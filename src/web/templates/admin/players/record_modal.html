@@ -234,6 +234,7 @@
                             <td class="text-nowrap text-center align-middle">
                                 {{ score }}
                                 {% if client.can_update_results(tournament.id)
+                                    and not tournament.is_team_tournament
                                     and tournament.pairing_system.supports_point_adjustments %}
                                     {# There is nothing to adjust until the round
                                        is paired: the adjustment belongs to a game

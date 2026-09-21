@@ -10,7 +10,7 @@ from logging import Logger
 import math
 from pathlib import Path
 from typing import Annotated, Any, cast, ClassVar
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 
 import chardet
 from litestar.di import NamedDependency
@@ -52,7 +52,7 @@ from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
 )
-from data.teams.team import RosterFullError
+from data.teams.team import RosterFullError, Team
 from data.tournament import Tournament
 from data.criteria.managers import SearchFilterManager
 from database.sqlite.event.event_database import EventDatabase
@@ -2008,6 +2008,28 @@ class PlayerAdminController(BaseEventAdminController):
                 optional.append(column.id)
         return required, optional, informative
 
+    @staticmethod
+    def _overwrite_blocking_tournaments(
+        event: Event, tournament: Tournament | None
+    ) -> list[Tournament]:
+        """The started tournaments an overwrite would clear: the selected
+        one, or every tournament of a team event (whose import clears the
+        whole event)."""
+        cleared = (
+            [tournament]
+            if tournament is not None
+            else list(event.tournaments_by_id.values())
+        )
+        return [candidate for candidate in cleared if candidate.started]
+
+    @staticmethod
+    def _overwrite_forbidden_message(event: Event) -> str:
+        return (
+            _("Players can't be overwritten once a tournament has started.")
+            if event.is_team_event
+            else _("Players can't be overwritten once the tournament has started.")
+        )
+
     @classmethod
     def _render_players_import_modal(
         cls,
@@ -2037,6 +2059,11 @@ class PlayerAdminController(BaseEventAdminController):
             'started_tournament_ids': [
                 str(tournament.id) for tournament in tournaments if tournament.started
             ],
+            'overwrite_forbidden': (
+                event.is_team_event
+                and bool(cls._overwrite_blocking_tournaments(event, None))
+            ),
+            'overwrite_forbidden_message': cls._overwrite_forbidden_message(event),
             'is_team_event': event.is_team_event,
             'tournament_options': tournament_options,
             'data_source_options': {
@@ -2254,6 +2281,15 @@ class PlayerAdminController(BaseEventAdminController):
                     keep_reliable_k_factors(stored_player)
                 stored_players_by_index[index] = stored_player
 
+        if event.is_team_event:
+            cls._reject_rows_over_roster_cap(
+                event,
+                tournament,
+                stored_players_by_index,
+                import_errors_by_index,
+                overwrite_players,
+            )
+
         for index, stored_player in stored_players_by_index.items():
             for tr in TournamentRating:
                 for prt in PlayerRatingType:
@@ -2273,6 +2309,45 @@ class PlayerAdminController(BaseEventAdminController):
                             )
 
         return stored_players_by_index, import_errors_by_index, duplicated_indexes
+
+    @staticmethod
+    def _reject_rows_over_roster_cap(
+        event: Event,
+        tournament: Tournament | None,
+        stored_players_by_index: dict[int, StoredPlayer],
+        import_errors_by_index: dict[int, dict[str, str]],
+        overwrite_players: bool,
+    ) -> None:
+        """Flag the rows a team has no room for: each team fills up in row
+        order until it reaches its tournament's roster cap. A team the
+        import creates joins *tournament* (when there is one), so it takes
+        that tournament's cap."""
+        emptied_team_ids: set[int] = set()
+        if overwrite_players:
+            emptied = tournament.teams if tournament is not None else event.teams
+            emptied_team_ids = {team.id for team in emptied}
+        cap_by_team_name: dict[str, int | None] = {}
+        count_by_team_name: dict[str, int] = {}
+        for team in event.teams:
+            if team.name in cap_by_team_name:
+                continue
+            cap_by_team_name[team.name] = team.roster_max_size
+            count_by_team_name[team.name] = (
+                0 if team.id in emptied_team_ids else len(team.players)
+            )
+        new_team_cap = tournament.roster_max_size if tournament is not None else None
+        for index in sorted(stored_players_by_index):
+            team_name = stored_players_by_index[index].transient_team_name
+            if not team_name:
+                continue
+            max_size = cap_by_team_name.setdefault(team_name, new_team_cap)
+            count = count_by_team_name.get(team_name, 0)
+            if max_size is not None and count >= max_size:
+                import_errors_by_index[index]['team'] = _(
+                    'Team [{team}] is full ({max} players max).'
+                ).format(team=team_name, max=max_size)
+                continue
+            count_by_team_name[team_name] = count + 1
 
     @classmethod
     async def _render_players_import_diff_modal(
@@ -2381,6 +2456,10 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     break
         overwrite_players = WebContext.form_data_to_bool(data, 'overwrite_players')
+        if overwrite_players and self._overwrite_blocking_tournaments(
+            event, event.tournaments_by_id.get(tournament_id or 0)
+        ):
+            errors['overwrite_players'] = self._overwrite_forbidden_message(event)
         if errors:
             return self._render_players_import_modal(
                 web_context, normalized_data, errors
@@ -2411,6 +2490,8 @@ class PlayerAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         tournament = web_context.admin_tournament
         team_mode = event.is_team_event
+        # Tournaments whose team list the import changes, to renumber.
+        resort_tournament_ids: set[int] = set()
         if stored_players:
             # Team events import players at the event level: no
             # ``tournament_player`` row (the synthetic loader derives one
@@ -2419,6 +2500,7 @@ class PlayerAdminController(BaseEventAdminController):
             # attached to the team tournament when there is one).
             team_id_by_name: dict[str, int] = {}
             next_team_index: dict[int, int] = {}
+            emptied: Collection[Team] = []
             if team_mode:
                 for team in event.teams:
                     team_id_by_name.setdefault(team.name, team.id)
@@ -2469,10 +2551,19 @@ class PlayerAdminController(BaseEventAdminController):
                             )
                             team_id_by_name[team_name] = team_id
                             next_team_index[team_id] = 0
+                            if tournament is not None:
+                                resort_tournament_ids.add(tournament.id)
                         database.set_player_team(
                             player_id, team_id, next_team_index[team_id]
                         )
                         next_team_index[team_id] += 1
+                # An emptied team the import didn't refill is a shell the
+                # file no longer knows about.
+                for team in emptied:
+                    if next_team_index[team.id] == 0:
+                        database.delete_stored_team(team.id)
+                        if team.tournament_id is not None:
+                            resort_tournament_ids.add(team.tournament_id)
                 if any(column.save_stored_event for column in used_columns):
                     database.update_stored_event(event.stored_event)
             Message.success(
@@ -2485,9 +2576,15 @@ class PlayerAdminController(BaseEventAdminController):
             )
         else:
             Message.warning(request, _('No players imported.'))
-        return cls._render_players_tab(
-            PlayerAdminWebContext(request, reload_event=True)
-        )
+        web_context = PlayerAdminWebContext(request, reload_event=True)
+        if resort_tournament_ids:
+            # Created teams joined without a pairing number and deleted
+            # ones left a gap; the sort mode renumbers.
+            tournaments_by_id = web_context.get_admin_event().tournaments_by_id
+            with EventDatabase(event.uniq_id, True) as database:
+                for tournament_id in resort_tournament_ids:
+                    tournaments_by_id[tournament_id].resort_teams(database)
+        return cls._render_players_tab(web_context)
 
     @post(
         path=[
@@ -2518,28 +2615,27 @@ class PlayerAdminController(BaseEventAdminController):
         assert file_path is not None
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
-        if overwrite_players:
-            started = (
-                [tournament]
-                if tournament is not None
-                else list(event.tournaments_by_id.values())
-            )
-            if any(candidate.started for candidate in started):
-                raise ClientException('Overwrite is forbidden on started tournaments.')
+        if overwrite_players and self._overwrite_blocking_tournaments(
+            event, tournament
+        ):
+            Message.error(request, self._overwrite_forbidden_message(event))
+            return self._render_players_tab(web_context)
         columns = PlayerDatasheetColumnHandler(event, data_source).columns
         content_by_column_id = self._read_csv_file(file_path)
         used_columns = [
             column for column in columns if column.id in content_by_column_id
         ]
-        stored_players_by_index = (
-            await self._get_imported_stored_players(
-                web_context, used_columns, content_by_column_id, overwrite_players
-            )
-        )[0]
+        (
+            stored_players_by_index,
+            import_errors_by_index,
+            __,
+        ) = await self._get_imported_stored_players(
+            web_context, used_columns, content_by_column_id, overwrite_players
+        )
         stored_players = [
             stored_player
             for index, stored_player in stored_players_by_index.items()
-            if index in row_indexes
+            if index in row_indexes and index not in import_errors_by_index
         ]
         return self._create_imported_stored_players(
             web_context, stored_players, used_columns, overwrite_players

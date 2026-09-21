@@ -574,10 +574,19 @@ class Tournament:
             boards=self.team_player_count or 0,
             pab_is_draw=self.pairing_system == TeamSwissPairingSystem(),
             bye_is_rest=self.pairing_variation.engine.pab_result == Result.REST_GAME,
-            primary_score=ScoreType(self.stored_tournament.primary_score)
-            if self.stored_tournament.primary_score
-            else ScoreType.MATCH_POINTS,
+            primary_score=self._primary_score,
         )
+
+    @property
+    def _primary_score(self) -> ScoreType:
+        """The score the teams rank on: game points where the system has
+        no match points (a flat fixed table), otherwise whichever the
+        tournament stores, match points by default."""
+        if not self.pairing_system.supports_match_points:
+            return ScoreType.GAME_POINTS
+        if self.stored_tournament.primary_score:
+            return ScoreType(self.stored_tournament.primary_score)
+        return ScoreType.MATCH_POINTS
 
     @property
     def match_points(self) -> dict[Result, float]:

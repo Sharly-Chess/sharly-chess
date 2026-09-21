@@ -83,11 +83,7 @@
                 <div class="d-flex my-2">
                     <span
                         id="overwrite-players-container"
-                        {{ macros.tooltip_attributes(
-                            '', _('Players can\'t be overwritten once a tournament has started.')
-                            if admin_event.is_team_event else
-                            _('Players can\'t be overwritten once the tournament has started.')
-                        ) }}
+                        {{ macros.tooltip_attributes('', overwrite_forbidden_message) }}
                     >
                         {# A team event imports at the event level — a team,
                            not a tournament, places its players — so there is
@@ -112,7 +108,8 @@
                                 'Every player of the event will be deleted before '
                                 'importing the ones from the file — a team event '
                                 'places its players by team, not by tournament, so '
-                                'the deletion cannot be limited to one tournament.'
+                                'the deletion cannot be limited to one tournament. '
+                                'Teams the file leaves empty are deleted too.'
                             ) if admin_event.is_team_event else _(
                                 'All the players of the selected tournament will '
                                 'be deleted before importing the ones from the file.'
@@ -121,7 +118,8 @@
                     ></i>
                     <script>
                         $('#tournament-id').change(function () {
-                            const isStarted = {{ started_tournament_ids|tojson }}.includes($(this).val());
+                            const isStarted = {{ overwrite_forbidden|tojson }}
+                                || {{ started_tournament_ids|tojson }}.includes($(this).val());
 
                             $('#overwrite-players').prop('disabled', isStarted);
                             const tooltip = new bootstrap.Tooltip(

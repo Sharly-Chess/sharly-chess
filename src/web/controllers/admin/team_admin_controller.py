@@ -1420,14 +1420,15 @@ class TeamAdminController(BaseEventAdminController):
         in their current tournament are not allowed to move, and teams
         cannot be dropped into a tournament whose pairing system refuses
         team additions once paired — such attempts are silently
-        ignored."""
+        ignored. A team with more players than the target tournament's
+        roster cap stays where it is, with a warning."""
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
         flat_data = WebContext.flatten_list_data(data)
         raw_assignments = WebContext.form_data_to_list_str(flat_data, 'assignment')
         by_tournament: dict[int | None, list[int]] = {}
         for raw in raw_assignments:
-            team_id_str, _, tid_str = raw.partition(':')
+            team_id_str, _separator, tid_str = raw.partition(':')
             try:
                 team_id = int(team_id_str)
             except ValueError:
@@ -1459,6 +1460,23 @@ class TeamAdminController(BaseEventAdminController):
                         )
                         if target is not None and not target.can_add_teams:
                             continue
+                        if target is not None:
+                            max_size = target.roster_max_size
+                            if max_size is not None and len(team.players) > max_size:
+                                Message.warning(
+                                    request,
+                                    _(
+                                        'Team [{team}] has {count} players, more '
+                                        'than the {max} allowed in tournament '
+                                        '[{tournament}].'
+                                    ).format(
+                                        team=team.name,
+                                        count=len(team.players),
+                                        max=max_size,
+                                        tournament=target.name,
+                                    ),
+                                )
+                                continue
                         team.set_tournament(tournament_id, database)
                         # A team joining a tournament with paired rounds
                         # is zero-point-byed for them, like late-added

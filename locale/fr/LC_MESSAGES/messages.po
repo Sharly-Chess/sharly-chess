@@ -3506,8 +3506,8 @@ msgstr "Évènements"
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
 
-msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament."
-msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi."
+msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
+msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi. Les équipes que le fichier laisse vides sont également supprimées."
 
 msgid "Example data"
 msgstr "Données d’exemple"
@@ -8774,6 +8774,10 @@ msgstr "L'équipe [{team}] a été mise à jour."
 #, python-brace-format
 msgid "Team [{team}] has returned for this round."
 msgstr "L’équipe [{team}] est de retour pour cette ronde."
+
+#, python-brace-format
+msgid "Team [{team}] has {count} players, more than the {max} allowed in tournament [{tournament}]."
+msgstr "L'équipe [{team}] compte {count} joueur·euses, plus que les {max} autorisé·es dans le tournoi [{tournament}]."
 
 #, python-brace-format
 msgid "Team [{team}] is full ({max} players max)."
