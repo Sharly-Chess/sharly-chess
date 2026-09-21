@@ -135,6 +135,14 @@ class TeamScoring:
             if after_round is None or team_board.round <= after_round
         ]
 
+    @property
+    def _flat(self) -> bool:
+        """Whether the players are paired straight across teams, with no
+        team board around a round's games (a fixed-table system such as
+        Molter), so that a team's round is what its lineup scored on each
+        board rather than one match against one opponent."""
+        return not self.tournament.pairing_system.paired_by_team
+
     def _excluded_team_ids(self) -> set[int]:
         return {
             team.id for team in self.tournament.teams if team.is_excluded_from_standings
@@ -167,11 +175,10 @@ class TeamScoring:
         win/draw/loss tallies aren't meaningful in that mode."""
         tournament = self.tournament
         standings = self._empty_standings()
-        if not tournament.team_boards_by_id:
+        if self._flat:
             self._tally_boards(standings, after_round)
-            self._apply_point_adjustments(standings, after_round)
-            return self._flat_ranking(list(standings.values()))
-        self._tally_matches(standings, after_round)
+        else:
+            self._tally_matches(standings, after_round)
         self._apply_point_adjustments(standings, after_round)
         rows = list(standings.values())
         base_key = self._base_key(after_round)
@@ -192,10 +199,13 @@ class TeamScoring:
         self, standings: dict[int, TeamStanding], after_round: int | None
     ) -> None:
         """Flat fixed-table scoring (no team boards): each player's game
-        points go straight into the team's total. ``team_game_points`` is
-        used so the ``gp_*`` override applies to team scoring here too."""
+        points go straight into the team's total, and a round any of
+        them was paired in is a round the team played. ``team_game_points``
+        is used so the ``gp_*`` override applies to team scoring here
+        too."""
         tournament = self.tournament
         team_game_points = tournament.team_game_points
+        rounds_played: set[tuple[int, int]] = set()
         for board in tournament.boards_by_id.values():
             if after_round is not None and board.round > after_round:
                 continue
@@ -210,25 +220,9 @@ class TeamScoring:
                     continue
                 entry = standings[player.team_id]
                 entry.gp += pairing.result.points(team_game_points)
-                entry.played += 1
-
-    def _flat_ranking(self, rows: list[TeamStanding]) -> list[TeamStanding]:
-        """Flat fixed-table order: game points, then pairing number and
-        name. The team tie-breaks are not computed in this mode, but every
-        row still carries one zero per team tie-break so consumers that
-        render a column each (ranking document / screen table) never
-        index past the end."""
-        team_tie_breaks = [
-            tb for tb in self.tournament.tie_breaks if tb.supports_team_mode
-        ]
-        for row in rows:
-            row.tie_break_values = self._wrap_tie_break_values(
-                team_tie_breaks, [0.0] * len(team_tie_breaks)
-            )
-        rows.sort(key=lambda row: (-row.gp, *row.tie_order))
-        for rank, row in enumerate(rows, 1):
-            row.rank = rank
-        return rows
+                rounds_played.add((player.team_id, board.round))
+        for team_id, _round in rounds_played:
+            standings[team_id].played += 1
 
     def _tally_matches(
         self, standings: dict[int, TeamStanding], after_round: int | None
@@ -450,16 +444,47 @@ class TeamScoring:
         pairing-allocated bye scored as a win; a team that fielded
         nobody, or every one of whose players lost by forfeit, forfeited
         the match rather than playing it, and its opponent won by
-        forfeit rather than over the board."""
+        forfeit rather than over the board.
+
+        In a flat tournament a team's round is the games its lineup
+        played on each board, against no one opponent, and it scores
+        game points only."""
         tournament = self.tournament
         if after_round is None:
             after_round = tournament.current_round
         matches_per_team: dict[int, list[TeamMatchRecord]] = {
             team.id: [] for team in tournament.teams
         }
+        if self._flat:
+            for team in tournament.teams:
+                matches_per_team[team.id] = self._flat_records(team, after_round)
+        else:
+            self._collect_match_records(matches_per_team, after_round)
         totals: dict[int, list[float]] = {
-            team.id: [0.0, 0.0] for team in tournament.teams
+            team_id: [
+                sum(record.own_mp for record in records),
+                sum(record.own_gp for record in records),
+            ]
+            for team_id, records in matches_per_team.items()
         }
+        self._fold_adjustments_into(matches_per_team, totals, after_round)
+        return [
+            TeamRecord(
+                team_id=team.id,
+                name=team.name,
+                total_mp=totals[team.id][0],
+                total_gp=totals[team.id][1],
+                matches=sorted(matches_per_team[team.id], key=lambda m: m.round_),
+                pairing_number=team.pairing_number,
+            )
+            for team in tournament.teams
+        ]
+
+    def _collect_match_records(
+        self, matches_per_team: dict[int, list[TeamMatchRecord]], after_round: int
+    ) -> None:
+        """Add each team's record of every team board through
+        ``after_round``."""
         excluded_team_ids = self._excluded_team_ids()
         for team_board in self._team_boards_through(after_round):
             stb = team_board.stored_team_board
@@ -477,20 +502,49 @@ class TeamScoring:
                     continue
                 assert team_id is not None
                 matches_per_team[team_id].append(record)
-                totals[team_id][0] += record.own_mp
-                totals[team_id][1] += record.own_gp
-        self._fold_adjustments_into(matches_per_team, totals, after_round)
-        return [
-            TeamRecord(
-                team_id=team.id,
-                name=team.name,
-                total_mp=totals[team.id][0],
-                total_gp=totals[team.id][1],
-                matches=sorted(matches_per_team[team.id], key=lambda m: m.round_),
-                pairing_number=team.pairing_number,
+
+    def _flat_records(self, team: 'Team', after_round: int) -> list[TeamMatchRecord]:
+        """One record per round the team's lineup was paired in, with a
+        score and a rating per board slot: a slot left empty, or whose
+        player sat the round out, scores nothing."""
+        tournament = self.tournament
+        players_by_id = tournament.tournament_players_by_id
+        team_game_points = tournament.team_game_points
+        records: list[TeamMatchRecord] = []
+        for round_ in range(1, after_round + 1):
+            scores: list[float] = []
+            ratings: list[int | None] = []
+            paired = False
+            for player in team.effective_round_slots(round_):
+                tournament_player = (
+                    players_by_id.get(player.id) if player is not None else None
+                )
+                pairing = (
+                    tournament_player.pairings.get(round_)
+                    if tournament_player is not None
+                    else None
+                )
+                if tournament_player is None or pairing is None:
+                    scores.append(0.0)
+                    ratings.append(None)
+                    continue
+                paired = True
+                scores.append(pairing.result.points(team_game_points))
+                ratings.append(tournament_player.rating or None)
+            if not paired:
+                continue
+            records.append(
+                TeamMatchRecord(
+                    round_=round_,
+                    opponent_id=None,
+                    own_mp=0.0,
+                    own_gp=sum(scores),
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=tuple(scores),
+                    board_ratings=tuple(ratings),
+                )
             )
-            for team in tournament.teams
-        ]
+        return records
 
     def _bye_record(self, team_board: TeamBoard) -> TeamMatchRecord | None:
         """The record of a bye, or ``None`` for a rest game, which is not
