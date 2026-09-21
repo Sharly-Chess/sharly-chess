@@ -2178,7 +2178,7 @@ msgid "Contact and registration"
 msgstr "Contact et inscription"
 
 msgid "Contact email:"
-msgstr "Email de contact :"
+msgstr "Mél de contact :"
 
 msgid "Content"
 msgstr "Contenu"
@@ -4459,7 +4459,7 @@ msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Délai non valide [{delay}] (entier positif attendu)."
 
 msgid "Invalid email format."
-msgstr "Format d'email invalide."
+msgstr "Format de mél invalide."
 
 #, python-brace-format
 msgid "Invalid expression [{expression}]"
@@ -5607,7 +5607,7 @@ msgid "No dropdowns"
 msgstr "Sans menus déroulants"
 
 msgid "No email"
-msgstr "Aucun email"
+msgstr "Aucun mél"
 
 msgid "No events."
 msgstr "Aucun évènement."
@@ -6876,7 +6876,7 @@ msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and rema
 msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
 
 msgid "Players without phone or email won't be included."
-msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
+msgstr "Les joueur·euses sans numéro de téléphone ni mél ne seront pas inclus·es."
 
 msgid "Players:"
 msgstr "Joueur·euses :"
@@ -6994,7 +6994,7 @@ msgid "Please supply a valid URL (e.g. https://my.domain.com)."
 msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
 
 msgid "Please supply a valid email address."
-msgstr "Veuillez fournir une adresse email valide."
+msgstr "Veuillez fournir un mél valide."
 
 msgid "Please validate the affiliation to continue."
 msgstr "Veuillez valider l'affiliation pour continuer."
