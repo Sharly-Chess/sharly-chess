@@ -710,6 +710,8 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
+        if tournament.is_team_tournament:
+            raise NotFoundException('Team events adjust whole teams, not players.')
         player = tournament.tournament_players_by_id.get(player_id)
         if player is None:
             raise NotFoundException(f'Player {player_id} not found.')
@@ -743,6 +745,8 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
+        if tournament.is_team_tournament:
+            raise NotFoundException('Team events adjust whole teams, not players.')
         player = tournament.tournament_players_by_id.get(player_id)
         if player is None:
             raise NotFoundException(f'Player {player_id} not found.')

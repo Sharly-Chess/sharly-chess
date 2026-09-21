@@ -287,6 +287,28 @@ def test_a_team_is_given_bonus_match_points(http: TestClient, paired: Tournament
 
 
 @pytest.mark.unit
+def test_a_player_of_a_team_is_not_given_bonus_points_alone(
+    http: TestClient, paired: Tournament
+):
+    """Team events adjust whole teams: a single player's record offers
+    no adjustment, and the route refuses one."""
+    player = next(iter(paired.tournament_players_by_id.values()))
+    response = http.get(
+        f'/player-point-adjustment/{EVENT_ID}/{paired.id}/1/{player.id}',
+        follow_redirects=False,
+    )
+    assert response.status_code == 302
+    assert response.headers['location'].endswith('/error/404')
+    response = http.patch(
+        f'/player-point-adjustment/{EVENT_ID}/{paired.id}/1/{player.id}',
+        data={'delta': '0.5', 'reason': ''},
+        follow_redirects=False,
+    )
+    assert response.status_code == 302
+    assert not EVENT.tournament().stored_tournament.stored_player_point_adjustments
+
+
+@pytest.mark.unit
 def test_a_team_match_is_unpaired_on_its_own(http: TestClient, paired: Tournament):
     team_board = paired.get_round_team_boards(1)[0]
     response = http.delete(
