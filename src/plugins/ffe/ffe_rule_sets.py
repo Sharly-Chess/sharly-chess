@@ -527,10 +527,10 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             a_gp, b_gp = team_board.game_points
             scored = a_gp if team_board.stored_team_board.team_a_id == team.id else b_gp
             if penalty > scored:
+                # Kept with its explanation even when nothing is left to
+                # take off, so the arbiter sees why the penalty is void.
                 penalty = max(scored, 0.0)
                 explanation += ' ' + _('The match score cannot go below zero.')
-        if not penalty:
-            return None
         return PointAdjustment(gp=-penalty, explanation=explanation)
 
     def _following_board_played_penalty(

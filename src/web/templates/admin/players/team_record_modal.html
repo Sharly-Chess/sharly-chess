@@ -98,15 +98,17 @@
                                 {% set _mp, _gp = tournament.point_adjustments.effective(
                                     admin_team.id, round
                                 ) %}
-                                {% if _mp or _gp %}
+                                {% set _note = tournament.point_adjustments.from_rule_set(admin_team.id, round) %}
+                                {% set _note = _note.explanation if _note else '' %}
+                                {% if _mp or _gp or _note %}
                                     <span
-                                        class="badge rounded-pill {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else 'text-bg-success' }}"
+                                        class="badge rounded-pill {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else ('text-bg-success' if (_mp or _gp) else 'text-bg-secondary') }}"
                                         {{ macros.tooltip_attributes(
                                             'info',
                                             macros.point_adjustment_tooltip(tournament, admin_team.id, round),
                                             'top'
                                         ) }}
-                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</span>
+                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _mp and not _gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</span>
                                 {% endif %}
                                 {% if client.can_update_results(tournament.id) %}
                                     {# There is nothing to adjust until the round

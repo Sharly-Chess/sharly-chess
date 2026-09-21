@@ -18,13 +18,13 @@
             </div>
         </div>
         <div class="modal-body">
-            {% if adj.rule_set_mp or adj.rule_set_gp %}
+            {% if adj.rule_set_mp or adj.rule_set_gp or adj.rule_set_explanation %}
                 <div class="alert alert-warning d-flex gap-2 py-2 px-2 mb-3 small">
                     <i class="bi-exclamation-triangle-fill"></i>
                     <div>
                         <div class="fw-bold">
                             {{ _('%(string)s:', string=_('Rule set applied')) }}
-                            {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}
+                            {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not adj.rule_set_mp and not adj.rule_set_gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}
                         </div>
                         {% if adj.rule_set_explanation %}
                             <div>{{ adj.rule_set_explanation }}</div>
