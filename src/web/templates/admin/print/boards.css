@@ -10,3 +10,5 @@
 .board-table .board-number { text-align: right; }
 .board-table .points,
 .board-table .result { text-align: center; }
+{# ========== SEAT CODES ========== #}
+.board-table .board-seat-code { font-size: 80%; color: #555; }

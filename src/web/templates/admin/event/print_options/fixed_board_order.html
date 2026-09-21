@@ -11,16 +11,15 @@
         (() => {
             const $modal = $('.modal');
             function toggleFixedBoardOrder() {
-                const doc = $modal.find('#document').val();
                 const style = $modal.find('#pairing-style').val();
-                const visible = doc === '{{ option.pairing_document_id }}'
+                const visible = printOptionContainers().includes('{{ option.container_id }}')
                     && style === '{{ option.boards_pairing_style_id }}';
                 // Delay so this runs after the modal's own document-change handler.
                 setTimeout(() => {
                     $('#{{ option.container_id }}').css('display', visible ? 'block' : 'none');
                 }, 0);
             }
-            $modal.find('#document').on('change', toggleFixedBoardOrder);
+            $modal.find('#document, #tournament').on('change', toggleFixedBoardOrder);
             $modal.find('#pairing-style').on('change', toggleFixedBoardOrder);
             toggleFixedBoardOrder();
         })();

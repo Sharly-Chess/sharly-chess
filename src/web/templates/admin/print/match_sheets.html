@@ -83,12 +83,6 @@
     table.match-sheet-table thead .team-name-head { font-size: 15pt; }
     table.match-sheet-table thead .team-score-head { font-size: 15pt; }
     .player-meta { font-size: 9pt; color: #555; }
-    .board-refs {
-        font-size: 8pt;
-        color: #555;
-        white-space: nowrap;
-        margin-top: 4pt;
-    }
     td.col-bd .board-number {
         font-size: 14pt;
         font-weight: bold;
@@ -141,120 +135,7 @@
 
 {% block content %}
     {% set pattern = tournament.color_pattern or '' %}
-    {% macro player_meta(player) %}
-        {%- set parts = [] -%}
-        {%- if player.team -%}
-            {%- do parts.append(player.team.name) -%}
-        {%- endif -%}
-        {%- if player.rating_str -%}
-            {%- do parts.append(player.rating_str) -%}
-        {%- endif -%}
-        {%- if player.category and player.category.name and player.category.name != '-' -%}
-            {%- do parts.append(player.category.name) -%}
-        {%- endif -%}
-        {%- if player.fide_id -%}
-            {%- do parts.append(_('FIDE %(fide_id)s', fide_id=player.fide_id)) -%}
-        {%- endif -%}
-        {%- set _national_id = player_national_id(player) -%}
-        {%- if _national_id -%}
-            {%- do parts.append(_national_id) -%}
-        {%- endif -%}
-        {%- if parts -%}
-            <div class="player-meta">{{ parts|join(' · ') }}</div>
-        {%- endif -%}
-    {% endmacro %}
-    {% if flat_mode %}
-        {% if not flat_boards %}
-            <div class="error">
-                {{ _('No paired boards in this round.') }}
-            </div>
-        {% else %}
-            {# Flat team systems (fixed tables): one round sheet listing
-               every board, white on the left. #}
-            <div class="match-sheet">
-                <div class="match-sheet-title">
-                    {{ tournament.name }} — {{ _('Round #%(round)d', round=at_round) }}
-                </div>
-                <table class="match-sheet-table">
-                    <thead>
-                        <tr>
-                            <th class="col-bd">{{ _('Bd') }}</th>
-                            <th class="col-name">{{ _('White') }}</th>
-                            <th class="col-result"></th>
-                            <th class="col-result"></th>
-                            <th class="col-name">{{ _('Black') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for board in flat_boards %}
-                            {% set wtp = board.optional_white_tournament_player %}
-                            {% set btp = board.black_tournament_player %}
-                            {# Codes (A1/B3): a seated player's own team letter +
-                               lineup slot (follows them through re-pairing); an
-                               empty seat falls back to the table cell code so a
-                               forfeit shows which player is missing. #}
-                            {% set refs = flat_board_refs.get(board.index) %}
-                            {% set _wc = wtp.team.player_round_label(wtp, at_round) if (wtp and wtp.team) else (refs[0] if refs else none) %}
-                            {% set _bc = btp.team.player_round_label(btp, at_round) if (btp and btp.team) else (refs[1] if refs else none) %}
-                            {% set raw_result = board.result_str %}
-                            {% if raw_result and '-' in raw_result %}
-                                {% set parts = raw_result.split('-') %}
-                                {% set a_result = parts[0] %}
-                                {% set b_result = parts[1] %}
-                            {% else %}
-                                {% set a_result = '' %}
-                                {% set b_result = '' %}
-                            {% endif %}
-                            <tr>
-                                <td class="col-bd">
-                                    <div class="board-number">{{ board.number }}</div>
-                                    {% if _wc or _bc %}
-                                        <div class="board-refs">{{ _wc or '' }}-{{ _bc or '' }}</div>
-                                    {% endif %}
-                                </td>
-                                <td class="col-name left">
-                                    {% if wtp %}
-                                        {% set _w_title = wtp.display_title %}
-                                        <div class="player-name">
-                                            <span class="color-chip"></span>{% if _w_title %}{{ _w_title }} {% endif %}{{ wtp.full_name }}
-                                        </div>
-                                        {{ player_meta(wtp) }}
-                                    {% else %}
-                                        &nbsp;
-                                    {% endif %}
-                                </td>
-                                <td class="col-result">{{ a_result }}</td>
-                                <td class="col-result">{{ b_result }}</td>
-                                <td class="col-name right">
-                                    {% if btp %}
-                                        {% set _b_title = btp.display_title %}
-                                        <div class="player-name">
-                                            {% if _b_title %}{{ _b_title }} {% endif %}{{ btp.full_name }}<span class="color-chip black" style="margin-left:4pt;margin-right:0"></span>
-                                        </div>
-                                        {{ player_meta(btp) }}
-                                    {% else %}
-                                        &nbsp;
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div class="result-legend">
-                    {{ _('Results: 1 = win, X = draw, 0 = loss, F = forfeit') }}
-                </div>
-                <div class="signatures">
-                    <div class="signature">
-                        <div class="signature-label">
-                            {{ _('Arbiter: %(name)s', name=arbiter_name or '') }}
-                        </div>
-                        <div class="signature-line"></div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
-    {% if not flat_mode and not team_boards %}
+    {% if not team_boards %}
         <div class="error">
             {{ _('No paired team matches in this round.') }}
         </div>

@@ -5,11 +5,28 @@ from markupsafe import escape
 
 from common.i18n import _, pgettext
 from data.board import Board
+from data.player import TournamentPlayer
 from .column import Column, ColumnUsage
 
 
 def _color_chip(color: str) -> str:
     return f'<span class="board-color-chip {color}"></span>'
+
+
+def _seat_code(board: Board, player: TournamentPlayer) -> str:
+    """The player's fixed-table code (``A1``, ``B3``) on a flat team board,
+    shown ahead of the name; empty elsewhere."""
+    tournament = board.tournament
+    if (
+        not tournament.is_team_tournament
+        or tournament.pairing_system.paired_by_team
+        or player.team is None
+    ):
+        return ''
+    code = player.team.player_round_label(player, board.round)
+    if code is None:
+        return ''
+    return f'<span class="board-seat-code">{escape(code)}</span> '
 
 
 class BoardColumn(Column[Board], ABC):
@@ -130,7 +147,9 @@ class WhiteNameColumn(BoardColumn):
 
     def get_cell_content(self, board: Board) -> Any:
         wtp = board.optional_white_tournament_player
-        name = escape(wtp.full_name) if wtp else ''
+        if wtp is None:
+            return ''
+        name = f'{_seat_code(board, wtp)}{escape(wtp.full_name)}'
         # Inside a team match a colour chip marks each side (the team
         # screens group rows by match, where colours alternate by board).
         if board.team_board is not None:
@@ -248,7 +267,7 @@ class BlackNameColumn(BoardColumn):
     def get_cell_content(self, board: Board) -> Any:
         black = board.black_tournament_player
         if black is not None:
-            name = escape(black.full_name)
+            name = f'{_seat_code(board, black)}{escape(black.full_name)}'
             if board.team_board is not None:
                 return f'{_color_chip("black")}{name}'
             return name
