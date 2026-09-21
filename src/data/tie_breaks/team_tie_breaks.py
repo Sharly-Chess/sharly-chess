@@ -559,8 +559,11 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
                     opponent_adjusted=opponent_adjusted,
                     legacy=self._legacy_march_2026,
                 )
+            elif match.opponent_id is None:
+                # A round played against several teams at once, with no
+                # one opponent whose score could be summed.
+                continue
             else:
-                assert match.opponent_id is not None
                 opponent = all_records[match.opponent_id]
                 opp_total = _adjust_opponent_total(
                     opponent,

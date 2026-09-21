@@ -21,10 +21,12 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTeam,
+    StoredTieBreak,
     StoredTournamentPlayer,
 )
 from data.loader import EventLoader
 from plugins.ffe.ffe_rule_sets import CoupeJeanClaudeLoubatiereRuleSet
+from plugins.ffe.ffe_tie_breaks import BerlinTieBreak
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
 import contextlib
@@ -305,3 +307,60 @@ class FixedTablePairingTestCase(TestCase):
         for team_players in self.player_ids:
             for pid in team_players:
                 self.assertEqual(self._boards_of(tournament, pid), 1)
+
+    def test_team_standings_score_the_tie_breaks(self) -> None:
+        """A flat tournament's team standings carry the points and the
+        board-weighted tie-breaks scored from each lineup's boards: White
+        wins every board, so a team's points are its games as White and
+        its Berlin score weights each by the slot it was played from."""
+        self._seed()
+        with EventDatabase(EVENT_ID, write=True) as db:
+            tournament_id = next(
+                t for t in db.load_stored_tournaments() if t.name == TOURNAMENT_NAME
+            ).id
+            assert tournament_id is not None
+            db.add_stored_tie_break(
+                StoredTieBreak(
+                    id=None,
+                    tournament_id=tournament_id,
+                    type=BerlinTieBreak.static_id(),
+                    options={},
+                    index=0,
+                )
+            )
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        expected: dict[int, list[float]] = {
+            team_id: [0.0, 0.0] for team_id in self.team_ids
+        }
+        with EventDatabase(EVENT_ID, write=True) as db:
+            for board in tournament.get_round_boards(1):
+                white = board.white_tournament_player
+                board.white_pairing.update_result(db, Result.WIN)
+                board.black_pairing.update_result(db, Result.LOSS)
+                team = self._event.teams_by_id[white.team_id]
+                slot = [pl.id if pl else None for pl in team.effective_round_slots(1)]
+                expected[team.id][0] += 1.0
+                expected[team.id][1] += N - slot.index(white.id)
+
+        tournament = self._load()
+        standings = tournament.team_standings(after_round=1)
+        self.assertEqual(len(standings), TEAMS)
+        for row in standings:
+            self.assertEqual(
+                [v.value for v in row.tie_break_values], expected[row.team.id]
+            )
+            self.assertEqual(row.gp, expected[row.team.id][0])
+            self.assertEqual(row.played, 1)
+        self.assertEqual(
+            [row.team.id for row in standings],
+            sorted(
+                self.team_ids,
+                key=lambda team_id: (
+                    -expected[team_id][0],
+                    -expected[team_id][1],
+                    team_id,
+                ),
+            ),
+        )
