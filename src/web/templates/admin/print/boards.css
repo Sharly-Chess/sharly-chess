@@ -10,5 +10,7 @@
 .board-table .board-number { text-align: right; }
 .board-table .points,
 .board-table .result { text-align: center; }
-{# ========== SEAT CODES ========== #}
+{# ========== FLAT TEAM BOARDS ========== #}
+.board-table .board-flat-player { display: flex; align-items: center; gap: 4pt; }
 .board-table .board-seat-code { font-size: 80%; color: #555; }
+.board-table .board-team-name { font-size: 80%; color: #555; }
