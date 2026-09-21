@@ -112,7 +112,8 @@
                                 'Every player of the event will be deleted before '
                                 'importing the ones from the file — a team event '
                                 'places its players by team, not by tournament, so '
-                                'the deletion cannot be limited to one tournament.'
+                                'the deletion cannot be limited to one tournament. '
+                                'Teams the file leaves empty are deleted too.'
                             ) if admin_event.is_team_event else _(
                                 'All the players of the selected tournament will '
                                 'be deleted before importing the ones from the file.'
