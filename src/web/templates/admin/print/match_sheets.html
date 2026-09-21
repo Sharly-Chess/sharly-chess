@@ -152,11 +152,12 @@
             <table class="match-sheet-table">
                 <thead>
                     {% set _a_gp, _b_gp = team_board.game_points %}
+                    {% set _final = team_board.all_games_played %}
                     <tr>
                         <th class="col-bd">{{ _('Bd') }}</th>
                         <th class="col-name team-name-head">{{ team_board.team_a.name }}</th>
-                        <th class="col-result team-score-head">{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }}</th>
-                        <th class="col-result team-score-head">{{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}</th>
+                        <th class="col-result team-score-head">{% if _final %}{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }}{% endif %}</th>
+                        <th class="col-result team-score-head">{% if _final %}{{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}{% endif %}</th>
                         <th class="col-name team-name-head">{{ team_board.team_b.name }}</th>
                     </tr>
                 </thead>
