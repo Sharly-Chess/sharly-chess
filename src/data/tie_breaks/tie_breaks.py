@@ -2180,7 +2180,10 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
             return 0
         max_score = len(ratings) * tournament.win_points
         average = sum(ratings) / len(ratings)
-        fractional_score = round(score / max_score, 2)
+        # The conversion table is read on the percentage rounded to the
+        # nearest whole number, 0.5 up, the way every rounding in the
+        # FIDE regulations goes (C.07 Art. 10.1, B.02 Art. 8.3.4).
+        fractional_score = Utils.round_ranking(100 * score / max_score) / 100
         bonus = Utils.performance_bonus(fractional_score)
         return Utils.round_ranking(average + bonus)
 

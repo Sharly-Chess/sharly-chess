@@ -1262,6 +1262,22 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
         expected = {1: 9.25, 2: 6.25, 3: 6.25, 4: 4.25, 5: 3.25, 6: 2.25}
         self.assertEqual(results, expected)
 
+    def test_tpr_rounds_the_percentage_half_up(self):
+        """C.07 Art. 10.2 reads the conversion table on the fractional
+        score to two decimals; a half rounds up, as every rounding in the
+        FIDE regulations does (Art. 10.1, B.02 Art. 8.3.4). Helene (id 6)
+        scored 0.5 in 4 played games: 12.5% reads as 13%, RD -322."""
+        tie_break_ = tie_breaks.TournamentPerformanceRatingTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {1: 2199, 2: 2209, 3: 2219, 4: 1931, 5: 2038, 6: 1803}
+        self.assertEqual(results, expected)
+
+    def test_apro_round_robin(self):
+        tie_break_ = tie_breaks.AveragePerformanceRatingOpponentsTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {1: 2040, 2: 2038, 3: 2036, 4: 2094, 5: 2140, 6: 2140}
+        self.assertEqual(results, expected)
+
     def test_sb_cut1_round_robin(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak(
             [options.CutterTieBreakOption(Cut1TieBreakCutter.static_id())]
