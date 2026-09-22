@@ -9,7 +9,7 @@ from data.loader import EventLoader
 
 import pytest
 from data.tie_breaks import tie_breaks, options
-from data.tie_breaks.cutters import Cut1TieBreakCutter
+from data.tie_breaks.cutters import Cut1TieBreakCutter, Median1TieBreakCutter
 from data.tie_breaks.options import (
     ReversedTieBreakOption,
     LegacyMarch2026TieBreakOption,
@@ -706,6 +706,34 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
+    def test_sonneborn_berger_swiss_forfeits_played(self):
+        """With the played modifier a forfeit counts as a game against the
+        scheduled opponent, and a bye still counts as a game against the
+        dummy (Art. 16.4): here every bye holder keeps the same value."""
+        tie_break_ = tie_breaks.SonnebornBergerTieBreak(
+            [options.PlayedModifierTieBreakOption(True)]
+        )
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            2: 9.5,
+            3: 10.5,
+            4: 9.25,  # HPB R2: dummy 2.5 * 0.5
+            1: 8.0,
+            16: 7.25,
+            6: 6.0,  # PAB R3: dummy 2.5 * 1
+            11: 4.75,  # Forfeit win R4 against #9: their 1.5 * 1
+            8: 5.25,
+            5: 4.25,
+            14: 4.5,
+            12: 4.0,  # PAB R2: dummy 2 * 1
+            15: 3.5,
+            13: 4.25,
+            7: 3.25,
+            9: 2.25,  # HPB R3 and PAB R5: dummy 1.5 * 0.5 and 1.5 * 1
+            10: 1.5,
+        }
+        self.assertEqual(results, expected)
+
     def test_sb_cut1_swiss_legacy_2026(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak(
             [
@@ -1261,6 +1289,62 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
 
+@pytest.mark.unit
+class MedianBuchholzWithByesTestCase(TieBreakTestCase):
+    """Alpha (#1) has a half-point bye and a zero-point bye, both
+    voluntarily unplayed rounds whose dummy is worth 2.5 (own score 3.5
+    capped at half the rounds, Art. 16.4.2), or 3.5 before March 2026.
+    Cut 1 takes the lower of them (Art. 16.5); the median then takes the
+    highest contribution of all, the other dummy, not the highest
+    opponent score."""
+
+    @property
+    def json_file(self) -> str:
+        return 'median-buchholz-byes'
+
+    def _alpha(self, tie_break_):
+        return self.get_tie_break_player_values(tie_break_, only_ids=[1])[1]
+
+    def test_buchholz(self):
+        self.assertEqual(self._alpha(tie_breaks.StandardBuchholzTieBreak()), 8.0)
+        self.assertEqual(
+            self._alpha(
+                tie_breaks.StandardBuchholzTieBreak(
+                    [LegacyMarch2026TieBreakOption(True)]
+                )
+            ),
+            10.0,
+        )
+
+    def test_buchholz_cut1(self):
+        cut1 = options.CutterWithMedianTieBreakOption(Cut1TieBreakCutter.static_id())
+        self.assertEqual(self._alpha(tie_breaks.StandardBuchholzTieBreak([cut1])), 5.5)
+        self.assertEqual(
+            self._alpha(
+                tie_breaks.StandardBuchholzTieBreak(
+                    [cut1, LegacyMarch2026TieBreakOption(True)]
+                )
+            ),
+            6.5,
+        )
+
+    def test_buchholz_median1(self):
+        median1 = options.CutterWithMedianTieBreakOption(
+            Median1TieBreakCutter.static_id()
+        )
+        self.assertEqual(
+            self._alpha(tie_breaks.StandardBuchholzTieBreak([median1])), 3.0
+        )
+        self.assertEqual(
+            self._alpha(
+                tie_breaks.StandardBuchholzTieBreak(
+                    [median1, LegacyMarch2026TieBreakOption(True)]
+                )
+            ),
+            3.0,
+        )
+
+
 class KoyaTieBreakTestCase(TieBreakTestCase):
     """Test on a stricter koya, the TEC exercise is too laxist
     (0 on last round + no opponent score matching the limit)"""
@@ -1283,3 +1367,21 @@ class KoyaTieBreakTestCase(TieBreakTestCase):
             8: 0.0,
         }
         self.assertEqual(results, expected)
+
+
+@pytest.mark.unit
+class KoyaAcronymTestCase(TestCase):
+    """The Koya limit is written ``/L±n``, the sign carried once (TEC,
+    *Mandatory Tie-Breaks*, Modifiers: "/L±n Used for Koya, Set the Limit
+    to ± n half points above / below 50%. (L+1 , L-2, …)"). A reader that
+    takes ``L--1`` for an unknown modifier computes an unlimited Koya."""
+
+    def test_the_limit_carries_one_sign(self):
+        for value, expected in ((1, 'KS/L+1'), (-1, 'KS/L-1'), (-2, 'KS/L-2')):
+            tie_break_ = tie_breaks.KoyaTieBreak(
+                [options.KoyaLimitTieBreakOption(value)]
+            )
+            self.assertEqual(tie_break_.trf_acronym, expected)
+
+    def test_no_limit_leaves_the_acronym_bare(self):
+        self.assertEqual(tie_breaks.KoyaTieBreak().trf_acronym, 'KS')

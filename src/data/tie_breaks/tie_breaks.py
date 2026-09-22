@@ -1139,6 +1139,22 @@ class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
             opponent=opponent,
         )
 
+    @staticmethod
+    def _cut_sum(
+        scores: list[float],
+        voluntary_unplayed: list[float],
+        bottom_cut: int,
+        top_cut: int,
+    ) -> float:
+        """The sum of the contributions once cut: the lowest ones from the
+        voluntarily unplayed rounds first (Art. 16.5), then the lowest of
+        the rest; the highest ones from all of them alike."""
+        kept = sorted(voluntary_unplayed) + sorted(scores)
+        kept = sorted(kept[bottom_cut:])
+        if top_cut:
+            kept = kept[:-top_cut]
+        return sum(kept)
+
 
 class StandardBuchholzTieBreak(BuchholzTieBreak):
     """The sum of the scores of each of the opponents of a participant.
@@ -1320,13 +1336,7 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
                 opponent, after_round=after_round
             )
             scores.append(opponent_adjusted_score)
-        voluntary_unplayed = sorted(voluntary_unplayed)
-        scores = sorted(scores)
-        scores = voluntary_unplayed + scores
-
-        if top_cut:
-            return sum(scores[bottom_cut:-top_cut])
-        return sum(scores[bottom_cut:])
+        return self._cut_sum(scores, voluntary_unplayed, bottom_cut, top_cut)
 
 
 class ForeBuchholzTieBreak(BuchholzTieBreak):
@@ -1421,13 +1431,7 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
                 opponent, after_round=after_round, adjust_fore=True
             )
             scores.append(opponent_adjusted_score)
-        voluntary_unplayed = sorted(voluntary_unplayed)
-        scores = sorted(scores)
-        scores = voluntary_unplayed + scores
-
-        if top_cut:
-            return sum(scores[bottom_cut:-top_cut])
-        return sum(scores[bottom_cut:])
+        return self._cut_sum(scores, voluntary_unplayed, bottom_cut, top_cut)
 
     @property
     def supports_team_mode(self) -> bool:
@@ -1822,7 +1826,12 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
         for pairing in pairings.values():
             if not player.game_counts_for_tie_breaks(pairing):
                 continue
-            if pairing.unplayed and not played_modifier:
+            # The played modifier only turns a forfeit into a game against
+            # the scheduled opponent: a bye has no opponent to count and
+            # keeps its dummy (Art. 16.4).
+            if pairing.unplayed and (
+                not played_modifier or pairing.opponent_id is None
+            ):
                 dummy, result = self._dummy_score(
                     player, pairing, after_round=after_round
                 )
@@ -1831,9 +1840,7 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
                     general_contributions.append(SBContribution(dummy, value))
                 else:
                     voluntary_unplayed.append(SBContribution(dummy, value))
-            elif pairing.played or (
-                pairing.unplayed and pairing.opponent_id is not None and played_modifier
-            ):
+            elif pairing.played or (pairing.unplayed and played_modifier):
                 assert pairing.opponent_id is not None
                 opponent: TournamentPlayer = tournament.players_by_id[
                     pairing.opponent_id
