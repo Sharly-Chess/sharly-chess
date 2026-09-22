@@ -4,6 +4,11 @@
    team_b span covers Player. #}
 {% set team_a_colspan = 1 + (1 if has_illegal else 0) %}
 {% set team_b_colspan = 1 + (1 if has_illegal else 0) %}
+{# The header's buttons are laid out as flex boxes (centred icon, score on
+   one or two lines) so they get their height from here rather than from
+   their line box: a small button's, plus a little room for the two-line
+   score. #}
+{% set header_button_height = 'calc(var(--bs-btn-line-height, 1.5) * var(--bs-btn-font-size, .875rem) + 2 * var(--bs-btn-padding-y, .25rem) + 2 * var(--bs-btn-border-width, 1px) + .25rem)' %}
 <tbody
     id="team-block-header-{{ team_board.id }}"
     class="team-block-header-tbody"
@@ -82,7 +87,8 @@
                 {% if client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="team-header-lineup-a btn btn-sm btn-outline-primary ms-2"
+                        class="team-header-lineup-a btn btn-sm btn-outline-primary ms-2 d-inline-flex align-items-center justify-content-center"
+                        style="height: {{ header_button_height }};"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -95,7 +101,7 @@
                         onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
-                        <i class="bi-list-ol"></i>
+                        <i class="bi-list-ol lh-1 d-flex align-items-center" style="font-size: 1.3rem;"></i>
                     </button>
                 {% endif %}
             </div>
@@ -113,6 +119,25 @@
                     {{ '%g'|format(admin_tournament.team_pab_game_points) }} – F
                 {% endif %}
             {% endset %}
+            {# The score the match result is read from, when this round's
+               bonus/penalty points move it away from the board score. A
+               team's points never go below zero. Shown as a second, smaller
+               line under the board score. #}
+            {% set _effective_text %}
+                {% if team_board.team_b and not team_board.no_games_played %}
+                    {% set _eff_a, _eff_b = team_board.effective_game_points %}
+                    {% set _eff_a, _eff_b = [_eff_a, 0]|max, [_eff_b, 0]|max %}
+                    {% if (_eff_a, _eff_b) != team_board.game_points %}
+                        <small
+                            class="d-block fw-normal opacity-75 lh-1"
+                            style="font-size: .7rem;"
+                            {{ macros.tooltip_attributes('info', _('Score after bonus/penalty points, which decides the match result.'), 'bottom') }}
+                        >{{ '%g'|format(_eff_a) }} – {{ '%g'|format(_eff_b) }}</small>
+                    {% endif %}
+                {% endif %}
+            {% endset %}
+            {% set _score_classes = 'd-inline-flex flex-column justify-content-center lh-1 py-0' %}
+            {% set _score_style = 'width: 4.5rem; height: ' ~ header_button_height ~ ';' %}
             {# A knock-out's level match is clickable too, to designate the
                winner — with a marker on the advancing team (or a warning in
                the corner while unresolved). #}
@@ -121,16 +146,16 @@
                    marker) shows as plain text rather than a modal button. #}
                 {% if round_locked is defined and round_locked %}
                 <span
-                    class="d-inline-block position-relative text-nowrap text-center
-                        {% if team_board.all_games_played %}fw-bold{% endif %}"
-                    style="width: 4.5rem;"
+                    class="d-inline-block position-relative text-nowrap text-center align-middle
+                        {% if team_board.all_games_played %}fw-bold{% endif %} {{ _score_classes }}"
+                    style="{{ _score_style }}"
                 >
                 {% else %}
                 <button
                     type="button"
                     class="btn btn-sm btn-outline-primary position-relative
-                        {% if team_board.all_games_played %}fw-bold{% endif %} text-nowrap"
-                    style="width: 4.5rem;"
+                        {% if team_board.all_games_played %}fw-bold{% endif %} text-nowrap {{ _score_classes }}"
+                    style="{{ _score_style }}"
                     hx-get="{{ url_for(
                         'admin-event-team-pairing-modal',
                         event_uniq_id=admin_event.uniq_id,
@@ -146,6 +171,7 @@
                 >
                 {% endif %}
                     {{ _score_text | trim }}
+                    {{ _effective_text | trim }}
                     {# Markers live inside the button/text so hover/click count
                        as the button. #}
                     {% if ko_adv and ko_adv.winner_id %}
@@ -160,8 +186,8 @@
                         >1</span>
                     {% elif ko_adv and ko_adv.manual_pending %}
                         <span
-                            class="position-absolute top-0 end-0 overflow-hidden"
-                            style="width: 1.7rem; height: 1.7rem; border-top-right-radius: 0.25rem;"
+                            class="position-absolute overflow-hidden"
+                            style="width: 1.7rem; height: 1.7rem; border-top-right-radius: inherit; top: calc(-1 * var(--bs-btn-border-width, 0px)); right: calc(-1 * var(--bs-btn-border-width, 0px));"
                             {{ macros.tooltip_attributes('', _('Tied match — choose who advances.'), 'top') }}
                         >
                             <span class="d-block w-100 h-100 bg-dark"
@@ -175,7 +201,7 @@
                 {# Fixed-schedule systems (round-robin, two-game match): the
                    match belongs to a fixed schedule and can't be unpaired, so
                    show the score as plain text rather than a modal button. #}
-                <span class="fw-bold text-nowrap d-inline-block" style="width: 4.5rem;">{{ _score_text | trim }}</span>
+                <span class="fw-bold text-nowrap position-relative align-middle {{ _score_classes }}" style="{{ _score_style }}">{{ _score_text | trim }}{{ _effective_text | trim }}</span>
             {% endif %}
         </td>
         <td class="team-header-cell-team-b" colspan="{{ team_b_colspan }}">
@@ -183,7 +209,8 @@
                 {% if team_board.team_b and client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="team-header-lineup-b btn btn-sm btn-outline-primary me-2"
+                        class="team-header-lineup-b btn btn-sm btn-outline-primary me-2 d-inline-flex align-items-center justify-content-center"
+                        style="height: {{ header_button_height }};"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -196,7 +223,7 @@
                         onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
-                        <i class="bi-list-ol"></i>
+                        <i class="bi-list-ol lh-1 d-flex align-items-center" style="font-size: 1.3rem;"></i>
                     </button>
                 {% endif %}
                 <strong class="team-header-name-b text-end flex-grow-1">

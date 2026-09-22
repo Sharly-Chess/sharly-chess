@@ -7998,6 +7998,9 @@ msgctxt "score column header"
 msgid "Score"
 msgstr ""
 
+msgid "Score after bonus/penalty points, which decides the match result."
+msgstr ""
+
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr ""
 
