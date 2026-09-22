@@ -8000,11 +8000,11 @@ msgctxt "score column header"
 msgid "Score"
 msgstr "Score"
 
-msgid "Score after bonus/penalty points, which decides the match result."
-msgstr "Score après les points de bonus/pénalité, qui détermine le résultat du match."
-
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
+
+msgid "Score with bonus/penalty points, which decides the match result."
+msgstr "Score avec les points de bonus/pénalité, qui détermine le résultat du match."
 
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr "Scores + force du parcours (SSSC)"
