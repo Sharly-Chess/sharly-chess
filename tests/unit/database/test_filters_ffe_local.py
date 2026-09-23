@@ -165,8 +165,8 @@ def init_mock_FFE_database():
     ]
 
     cursor.executemany(
-        'INSERT INTO player (fide_id, federation, first_name, last_name, gender, date_of_birth, league, fide_title, standard_rating_type, rapid_rating_type, blitz_rating_type, ffe_licence) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        mock_data,
+        'INSERT INTO player (fide_id, federation, first_name, last_name, gender, date_of_birth, league, fide_title, standard_rating_type, rapid_rating_type, blitz_rating_type, ffe_licence, ffe_licence_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [(*row, f'Z{row[0][-5:]}') for row in mock_data],
     )
 
     database = FfeDatabase()

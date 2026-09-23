@@ -270,7 +270,7 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
-class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
+class SessionAdminCollectionViewMode(SubKeySessionVariable[str | None]):
     """The preferred projection for each card-based admin collection."""
 
     @property
@@ -278,8 +278,8 @@ class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
         return 'admin_collection_view_modes'
 
     @property
-    def default_value(self) -> str:
-        return 'list'
+    def default_value(self) -> str | None:
+        return None
 
 
 class SessionAdminCollectionShowDetails(SubKeySessionVariable[bool]):

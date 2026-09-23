@@ -323,7 +323,7 @@
 
 {% macro criteria_content(tournament) %}
     {% if tournament.criteria %}
-        {{ tournament.criteria_string }}
+        <span>{{ tournament.criteria_string }}</span>
     {% else %}
         <span class="text-secondary"><i>{{ pgettext('said of several things', 'Undefined') }}</i></span>
     {% endif %}
