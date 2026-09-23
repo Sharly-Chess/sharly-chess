@@ -82,9 +82,9 @@ class IncompatibleFFEUploadStatus(FFEUploadStatus):
         return _('Incompatible')
 
     def tooltip_message(self, tournament: Tournament) -> str | None:
-        from plugins.ffe.papi_converter import PapiConverter
+        from plugins.ffe.utils import FFEUtils
 
-        return PapiConverter.papi_export_unavailable_message(tournament)
+        return FFEUtils.upload_unavailable_message(tournament)
 
     @property
     def css_classes(self) -> str:

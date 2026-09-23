@@ -281,6 +281,8 @@ class FFETeamSession(FFESession):
                 names += ', …'
             return _('Players without FFE licence number: {names}.').format(names=names)
         for team in tournament.teams:
+            if not team.players:
+                return _('Team [{team}] has no players.').format(team=team.name)
             if cls._correspondent_licence(team) is None:
                 return _(
                     'Team [{team}] has no player with an FFE licence number.'

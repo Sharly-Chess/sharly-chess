@@ -676,6 +676,10 @@ msgstr ""
 msgid "Team [{team}] has no player with an FFE licence number."
 msgstr ""
 
+#, python-brace-format
+msgid "Team [{team}] has no players."
+msgstr ""
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr ""
 

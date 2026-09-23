@@ -28,6 +28,7 @@ from plugins.ffe.ffe_team_session import (
     GROUP_SELECT,
     SiteOption,
 )
+from plugins.ffe.ffe_upload_status import IncompatibleFFEUploadStatus
 from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result, ScoreType
@@ -274,6 +275,28 @@ class MatchReportTestCase(_MatchReportHarness):
         self.assertEqual(FFEUtils.team_competition_id(tournament), 8)
         self.assertTrue(FFEUtils.supports_team_transfer(tournament))
         self.assertTrue(FFEUtils.supports_ffe_transfer(tournament))
+
+    def test_an_empty_team_blocks_the_upload_by_name(self) -> None:
+        """The site registers no team without a correspondent, and the
+        reason names the team rather than the Papi export."""
+        tournament = self._create()
+        with EventDatabase(EVENT_ID, write=True) as database:
+            database.add_stored_team(
+                StoredTeam(
+                    id=None,
+                    name='Empty team',
+                    tournament_id=tournament.id,
+                    pairing_number=3,
+                    check_in=True,
+                )
+            )
+        tournament = self._load()
+        message = FFEUtils.upload_unavailable_message(tournament)
+        assert message is not None
+        self.assertIn('Empty team', message)
+        self.assertEqual(
+            IncompatibleFFEUploadStatus().tooltip_message(tournament), message
+        )
 
     def test_unlicensed_players_block_the_upload(self) -> None:
         tournament = self._create(licences=False)

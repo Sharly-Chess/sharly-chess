@@ -174,24 +174,31 @@ class FFEUtils:
         assert isinstance(plugin_data, FfeAccountPluginData)
         return plugin_data
 
-    @staticmethod
-    def ffe_actions_unavailable_message(tournament: Tournament) -> str | None:
-        from plugins.ffe.papi_converter import PapiConverter
-
-        pd = FFEUtils.get_tournament_plugin_data(tournament)
-        if FFEUtils.supports_team_transfer(tournament):
+    @classmethod
+    def upload_unavailable_message(cls, tournament: Tournament) -> str | None:
+        """Why the tournament's data cannot be sent to the FFE website,
+        credentials aside — what the transfer it uses cannot carry."""
+        if cls.supports_team_transfer(tournament):
             from plugins.ffe.ffe_team_session import FFETeamSession
 
+            return FFETeamSession.upload_unavailable_message(tournament)
+        from plugins.ffe.papi_converter import PapiConverter
+
+        return PapiConverter.papi_export_unavailable_message(tournament)
+
+    @classmethod
+    def ffe_actions_unavailable_message(cls, tournament: Tournament) -> str | None:
+        pd = cls.get_tournament_plugin_data(tournament)
+        if cls.supports_team_transfer(tournament):
             if not pd.team_configured:
                 return _('FFE group account, division or group not defined.')
-            return FFETeamSession.upload_unavailable_message(tournament)
-        if not pd.ffe_id and not pd.password:
+        elif not pd.ffe_id and not pd.password:
             return _('FFE certification number and password not defined.')
-        if not pd.ffe_id:
+        elif not pd.ffe_id:
             return _('FFE certification number not defined.')
-        if not pd.password:
+        elif not pd.password:
             return _('FFE password not defined.')
-        return PapiConverter.papi_export_unavailable_message(tournament)
+        return cls.upload_unavailable_message(tournament)
 
     @staticmethod
     def update_tournament_plugin_data(
@@ -251,7 +258,6 @@ class FFEUtils:
         cls, tournament: Tournament
     ) -> list[FFEUploadStatus]:
         from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
-        from plugins.ffe.papi_converter import PapiConverter
 
         plugin_data = cls.get_tournament_plugin_data(tournament)
 
@@ -267,12 +273,7 @@ class FFEUtils:
             )
             statuses.append(status)
 
-        if cls.supports_team_transfer(tournament):
-            from plugins.ffe.ffe_team_session import FFETeamSession
-
-            if FFETeamSession.upload_unavailable_message(tournament):
-                statuses.append(IncompatibleFFEUploadStatus())
-        elif PapiConverter.papi_export_unavailable_message(tournament):
+        if cls.upload_unavailable_message(tournament):
             statuses.append(IncompatibleFFEUploadStatus())
 
         is_modified = FfeBackgroundUploader.ffe_upload_needed(tournament)

@@ -681,6 +681,10 @@ msgstr "T7 Signalement d'un·e joueur·euse"
 msgid "Team [{team}] has no player with an FFE licence number."
 msgstr "L'équipe [{team}] n'a aucun·e joueur·euse avec un numéro de licence FFE."
 
+#, python-brace-format
+msgid "Team [{team}] has no players."
+msgstr "L'équipe [{team}] n'a aucun·e joueur·euse."
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
 
