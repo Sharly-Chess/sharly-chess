@@ -40,6 +40,13 @@
             >
                 <i class="bi-collection-fill pe-1"></i>{{ team.group.name }}
             </div>
+        {% elif view == 'card' and team.affiliation_warning_message %}
+            <div
+                class="small text-muted text-truncate"
+                {{ macros.tooltip_attributes('warning', team.affiliation_warning_message, 'top') }}
+            >
+                <i class="bi-exclamation-triangle-fill text-warning pe-1"></i>{{ _('No affiliation') }}
+            </div>
         {% endif %}
     </div>
 {% endmacro %}
@@ -134,6 +141,11 @@
     {% endif %}
     {% if team.group %}
         {{ team.group.name }}
+    {% elif team.affiliation_warning_message %}
+        <i
+            class="bi-exclamation-triangle-fill text-warning"
+            {{ macros.tooltip_attributes('warning', team.affiliation_warning_message, 'top') }}
+        ></i>
     {% else %}
         <span class="text-muted">—</span>
     {% endif %}
