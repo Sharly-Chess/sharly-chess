@@ -73,6 +73,14 @@ class SQLiteDatabase:
                 self.cursor.execute(f'PRAGMA foreign_keys={fk_status}')
                 self.cursor.execute('PRAGMA journal_mode=DELETE')
                 self.cursor.execute('BEGIN IMMEDIATE')
+            else:
+                # One read = one snapshot: an event is loaded by a series
+                # of queries, and without a transaction each of them sees
+                # the file as it is at that moment. A write committed in
+                # between (a sync adding players, say) would be read half
+                # way, leaving the event with rows pointing at records it
+                # has not read.
+                self.cursor.execute('BEGIN')
 
             return self
         except OperationalError as e:
@@ -97,7 +105,11 @@ class SQLiteDatabase:
 
     def __exit__(self, exc_type: Any, exc_value: Any, tb: Any) -> None:
         try:
-            if self.database and self.write:
+            if self.database and not self.write:
+                # Ends the read transaction opened on entry; a reader
+                # writes nothing, so there is nothing to commit.
+                self.database.rollback()
+            elif self.database and self.write:
                 if exc_type is None:
                     self.database.commit()
                 else:
