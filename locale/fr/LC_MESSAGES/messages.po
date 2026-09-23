@@ -19,10 +19,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
-msgid "%(a)s vs %(b)s"
-msgstr "%(a)s contre %(b)s"
-
-#, python-format
 msgid "%(bye)s at round %(round)d"
 msgstr "%(bye)s à la ronde %(round)d"
 
@@ -2182,7 +2178,7 @@ msgid "Contact and registration"
 msgstr "Contact et inscription"
 
 msgid "Contact email:"
-msgstr "Email de contact :"
+msgstr "Mél de contact :"
 
 msgid "Content"
 msgstr "Contenu"
@@ -4463,7 +4459,7 @@ msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Délai non valide [{delay}] (entier positif attendu)."
 
 msgid "Invalid email format."
-msgstr "Format d'email invalide."
+msgstr "Format de mél invalide."
 
 #, python-brace-format
 msgid "Invalid expression [{expression}]"
@@ -5611,7 +5607,7 @@ msgid "No dropdowns"
 msgstr "Sans menus déroulants"
 
 msgid "No email"
-msgstr "Aucun email"
+msgstr "Aucun mél"
 
 msgid "No events."
 msgstr "Aucun évènement."
@@ -5700,9 +5696,6 @@ msgstr "Aucun·e adversaire apparié·e à cette ronde."
 
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
-
-msgid "No paired boards in this round."
-msgstr "Aucun échiquier apparié pour cette ronde."
 
 msgid "No paired team matches for this round."
 msgstr "Aucun match d'équipe pour cette ronde."
@@ -6883,7 +6876,7 @@ msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and rema
 msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
 
 msgid "Players without phone or email won't be included."
-msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
+msgstr "Les joueur·euses sans numéro de téléphone ni mél ne seront pas inclus·es."
 
 msgid "Players:"
 msgstr "Joueur·euses :"
@@ -7001,7 +6994,7 @@ msgid "Please supply a valid URL (e.g. https://my.domain.com)."
 msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
 
 msgid "Please supply a valid email address."
-msgstr "Veuillez fournir une adresse email valide."
+msgstr "Veuillez fournir un mél valide."
 
 msgid "Please validate the affiliation to continue."
 msgstr "Veuillez valider l'affiliation pour continuer."
@@ -8009,6 +8002,9 @@ msgstr "Score"
 
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
+
+msgid "Score with bonus/penalty points, which decides the match result."
+msgstr "Score avec les points de bonus/pénalité, qui détermine le résultat du match."
 
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr "Scores + force du parcours (SSSC)"

@@ -485,19 +485,24 @@ class FfePlayerPluginData(PluginData):
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        ffe_licence_number = stored_value.get('ffe_licence_number')
         return cls(
             ffe_id=stored_value.get('ffe_id'),
             ffe_licence=PlayerFFELicence(
                 stored_value.get('ffe_licence', PlayerFFELicence.NONE)
+                if ffe_licence_number
+                else PlayerFFELicence.NONE
             ),
-            ffe_licence_number=stored_value.get('ffe_licence_number'),
+            ffe_licence_number=ffe_licence_number,
             league=stored_value.get('league'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'ffe_id': self.ffe_id,
-            'ffe_licence': self.ffe_licence.value,
+            'ffe_licence': (
+                self.ffe_licence if self.ffe_licence_number else PlayerFFELicence.NONE
+            ).value,
             'ffe_licence_number': self.ffe_licence_number,
             'league': self.league,
         }

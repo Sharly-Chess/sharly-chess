@@ -141,6 +141,12 @@ class FixedTablePairingSystem(
         return False
 
     @property
+    def pairing_info_button_template(self) -> str | None:
+        # Who meets whom follows from the table, so there is no score group
+        # or colour history to explain.
+        return None
+
+    @property
     def uses_team_letters(self) -> bool:
         # The table addresses teams by letter (A, B, …) — see team_by_letter.
         return True

@@ -152,6 +152,10 @@ class FfePairingSheetDocument(PrintDocument):
     ) -> dict[str, Any]:
         event = self.get_event()
         tournament = self.tournament
+        # Molter has no matches: each round a team's players are spread
+        # across the other teams' boards and it scores game points only
+        # (no opponent, colour, differential or match points).
+        match_play = tournament.pairing_system.paired_by_team
         record = records_by_id.get(team.id)
         rounds_context: list[dict[str, Any]] = []
         cumulative_match_points = 0.0
@@ -177,6 +181,20 @@ class FfePairingSheetDocument(PrintDocument):
                 )
                 continue
             has_results = True
+            if not match_play:
+                total_gains += match.own_gp
+                rounds_context.append(
+                    {
+                        'round': round_,
+                        'colour': '',
+                        'opponent': '',
+                        'gains': match.own_gp,
+                        'differential': None,
+                        'match_points': None,
+                        'total_match_points': None,
+                    }
+                )
+                continue
             opponent = (
                 event.teams_by_id.get(match.opponent_id)
                 if match.opponent_id is not None
@@ -243,9 +261,13 @@ class FfePairingSheetDocument(PrintDocument):
             'average_elo': team.lineup_average_rating(1) or team.average_rating,
             'players': players_context,
             'rounds': rounds_context,
-            'total_match_points': record.total_mp if (record and has_results) else None,
+            'total_match_points': record.total_mp
+            if (record and has_results and match_play)
+            else None,
             'total_gains': total_gains if has_results else None,
-            'total_differential': total_differential if has_results else None,
+            'total_differential': total_differential
+            if (has_results and match_play)
+            else None,
             'classement': f'{_ordinal_fr(rank)} / {team_count}' if rank else '',
         }
 

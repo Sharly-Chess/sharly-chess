@@ -19,10 +19,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
-msgid "%(a)s vs %(b)s"
-msgstr ""
-
-#, python-format
 msgid "%(bye)s at round %(round)d"
 msgstr ""
 
@@ -5701,9 +5697,6 @@ msgstr ""
 msgid "No organiser"
 msgstr ""
 
-msgid "No paired boards in this round."
-msgstr ""
-
 msgid "No paired team matches for this round."
 msgstr ""
 
@@ -8006,6 +7999,9 @@ msgid "Score"
 msgstr ""
 
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
+msgstr ""
+
+msgid "Score with bonus/penalty points, which decides the match result."
 msgstr ""
 
 msgid "Scores + Schedule Strength (SSSC)"

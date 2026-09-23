@@ -85,6 +85,7 @@ class EventDocumentsController(BaseEventAdminController):
         )
         document_ids_by_option_id: dict[str, list[str]] = defaultdict(list[str])
         containers_by_document: dict[str, list[str]] = {'': []}
+        containers_by_document_and_tournament: dict[str, dict[int, list[str]]] = {}
         documents = [
             doc
             for doc in PrintDocumentManager(event).objects()
@@ -95,15 +96,29 @@ class EventDocumentsController(BaseEventAdminController):
             containers_by_document[document.id] = [
                 option.container_id for option in options
             ]
+            containers_by_document_and_tournament[document.id] = {
+                tournament.id: [
+                    option_type(event).container_id
+                    for option_type in document.option_types_for_tournament(tournament)
+                ]
+                for tournament in allowed_tournaments
+            }
             for option in options:
                 document_ids_by_option_id[option.id].append(document.id)
         current_document_option_ids = []
         if document_id := data.get('document'):
+            document_type = PrintDocumentManager(event).get_type(document_id)
+            tournament_id = WebContext.form_data_to_int(data, 'tournament')
+            tournament = (
+                event.tournaments_by_id.get(tournament_id) if tournament_id else None
+            )
             current_document_option_ids = [
-                option.id
-                for option in PrintDocumentManager(event)
-                .get_type(document_id)()
-                .default_options()
+                option_type(event).id
+                for option_type in (
+                    document_type.option_types_for_tournament(tournament)
+                    if tournament
+                    else document_type.available_options()
+                )
             ]
         players_per_tournament_id = {
             tournament.id: [
@@ -132,9 +147,15 @@ class EventDocumentsController(BaseEventAdminController):
         }
         return {
             'print_options': print_options,
-            'document_options': {document.id: document.name for document in documents},
+            'document_options': {
+                document.id: document.picker_name(allowed_tournaments)
+                for document in documents
+            },
             'document_ids_by_option_id': document_ids_by_option_id,
             'containers_by_document': containers_by_document,
+            'containers_by_document_and_tournament': (
+                containers_by_document_and_tournament
+            ),
             'current_document_option_ids': current_document_option_ids,
             'players_per_tournament_id': players_per_tournament_id,
             'teams_per_tournament_id': teams_per_tournament_id,
