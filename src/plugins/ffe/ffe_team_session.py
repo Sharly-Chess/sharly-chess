@@ -54,6 +54,7 @@ GROUP_SELECT: str = MAIN + 'SelectGroupe'
 PV_TABLE_ID: str = 'TablePV'
 TEAM_FORM_TITLE_ID: str = MAIN_ID + 'LabelEquipeTitre'
 PV_FORM_TITLE_ID: str = MAIN_ID + 'LabelPV'
+VISIBLE_CHECKBOX: str = MAIN + 'CheckVisible'
 
 CREATE_TEAM_EVENT: str = MAIN + 'LinkCmdEquipeCreer'
 SAVE_TEAM_EVENT: str = MAIN + 'CmdEquipeSave'
@@ -669,6 +670,9 @@ class FFETeamSession(FFESession):
             MAIN + 'DropPtsMatchNr$DropDownNumeric': data.right_match_points,
             MAIN + 'TextCapitaineBl': data.left_captain,
             MAIN + 'TextCapitaineNr': data.right_captain,
+            # The results are sent to be read: a report Sharly saves is
+            # shown on the public site.
+            VISIBLE_CHECKBOX: 'on',
         }
         for index in range(board_count):
             left, right, result = (

@@ -23,6 +23,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins.ffe.ffe_team_session import (
     FFETeamSession,
+    MatchReportData,
     DIVISION_SELECT,
     GROUP_SELECT,
     SiteOption,
@@ -77,6 +78,42 @@ class SitePagesTestCase(TestCase):
         report = group.match_reports[0]
         self.assertEqual((report.id, report.round), (4310, 0))
         self.assertTrue(report.is_blank)
+
+    def test_a_saved_report_is_shown_on_the_public_site(self) -> None:
+        """The report form's *Visible* box is unticked when the site
+        creates it: saving the results ticks it."""
+        session = FFETeamSession(tournament=None)
+        posted: dict[str, str] = {}
+
+        def fake_get(url: str) -> AdvancedHTMLParser:
+            return page('match_report_form.html')
+
+        def fake_post(url: str, data: dict[str, str]) -> AdvancedHTMLParser:
+            posted.update(data)
+            return page('group.html')
+
+        session._get = fake_get  # type: ignore[method-assign]
+        session._post = fake_post  # type: ignore[method-assign]
+        session.save_report(
+            4310,
+            MatchReportData(
+                round=1,
+                number=1,
+                left_team_id=2213,
+                right_team_id=2214,
+                left_match_points='3',
+                right_match_points='1',
+                left_game_points='2.0',
+                right_game_points='1.0',
+                boards=[('A00001', 'A00002', 'GainBlanc')],
+                left_captain='',
+                right_captain='',
+                date='20/09/2026 14:00',
+                place='Asnières',
+                arbiter='',
+            ),
+        )
+        self.assertEqual(posted['ctl00$ContentPlaceHolderMain$CheckVisible'], 'on')
 
     def test_a_refused_login_reads_as_no_connected_account(self) -> None:
         """The site answers a refused login with the page of a
