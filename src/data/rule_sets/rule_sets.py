@@ -253,6 +253,15 @@ class RuleSet(IdentifiableEntity, ABC):
         tournament modal locks the ``rounds`` field."""
         return None
 
+    def pairing_variation_for(
+        self, pairing_system_id: str, team_count: int
+    ) -> str | None:
+        """Full id of the variation this rule set imposes for the given
+        pairing system with ``team_count`` teams entered, or ``None`` to
+        leave the arbiter's choice. It is followed until the tournament
+        is first paired, then settled."""
+        return None
+
     def molter_table_overrides(self) -> dict[tuple[int, int], 'FixedPairingTable']:
         """Per-rule-set overrides for the fixed Molter pairing tables,
         keyed by ``(team_count, players_per_team)``. The Molter

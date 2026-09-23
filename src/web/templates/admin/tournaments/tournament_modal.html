@@ -212,7 +212,7 @@
                             {{ admin_macros.select_input(
                                 name=pairing_system.variation_field_id,
                                 label=_('%(string)s:', string=_('Variation')),
-                                select_options=pairing_system.variation_manager(admin_event).options(),
+                                select_options=pairing_variation_options[pairing_system.id],
                                 disabled=admin_tournament.started,
                                 input_tooltip=(
                                     _('This field can\'t be modified once the tournament has started.')
@@ -1040,6 +1040,10 @@
                                 const fid = inputId(name);
                                 const $input = $('#' + fid);
                                 if ($input.length === 0) return;
+                                // Already locked by the server (the
+                                // tournament is paired): it shows what was
+                                // settled, not the rule set's default.
+                                if ($input.prop('disabled') && !$input.attr('data-rule-set-locked')) return;
                                 // Disabled first, so the change handlers
                                 // below already see the field as locked.
                                 $input.prop('disabled', true)
@@ -1099,9 +1103,13 @@
                             }
 
                             function setValue($input, value) {
+                                // Setting the variation re-runs refresh(),
+                                // which comes back here with the same value.
                                 if ($input.is(':checkbox')) {
+                                    if ($input.prop('checked') === (value === 'on')) return;
                                     $input.prop('checked', value === 'on');
                                 } else {
+                                    if ($input.val() === value) return;
                                     $input.val(value);
                                 }
                                 if ($input.is('select')) {

@@ -217,6 +217,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return {
             FfeLicenceTournamentCriterion().form_key,
             'rounds',
+            'TEAM_ROUND_ROBIN_pairing_variation',
             'rating',
             'team_player_count',
             'roster_max_size',
@@ -321,6 +322,22 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'TEAM_SWISS': 3,
             'MOLTER': 3,
         }.get(pairing_system_id)
+
+    @override
+    def pairing_variation_for(
+        self, pairing_system_id: str, team_count: int
+    ) -> str | None:
+        # Two teams meet home and away (aller-retour); more meet once.
+        from data.pairings.variations import (
+            BergerTeamRoundRobinVariation,
+            DoubleBergerTeamRoundRobinVariation,
+        )
+
+        if pairing_system_id != 'TEAM_ROUND_ROBIN':
+            return None
+        if team_count == 2:
+            return DoubleBergerTeamRoundRobinVariation.static_id()
+        return BergerTeamRoundRobinVariation.static_id()
 
     @override
     def molter_table_overrides(self) -> dict[tuple[int, int], FixedPairingTable]:
@@ -541,6 +558,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         gp = self._game_points_for(pairing_system_id)
         defaults: dict[str, str] = {
             FfeLicenceTournamentCriterion().form_key: PlayerFFELicence.A.value,
+            'TEAM_ROUND_ROBIN_pairing_variation': '',
             'rating': str(TournamentRating.STANDARD.value),
             'team_player_count': '4',
             'roster_max_size': str(self.roster_max_size)

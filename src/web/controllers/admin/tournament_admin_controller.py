@@ -300,7 +300,10 @@ class TournamentAdminController(BaseEventAdminController):
             location: str | None = None
             player_rating_type: int | None = None
             pairing_variations: dict[str, str | None] = {
-                system.variation_field_id: None for system in pairing_systems
+                system.variation_field_id: next(
+                    iter(system.variation_manager(admin_event).options())
+                )
+                for system in pairing_systems
             }
             override_unrated_rapid_blitz: bool = True
             team_player_count: int | None = None
@@ -594,10 +597,18 @@ class TournamentAdminController(BaseEventAdminController):
             rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
                 name=rs.name
             )
+        managed_fields = {field for rs in rule_sets for field in rs.managed_fields}
+        pairing_variation_options: dict[str, dict[str, str]] = {}
+        for system in pairing_systems:
+            options = system.variation_manager(admin_event).options()
+            if system.variation_field_id in managed_fields:
+                options = {'': _('Automatic')} | options
+            pairing_variation_options[system.id] = options
         return (
             {
                 'rating_options': cls._get_rating_options(),
                 'pairing_systems': pairing_systems,
+                'pairing_variation_options': pairing_variation_options,
                 'pairing_system_options': PairingSystemManager(admin_event).options(),
                 'rule_sets': rule_sets,
                 'rule_set_options': rule_set_options,
@@ -957,6 +968,15 @@ class TournamentAdminController(BaseEventAdminController):
             if rule_set_type is not None
             else {}
         )
+        if not pairing:
+            if rule_set_type is not None:
+                # "Automatic": the rule set picks the variation from the
+                # entrants (see ``Tournament.pairing_variation``).
+                pairing = next(iter(pairing_system.variation_manager(event).options()))
+            else:
+                errors[pairing_system.variation_field_id] = _(
+                    'Please choose a variation.'
+                )
 
         stored_criteria: dict[str, Any] = {}
         for criterion in TournamentCriterionManager(event).objects():
