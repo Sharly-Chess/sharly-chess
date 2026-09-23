@@ -46,6 +46,7 @@ AUTOCOMPLETE_URL: str = FFE_ADMIN_URL + '/AutoComplete.ashx'
 MAIN: str = 'ctl00$ContentPlaceHolderMain$'
 MAIN_ID: str = 'ctl00_ContentPlaceHolderMain_'
 LOGOUT_LINK_ID: str = 'ctl00_CmdDeconnection'
+USER_LABEL_ID: str = 'ctl00_LabelUser'
 MESSAGE_LABEL_ID: str = MAIN_ID + 'LabelMessage'
 COMPETITION_SELECT: str = MAIN + 'SelectCompetition'
 DIVISION_SELECT: str = MAIN + 'SelectDivision'
@@ -342,11 +343,30 @@ class FFETeamSession(FFESession):
         parser = self._ffe_login(login, password)
         if parser is None:
             return None
-        if parser.getElementById(LOGOUT_LINK_ID) is None:
-            logger.error('Authentication failed.')
+        account = self.connected_account(parser)
+        if account is None or account.casefold() != login.strip().casefold():
+            # The site answers a refused login with the same page as a
+            # successful one, logout link included, and only leaves the
+            # account out of the "<account> est connecté" label.
+            logger.error(
+                'Authentication failed (connected account: [%s]).', account or ''
+            )
             return False
         logger.debug('FFE authentication succeeded.')
         return True
+
+    @staticmethod
+    def connected_account(parser: AdvancedHTMLParser) -> str | None:
+        """The account the page says is connected, or None when it says
+        none — which is how a refused login reads."""
+        if parser.getElementById(LOGOUT_LINK_ID) is None:
+            return None
+        tag = parser.getElementById(USER_LABEL_ID)
+        if tag is None:
+            return None
+        text = html.unescape(tag.innerText or '').replace('\xa0', ' ').strip()
+        account = text.split(' ', 1)[0].strip()
+        return account or None
 
     def _selects_data(self) -> dict[str, str]:
         data = {COMPETITION_SELECT: str(self.competition_id)}

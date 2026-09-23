@@ -78,6 +78,22 @@ class SitePagesTestCase(TestCase):
         self.assertEqual((report.id, report.round), (4310, 0))
         self.assertTrue(report.is_blank)
 
+    def test_a_refused_login_reads_as_no_connected_account(self) -> None:
+        """The site answers a refused login with the page of a
+        successful one, minus the account in its "connected" label."""
+        connected = AdvancedHTMLParser()
+        connected.parseStr(
+            '<a id="ctl00_CmdDeconnection">x</a>'
+            '<span id="ctl00_LabelUser">group est connect&eacute;&nbsp;&nbsp;</span>'
+        )
+        refused = AdvancedHTMLParser()
+        refused.parseStr(
+            '<a id="ctl00_CmdDeconnection">x</a>'
+            '<span id="ctl00_LabelUser"> est connect&eacute;&nbsp;&nbsp;</span>'
+        )
+        self.assertEqual(FFETeamSession.connected_account(connected), 'group')
+        self.assertNotEqual(FFETeamSession.connected_account(refused), 'group')
+
     def test_the_match_report_form_has_four_boards(self) -> None:
         self.assertEqual(
             FFETeamSession.parse_board_count(page('match_report_form.html')), 4
