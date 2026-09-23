@@ -186,12 +186,14 @@ def resolve_admin_collection_view_mode(
     if requested_view_mode is not None:
         session_value.set(requested_view_mode)
     stored_mode = session_value.get()
-    try:
-        return AdminCollectionViewMode(stored_mode)
-    except ValueError:
-        default_mode = get_admin_collection_spec(collection_key).default_view_mode
-        session_value.set(default_mode)
-        return default_mode
+    if stored_mode is not None:
+        try:
+            return AdminCollectionViewMode(stored_mode)
+        except ValueError:
+            pass
+    default_mode = get_admin_collection_spec(collection_key).default_view_mode
+    session_value.set(default_mode)
+    return default_mode
 
 
 def resolve_admin_collection_show_details(
