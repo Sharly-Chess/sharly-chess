@@ -310,20 +310,16 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         pairing_system_id: str,
         pairing_variation_id: str | None = None,
     ) -> int | None:
-        # Phase rounds (Loubatière / Parité): the final runs 5 rounds
-        # whatever the system — the team-count table that picks the system
-        # only covers the qualifying phases, which run 3, apart from the
-        # aller-retour (double round-robin, a 2-team home-and-away) at 2.
-        from data.pairings.variations import DoubleBergerTeamRoundRobinVariation
-
+        # A round-robin's length follows from the number of teams, single
+        # or home-and-away alike. Otherwise (Loubatière / Parité) the final
+        # runs 5 rounds and the qualifying phases 3.
+        if pairing_system_id == 'TEAM_ROUND_ROBIN':
+            return 0
         if self.is_final_phase:
             return 5
-        if pairing_variation_id == DoubleBergerTeamRoundRobinVariation.static_id():
-            return 2
         return {
             'TEAM_SWISS': 3,
             'MOLTER': 3,
-            'TEAM_ROUND_ROBIN': 3,
         }.get(pairing_system_id)
 
     @override
@@ -569,7 +565,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id, pairing_variation_id)
             if rounds is not None:
-                defaults['rounds'] = str(rounds)
+                defaults['rounds'] = str(rounds) if rounds else ''
         return defaults
 
 

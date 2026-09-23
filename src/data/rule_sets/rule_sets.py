@@ -247,9 +247,9 @@ class RuleSet(IdentifiableEntity, ABC):
         """Round count this rule set imposes for the given pairing
         system / variation. ``None`` (default) means no lock — the
         arbiter chooses freely. ``pairing_variation_id`` lets the count
-        differ between variations of one system (e.g. a double
-        round-robin runs fewer rounds than the single one). When set,
-        :meth:`apply_defaults` writes the value on save and the
+        differ between variations of one system. ``0`` locks
+        it to the count the pairing system works out for itself. When
+        set, :meth:`apply_defaults` writes the value on save and the
         tournament modal locks the ``rounds`` field."""
         return None
 
