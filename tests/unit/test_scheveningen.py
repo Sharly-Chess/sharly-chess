@@ -14,9 +14,7 @@ import pytest
 from data.event import Event
 from data.loader import EventLoader
 from data.pairings.scheveningen import (
-    ScheveningenPairingSystem,
     ScheveningenVariation,
-    StandardScheveningenVariation,
     scheveningen_table,
 )
 from data.print_documents.documents import (
@@ -745,13 +743,3 @@ class TestScheveningenTournament(TestCase):
         assert tournament.pairing_warning_message is None
         FFEUtils.get_tournament_plugin_data(tournament).ffe_id = 12345
         assert tournament.pairing_warning_message is None
-
-
-def test_the_scheveningen_maps_to_the_swiss_papi_type():
-    from plugins.ffe.papi_mappers import PapiPairingSystem, PapiPairingVariation
-
-    assert PapiPairingSystem.get_outer_value(ScheveningenPairingSystem()) == 'Suisse'
-    assert (
-        PapiPairingVariation.get_outer_value(StandardScheveningenVariation())
-        == 'Standard'
-    )

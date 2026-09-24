@@ -28,7 +28,9 @@ from plugins.ffe.ffe_team_session import (
     GROUP_SELECT,
     SiteOption,
 )
+from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_upload_status import IncompatibleFFEUploadStatus
+from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result, ScoreType
@@ -269,6 +271,35 @@ class _MatchReportHarness(TestCase):
             EventLoader.unload_event(EVENT_ID)
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+class PapiExportTestCase(_MatchReportHarness):
+    """A team tournament exports as the individual Swiss the Papi
+    format can describe: the teams are left out, every board is a game
+    of its own."""
+
+    def test_a_team_tournament_exports_as_an_individual_swiss(self) -> None:
+        tournament = self._create(pairing='MOLTER_STANDARD', teams=3, boards=4)
+        for board in tournament.get_round_boards(1):
+            tournament.add_result(board, Result.WIN)
+        tournament = self._load()
+        self.assertIsNone(PapiTournamentExporter().is_unavailable_message(tournament))
+        papi_data = PapiConverter().tournament_to_papi_data(tournament)
+        self.assertEqual(papi_data.variables.type, 'Suisse')
+        self.assertEqual(papi_data.variables.pairing, 'Standard')
+        self.assertEqual(len(papi_data.players), 3 * 4)
+        # Every board of the round is one game of the individual view.
+        self.assertEqual(
+            sum(len(player.rounds) for player in papi_data.players),
+            2 * len(tournament.get_round_boards(1)),
+        )
+
+    def test_the_export_warns_the_teams_are_left_out(self) -> None:
+        tournament = self._create()
+        warning = PapiTournamentExporter().warning_message(tournament)
+        assert warning is not None
+        self.assertIn('individual Swiss', warning)
 
 
 @pytest.mark.unit
