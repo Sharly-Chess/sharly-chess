@@ -317,6 +317,22 @@ class Team:
         return ' '.join(warnings) or None
 
     @property
+    def affiliation_warning_message(self) -> str | None:
+        """Set when the tournament keeps teams of the same affiliation apart
+        but this team has none, so the pairing cannot protect it."""
+        tournament = self.tournament
+        if (
+            tournament is None
+            or self.group is not None
+            or tournament.prohibited_pairings.dimension_id != 'team-group'
+        ):
+            return None
+        return _(
+            'No affiliation set: the pairing cannot keep this team apart '
+            'from teams of the same affiliation.'
+        )
+
+    @property
     def lineups_by_round(self) -> dict[int, list['Player']]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""

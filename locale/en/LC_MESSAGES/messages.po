@@ -5558,6 +5558,12 @@ msgstr ""
 msgid "No accounts"
 msgstr ""
 
+msgid "No affiliation"
+msgstr ""
+
+msgid "No affiliation set: the pairing cannot keep this team apart from teams of the same affiliation."
+msgstr ""
+
 msgid "No alert message"
 msgstr ""
 
