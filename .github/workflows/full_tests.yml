@@ -56,7 +56,9 @@ jobs:
                 python -m playwright install chromium
 
             - name: Run all tests
-              # -m "" clears the default marker filter from pytest.ini, which
-              # leaves the release-only tests out. This is the run they exist
-              # for, so they have to be put back in.
-              run: pytest -m ""
+              # The default marker filter from pytest.ini leaves the
+              # release-only tests out, and this is the run they exist for, so
+              # they are put back in. The Gacrux checks stay out: they fetch
+              # FIDE TEC's checker from GitHub and are run by hand for the
+              # endorsement.
+              run: pytest -m "not gacrux"
