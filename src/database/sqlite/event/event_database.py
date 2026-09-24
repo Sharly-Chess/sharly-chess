@@ -205,6 +205,7 @@ class EventDatabase(MigrationDatabase):
             arch_file = ArchiveLoader.get_archive_path(f'{self.uniq_id}#{index}')
         arch_file.parent.mkdir(parents=True, exist_ok=True)
         self.file.rename(arch_file)
+        arch_file.touch()
         logger.info('Database has been archived (%s).', arch_file)
         EventLoader.unload_event(self.uniq_id)
         return arch_file
