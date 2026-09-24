@@ -1,6 +1,5 @@
-import re
 from collections import defaultdict
-from datetime import datetime, date
+from datetime import datetime, date, time
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from common.exception import ImporterError
@@ -14,7 +13,6 @@ from data.input_output.tournament_importer_options import (
 )
 from data.input_output.tournament_importers import FileTournamentImporter
 from data.input_output.trf.trf_data import (
-    TRF_DATE_FORMAT,
     TrfGame,
     TrfPlayer,
     TrfTournament,
@@ -28,6 +26,7 @@ from data.input_output.trf.trf_mappers import (
     TrfPointSystemResult,
 )
 from data.input_output.trf.trf_serializer import TrfSerializer
+from data.input_output.trf.trf_utils import parse_trf_date, parse_trf_year
 from data.pairings.settings import ColorSeedSetting
 from data.tie_breaks import TieBreak, TieBreakManager
 from database.sqlite.event.event_database import EventDatabase
@@ -1201,12 +1200,6 @@ class TrfTournamentImporter(FileTournamentImporter):
     @staticmethod
     def _validate_trf_player(trf_player: TrfPlayer) -> None:
         try:
-            TrfPlayerGender.get_core_object(trf_player.gender)
-        except KeyError:
-            raise ImporterError(
-                _('Unknown gender [{gender}].').format(gender=trf_player.gender)
-            ) from None
-        try:
             TrfPlayerTitle.get_core_object(trf_player.title)
         except KeyError:
             raise ImporterError(
@@ -1221,16 +1214,15 @@ class TrfTournamentImporter(FileTournamentImporter):
                     federation=trf_player.federation.upper()
                 )
             )
-        if trf_player.birth_date:
-            try:
-                datetime.strptime(trf_player.birth_date, '%Y/%m/%d')
-            except ValueError:
-                if not re.match(r'^\d{4}/00/00$', trf_player.birth_date):
-                    raise ImporterError(
-                        _('Invalid date format [{date}] (expected: {format}).').format(
-                            date=trf_player.birth_date, format=_('YYYY/MM/DD')
-                        )
-                    ) from None
+        if trf_player.birth_date and not (
+            parse_trf_date(trf_player.birth_date)
+            or parse_trf_year(trf_player.birth_date)
+        ):
+            raise ImporterError(
+                _('Invalid date format [{date}] (expected: {format}).').format(
+                    date=trf_player.birth_date, format=_('YYYY/MM/DD')
+                )
+            )
 
     @staticmethod
     def _validate_trf_game(trf_game: TrfGame) -> None:
@@ -1307,35 +1299,30 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stop_date=event.stop_date,
             )
         stored_tournament.location = trf_tournament.city
-        if trf_tournament.start_date:
-            try:
-                stored_tournament.start_date = datetime.strptime(
-                    trf_tournament.start_date, TRF_DATE_FORMAT
-                ).date()
-            except ValueError:
+        for field, trf_date in (
+            ('start_date', trf_tournament.start_date),
+            ('stop_date', trf_tournament.end_date),
+        ):
+            if not trf_date:
+                continue
+            parsed = parse_trf_date(trf_date)
+            if parsed is None:
                 raise ImporterError(
                     _('Invalid date format [{date}] (expected: {format}).').format(
-                        date=trf_tournament.start_date, format=_('YYYY/MM/DD')
+                        date=trf_date, format=_('YYYY/MM/DD')
                     )
-                ) from None
-        if trf_tournament.end_date:
-            try:
-                stored_tournament.stop_date = datetime.strptime(
-                    trf_tournament.end_date, TRF_DATE_FORMAT
-                ).date()
-            except ValueError:
-                raise ImporterError(
-                    _('Invalid date format [{date}] (expected: {format}).').format(
-                        date=trf_tournament.end_date, format=_('YYYY/MM/DD')
-                    )
-                ) from None
+                )
+            setattr(stored_tournament, field, parsed)
         last_date_count = 0
         last_date: date | None = None
         for round_, trf_date in enumerate(trf_tournament.round_dates, start=1):
             if not trf_date:
                 continue
             try:
-                round_datetime = datetime.strptime(trf_date, '%y/%m/%d')
+                parsed_round_date = parse_trf_date(trf_date)
+                if parsed_round_date is None:
+                    raise ValueError(trf_date)
+                round_datetime = datetime.combine(parsed_round_date, time())
                 if round_datetime.date() == last_date:
                     last_date_count += 1
                 else:
@@ -1355,16 +1342,18 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_tournament.rounds = trf_tournament.num_rounds_estimation
         initial_color = trf_tournament.initial_color
         if initial_color:
+            # The spec writes the 152 value as ``W`` or ``B`` and the
+            # colour of a game as ``w`` or ``b``, and notes that its
+            # letter codes are case-insensitive; programs write the one
+            # case or the other.
             try:
-                BoardColor(initial_color)
-                stored_tournament.pairing_settings[ColorSeedSetting().id] = (
-                    initial_color
-                )
+                color = BoardColor(initial_color.upper())
             except ValueError:
                 message = _('Unknown colour [{color}].').format(color=initial_color)
                 raise ImporterError(
                     _('{string}: {value}').format(string='152', value=message)
                 ) from None
+            stored_tournament.pairing_settings[ColorSeedSetting().id] = color.value
         rating_type = cls.STARTING_RANK_RATING_TYPES.get(
             trf_tournament.starting_rank_method
         )
@@ -1427,13 +1416,9 @@ class TrfTournamentImporter(FileTournamentImporter):
         date_of_birth: date | None = None
         year_of_birth: int | None = None
         if trf_player.birth_date:
-            try:
-                date_of_birth = datetime.strptime(
-                    trf_player.birth_date, '%Y/%m/%d'
-                ).date()
-            except ValueError:
-                if re.match(r'^\d{4}/00/00$', trf_player.birth_date):
-                    year_of_birth = int(trf_player.birth_date.split('/')[0])
+            date_of_birth = parse_trf_date(trf_player.birth_date)
+            if date_of_birth is None:
+                year_of_birth = parse_trf_year(trf_player.birth_date)
 
         trf_title = TrfPlayerTitle.get_core_object(trf_player.title)
         stored_player = StoredPlayer(

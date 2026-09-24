@@ -354,10 +354,40 @@ class Tournament:
 
     @cached_property
     def pairing_variation(self) -> 'PairingVariation':
+        """The stored variation, or until the tournament is paired, the
+        one its rule set picks for the teams entered."""
         from data.pairings import PairingVariationManager
 
-        return PairingVariationManager(self.event).get_object(
-            self.stored_tournament.pairing
+        manager = PairingVariationManager(self.event)
+        variation = manager.get_object(self.stored_tournament.pairing)
+        if self.rule_set is not None and not self._has_stored_pairings:
+            variation_id = self.rule_set.pairing_variation_for(
+                variation.system().id, self.team_count
+            )
+            if variation_id is not None:
+                return manager.get_object(variation_id)
+        return variation
+
+    @property
+    def pairing_variation_is_automatic(self) -> bool:
+        """Whether the rule set still picks the variation: until the
+        tournament is paired."""
+        return (
+            self.rule_set is not None
+            and not self._has_stored_pairings
+            and self.rule_set.pairing_variation_for(
+                self.pairing_system.id, self.team_count
+            )
+            is not None
+        )
+
+    @property
+    def rounds_are_unsettled(self) -> bool:
+        """Whether the pairing system will still work the round count
+        out: until the tournament is paired."""
+        return (
+            self.pairing_variation.sets_its_own_round_count
+            and not self._has_stored_pairings
         )
 
     @cached_property
@@ -1527,10 +1557,20 @@ class Tournament:
             return _(
                 'Round {round} is already paired. Unpair it before pairing it again.'
             ).format(round=at_round)
+        self.persist_pairing_variation()
         self.persist_automatic_rounds()
         return self.pairing_variation.engine.generate_pairings(
             self, at_round, partial_pairings
         )
+
+    def persist_pairing_variation(self) -> None:
+        """Write down the variation the rule set picked, which the
+        tournament keeps once paired whatever its teams become."""
+        if self.pairing_variation.id == self.stored_tournament.pairing:
+            return
+        self.stored_tournament.pairing = self.pairing_variation.id
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
 
     def persist_automatic_rounds(self) -> None:
         """Write down the round count a system works out for itself.
@@ -1929,9 +1969,20 @@ class Tournament:
     @cached_property
     def tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
         players_by_id: dict[int, TournamentPlayer] = {}
+        event_players_by_id = self.event.players_by_id
         for (
             stored_tournament_player
         ) in self.stored_tournament.stored_tournament_players:
+            if stored_tournament_player.player_id not in event_players_by_id:
+                # The event was read while its player was being deleted:
+                # the entry is dropped rather than raised on, and the
+                # next load reads the two consistently.
+                logger.warning(
+                    '%sPlayer [%d] entered but not found in the event.',
+                    self.log_prefix,
+                    stored_tournament_player.player_id,
+                )
+                continue
             tournament_player = TournamentPlayer(self, stored_tournament_player)
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id

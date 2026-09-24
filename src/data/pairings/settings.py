@@ -183,12 +183,27 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
 
     @classmethod
     def _computed_value(cls, tournament: 'Tournament') -> BoardColor | None:
+        """The colour of the highest ranked participant paired in the
+        first round, which is what the seed colour means when it is not
+        stated (TRF26 record 152).
+
+        The ranking is the pairing numbers: they are the starting rank,
+        and an imported file carries its own, which the ratings need not
+        reproduce — two players on the same rating are separated there by
+        their names, and so could put a different player at the top of
+        the list than the file does. Only a tournament whose players are
+        not numbered yet is ranked by rating.
+        """
         return next(
             (
                 player.pairings[1].color
                 for player in sorted(
                     tournament.tournament_players,
-                    key=lambda player: player.starting_rank_sort_key,
+                    key=lambda player: (
+                        player.pairing_number is None,
+                        player.pairing_number or 0,
+                        player.starting_rank_sort_key,
+                    ),
                 )
                 if 1 in player.pairings and player.pairings[1].color is not None
             ),

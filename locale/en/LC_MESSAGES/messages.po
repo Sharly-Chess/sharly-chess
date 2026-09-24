@@ -283,6 +283,10 @@ msgid "%(string)s: %(value)s"
 msgstr ""
 
 #, python-format
+msgid "%(system)s (automatic)"
+msgstr ""
+
+#, python-format
 msgid "%f to %l"
 msgstr ""
 
@@ -5558,6 +5562,12 @@ msgstr ""
 msgid "No accounts"
 msgstr ""
 
+msgid "No affiliation"
+msgstr ""
+
+msgid "No affiliation set: the pairing cannot keep this team apart from teams of the same affiliation."
+msgstr ""
+
 msgid "No alert message"
 msgstr ""
 
@@ -6905,6 +6915,9 @@ msgid "Please choose a tie-break."
 msgstr ""
 
 msgid "Please choose a valid colour."
+msgstr ""
+
+msgid "Please choose a variation."
 msgstr ""
 
 msgid "Please choose the document."

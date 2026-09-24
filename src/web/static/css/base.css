@@ -904,6 +904,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     min-width: 0;
     padding: .8rem 1rem;
     overflow-wrap: anywhere;
+    container-type: inline-size;
 }
 
 .collection-card-summary + .collection-card-body {
@@ -943,9 +944,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-fact {
     display: grid;
-    grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr);
+    grid-template-columns: minmax(min-content, 2fr) minmax(0, 3fr);
     gap: .75rem;
     align-items: baseline;
+    line-height: 1.3;
 }
 
 .collection-fact > * {
@@ -958,6 +960,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     gap: .4rem;
     color: var(--bs-secondary-color);
     font-size: .85rem;
+    overflow-wrap: normal;
 }
 
 .collection-fact .text-start {
@@ -980,6 +983,12 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-details-grid-triple {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@container (max-width: 22rem) {
+    .collection-details-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 .collection-detail-section h6 {

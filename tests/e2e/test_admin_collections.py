@@ -152,8 +152,12 @@ class TestAdminCollections:
         )
         expect(item.locator('.card-block-button button')).to_be_visible()
 
-    def test_tournament_drag_icon_matches_the_view(self, page: Page):
+    def test_tournaments_default_to_card_view(self, page: Page):
         page.goto(f'/event/{PRIZE_EVENT_ID}/tournaments')
+        expect(page.locator('.admin-collection-cards')).to_be_visible()
+
+    def test_tournament_drag_icon_matches_the_view(self, page: Page):
+        page.goto(f'/event/{PRIZE_EVENT_ID}/tournaments?collection_view=list')
         expect(page.locator('.collection-list-header')).not_to_contain_text(
             'Project-Id-Version'
         )

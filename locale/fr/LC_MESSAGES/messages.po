@@ -283,6 +283,10 @@ msgid "%(string)s: %(value)s"
 msgstr "%(string)s : %(value)s"
 
 #, python-format
+msgid "%(system)s (automatic)"
+msgstr "%(system)s (automatique)"
+
+#, python-format
 msgid "%f to %l"
 msgstr "%f à %l"
 
@@ -5558,6 +5562,12 @@ msgstr "Pas d'accélération."
 msgid "No accounts"
 msgstr "Aucun compte"
 
+msgid "No affiliation"
+msgstr "Aucune affiliation"
+
+msgid "No affiliation set: the pairing cannot keep this team apart from teams of the same affiliation."
+msgstr "Aucune affiliation définie : l’appariement ne peut pas éviter que cette équipe rencontre des équipes de la même affiliation."
+
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
@@ -6908,6 +6918,9 @@ msgstr "Veuillez choisir un départage."
 
 msgid "Please choose a valid colour."
 msgstr "Veuillez choisir une couleur valide."
+
+msgid "Please choose a variation."
+msgstr "Veuillez choisir une variante."
 
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."

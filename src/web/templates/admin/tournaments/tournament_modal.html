@@ -1036,15 +1036,43 @@
                                 });
                             }
 
+                            // A select the rule set no longer holds on
+                            // "Automatic" falls back to its first option.
+                            function dropUnlockedAutomatic() {
+                                $('option[data-rule-set-automatic]').each(function() {
+                                    const $input = $(this).parent();
+                                    if ($input.attr('data-rule-set-locked')) return;
+                                    const wasAutomatic = $(this).is(':selected');
+                                    $(this).remove();
+                                    if (wasAutomatic) {
+                                        $input.val($input.find('option').first().val())
+                                              .trigger('change');
+                                    } else {
+                                        $input.trigger('change.select2');
+                                    }
+                                });
+                            }
+
                             function lockField(name, defaults, title) {
                                 const fid = inputId(name);
                                 const $input = $('#' + fid);
                                 if ($input.length === 0) return;
+                                // Already locked by the server (the
+                                // tournament is paired): it shows what was
+                                // settled, not the rule set's default.
+                                if ($input.prop('disabled') && !$input.attr('data-rule-set-locked')) return;
                                 // Disabled first, so the change handlers
                                 // below already see the field as locked.
                                 $input.prop('disabled', true)
                                       .attr('data-rule-set-locked', '1');
                                 if (Object.prototype.hasOwnProperty.call(defaults, name)) {
+                                    if ($input.is('select') && defaults[name] === ''
+                                        && $input.find('option[value=""]').length === 0) {
+                                        $input.prepend(
+                                            $('<option value="" data-rule-set-automatic></option>')
+                                                .text({{ _('Automatic')|tojson }})
+                                        );
+                                    }
                                     setValue($input, defaults[name]);
                                 }
                                 // Disabled inputs swallow hover events so
@@ -1096,12 +1124,17 @@
                                 const id = $ruleSet.val();
                                 showConfigFields(id);
                                 if (id) lockForRuleSet(id);
+                                dropUnlockedAutomatic();
                             }
 
                             function setValue($input, value) {
+                                // Setting the variation re-runs refresh(),
+                                // which comes back here with the same value.
                                 if ($input.is(':checkbox')) {
+                                    if ($input.prop('checked') === (value === 'on')) return;
                                     $input.prop('checked', value === 'on');
                                 } else {
+                                    if ($input.val() === value) return;
                                     $input.val(value);
                                 }
                                 if ($input.is('select')) {
