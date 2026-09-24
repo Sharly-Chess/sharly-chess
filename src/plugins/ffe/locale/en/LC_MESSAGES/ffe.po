@@ -123,6 +123,9 @@ msgstr ""
 msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
 msgstr ""
 
+msgid "Competition:"
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -612,6 +615,9 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
+msgid "Select a competition"
+msgstr ""
+
 msgid "Select a division"
 msgstr ""
 
@@ -628,6 +634,9 @@ msgid "Select the trainee"
 msgstr ""
 
 msgid "Select the writer"
+msgstr ""
+
+msgid "Set by the rule set of the tournament."
 msgstr ""
 
 msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."

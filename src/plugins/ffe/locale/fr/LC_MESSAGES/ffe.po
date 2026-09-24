@@ -128,6 +128,9 @@ msgstr "Arbitre Fédéral Club"
 msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
 msgstr "Départage les équipes à égalité sur la somme des différentiels au 1er échiquier ; celles toujours à égalité sont ensuite comparées au 2e échiquier, et ainsi de suite (règlement FFE §4.4.a)."
 
+msgid "Competition:"
+msgstr "Compétition :"
+
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
@@ -617,6 +620,9 @@ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tourno
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
+msgid "Select a competition"
+msgstr "Sélectionnez une compétition"
+
 msgid "Select a division"
 msgstr "Sélectionnez une division"
 
@@ -634,6 +640,9 @@ msgstr "Sélectionner le·la stagiaire"
 
 msgid "Select the writer"
 msgstr "Sélectionner le·la rédacteur·ice"
+
+msgid "Set by the rule set of the tournament."
+msgstr "Défini par le règlement du tournoi."
 
 msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."
 msgstr "Détermine si les règles complémentaires du système suisse s'appliquent : seule la phase zone interdépartementale de N2F les applique."

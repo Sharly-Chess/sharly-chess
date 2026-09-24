@@ -25,20 +25,22 @@
 </div>
 <script>
     (function () {
-        // The FFE transfer is offered for some systems only (a game-point
-        // score, and a Scheveningen among the team systems) and, through
-        // the site's team module, for the team competitions listed
-        // here: the connection fields follow the system and rule set
-        // chosen in the form.
+        // A team event is sent through the site's team module; an
+        // individual tournament uploads a Papi file, offered for the
+        // systems listed here (those with a game-point score).
         const FFE_TRANSFER = {{ ffe_transfer_system_ids|tojson }};
-        const TEAM_COMPETITIONS = {{ ffe_team_competition_rule_set_ids|tojson }};
+        const TEAM_EVENT = {{ ffe_team_event|tojson }};
+        // Competition id per rule set that names one: it fixes the choice.
+        const RULE_SET_COMPETITIONS = {{ ffe_team_rule_set_competitions|tojson }};
         const DIVISION_HINTS = {{ ffe_team_division_hints|tojson }};
-        function teamCompetition() {
-            const id = $('#rule-set').val() || '';
-            return TEAM_COMPETITIONS.includes(id) ? id : '';
+        function papiTransfer() {
+            return FFE_TRANSFER.includes($('#pairing-system').val() || '');
+        }
+        function teamTransfer() {
+            return TEAM_EVENT;
         }
         window.ffeTeamDivisionHint = function () {
-            const hints = DIVISION_HINTS[teamCompetition()] || {};
+            const hints = DIVISION_HINTS[$('#rule-set').val() || ''] || {};
             for (const key of Object.keys(hints)) {
                 const [name, value] = key.split('=');
                 const $input = $('[name="' + name + '"]');
@@ -49,18 +51,16 @@
             return '';
         };
         function syncFfeConnection() {
-            const id = $('#pairing-system').val() || '';
-            const team = teamCompetition() !== '';
-            $('#ffe-connection-section').toggle(!team && FFE_TRANSFER.includes(id));
-            $('#ffe-team-connection-section').toggle(team);
+            $('#ffe-connection-section').toggle(!teamTransfer() && papiTransfer());
+            $('#ffe-team-connection-section').toggle(teamTransfer());
         }
         function refreshTeamLists() {
             syncFfeConnection();
-            if (teamCompetition()) {
+            if (teamTransfer()) {
                 htmx.trigger('#ffe-team-connection-section .team-auth-fields', 'ffe-team-refresh');
             }
         }
-        $('#pairing-system').on('change', syncFfeConnection);
+        $('#pairing-system').on('change', refreshTeamLists);
         $('#rule-set').on('change', refreshTeamLists);
         $('[data-rule-set-config] select').on('change', refreshTeamLists);
         syncFfeConnection();

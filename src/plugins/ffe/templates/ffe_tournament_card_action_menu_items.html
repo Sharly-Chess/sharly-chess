@@ -1,7 +1,6 @@
-{# The FFE site connection is Papi-based (individual tournaments, plus a
-   Scheveningen, which uploads as an individual Swiss) or goes through
-   the site's team module (team competitions), which only offers the
-   upload. #}
+{# The FFE site connection is Papi-based for an individual tournament,
+   and goes through the site's team module for a team event, which only
+   offers the upload. #}
 {% if ffe_utils.supports_ffe_transfer(tournament) %}
     {% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
     {% set team_transfer = ffe_utils.supports_team_transfer(tournament) %}

@@ -65,6 +65,46 @@ def test_the_lists_wait_for_credentials(http: TestClient, tournament: Tournament
 
 
 @pytest.mark.unit
+def test_accepted_credentials_mark_the_password_valid(
+    http: TestClient, tournament: Tournament, monkeypatch
+) -> None:
+    """The password reads as valid as soon as the site accepts it, as
+    the certification number's does, whatever is chosen below it."""
+    from common.network import NetworkMonitor
+    from plugins.ffe.ffe_team_session import SiteOption
+    from plugins.ffe.ffe_tournament_controller import FfeTournamentController
+
+    monkeypatch.setattr(NetworkMonitor, 'connected', staticmethod(lambda: True))
+    monkeypatch.setattr(
+        FfeTournamentController,
+        '_team_lists',
+        staticmethod(
+            lambda *args, **kwargs: (
+                True,
+                [SiteOption(8, 'Coupe Jean-Claude Loubatiere')],
+                None,
+                None,
+            )
+        ),
+    )
+    response = http.post(
+        f'/ffe/team-auth/{EVENT_ID}',
+        data={
+            'rule_set': 'ffe-coupe-jean-claude-loubatiere',
+            'ffe_team_login': 'group',
+            'ffe_team_password': 'secret',
+            'ffe_team_competition': '',
+            'ffe_team_division': '',
+            'ffe_team_group': '',
+            'ffe_team_password_visible': 'false',
+        },
+    )
+    assert response.status_code == 200
+    assert 'is-valid' in response.text
+    assert 'Invalid FFE group account or password.' not in response.text
+
+
+@pytest.mark.unit
 def test_refused_credentials_clear_the_valid_mark(
     http: TestClient, tournament: Tournament, monkeypatch
 ) -> None:
@@ -77,7 +117,7 @@ def test_refused_credentials_clear_the_valid_mark(
     monkeypatch.setattr(
         FfeTournamentController,
         '_team_lists',
-        staticmethod(lambda *args, **kwargs: (False, None, None)),
+        staticmethod(lambda *args, **kwargs: (False, None, None, None)),
     )
     response = http.post(
         f'/ffe/team-auth/{EVENT_ID}',

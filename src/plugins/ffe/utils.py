@@ -78,18 +78,14 @@ class FFEUtils:
     def system_supports_ffe_transfer(
         event: Event, pairing_system: 'PairingSystem'
     ) -> bool:
-        """Whether the FFE-site transfer (Papi upload and its fields) is
-        offered for a tournament of ``event`` paired with this system. The
-        transfer is Papi-based, so it needs a game-point score; every such
-        individual tournament qualifies; among the team systems only the
-        Scheveningen, which is uploaded as an individual Swiss."""
-        from data.pairings.scheveningen import ScheveningenPairingSystem
-
+        """Whether the Papi upload (and its fields) is offered for a
+        tournament of ``event`` paired with this system: it needs a
+        game-point score, and every tournament of a team event is sent
+        through the site's team module instead. A Scheveningen still
+        exports a Papi file by hand — that export has its own rules."""
         if not pairing_system.uses_result_points:
             return False
-        if not event.is_team_event:
-            return True
-        return isinstance(pairing_system, ScheveningenPairingSystem)
+        return not event.is_team_event
 
     @staticmethod
     def rule_set_team_competition_id(rule_set: 'RuleSet | None') -> int | None:
@@ -103,18 +99,21 @@ class FFEUtils:
 
     @classmethod
     def team_competition_id(cls, tournament: Tournament) -> int | None:
-        """The FFE team-module competition this tournament is sent to
-        (see :meth:`rule_set_team_competition_id`)."""
-        if not tournament.event.is_team_event:
+        """The FFE team-module competition this tournament is sent to:
+        the one its rule set names, else the one chosen in the form."""
+        if not cls.supports_team_transfer(tournament):
             return None
-        return cls.rule_set_team_competition_id(tournament.rule_set)
+        return (
+            cls.rule_set_team_competition_id(tournament.rule_set)
+            or cls.get_tournament_plugin_data(tournament).team_competition_id
+        )
 
-    @classmethod
-    def supports_team_transfer(cls, tournament: Tournament) -> bool:
+    @staticmethod
+    def supports_team_transfer(tournament: Tournament) -> bool:
         """Whether the tournament is sent through the site's team module
         (match reports, one per round and pair of teams) rather than as
-        a Papi file."""
-        return cls.team_competition_id(tournament) is not None
+        a Papi file: every tournament of a team event is."""
+        return tournament.event.is_team_event
 
     @staticmethod
     def supports_ffe_transfer(tournament: Tournament) -> bool:
@@ -476,6 +475,8 @@ class FfeTournamentPluginData(PluginData):
     # group account rather than a tournament certification number.
     team_login: str | None = None
     team_password: str | None = None
+    team_competition_id: int | None = None
+    team_competition_name: str | None = None
     team_division_id: int | None = None
     team_division_name: str | None = None
     team_group_id: int | None = None
@@ -500,6 +501,8 @@ class FfeTournamentPluginData(PluginData):
             password=stored_value.get('password'),
             team_login=stored_value.get('team_login'),
             team_password=stored_value.get('team_password'),
+            team_competition_id=stored_value.get('team_competition_id'),
+            team_competition_name=stored_value.get('team_competition_name'),
             team_division_id=stored_value.get('team_division_id'),
             team_division_name=stored_value.get('team_division_name'),
             team_group_id=stored_value.get('team_group_id'),
@@ -521,6 +524,8 @@ class FfeTournamentPluginData(PluginData):
             'password': self.password,
             'team_login': self.team_login,
             'team_password': self.team_password,
+            'team_competition_id': self.team_competition_id,
+            'team_competition_name': self.team_competition_name,
             'team_division_id': self.team_division_id,
             'team_division_name': self.team_division_name,
             'team_group_id': self.team_group_id,
@@ -549,8 +554,14 @@ class FfeTournamentPluginData(PluginData):
             team_login=WebContext.form_data_to_str(data, 'ffe_team_login'),
             team_password=WebContext.form_data_to_str(data, 'ffe_team_password'),
         )
-        # The division and group selects carry ``id|name``: the name is
-        # what the arbiter sees afterwards, the id what the upload uses.
+        # The competition, division and group selects carry ``id|name``:
+        # the name is what the arbiter sees afterwards, the id what the
+        # upload uses.
+        plugin_data.team_competition_id, plugin_data.team_competition_name = (
+            cls._split_site_choice(
+                WebContext.form_data_to_str(data, 'ffe_team_competition')
+            )
+        )
         plugin_data.team_division_id, plugin_data.team_division_name = (
             cls._split_site_choice(
                 WebContext.form_data_to_str(data, 'ffe_team_division')
@@ -582,6 +593,9 @@ class FfeTournamentPluginData(PluginData):
                 'ffe_password': self.password if action != 'clone' else '',
                 'ffe_team_login': self.team_login if action != 'clone' else '',
                 'ffe_team_password': self.team_password if action != 'clone' else '',
+                'ffe_team_competition': self.site_choice(
+                    self.team_competition_id, self.team_competition_name
+                ),
                 'ffe_team_division': self.site_choice(
                     self.team_division_id, self.team_division_name
                 ),
@@ -611,6 +625,7 @@ class FfeTournamentPluginData(PluginData):
         return bool(
             self.team_login
             and self.team_password
+            and self.team_competition_id
             and self.team_division_id
             and self.team_group_id
         )

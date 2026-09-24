@@ -399,6 +399,14 @@ class FFETeamSession(FFESession):
             options.append(SiteOption(int(value), (option.innerText or '').strip()))
         return options
 
+    def list_competitions(self) -> list[SiteOption] | None:
+        """The competitions the team module manages, or None when the
+        site could not be read."""
+        parser = self._get(EQUIPES_URL)
+        if parser is None:
+            return None
+        return self._options(parser, COMPETITION_SELECT)
+
     def list_divisions(self, competition_id: int) -> list[SiteOption] | None:
         """The divisions of the competition, or None when the site
         could not be read."""

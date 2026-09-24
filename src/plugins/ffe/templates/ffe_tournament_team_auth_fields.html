@@ -1,11 +1,18 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-{# The division and group lists come from the FFE website: the fragment
-   reloads itself whenever the credentials, the rule set or its phase
-   change, and the selects then offer what the site lists for the
-   competition. Until the site has answered, each select only offers
-   the stored value. #}
+{# The competition, division and group lists come from the FFE website:
+   the fragment reloads itself whenever the credentials, a list above or
+   the rule set change. Until the site has answered, each select only
+   offers the stored value. #}
+{% set competition_options = {'': _('Select a competition')} %}
+{% if ffe_team_competitions %}
+    {% for option in ffe_team_competitions %}
+        {% set ignored = competition_options.update({option.id ~ '|' ~ option.name: option.name}) %}
+    {% endfor %}
+{% elif data.ffe_team_competition %}
+    {% set ignored = competition_options.update({data.ffe_team_competition: data.ffe_team_competition.split('|', 1)[1]}) %}
+{% endif %}
 {% set division_options = {'': _('Select a division')} %}
 {% if ffe_team_divisions %}
     {% for option in ffe_team_divisions %}
@@ -61,6 +68,24 @@
             password_visible=ffe_team_password_visible,
             data=data, errors=errors
         ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='ffe_team_competition',
+            label=_('Competition:'),
+            select_options=competition_options,
+            disabled=ffe_team_competition_locked,
+            input_tooltip=(
+                _('Set by the rule set of the tournament.')
+                if ffe_team_competition_locked else ''
+            ),
+            onchange="htmx.trigger(this.closest('.team-auth-fields'), 'ffe-team-refresh')",
+            data=data, errors=errors
+        ) }}
+        {% if ffe_team_competition_locked %}
+            {# A disabled select is not submitted: its value rides along. #}
+            <input type="hidden" name="ffe_team_competition" value="{{ data.ffe_team_competition }}">
+        {% endif %}
     </div>
     <div class="col-12 col-md-6">
         {{ admin_macros.select_input(

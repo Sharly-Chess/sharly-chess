@@ -147,9 +147,14 @@ class SiteChoiceTestCase(TestCase):
             {
                 'ffe_team_login': 'group',
                 'ffe_team_password': 'secret',
+                'ffe_team_competition': '8|Coupe Jean-Claude Loubatiere',
                 'ffe_team_division': '706|Phase Departementale',
                 'ffe_team_group': '3593|Test group Swiss',
             }
+        )
+        self.assertEqual(
+            (data.team_competition_id, data.team_competition_name),
+            (8, 'Coupe Jean-Claude Loubatiere'),
         )
         self.assertEqual(
             (data.team_division_id, data.team_division_name),
@@ -166,6 +171,7 @@ class SiteChoiceTestCase(TestCase):
             {
                 'ffe_team_login': 'group',
                 'ffe_team_password': 'secret',
+                'ffe_team_competition': '',
                 'ffe_team_division': '',
                 'ffe_team_group': '',
             }
