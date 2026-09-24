@@ -5,6 +5,7 @@ from unittest import TestCase
 
 import pytest
 
+from common import BASE_DIR
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.input_output.tournament_importer_options import FileOption
@@ -224,6 +225,22 @@ class TournamentImporterTestCase(TestCase):
             games=[],
             **kwargs,
         )
+
+    def test_trf_seed_colour_follows_the_files_own_starting_rank(self):
+        """A file that leaves out record 152 states its seed colour by the
+        colour of the highest ranked participant paired in round 1 — the
+        player its starting rank numbers first. Two players on the same
+        rating must not let a rating-and-name ordering put a different
+        player at the top, and with them the opposite colour."""
+        file_path = BASE_DIR / 'tests' / 'trf' / 'gacrux' / 'tied_ratings_9p.trf'
+        tournament = self._import_tournament(
+            TrfTournamentImporter([FileOption(file_path)])
+        )
+        first = tournament.tournament_players_by_pairing_number[1]
+        second = tournament.tournament_players_by_pairing_number[2]
+        self.assertEqual(first.rating, second.rating)
+        self.assertEqual(first.pairings[1].color, BoardColor.WHITE)
+        self.assertEqual(ColorSeedSetting.get_value(tournament), BoardColor.WHITE)
 
     def test_trf_starting_rank_method_reflects_the_ratings_used(self):
         """TRF26 172 states how the field was actually ranked, so it is

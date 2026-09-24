@@ -21,6 +21,12 @@ from utils.enum import (
 
 
 class TrfPlayerGender(CoreMapper[str, PlayerGender]):
+    """001 position 10. The spec spells the field ``m/w`` and marks it
+    ``□`` — "warning if wrong" — with no pairing column, so a value it
+    does not spell is read as unspecified rather than refused: the
+    Gacrux tournament generator writes ``u``, and other programs leave
+    it blank. Both cases are accepted, as for the other letter codes."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerGender]:
         return {
@@ -29,6 +35,12 @@ class TrfPlayerGender(CoreMapper[str, PlayerGender]):
             'm': PlayerGender.MAN,
             'w': PlayerGender.WOMAN,
         }
+
+    @classmethod
+    def get_core_object(cls, outer_value: str) -> PlayerGender:
+        return cls._core_object_by_outer_value().get(
+            outer_value.lower(), PlayerGender.NONE
+        )
 
 
 class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
