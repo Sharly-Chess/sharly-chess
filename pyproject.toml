@@ -276,6 +276,7 @@ module = [
   "rubicon.objc.*",
   "text_unidecode.*",
   "toga_cocoa.*",
+  "toga_gtk.*",
   "travertino.*",
   "xlsxwriter.*",
 ]
@@ -284,7 +285,12 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 # Code behind a `sys.platform` test is unreachable, and so unchecked, on every
 # other platform, which makes the ignores it needs look unused there.
-module = ["utils.scripts"]
+module = [
+  "utils.scripts",
+  "sharly_chess",
+  "common.updaters.windows_updater",
+  "gui.server_gui_toga",
+]
 warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
@@ -316,7 +322,9 @@ module = [
   "utils.scripts",
   "utils.fonts",
   "common.network",
+  "common.updaters.version_updater",
   "gui.server_gui_toga",
+  "gui.web_view_background",
 ]
 warn_unreachable = false
 
