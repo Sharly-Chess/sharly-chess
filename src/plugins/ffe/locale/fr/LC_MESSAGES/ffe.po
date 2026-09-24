@@ -240,8 +240,8 @@ msgstr "Base de données FFE (en ligne)"
 msgid "FFE forms"
 msgstr "Formulaires FFE"
 
-msgid "FFE group account, division or group not defined."
-msgstr "Compte de groupe FFE, division ou groupe non définis."
+msgid "FFE group account, competition, division or group not defined."
+msgstr "Compte de groupe FFE, competition, division ou groupe non définis."
 
 msgid "FFE licence"
 msgstr "Licence FFE"
@@ -723,7 +723,7 @@ msgid "The [{variation}] pairing system is not recognized by the FFE, which deri
 msgstr "Le système d'appariement [{variation}] n'est pas reconnu par la FFE, qui déduit l'accélération des classements : les appariements affichés sur le site de la FFE peuvent différer."
 
 msgid "The account of the group director on the FFE website (administration of team competitions)."
-msgstr "Le compte du directeur ou de la directrice de groupe sur le site de la FFE (administration des compétitions par équipes)."
+msgstr "Le compte du·de la directeur·ice de groupe sur le site de la FFE (administration des compétitions par équipes)."
 
 msgid "The match score cannot go below zero."
 msgstr "Le score du match ne peut pas être négatif."

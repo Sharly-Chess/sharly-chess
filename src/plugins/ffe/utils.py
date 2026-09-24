@@ -204,7 +204,9 @@ class FFEUtils:
         pd = cls.get_tournament_plugin_data(tournament)
         if cls.supports_team_transfer(tournament):
             if not cls.team_transfer_configured(tournament):
-                return _('FFE group account, division or group not defined.')
+                return _(
+                    'FFE group account, competition, division or group not defined.'
+                )
         elif not pd.ffe_id and not pd.password:
             return _('FFE certification number and password not defined.')
         elif not pd.ffe_id:

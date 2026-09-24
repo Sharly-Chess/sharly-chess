@@ -235,7 +235,7 @@ msgstr ""
 msgid "FFE forms"
 msgstr ""
 
-msgid "FFE group account, division or group not defined."
+msgid "FFE group account, competition, division or group not defined."
 msgstr ""
 
 msgid "FFE licence"
