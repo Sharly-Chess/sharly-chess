@@ -212,7 +212,7 @@
                             {{ admin_macros.select_input(
                                 name=pairing_system.variation_field_id,
                                 label=_('%(string)s:', string=_('Variation')),
-                                select_options=pairing_variation_options[pairing_system.id],
+                                select_options=pairing_system.variation_manager(admin_event).options(),
                                 disabled=admin_tournament.started,
                                 input_tooltip=(
                                     _('This field can\'t be modified once the tournament has started.')
@@ -1036,6 +1036,23 @@
                                 });
                             }
 
+                            // A select the rule set no longer holds on
+                            // "Automatic" falls back to its first option.
+                            function dropUnlockedAutomatic() {
+                                $('option[data-rule-set-automatic]').each(function() {
+                                    const $input = $(this).parent();
+                                    if ($input.attr('data-rule-set-locked')) return;
+                                    const wasAutomatic = $(this).is(':selected');
+                                    $(this).remove();
+                                    if (wasAutomatic) {
+                                        $input.val($input.find('option').first().val())
+                                              .trigger('change');
+                                    } else {
+                                        $input.trigger('change.select2');
+                                    }
+                                });
+                            }
+
                             function lockField(name, defaults, title) {
                                 const fid = inputId(name);
                                 const $input = $('#' + fid);
@@ -1049,6 +1066,13 @@
                                 $input.prop('disabled', true)
                                       .attr('data-rule-set-locked', '1');
                                 if (Object.prototype.hasOwnProperty.call(defaults, name)) {
+                                    if ($input.is('select') && defaults[name] === ''
+                                        && $input.find('option[value=""]').length === 0) {
+                                        $input.prepend(
+                                            $('<option value="" data-rule-set-automatic></option>')
+                                                .text({{ _('Automatic')|tojson }})
+                                        );
+                                    }
                                     setValue($input, defaults[name]);
                                 }
                                 // Disabled inputs swallow hover events so
@@ -1100,6 +1124,7 @@
                                 const id = $ruleSet.val();
                                 showConfigFields(id);
                                 if (id) lockForRuleSet(id);
+                                dropUnlockedAutomatic();
                             }
 
                             function setValue($input, value) {
