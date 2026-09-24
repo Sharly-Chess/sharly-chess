@@ -690,19 +690,19 @@ class PapiConverter:
 
     @classmethod
     def scheveningen_export_warning(cls, tournament: Tournament) -> str | None:
-        """The warning that a Scheveningen has no Papi form of its own and
-        is exported / uploaded as an individual Swiss. Shared by the export
-        modal and the tournament tab's pairing warning."""
+        """The warning that the exported file describes an individual
+        Swiss: the Papi format has no Scheveningen, so the teams are
+        left out and every board reads as a game of its own."""
         if isinstance(tournament.pairing_system, ScheveningenPairingSystem):
             return _(
-                'This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament.'
+                'This Scheveningen will be exported as an individual Swiss '
+                'tournament: the Papi format has no Scheveningen, and carries '
+                'no teams.'
             )
         return None
 
     @classmethod
     def check_pairing_warning(cls, tournament: Tournament) -> str | None:
-        if warning := cls.scheveningen_export_warning(tournament):
-            return warning
         if isinstance(tournament.pairing_variation, AccelerationSwissVariation):
             return _(
                 "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."

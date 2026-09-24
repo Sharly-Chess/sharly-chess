@@ -726,6 +726,15 @@ class TestScheveningenTournament(TestCase):
             tournament.compute_tournament_player_ranks()
         assert numbers == list(range(1, 9))
 
+    def test_the_papi_export_warns_it_reads_as_a_swiss(self):
+        """The format has no Scheveningen: the export says what the file
+        will describe."""
+        from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
+
+        tournament = self._paired_round(4)
+        warning = PapiTournamentExporter().warning_message(tournament)
+        assert warning is not None and 'Swiss' in warning
+
     def test_the_pairing_tab_stays_quiet(self):
         """The FFE site is sent the matches of the team event, so the
         pairing the Papi format would flatten them to says nothing about
