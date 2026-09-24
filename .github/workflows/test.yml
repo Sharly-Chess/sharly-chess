@@ -48,6 +48,8 @@ jobs:
             - name: Run Mypy
               run: |
                 mypy src tests
+                mypy src tests --platform linux
+                mypy src tests --platform win32
 
             - name: Install Playwright browsers
               run: |
