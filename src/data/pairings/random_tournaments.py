@@ -49,6 +49,57 @@ logger = get_logger()
 #: either.
 UNUSUAL_RESULTS = (Result.PENALTY_DL, Result.PENALTY_LD, Result.PENALTY_LL)
 
+
+@dataclass(frozen=True)
+class Frequency:
+    """How often something happens: a fixed number of them, or the chance
+    each opportunity has of being one.
+
+    The check-list asks for each of the byes, the forfeits and the unusual
+    results to be settable as a "fixed number or percentage" (question
+    24), so both are accepted. Written ``4`` it is four of them in the
+    whole tournament; written ``5%`` or ``0.05`` it is the chance each
+    player has in each round, or each board has.
+    """
+
+    count: int | None = None
+    rate: float | None = None
+
+    @classmethod
+    def parse(cls, value: str | float | None) -> 'Frequency | None':
+        """``4``, ``5%`` or ``0.05``; None when nothing was asked for."""
+        if value is None or value == '':
+            return None
+        if isinstance(value, int | float):
+            return cls(rate=float(value))
+        text = str(value).strip()
+        if text.endswith('%'):
+            return cls(rate=float(text[:-1]) / 100)
+        number = float(text)
+        # A whole number is a count, a fraction is a rate: 1 would be
+        # ambiguous, and is read as the count, 100% being writable as such.
+        if number.is_integer():
+            return cls(count=int(number))
+        return cls(rate=number)
+
+    def occurrences(self, opportunities: int, chance: random.Random) -> int:
+        """How many of this many opportunities are one."""
+        if self.count is not None:
+            return min(self.count, opportunities)
+        rate = self.rate or 0.0
+        return sum(1 for _ in range(opportunities) if chance.random() < rate)
+
+    def share_over_rounds(self, rounds: int, chance: random.Random) -> list[int]:
+        """A fixed number spread over the rounds; a rate leaves each round
+        to draw its own, which ``None`` here stands for."""
+        if self.count is None:
+            return []
+        shares = [0] * rounds
+        for _ in range(self.count):
+            shares[chance.randrange(rounds)] += 1
+        return shares
+
+
 #: Rates a run uses when the caller states none. Chosen per tournament
 #: from these ranges rather than fixed, which question 25 asks for.
 _UNSTATED_PLAYER_RANGE = (8, 120)
@@ -75,14 +126,14 @@ class TournamentSettings:
     top_rating: int | None = None
     rating_step: float | None = None
     #: The chance each player has of each kind of bye, per round.
-    full_point_byes: float | None = None
-    half_point_byes: float | None = None
-    zero_point_byes: float | None = None
+    full_point_byes: Frequency | None = None
+    half_point_byes: Frequency | None = None
+    zero_point_byes: Frequency | None = None
     #: The chance each board has of being decided by forfeit, or of
     #: carrying one of the unusual results.
-    forfeit_wins: float | None = None
-    forfeit_losses: float | None = None
-    unusual_results: float | None = None
+    forfeit_wins: Frequency | None = None
+    forfeit_losses: Frequency | None = None
+    unusual_results: Frequency | None = None
     #: The Baku acceleration method.
     acceleration: bool = False
     #: The criteria the standings are ranked on, as TRF26 acronyms.
@@ -92,8 +143,10 @@ class TournamentSettings:
     def settled(self, chance: random.Random) -> 'TournamentSettings':
         """The same settings with a value drawn for everything unstated."""
 
-        def rate(stated: float | None) -> float:
-            return chance.uniform(*_UNSTATED_RATE_RANGE) if stated is None else stated
+        def frequency(stated: Frequency | None) -> Frequency:
+            if stated is not None:
+                return stated
+            return Frequency(rate=chance.uniform(*_UNSTATED_RATE_RANGE))
 
         players = self.players or chance.randint(*_UNSTATED_PLAYER_RANGE)
         rounds = self.rounds or chance.randint(*_UNSTATED_ROUND_RANGE)
@@ -108,12 +161,12 @@ class TournamentSettings:
             rating_step=self.rating_step
             if self.rating_step is not None
             else chance.uniform(*_UNSTATED_RATING_STEP_RANGE),
-            full_point_byes=rate(self.full_point_byes),
-            half_point_byes=rate(self.half_point_byes),
-            zero_point_byes=rate(self.zero_point_byes),
-            forfeit_wins=rate(self.forfeit_wins),
-            forfeit_losses=rate(self.forfeit_losses),
-            unusual_results=rate(self.unusual_results),
+            full_point_byes=frequency(self.full_point_byes),
+            half_point_byes=frequency(self.half_point_byes),
+            zero_point_byes=frequency(self.zero_point_byes),
+            forfeit_wins=frequency(self.forfeit_wins),
+            forfeit_losses=frequency(self.forfeit_losses),
+            unusual_results=frequency(self.unusual_results),
             acceleration=self.acceleration,
             tie_breaks=list(self.tie_breaks),
             name=self.name,
@@ -206,9 +259,29 @@ class RandomTournamentGenerator:
                 stored.index = index
                 database.add_stored_tie_break(stored)
 
+        # A frequency given as a fixed number is shared over the rounds
+        # before the tournament starts, so the whole of it is used; a rate
+        # leaves each round to draw its own.
+        self._planned = {
+            name: getattr(settled, name).share_over_rounds(settled.rounds, self.chance)
+            for name in (
+                'full_point_byes',
+                'half_point_byes',
+                'zero_point_byes',
+                'forfeit_wins',
+                'forfeit_losses',
+                'unusual_results',
+            )
+        }
         for round_ in range(1, settled.rounds + 1):
             self._play_round(uniq_id, tournament_id, round_, settled)
         return tournament_id
+
+    def _this_round(self, name: str, round_: int) -> int | None:
+        """How many of a planned number fall in this round, or None when
+        the frequency was a rate and each opportunity draws its own."""
+        shares = self._planned.get(name) or []
+        return shares[round_ - 1] if shares else None
 
     def _tournament(self, uniq_id: str, tournament_id: int) -> 'Tournament':
         from data.loader import EventLoader
@@ -238,43 +311,70 @@ class RandomTournamentGenerator:
         self, tournament: 'Tournament', round_: int, settings: TournamentSettings
     ) -> None:
         """Each player's chance of sitting this round out."""
-        chances = (
-            (settings.full_point_byes or 0.0, Result.FULL_POINT_BYE),
-            (settings.half_point_byes or 0.0, Result.HALF_POINT_BYE),
-            (settings.zero_point_byes or 0.0, Result.ZERO_POINT_BYE),
+        kinds = (
+            ('full_point_byes', Result.FULL_POINT_BYE),
+            ('half_point_byes', Result.HALF_POINT_BYE),
+            ('zero_point_byes', Result.ZERO_POINT_BYE),
         )
-        for player in tournament.tournament_players:
-            for rate, result in chances:
-                if self.chance.random() < rate:
-                    tournament.set_player_byes(player, {round_: result})
-                    break
+        free = list(tournament.tournament_players)
+        self.chance.shuffle(free)
+        for name, result in kinds:
+            frequency = getattr(settings, name)
+            planned = self._this_round(name, round_)
+            taking = (
+                planned
+                if planned is not None
+                else frequency.occurrences(len(free), self.chance)
+            )
+            for player in free[:taking]:
+                tournament.set_player_byes(player, {round_: result})
+            free = free[taking:]
 
     def _enter_results(
         self, tournament: 'Tournament', round_: int, settings: TournamentSettings
     ) -> None:
         """One result per board, drawn from the two ratings."""
-        forfeit_win = settings.forfeit_wins or 0.0
-        forfeit_loss = settings.forfeit_losses or 0.0
-        unusual = settings.unusual_results or 0.0
-        for board in tournament.get_round_boards(round_):
-            if board.black_tournament_player is None:
-                # A player left over by an odd field already holds the bye
-                # the pairing system gives.
-                continue
-            roll = self.chance.random()
-            if roll < forfeit_win:
-                result = Result.FORFEIT_WIN
-            elif roll < forfeit_win + forfeit_loss:
-                result = Result.FORFEIT_LOSS
-            elif roll < forfeit_win + forfeit_loss + unusual:
-                result = self.chance.choice(UNUSUAL_RESULTS)
-            else:
-                result = draw_result(
-                    board.white_tournament_player.rating or DEFAULT_RATING,
-                    board.black_tournament_player.rating or DEFAULT_RATING,
-                    self.chance,
+        played = [
+            board
+            for board in tournament.get_round_boards(round_)
+            # A player left over by an odd field already holds the bye the
+            # pairing system gives them.
+            if board.black_tournament_player is not None
+        ]
+        order = list(played)
+        self.chance.shuffle(order)
+        decided: dict[int, Result] = {}
+        for name, result in (
+            ('forfeit_wins', Result.FORFEIT_WIN),
+            ('forfeit_losses', Result.FORFEIT_LOSS),
+            ('unusual_results', None),
+        ):
+            frequency = getattr(settings, name)
+            planned = self._this_round(name, round_)
+            taking = (
+                planned
+                if planned is not None
+                else frequency.occurrences(len(order), self.chance)
+            )
+            for board in order[:taking]:
+                decided[board.id] = (
+                    result
+                    if result is not None
+                    else self.chance.choice(UNUSUAL_RESULTS)
                 )
-            tournament.add_result(board, result)
+            order = order[taking:]
+        for board in played:
+            black = board.black_tournament_player
+            assert black is not None, 'boards without an opponent were left out'
+            tournament.add_result(
+                board,
+                decided.get(board.id)
+                or draw_result(
+                    board.white_tournament_player.rating or DEFAULT_RATING,
+                    black.rating or DEFAULT_RATING,
+                    self.chance,
+                ),
+            )
 
 
 def generate_tournament_file(

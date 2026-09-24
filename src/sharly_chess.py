@@ -97,6 +97,7 @@ try:
     from common.logger import (
         get_logger,
         print_interactive_error,
+        print_interactive_info,
         set_logging_config,
     )
     from gui.server_gui_toga import SharlyChessServerToga
@@ -173,7 +174,74 @@ try:
         '-c',
         '--check-tournament',
         action='store_true',
-        help='generate a random tournament',
+        help=(
+            'check a tournament: the pairings of every round, and the '
+            'standings against the tie-breaks the file names'
+        ),
+    )
+    generator = parser.add_argument_group(
+        'random tournament generation',
+        'What a generated tournament is made of. Anything left out is drawn '
+        'rather than given a fixed value. A rate is the chance each player '
+        'has of a bye in a round, or each board of a result of that kind.',
+    )
+    generator.add_argument(
+        '-n', '--count', type=int, default=1, help='how many to generate'
+    )
+    generator.add_argument('--players', type=int, help='number of players')
+    generator.add_argument('--rounds', type=int, help='number of rounds')
+    generator.add_argument(
+        '--ratings',
+        type=str,
+        help='the ratings to give the players, strongest first, comma-separated',
+    )
+    generator.add_argument('--top-rating', type=int, help='the highest rating')
+    generator.add_argument(
+        '--rating-step', type=float, help='the rating between one player and the next'
+    )
+    generator.add_argument(
+        '--full-point-byes',
+        type=str,
+        help='number of full-point byes, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--half-point-byes',
+        type=str,
+        help='number of half-point byes, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--zero-point-byes',
+        type=str,
+        help='number of zero-point byes, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--forfeit-wins',
+        type=str,
+        help='number of forfeit wins, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--forfeit-losses',
+        type=str,
+        help='number of forfeit losses, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--unusual-results',
+        type=str,
+        help=(
+            'number of results giving a half point to one side only or nothing '
+            'to either, or a percentage of the boards'
+        ),
+    )
+    generator.add_argument(
+        '--acceleration',
+        action='store_true',
+        help='use the Baku acceleration method',
+    )
+    generator.add_argument(
+        '--tie-breaks',
+        type=str,
+        default='PTS',
+        help='the criteria the standings are ranked on, as TRF26 acronyms',
     )
     parser.add_argument(
         'input_file',
@@ -197,7 +265,13 @@ try:
                 print_interactive_error('Argument --output-file is needed, exiting.')
                 sys.exit(1)
             try:
-                validate_filepath(args.output_file)
+                # A name may carry %d, which each generated tournament
+                # replaces with its number; validate what that becomes.
+                # Validated for the platform in use, not for every platform
+                # at once, which would refuse an absolute path outright.
+                validate_filepath(
+                    str(args.output_file).replace('%d', '00000'), platform='auto'
+                )
             except ValidationError:
                 print_interactive_error(
                     f'Invalid output file [{args.output_file}], exiting.'
@@ -213,7 +287,7 @@ try:
                 print_interactive_error('Input file is required, exiting.')
                 sys.exit(1)
             try:
-                validate_filepath(args.input_file)
+                validate_filepath(args.input_file, platform='auto')
             except ValidationError:
                 print_interactive_error(
                     f'Invalid input file [{args.input_file}], exiting.'
@@ -222,13 +296,52 @@ try:
             trf_input_file_path = Path(args.input_file)
 
         from data.pairings.checkers import BbpPairingsChecker
-        from data.pairings.generators import BbpPairingsGenerator
 
         if args.generate_tournament:
-            BbpPairingsGenerator().generate_tournament(
-                trf_input_file_path,
-                args.random_seed,
+            from data.pairings.random_tournaments import (
+                Frequency,
+                TournamentSettings,
+                generate_tournament_file,
             )
+
+            settings = TournamentSettings(
+                players=args.players,
+                rounds=args.rounds,
+                ratings=[
+                    int(rating) for rating in args.ratings.split(',') if rating.strip()
+                ]
+                if args.ratings
+                else None,
+                top_rating=args.top_rating,
+                rating_step=args.rating_step,
+                full_point_byes=Frequency.parse(args.full_point_byes),
+                half_point_byes=Frequency.parse(args.half_point_byes),
+                zero_point_byes=Frequency.parse(args.zero_point_byes),
+                forfeit_wins=Frequency.parse(args.forfeit_wins),
+                forfeit_losses=Frequency.parse(args.forfeit_losses),
+                unusual_results=Frequency.parse(args.unusual_results),
+                acceleration=args.acceleration,
+                tie_breaks=[
+                    acronym.strip()
+                    for acronym in args.tie_breaks.split(',')
+                    if acronym.strip()
+                ],
+            )
+            # One file per tournament, numbered where the name says so; a
+            # seed given is the first one, so a run of them is reproducible.
+            output_file = trf_input_file_path
+            for index in range(max(1, args.count)):
+                output_file = Path(str(args.output_file).replace('%d', f'{index:05d}'))
+                if args.count > 1 and '%d' not in str(args.output_file):
+                    output_file = output_file.with_name(
+                        f'{output_file.stem}{index:05d}{output_file.suffix}'
+                    )
+                seed = None if args.random_seed is None else args.random_seed + index
+                used = generate_tournament_file(settings, output_file, seed)
+                print_interactive_info(
+                    f'Generated [{output_file.name}] from seed {used}.'
+                )
+            trf_input_file_path = output_file
         if args.check_tournament:
             if not trf_input_file_path.exists():
                 print_interactive_error(
