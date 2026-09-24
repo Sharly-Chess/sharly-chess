@@ -28,7 +28,10 @@ from plugins.ffe.ffe_team_session import (
     GROUP_SELECT,
     SiteOption,
 )
+from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_upload_status import IncompatibleFFEUploadStatus
+from plugins.ffe.papi_converter import PapiConverter
+from plugins.ffe.papi_mappers import PapiColor, PapiResult
 from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result, ScoreType
@@ -195,6 +198,7 @@ class _MatchReportHarness(TestCase):
         boards: int = BOARDS,
         first_team_players: int | None = None,
         primary_score: ScoreType = ScoreType.MATCH_POINTS,
+        roster: int | None = None,
     ) -> Tournament:
         TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
         stored_tournament = TestUtils.create_tournament(
@@ -234,7 +238,7 @@ class _MatchReportHarness(TestCase):
                     )
                 )
                 self.team_ids.append(team_id)
-                players = boards
+                players = roster if roster is not None else boards
                 if seed == 1 and first_team_players is not None:
                     players = first_team_players
                 for index in range(players):
@@ -269,6 +273,68 @@ class _MatchReportHarness(TestCase):
             EventLoader.unload_event(EVENT_ID)
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+class PapiExportTestCase(_MatchReportHarness):
+    """A team tournament exports as the individual Swiss the Papi
+    format can describe: the teams are left out, every board is a game
+    of its own."""
+
+    def test_a_team_tournament_exports_as_an_individual_swiss(self) -> None:
+        tournament = self._create(pairing='MOLTER_STANDARD', teams=3, boards=4)
+        for board in tournament.get_round_boards(1):
+            tournament.add_result(board, Result.WIN)
+        tournament = self._load()
+        self.assertIsNone(PapiTournamentExporter().is_unavailable_message(tournament))
+        papi_data = PapiConverter().tournament_to_papi_data(tournament)
+        self.assertEqual(papi_data.variables.type, 'Suisse')
+        self.assertEqual(papi_data.variables.pairing, 'Standard')
+        self.assertEqual(len(papi_data.players), 3 * 4)
+        # Every board of the round is one game of the individual view.
+        self.assertEqual(
+            sum(len(player.rounds) for player in papi_data.players),
+            2 * len(tournament.get_round_boards(1)),
+        )
+
+    def test_a_player_out_of_the_lineup_takes_a_zero_point_bye(self) -> None:
+        """A roster player the captain did not field has no board: the
+        file reads them as sitting the round out, not as unpaired."""
+        tournament = self._create(
+            pairing='MOLTER_STANDARD', teams=3, boards=2, roster=3
+        )
+        for board in tournament.get_round_boards(1):
+            tournament.add_result(board, Result.WIN)
+        tournament = self._load()
+        papi_data = PapiConverter().tournament_to_papi_data(tournament)
+        seated = {
+            player.id
+            for board in tournament.get_round_boards(1)
+            for player in (
+                board.optional_white_tournament_player,
+                board.black_tournament_player,
+            )
+            if player is not None
+        }
+        benched = [
+            player
+            for player in tournament.tournament_players
+            if player.id not in seated
+        ]
+        self.assertEqual(len(benched), 3)
+        benched_names = {player.last_name for player in benched}
+        for papi_player in papi_data.players:
+            if papi_player.lastName not in benched_names:
+                continue
+            papi_round = papi_player.rounds[1]
+            self.assertEqual(papi_round.color, PapiColor.BYE)
+            self.assertEqual(papi_round.result, PapiResult.UNPLAYED_OR_NOT_PAIRED)
+
+    def test_the_export_warns_the_teams_are_left_out(self) -> None:
+        tournament = self._create()
+        warning = PapiTournamentExporter().warning_message(tournament)
+        assert warning is not None
+        self.assertIn('individual Swiss', warning)
 
 
 @pytest.mark.unit

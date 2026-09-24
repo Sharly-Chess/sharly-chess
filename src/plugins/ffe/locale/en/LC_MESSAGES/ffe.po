@@ -533,9 +533,6 @@ msgstr ""
 msgid "Papi export does not support bonus / penalty points, which this tournament uses."
 msgstr "Papi export does not support bonus / penalty points, which this tournament uses."
 
-msgid "Papi export is not available for team events."
-msgstr ""
-
 #, python-brace-format
 msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
 msgstr ""
@@ -709,6 +706,9 @@ msgstr ""
 msgid "The Papi format does not support result [{result}]."
 msgstr ""
 
+msgid "The Papi format has no team play: the file describes an individual Swiss tournament, where each board is a game of its own and the players are ranked on their game points."
+msgstr ""
+
 #, python-brace-format
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr ""
@@ -730,9 +730,6 @@ msgid "The player's points and the board numbers may differ on the FFE website b
 msgstr ""
 
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
-msgstr ""
-
-msgid "This Scheveningen will be exported as an individual Swiss tournament: the Papi format has no Scheveningen, and carries no teams."
 msgstr ""
 
 msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."

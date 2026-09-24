@@ -16,11 +16,12 @@ from common.tool_installer import PapiConverterInstaller
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
 from data.pairings.engines import DoubleBergerPairingEngine
-from data.pairings.scheveningen import ScheveningenPairingSystem
+from data.pairings.systems import SwissPairingSystem
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
     PairingVariation,
+    StandardSwissVariation,
 )
 from data.player import TournamentPlayer
 from utils.types import PlayerRating
@@ -689,17 +690,19 @@ class PapiConverter:
         )
 
     @classmethod
-    def scheveningen_export_warning(cls, tournament: Tournament) -> str | None:
+    def team_export_warning(cls, tournament: Tournament) -> str | None:
         """The warning that the exported file describes an individual
-        Swiss: the Papi format has no Scheveningen, so the teams are
-        left out and every board reads as a game of its own."""
-        if isinstance(tournament.pairing_system, ScheveningenPairingSystem):
-            return _(
-                'This Scheveningen will be exported as an individual Swiss '
-                'tournament: the Papi format has no Scheveningen, and carries '
-                'no teams.'
-            )
-        return None
+        Swiss: the Papi format knows no team play, so the teams are left
+        out, every board reads as a game of its own and the standings
+        are the game points — not the match points a team competition
+        may be ranked on."""
+        if not tournament.event.is_team_event:
+            return None
+        return _(
+            'The Papi format has no team play: the file describes an individual '
+            'Swiss tournament, where each board is a game of its own and the '
+            'players are ranked on their game points.'
+        )
 
     @classmethod
     def check_pairing_warning(cls, tournament: Tournament) -> str | None:
@@ -739,14 +742,6 @@ class PapiConverter:
     @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
-        # A Scheveningen is the one team system that can be flattened to an
-        # individual Swiss (every player has one opponent per round), so it
-        # is exported that way; the other team systems have no Papi form.
-        if tournament.event.is_team_event and not isinstance(
-            tournament.pairing_system, ScheveningenPairingSystem
-        ):
-            return _('Papi export is not available for team events.')
-
         # Papi ranks on the points and then on up to three tie-breaks;
         # there is no way to express a criterion that outranks the score.
         if not tournament.tie_break_configuration.leads_on_points:
@@ -797,7 +792,7 @@ class PapiConverter:
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
         warnings: list[str] = []
-        if warning := cls.scheveningen_export_warning(tournament):
+        if warning := cls.team_export_warning(tournament):
             warnings.append(warning)
         if warning := cls.check_tiebreaks_warning(
             tournament.tie_breaks,
@@ -898,9 +893,20 @@ class PapiConverter:
         # Convert tournament variables
         variables = PapiVariables(
             name=tournament.full_name,
-            type=PapiPairingSystem.get_outer_value(tournament.pairing_system),
+            # A team tournament is flattened to an individual Swiss:
+            # the format has no team play, and its players each have one
+            # opponent per round.
+            type=PapiPairingSystem.get_outer_value(
+                SwissPairingSystem()
+                if tournament.event.is_team_event
+                else tournament.pairing_system
+            ),
             rounds=str(tournament.rounds),
-            pairing=PapiPairingVariation.get_outer_value(tournament.pairing_variation),
+            pairing=PapiPairingVariation.get_outer_value(
+                StandardSwissVariation()
+                if tournament.event.is_team_event
+                else tournament.pairing_variation
+            ),
             ratingClass=PapiTournamentRating.get_outer_value(tournament.rating),
             venue=tournament.location,
             startDate=tournament.start_date.strftime(PAPI_DATE_FORMAT),
@@ -1115,16 +1121,16 @@ class PapiConverter:
                 opponent_index = player_id_to_index.get(pairing.opponent_id)
             papi_round.opponent = opponent_index
 
-            # In a knock-out a player has no opponent in a round when they are
-            # eliminated (unpaired) or seated on a structural bye (a top seed
-            # sitting the round out). Papi cannot take a *scoring* bye with no
-            # adversary — it assigns a default one, so several such byes in a
-            # round collide on its per-round adversary index — so represent
-            # every opponent-less played round as a zero-point bye, which it
-            # accepts and which leaves the score untouched (a knock-out ranks
-            # on the round reached, not on the points).
+            # A player can have no opponent in a played round: in a
+            # knock-out, eliminated or seated on a structural bye; in a
+            # team competition, left out of the lineup. Papi cannot take
+            # a *scoring* bye with no adversary — it assigns a default
+            # one, so several such byes in a round collide on its
+            # per-round adversary index — so both read as a zero-point
+            # bye, which it accepts and which scores what the player
+            # scored: nothing.
             if (
-                eliminates
+                (eliminates or tournament.event.is_team_event)
                 and papi_round.opponent is None
                 and tournament.round_has_pairings(round_)
             ):
