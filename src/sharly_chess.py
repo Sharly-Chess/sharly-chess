@@ -255,6 +255,17 @@ try:
         type=str,
         help='the output file',
     )
+    parser.add_argument(
+        '-l',
+        '--check-list-file',
+        type=str,
+        help=(
+            'write the report of --check-tournament to this file, as JSON: '
+            'the boards of every round that differ from the pairing the '
+            'rules give, and the positions of the standings that the '
+            'tie-breaks named in the file do not give'
+        ),
+    )
 
     args = parser.parse_args(arguments)
 
@@ -348,7 +359,19 @@ try:
                     f'TRF input file [{trf_input_file_path}] not found, exiting.'
                 )
                 sys.exit(1)
-            BbpPairingsChecker().check_tournament(trf_input_file_path)
+            tournament_check = BbpPairingsChecker.check_tournament(trf_input_file_path)
+            if args.check_list_file:
+                try:
+                    validate_filepath(args.check_list_file, platform='auto')
+                except ValidationError:
+                    print_interactive_error(
+                        f'Invalid check list file [{args.check_list_file}], exiting.'
+                    )
+                    sys.exit(1)
+                check_list_file = Path(args.check_list_file)
+                check_list_file.parent.mkdir(parents=True, exist_ok=True)
+                tournament_check.dump_to_file(check_list_file)
+                print_interactive_info(f'Wrote the report to [{check_list_file.name}].')
 
         sys.exit(0)
 

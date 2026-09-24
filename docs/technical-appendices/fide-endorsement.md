@@ -21,35 +21,46 @@
 - [_BbpPairings_](https://github.com/BieremaBoyzProgramming/bbpPairings)
 - [_JaVaFo_](https://www.rrweb.org/javafo/aum/JaVaFo2_AUM.htm)
 
-## Checking the _Sharly Chess_ pairings
+## Retrieving and running the checker and the generator
 
-Checking the pairings is needed for the _FIDE_ endorsement.
+The check-list requires a Pairing and Tie-Break Checker (PTC) and a Random
+Tournament Generator (RTG), both reachable from a command line and usable free
+of charge by any stakeholder (C.04.A Annex 3, questions 19, 20 and 22). This
+section is the one to give TEC: it is what belongs in the check-list's box for
+*instructions on how to retrieve the PTC and the RTG*.
 
-Pairings and checks entirely rely on the _BbpPairings_ pairing engine.
+### Retrieving them
 
-## Generate tournament pairings
+Both are part of _Sharly Chess_ itself; there is nothing else to download and
+no licence to buy. The program is free software under the AGPL v3.0.
 
-Generate a random TRF file ``test.trf``:
+1. Download the release for your platform from
+   [the releases page](https://github.com/Sharly-Chess/sharly-chess/releases).
+2. Run it from a terminal with the options below. The options are handled
+   before any window or server opens, so no interface starts and nothing is
+   installed: the program does its work, prints its report and exits.
 
-``sharly-chess-<version>.exe --generate-tournament --output-file=test.trf``<br/>
+In the commands below, ``sharly-chess`` stands for the executable of the
+release in use — ``sharly-chess-<version>.exe`` on Windows,
+``sharly-chess-<version>`` on macOS and Linux.
+
+### The checker (PTC)
+
+Read a TRF26 file and report what does not follow from the rules:
+
+``sharly-chess --check-tournament test.trf``<br/>
 or<br/>
-``sharly-chess-<version>.exe -g -o test.trf``
+``sharly-chess -c test.trf``
 
-Generate a random TRF file ``test.trf`` using a random seed (to easily reproduce the tests):
+It reports both halves question 21 asks for:
 
-``sharly-chess-<version>.exe --generate-tournament --output-file=test.trf --random-seed=12345678``<br/>
-or<br/>
-``sharly-chess-<version>.exe -g -o test.trf -s 12345678``
+- **the pairings**, round by round, each one re-paired from the position before
+  it and compared with what the file records;
+- **the standings**, against the criteria named in the file's own 212 record
+  (or 202), in the order given there.
 
-## Check tournament pairings and standings
-
-The checker reports both halves the check-list asks of it (C.04.A Annex 3,
-question 21): the pairings inconsistent with the rules in each round, found by
-re-pairing the round from the position before it, and the positions of the
-standings that the tie-breaks the file itself names do not produce.
-
-The standings are checked against the criteria of the file's 212 record (or
-202), in the order given there. Two points of care:
+Three points about the standings, each of which would otherwise produce a
+finding that is not an error:
 
 - The comparison is on the *order*, not on the rank numbers. The rank field
   allows ties and programs number a shared rank differently, so the check asks
@@ -59,29 +70,79 @@ The standings are checked against the criteria of the file's 212 record (or
   Art. 4.2 has such ties drawn by lot — so only a pair the criteria actively
   reverse is reported.
 - A file naming a criterion this program does not implement is reported as
-  unchecked rather than checked against a shorter list, which would pass for
-  the wrong reason.
+  unchecked, rather than checked against the criteria that remain, which would
+  pass for the wrong reason.
 
-Check the pairings of a TRF file ``test.trf`` (automatically writes file ``test.list``):
+Add ``--check-list-file`` to write the report as JSON, which is what a run over
+many tournaments wants:
 
-``sharly-chess-<version>.exe --check-tournament test.trf``<br/>
+``sharly-chess -c test.trf -l report.json``
+
+### The generator (RTG)
+
+Write a random tournament as TRF26:
+
+``sharly-chess --generate-tournament --output-file=test.trf``<br/>
 or<br/>
-``sharly-chess-<version>.exe -c test.trf``
+``sharly-chess -g -o test.trf``
 
-Check the pairings of a TRF file ``test.trf`` (write to file ``test2.list``):
+Everything question 24 lists can be set, and anything left out is drawn rather
+than given a fixed value (question 25):
 
-``sharly-chess-<version>.exe --check-tournament --check-list-file=test2.list test.trf``<br/>
-or<br/>
-``sharly-chess-<version>.exe -c -l test2.list test.trf``
+| Option | |
+|---|---|
+| ``--players`` | number of players |
+| ``--rounds`` | number of rounds |
+| ``--ratings`` | the ratings to give the players, strongest first, comma-separated |
+| ``--top-rating``, ``--rating-step`` | or build the ratings from a highest and a step |
+| ``--full-point-byes`` | a fixed number (``4``) or a percentage (``5%``) |
+| ``--half-point-byes`` | as above |
+| ``--zero-point-byes`` | as above |
+| ``--forfeit-wins`` | as above, counted in boards |
+| ``--forfeit-losses`` | as above, counted in boards |
+| ``--unusual-results`` | as above: a half point to one side only, or nothing to either |
+| ``--acceleration`` | use the Baku acceleration method |
+| ``--tie-breaks`` | the criteria the standings are ranked on, as TRF26 acronyms |
+| ``--random-seed`` | repeat an earlier tournament exactly |
+| ``--count`` | write a run of them, numbering the name where it carries ``%d`` |
 
-## Generate and check tournament pairings
+For example, five hundred tournaments of 40 players over 9 rounds, with a
+twentieth of the players taking a half-point bye in any round, three forfeits
+per tournament, and the standings ranked on points, Buchholz cut 1 and
+Sonneborn-Berger:
 
-Generate a random TRF file ``test.trf`` and check it:
+``sharly-chess -g -o "t%d.trf" --count 500 --players 40 --rounds 9
+--half-point-byes 5% --forfeit-losses 3 --tie-breaks "PTS,BH/C1,SB"``
 
-``sharly-chess-<version>.exe --generate-tournament --output-file=test.trf --check-tournament``<br/>
-or<br/>
-``sharly-chess-<version>.exe -g -o test.trf -c``
+Each tournament is built the way the program builds a real one: the rounds are
+paired by the pairing engine, the results are drawn from the ratings by the
+statistical model of Otto Milvang's *Statistical model for chess tournament
+simulations* (2024), and the standings come from the tie-break engine. The
+file therefore states a tie-break list and standings that follow from it
+(question 31), and nothing in it is invented after the fact.
 
-## Generate and check 5000 tournament pairings at once
+Given ``--random-seed`` the generator repeats itself exactly; without one it
+draws a seed, prints it, and does not repeat (question 30).
 
-Use script ``/scripts/fide/generate_and_check_tournaments.py``.
+### Both at once
+
+Generate a tournament and check it:
+
+``sharly-chess -g -o test.trf -c``
+
+## Generating and checking many at once
+
+``scripts/fide/generate_and_check_tournaments.py`` writes a run of tournaments
+and reads each one back through the checker, reporting the seed of any the two
+disagree about:
+
+``PYTHONPATH=src:. ./venv/bin/python scripts/fide/generate_and_check_tournaments.py 500``
+
+Every parameter but the tie-break list is left to be drawn, so a run covers a
+range of field and round counts.
+
+Our own checker accepting our own tournaments shows only that the two agree,
+which is why question 33 asks for the other engine as well: at least 50,000
+tournaments from each generator, verified by the other's checker. What this
+script does catch is the two of them contradicting each other, where there is
+no third party to blame.
