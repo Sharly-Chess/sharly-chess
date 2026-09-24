@@ -166,7 +166,7 @@ class SiteChoiceTestCase(TestCase):
         self.assertEqual(
             (data.team_group_id, data.team_group_name), (3593, 'Test group Swiss')
         )
-        self.assertTrue(data.team_configured)
+        self.assertTrue(data.team_place_configured)
         self.assertEqual(data.to_form_data()['ffe_team_group'], '3593|Test group Swiss')
 
     def test_an_empty_choice_leaves_the_transfer_unconfigured(self) -> None:
@@ -180,7 +180,7 @@ class SiteChoiceTestCase(TestCase):
             }
         )
         self.assertIsNone(data.team_division_id)
-        self.assertFalse(data.team_configured)
+        self.assertFalse(data.team_place_configured)
 
 
 class _MatchReportHarness(TestCase):
@@ -341,6 +341,19 @@ class PapiExportTestCase(_MatchReportHarness):
 class MatchReportTestCase(_MatchReportHarness):
     def _site_ids(self) -> dict[int, int]:
         return {team_id: 2212 + seed for seed, team_id in enumerate(self.team_ids, 1)}
+
+    def test_a_rule_set_competition_needs_no_stored_one(self) -> None:
+        """The competition of a tournament whose rule set names one is
+        not stored: it is configured all the same."""
+        tournament = self._create()
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        plugin_data.team_login = 'group'
+        plugin_data.team_password = 'secret'
+        plugin_data.team_division_id = 706
+        plugin_data.team_group_id = 3593
+        self.assertIsNone(plugin_data.team_competition_id)
+        self.assertEqual(FFEUtils.team_competition_id(tournament), 8)
+        self.assertTrue(FFEUtils.is_configured(tournament))
 
     def test_the_transfer_goes_through_the_team_module(self) -> None:
         tournament = self._create()

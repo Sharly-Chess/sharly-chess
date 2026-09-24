@@ -1033,7 +1033,7 @@ class FFETeamSession(FFESession):
         plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
         competition_id = FFEUtils.team_competition_id(tournament)
         if (
-            not plugin_data.team_configured
+            not FFEUtils.team_transfer_configured(tournament)
             or competition_id is None
             or self.upload_unavailable_message(tournament)
         ):

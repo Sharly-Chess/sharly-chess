@@ -136,11 +136,25 @@ class FFEUtils:
         )
 
     @classmethod
+    def team_transfer_configured(cls, tournament: Tournament) -> bool:
+        """Whether the tournament names the group its match reports go
+        to, and the account that may write them. The competition comes
+        from the rule set when it names one, so it need not be stored."""
+        pd = cls.get_tournament_plugin_data(tournament)
+        return bool(
+            pd.team_login
+            and pd.team_password
+            and pd.team_division_id
+            and pd.team_group_id
+            and cls.team_competition_id(tournament)
+        )
+
+    @classmethod
     def is_configured(cls, tournament: Tournament) -> bool:
         """Whether the tournament holds the credentials its transfer needs."""
-        pd = cls.get_tournament_plugin_data(tournament)
         if cls.supports_team_transfer(tournament):
-            return pd.team_configured
+            return cls.team_transfer_configured(tournament)
+        pd = cls.get_tournament_plugin_data(tournament)
         return bool(pd.ffe_id and pd.password)
 
     @classmethod
@@ -189,7 +203,7 @@ class FFEUtils:
     def ffe_actions_unavailable_message(cls, tournament: Tournament) -> str | None:
         pd = cls.get_tournament_plugin_data(tournament)
         if cls.supports_team_transfer(tournament):
-            if not pd.team_configured:
+            if not cls.team_transfer_configured(tournament):
                 return _('FFE group account, division or group not defined.')
         elif not pd.ffe_id and not pd.password:
             return _('FFE certification number and password not defined.')
@@ -573,7 +587,7 @@ class FfeTournamentPluginData(PluginData):
         if previous_object:
             if action != 'clone' and (
                 (plugin_data.ffe_id and plugin_data.password)
-                or plugin_data.team_configured
+                or plugin_data.team_place_configured
             ):
                 plugin_data.last_upload_at = previous_object.last_upload_at
                 plugin_data.last_upload_attempt_at = (
@@ -621,11 +635,13 @@ class FfeTournamentPluginData(PluginData):
             return None, None
 
     @property
-    def team_configured(self) -> bool:
+    def team_place_configured(self) -> bool:
+        """Whether the group the match reports go to, and the account
+        that may write them, are named. The competition is left out: a
+        rule set that names one does not store it."""
         return bool(
             self.team_login
             and self.team_password
-            and self.team_competition_id
             and self.team_division_id
             and self.team_group_id
         )

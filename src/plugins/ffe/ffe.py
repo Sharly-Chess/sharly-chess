@@ -880,9 +880,7 @@ class FfePlugin(Plugin):
             'ffe_team_rule_set_competitions': rule_set_competitions,
             'ffe_team_division_hints': division_hints,
             'ffe_team_auth_valid': (
-                FFEUtils.get_tournament_plugin_data(tournament).team_configured
-                if tournament
-                else False
+                FFEUtils.team_transfer_configured(tournament) if tournament else False
             ),
         }
 
