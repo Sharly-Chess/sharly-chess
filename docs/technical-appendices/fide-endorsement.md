@@ -40,9 +40,19 @@ no licence to buy. The program is free software under the AGPL v3.0.
    before any window or server opens, so no interface starts and nothing is
    installed: the program does its work, prints its report and exits.
 
-In the commands below, ``sharly-chess`` stands for the executable of the
-release in use — ``sharly-chess-<version>.exe`` on Windows,
-``sharly-chess-<version>`` on macOS and Linux.
+In the commands below, ``sharly-chess`` stands for however the release in
+use is invoked, which differs by platform:
+
+| Platform | What to run |
+|---|---|
+| Windows | ``sharly-chess.exe``, in the installation directory |
+| macOS | the executable in ``/Applications/SharlyChess.app/Contents/MacOS/`` |
+| Linux | ``flatpak run com.sharlychess.SharlyChess``, followed by the options |
+| From source | ``PYTHONPATH=src python src/sharly_chess.py`` |
+
+The macOS disk image holds ``SharlyChess.app``, which is dragged to the
+Applications folder as usual; the command line is the executable inside its
+bundle, which ``open`` does not reach because it passes no options on.
 
 ### The checker (PTC)
 
