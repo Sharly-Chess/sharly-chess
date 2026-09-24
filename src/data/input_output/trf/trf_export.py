@@ -94,6 +94,13 @@ class TrfExport:
             accelerated_rounds=self.accelerated_rounds(),
             round_byes=self._round_byes(),
         )
+        # The rank field allows ties, and players the criteria leave level
+        # are level (C.07 Art. 4.2): they share the rank the standings
+        # show, rather than take the pairing-number order the list is
+        # written in.
+        shared_rank = self._shared_ranks()
+        for trf_player in trf.players:
+            trf_player.rank = shared_rank[trf_player.id]
         if tournament.is_team_tournament:
             self._populate_team(
                 trf,
@@ -110,6 +117,24 @@ class TrfExport:
             else self._prohibited_pairings()
         )
         return trf
+
+    def _shared_ranks(self) -> dict[int, int]:
+        """Pairing number → rank, the same for players level on every
+        criterion, as the ranks were last computed."""
+        shared_rank: dict[int, int] = {}
+        previous_key: tuple | None = None
+        rank = 0
+        for player in self.tournament.tournament_players_by_rank.values():
+            key = (
+                player.is_excluded_from_standings,
+                player.rank_sort_key_without_pairing_number,
+            )
+            if key != previous_key:
+                previous_key = key
+                rank = player.rank
+            assert player.pairing_number is not None
+            shared_rank[player.pairing_number] = rank
+        return shared_rank
 
     def _prohibited_pairings(self) -> list[TrfProhibitedPairing]:
         """TRF26 260 records regenerated from the per-round snapshots: the

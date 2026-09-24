@@ -46,6 +46,23 @@ class TournamentExporterTestCase(TestCase):
         super().tearDown()
 
     # -------------------------------------------------------------------------
+    # TRF
+    # -------------------------------------------------------------------------
+
+    def test_trf_players_level_on_every_criterion_share_the_rank(self):
+        """Ranked on the points alone, the four players on 3.5 are level
+        (C.07 Art. 4.2) and the rank field, which allows ties, says so."""
+        self._set_tie_breaks([])
+        rank_by_name = {
+            player.name: player.rank for player in self.tournament.to_trf().players
+        }
+        self.assertEqual(rank_by_name['BRUNO'], 1)
+        for name in ('ALYX', 'CHARLINE', 'DAVID', 'STEPHAN'):
+            self.assertEqual(rank_by_name[name], 2, name)
+        self.assertEqual(rank_by_name['FRANCK'], 6)
+        self.assertEqual(rank_by_name['LAIS'], 16)
+
+    # -------------------------------------------------------------------------
     # Chess-Results
     # -------------------------------------------------------------------------
 
