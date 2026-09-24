@@ -300,7 +300,10 @@ class TournamentAdminController(BaseEventAdminController):
             location: str | None = None
             player_rating_type: int | None = None
             pairing_variations: dict[str, str | None] = {
-                system.variation_field_id: None for system in pairing_systems
+                system.variation_field_id: next(
+                    iter(system.variation_manager(admin_event).options())
+                )
+                for system in pairing_systems
             }
             override_unrated_rapid_blitz: bool = True
             team_player_count: int | None = None
@@ -957,6 +960,15 @@ class TournamentAdminController(BaseEventAdminController):
             if rule_set_type is not None
             else {}
         )
+        if not pairing:
+            if rule_set_type is not None:
+                # "Automatic": the rule set picks the variation from the
+                # entrants (see ``Tournament.pairing_variation``).
+                pairing = next(iter(pairing_system.variation_manager(event).options()))
+            else:
+                errors[pairing_system.variation_field_id] = _(
+                    'Please choose a variation.'
+                )
 
         stored_criteria: dict[str, Any] = {}
         for criterion in TournamentCriterionManager(event).objects():

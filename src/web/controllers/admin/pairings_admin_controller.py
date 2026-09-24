@@ -2073,6 +2073,17 @@ class PairingsAdminController(BaseEventAdminController):
         scheduled = tournament.stored_tournament.rounds
         if not scheduled:  # 0 means "let the system decide" — no override
             return None
+        # A rule set locking the count to the system's leaves the arbiter
+        # no override: the stored value is the last pairing's count.
+        rule_set = tournament.rule_set
+        if (
+            rule_set is not None
+            and rule_set.rounds_for_pairing(
+                tournament.pairing_system.id, tournament.pairing_variation.id
+            )
+            == 0
+        ):
+            return None
         calculated = tournament.automatic_rounds
         if calculated is None or calculated == scheduled:
             return None

@@ -90,6 +90,12 @@
 {% endmacro %}
 
 {% macro round_progress(item, view, placement) %}
+    {% if item.rounds_are_unsettled %}
+        <span
+            class="text-nowrap text-secondary"
+            {{ macros.tooltip_attributes('info', _('The number of rounds follows from the pairing system.'), 'top') }}
+        >{{ _('Automatic') }}</span>
+    {% else %}
     {% set progress = ((item.current_round / item.rounds * 100) if item.rounds else 0)|round|int %}
     <span
         class="collection-progress d-inline-flex align-items-center gap-2"
@@ -104,6 +110,7 @@
         </span>
         <span class="num text-nowrap">{{ item.current_round }}/{{ item.rounds }}</span>
     </span>
+    {% endif %}
 {% endmacro %}
 
 {% macro rating(item, view, placement) %}
@@ -162,9 +169,14 @@
 
 {% macro pairing(item, view, placement) %}
     {% set warning_message = item.pairing_warning_message %}
+    {% set pairing_name = (
+        _('%(system)s (automatic)', system=item.pairing_system.name)
+        if item.pairing_variation_is_automatic
+        else item.pairing_variation.name
+    ) %}
     {% if view == 'list' %}
-        <span class="text-truncate" title="{{ item.pairing_variation.name }}">
-            {{ item.pairing_variation.name }}
+        <span class="text-truncate" title="{{ pairing_name }}">
+            {{ pairing_name }}
             {% if warning_message %}<i class="bi-exclamation-triangle-fill text-warning ms-1" {{ macros.tooltip_attributes('warning', warning_message, 'top') }}></i>{% endif %}
         </span>
     {% else %}
@@ -173,7 +185,7 @@
                 <i class="bi-diagram-3-fill"></i>{{ _('Pairing system') }}
             </span>
             <span>
-                <span>{{ item.pairing_variation.name }}</span>
+                <span>{{ pairing_name }}</span>
                 {% with pairing_tooltip_message=item.pairing_variation.settings_tooltip_message(item) %}
                     {% if pairing_tooltip_message %}
                         <i
