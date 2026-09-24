@@ -22,11 +22,17 @@ the generator's and not an artefact of the field changing.
 
 import sys
 from collections import defaultdict
+from math import sqrt
 from pathlib import Path
 
 from common import TMP_DIR
 from common.logger import print_interactive_error, print_interactive_info
 from data.pairings.simulation import expected_score
+
+#: How much one game's score wanders from its expectation, as a standard
+#: deviation: a score of nothing, a half or one against an expectation
+#: between them. Used to tell a drift that is chance from one that is not.
+GAME_DEVIATION = 0.42
 
 #: The development coefficient rating changes are multiplied by. Only used
 #: to put the figure in rating points; the difference it multiplies is what
@@ -129,23 +135,41 @@ def main(count: int, players: int = 40, rounds: int = 9) -> int:
         )
         + ' (the eight furthest from zero)'
     )
-    # A player meeting the field over this many games should not be handed
-    # more than a rating point a game; anything larger says the results are
-    # not drawn from the ratings the file states.
-    tolerance = 1.0 / K_FACTOR
+    # Whether a drift is bias or chance is not settled by its size: a score
+    # of 0, a half or one against an expectation between them varies by
+    # about 0.4 of a point a game, so the mean over n games wanders by
+    # 0.4/sqrt(n) even when nothing is wrong. What separates the two is that
+    # chance shrinks as the sample grows and bias does not, so the figure is
+    # measured against that standard error rather than against a fixed
+    # number. Three of them is generous for the worst of a field this size.
+    standard_error = {
+        player_id: GAME_DEVIATION / sqrt(games[player_id]) for player_id in per_game
+    }
+    print_interactive_info(
+        f'- Expected to wander by {standard_error[worst_id]:.4f} points per game '
+        f'on chance alone, over {games[worst_id]} games'
+    )
     astray = {
         player_id: value
         for player_id, value in per_game.items()
-        if abs(value) > tolerance
+        if abs(value) > 3 * standard_error[player_id]
     }
     if astray:
         print_interactive_error(
-            f'- {len(astray)} player(s) gained or lost more than '
-            f'{tolerance:.3f} points per game'
+            f'- {len(astray)} player(s) beyond three times that, which is not '
+            f'chance: the results are not being drawn from the ratings stated'
         )
+        for player_id, value in sorted(
+            astray.items(), key=lambda pair: abs(pair[1]), reverse=True
+        )[:5]:
+            print_interactive_error(
+                f'    player {player_id}: {value:+.4f} against '
+                f'{standard_error[player_id]:.4f}'
+            )
         return 1
     print_interactive_info(
-        f'- Every player within {tolerance:.3f} points per game of expectation'
+        '- Every player within three standard errors of expectation, so the '
+        'drift is chance and not bias'
     )
     return 0
 

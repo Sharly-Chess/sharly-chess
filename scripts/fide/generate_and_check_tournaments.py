@@ -23,22 +23,48 @@ from common.logger import print_interactive_error, print_interactive_info
 from data.pairings.checkers import BbpPairingsChecker, TournamentCheck
 from data.pairings.random_tournaments import TournamentSettings
 
+#: The criteria a run works through when none are named, one list per
+#: tournament in turn. A run that ranked every tournament the same way
+#: would leave the standings checked against one set of criteria only,
+#: and the tie-break list is one of the things the generator is required
+#: to vary (question 24).
+TIE_BREAK_LISTS = (
+    ['PTS'],
+    ['PTS', 'BH/C1'],
+    ['PTS', 'BH/C1', 'SB'],
+    ['PTS', 'BH/M1', 'SB', 'ARO'],
+    ['PTS', 'DE', 'BH', 'WIN'],
+    ['PTS', 'SB', 'KS', 'TPR'],
+    ['PTS', 'FB/C1', 'AOB', 'BPG'],
+    ['PTS', 'BH/C2/P', 'SB/C1', 'PS'],
+)
 
-def main(count: int, seed: int | None = None) -> int:
-    """Generate *count* tournaments and check each one."""
+
+def main(
+    count: int,
+    seed: int | None = None,
+    tie_breaks: list[str] | None = None,
+) -> int:
+    """Generate *count* tournaments and check each one.
+
+    ``tie_breaks`` is the criteria to rank them on, used for every
+    tournament of the run. Left out, the run works through
+    ``TIE_BREAK_LISTS`` instead, a tournament at a time, so that one run
+    covers a range of them.
+    """
     from data.pairings.random_tournaments import generate_tournament_file
 
     directory: Path = TMP_DIR / 'pairings_checker'
     directory.mkdir(exist_ok=True, parents=True)
-    # Nothing is stated but the tie-breaks, so every other parameter is
-    # drawn per tournament and the run covers a range of them (question
-    # 25). The criteria are named so the standings have something to be
-    # checked against.
-    settings = TournamentSettings(tie_breaks=['PTS', 'BH/C1', 'SB'])
+    lists = [tie_breaks] if tie_breaks else list(TIE_BREAK_LISTS)
     checks: list[TournamentCheck] = []
     seeds: list[int] = []
     for index in range(max(count, 1)):
         tournament_file: Path = directory / f'{index:05d}.trf'
+        # Nothing is stated but the criteria, so every other parameter is
+        # drawn per tournament and the run covers a range of them
+        # (question 25).
+        settings = TournamentSettings(tie_breaks=lists[index % len(lists)])
         seeds.append(
             generate_tournament_file(
                 settings,
@@ -68,6 +94,9 @@ def main(count: int, seed: int | None = None) -> int:
     print_interactive_info(
         f'- Tournaments whose standings the checker disputes: {len(standings_faults)}'
     )
+    print_interactive_info(
+        '- Criteria used: ' + '; '.join(','.join(criteria) for criteria in lists)
+    )
     if unchecked:
         print_interactive_error(
             f'- Tournaments whose standings could not be checked: {len(unchecked)}'
@@ -79,4 +108,14 @@ def main(count: int, seed: int | None = None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main(int(sys.argv[1]) if len(sys.argv) > 1 else 10))
+    # <count> [tie-breaks, comma-separated]
+    sys.exit(
+        main(
+            int(sys.argv[1]) if len(sys.argv) > 1 else 10,
+            tie_breaks=[
+                acronym.strip() for acronym in sys.argv[2].split(',') if acronym.strip()
+            ]
+            if len(sys.argv) > 2
+            else None,
+        )
+    )

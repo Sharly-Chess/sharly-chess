@@ -149,7 +149,13 @@ disagree about:
 ``PYTHONPATH=src:. ./venv/bin/python scripts/fide/generate_and_check_tournaments.py 500``
 
 Every parameter but the tie-break list is left to be drawn, so a run covers a
-range of field and round counts.
+range of field and round counts. The criteria are given as a comma-separated
+list, as they are to ``--tie-breaks``:
+
+``... generate_and_check_tournaments.py 500 "PTS,BH/C1,SB"``
+
+Given none, the run works through a range of lists instead, a tournament at a
+time, so that the standings are checked against more than one set of criteria.
 
 Our own checker accepting our own tournaments shows only that the two agree,
 which is why question 33 asks for the other engine as well: at least 50,000
