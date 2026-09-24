@@ -58,7 +58,7 @@ jobs:
             - name: Run all tests
               # The default marker filter from pytest.ini leaves the
               # release-only tests out, and this is the run they exist for, so
-              # they are put back in. The Gacrux checks stay out: they fetch
-              # FIDE TEC's checker from GitHub and are run by hand for the
+              # they are put back in. The Gacrux checks stay out: they fetch an
+              # external checker from GitHub and are run by hand for the
               # endorsement.
               run: pytest -m "not gacrux"

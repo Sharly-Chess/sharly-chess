@@ -13,9 +13,16 @@ from tests.gacrux.harness import (
 from tests.gacrux.sources import LoadedTournament, TournamentSource, all_sources
 
 
-def pytest_report_header(config: pytest.Config) -> str:
-    # A failure here is either ours or a change in Gacrux: the report says
-    # which Gacrux it was, so the two can be told apart.
+def pytest_report_collectionfinish(items: list[pytest.Item]) -> str:
+    """Which Gacrux the run checked against, so that a failure can be told
+    apart from a change in Gacrux.
+
+    Naming the version means fetching Gacrux, so this waits until
+    collection has settled, and says nothing when the run selected none of
+    these tests.
+    """
+    if not any(item.get_closest_marker('gacrux') for item in items):
+        return ''
     return gacrux_report_header()
 
 
