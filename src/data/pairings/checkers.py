@@ -1,7 +1,8 @@
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from itertools import pairwise
 from pathlib import Path
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from common.logger import (
     get_logger,
@@ -15,6 +16,10 @@ from data.pairings.engines import BbpPairings
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+
+if TYPE_CHECKING:
+    from data.event import Event
+    from data.input_output.trf.trf_data import TrfTournament
 
 logger = get_logger()
 
@@ -161,11 +166,54 @@ class BoardDiff:
 
 
 @dataclass
+class StandingsDiff:
+    """Two participants the file orders one way and the tie-breaks it names
+    order the other: the file puts ``player`` at ``position``, ahead of
+    ``next_player``, and applying the criteria gives the later one the
+    better standing.
+
+    Reported as a pair rather than as a rank, because the rank field
+    allows ties and programs number a shared rank differently; what can be
+    checked without knowing the convention is the order itself.
+    """
+
+    position: int
+    player: CheckerPlayer
+    next_position: int
+    next_player: CheckerPlayer
+
+    @classmethod
+    def from_dict(cls, d: dict) -> 'StandingsDiff':
+        player = CheckerPlayer.from_dict(d['player'])
+        next_player = CheckerPlayer.from_dict(d['next_player'])
+        assert player is not None and next_player is not None
+        return StandingsDiff(d['position'], player, d['next_position'], next_player)
+
+    @property
+    def to_dict(self) -> dict:
+        return {
+            'position': self.position,
+            'player': self.player.to_dict,
+            'next_position': self.next_position,
+            'next_player': self.next_player.to_dict,
+        }
+
+
+@dataclass
 class TournamentCheck:
     name: str
     player_count: int
     rounds: int
     diff: dict[int, list[BoardDiff]]
+    #: Positions of the file's standings the tie-breaks it names do not give.
+    standings_diff: list[StandingsDiff] = field(default_factory=list)
+    #: Tie-breaks the file names that this program cannot apply, so the
+    #: standings could not be reproduced from the list as written.
+    unapplied_tie_breaks: list[str] = field(default_factory=list)
+    #: The criteria the standings were checked against, in order.
+    tie_breaks: list[str] = field(default_factory=list)
+    #: The round the standings were checked for.
+    standings_round: int = 0
 
     @classmethod
     def from_object(
@@ -194,6 +242,13 @@ class TournamentCheck:
                 ]
                 for round_, round_board_diffs in d['diff'].items()
             },
+            [
+                StandingsDiff.from_dict(standings_diff)
+                for standings_diff in d.get('standings_diff', [])
+            ],
+            d.get('unapplied_tie_breaks', []),
+            d.get('tie_breaks', []),
+            d.get('standings_round', 0),
         )
 
     @classmethod
@@ -216,6 +271,12 @@ class TournamentCheck:
                 ]
                 for round_, round_board_diffs in self.diff.items()
             },
+            'standings_diff': [
+                standings_diff.to_dict for standings_diff in self.standings_diff
+            ],
+            'unapplied_tie_breaks': self.unapplied_tie_breaks,
+            'tie_breaks': self.tie_breaks,
+            'standings_round': self.standings_round,
         }
 
     def dump_to_file(
@@ -235,7 +296,40 @@ class TournamentCheck:
         """Returns the number of boards with errors."""
         return sum(len(round_board_diffs) for round_board_diffs in self.diff.values())
 
+    @property
+    def standings_error_count(self) -> int:
+        """Returns the number of positions the tie-breaks do not give."""
+        return len(self.standings_diff)
+
+    def print_standings(self) -> None:
+        criteria = ', '.join(self.tie_breaks) or '(none named)'
+        if self.unapplied_tie_breaks:
+            print_interactive_warning(
+                f'Tournament [{self.name}]: the standings were not checked. '
+                f'The file ranks on {", ".join(self.unapplied_tie_breaks)}, '
+                f'which this program does not apply.'
+            )
+            return
+        if self.standings_diff:
+            print_interactive_error(
+                f'Tournament [{self.name}]: {self.standings_error_count} '
+                f'position(s) of the standings after round {self.standings_round} '
+                f'are not the order given by {criteria}.'
+            )
+            for standings_diff in self.standings_diff:
+                print_interactive_warning(
+                    f'{standings_diff.position:4d}. {standings_diff.player} is '
+                    f'placed above {standings_diff.next_position}. '
+                    f'{standings_diff.next_player}, which the criteria reverse.'
+                )
+        else:
+            print_interactive_success(
+                f'Tournament [{self.name}]: the standings after round '
+                f'{self.standings_round} are the order given by {criteria}.'
+            )
+
     def print(self) -> None:
+        self.print_standings()
         if self.diff:
             print_interactive_error(
                 f'Tournament [{self.name}]: {self.board_error_count} error(s) found on {self.round_error_count} round(s) (rounds: {self.rounds}, players: {self.player_count}).'
@@ -295,6 +389,75 @@ class TournamentCheck:
             )
 
 
+def check_standings(
+    tournament: Tournament,
+    trf_tournament: 'TrfTournament',
+    event: 'Event',
+) -> tuple[list[StandingsDiff], list[str], list[str], int]:
+    """Check the standings a TRF states against the order the tie-breaks it
+    names produce (FIDE C.04.A Annex 3, question 21).
+
+    Returns the positions that disagree, the tie-breaks named that cannot be
+    applied here, the criteria the check was made against, and the round it
+    was made for.
+
+    The comparison is on the order, not on the rank numbers: the rank field
+    allows ties and programs number a shared rank differently, so what can
+    be checked without knowing the convention is whether the file ever puts
+    one participant above another that the criteria place higher. A file
+    naming a criterion this program does not implement is reported rather
+    than checked against a shorter list, which would pass for the wrong
+    reason.
+    """
+    from data.input_output.trf.trf_importer import TrfTournamentImporter
+
+    acronyms = trf_tournament.standings_tie_breaks or trf_tournament.tie_breaks
+    applied, unapplied = TrfTournamentImporter.read_tie_breaks(list(acronyms), event)
+    after_round = tournament.ranking.correct_round()
+    tournament.compute_tournament_player_ranks(after_round=after_round)
+    # The criteria alone, without the pairing number this program falls back
+    # on: participants the criteria leave level may be ordered any way at all
+    # (C.07 Art. 4.2 has such ties drawn by lot), so only a pair the criteria
+    # actively reverse is a position the file states wrongly.
+    # The file's own order, as its rank field gives it. Participants sharing
+    # a rank are not ordered by the file, so nothing between them can
+    # contradict it.
+    stated = sorted(
+        (
+            (trf_player.rank, trf_player.id)
+            for trf_player in trf_tournament.players
+            if trf_player.rank is not None
+        ),
+    )
+    diffs: list[StandingsDiff] = []
+    if not unapplied:
+        players_by_number = tournament.tournament_players_by_pairing_number
+        for (rank, number), (next_rank, next_number) in pairwise(stated):
+            if rank == next_rank:
+                continue
+            player = players_by_number.get(number)
+            next_player = players_by_number.get(next_number)
+            if player is None or next_player is None:
+                continue
+            if (
+                next_player.rank_sort_key_without_pairing_number
+                < player.rank_sort_key_without_pairing_number
+            ):
+                checker_player = CheckerPlayer.from_object(player)
+                next_checker_player = CheckerPlayer.from_object(next_player)
+                assert checker_player is not None
+                assert next_checker_player is not None
+                diffs.append(
+                    StandingsDiff(rank, checker_player, next_rank, next_checker_player)
+                )
+    return (
+        diffs,
+        unapplied,
+        [tie_break.trf_acronym for tie_break in applied],
+        after_round,
+    )
+
+
 class BbpPairingsChecker(BbpPairings):
     @staticmethod
     def check_tournament(
@@ -351,6 +514,19 @@ class BbpPairingsChecker(BbpPairings):
                             )
                             for read_board, expected_board in round_pairings_diff
                         ]
+                print_interactive_info(
+                    f'Analysing standings for tournament [{tournament_check.name}]...'
+                )
+                from data.input_output.trf.trf_serializer import TrfSerializer
+
+                with open(trf_input_file_path, encoding='utf-8') as file:
+                    trf_tournament = TrfSerializer.load(file)
+                (
+                    tournament_check.standings_diff,
+                    tournament_check.unapplied_tie_breaks,
+                    tournament_check.tie_breaks,
+                    tournament_check.standings_round,
+                ) = check_standings(tournament, trf_tournament, event)
                 EventDatabase(event_uniq_id).file.unlink()
                 if cache:
                     tournament_check.dump_to_file(check_file_path)

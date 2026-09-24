@@ -41,7 +41,26 @@ Generate a random TRF file ``test.trf`` using a random seed (to easily reproduce
 or<br/>
 ``sharly-chess-<version>.exe -g -o test.trf -s 12345678``
 
-## Check tournament pairings
+## Check tournament pairings and standings
+
+The checker reports both halves the check-list asks of it (C.04.A Annex 3,
+question 21): the pairings inconsistent with the rules in each round, found by
+re-pairing the round from the position before it, and the positions of the
+standings that the tie-breaks the file itself names do not produce.
+
+The standings are checked against the criteria of the file's 212 record (or
+202), in the order given there. Two points of care:
+
+- The comparison is on the *order*, not on the rank numbers. The rank field
+  allows ties and programs number a shared rank differently, so the check asks
+  only whether the file ever places a participant above one the criteria place
+  higher.
+- Participants the criteria leave level may be ordered any way at all — C.07
+  Art. 4.2 has such ties drawn by lot — so only a pair the criteria actively
+  reverse is reported.
+- A file naming a criterion this program does not implement is reported as
+  unchecked rather than checked against a shorter list, which would pass for
+  the wrong reason.
 
 Check the pairings of a TRF file ``test.trf`` (automatically writes file ``test.list``):
 
