@@ -12,6 +12,8 @@
 
 - Exclusion of players (or teams) who have not played 50% of the games (or matches) in accordance with FIDE 6.6 in round robins (5.1.0)
 - Separate players of the same club when distributing players on balanced tournaments, as much as possible (5.1.0)
+- Team competitions can be sent to the _FFE_ website: teams and match reports are filled in from the tournament with the group account, for the competition, division and group chosen in the tournament properties (5.1.0)
+- Team tournaments can be exported to the _Papi_ format, which describes them as individual Swiss tournaments (5.1.0)
 
 ## Players
 

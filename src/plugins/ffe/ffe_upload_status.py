@@ -82,9 +82,9 @@ class IncompatibleFFEUploadStatus(FFEUploadStatus):
         return _('Incompatible')
 
     def tooltip_message(self, tournament: Tournament) -> str | None:
-        from plugins.ffe.papi_converter import PapiConverter
+        from plugins.ffe.utils import FFEUtils
 
-        return PapiConverter.papi_export_unavailable_message(tournament)
+        return FFEUtils.upload_unavailable_message(tournament)
 
     @property
     def css_classes(self) -> str:
@@ -160,6 +160,11 @@ class OngoingFFEUploadStatus(FFEUploadStatus):
 
 
 class FailureFFEUploadStatus(FFEUploadStatus, ABC):
+    def __init__(self, message: str | None = None) -> None:
+        # The text behind the failure (what the site answered), shown
+        # with the tooltip once stored on the tournament.
+        self.message: str | None = message
+
     @staticmethod
     def static_name() -> str:
         return _('Failure')
@@ -176,11 +181,10 @@ class FailureFFEUploadStatus(FFEUploadStatus, ABC):
     def tooltip_message(self, tournament: Tournament) -> str | None:
         from plugins.ffe.utils import FFEUtils
 
-        last_attempt_at = FFEUtils.get_tournament_plugin_data(
-            tournament
-        ).last_upload_attempt_at
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        last_attempt_at = plugin_data.last_upload_attempt_at
         assert last_attempt_at is not None
-        return _(
+        message = _(
             'Last upload attempt failed on {last_attempt_date} '
             'at {last_attempt_time} (details: {details}).'
         ).format(
@@ -188,6 +192,9 @@ class FailureFFEUploadStatus(FFEUploadStatus, ABC):
             last_attempt_time=format_time(last_attempt_at),
             details=self.details,
         )
+        if plugin_data.upload_failure_message:
+            message += ' ' + plugin_data.upload_failure_message
+        return message
 
 
 class NetworkFailureFFEUploadStatus(FailureFFEUploadStatus):
@@ -248,3 +255,26 @@ class PapiConversionFailureFFEUploadStatus(FailureFFEUploadStatus):
     @property
     def details(self) -> str:
         return _('tournament could not be converted to the Papi format')
+
+
+class GroupNotFoundFFEUploadStatus(FailureFFEUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'GROUP_NOT_FOUND'
+
+    @property
+    def details(self) -> str:
+        return _(
+            'group not found on the FFE website, check the division and '
+            'group in the tournament properties'
+        )
+
+
+class RejectedFFEUploadStatus(FailureFFEUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'REJECTED'
+
+    @property
+    def details(self) -> str:
+        return _('FFE website rejected the data')

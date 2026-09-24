@@ -15,6 +15,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredEvent
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
+from plugins.ffe.ffe_team_session import FFETeamSession
 from plugins.ffe.ffe_upload_status import (
     FailureFFEUploadStatus,
     NetworkFailureFFEUploadStatus,
@@ -147,7 +148,10 @@ class FfeBackgroundUploader:
             logger.info(
                 'Uploading tournament [%s] to the FFE website...', tournament.name
             )
-            failure_status = FFESession(tournament).upload(set_visible)
+            if FFEUtils.supports_team_transfer(tournament):
+                failure_status = FFETeamSession(tournament).upload_match_reports()
+            else:
+                failure_status = FFESession(tournament).upload(set_visible)
         except Exception as e:
             logger.exception('Error uploading tournament [%s]: [%s]', result_id, e)
             failure_status = UnexpectedFailureFFEUploadStatus()
@@ -158,8 +162,10 @@ class FfeBackgroundUploader:
                 now = datetime.now()
                 if failure_status:
                     plugin_data.upload_failure_id = failure_status.id
+                    plugin_data.upload_failure_message = failure_status.message
                 else:
                     plugin_data.upload_failure_id = None
+                    plugin_data.upload_failure_message = None
                     plugin_data.last_upload_at = now
                 plugin_data.last_upload_attempt_at = now
                 FFEUtils.update_tournament_plugin_data(tournament, plugin_data)

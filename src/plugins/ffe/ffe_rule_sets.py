@@ -211,6 +211,20 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         exempt, from its own fields."""
         return True
 
+    @staticmethod
+    def ffe_competition_id() -> int | None:
+        """Id of the competition in the FFE site's team module
+        (``SelectCompetition`` on ``Equipes.aspx``), for the results
+        upload; ``None`` for a cup the module does not manage."""
+        return None
+
+    @property
+    def ffe_division_name(self) -> str | None:
+        """Name of the site division (``SelectDivision``) matching the
+        configured phase, used to pre-select it in the tournament form;
+        ``None`` when the rule set cannot tell."""
+        return None
+
     @property
     @override
     def managed_fields(self) -> set[str]:
@@ -502,7 +516,10 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     ) -> 'PointAdjustment | None':
         """A game lost by forfeit counts −1 game point ("Une partie perdue
         par forfait sportif est comptée -1"). Applies to every pairing
-        system, Molter included."""
+        system, Molter included. In a team-vs-team match the score
+        cannot go below zero ("lorsque le total des points de parties
+        d'une équipe est négatif, le score est ramené à zéro"), so the
+        penalty stops at the points the team scored on the boards."""
         if team.tournament is None:
             return None
         count = sum(
@@ -512,14 +529,22 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         )
         if not count:
             return None
-        return PointAdjustment(
-            gp=-float(count),
-            explanation=ngettext(
-                '{n} game lost by forfeit, counted as -1.',
-                '{n} games lost by forfeit, counted as -1 each.',
-                count,
-            ).format(n=count),
-        )
+        penalty = float(count)
+        explanation = ngettext(
+            '{n} game lost by forfeit, counted as -1.',
+            '{n} games lost by forfeit, counted as -1 each.',
+            count,
+        ).format(n=count)
+        team_board = self._team_round_match(team, round_)
+        if team_board is not None:
+            a_gp, b_gp = team_board.game_points
+            scored = a_gp if team_board.stored_team_board.team_a_id == team.id else b_gp
+            if penalty > scored:
+                # Kept with its explanation even when nothing is left to
+                # take off, so the arbiter sees why the penalty is void.
+                penalty = max(scored, 0.0)
+                explanation += ' ' + _('The match score cannot go below zero.')
+        return PointAdjustment(gp=-penalty, explanation=explanation)
 
     def _following_board_played_penalty(
         self, team: 'Team', round_: int
@@ -662,6 +687,21 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
     def is_final_phase(self) -> bool:
         return self.phase == _LOUBATIERE_PHASE_FINAL
 
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 8
+
+    @property
+    @override
+    def ffe_division_name(self) -> str | None:
+        return {
+            _LOUBATIERE_PHASE_DEPARTMENTAL: 'Phase Departementale',
+            _LOUBATIERE_PHASE_2: 'Phase 2',
+            _LOUBATIERE_PHASE_3: 'Phase 3',
+            _LOUBATIERE_PHASE_FINAL: 'Phase Finale',
+        }.get(self.phase)
+
     @override
     def team_point_adjustment(
         self, team: 'Team', round_: int
@@ -754,6 +794,20 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
         """Whether the chosen division is one of the two Nationale 2
         phases, the Nationale 1 being the only other option."""
         return self.division in (_FEMININ_N2F_ZONE, _FEMININ_N2F_PHASE_2)
+
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 10
+
+    @property
+    @override
+    def ffe_division_name(self) -> str | None:
+        return {
+            _FEMININ_N1F: 'Nationale 1 F',
+            _FEMININ_N2F_ZONE: 'Nationale 2 F Phase Inter Zid',
+            _FEMININ_N2F_PHASE_2: 'Nationale 2 F',
+        }.get(self.division)
 
     @property
     @override
@@ -878,6 +932,21 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
     @override
     def is_final_phase(self) -> bool:
         return self.phase == _PARITE_PHASE_FINAL
+
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 38
+
+    @property
+    @override
+    def ffe_division_name(self) -> str | None:
+        return {
+            _PARITE_PHASE_ZONE: 'Phase Ligue',
+            _PARITE_PHASE_2: 'Phase Interligue',
+            _PARITE_PHASE_2_SINGLE: 'Phase Interligue',
+            _PARITE_PHASE_FINAL: 'Finale',
+        }.get(self.phase)
 
     @property
     @override

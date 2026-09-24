@@ -45,14 +45,24 @@
             </td>
             <td class="d-flex gap-2 align-items-center">
                 <div class="flex-grow-1"></div>
-                {% if plugin_data.ffe_id %}
+                {% set team_transfer = ffe_utils.supports_team_transfer(tournament) %}
+                {% if team_transfer %}
+                    {% set group_url = ffe_utils.team_group_url(tournament) %}
+                    {% if group_url %}
+                        <a
+                            href="{{ group_url }}"
+                            target="_blank"
+                            {{ macros.tooltip_attributes('', _('Page of the group on the FFE website (group account required).')) }}
+                        ><i class="bi bi-box-arrow-up-right"></i></a>
+                    {% endif %}
+                {% elif plugin_data.ffe_id %}
                     <a
                         href="{{ ffe_utils.tournament_url(plugin_data.ffe_id) }}"
                         target="_blank"
                         {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
                     ><i class="bi bi-box-arrow-up-right"></i></a>
                 {% endif %}
-                {% if not (plugin_data.ffe_id and plugin_data.password) %}
+                {% if not ffe_utils.is_configured(tournament) %}
                     <span {{ macros.tooltip_attributes('', _('Edit the properties of the tournament.')) }}>
                         <button
                             class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
@@ -69,6 +79,7 @@
                         </button>
                     </span>
                 {% else %}
+                    {% if not team_transfer %}
                     <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
                         <button
                             type="button"
@@ -88,6 +99,7 @@
                             <i class="bi-eye lh-1"></i>
                         </button>
                     </span>
+                    {% endif %}
                     <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
                         <button
                             type="button"

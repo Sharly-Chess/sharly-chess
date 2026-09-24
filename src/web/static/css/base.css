@@ -480,6 +480,19 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
   border-color: var(--bs-border-color);
 }
 
+/* The neutral focus border above would otherwise leave a validated
+   field half coloured: its addons keep their border, the field loses
+   it. */
+.form-control.is-valid:focus,
+.input-group .form-control.is-valid:focus {
+  border-color: var(--bs-form-valid-border-color);
+}
+
+.form-control.is-invalid:focus,
+.input-group .form-control.is-invalid:focus {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
 [data-bs-theme=dark] .input-group:focus-within,
 [data-bs-theme=dark] .input-group:has(.select2-container--open) {
     box-shadow: none;
