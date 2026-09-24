@@ -12,6 +12,7 @@ module goes away and the option is passed to the selections instead.
 """
 
 import sys
+from typing import Any
 
 import toga
 
@@ -103,7 +104,7 @@ elif sys.platform == 'linux':
     #: screen and scrolls, instead of in a menu, which it does neither to.
     _LIST_APPEARANCE_CSS = b'* { -GtkComboBox-appears-as-list: 1; }'
 
-    def list_parts(combo_box) -> tuple | None:
+    def list_parts(combo_box: Any) -> tuple | None:
         """The scrolled window and the tree view the list of *combo_box* is
         displayed in. GTK keeps both private, so they are looked for among the
         toplevel windows, by the items the tree view displays."""
@@ -119,12 +120,12 @@ elif sys.platform == 'linux':
                 return scrolled_window, tree_view
         return None
 
-    def item_height(tree_view) -> float | None:
+    def item_height(tree_view: Any) -> float | None:
         """The height of an item of *tree_view*, measured both from the height
         the whole list asks for and from what it takes to display one item, as
         the list asks for a height of its own only once it has been laid out.
         None as long as neither can be measured."""
-        heights = []
+        heights: list[float] = []
         item_count = tree_view.get_model().iter_n_children(None)
         natural_height = tree_view.get_preferred_height()[1]
         if item_count and natural_height:
@@ -142,7 +143,7 @@ elif sys.platform == 'linux':
             return None
         return max(heights)
 
-    def restrict_list(combo_box, max_visible_items: int):
+    def restrict_list(combo_box: Any, max_visible_items: int) -> None:
         """Gives the scrolled window the height of *max_visible_items* items,
         which GTK sizes and places the list from. Done before GTK measures the
         list, and again before each of the next ones, as the items are only
@@ -165,14 +166,14 @@ elif sys.platform == 'linux':
         horizontal_policy = scrolled_window.get_policy()[0]
         scrolled_window.set_policy(horizontal_policy, Gtk.PolicyType.AUTOMATIC)
 
-    def scroll_to_item(tree_view, index: int) -> bool:
+    def scroll_to_item(tree_view: Any, index: int) -> bool:
         """Displays the item of *tree_view* at *index*, halfway down the list."""
         tree_view.scroll_to_cell(
             Gtk.TreePath.new_from_indices([index]), None, True, 0.5, 0
         )
-        return GLib.SOURCE_REMOVE
+        return bool(GLib.SOURCE_REMOVE)
 
-    def show_selected_item(tree_view, _allocation, combo_box):
+    def show_selected_item(tree_view: Any, _allocation: Any, combo_box: Any) -> None:
         """Scrolls the displayed list to the selected item, which is out of
         sight when it is not among the items a restricted list displays. GTK
         scrolls a list back to its first item each time it lays it out, and it
@@ -189,7 +190,7 @@ elif sys.platform == 'linux':
             return
         GLib.idle_add(scroll_to_item, tree_view, index)
 
-    def list_position(combo_box) -> tuple | None:
+    def list_position(combo_box: Any) -> tuple | None:
         """Where the list belongs: under the selection, in the coordinates of
         the window holding it."""
         window = combo_box.get_toplevel()
@@ -198,7 +199,7 @@ elif sys.platform == 'linux':
             return None
         return coordinates[0], coordinates[1] + combo_box.get_allocation().height
 
-    def place_list(popup_window, combo_box):
+    def place_list(popup_window: Any, combo_box: Any) -> None:
         """Moves the list back under the selection. GTK places it at the
         coordinates of the selection on the desktop, and keeps those inside the
         screen the selection is displayed on. Wayland places a window against
@@ -215,7 +216,7 @@ elif sys.platform == 'linux':
         if (current.x, current.y) != position:
             popup_window.move(*position)
 
-    def keep_list_placed(combo_box, _allocation):
+    def keep_list_placed(combo_box: Any, _allocation: Any) -> None:
         """GTK places the displayed list again every time it lays the selection
         out, which is what it does after displaying it."""
         parts = list_parts(combo_box)
@@ -223,7 +224,7 @@ elif sys.platform == 'linux':
             return
         place_list(parts[0].get_toplevel(), combo_box)
 
-    def keep_list_scrollable(scrolled_window, _parameter):
+    def keep_list_scrollable(scrolled_window: Any, _parameter: Any) -> None:
         """Keeps the list scrollable, which GTK stops it from being each time it
         displays it, and which is what a restricted list is measured from: a
         list that does not scroll is as tall as everything it holds."""

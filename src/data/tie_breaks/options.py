@@ -277,7 +277,8 @@ class KoyaLimitTieBreakOption(TieBreakOption[int | None]):
 
     @property
     def variation_acronym(self) -> str:
-        return f'L{self.operator}{self.value}'
+        assert self.value is not None
+        return f'L{self.operator}{abs(self.value)}'
 
     def set_value_from_variation_acronym(self, acronym: str) -> bool:
         if len(acronym) != 3 or acronym[0] != 'L':

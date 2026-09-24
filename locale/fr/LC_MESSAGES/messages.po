@@ -5562,6 +5562,12 @@ msgstr "Pas d'accélération."
 msgid "No accounts"
 msgstr "Aucun compte"
 
+msgid "No affiliation"
+msgstr "Aucune affiliation"
+
+msgid "No affiliation set: the pairing cannot keep this team apart from teams of the same affiliation."
+msgstr "Aucune affiliation définie : l’appariement ne peut pas éviter que cette équipe rencontre des équipes de la même affiliation."
+
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 

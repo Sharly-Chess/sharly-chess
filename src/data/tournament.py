@@ -1969,9 +1969,20 @@ class Tournament:
     @cached_property
     def tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
         players_by_id: dict[int, TournamentPlayer] = {}
+        event_players_by_id = self.event.players_by_id
         for (
             stored_tournament_player
         ) in self.stored_tournament.stored_tournament_players:
+            if stored_tournament_player.player_id not in event_players_by_id:
+                # The event was read while its player was being deleted:
+                # the entry is dropped rather than raised on, and the
+                # next load reads the two consistently.
+                logger.warning(
+                    '%sPlayer [%d] entered but not found in the event.',
+                    self.log_prefix,
+                    stored_tournament_player.player_id,
+                )
+                continue
             tournament_player = TournamentPlayer(self, stored_tournament_player)
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id
