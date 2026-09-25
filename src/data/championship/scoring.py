@@ -18,11 +18,12 @@ import json
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from statistics import fmean
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any, Self, cast
 
 from common.i18n import _
 from data.championship.options import TeamScoreBasis
+from data.tie_breaks.direct_encounter import MinMax, rank_by_encounters
 
 if TYPE_CHECKING:
     from data.championship.reconciliation import (
@@ -1250,53 +1251,45 @@ class DirectEncounterRule(ChampionshipRule):
     def split(
         self, group: list['ReconciledCompetitor'], context: ScoringContext
     ) -> list[list['ReconciledCompetitor']]:
-        return self._resolve(group, context, secondary=False)
+        """The group split best-first by the encounters of Art. 6, a set the
+        score leaves level going on to the secondary score (Art. 13.3.1,
+        teams). Individuals have only one score, so the set stays tied for
+        the next rule."""
+        by_key = {id(competitor): competitor for competitor in group}
+        values: dict[int, int] = {}
 
-    def _resolve(
-        self,
-        group: list['ReconciledCompetitor'],
-        context: ScoringContext,
-        secondary: bool,
-    ) -> list[list['ReconciledCompetitor']]:
-        ranges = self.score_ranges(group, context, secondary=secondary)
-        if ranges is None:
-            return self._fall_back(group, context, secondary)
+        def min_max_on(secondary: bool) -> MinMax[int]:
+            ranges_by_group: dict[frozenset[int], dict[int, tuple[float, float]] | None]
+            ranges_by_group = {}
 
-        ordered = sorted(group, key=lambda competitor: ranges[id(competitor)][0])
-        subgroups: list[list] = []
-        current = [ordered[0]]
-        current_maximum = ranges[id(ordered[0])][1]
-        for competitor in ordered[1:]:
-            minimum, maximum = ranges[id(competitor)]
-            if round(minimum, 6) <= round(current_maximum, 6):
-                current.append(competitor)
-                current_maximum = max(current_maximum, maximum)
-            else:
-                subgroups.append(current)
-                current = [competitor]
-                current_maximum = maximum
-        subgroups.append(current)
+            def min_max(key: int, keys: Sequence[int]) -> tuple[float, float]:
+                group_key = frozenset(keys)
+                if group_key not in ranges_by_group:
+                    ranges_by_group[group_key] = self.score_ranges(
+                        [by_key[other] for other in keys], context, secondary=secondary
+                    )
+                ranges = ranges_by_group[group_key]
+                if ranges is None:
+                    return 0.0, 0.0
+                minimum, maximum = ranges[key]
+                return round(minimum, 6), round(maximum, 6)
 
-        if len(subgroups) == 1:
-            return self._fall_back(group, context, secondary)
+            return min_max
 
-        refined: list[list] = []
-        for subgroup in reversed(subgroups):
-            refined.extend(self._resolve(subgroup, context, secondary))
-        return refined
+        def on_secondary(keys: Sequence[int], min_value: int) -> None:
+            if self._has_secondary([by_key[key] for key in keys]):
+                rank_by_encounters(keys, min_max_on(True), values, min_value=min_value)
+                return
+            for key in keys:
+                values[key] = min_value
 
-    def _fall_back(
-        self,
-        group: list['ReconciledCompetitor'],
-        context: ScoringContext,
-        secondary: bool,
-    ) -> list[list['ReconciledCompetitor']]:
-        """A score that separates no one hands the set to the secondary score
-        (Art. 13.3.1, teams). Individuals have only one score, so the set stays
-        tied for the next rule."""
-        if not secondary and self._has_secondary(group):
-            return self._resolve(group, context, secondary=True)
-        return [group]
+        rank_by_encounters(
+            list(by_key), min_max_on(False), values, fallback=on_secondary
+        )
+        return [
+            [by_key[key] for key in by_key if values[key] == value]
+            for value in sorted(set(values.values()), reverse=True)
+        ]
 
     @staticmethod
     def _has_secondary(group: list['ReconciledCompetitor']) -> bool:

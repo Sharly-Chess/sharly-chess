@@ -1301,6 +1301,47 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(standings[pab_team.id].mp, pab_mp)
         self.assertEqual(standings[pab_team.id].gp, tournament.team_pab_game_points)
 
+    def test_trf_802_states_each_team_bye_as_it_was(self):
+        """Record 802 gives each team round its opponent, or the kind of bye,
+        and the game points: a zero-point, half-point, full-point or
+        pairing-allocated bye each as itself."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+        for r in (1, 2, 3):
+            for stb in list(
+                tournament.stored_tournament.stored_team_boards_by_round.get(r, [])
+            ):
+                from database.sqlite.event.event_database import EventDatabase
+
+                with EventDatabase(tournament.event.uniq_id, write=True) as db:
+                    if stb.id is not None:
+                        db.delete_stored_team_board(stb.id)
+            tournament.stored_tournament.stored_team_boards_by_round[r] = []
+        tournament.clear_team_cache()
+        for pairing_number, bye in ((1, 'ZPB'), (2, 'HPB'), (3, 'FPB'), (4, 'PAB')):
+            self._set_team_manual_bye(
+                tournament, teams_by_pn[pairing_number].id, 1, bye
+            )
+        records = tournament.to_trf(after_round=1).informative_team_results_records
+        boards = float(tournament.team_player_count or 0)
+        expected = {
+            1: ('ZPB', 0.0),
+            2: ('HPB', boards * 0.5),
+            3: ('FPB', boards * 1.0),
+            4: ('PAB', tournament.team_pab_game_points),
+        }
+        for record in records:
+            pairing_number = int(record.split()[0])
+            if pairing_number in expected:
+                bye, game_points = expected[pairing_number]
+                self.assertEqual(record.split()[-2:], [bye, f'{game_points:.1f}'])
+
     def test_create_team_round_pairing_flow(self):
         """Manual team pairing — first click creates a PAB envelope
         (team_a only, PAB-result individual boards), mirroring an

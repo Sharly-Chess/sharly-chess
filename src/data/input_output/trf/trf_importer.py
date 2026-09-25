@@ -379,8 +379,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
                 )
 
-        if tournament.accelerated_rounds and not self._acceleration_is_importable(
-            tournament
+        if tournament.accelerated_rounds and not (
+            self._acceleration_is_importable(tournament)
+            or self._acceleration_is_in_encoded_type(tournament)
         ):
             features.append(_('250 Accelerated rounds'))
         if tournament.abnormal_points_assignments and not tournament.teams:
@@ -417,6 +418,17 @@ class TrfTournamentImporter(FileTournamentImporter):
         return not (
             variation is None or variation.id != StandardSwissVariation.static_id()
         )
+
+    @staticmethod
+    def _acceleration_is_in_encoded_type(trf_tournament: TrfTournament) -> bool:
+        """A published accelerated system (Baku) is imported from its 192
+        encoded type, which the 250 records written alongside only restate."""
+        from data.pairings.acceleration import AcceleratedSwissVariation
+
+        variation = TrfEncodedType.get_supported_pairing_variation(
+            trf_tournament.encoded_type or 'FIDE_DUTCH_2026'
+        )
+        return isinstance(variation, AcceleratedSwissVariation)
 
     def _populate_acceleration(
         self,

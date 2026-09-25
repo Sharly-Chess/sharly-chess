@@ -10,6 +10,8 @@ The ``Tournament.team_records()`` helper builds them at runtime from
 from dataclasses import dataclass, field
 from enum import StrEnum
 
+from data.tie_breaks import unplayed_rounds
+from data.tie_breaks.unplayed_rounds import RoundRecord
 from utils.enum import ScoreType
 
 
@@ -27,6 +29,9 @@ class TeamMatchType(StrEnum):
     ZPB = 'ZPB'  # Zero-point bye (requested, no subsequent play)
     FORFEIT_WIN = 'FORFEIT_WIN'  # +F
     FORFEIT_LOSS = 'FORFEIT_LOSS'  # -F
+    # A drawn match on which no board was played: unplayed for both teams,
+    # and a voluntary unplayed round for both, neither having won it.
+    UNPLAYED_DRAW = 'UNPLAYED_DRAW'
 
 
 @dataclass(frozen=True)
@@ -75,6 +80,7 @@ class TeamMatchRecord:
             TeamMatchType.HPB,
             TeamMatchType.ZPB,
             TeamMatchType.FORFEIT_LOSS,
+            TeamMatchType.UNPLAYED_DRAW,
         )
 
     @property
@@ -113,6 +119,28 @@ class TeamRecord:
         """The team's own MP or GP scored in a given round's match."""
         return match.own_mp if score_type == ScoreType.MATCH_POINTS else match.own_gp
 
+    def rounds(self, score_type: ScoreType) -> list[RoundRecord]:
+        """The team's rounds as Art. 16 reads them, in ``score_type``."""
+        return [
+            RoundRecord(
+                round_=match.round_,
+                opponent_id=match.opponent_id,
+                points=self.own_against(match, score_type),
+                played=match.played,
+                requested_bye=match.match_type
+                in (TeamMatchType.HPB, TeamMatchType.ZPB),
+                voluntary_unplayed=match.voluntary_unplayed,
+            )
+            for match in self.matches
+        ]
+
+
+def fore_round_is_paired(record: 'TeamRecord', after_round: int) -> bool:
+    """Whether Art. 8.3's hypothesis reaches ``record``."""
+    return unplayed_rounds.fore_round_is_paired(
+        record.rounds(ScoreType.MATCH_POINTS), after_round
+    )
+
 
 def adjust_opponent_total(
     opponent: 'TeamRecord',
@@ -124,32 +152,14 @@ def adjust_opponent_total(
     adjust_fore: bool = False,
 ) -> float:
     """``opponent``'s total ``score_type`` adjusted for tie-break use by
-    *other* teams. ZPB rounds not followed by any played round (Art.
-    16.2.5) are reclassified as a draw (Art. 16.3.2); the opponent's
-    own tie-breaks still use the actual score (Art. 16.4) — adjustment
-    is one-sided.
-
-    When ``adjust_fore`` is True (Fore Buchholz), the *last* round
-    contribution is replaced with a draw — "all paired games for the
-    final round are considered draws"."""
-    total = 0.0
-    seen_played_or_pab = False
-    draw_val = draw_mp if score_type == ScoreType.MATCH_POINTS else draw_gp
-    for match in sorted(
-        (m for m in opponent.matches if m.round_ <= after_round),
-        key=lambda m: m.round_,
-        reverse=True,
-    ):
-        own = opponent.own_against(match, score_type)
-        if (adjust_fore and match.round_ == after_round) or (
-            match.match_type == TeamMatchType.ZPB and not seen_played_or_pab
-        ):
-            total += draw_val
-        else:
-            total += own
-        if match.played or match.match_type == TeamMatchType.PAB:
-            seen_played_or_pab = True
-    return total
+    *other* teams (Art. 16.3); ``adjust_fore`` is Fore Buchholz's final
+    round taken as drawn (Art. 8.3)."""
+    return unplayed_rounds.adjusted_score(
+        opponent.rounds(score_type),
+        after_round=after_round,
+        draw=draw_mp if score_type == ScoreType.MATCH_POINTS else draw_gp,
+        fore=adjust_fore,
+    )
 
 
 def dummy_opponent_score(
@@ -160,27 +170,28 @@ def dummy_opponent_score(
     draw_value: float,
     opponent_adjusted: float | None = None,
     legacy: bool = False,
+    fore_after_round: int | None = None,
 ) -> float:
-    """Score attributed to the virtual opponent when our team had an
-    unplayed match (Art. 16.4): the team's own total, capped.
+    """Score attributed to the dummy an unplayed match is played against
+    (Art. 16.4), ``opponent_adjusted`` being the scheduled opponent's
+    adjusted score for a forfeit. For teams the draw value is read per
+    score type, the closing note of Art. 16 defining "points" as match
+    points and game points alike.
 
-    The cap depends on the category of the unplayed round, and the two
-    are alternatives, not cumulative:
-
-      - a forfeit (Art. 16.2.2 / 16.2.4) caps at the scheduled
-        opponent's adjusted score, passed in as ``opponent_adjusted``
-        (Art. 16.4.1);
-      - every other unplayed round — pairing-allocated and requested
-        byes — caps at the draw value times the number of rounds
-        (Art. 16.4.2). For teams that value is read per score type,
-        the closing note of Art. 16 defining "points" as match points
-        and game points alike.
-
-    ``legacy`` restores the 2024 wording, which capped nothing.
+    ``fore_after_round`` is the final round of a Fore Buchholz: when the
+    team was paired for it, its own total counts that match as a draw.
     """
     own_total = own_record.total(score_type)
-    if legacy:
-        return own_total
-    if opponent_adjusted is not None:
-        return min(own_total, opponent_adjusted)
-    return min(own_total, rounds * draw_value)
+    if fore_after_round is not None and fore_round_is_paired(
+        own_record, fore_after_round
+    ):
+        final_match = own_record.match_at(fore_after_round)
+        assert final_match is not None
+        own_total += draw_value - own_record.own_against(final_match, score_type)
+    return unplayed_rounds.dummy_score(
+        own_total,
+        draw=draw_value,
+        tournament_rounds=rounds,
+        opponent_adjusted=opponent_adjusted,
+        legacy=legacy,
+    )

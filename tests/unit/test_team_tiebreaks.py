@@ -18,6 +18,7 @@ written against the current rules build their own fixtures.
 
 from typing import ClassVar
 from unittest import TestCase
+from unittest.mock import patch
 
 import pytest
 
@@ -25,6 +26,7 @@ from data.tie_breaks.team_records import (
     TeamMatchRecord,
     TeamMatchType,
     TeamRecord,
+    adjust_opponent_total,
     dummy_opponent_score,
 )
 from data.tie_breaks.team_tie_breaks import (
@@ -32,6 +34,7 @@ from data.tie_breaks.team_tie_breaks import (
     EDEKnockoutTieBreakOption,
     EDEKnockoutVariant,
     BottomBoardEliminationTieBreak,
+    ESBCutterTieBreakOption,
     ESBVariant,
     ESBVariantTieBreakOption,
     ExtendedDirectEncounterTieBreak,
@@ -40,8 +43,13 @@ from data.tie_breaks.team_tie_breaks import (
     ScoresAndScheduleStrengthCombinationTieBreak,
     TeamTieBreakContext,
     TopBoardResultsTieBreak,
+    board_totals,
 )
-from data.tie_breaks.tie_breaks import StandardBuchholzTieBreak
+from data.tie_breaks.tie_breaks import (
+    ForeBuchholzTieBreak,
+    ProgressiveScoresTieBreak,
+    StandardBuchholzTieBreak,
+)
 from data.tie_breaks.options import (
     CutterTieBreakOption,
     CutterWithMedianTieBreakOption,
@@ -49,7 +57,7 @@ from data.tie_breaks.options import (
     PlayedModifierTieBreakOption,
     TeamScoreTieBreakOption,
 )
-from data.tie_breaks.cutters import Cut1TieBreakCutter
+from data.tie_breaks.cutters import Cut1TieBreakCutter, Median1TieBreakCutter
 from utils.enum import ScoreType
 
 
@@ -720,6 +728,32 @@ class TecTeamTieBreakTestCase(TestCase):
             _CONTEXT
         )
         self.assertEqual(factor, 3)
+
+    def test_sssc_equal_combinations_give_equal_values(self):
+        # 0 + 2.5 / 3 and 0.5 + 1 / 3 are both 5/6.
+        buchholz = {1: 2.5, 2: 1.0}
+        records = {
+            team_id: TeamRecord(
+                team_id=team_id,
+                name=f'Team {team_id}',
+                total_mp=0.0,
+                total_gp=secondary,
+                matches=[],
+            )
+            for team_id, secondary in ((1, 0.0), (2, 0.5))
+        }
+        with patch.object(
+            StandardBuchholzTieBreak,
+            'compute_team_value',
+            side_effect=lambda record, *args, **kwargs: buchholz[record.team_id],
+        ):
+            values = [
+                ScoresAndScheduleStrengthCombinationTieBreak().compute_team_value(
+                    record, records, _CONTEXT, after_round=7
+                )
+                for record in records.values()
+            ]
+        self.assertEqual(values[0], values[1])
 
     def test_ex49_sssc_all_teams(self):
         tb = ScoresAndScheduleStrengthCombinationTieBreak(
@@ -1493,11 +1527,13 @@ class BoardTieBreakTestCase(TestCase):
         self.assertGreater(self._value(tb, 1), self._value(tb, 2))
         self.assertEqual(self._value(tb, 1), self._value(tb, 3))
 
-    def test_forfeited_match_counts_only_when_asked(self):
+    def test_forfeited_match_counts_its_boards_with_or_without_p(self):
+        # Art. 12: "individual forfeit wins or losses are considered as
+        # standard wins or losses", so the forfeited round's boards count
+        # as they went, and /P has nothing left to add.
         with_forfeit = _board_records(forfeit_round=2)
         tb = TopBoardResultsTieBreak()
-        # Round 2 no longer counts for team 1: board 1 drops to 1.0.
-        self.assertLess(self._value(tb, 1, with_forfeit), self._value(tb, 1))
+        self.assertEqual(self._value(tb, 1, with_forfeit), self._value(tb, 1))
         played = TopBoardResultsTieBreak([PlayedModifierTieBreakOption(True)])
         self.assertEqual(
             played.compute_team_value(
@@ -1930,6 +1966,193 @@ class DummyOpponentCapTestCase(TestCase):
         )
         self.assertEqual(value, own.total_mp)
 
+    def test_fore_counts_a_paired_final_match_as_a_draw(self):
+        # Fore Buchholz (Art. 8.3): own 7 GP, 3 of them from the final
+        # match, which counts as a 2 GP draw instead: the dummy takes 6.
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 1.0, 2.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 3, 1.0, 2.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, None, 0.0, 0.0, TeamMatchType.ZPB),
+                TeamMatchRecord(4, 4, 2.0, 3.0, TeamMatchType.PLAYED),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.GAME_POINTS,
+            rounds=4,
+            draw_value=2.0,
+            fore_after_round=4,
+        )
+        self.assertEqual(value, 6.0)
+
+    def test_fore_leaves_a_final_round_bye_alone(self):
+        # A bye in the final round is not a paired match: the dummy keeps
+        # the team's own total.
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, None, 0.0, 0.0, TeamMatchType.ZPB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.GAME_POINTS,
+            rounds=3,
+            draw_value=2.0,
+            fore_after_round=3,
+        )
+        self.assertEqual(value, 6.0)
+
+
+@pytest.mark.unit
+class TeamProgressiveScoresTestCase(TestCase):
+    """The sum of the team's score after each round (Art. 7.5): a round with
+    no match, a rest game, leaves the score where it was."""
+
+    def test_a_round_without_a_match_keeps_the_score(self):
+        record = TeamRecord(
+            team_id=1,
+            name='Team 1',
+            total_mp=6.0,
+            total_gp=9.0,
+            matches=[
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(4, 4, 2.0, 3.0, TeamMatchType.PLAYED),
+            ],
+        )
+        value = ProgressiveScoresTieBreak(
+            [TeamScoreTieBreakOption(TeamScoreTieBreakOption.VALUE_MP)]
+        ).compute_team_value(
+            record, {1: record}, _board_context(rounds=4), after_round=4
+        )
+        self.assertEqual(value, 2.0 + 4.0 + 4.0 + 6.0)
+
+
+@pytest.mark.unit
+class AdjustedOpponentScoreTestCase(TestCase):
+    """FIDE Art. 16.3: a requested bye followed only by voluntary unplayed
+    rounds, or in the last round, counts as a draw for the opponents'
+    tie-breaks; every other unplayed round counts what it gave."""
+
+    @staticmethod
+    def _record(matches: list[TeamMatchRecord]) -> TeamRecord:
+        return TeamRecord(
+            team_id=1,
+            name='Team 1',
+            total_mp=sum(m.own_mp for m in matches),
+            total_gp=sum(m.own_gp for m in matches),
+            matches=matches,
+        )
+
+    def _adjusted(
+        self, record: TeamRecord, score_type: ScoreType = ScoreType.MATCH_POINTS
+    ) -> float:
+        return adjust_opponent_total(
+            record,
+            score_type,
+            after_round=3,
+            draw_mp=1.0,
+            draw_gp=2.0,
+        )
+
+    def test_a_bye_followed_by_a_forfeit_loss_counts_as_a_draw(self):
+        record = self._record(
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, None, 0.0, 0.0, TeamMatchType.ZPB),
+                TeamMatchRecord(3, 3, 0.0, 0.0, TeamMatchType.FORFEIT_LOSS),
+            ]
+        )
+        self.assertEqual(self._adjusted(record), 3.0)
+
+    def test_a_bye_followed_by_a_forfeit_win_counts_what_it_gave(self):
+        # A forfeit win is not a voluntary unplayed round (Art. 16.1.2).
+        record = self._record(
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, None, 0.0, 0.0, TeamMatchType.ZPB),
+                TeamMatchRecord(3, 3, 2.0, 4.0, TeamMatchType.FORFEIT_WIN),
+            ]
+        )
+        self.assertEqual(self._adjusted(record), 4.0)
+
+    def test_a_half_point_bye_in_the_last_round_counts_as_a_draw(self):
+        # The bye gave 1 game point where a drawn match gives 2.
+        record = self._record(
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, None, 1.0, 1.0, TeamMatchType.HPB),
+            ]
+        )
+        self.assertEqual(self._adjusted(record, ScoreType.GAME_POINTS), 8.0)
+
+
+@pytest.mark.unit
+class MedianCutWithVoluntaryUnplayedRoundsTestCase(TestCase):
+    """Median 1 cuts the lowest contribution and the highest. Art. 16.5.1
+    has the low cut take a voluntary unplayed round first, and the high
+    cut then takes the highest of what remains, played or not.
+
+    Team 1 draws team 2 (2 MP) in round 1, then takes a zero-point bye
+    and two half-point byes: three dummies worth its own 3 MP. The low cut
+    takes one dummy and the high cut another, leaving 2 + 3. Team 2 draws
+    its final match, so Fore Buchholz reads the same values."""
+
+    @staticmethod
+    def _records() -> dict[int, TeamRecord]:
+        def record(team_id: int, matches: list[TeamMatchRecord]) -> TeamRecord:
+            return TeamRecord(
+                team_id=team_id,
+                name=f'Team {team_id}',
+                total_mp=sum(m.own_mp for m in matches),
+                total_gp=sum(m.own_gp for m in matches),
+                matches=matches,
+            )
+
+        return {
+            1: record(
+                1,
+                [
+                    TeamMatchRecord(1, 2, 1.0, 2.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, None, 0.0, 0.0, TeamMatchType.ZPB),
+                    TeamMatchRecord(3, None, 1.0, 2.0, TeamMatchType.HPB),
+                    TeamMatchRecord(4, None, 1.0, 2.0, TeamMatchType.HPB),
+                ],
+            ),
+            2: record(
+                2,
+                [
+                    TeamMatchRecord(1, 1, 1.0, 2.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(3, 3, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(4, 3, 1.0, 2.0, TeamMatchType.PLAYED),
+                ],
+            ),
+        }
+
+    def _value(self, tie_break_class) -> float:
+        records = self._records()
+        return tie_break_class(
+            [
+                TeamScoreTieBreakOption(TeamScoreTieBreakOption.VALUE_MP),
+                CutterWithMedianTieBreakOption(Median1TieBreakCutter.static_id()),
+            ]
+        ).compute_team_value(
+            records[1], records, _board_context(rounds=4), after_round=4
+        )
+
+    def test_buchholz(self):
+        self.assertEqual(self._value(StandardBuchholzTieBreak), 5.0)
+
+    def test_fore_buchholz(self):
+        self.assertEqual(self._value(ForeBuchholzTieBreak), 5.0)
+
 
 @pytest.mark.unit
 class BoardDifferentialTieBreakTestCase(TestCase):
@@ -2105,3 +2328,232 @@ class BoardDifferentialTieBreakTestCase(TestCase):
             [[first, second]], {1: first, 2: second}, self._context(), after_round=2
         )
         assert values[1] == values[2]
+
+
+def _team(team_id: int, matches: list[TeamMatchRecord]) -> TeamRecord:
+    return TeamRecord(
+        team_id=team_id,
+        name=f'Team {team_id}',
+        total_mp=sum(m.own_mp for m in matches),
+        total_gp=sum(m.own_gp for m in matches),
+        matches=matches,
+    )
+
+
+@pytest.mark.unit
+class UnplayedMatchBoardTotalsTestCase(TestCase):
+    """The Art. 12 tie-breaks read game points per board over "all games
+    played by the team", with "individual forfeit wins or losses ...
+    considered as standard wins or losses". A forfeited board counts as it
+    went, whether one player or the whole team was absent; a
+    pairing-allocated bye counts a win on every board; the other byes are
+    no games."""
+
+    RECORD = _team(
+        1,
+        [
+            TeamMatchRecord(1, None, 2.0, 3.0, TeamMatchType.PAB),
+            TeamMatchRecord(2, None, 1.0, 1.5, TeamMatchType.HPB),
+            TeamMatchRecord(3, 2, 2.0, 2.0, TeamMatchType.FORFEIT_WIN, (1.0, 0.0, 1.0)),
+            TeamMatchRecord(
+                4, 3, 1.0, 1.5, TeamMatchType.UNPLAYED_DRAW, (1.0, 0.5, 0.0)
+            ),
+            TeamMatchRecord(
+                5, 4, 0.0, 1.0, TeamMatchType.FORFEIT_LOSS, (0.0, 1.0, 0.0)
+            ),
+            TeamMatchRecord(6, None, 0.0, 0.0, TeamMatchType.ZPB),
+            TeamMatchRecord(7, 5, 2.0, 2.0, TeamMatchType.PLAYED, (1.0, 1.0, 0.0)),
+        ],
+    )
+
+    def test_forfeited_boards_count_as_they_went_and_byes_not_at_all(self):
+        totals = board_totals(self.RECORD, 3, after_round=7)
+        # PAB 1, 1, 1; the half-point and zero-point byes nothing; the
+        # three forfeited matches and the played one board by board.
+        self.assertEqual(totals, [4.0, 3.5, 2.0])
+
+
+@pytest.mark.unit
+class DirectEncounterTopDownTestCase(TestCase):
+    """Art. 6.3: when the tied teams have not all met, a team is ranked
+    only when it is alone at the top of the separate standings whatever
+    the missing matches would have given, and so on down; nothing is
+    ranked from the bottom."""
+
+    @staticmethod
+    def _values(records: dict[int, TeamRecord]) -> dict[int, float]:
+        return ExtendedDirectEncounterTieBreak().compute_all_team_values(
+            [list(records.values())], records, _board_context(rounds=2), after_round=2
+        )
+
+    def test_a_team_that_lost_to_both_is_not_ranked_last(self):
+        # Teams 1 and 2 both beat team 3 and never met: neither can be sure
+        # of the top, so all three stay tied, team 3 included.
+        records = {
+            1: _team(1, [TeamMatchRecord(1, 3, 2.0, 3.0, TeamMatchType.PLAYED)]),
+            2: _team(2, [TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED)]),
+            3: _team(
+                3,
+                [
+                    TeamMatchRecord(1, 1, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 2, 0.0, 1.0, TeamMatchType.PLAYED),
+                ],
+            ),
+        }
+        values = self._values(records)
+        self.assertEqual(values[1], values[2])
+        self.assertEqual(values[2], values[3])
+
+    def test_a_team_alone_at_the_top_is_ranked_first(self):
+        # Team 1 beat both others, who never met: team 1 is first, and the
+        # other two stay tied.
+        records = {
+            1: _team(
+                1,
+                [
+                    TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                ],
+            ),
+            2: _team(2, [TeamMatchRecord(1, 1, 0.0, 1.0, TeamMatchType.PLAYED)]),
+            3: _team(3, [TeamMatchRecord(2, 1, 0.0, 1.0, TeamMatchType.PLAYED)]),
+        }
+        values = self._values(records)
+        self.assertGreater(values[1], values[2])
+        self.assertEqual(values[2], values[3])
+
+
+@pytest.mark.unit
+class EDEKnockoutForfeitedEncounterTestCase(TestCase):
+    """Art. 13.3.2 applies the knock-out tie-breaks to the encounters the
+    direct encounter counted, and Art. 6.1.1 counts a forfeited match only
+    when forfeits count as played (/P, or pre-determined pairings). Teams 1
+    and 2 met once, in a match decided entirely by forfeits: without /P they
+    have not met, and EDET leaves them level; with /P the encounter counts."""
+
+    RECORDS: ClassVar[dict[int, TeamRecord]] = {
+        1: _team(
+            1,
+            [
+                TeamMatchRecord(
+                    1, 2, 2.0, 2.0, TeamMatchType.FORFEIT_WIN, (0.0, 1.0, 1.0)
+                ),
+                TeamMatchRecord(2, 3, 0.0, 1.0, TeamMatchType.PLAYED, (1.0, 0.0, 0.0)),
+            ],
+        ),
+        2: _team(
+            2,
+            [
+                TeamMatchRecord(
+                    1, 1, 0.0, 1.0, TeamMatchType.FORFEIT_LOSS, (1.0, 0.0, 0.0)
+                ),
+                TeamMatchRecord(2, 4, 2.0, 2.0, TeamMatchType.PLAYED, (0.0, 1.0, 1.0)),
+            ],
+        ),
+    }
+
+    def _values(self, played: bool) -> dict[int, float]:
+        options: list = [EDEKnockoutTieBreakOption(EDEKnockoutVariant.EDET.value)]
+        if played:
+            options.append(PlayedModifierTieBreakOption(True))
+        group = [self.RECORDS[1], self.RECORDS[2]]
+        return ExtendedDirectEncounterTieBreak(options).compute_all_team_values(
+            [group], self.RECORDS, _board_context(rounds=2), after_round=2
+        )
+
+    def test_a_forfeited_encounter_is_no_encounter_without_p(self):
+        values = self._values(played=False)
+        self.assertEqual(values[1], values[2])
+
+    def test_with_p_the_forfeited_encounter_counts(self):
+        values = self._values(played=True)
+        self.assertNotEqual(values[1], values[2])
+
+
+@pytest.mark.unit
+class ExtendedSonnebornBergerCutTestCase(TestCase):
+    """Cut 1 on EGGSB with /P. Round 1 is the least significant value
+    (opponent on 4 GP, contribution 4). Round 2 is a forfeit loss, which /P
+    counts as played, so it is no voluntary unplayed round (6.75). Round 3
+    is a half-point bye, the one voluntary unplayed round (9). Art. 16.5.1
+    cuts the bye, being worth more than the least significant value."""
+
+    def test_the_cut_takes_the_bye_not_the_forfeit(self):
+        records = {
+            1: _team(
+                1,
+                [
+                    TeamMatchRecord(1, 2, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 0.0, 1.5, TeamMatchType.FORFEIT_LOSS),
+                    TeamMatchRecord(3, None, 1.0, 2.0, TeamMatchType.HPB),
+                ],
+            ),
+            2: _team(
+                2,
+                [
+                    TeamMatchRecord(1, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 9, 1.0, 1.0, TeamMatchType.PLAYED),
+                ],
+            ),
+            3: _team(
+                3,
+                [
+                    TeamMatchRecord(1, 9, 1.0, 2.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 1, 2.0, 2.5, TeamMatchType.FORFEIT_WIN),
+                ],
+            ),
+        }
+        tie_break = ExtendedSonnebornBergerTeamTieBreak(
+            [
+                ESBVariantTieBreakOption(ESBVariant.EGGSB.value),
+                ESBCutterTieBreakOption(Cut1TieBreakCutter.static_id()),
+                PlayedModifierTieBreakOption(True),
+            ]
+        )
+        value = tie_break.compute_team_value(
+            records[1], records, _board_context(rounds=3), after_round=3
+        )
+        self.assertEqual(value, 4.0 + 6.75)
+
+
+@pytest.mark.unit
+class RankOrderDescriptorTestCase(TestCase):
+    """MTB26 writes the reference score of a team tie-break on the base
+    acronym itself, with the rest behind slashes: ``BH:GP/C1/P``. The
+    descriptor the program writes and the one it reads back have to be
+    that spelling, or the mandatory team codes name nothing."""
+
+    def test_the_reference_score_binds_to_the_base_acronym(self):
+        tie_break = StandardBuchholzTieBreak(
+            [
+                TeamScoreTieBreakOption(TeamScoreTieBreakOption.VALUE_GP),
+                CutterWithMedianTieBreakOption(Cut1TieBreakCutter.static_id()),
+                PlayedModifierTieBreakOption(True),
+            ]
+        )
+        self.assertEqual(tie_break.acronym, 'BH:GP/C1/P')
+
+    def test_match_points_are_left_implicit(self):
+        tie_break = StandardBuchholzTieBreak(
+            [TeamScoreTieBreakOption(TeamScoreTieBreakOption.VALUE_MP)]
+        )
+        self.assertEqual(tie_break.acronym, 'BH')
+
+    def test_the_extended_sb_variant_carries_the_played_modifier(self):
+        tie_break = ExtendedSonnebornBergerTeamTieBreak(
+            [
+                ESBVariantTieBreakOption(ESBVariant.EMMSB.value),
+                ESBCutterTieBreakOption(Cut1TieBreakCutter.static_id()),
+                PlayedModifierTieBreakOption(True),
+            ]
+        )
+        self.assertEqual(tie_break.acronym, 'EMMSB/C1/P')
+
+    def test_a_descriptor_splits_on_the_colon_and_the_slashes(self):
+        from data.tie_breaks.managers import _split_descriptor
+
+        self.assertEqual(_split_descriptor('BH:GP/C1/P'), ['BH', ':GP', 'C1', 'P'])
+        self.assertEqual(_split_descriptor('EMMSB/C1/P'), ['EMMSB', 'C1', 'P'])
+        self.assertEqual(_split_descriptor('AOB:MP/F'), ['AOB', ':MP', 'F'])
+        self.assertEqual(_split_descriptor('KS:GP/L+1'), ['KS', ':GP', 'L+1'])
+        self.assertEqual(_split_descriptor('PTS'), ['PTS'])

@@ -243,6 +243,56 @@ class TeamAbsentMatchPointsTestCase(_AbsentMatchPointsHarness):
         self.assertFalse(matches[opponent_id].voluntary_unplayed)
         self.assertEqual(matches[opponent_id].own_mp, 3.0)
 
+    def test_a_drawn_match_with_no_game_played_is_unplayed_for_both(self) -> None:
+        """Each team forfeits one board: the match is drawn, but no game was
+        played on it, so it is an unplayed round for both teams, and a
+        voluntary unplayed one, neither having won it. The draw stands."""
+        self._create(_CUP_MATCH_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        team_board = self._round_one_match(tournament, team_id)
+        for index, board in enumerate(team_board.boards):
+            white_team_id, _ = team_board.board_team_ids(board)
+            loser = team_id if index == 0 else opponent_id
+            tournament.add_result(
+                board,
+                Result.FORFEIT_LOSS if white_team_id == loser else Result.FORFEIT_WIN,
+            )
+        tournament = self._load()
+        matches = {
+            record.team_id: record.matches[0] for record in tournament.team_records()
+        }
+        for team in (team_id, opponent_id):
+            self.assertEqual(matches[team].match_type, TeamMatchType.UNPLAYED_DRAW)
+            self.assertTrue(matches[team].voluntary_unplayed)
+            self.assertEqual(matches[team].own_mp, 2.0)
+
+    def test_a_match_neither_team_scored_in_is_lost_by_both(self) -> None:
+        """Every board ends 0-0 over the board: a draw needs a point on each
+        side, so both teams lose the match, and it stays a played round."""
+        self._create(_CUP_MATCH_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        for board in self._round_one_match(tournament, team_id).boards:
+            tournament.add_result(board, Result.PENALTY_LL)
+        tournament = self._load()
+        for team in (team_id, opponent_id):
+            row = self._row(tournament, team)
+            self.assertEqual(row.mp, 1.0)
+            self.assertEqual(row.losses, 1)
+            self.assertEqual(row.draws, 0)
+        matches = {
+            record.team_id: record.matches[0] for record in tournament.team_records()
+        }
+        self.assertEqual(matches[team_id].match_type, TeamMatchType.PLAYED)
+        self._assert_tally_adds_up(tournament)
+
     def test_a_contested_match_stays_a_played_round(self) -> None:
         """One game over the board is enough: a team with three boards
         forfeited has not forfeited the match."""

@@ -42,6 +42,10 @@ class TeamStanding:
     forfeits: int = 0
     tie_break_values: list[TieBreakValue] = field(default_factory=list)
     rank: int = 0
+    # Everything the standings rank on, short of the tie_order of last
+    # resort: teams sharing it are level, and share a rank wherever a rank
+    # is reported rather than a position (C.07 Art. 4.2).
+    rank_key: tuple[float, ...] = ()
 
     def score(self, score_type: ScoreType) -> float:
         """The team's match or game points, whichever ``score_type`` is."""
@@ -93,7 +97,7 @@ class TeamScoring:
     # What a bye is worth
     # -------------------------------------------------------------------------
 
-    def _bye_score(self, bye_type: str | None) -> tuple[float, float] | None:
+    def bye_score(self, bye_type: str | None) -> tuple[float, float] | None:
         """The ``(match points, game points)`` a team takes for a bye of
         that type, or ``None`` for a rest game — the bye a round robin or a
         two-game-match system allocates, which is not played and scores
@@ -236,7 +240,7 @@ class TeamScoring:
                 continue
             if stb.team_b_id is None:
                 entry = standings.get(stb.team_a_id)
-                score = self._bye_score(stb.bye_type)
+                score = self.bye_score(stb.bye_type)
                 if entry is None or score is None:
                     continue
                 mp, gp = score
@@ -258,6 +262,8 @@ class TeamScoring:
                 a_outcome, b_outcome = 'wins', 'losses'
             elif a_gp_effective < b_gp_effective:
                 a_outcome, b_outcome = 'losses', 'wins'
+            elif team_board.lost_by_both((a_gp_effective, b_gp_effective)):
+                a_outcome = b_outcome = 'losses'
             else:
                 a_outcome = b_outcome = 'draws'
             # A side that forfeited the whole match is tallied as a
@@ -392,6 +398,7 @@ class TeamScoring:
         )
         for rank, row in enumerate(rows, 1):
             row.rank = rank
+            row.rank_key = base_key(row) + tuple(-v for v in values[row.team.id])
             row.tie_break_values = self._wrap_tie_break_values(
                 team_tie_breaks, values[row.team.id]
             )
@@ -550,7 +557,7 @@ class TeamScoring:
         """The record of a bye, or ``None`` for a rest game, which is not
         a match: no record, no points, invisible to the tie-breaks."""
         stb = team_board.stored_team_board
-        score = self._bye_score(stb.bye_type)
+        score = self.bye_score(stb.bye_type)
         if score is None:
             return None
         own_mp, own_gp = score
@@ -598,17 +605,19 @@ class TeamScoring:
         match_points_pair = team_board.match_points_pair()
         assert match_points_pair is not None
         a_mp, b_mp = match_points_pair
-        # A team is forfeit whether it fielded nobody or every one of
-        # its players lost by forfeit: either way no game was played
-        # on its side, and the round is not a played one for either
-        # team.
+        # A match is played when a game was played on any of its boards.
+        # Otherwise its result stands and it is a forfeit for the team that
+        # lost it, or for both teams when neither scored.
         a_type = b_type = TeamMatchType.PLAYED
-        if team_board.team_all_forfeit(a_id):
-            a_type, b_type = TeamMatchType.FORFEIT_LOSS, TeamMatchType.FORFEIT_WIN
-        if team_board.team_all_forfeit(b_id):
-            b_type = TeamMatchType.FORFEIT_LOSS
-            if a_type != TeamMatchType.FORFEIT_LOSS:
-                a_type = TeamMatchType.FORFEIT_WIN
+        if team_board.no_board_played():
+            if a_mp > b_mp:
+                a_type, b_type = TeamMatchType.FORFEIT_WIN, TeamMatchType.FORFEIT_LOSS
+            elif a_mp < b_mp:
+                a_type, b_type = TeamMatchType.FORFEIT_LOSS, TeamMatchType.FORFEIT_WIN
+            elif a_gp > 0 or b_gp > 0:
+                a_type = b_type = TeamMatchType.UNPLAYED_DRAW
+            else:
+                a_type = b_type = TeamMatchType.FORFEIT_LOSS
         return (
             TeamMatchRecord(
                 round_=team_board.round,
@@ -714,7 +723,7 @@ class TeamScoring:
             stb = team_board.stored_team_board
             a_entry = totals.setdefault(stb.team_a_id, [0.0, 0.0])
             if stb.team_b_id is None:
-                score = self._bye_score(stb.bye_type)
+                score = self.bye_score(stb.bye_type)
                 if score is not None:
                     a_entry[0] += score[0]
                     a_entry[1] += score[1]
