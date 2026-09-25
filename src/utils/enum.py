@@ -18,6 +18,7 @@ class Extension(StrEnum):
     CHAMPIONSHIP_DB = 'scch'
     LEGACY_EVENT_DB = 'db'
     ARCHIVE = 'sca'
+    SNAPSHOT = 'scs'
     BACKUP = 'backup'
     SOURCE_DB = 'db'
     TEMPLATE = 'template'
