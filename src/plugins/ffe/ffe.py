@@ -889,9 +889,9 @@ class FfePlugin(Plugin):
         """Site division name per value of the rule set's phase field,
         keyed by the form value, for the form to pre-select the division
         the phase implies."""
-        from plugins.ffe.ffe_rule_sets import _FfeTeamCupRuleSet
+        from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet
 
-        assert issubclass(rule_set_type, _FfeTeamCupRuleSet)
+        assert issubclass(rule_set_type, FfeTeamCompetitionRuleSet)
         hints: dict[str, str] = {}
         for config_field in rule_set_type({}).config_fields:
             if config_field.kind != 'select':
