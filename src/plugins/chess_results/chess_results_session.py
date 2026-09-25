@@ -65,10 +65,8 @@ def _forfeit_code(result: Result) -> str:
 
 
 def _date_of_birth(player: Player) -> str:
-    """Chess-Results ``dob``: ``yyyymmdd`` when the full date is known,
-    ``yyyy0000`` when only the year is, empty otherwise."""
-    if player.date_of_birth:
-        return player.date_of_birth.strftime('%Y%m%d')
+    """Chess-Results ``dob``: the year of birth as ``yyyy0000``, empty
+    when it is unknown."""
     if player.year_of_birth:
         return f'{player.year_of_birth}0000'
     return ''

@@ -184,8 +184,8 @@ class TournamentExporterTestCase(TestCase):
         assert changes_by_id[str(tournament_players[1].id)] == ''
 
     def test_chess_results_uploads_the_date_of_birth(self):
-        """``dob`` carries the full date as ``yyyymmdd`` when it is known,
-        ``yyyy0000`` when only the year is, and is empty otherwise."""
+        """``dob`` carries the year of birth alone as ``yyyy0000``, even
+        when the full date is known, and is empty when it is unknown."""
         with_date, with_year, without = list(
             self.tournament.tournament_players_by_pairing_number.values()
         )[:3]
@@ -207,7 +207,7 @@ class TournamentExporterTestCase(TestCase):
             player.attrib['id']: player.attrib['dob']
             for player in ET.fromstring(xml).findall('./players/player')
         }
-        assert dob_by_id[str(with_date.id)] == '20090307'
+        assert dob_by_id[str(with_date.id)] == '20090000'
         assert dob_by_id[str(with_year.id)] == '19940000'
         assert dob_by_id[str(without.id)] == ''
 
