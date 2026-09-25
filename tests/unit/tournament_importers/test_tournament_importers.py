@@ -375,6 +375,58 @@ class TournamentImporterTestCase(TestCase):
             tournament.team_primary_score_before_round(team.id, 2), earned - 3.0
         )
 
+    def test_trf_baku_export_states_its_accelerated_rounds(self):
+        """A Baku tournament is written with its 250 records as well as its
+        192 encoded type, so a reader that takes the acceleration from 250
+        records only pairs it the same; read back, it is Baku again, and
+        the 250 records are no feature left out."""
+        from data.pairings.random_tournaments import (
+            TournamentSettings,
+            generate_tournament_file,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            trf_path = Path(directory) / 'baku.trf'
+            generate_tournament_file(
+                TournamentSettings(players=20, rounds=4, acceleration=True),
+                trf_path,
+                seed=5,
+            )
+            lines = trf_path.read_text(encoding='utf-8').splitlines()
+            self.assertIn('192 FIDE_DUTCH_2026_BAKU', lines)
+            self.assertTrue(any(line.startswith('250 ') for line in lines))
+            importer = TrfTournamentImporter([FileOption(trf_path)])
+            tournament_id = importer.load_tournament(self.event)
+            features = importer.get_not_importable_features(self.event)
+        self.assertFalse(
+            any(feature.startswith('250') for feature in features), features
+        )
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self.event.tournaments_by_id[tournament_id]
+        self.assertIsInstance(tournament.pairing_variation, BakuSwissVariation)
+
+    def test_a_two_round_baku_tournament_is_paired(self):
+        """With two rounds, the only accelerated round gives the full point:
+        the 250 records name that round alone, and both rounds are paired."""
+        from data.pairings.random_tournaments import (
+            TournamentSettings,
+            generate_tournament_file,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            trf_path = Path(directory) / 'baku.trf'
+            generate_tournament_file(
+                TournamentSettings(players=8, rounds=2, acceleration=True),
+                trf_path,
+                seed=3,
+            )
+            records = [
+                line.split()[1:4]
+                for line in trf_path.read_text(encoding='utf-8').splitlines()
+                if line.startswith('250 ')
+            ]
+        self.assertEqual({tuple(record) for record in records}, {('1.0', '1', '1')})
+
     def test_trf_unsupported_type_is_rejected(self):
         """TRF files whose 192 tournament type is unknown or CUSTOM_* must
         be refused, not silently coerced to another pairing system."""

@@ -14,6 +14,7 @@ from litestar.plugins.htmx import ClientRedirect, HTMXRequest, HTMXTemplate
 from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 
+from common import DEVEL_ENV
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
 from common.i18n import _, ngettext, pgettext
 from common.logger import get_logger
@@ -2631,6 +2632,116 @@ class TournamentAdminController(BaseEventAdminController):
             re_target='#modal-wrapper',
             trigger_event='modal_opened',
             after='settle',
+        )
+
+    @get(
+        path='/random-tournament-modal/{event_uniq_id:str}',
+        name='admin-random-tournament-modal',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def htmx_admin_random_tournament_modal(
+        self, request: HTMXRequest
+    ) -> Template:
+        """The options of the random tournament generator, as a form.
+
+        The generator is reached from the command line (``--generate-tournament``),
+        which is what the endorsement check-list asks for; this is the same
+        generator behind a form, for filling an event while working on it.
+        """
+        if not DEVEL_ENV:
+            raise NotFoundException()
+        web_context = TournamentAdminWebContext(request)
+        return HTMXTemplate(
+            template_name='admin/tournaments/random_tournament_modal.html',
+            context=web_context.template_context
+            | {
+                'data': {'count': '1'},
+                'errors': {},
+            },
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    @post(
+        path='/random-tournament/{event_uniq_id:str}',
+        name='admin-random-tournament',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def htmx_admin_random_tournament(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> ClientRedirect:
+        from data.loader import EventLoader
+        from data.pairings.random_tournaments import (
+            Frequency,
+            RandomTournamentGenerator,
+            TournamentSettings,
+        )
+
+        if not DEVEL_ENV:
+            raise NotFoundException()
+        web_context = TournamentAdminWebContext(request)
+        event = web_context.get_admin_event()
+
+        def frequency(field_name: str) -> Frequency | None:
+            return Frequency.parse(WebContext.form_data_to_str(data, field_name))
+
+        def acronyms(field_name: str) -> list[str]:
+            stated = WebContext.form_data_to_str(data, field_name) or ''
+            return [acronym.strip() for acronym in stated.split(',') if acronym.strip()]
+
+        name = WebContext.form_data_to_str(data, 'name') or 'Generated tournament'
+        count = max(1, WebContext.form_data_to_int(data, 'count') or 1)
+        generator = RandomTournamentGenerator(WebContext.form_data_to_int(data, 'seed'))
+        seed = generator.seed
+        try:
+            ratings = [int(rating) for rating in acronyms('ratings')]
+            rating_step = WebContext.form_data_to_str(data, 'rating_step')
+            settings = TournamentSettings(
+                players=WebContext.form_data_to_int(data, 'players'),
+                rounds=WebContext.form_data_to_int(data, 'rounds'),
+                teams=WebContext.form_data_to_int(data, 'teams'),
+                players_per_team=WebContext.form_data_to_int(data, 'players_per_team'),
+                ratings=ratings or None,
+                top_rating=WebContext.form_data_to_int(data, 'top_rating'),
+                rating_step=float(rating_step) if rating_step else None,
+                full_point_byes=frequency('full_point_byes'),
+                half_point_byes=frequency('half_point_byes'),
+                zero_point_byes=frequency('zero_point_byes'),
+                forfeit_wins=frequency('forfeit_wins'),
+                forfeit_losses=frequency('forfeit_losses'),
+                unusual_results=frequency('unusual_results'),
+                acceleration=WebContext.form_data_to_bool(data, 'acceleration'),
+                tie_breaks=acronyms('tie_breaks') or ['PTS'],
+                name=name,
+                # The tournament is going to be looked at, so the players
+                # are named rather than numbered.
+                realistic_names=True,
+                pair_rounds=WebContext.form_data_to_bool(data, 'pair_rounds'),
+            )
+            for _number in range(count):
+                generator.generate(settings, event.uniq_id)
+        except (ValueError, SharlyChessException) as error:
+            Message.error(request, str(error))
+        else:
+            Message.success(
+                request,
+                ngettext(
+                    'Tournament generated from seed {seed}.',
+                    '{count} tournaments generated from seed {seed}.',
+                    count,
+                ).format(count=count, seed=seed),
+            )
+        EventLoader.unload_event(event.uniq_id)
+        return ClientRedirect(
+            redirect_to=request.app.route_reverse(
+                'admin-event-tournaments-tab', event_uniq_id=event.uniq_id
+            )
         )
 
     @get(

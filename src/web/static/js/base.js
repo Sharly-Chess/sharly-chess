@@ -271,6 +271,11 @@ window.addEventListener("show.bs.tooltip", function(event) {
     if ($(event.target).hasClass('sidebar-tooltip') && !$('body').hasClass('compact-sidebar')) {
         event.preventDefault();
     }
+    // A trigger that wraps a dropdown is still being hovered once the menu is
+    // open, so the tooltip would come back over the items the pointer moves to.
+    if (event.target.querySelector?.('.dropdown-menu.show')) {
+        event.preventDefault();
+    }
 });
 
 window.addEventListener("show.bs.dropdown", function(event) {

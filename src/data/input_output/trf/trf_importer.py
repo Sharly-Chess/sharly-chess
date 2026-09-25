@@ -370,7 +370,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         if not tie_breaks:
             tie_breaks = standard_tie_breaks
         if tie_breaks:
-            __, unknown = self._read_tie_breaks(tie_breaks, event)
+            __, unknown = self.read_tie_breaks(tie_breaks, event)
             if unknown:
                 features.append(
                     _('{code} Unknown tie-breaks: {tie_breaks}').format(
@@ -1192,9 +1192,12 @@ class TrfTournamentImporter(FileTournamentImporter):
                 database.replace_team_round_lineup(team_id, round_, lineup_entries)
 
     @classmethod
-    def _read_tie_breaks(
+    def read_tie_breaks(
         cls, tie_break_acronyms: list[str], event: Event
     ) -> tuple[list[TieBreak], list[str]]:
+        """The tie-breaks a 202 or 212 record names, and the acronyms among
+        them this program has no tie-break for. The checker reads the list
+        as well, to say what the standings were checked against."""
         tie_breaks: list[TieBreak] = []
         unknown_acronyms: list[str] = []
         manager = TieBreakManager(event)
@@ -1396,7 +1399,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             'PTS',
             *trf_tournament.tie_breaks,
         ]
-        tie_breaks = cls._read_tie_breaks(trf_tie_breaks, event)[0]
+        tie_breaks = cls.read_tie_breaks(trf_tie_breaks, event)[0]
         stored_tournament.stored_tie_breaks = [
             tie_break.to_stored_value() for tie_break in tie_breaks
         ]
