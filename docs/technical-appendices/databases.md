@@ -30,6 +30,14 @@
 | `outdate_delay`  | `TEXT`  | NOT NULL                 | The auto-update delay (`disabled`, `daily`, `2days`, `3days`, `weekly`, `month_1st`) |
 | `outdate_action` | `TEXT`  | NOT NULL                 | The action to take when the database needs to be updated (`notif`, `auto_update`)    |
 | `updated_at`     | `FLOAT` |                          | The last update date for the database                                                |
+| `is_active`      | `INTEGER` |                        | Whether the database is offered in the application:<br/>- `NULL`: never activated (a federation event or a plugin may still activate it);<br/>- `1`: active;<br/>- `0`: removed by the user |
+
+### `online_data_source` table (online player data sources)
+
+| Field       | Type      | Constraint               | Description                                                       |
+|-------------|-----------|--------------------------|-------------------------------------------------------------------|
+| `name`      | `TEXT`    | NOT NULL<br/>PRIMARY KEY | The data source name                                              |
+| `is_active` | `INTEGER` |                          | Whether the data source is offered, as `local_source_database.is_active` |
 
 ### `metadata` table (application metadata)
 
@@ -269,6 +277,8 @@
 | `women_title`   | `TEXT`    | NOT NULL<br/>DEFAULT ''                    | The player's chess women title                                   |
 | `ratings`       | `TEXT`    | NOT NULL                                   | The player's ratings in JSON format                              |
 | `fide_id`       | `INTEGER` |                                            | The player's _FIDE_ ID                                           |
+| `national_id`   | `TEXT`    |                                            | The player's identifier in their national federation (the _FFE_ licence number, the KNSB relation number…) |
+| `national_source` | `TEXT`  |                                            | The data source the national identifier comes from (`ffe`, `knsb`, `fsi`…); `NULL` for an identifier typed in, then taken as one of the event's federation |
 | `federation`    | `TEXT`    |                                            | The player's federation code                                     |
 | `club`          | `TEXT`    |                                            | The player's chess club                                          |
 | `fixed`         | `INTEGER` |                                            | The player's fixed table (if any)                                |
@@ -600,23 +610,29 @@
 | `pairing_number`  | `INTEGER` |                                                            | The player's pairing number in tournament                                         |
 | `manual_tiebreak` | `INTEGER` |                                                            | The rank the arbiter settled by hand, breaking a tie the tie-breaks left standing |
 
-## FIDE Local Database (`tmp/fide.db`)
+## FIDE Local Database (`data_sources/fide/fide-<version>.scdb`)
+
+Built by the application from the XML list of FIDE, see [national rating lists](national-rating-lists.md).
 
 ### `player` table (FIDE players)
 
 | Field                | Type      | Constraint                                 | Description                            |
 |----------------------|-----------|--------------------------------------------|----------------------------------------|
 | `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID               |
-| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                  |
+| `fide_id`            | `INTEGER` | NOT NULL<br/>UNIQUE                        | The player's _FIDE_ ID                 |
 | `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                 |
 | `first_name`         | `TEXT`    |                                            | The player's first name                |
 | `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code           |
-| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Woman, 2: Man) |
-| `title`              | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title              |
-| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating           |
-| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating              |
-| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating              |
-| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth             |
+| `gender`             | `TEXT`    | NOT NULL                                   | The player's gender (`M`, `F`)         |
+| `fide_title`         | `TEXT`    |                                            | The player's open _FIDE_ title         |
+| `fide_women_title`   | `TEXT`    |                                            | The player's women _FIDE_ title        |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating (0: none) |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating (0: none)    |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating (0: none)    |
+| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth (0: none)   |
+| `k_standard`         | `INTEGER` | NOT NULL                                   | The player's standard K factor         |
+| `k_rapid`            | `INTEGER` | NOT NULL                                   | The player's rapid K factor            |
+| `k_blitz`            | `INTEGER` | NOT NULL                                   | The player's blitz K factor            |
 | `fide_arbiter_title` | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title      |
 
 ## _FFE_ Local Database (`tmp/ffe/ffe.db`)
@@ -646,6 +662,33 @@
 | `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                        |
 | `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                        |
 | `ffe_arbiter_title`  | `TEXT`    | NOT NULL                                   | The player's _FFE_ arbiter title                 |
+
+## National Local Databases (`data_sources/<federation>/<federation>-<version>.scdb`)
+
+The rating lists of the federations converted by the application itself (see [national rating lists](national-rating-lists.md)) share one schema, whatever the list carries: the fields a list lacks are left `NULL`.
+
+### `player` table (national players)
+
+| Field                  | Type      | Constraint               | Description                                                            |
+|------------------------|-----------|--------------------------|------------------------------------------------------------------------|
+| `national_id`          | `TEXT`    | NOT NULL<br/>PRIMARY KEY | The player's identifier in the federation                              |
+| `last_name`            | `TEXT`    | NOT NULL                 | The player's last name                                                 |
+| `first_name`           | `TEXT`    | NOT NULL                 | The player's first name                                                |
+| `last_name_key`        | `TEXT`    | NOT NULL                 | The last name searched on: Latin letters, no accent, no case           |
+| `first_name_key`       | `TEXT`    | NOT NULL                 | The first name searched on, likewise                                   |
+| `year_of_birth`        | `INTEGER` |                          | The player's year of birth                                             |
+| `date_of_birth`        | `TEXT`    |                          | The player's date of birth in YYYY-MM-DD format                        |
+| `gender`               | `TEXT`    | NOT NULL                 | The player's gender (`M`, `F`, or empty when the list has none)        |
+| `title`                | `TEXT`    | NOT NULL                 | The player's _FIDE_ title                                              |
+| `federation`           | `TEXT`    | NOT NULL                 | The player's federation code                                           |
+| `club`                 | `TEXT`    |                          | The player's club (or what the list has closest: a region, a city)     |
+| `fide_id`              | `INTEGER` |                          | The player's _FIDE_ ID                                                 |
+| `standard_rating`      | `INTEGER` |                          | The player's national standard rating                                  |
+| `rapid_rating`         | `INTEGER` |                          | The player's national rapid rating                                     |
+| `blitz_rating`         | `INTEGER` |                          | The player's national blitz rating                                     |
+| `fide_standard_rating` | `INTEGER` |                          | The player's _FIDE_ standard rating, as the list gives it              |
+| `fide_rapid_rating`    | `INTEGER` |                          | The player's _FIDE_ rapid rating, as the list gives it                 |
+| `fide_blitz_rating`    | `INTEGER` |                          | The player's _FIDE_ blitz rating, as the list gives it                 |
 
 ## FRA Schools Local Database (`tmp/fra_schools/fra_schools.db`)
 

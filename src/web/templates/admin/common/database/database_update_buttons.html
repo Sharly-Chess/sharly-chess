@@ -1,11 +1,12 @@
+{% import '/common/macros.j2' as macros with context %}
+
 <div class="d-flex gap-2 justify-content-end">
-    {% if database.exists() and not database.is_updating %}
+    {% if (database.exists() or not database.is_forced_active) and not database.is_updating %}
         <button
             type="button"
             class="btn btn-outline-danger btn-sm d-inline-flex gap-2 align-items-center"
             hx-delete="{{ url_for('admin-database-delete', database_id=database.id) }}"
-            hx-target="closest div"
-            hx-swap="outerHTML"
+            hx-indicator="#please-wait"
         >
             <i class="bi-trash-fill"></i>
         </button>
@@ -23,28 +24,64 @@
                     animation: spin 1s infinite;
                     animation-timing-function: linear;"
             ></i>
-            {{ _('Updating') }}
+            {{ database.progress or _('Updating') }}
         </button>
     {% else %}
-        <button
-            type="button"
-            class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
-            hx-post="{{ url_for('admin-database-update', database_id=database.id) }}"
+        <form
+            id="database-{{ database.id }}-file-form"
+            hx-post="{{ url_for('admin-database-install-file', database_id=database.id) }}"
+            hx-encoding="multipart/form-data"
             hx-target="closest div"
             hx-swap="outerHTML"
+            hx-trigger="change from:#database-{{ database.id }}-file"
+            hx-indicator="#please-wait"
+            class="d-inline-flex"
         >
-            {% if database.exists() %}
-                <i class="bi bi-arrow-clockwise lh-1"></i>
-                {{ _('Update') }}
-            {% else %}
-                <i class="bi bi-download lh-1"></i>
-                {{ _('Install') }}
-            {% endif %}
-        </button>
+            <input
+                id="database-{{ database.id }}-file"
+                type="file"
+                name="file"
+                accept="{{ database.source_file_accept }}"
+                class="d-none"
+            >
+            <button
+                type="button"
+                class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
+                onclick="$('#database-{{ database.id }}-file').click()"
+                {{ macros.tooltip_attributes(
+                    '',
+                    database.source_file_help or _('Install the database from a source file you downloaded yourself.'),
+                    'left',
+                ) }}
+            >
+                <i class="bi bi-folder2-open lh-1"></i>
+                {% if database.is_manual %}
+                    {{ _('Install from a file…') }}
+                {% endif %}
+            </button>
+        </form>
+        {% if not database.is_manual %}
+            <button
+                type="button"
+                class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
+                hx-post="{{ url_for('admin-database-update', database_id=database.id) }}"
+                hx-target="closest div"
+                hx-swap="outerHTML"
+            >
+                {% if database.exists() %}
+                    <i class="bi bi-arrow-clockwise lh-1"></i>
+                    {{ _('Update') }}
+                {% else %}
+                    <i class="bi bi-download lh-1"></i>
+                    {{ _('Install') }}
+                {% endif %}
+            </button>
+        {% endif %}
     {% endif %}
     <script>
         {% with id=database.id %}
             $('#{{ id }}-updated-at').text({{ database.updated_at_str|tojson }});
+            $('#{{ id }}-content').text({{ database.content_description|tojson }});
         {% endwith %}
     </script>
 </div>

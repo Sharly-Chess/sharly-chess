@@ -362,6 +362,7 @@ class SCEPlayerSyncData:
             # empty field to avoid setting it in the THP
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=data['fide_id'],
+            national_id=data['national_id'] or None,
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
             club=data['club'] or '',
             rating=data['rating'],
@@ -396,6 +397,7 @@ class SCEPlayerSyncData:
             first_name=player.first_name,
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=player.fide_id,
+            national_id=player.national_id,
             title=player.strongest_title,
             club=player.club.name,
             federation=player.federation.name,
@@ -523,6 +525,9 @@ class SCEPlayerSyncData:
             stored_player.date_of_birth = None
             stored_player.year_of_birth = self.year_of_birth
         stored_player.fide_id = self.fide_id
+        if self.national_id != stored_player.national_id:
+            stored_player.national_id = self.national_id
+            stored_player.national_source = None
         stored_player.title = self.title.open_value
         stored_player.women_title = self.title.women_value
         stored_player.federation = self.federation or event.federation
@@ -564,7 +569,7 @@ class SCEPlayerSyncData:
             'year_of_birth': _('Year of birth'),
             'gender_str': _('Gender'),
             'fide_id': _('FIDE ID'),
-            'national_id': None,
+            'national_id': _('National ID'),
             'ffe_licence_str': None,
             'phone': _('Phone'),
             'comment': _('Comment'),

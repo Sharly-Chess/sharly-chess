@@ -201,6 +201,8 @@ class ServerEngine:
         sc_config = SharlyChessConfig()
         logger.info(f'Console logging level: {sc_config.console_log_level_str}')
 
+        if federation := sc_config.federation:
+            DataSourceManager().activate_for_federation(federation.name)
         for data_source in DataSourceManager().objects():
             data_source.on_app_init()
 

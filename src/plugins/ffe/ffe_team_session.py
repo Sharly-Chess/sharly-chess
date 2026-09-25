@@ -257,7 +257,7 @@ class FFETeamSession(FFESession):
 
     @staticmethod
     def licence_number(player: Player) -> str | None:
-        return FFEUtils.get_player_plugin_data(player).ffe_licence_number or None
+        return FFEUtils.licence_number(player) or None
 
     @classmethod
     def upload_unavailable_message(cls, tournament: Tournament) -> str | None:

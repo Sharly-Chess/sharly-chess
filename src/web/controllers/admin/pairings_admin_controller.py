@@ -2504,7 +2504,7 @@ class PairingsAdminController(BaseEventAdminController):
             web_context,
             {
                 'modal': 'pairing-ratings-warning',
-                'data_sources': DataSourceManager().objects(),
+                'data_sources': DataSourceManager().active_objects(),
             },
         )
 

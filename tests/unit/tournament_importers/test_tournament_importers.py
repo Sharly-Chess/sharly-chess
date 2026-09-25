@@ -108,7 +108,7 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(player.national_rating_value, 2200)
         ffe_data = FFEUtils.get_player_plugin_data(player)
         self.assertEqual(ffe_data.ffe_licence, PlayerFFELicence.A)
-        self.assertEqual(ffe_data.ffe_licence_number, 'D50113')
+        self.assertEqual(player.national_id, 'D50113')
         self.assertEqual(ffe_data.league, 'IDF')
 
         results_player = tournament.tournament_players_by_pairing_number[9]

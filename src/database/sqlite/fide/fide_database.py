@@ -1,8 +1,12 @@
 import re
+import zipfile
 from contextlib import suppress
 from datetime import date
+from enum import StrEnum
 from logging import Logger
 from pathlib import Path
+from xml.etree import ElementTree
+from xml.etree.ElementTree import Element
 from typing import Any, override
 from collections.abc import Iterator
 
@@ -15,7 +19,8 @@ from common.logger import get_logger
 from utils.types import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourcePlayerDatabase
+from database.sqlite.local_source_database import GitHubLocalSourcePlayerDatabase
+from database.sqlite.sqlite_database import SQLiteDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from utils.enum import (
@@ -25,9 +30,22 @@ from utils.enum import (
 logger: Logger = get_logger()
 
 
-class FideDatabase(LocalSourcePlayerDatabase):
+#: Where the FIDE database comes from, until one way is settled: converted
+#: by the application from the XML list FIDE publishes (`OFFICIAL_LIST`),
+#: or downloaded ready-made, built by the Sharly Chess GitHub workflow
+#: (`GITHUB_RELEASE`, which needs the decryption credentials).
+class FideSource(StrEnum):
+    OFFICIAL_LIST = 'official_list'
+    GITHUB_RELEASE = 'github_release'
+
+
+FIDE_SOURCE = FideSource.OFFICIAL_LIST
+
+
+class FideDatabase(GitHubLocalSourcePlayerDatabase):
     """
-    The SQLite database class for FIDE players. Usage:
+    The SQLite database class for FIDE players, see `FIDE_SOURCE` for
+    where it comes from. Usage:
     1. Check if the database exists and is up-to-date.
         If outdated, the outdate action is executed:
     FideDatabase().check()
@@ -36,6 +54,12 @@ class FideDatabase(LocalSourcePlayerDatabase):
         for player in fide_database.search_player('my name'):
             ...
     """
+
+    _URL = 'https://ratings.fide.com/download/players_list_xml_legacy.zip'
+    _INSERT_BATCH_SIZE = 10_000
+    _OPEN_TITLES = ('CM', 'FM', 'IM', 'GM')
+    _WOMEN_TITLES = ('WCM', 'WFM', 'WIM', 'WGM')
+    _ARBITER_TITLES = ('NA', 'FA', 'IA')
 
     @staticmethod
     def static_id() -> str:
@@ -51,7 +75,9 @@ class FideDatabase(LocalSourcePlayerDatabase):
 
     @property
     def _source_file_name(self) -> str:
-        return 'fide_players_v2.db'
+        if FIDE_SOURCE == FideSource.GITHUB_RELEASE:
+            return 'fide_players_v2.db'
+        return 'players_list_xml_legacy.zip'
 
     @classmethod
     def credentials_file(cls) -> Path:
@@ -62,7 +88,143 @@ class FideDatabase(LocalSourcePlayerDatabase):
         return 'fide-latest'
 
     def _download_source_file(self, source_file_dir: Path) -> bool:
-        return self._download_enc_source_file(source_file_dir)
+        if FIDE_SOURCE == FideSource.GITHUB_RELEASE:
+            return self._download_enc_source_file(source_file_dir)
+        return self._download_file(self._URL, source_file_dir / self._source_file_name)
+
+    @override
+    def _use_external_generator(self) -> bool:
+        return FIDE_SOURCE == FideSource.GITHUB_RELEASE
+
+    @property
+    def _schema(self) -> str:
+        return """
+            CREATE TABLE `player` (
+                `id` INTEGER NOT NULL,
+                `fide_id` INTEGER NOT NULL,
+                `last_name` TEXT NOT NULL,
+                `first_name` TEXT,
+                `federation` TEXT NOT NULL,
+                `gender` TEXT NOT NULL,
+                `fide_title` TEXT,
+                `fide_women_title` TEXT,
+                `standard_rating` INTEGER NOT NULL,
+                `rapid_rating` INTEGER NOT NULL,
+                `blitz_rating` INTEGER NOT NULL,
+                `year_of_birth` INTEGER NOT NULL,
+                `k_standard` INTEGER NOT NULL,
+                `k_rapid` INTEGER NOT NULL,
+                `k_blitz` INTEGER NOT NULL,
+                `fide_arbiter_title` TEXT NOT NULL,
+                PRIMARY KEY(`id` AUTOINCREMENT),
+                UNIQUE(`fide_id`)
+            );
+        """
+
+    @classmethod
+    @override
+    def _create_indexes(cls, database: SQLiteDatabase) -> None:
+        if FIDE_SOURCE == FideSource.GITHUB_RELEASE:
+            # The release carries its indices.
+            return
+        database.execute(
+            'CREATE INDEX `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
+        )
+        database.execute('CREATE INDEX `player_fide_id` ON `player` (`fide_id`)')
+
+    @classmethod
+    def _player_params(cls, player: Element) -> tuple | None:
+        """The row of a `<player>` element of the FIDE list, None for an
+        element without a FIDE id."""
+        text = player.findtext
+        fide_id = (text('fideid') or '').strip()
+        if not fide_id.isdigit():
+            return None
+        last_name, _sep, first_name = (text('name') or '').partition(',')
+        # The `<title>` field holds the player's highest title, which may be
+        # a women's title; the women's title has its own field.
+        title = (text('title') or '').strip().upper()
+        arbiter_title = next(
+            (
+                string
+                for string in (text('o_title') or '').split(',')
+                if string in cls._ARBITER_TITLES
+            ),
+            '',
+        )
+        return (
+            int(fide_id),
+            last_name.strip(),
+            first_name.strip() or None,
+            (text('country') or '').strip().upper(),
+            (text('sex') or '').strip().upper(),
+            title if title in cls._OPEN_TITLES else '',
+            (text('w_title') or '').strip().upper(),
+            int(text('rating') or 0),
+            int(text('rapid_rating') or 0),
+            int(text('blitz_rating') or 0),
+            int(text('birthday') or 0),
+            int(text('k') or 0),
+            int(text('rapid_k') or 0),
+            int(text('blitz_k') or 0),
+            arbiter_title,
+        )
+
+    @override
+    def _populate_from_source_file(
+        self, source_file_path: Path, database: SQLiteDatabase
+    ) -> bool:
+        """Reads the players straight out of the archive: the XML is too
+        big to be worth extracting."""
+        query = (
+            'INSERT OR REPLACE INTO `player` ('
+            '`fide_id`, `last_name`, `first_name`, `federation`, `gender`, '
+            '`fide_title`, `fide_women_title`, `standard_rating`, `rapid_rating`, '
+            '`blitz_rating`, `year_of_birth`, `k_standard`, `k_rapid`, `k_blitz`, '
+            '`fide_arbiter_title`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        )
+        count = 0
+        batch: list[tuple] = []
+        with zipfile.ZipFile(source_file_path) as archive:
+            xml_names = [name for name in archive.namelist() if name.endswith('.xml')]
+            if len(xml_names) != 1:
+                logger.error(
+                    self.log_prefix + 'Expected one XML file in the archive, got %s.',
+                    xml_names,
+                )
+                return False
+            with archive.open(xml_names[0]) as stream:
+                context = ElementTree.iterparse(stream, events=('start', 'end'))
+                _event, root = next(context)
+                for event, element in context:
+                    if event != 'end' or element.tag != 'player':
+                        continue
+                    if (params := self._player_params(element)) is not None:
+                        batch.append(params)
+                    # The parsed players would otherwise pile up under the root.
+                    root.clear()
+                    if len(batch) >= self._INSERT_BATCH_SIZE:
+                        if self.stop_event.is_set():
+                            return False
+                        database.executemany(query, batch)
+                        count += len(batch)
+                        batch = []
+                        self._report_players_stored(count)
+                        if count % (self._INSERT_BATCH_SIZE * 20) == 0:
+                            logger.info(self.log_prefix + '%d players stored…', count)
+        if batch:
+            database.executemany(query, batch)
+            count += len(batch)
+        logger.info(self.log_prefix + '%d players stored.', count)
+        return count > 0
+
+    @override
+    @property
+    def default_is_active(self) -> bool:
+        return True
 
     @override
     @property
