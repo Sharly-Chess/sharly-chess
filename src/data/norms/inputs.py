@@ -7,10 +7,11 @@ from dataclasses import dataclass, field, replace
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
-from utils.enum import PlayerTitle, Result, TitleNorm
+from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation
 
 if TYPE_CHECKING:
+    from data.pairing import Pairing
     from data.player import TournamentPlayer
 
 
@@ -41,6 +42,51 @@ REASON_DROPPED_BY_141F = 'ignored_via_1_4_1f'
 
 
 @dataclass(frozen=True)
+class NormOpponent:
+    """An opponent as the round they were played in knew them.
+
+    In a tournament of more than 30 days, B.01 1.1.4 has the opponents'
+    ratings and titles being those applying when the games were played,
+    so a norm reads each of them at the slice their game belongs to.
+    Everything a norm needs from the opponent besides those — federation,
+    identity, the rest of their schedule — is the same whatever the
+    round, and is read from the player."""
+
+    player: TournamentPlayer
+    rating: int
+    rating_type: PlayerRatingType
+    held_titles: frozenset[PlayerTitle]
+    display_title: str
+
+    @classmethod
+    def in_round(cls, player: TournamentPlayer, round_: int) -> NormOpponent:
+        rating_and_type = player.rating_and_type_in_round(round_)
+        return cls(
+            player=player,
+            rating=rating_and_type.value,
+            rating_type=rating_and_type.type,
+            held_titles=player.held_titles_in_round(round_),
+            display_title=player.display_title_in_round(round_),
+        )
+
+    @property
+    def id(self) -> int:
+        return self.player.id
+
+    @property
+    def full_name(self) -> str:
+        return self.player.full_name
+
+    @property
+    def federation(self) -> Federation:
+        return self.player.federation
+
+    @property
+    def pairings_by_round(self) -> dict[int, Pairing]:
+        return self.player.pairings_by_round
+
+
+@dataclass(frozen=True)
 class RoundAuditEntry:
     """A single row of the per-round audit trail.
 
@@ -51,7 +97,7 @@ class RoundAuditEntry:
     """
 
     round_: int
-    opponent: TournamentPlayer | None
+    opponent: NormOpponent | None
     raw_result: Result
     effective_result: Result | None
     decision: RoundDecision
@@ -84,7 +130,7 @@ class NormInputs:
     # separately only so the audit view can show it with a clarifying note.
     fid_count: int = 0
     titles_counter: Counter[PlayerTitle] = field(default_factory=Counter)
-    opponents: list[TournamentPlayer] = field(default_factory=list)
+    opponents: list[NormOpponent] = field(default_factory=list)
     results_list: list[Result] = field(default_factory=list)
     included_rounds: list[int] = field(default_factory=list)
     forfeits_or_byes: int = 0

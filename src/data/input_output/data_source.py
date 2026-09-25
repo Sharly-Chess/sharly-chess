@@ -1,4 +1,5 @@
 import asyncio
+import copy
 from abc import ABC, abstractmethod
 from dataclasses import replace
 from datetime import date, datetime
@@ -13,6 +14,7 @@ from common.logger import get_logger
 from common.network import NetworkMonitor
 import data.columns.player_datasheet as pds
 from data.columns.handlers import PlayerDatasheetColumnHandler
+from data.tournament_period import TournamentPeriod
 from data.columns.player_datasheet import DatasheetColumn
 from data.event import Event
 from data.input_output.player_updater_fields import (
@@ -30,7 +32,7 @@ from data.input_output.player_updater_fields import (
 )
 from data.player import Player
 from utils.types import PlayerRating
-from database.sqlite.event.event_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer, StoredPlayerPeriod
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.manager import plugin_manager
@@ -73,18 +75,50 @@ def keep_reliable_k_factors(stored_player: StoredPlayer) -> None:
 
 
 class PlayerComparator:
+    """What a data source would change about a player, and the change
+    itself once the arbiter accepts it.
+
+    In a tournament reported in slices, the ratings compared and updated
+    are those of the slice being played: refreshing them prepares that
+    slice, and what the earlier ones were reported with stays as it is.
+    ``player`` is therefore a view of the player in the current slice,
+    and ``target_player`` the player themselves."""
+
     def __init__(
         self,
         fields: list[PlayerUpdaterField],
         player: Player,
         match_stored_player: StoredPlayer | None = None,
     ):
-        self.player = player
+        self.target_player = player
+        self.period = self._recorded_period(player)
+        self.player = self._player_in_period(player, self.period)
         self.match_player: Player | None = None
         if match_stored_player:
             match_stored_player.id = 0
             self.match_player = Player(player.event, match_stored_player)
         self.diff_field_ids = self._get_diff_field_ids(fields)
+
+    @staticmethod
+    def _recorded_period(player: Player) -> TournamentPeriod | None:
+        """The slice a rating update is recorded against, or None when the
+        player's own ratings are what it changes."""
+        tournament = player.optional_single_tournament
+        if tournament is None:
+            return None
+        period = tournament.current_period
+        return period if period.first_round > 1 and period.id is not None else None
+
+    @staticmethod
+    def _player_in_period(player: Player, period: TournamentPeriod | None) -> Player:
+        if period is None:
+            return player
+        stored_player = copy.deepcopy(player.stored_player)
+        stored_player.ratings = {
+            tournament_rating.value: rating.stored_value
+            for tournament_rating, rating in player.ratings_for(period).items()
+        }
+        return Player(player.event, stored_player)
 
     def _get_diff_field_ids(self, fields: list[PlayerUpdaterField]) -> list[str]:
         if not self.match_player:
@@ -103,7 +137,26 @@ class PlayerComparator:
             field.update_player(
                 self.player.stored_player, self.match_player.stored_player
             )
-        return self.player
+        if self.period is None:
+            return self.player
+        # Everything but the ratings belongs to the player, whatever slice
+        # is being played; the ratings belong to the slice.
+        updated = self.player.stored_player
+        stored_player = self.target_player.stored_player
+        base_ratings = stored_player.ratings
+        periods = stored_player.periods
+        for attribute, value in vars(updated).items():
+            setattr(stored_player, attribute, value)
+        stored_player.ratings = base_ratings
+        stored_player.periods = periods
+        assert self.period.id is not None
+        stored_player.periods[self.period.id] = StoredPlayerPeriod(
+            ratings=updated.ratings,
+            title=updated.title,
+            women_title=updated.women_title,
+        )
+        self.target_player.replace_stored_player(stored_player)
+        return self.target_player
 
 
 class DataSource(IdentifiableEntity, ABC):

@@ -17,7 +17,7 @@ Public API:
 
 from data.norms.evaluator import TitleNormEvaluator
 from data.norms.forecaster import ForecastRequirement, TitleNormForecaster
-from data.norms.inputs import NormInputs
+from data.norms.inputs import NormInputs, NormOpponent
 from data.norms.searcher import TitleNormSubsetSearcher
 from data.norms.tournament_checks import (
     BigTournamentRoundCounts,
@@ -34,6 +34,7 @@ __all__ = [
     'ForecastRequirement',
     'HighLevelRoundCounts',
     'NormInputs',
+    'NormOpponent',
     'TitleNormEvaluator',
     'TitleNormForecaster',
     'TitleNormSubsetSearcher',

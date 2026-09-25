@@ -12,6 +12,7 @@ from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_store import StoredTournament, StoredEvent
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
@@ -39,6 +40,8 @@ class FfeBackgroundUploader:
     timeout_threads: ClassVar[dict[str, Timer]] = {}
     group_upload_wait_queue: ClassVar[set[str]] = set()
     ongoing_result_ids: ClassVar[set[str]] = set()
+    ongoing_period_result_ids: ClassVar[set[str]] = set()
+    pending_period_result_ids: ClassVar[set[str]] = set()
 
     @staticmethod
     def result_id(event_uniq_id: str, tournament_id: int) -> str:
@@ -47,6 +50,34 @@ class FfeBackgroundUploader:
     @classmethod
     def tournament_result_id(cls, tournament: Tournament) -> str:
         return cls.result_id(tournament.event.uniq_id, tournament.id)
+
+    @classmethod
+    def period_result_id(cls, period: TournamentPeriod) -> str:
+        return f'{cls.tournament_result_id(period.tournament)}:{period.id}'
+
+    @classmethod
+    def is_period_upload_ongoing(cls, period: TournamentPeriod) -> bool:
+        """Whether this slice is the one being sent right now."""
+        return cls.period_result_id(period) in cls.ongoing_period_result_ids
+
+    @classmethod
+    def is_period_upload_pending(cls, period: TournamentPeriod) -> bool:
+        """Whether this slice is the one an upload still to come will send.
+
+        A whole-tournament upload sends the slice being played once the
+        tournament itself is published, so that slice is waiting for its
+        turn from the moment the run starts — and from the moment one is
+        queued or scheduled."""
+        if cls.is_period_upload_ongoing(period):
+            return False
+        if cls.period_result_id(period) in cls.pending_period_result_ids:
+            return True
+        tournament = period.tournament
+        if period.id != tournament.current_period.id:
+            return False
+        if cls.is_upload_queued(tournament):
+            return True
+        return cls.is_upload_scheduled(tournament) and cls.ffe_upload_needed(tournament)
 
     @classmethod
     def is_upload_ongoing(cls, tournament: Tournament) -> bool:
@@ -109,8 +140,15 @@ class FfeBackgroundUploader:
         event_uniq_id: str,
         tournament_id: int,
         set_visible: bool = False,
+        period_id: int | None = None,
     ) -> None:
-        """Upload a tournament to FFE."""
+        """Upload a tournament to FFE.
+
+        *period_id* sends one slice of a tournament reported in slices,
+        under the registration that slice was declared with — which is
+        how a slice already submitted is sent again after a correction.
+        Without it the whole tournament goes to its own registration, and
+        the slice being played to its, as the FFE procedure has it."""
 
         # Set the locale (called in a new thread)
         set_locale(SharlyChessConfig().locale)
@@ -125,6 +163,9 @@ class FfeBackgroundUploader:
         time.sleep(0.5)
 
         tournament: Tournament | None = None
+        # Where the outcome is recorded: a slice answers for its own
+        # upload, the tournament for the whole-tournament one.
+        uploaded_period: TournamentPeriod | None = None
         failure_status: FailureFFEUploadStatus | None = None
         try:
             loader = EventLoader()
@@ -145,31 +186,111 @@ class FfeBackgroundUploader:
                 failure_status = NetworkFailureFFEUploadStatus()
                 return
 
+            if period_id is not None:
+                period = next(
+                    (
+                        candidate
+                        for candidate in tournament.periods
+                        if candidate.id == period_id
+                    ),
+                    None,
+                )
+                if period is None:
+                    return
+                logger.info(
+                    'Uploading period [%s] of tournament [%s] to the FFE website...',
+                    period.rounds_str,
+                    tournament.name,
+                )
+                uploaded_period = period
+                cls._start_period_upload(period)
+                failure_status = FFESession(tournament, period).upload(set_visible)
+                return
+            # A tournament reported in slices is published entire on the
+            # first tranche's registration — the upload below — and
+            # submitted for rating one tranche at a time, so the tranche
+            # being played goes to its own registration as well.
+            # A team competition is reported through the site's team module,
+            # match report by match report, and has no Papi to submit a
+            # tranche of.
+            team_transfer = FFEUtils.supports_team_transfer(tournament)
+            current_period = (
+                tournament.current_period
+                if not team_transfer and len(tournament.periods) > 1
+                else None
+            )
+            if current_period is not None and current_period.first_round > 1:
+                cls.pending_period_result_ids.add(cls.period_result_id(current_period))
+                cls.publish_upload_event(start=True)
+            else:
+                current_period = None
             logger.info(
                 'Uploading tournament [%s] to the FFE website...', tournament.name
             )
-            if FFEUtils.supports_team_transfer(tournament):
+            if team_transfer:
                 failure_status = FFETeamSession(tournament).upload_match_reports()
-            else:
-                failure_status = FFESession(tournament).upload(set_visible)
+                return
+            failure_status = FFESession(tournament).upload(set_visible)
+            if failure_status is None and current_period is not None:
+                logger.info(
+                    'Uploading period [%s] of tournament [%s] to the FFE website...',
+                    current_period.rounds_str,
+                    tournament.name,
+                )
+                cls._record_upload(tournament, None, None)
+                uploaded_period = current_period
+                cls._start_period_upload(current_period)
+                failure_status = FFESession(tournament, current_period).upload(
+                    set_visible
+                )
         except Exception as e:
             logger.exception('Error uploading tournament [%s]: [%s]', result_id, e)
             failure_status = UnexpectedFailureFFEUploadStatus()
         finally:
             cls.ongoing_result_ids.discard(result_id)
+            for period in tournament.periods if tournament else []:
+                cls.ongoing_period_result_ids.discard(cls.period_result_id(period))
+                cls.pending_period_result_ids.discard(cls.period_result_id(period))
             if tournament:
-                plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
-                now = datetime.now()
-                if failure_status:
-                    plugin_data.upload_failure_id = failure_status.id
-                    plugin_data.upload_failure_message = failure_status.message
-                else:
-                    plugin_data.upload_failure_id = None
-                    plugin_data.upload_failure_message = None
-                    plugin_data.last_upload_at = now
-                plugin_data.last_upload_attempt_at = now
-                FFEUtils.update_tournament_plugin_data(tournament, plugin_data)
+                cls._record_upload(tournament, uploaded_period, failure_status)
             cls.publish_upload_event()
+
+    @classmethod
+    def _start_period_upload(cls, period: TournamentPeriod) -> None:
+        """Hand the slice over from waiting to being sent, and say so:
+        the transfer screen is redrawn on the event, and a slice can be
+        sent well into a run that started with the tournament itself."""
+        cls.pending_period_result_ids.discard(cls.period_result_id(period))
+        cls.ongoing_period_result_ids.add(cls.period_result_id(period))
+        cls.publish_upload_event(start=True)
+
+    @staticmethod
+    def _record_upload(
+        tournament: Tournament,
+        period: TournamentPeriod | None,
+        failure_status: FailureFFEUploadStatus | None,
+    ) -> None:
+        """Record how an upload went, against what was uploaded: a slice
+        answers for its own submission, the tournament for the file
+        published entire."""
+        plugin_data = (
+            FFEUtils.get_period_own_plugin_data(period)
+            if period is not None
+            else FFEUtils.get_tournament_plugin_data(tournament)
+        )
+        now = datetime.now()
+        if failure_status:
+            plugin_data.upload_failure_id = failure_status.id
+            plugin_data.upload_failure_message = failure_status.message
+        else:
+            plugin_data.upload_failure_id = None
+            plugin_data.upload_failure_message = None
+            plugin_data.last_upload_at = now
+        plugin_data.last_upload_attempt_at = now
+        if period is not None:
+            period.set_plugin_data(PLUGIN_NAME, plugin_data)
+        else:
+            FFEUtils.update_tournament_plugin_data(tournament, plugin_data)
 
     @classmethod
     def upload_event_tournaments(cls, tournaments: list[Tournament]) -> None:

@@ -11,6 +11,7 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -176,6 +177,32 @@ class FFEUtils:
         return plugin_data
 
     @staticmethod
+    def get_period_own_plugin_data(
+        period: 'TournamentPeriod',
+    ) -> 'FfeTournamentPluginData':
+        """What the period itself holds — its own registration and the
+        outcome of its own uploads, with nothing borrowed from the
+        tournament."""
+        plugin_data = period.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfeTournamentPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_period_plugin_data(period: 'TournamentPeriod') -> 'FfeTournamentPluginData':
+        """What a rating period is submitted under.
+
+        Each tranche has its own homologation number; the first tranche
+        is submitted under the tournament's own, which is also where the
+        whole tournament is published for the players. A later tranche
+        with no registration of its own falls back to it too, so that a
+        tournament nobody has cut up yet still uploads."""
+        if period.first_round > 1:
+            plugin_data = FFEUtils.get_period_own_plugin_data(period)
+            if plugin_data.ffe_id:
+                return plugin_data
+        return FFEUtils.get_tournament_plugin_data(period.tournament)
+
+    @staticmethod
     def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
@@ -306,6 +333,40 @@ class FFEUtils:
         elif FfeBackgroundUploader.is_upload_queued(tournament) or (
             FfeBackgroundUploader.is_upload_scheduled(tournament) and is_modified
         ):
+            statuses.append(PendingFFEUploadStatus())
+        return statuses
+
+    @classmethod
+    def resolve_period_upload_statuses(
+        cls, period: 'TournamentPeriod'
+    ) -> list[FFEUploadStatus]:
+        """How the submission of one slice stands.
+
+        A slice is submitted under its own registration, so it answers
+        for its own upload: whether it has been sent, and how it went.
+        What is true of the tournament as a whole — whether its data has
+        moved since — belongs to the tournament's own row."""
+        from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+
+        # What the slice itself holds: borrowing the tournament's would
+        # report its upload as this slice's.
+        plugin_data = cls.get_period_own_plugin_data(period)
+        if not plugin_data.ffe_id or not plugin_data.password:
+            return [NotConfiguredFFEUploadStatus()]
+        statuses: list[FFEUploadStatus] = []
+        if plugin_data.upload_failure_id:
+            statuses.append(
+                FFEUploadFailureStatusManager().get_object(
+                    plugin_data.upload_failure_id
+                )
+            )
+        if not plugin_data.last_upload_at:
+            statuses.append(NeverUploadedFFEUploadStatus())
+        else:
+            statuses.append(UpToDateFFEUploadStatus())
+        if FfeBackgroundUploader.is_period_upload_ongoing(period):
+            statuses.append(OngoingFFEUploadStatus())
+        elif FfeBackgroundUploader.is_period_upload_pending(period):
             statuses.append(PendingFFEUploadStatus())
         return statuses
 

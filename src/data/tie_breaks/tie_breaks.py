@@ -2124,7 +2124,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            ratings.append(opponent.rating)
+            ratings.append(opponent.tie_break_rating(pairing.round))
         ratings = sorted(ratings)
         ratings = ratings[bottom_cut:-top_cut] if top_cut else ratings[bottom_cut:]
         if not ratings:
@@ -2174,7 +2174,7 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            ratings.append(opponent.rating)
+            ratings.append(opponent.tie_break_rating(pairing.round))
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
@@ -2293,12 +2293,16 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             tournament.point_values
         ):
             return -800 + min(
-                tournament.players_by_id[pairing.opponent_id].rating
+                tournament.players_by_id[pairing.opponent_id].tie_break_rating(
+                    pairing.round
+                )
                 for pairing in played_rounds
                 if pairing.opponent_id is not None
             )
         ratings: list[int] = [
-            tournament.players_by_id[pairing.opponent_id].rating
+            tournament.players_by_id[pairing.opponent_id].tie_break_rating(
+                pairing.round
+            )
             for pairing in played_rounds
             if pairing.opponent_id is not None
         ]

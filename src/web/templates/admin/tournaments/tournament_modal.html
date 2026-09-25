@@ -111,6 +111,7 @@
                             on_date_picker_hide=reload_schedule_script,
                             data=data, errors=errors
                         ) }}
+                        {% include '/admin/tournaments/tournament_multi_period_field.html' %}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(

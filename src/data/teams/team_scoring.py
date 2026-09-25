@@ -6,7 +6,7 @@ they are worked out side by side, from one reading of what a bye and a
 match are worth.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Literal
 
@@ -709,8 +709,30 @@ class TeamScoring:
         ``after_round``, bonus / penalty points included. Returned dict
         is keyed by ``team.id``; teams with no team_board entries simply
         get ``(0.0, 0.0)``."""
+        adjustments = self.tournament.point_adjustments
+        return self._totals(
+            self._team_boards_through(after_round),
+            range(1, adjustments.bound(after_round) + 1),
+        )
+
+    def totals_in(self, rounds: range) -> dict[int, tuple[float, float]]:
+        """Per-team ``(match_points, game_points)`` over *rounds* alone —
+        the standings of a report that covers a slice of the tournament,
+        which are the standings of that report and no other."""
+        return self._totals(
+            [
+                team_board
+                for team_board in self.tournament.team_boards_by_id.values()
+                if team_board.round in rounds
+            ],
+            rounds,
+        )
+
+    def _totals(
+        self, team_boards: Iterable[TeamBoard], adjustment_rounds: range
+    ) -> dict[int, tuple[float, float]]:
         totals: dict[int, list[float]] = {}
-        for team_board in self._team_boards_through(after_round):
+        for team_board in team_boards:
             stb = team_board.stored_team_board
             a_entry = totals.setdefault(stb.team_a_id, [0.0, 0.0])
             if stb.team_b_id is None:
@@ -736,7 +758,7 @@ class TeamScoring:
         # written on the same line, which does include them.
         adjustments = self.tournament.point_adjustments
         for team in self.tournament.teams:
-            for round_ in range(1, adjustments.bound(after_round) + 1):
+            for round_ in adjustment_rounds:
                 mp_adj, gp_adj = adjustments.effective(team.id, round_)
                 if not mp_adj and not gp_adj:
                     continue

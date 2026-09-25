@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
 from data.norms.inputs import (
+    NormOpponent,
     NormInputs,
     REASON_BOARD_BYE,
     REASON_FORFEIT_WIN_EXCLUDED,
@@ -194,7 +195,11 @@ class TitleNormEvaluator:
                 inputs.round_audit.append(
                     RoundAuditEntry(
                         round_=rnd,
-                        opponent=pairing.opponent,
+                        opponent=(
+                            NormOpponent.in_round(pairing.opponent, rnd)
+                            if pairing.opponent
+                            else None
+                        ),
                         raw_result=pairing.result,
                         effective_result=None,
                         decision=RoundDecision.NO_OPPONENT,
@@ -206,8 +211,11 @@ class TitleNormEvaluator:
                 continue
 
             inputs.played_games += 1
-            opponent = pairing.opponent
-            assert opponent is not None  # narrowed by include_as_played
+            assert pairing.opponent is not None  # narrowed by include_as_played
+            # Read at the slice the game belongs to: in a tournament of more
+            # than 30 days the opponent's rating and titles are those of the
+            # day they were played (B.01 1.1.4).
+            opponent = NormOpponent.in_round(pairing.opponent, rnd)
 
             # 1.4.2b — Round-Robin only: ignore unrated opponents who lost every
             # game they actually played against a FIDE-rated opponent.
@@ -396,7 +404,7 @@ class TitleNormEvaluator:
 
     def opponent_rating_floor_and_average(
         self, inputs: NormInputs, tn: TitleNorm
-    ) -> tuple[float, TournamentPlayer | None, int | None]:
+    ) -> tuple[float, NormOpponent | None, int | None]:
         """1.4.6 + 1.4.7 — apply rating floor to (at most) the single lowest
         opponent, then return the rounded average. Also returns the adjusted
         opponent and the floor value so the form can show the adjustment.
@@ -413,7 +421,7 @@ class TitleNormEvaluator:
             for o in sorted_opponents
         ]
 
-        adjusted_player: TournamentPlayer | None = None
+        adjusted_player: NormOpponent | None = None
         adjusted_rating: int | None = None
         if rating_list and rating_list[0].value < tn.minimum_rating:
             rating_list[0].value = tn.minimum_rating

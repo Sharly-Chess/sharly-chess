@@ -680,6 +680,26 @@
                                     >
                                         {{ exporter.name }}
                                     </li>
+                                    {# A tournament reported in slices is submitted
+                                       one slice at a time, each its own file. #}
+                                    {% if exporter.exports_periods and tournament.periods|length > 1 %}
+                                        {% for period in tournament.periods %}
+                                            <li
+                                                class="dropdown-item text-start cursor-pointer small"
+                                                data-export-url="{{ url_for(
+                                                    'admin-tournament-export',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=tournament.id,
+                                                    exporter_id=exporter.id,
+                                                ) }}?period_id={{ period.id }}"
+                                                onclick="downloadFile(this)"
+                                            >
+                                                <i class="bi-arrow-return-right pe-1"></i>
+                                                {{ _('Period %(index)d', index=loop.index) }}
+                                                · {{ period.rounds_str }}
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </ul>

@@ -30,6 +30,11 @@ from data.prohibited_pairings import ProhibitedPairings
 from data.screens.screen import Screen
 from data.teams.team_board import TeamBoard
 from data.teams.team_pairing_block import TeamPairingBlock
+from data.tournament_period import (
+    TIE_BREAK_RATING_BY_ROUND,
+    TournamentPeriod,
+    dates_exceed_period,
+)
 from data.tie_breaks.configuration import TieBreakConfiguration
 from data.tie_breaks import (
     TieBreak,
@@ -38,6 +43,7 @@ from data.tie_breaks import (
 from data.criteria.tournament_criteria import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
+    StoredTournamentPeriod,
     StoredTournamentPlayer,
     StoredPairing,
 )
@@ -218,6 +224,111 @@ class Tournament:
         """True if at least one round has a scheduled datetime."""
         return any(v is not None for v in self.round_datetimes.values())
 
+    # Rating periods
+
+    @property
+    def multi_period(self) -> bool:
+        """Whether the tournament lasts more than 30 days and is therefore
+        reported to FIDE one slice at a time (VCL Q210)."""
+        return bool(self.stored_tournament.multi_period)
+
+    @cached_property
+    def periods(self) -> list[TournamentPeriod]:
+        """The tournament's rating periods, in order. A tournament that is
+        not multi-period has the single period covering all its rounds, so
+        callers never branch on the number of periods."""
+        first_rounds: list[int] = [1]
+        if self.multi_period:
+            first_rounds = sorted(
+                {1}
+                | {
+                    stored_period.first_round
+                    for stored_period in self.stored_tournament.stored_tournament_periods
+                    if 1 < stored_period.first_round <= self.rounds
+                }
+            )
+        stored_periods_by_first_round = {
+            stored_period.first_round: stored_period
+            for stored_period in self.stored_tournament.stored_tournament_periods
+        }
+        periods: list[TournamentPeriod] = []
+        for index, first_round in enumerate(first_rounds):
+            last_round = (
+                first_rounds[index + 1] - 1
+                if index + 1 < len(first_rounds)
+                else self.rounds
+            )
+            periods.append(
+                TournamentPeriod(
+                    self,
+                    stored_periods_by_first_round.get(
+                        first_round, StoredTournamentPeriod(None, self.id, first_round)
+                    ),
+                    index,
+                    last_round,
+                )
+            )
+        return periods
+
+    @cached_property
+    def period_by_round(self) -> dict[int, TournamentPeriod]:
+        return {
+            round_nb: period for period in self.periods for round_nb in period.rounds
+        }
+
+    @property
+    def tie_break_rating(self) -> str:
+        """Which of a player's ratings a rating-based tie-break reads:
+        their first (C.07:10's default), the one of each game's own slice,
+        or the one of a slice the arbiter names.
+
+        Stored as '' for the first rating, 'round' for each game's slice,
+        or the id of a period."""
+        return self.stored_tournament.tie_break_rating or ''
+
+    def set_tie_break_rating(self, tie_break_rating: str) -> None:
+        self.stored_tournament.tie_break_rating = tie_break_rating
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
+
+    def tie_break_period(self, round_: int) -> TournamentPeriod | None:
+        """The slice whose ratings a tie-break reads for a game of this
+        round.
+
+        None when the tournament is rated in one go and the question does
+        not arise; otherwise the first slice unless the arbiter said
+        otherwise, which is the first rating C.07:10 takes by default."""
+        if len(self.periods) < 2:
+            return None
+        setting = self.tie_break_rating
+        if not setting:
+            return self.periods[0]
+        if setting == TIE_BREAK_RATING_BY_ROUND:
+            return self.period_by_round.get(round_)
+        return next(
+            (period for period in self.periods if str(period.id) == setting),
+            self.periods[0],
+        )
+
+    def round_starts_period(self, round_: int) -> bool:
+        """Whether a round opens a slice of a tournament reported in
+        slices — the moment its ratings are refreshed, and the only one
+        at which the arbiter has to be reminded of it."""
+        return len(self.periods) > 1 and any(
+            period.first_round == round_ for period in self.periods
+        )
+
+    @property
+    def current_period(self) -> TournamentPeriod:
+        """The period today falls in — the last one once the tournament is
+        over, the first while it has not started."""
+        today = date.today()
+        for period in self.periods:
+            stop_date = period.stop_date
+            if stop_date is None or today <= stop_date:
+                return period
+        return self.periods[-1]
+
     @property
     def schedule_first_datetime(self) -> datetime | None:
         """Return the earliest scheduled round datetime, or None if no schedule."""
@@ -259,8 +370,9 @@ class Tournament:
 
     @property
     def multiple_fide_periods(self) -> bool:
-        """Returns True if the tournament lasts more than one month, False otherwise."""
-        return (self.stop_date - self.start_date).days > 30
+        """Whether the tournament runs longer than FIDE rates as a single
+        tournament, and is therefore reported in slices."""
+        return dates_exceed_period(self.start_date, self.stop_date)
 
     @property
     def location(self) -> str | None:
@@ -683,6 +795,9 @@ class Tournament:
 
     def team_totals_after(self, after_round: int) -> dict[int, tuple[float, float]]:
         return self.team_scoring.totals_after(after_round)
+
+    def team_totals_in(self, rounds: range) -> dict[int, tuple[float, float]]:
+        return self.team_scoring.totals_in(rounds)
 
     @cached_property
     def teams_by_id(self) -> dict[int, 'Team']:
@@ -2194,13 +2309,17 @@ class Tournament:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
+        period: TournamentPeriod | None = None,
     ) -> 'TrfTournament':
+        """The tournament's TRF, or — given a *period* — the file for
+        that slice of it alone (see ``trf_window``)."""
         from data.input_output.trf.trf_export import TrfExport
 
         return TrfExport(self).build(
             after_round=after_round,
             next_round_pairings_as_zpb=next_round_pairings_as_zpb,
             prohibited_pairing_override=prohibited_pairing_override,
+            period=period,
         )
 
     @property

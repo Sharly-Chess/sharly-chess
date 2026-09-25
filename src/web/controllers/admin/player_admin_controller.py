@@ -59,6 +59,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
+    StoredPlayerPeriod,
     StoredTeam,
     StoredTournamentPlayer,
 )
@@ -687,6 +688,28 @@ class PlayerAdminController(BaseEventAdminController):
         }
 
     @staticmethod
+    def _player_period_ratings_context(admin_player: Player | None) -> dict[str, Any]:
+        """What the player's earlier slices were played on.
+
+        The fields of the form hold the slice being played; a tournament
+        reported in slices keeps the ratings of the ones before it, which
+        the reports already made of them were built from."""
+        if admin_player is None:
+            return {}
+        tournament = admin_player.optional_single_tournament
+        if tournament is None or len(tournament.periods) < 2:
+            return {}
+        current_period = tournament.current_period
+        return {
+            'current_period': current_period,
+            'earlier_period_ratings': [
+                (period, admin_player.ratings_for(period))
+                for period in tournament.periods
+                if period.first_round < current_period.first_round
+            ],
+        }
+
+    @staticmethod
     def _get_k_factor_placeholders(
         data: dict[str, str],
     ) -> dict[TournamentRating, int]:
@@ -786,10 +809,10 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     if stored_player.year_of_birth:
                         date_of_birth = str(stored_player.year_of_birth)
-                    for tr_value, rating in stored_player.ratings.items():
-                        ratings[TournamentRating(tr_value)] = (
-                            PlayerRating.from_stored_value(rating)
-                        )
+                    # The fields hold the slice being played, which is
+                    # what an edit records (see
+                    # ``_ratings_for_current_period``).
+                    ratings |= cls._current_period_ratings(admin_player, stored_player)
                     title = stored_player.title
                     women_title = stored_player.women_title
                     federation = stored_player.federation
@@ -931,6 +954,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         search_filter_manager = SearchFilterManager(web_context.get_admin_event())
         k_factor_placeholders = cls._get_k_factor_placeholders(data)
+        template_context |= cls._player_period_ratings_context(admin_player)
         template_context |= {
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
@@ -1330,6 +1354,50 @@ class PlayerAdminController(BaseEventAdminController):
         )
         return errors
 
+    @staticmethod
+    def _current_period_ratings(
+        admin_player: Player | None, stored_player: StoredPlayer
+    ) -> dict[TournamentRating, PlayerRating]:
+        """The ratings the rating fields show: those of the slice being
+        played, which are the player's own unless a later slice recorded
+        ratings of its own."""
+        tournament = admin_player.optional_single_tournament if admin_player else None
+        if admin_player is not None and tournament is not None:
+            return admin_player.ratings_for(tournament.current_period)
+        return {
+            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
+            for tr_value, rating in stored_player.ratings.items()
+        }
+
+    @staticmethod
+    def _ratings_for_current_period(
+        player: Player | None,
+        form_ratings: dict[int, dict[str, int | None]],
+        title: str,
+        women_title: str,
+    ) -> tuple[dict[int, dict[str, int | None]], dict[int, StoredPlayerPeriod]]:
+        """Where the ratings the form carries belong.
+
+        The form shows the slice being played, so in a tournament
+        reported in slices the ratings it comes back with are that
+        slice's, and the player's own — what the first slice was played
+        on — stay as they were. The slices already recorded are carried
+        through whatever happens: a player edited for their phone number
+        must not lose what their earlier slices were reported with."""
+        if player is None:
+            return form_ratings, {}
+        periods = dict(player.stored_player.periods)
+        tournament = player.optional_single_tournament
+        if tournament is None:
+            return form_ratings, periods
+        current_period = tournament.current_period
+        if current_period.first_round == 1 or current_period.id is None:
+            return form_ratings, periods
+        periods[current_period.id] = StoredPlayerPeriod(
+            ratings=form_ratings, title=title, women_title=women_title
+        )
+        return dict(player.stored_player.ratings), periods
+
     @classmethod
     def _stored_player_from_data(
         cls,
@@ -1357,6 +1425,30 @@ class PlayerAdminController(BaseEventAdminController):
                 data, previous_object=previous_object
             ).to_stored_value()
 
+        form_ratings = {
+            tr.value: PlayerRating(
+                estimated=WebContext.form_data_to_int(
+                    data, f'{tr.form_key}_rating_estimated'
+                )
+                or None,
+                national=WebContext.form_data_to_int(
+                    data, f'{tr.form_key}_rating_national'
+                )
+                or None,
+                fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
+                or None,
+                k_factor=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_k'),
+            ).stored_value
+            for tr in TournamentRating
+        }
+        title = WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value
+        women_title = (
+            WebContext.form_data_to_str(data, 'women_title') or PlayerTitle.NONE.value
+        )
+        ratings, periods = cls._ratings_for_current_period(
+            player, form_ratings, title, women_title
+        )
+
         return StoredPlayer(
             id=None,
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
@@ -1370,27 +1462,10 @@ class PlayerAdminController(BaseEventAdminController):
             comment=data.get('comment'),
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
-            title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
-            women_title=WebContext.form_data_to_str(data, 'women_title')
-            or PlayerTitle.NONE.value,
-            ratings={
-                tr.value: PlayerRating(
-                    estimated=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_estimated'
-                    )
-                    or None,
-                    national=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_national'
-                    )
-                    or None,
-                    fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
-                    or None,
-                    k_factor=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_k'
-                    ),
-                ).stored_value
-                for tr in TournamentRating
-            },
+            title=title,
+            women_title=women_title,
+            ratings=ratings,
+            periods=periods,
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=(WebContext.form_data_to_str(data, 'club') or '').strip(),

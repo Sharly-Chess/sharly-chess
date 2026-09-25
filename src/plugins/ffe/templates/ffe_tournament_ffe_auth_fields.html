@@ -1,5 +1,9 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
+{# ``field_suffix`` names the slice these credentials belong to: a
+   tournament reported in slices is submitted under one registration per
+   slice, each with its own number and password. #}
+{% set field_suffix = field_suffix | default('') %}
 <div class="auth-fields row gy-2 gx-3">
     {% set auth_url = url_for(
         'ffe-test-auth',
@@ -7,23 +11,23 @@
     ) %}
     <div class="col-12 col-md-6">
         {{ admin_macros.number_input(
-            name='ffe_id',
+            name='ffe_id' ~ field_suffix,
             label=_('FFE certification number:'),
             placeholder=_('E.g.: %(num)d', num=68991),
             hx_post=auth_url,
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
-            hx_vals='js:{ffe_password_visible: $("#ffe-password").attr("type") === "text"}',
+            hx_vals='js:{ffe_password_visible: $("#ffe-password' ~ (field_suffix | replace('_', '-')) ~ '").attr("type") === "text", field_suffix: "' ~ field_suffix ~ '"}',
             hx_sync="closest .auth-fields:replace",
             hx_indicator="unset",
             data=data, errors=errors
         ) }}
     </div>
     <div class="col-12 col-md-6">
-        <input type="password" name="fake_ffe_password" style="display:none" autocomplete="current-password">
+        <input type="password" name="fake_ffe_password{{ field_suffix }}" style="display:none" autocomplete="current-password">
         {{ admin_macros.password_input(
-            name='ffe_password',
+            name='ffe_password' ~ field_suffix,
             label=_('FFE password:'),
             autocomplete='new-password',
             placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
@@ -33,7 +37,7 @@
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
-            hx_vals='js:{ffe_password_visible: $("#ffe-password").attr("type") === "text"}',
+            hx_vals='js:{ffe_password_visible: $("#ffe-password' ~ (field_suffix | replace('_', '-')) ~ '").attr("type") === "text", field_suffix: "' ~ field_suffix ~ '"}',
             hx_sync="closest .auth-fields:replace",
             hx_indicator="unset",
             data=data, errors=errors

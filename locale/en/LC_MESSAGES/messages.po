@@ -29,6 +29,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(days)d days"
+msgstr ""
+
+#, python-format
 msgid "%(first)s - %(last)s"
 msgstr ""
 
@@ -618,6 +622,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "A pairing number between 1 and {max} is expected."
+msgstr ""
+
+msgid "A player may hold a different rating in each slice of a tournament reported in slices, so FIDE C.07:10 leaves the choice to the arbiter and takes the first rating by default."
 msgstr ""
 
 msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
@@ -3206,6 +3213,9 @@ msgstr ""
 msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the colour is the one on the first board."
 msgstr ""
 
+msgid "Each game's own period"
+msgstr ""
+
 msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
@@ -3639,6 +3649,9 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
+msgid "FIDE rates a tournament of more than 30 days in slices of at most 30 days, each submitted as a tournament of its own. Mark the round that starts each slice in the schedule below."
+msgstr ""
+
 msgid "FIDE rating lost"
 msgstr ""
 
@@ -3767,6 +3780,9 @@ msgid "First pairing:"
 msgstr ""
 
 msgid "First player:"
+msgstr ""
+
+msgid "First rating"
 msgstr ""
 
 msgid "First round"
@@ -5279,6 +5295,12 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
+msgid "Move this round to the next period"
+msgstr ""
+
+msgid "Move this round to the previous period"
+msgstr ""
+
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -6604,6 +6626,14 @@ msgstr ""
 msgid "Period"
 msgstr ""
 
+#, python-format
+msgid "Period %(index)d"
+msgstr ""
+
+#, python-format
+msgid "Period %(index)d (%(rounds)s)"
+msgstr ""
+
 msgid "Permissions"
 msgstr ""
 
@@ -7265,6 +7295,14 @@ msgctxt "round column header"
 msgid "R {round}"
 msgstr ""
 
+#, python-format
+msgid "R%(first)d–R%(last)d"
+msgstr ""
+
+#, python-format
+msgid "R%(round)d"
+msgstr ""
+
 msgid "RES"
 msgstr ""
 
@@ -7370,6 +7408,9 @@ msgstr ""
 msgid "Rating ranges"
 msgstr ""
 
+msgid "Rating read by rating-based tie-breaks"
+msgstr ""
+
 msgid "Rating step"
 msgstr ""
 
@@ -7386,6 +7427,9 @@ msgid "Rating:"
 msgstr ""
 
 msgid "Ratings"
+msgstr ""
+
+msgid "Ratings of the earlier periods"
 msgstr ""
 
 msgid "Ratings update"
@@ -7441,9 +7485,6 @@ msgstr ""
 msgid "Reload the page"
 msgstr ""
 
-msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
-msgstr ""
-
 msgid "Reminder: you might have to update the players' information before distributing them among the tournaments."
 msgstr ""
 
@@ -7466,6 +7507,9 @@ msgid "Remove the player from the event."
 msgstr ""
 
 msgid "Remove the screen from the display controller."
+msgstr ""
+
+msgid "Remove this period"
 msgstr ""
 
 msgid "Remove this tournament from the championship?"
@@ -7760,6 +7804,10 @@ msgid "Round %(current)d of %(total)d"
 msgstr ""
 
 #, python-format
+msgid "Round %(round)d"
+msgstr ""
+
+#, python-format
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr ""
 
@@ -7834,6 +7882,10 @@ msgid "Rounding of the Keizer points"
 msgstr ""
 
 msgid "Rounds"
+msgstr ""
+
+#, python-format
+msgid "Rounds %(first)d-%(last)d"
 msgstr ""
 
 msgid "Rounds before a rematch"
@@ -8544,6 +8596,9 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
+msgid "Split for FIDE (max 30 days)"
+msgstr ""
+
 msgid "Split method"
 msgstr ""
 
@@ -8603,6 +8658,9 @@ msgid "Standard:"
 msgstr ""
 
 msgid "Start Sharly Chess"
+msgstr ""
+
+msgid "Start a new period at this round"
 msgstr ""
 
 msgid "Start date"
@@ -9715,6 +9773,14 @@ msgstr ""
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
 msgstr ""
 
+#, python-format
+msgid "This period lasts %(days)d days: split it before round #%(round)d."
+msgstr ""
+
+#, python-format
+msgid "This period lasts %(days)d days; FIDE allows %(max)d at most."
+msgstr ""
+
 msgid "This player already exists in the event."
 msgstr ""
 
@@ -9766,6 +9832,9 @@ msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
 msgid "This round is paired; the prohibited pairings used are frozen."
+msgstr ""
+
+msgid "This round opens a new period of the tournament, which FIDE rates on the ratings in force when it starts: you might have to update them before pairing."
 msgstr ""
 
 #, python-format

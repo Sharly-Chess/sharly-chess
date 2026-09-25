@@ -6,6 +6,7 @@ from common.i18n.utils import unicode_normalize
 from common.i18n import _
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from utils.entity import IdentifiableEntity
 from utils.enum import EventType
 
@@ -43,9 +44,21 @@ class TournamentExporter(IdentifiableEntity, ABC):
         Returns None for no warning."""
         return None
 
+    @property
+    def exports_periods(self) -> bool:
+        """Whether one slice of a tournament reported in slices can be
+        exported on its own, as FIDE receives it."""
+        return False
+
     @abstractmethod
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
-        """Dump the content of the *tournament* to export into the *file*."""
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
+        """Dump the content of the *tournament* to export into the *file*,
+        or of one rating period of it."""
 
     @property
     @abstractmethod
@@ -53,9 +66,14 @@ class TournamentExporter(IdentifiableEntity, ABC):
         """Extension of the file to download."""
 
     @staticmethod
-    def file_name(tournament: Tournament) -> str:
-        """Name of the file to download."""
-        return tournament.sanitized_name
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
+        """Name of the file to download. A slice says which rounds it
+        holds, as the registrations FIDE receives do."""
+        if period is None:
+            return tournament.sanitized_name
+        return f'{tournament.sanitized_name}-{period.rounds_str}'.replace('–', '-')
 
     @property
     def file_encoding(self) -> str | None:
@@ -91,8 +109,17 @@ class Trf26TournamentExporter(TournamentExporter):
             )
         return None
 
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
-        trf_tournament = TrfSerializer.dumps(tournament.to_trf())
+    @property
+    def exports_periods(self) -> bool:
+        return True
+
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
+        trf_tournament = TrfSerializer.dumps(tournament.to_trf(period=period))
         file.write(unicode_normalize(trf_tournament))
 
 
@@ -126,13 +153,20 @@ class PgnTournamentExporter(TournamentExporter):
 
     @staticmethod
     @override
-    def file_name(tournament: Tournament) -> str:
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
         return (
             tournament.sanitized_name
             + '-'
             + _('round_{round}').format(round=tournament.current_round)
         )
 
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
         for board in tournament.boards:
             file.write(board.to_pgn(tournament, tournament.current_round))

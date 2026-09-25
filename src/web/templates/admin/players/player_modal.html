@@ -173,6 +173,12 @@
 
                 <h4>
                     {{ _('Ratings') }}
+                    {% if current_period %}
+                        <small class="text-muted">
+                            {{ _('Period %(index)d', index=current_period.index + 1) }}
+                            · {{ current_period.rounds_str }}
+                        </small>
+                    {% endif %}
                 </h4>
                 <div class="row gy-2 gx-3">
                     {% set show_estimated_ratings = (
@@ -306,6 +312,55 @@
                         </div>
                     {% endif %}
                 </div>
+                {% if earlier_period_ratings %}
+                    <button
+                        type="button"
+                        class="collapse-button collapsed mt-2"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#earlier-period-ratings"
+                        aria-expanded="false"
+                    >
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <i class="bi-chevron-down text-body"></i>
+                            {{ _('Ratings of the earlier periods') }}
+                        </span>
+                    </button>
+                    <div id="earlier-period-ratings" class="collapse">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    {% for tournament_rating_strings in tournament_ratings_strings.values() %}
+                                        <th class="fw-normal">{{ tournament_rating_strings['label'] }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for period, ratings in earlier_period_ratings %}
+                                    <tr>
+                                        <td class="text-nowrap">
+                                            {{ _('Period %(index)d', index=period.index + 1) }}
+                                            · {{ period.rounds_str }}
+                                            {% if period.dates_str %}
+                                                <span class="text-muted">· {{ period.dates_str }}</span>
+                                            {% endif %}
+                                        </td>
+                                        {% for tournament_rating in tournament_ratings_strings %}
+                                            <td>
+                                                {{ ratings[tournament_rating] }}
+                                                {% if ratings[tournament_rating].k_factor %}
+                                                    <span class="text-muted">
+                                                        ({{ pgettext('FIDE rating coefficient', 'K') }}{{ ratings[tournament_rating].k_factor }})
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
                 <script>
                     (function () {
                         // Section B-02-8.3.3 of the FIDE handbook.

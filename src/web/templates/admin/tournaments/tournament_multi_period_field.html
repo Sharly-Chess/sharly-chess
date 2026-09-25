@@ -1,0 +1,27 @@
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{# Offered only once the dates span more than the 30 days FIDE rates as one
+   tournament. Re-rendered with the schedule section, which is what the date
+   picker and the round count refresh. #}
+<div id="multi-period-field" {% if oob %}hx-swap-oob="true"{% endif %}>
+    {% if dates_exceed_period %}
+        <div class="mt-3">
+        {{ admin_macros.switch_input(
+            name='multi_period',
+            placeholder=_('Split for FIDE (max 30 days)'),
+            tooltip_text=_(
+                'FIDE rates a tournament of more than 30 days in slices of at '
+                'most 30 days, each submitted as a tournament of its own. Mark '
+                'the round that starts each slice in the schedule below.'
+            ),
+            data=data, errors=errors
+        ) }}
+        </div>
+        <script>
+            $('#multi-period').on('change', () => htmx.trigger(
+                document.getElementById('schedule-section'),
+                'schedule-params-updated',
+            ));
+        </script>
+    {% endif %}
+</div>

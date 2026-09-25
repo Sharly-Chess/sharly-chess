@@ -15,6 +15,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_upload_status import (
@@ -60,9 +61,15 @@ class FFESession(Session):
     def __init__(
         self,
         tournament: Tournament | None,
+        period: TournamentPeriod | None = None,
     ):
         super().__init__()
         self.tournament: Tournament | None = tournament
+        # A tournament reported in slices is submitted one slice at a
+        # time, each under its own registration; without a slice the
+        # session speaks for the tournament entire, which is what the
+        # first tranche's registration publishes.
+        self.period: TournamentPeriod | None = period
         self.ffe_state: dict[str, str] = {}
         self.auth_state: dict[str, str | None] = {}
         self.tournament_ffe_url: str | None = None
@@ -373,8 +380,13 @@ class FFESession(Session):
         """Fetches the certification number and password for the tournament from the plugin data."""
 
         assert self.tournament is not None
-        ffe_id = FFEUtils.get_tournament_plugin_data(self.tournament).ffe_id
-        ffe_password = FFEUtils.get_tournament_plugin_data(self.tournament).password
+        plugin_data = (
+            FFEUtils.get_period_plugin_data(self.period)
+            if self.period is not None
+            else FFEUtils.get_tournament_plugin_data(self.tournament)
+        )
+        ffe_id = plugin_data.ffe_id
+        ffe_password = plugin_data.password
         if not ffe_id or not ffe_password:
             logger.warning(
                 'FFE certification number and password are not correctly set for tournament [%s], data can not be sent to the FFE website.',
@@ -465,6 +477,11 @@ class FFESession(Session):
                     tmp_papi_file,
                     anonymize_player_data=True,
                     is_ffe_upload=True,
+                    period=(
+                        tmp_tournament.periods[self.period.index]
+                        if self.period is not None
+                        else None
+                    ),
                 )
             except Exception as e:
                 logger.exception(
@@ -488,7 +505,10 @@ class FFESession(Session):
                 logger.error('Upload failed: %s', error)
                 return UnexpectedFailureFFEUploadStatus()
 
-        if not set_visible:
+        # A later tranche's registration carries a slice of the games for
+        # rating; what the players read is the tournament, published
+        # entire under its own registration.
+        if not set_visible or (self.period is not None and self.period.first_round > 1):
             return None
 
         logger.info('Making the tournament visible on the FFE website...')

@@ -207,7 +207,7 @@
                             {{ left_tp.full_name if left_tp else (_left_code or '—') }}
                         </div>
                         <div class="text-muted small">
-                            {{ left_tp.rating_str if left_tp else _('Absent — forfeit') if _left_code else '' }}
+                            {{ left_tp.rating_str_in_round(admin_round) if left_tp else _('Absent — forfeit') if _left_code else '' }}
                         </div>
                         {% if left_team %}
                             <div class="text-muted small">{{ left_team.name }}</div>
@@ -222,7 +222,7 @@
                             {{ right_tp.full_name if right_tp else (_right_code or '—') }}
                         </div>
                         <div class="text-muted small">
-                            {{ right_tp.rating_str if right_tp else _('Absent — forfeit') if _right_code else '' }}
+                            {{ right_tp.rating_str_in_round(admin_round) if right_tp else _('Absent — forfeit') if _right_code else '' }}
                         </div>
                         {% if right_team %}
                             <div class="text-muted small">{{ right_team.name }}</div>

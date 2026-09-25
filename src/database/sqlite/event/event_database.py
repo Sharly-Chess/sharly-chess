@@ -30,6 +30,8 @@ from database.sqlite.event.event_store import (
     StoredScreen,
     StoredPrizeGroup,
     StoredProhibitedPairingGroup,
+    StoredPlayerPeriod,
+    StoredTournamentPeriod,
     StoredPrizeCategory,
     StoredPrizeCriterion,
     StoredPrize,
@@ -687,6 +689,8 @@ class EventDatabase(MigrationDatabase):
             round_robin_participation_rule=cls.load_bool_from_database_field(
                 row['round_robin_participation_rule']
             ),
+            multi_period=cls.load_bool_from_database_field(row['multi_period']),
+            tie_break_rating=row['tie_break_rating'],
         )
 
     @staticmethod
@@ -744,6 +748,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.stored_prohibited_pairing_groups = (
                 self.load_tournament_stored_prohibited_pairing_groups(id_)
             )
+            stored_tournament.stored_tournament_periods = (
+                self.load_tournament_stored_periods(id_)
+            )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 
@@ -780,6 +787,8 @@ class EventDatabase(MigrationDatabase):
                 'prohibited_pairing_dimension',
                 'prohibited_pairing_dimension_is_hard',
                 'round_robin_participation_rule',
+                'multi_period',
+                'tie_break_rating',
             ],
         ) | {
             'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),
@@ -816,6 +825,13 @@ class EventDatabase(MigrationDatabase):
         if tournament_id is None:
             raise RuntimeError('Tournament insertion failed')
         self.seed_default_tie_breaks(tournament_id, stored_tournament.pairing)
+        self.set_tournament_periods(
+            tournament_id,
+            [
+                stored_period.first_round
+                for stored_period in stored_tournament.stored_tournament_periods
+            ],
+        )
         return tournament_id
 
     @staticmethod
@@ -1091,7 +1107,61 @@ class EventDatabase(MigrationDatabase):
                     plugin_data=self.load_json_from_database_field(plugin_data, {}),
                 )
             )
+        player_periods = self.load_player_periods()
+        for stored_player in stored_players:
+            stored_player.periods = player_periods.get(stored_player.id or 0, {})
         return stored_players
+
+    def load_player_periods(self) -> dict[int, dict[int, StoredPlayerPeriod]]:
+        """Every player as the periods that differ from their own columns
+        knew them, keyed by player then by period."""
+        self.execute(
+            'SELECT `player_id`, `period_id`, `ratings`, `title`, `women_title` '
+            'FROM `player_period`'
+        )
+        player_periods: dict[int, dict[int, StoredPlayerPeriod]] = {}
+        for row in self.fetchall():
+            player_periods.setdefault(row['player_id'], {})[row['period_id']] = (
+                StoredPlayerPeriod(
+                    ratings=self.set_dict_int_keys(
+                        self.load_json_from_database_field(row['ratings'])
+                    ),
+                    title=row['title'],
+                    women_title=row['women_title'],
+                )
+            )
+        return player_periods
+
+    def set_player_period(
+        self,
+        player_id: int,
+        period_id: int,
+        stored_player_period: StoredPlayerPeriod,
+    ) -> None:
+        """Upsert what one period knew of a player. A period with nothing
+        to record is removed, so the player reads as unchanged there."""
+        if not stored_player_period.ratings:
+            self.execute(
+                'DELETE FROM `player_period` WHERE `player_id` = ? AND `period_id` = ?',
+                (player_id, period_id),
+            )
+            return
+        self.execute(
+            'INSERT INTO `player_period` '
+            '(`player_id`, `period_id`, `ratings`, `title`, `women_title`) '
+            'VALUES (?, ?, ?, ?, ?) '
+            'ON CONFLICT(`player_id`, `period_id`) DO UPDATE SET '
+            '`ratings` = excluded.`ratings`, '
+            '`title` = excluded.`title`, '
+            '`women_title` = excluded.`women_title`',
+            (
+                player_id,
+                period_id,
+                self.dump_to_json_database_field(stored_player_period.ratings),
+                stored_player_period.title,
+                stored_player_period.women_title,
+            ),
+        )
 
     @classmethod
     def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
@@ -1148,6 +1218,24 @@ class EventDatabase(MigrationDatabase):
             f'UPDATE `player` SET {field_sets} WHERE `id` = ?',
             (*tuple(fields.values()), stored_player.id),
         )
+        self._update_player_periods(stored_player)
+
+    def _update_player_periods(self, stored_player: StoredPlayer) -> None:
+        """Persist the periods that knew the player differently, so that
+        every path that saves a player saves them with it."""
+        assert stored_player.id is not None
+        period_ids = list(stored_player.periods)
+        self.execute(
+            'DELETE FROM `player_period` WHERE `player_id` = ?'
+            + (
+                f' AND `period_id` NOT IN ({",".join("?" * len(period_ids))})'
+                if period_ids
+                else ''
+            ),
+            (stored_player.id, *period_ids),
+        )
+        for period_id, stored_player_period in stored_player.periods.items():
+            self.set_player_period(stored_player.id, period_id, stored_player_period)
 
     def delete_stored_player(self, player_id: int) -> None:
         self.execute('DELETE FROM `player` WHERE `id` = ?;', (player_id,))
@@ -2081,6 +2169,85 @@ class EventDatabase(MigrationDatabase):
             '`reason` = excluded.`reason`',
             (tournament_id, player_id, round_, delta, reason),
         )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTournamentPeriod
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_period(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentPeriod:
+        return StoredTournamentPeriod(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            first_round=row['first_round'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
+        )
+
+    def load_tournament_stored_periods(
+        self, tournament_id: int
+    ) -> list[StoredTournamentPeriod]:
+        self.execute(
+            'SELECT * FROM `tournament_period` WHERE `tournament_id` = ? '
+            'ORDER BY `first_round`',
+            (tournament_id,),
+        )
+        return [self._row_to_stored_tournament_period(row) for row in self.fetchall()]
+
+    def set_tournament_period_plugin_data(
+        self, period_id: int, plugin_data: dict[str, dict[str, Any]]
+    ) -> None:
+        """Store what the plugins keep about one slice — the identifiers
+        of the registration it is submitted under."""
+        self.execute(
+            'UPDATE `tournament_period` SET `plugin_data` = ? WHERE `id` = ?',
+            (self.dump_to_json_database_field(plugin_data, {}), period_id),
+        )
+
+    def set_tournament_periods(
+        self, tournament_id: int, first_rounds: list[int]
+    ) -> None:
+        """Set the rounds the tournament's periods start at. Round 1 always
+        starts one, so it is added whatever the caller passes.
+
+        A period keeps its row, and with it the ratings its players were
+        prepared with, as long as the tournament still has a period in its
+        place: moving a boundary re-bounds the slice rather than replacing
+        it. Only a slice the tournament no longer has — one merged into
+        its neighbour — loses its rows."""
+        wanted = sorted({1} | set(first_rounds))
+        current = [
+            stored_period.id
+            for stored_period in self.load_tournament_stored_periods(tournament_id)
+        ]
+        # The rounds are rewritten in three steps: the slices that stay are
+        # parked out of the way, the surplus ones are dropped, and only then
+        # do the survivors take their new rounds — a slice moved onto a round
+        # another is leaving would otherwise collide with it in passing.
+        kept = current[: len(wanted)]
+        for index, period_id in enumerate(kept):
+            self.execute(
+                'UPDATE `tournament_period` SET `first_round` = ? WHERE `id` = ?',
+                (-1 - index, period_id),
+            )
+        self.execute(
+            'DELETE FROM `tournament_period` WHERE `tournament_id` = ? '
+            'AND `first_round` >= 0',
+            (tournament_id,),
+        )
+        for index, period_id in enumerate(kept):
+            self.execute(
+                'UPDATE `tournament_period` SET `first_round` = ? WHERE `id` = ?',
+                (wanted[index], period_id),
+            )
+        for first_round in wanted:
+            self.execute(
+                'INSERT INTO `tournament_period` (`tournament_id`, `first_round`) '
+                'VALUES (?, ?) '
+                'ON CONFLICT(`tournament_id`, `first_round`) DO NOTHING',
+                (tournament_id, first_round),
+            )
 
     # ---------------------------------------------------------------------------------
     # StoredProhibitedPairingGroup
