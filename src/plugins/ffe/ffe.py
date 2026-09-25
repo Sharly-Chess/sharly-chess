@@ -903,6 +903,18 @@ class FfePlugin(Plugin):
         return hints
 
     @hookimpl
+    def get_tournament_period_form_fields_template_and_data(
+        self, event: 'Event', tournament: 'Tournament'
+    ) -> tuple[str, dict[str, Any]] | None:
+        # Each tranche of a tournament reported in slices is submitted
+        # under its own homologation number; the first tranche's is the
+        # tournament's own, which is also where the whole tournament is
+        # published for the players.
+        if not FFEUtils.supports_ffe_transfer(tournament):
+            return None
+        return '/ffe_tournament_ffe_auth_fields.html', {}
+
+    @hookimpl
     def validate_tournament_form_fields(
         self, data: dict[str, str], errors: dict[str, str]
     ) -> None:

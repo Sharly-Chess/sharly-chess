@@ -73,7 +73,7 @@
             <span class="color-chip color-chip-{{ team_a_color|lower }}"></span>
             <span class="lineup-view flex-grow-1 text-truncate" style="min-width: 0;">
                 {% if team_a_player and team_a_player.team_id %}
-                    {% with tournament_player=team_a_player, display_rating=true %}
+                    {% with tournament_player=team_a_player, display_rating=true, rating_round=admin_round %}
                         {% include '/admin/player_link.html' %}
                     {% endwith %}
                 {% else %}
@@ -136,7 +136,7 @@
             <span class="color-chip color-chip-{{ team_b_color|lower }}"></span>
             <span class="lineup-view flex-grow-1 text-truncate" style="min-width: 0;">
                 {% if team_b_player and team_b_player.team_id %}
-                    {% with tournament_player=team_b_player, display_rating=true %}
+                    {% with tournament_player=team_b_player, display_rating=true, rating_round=admin_round %}
                         {% include '/admin/player_link.html' %}
                     {% endwith %}
                 {% else %}

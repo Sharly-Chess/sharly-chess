@@ -555,6 +555,10 @@ msgstr "Mot de passe :"
 msgid "Pending"
 msgstr "En attente"
 
+#, python-format
+msgid "Period %(index)d"
+msgstr "Période %(index)d"
+
 msgid "Phase"
 msgstr "Phase"
 
@@ -700,6 +704,9 @@ msgstr "L'identifiant FFE est un entier positif."
 msgid "The FFE always uses the FIDE rating when available."
 msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
 
+msgid "The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here."
+msgstr "La FFE ferme cette homologation une fois sa période envoyée à la FIDE : demandez à Erick Mouret de la rouvrir, afin de pouvoir continuer à y publier les résultats du tournoi entier."
+
 #, python-brace-format
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
@@ -739,6 +746,9 @@ msgstr "La moyenne des classements des joueur·euses de l'équipe, pondérée pa
 
 msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
 msgstr "Ce filtre ne s'applique qu'aux joueur·euses affilié·es à la fédération française, les autres ne seront ni filtré·es ni grisé·es (pas besoin de licence française)."
+
+msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
+msgstr "Il s'agit de la première période, et de l'homologation où le tournoi entier est publié ; les autres ont la leur, dans le calendrier ci-dessous."
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -817,6 +827,10 @@ msgstr "Mettre en ligne tous les tournois"
 #, python-format
 msgid "Upload automatically every %(delay)d minutes."
 msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
+
+#, python-format
+msgid "Upload period %(index)d"
+msgstr "Envoyer la période %(index)d"
 
 msgid "Upload rules"
 msgstr "Mettre en ligne le règlement"

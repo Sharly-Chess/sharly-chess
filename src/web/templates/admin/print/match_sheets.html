@@ -214,7 +214,7 @@
                                     </div>
                                     {% set _a_meta_parts = [] %}
                                     {%- if team_a_player.rating_str -%}
-                                        {%- do _a_meta_parts.append(team_a_player.rating_str) -%}
+                                        {%- do _a_meta_parts.append(team_a_player.rating_str_in_round(team_board.round)) -%}
                                     {%- endif -%}
                                     {%- if team_a_player.category and team_a_player.category.name and team_a_player.category.name != '-' -%}
                                         {%- do _a_meta_parts.append(team_a_player.category.name) -%}
@@ -244,7 +244,7 @@
                                     </div>
                                     {% set _b_meta_parts = [] %}
                                     {%- if team_b_player.rating_str -%}
-                                        {%- do _b_meta_parts.append(team_b_player.rating_str) -%}
+                                        {%- do _b_meta_parts.append(team_b_player.rating_str_in_round(team_board.round)) -%}
                                     {%- endif -%}
                                     {%- if team_b_player.category and team_b_player.category.name and team_b_player.category.name != '-' -%}
                                         {%- do _b_meta_parts.append(team_b_player.category.name) -%}

@@ -145,6 +145,37 @@
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
+            {% if tie_break_rating_options %}
+                {# Which of a player's ratings a rating-based tie-break reads,
+                   which C.07:10 leaves to the arbiter when a tournament is
+                   reported in slices. #}
+                <div class="mb-3 col-12 col-md-7">
+                    {{ admin_macros.select_input(
+                        name='tie_break_rating',
+                        label=_('%(string)s:', string=_('Rating read by rating-based tie-breaks')),
+                        select_options=tie_break_rating_options,
+                        data={'tie_break_rating': admin_tournament.tie_break_rating},
+                        stacked=true,
+                        tooltip_text=_(
+                            'A player may hold a different rating in each slice '
+                            'of a tournament reported in slices, so FIDE C.07:10 '
+                            'leaves the choice to the arbiter and takes the first '
+                            'rating by default.'
+                        )
+                    ) }}
+                    <form
+                        hx-patch="{{ url_for(
+                            'admin-tournament-tie-break-rating',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id
+                        ) }}"
+                        hx-include='[name="tie_break_rating"]'
+                        hx-target="body"
+                        hx-trigger="change from:[name='tie_break_rating']"
+                        hx-indicator="#please-wait"
+                    ></form>
+                </div>
+            {% endif %}
             {% if config_tie_breaks %}
                 {% set reorder_enabled = (
                     not rule_set_managed and config_tie_breaks|length > 1
@@ -285,15 +316,19 @@
                             ) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            class="d-flex gap-2 align-items-end"
+                            class="d-flex flex-wrap gap-2 align-items-end"
                         >
+                            {# The label spans the row: it describes the pair,
+                               and reads badly stopping short of the button. #}
+                            <label
+                                for="tie-break-set"
+                                class="form-check-label w-100"
+                            >
+                                {{ _('Quick-apply a tie-break set (replace actual tie-breaks)') }}
+                            </label>
                             <div class="flex-grow-1 tie-break-set-field">
-                                <style>
-                                    #tie-break-set-wrapper { flex-direction: column; }
-                                </style>
                                 {{ admin_macros.select_input(
                                     name='tie_break_set',
-                                    label=_('Quick-apply a tie-break set (replace actual tie-breaks)'),
                                     placeholder=_('Choose a set…'),
                                     select_options=tie_break_set_select_options,
                                     tooltip_select=true,

@@ -24,7 +24,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 from unittest.mock import MagicMock
 
-from data.player import TournamentPlayer
+from data.player import Player, TournamentPlayer
 from data.tournament import Tournament
 from utils.enum import PlayerGender
 
@@ -32,11 +32,12 @@ import pytest
 
 from data.norms import (
     NormInputs,
+    NormOpponent,
     TitleNormEvaluator,
     TitleNormSubsetSearcher,
 )
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
-from utils.types import Federation, NormCheckResult
+from utils.types import Federation, PlayerRatingAndType, NormCheckResult
 
 
 # ---------------------------------------------------------------------------
@@ -48,7 +49,10 @@ from utils.types import Federation, NormCheckResult
 class FakeOpponent:
     """Duck-typed stand-in for `TournamentPlayer`. The norm code only
     reads `id`, `rating`, `rating_type`, `federation`, `title`,
-    `women_title`, `held_titles` and `strongest_title` on opponents.
+    `women_title`, `held_titles` and `strongest_title` on opponents, and
+    reads the first three of those through the round the game was played
+    in (B.01 1.1.4) — which for a stand-in with no slices is the same
+    answer whatever the round.
     """
 
     id: int
@@ -72,6 +76,18 @@ class FakeOpponent:
     def strongest_title(self) -> PlayerTitle:
         return max(self.title, self.women_title, key=lambda title: title.sort_index)
 
+    def rating_and_type_in_round(self, _round: int) -> PlayerRatingAndType:
+        return PlayerRatingAndType(self.rating, self.rating_type)
+
+    def rating_in_round(self, _round: int) -> int:
+        return self.rating
+
+    def held_titles_in_round(self, _round: int) -> frozenset[PlayerTitle]:
+        return self.held_titles
+
+    def display_title_in_round(self, _round: int) -> str:
+        return Player.format_titles(self.title, self.women_title)
+
 
 def as_tournament_player(double: object) -> TournamentPlayer:
     """Cross a stand-in into a production signature. The norm code reads a
@@ -79,6 +95,13 @@ def as_tournament_player(double: object) -> TournamentPlayer:
     name the concrete class — so the substitution is stated here once
     instead of being implied at every call site."""
     return cast(TournamentPlayer, double)
+
+
+def as_norm_opponent(double: FakeOpponent, round_: int = 1) -> NormOpponent:
+    """The stand-in as a norm reads it: at the round the game was played
+    in, which for a stand-in with no slices is the same whatever the
+    round."""
+    return NormOpponent.in_round(as_tournament_player(double), round_)
 
 
 def as_tournament(double: object) -> Tournament:
@@ -177,7 +200,7 @@ class TestWithoutRounds:
         )
         # Add a round manually to drop.
         opp = FakeOpponent(1, 2500)
-        inputs.opponents.append(as_tournament_player(opp))
+        inputs.opponents.append(as_norm_opponent(opp))
         inputs.results_list.append(Result.WIN)
         inputs.included_rounds.append(1)
         inputs.played_games = 1

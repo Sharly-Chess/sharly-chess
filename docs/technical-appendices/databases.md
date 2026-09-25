@@ -277,6 +277,21 @@
 | `team_index`    | `INTEGER` |                                            | The player's board order within the team (team tournaments only) |
 | `plugin_data`   | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format                  |
 
+### `player_period` table (a player's ratings in one rating period)
+
+> [!NOTE]
+> :information_source: A tournament of more than 30 days is rated one slice at a time, and a slice is played on the ratings and titles in force while it runs (FIDE B.01 1.1.4). The `player` row holds the first of them; a row here records a slice where they differ, in full — a report of that slice has to answer for every rating type and for the titles.
+
+| Field         | Type      | Constraint                                                          | Description                                            |
+|---------------|-----------|---------------------------------------------------------------------|--------------------------------------------------------|
+| `id`          | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                          | The record ID                                          |
+| `player_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`) ON DELETE CASCADE            | The player                                             |
+| `period_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `tournament_period`(`id`) ON DELETE CASCADE | The rating period                                      |
+| `ratings`     | `TEXT`    |                                                                     | The player's ratings in that period, in JSON format    |
+| `title`       | `TEXT`    | NOT NULL<br/>DEFAULT ''                                             | The player's chess title in that period                |
+| `women_title` | `TEXT`    | NOT NULL<br/>DEFAULT ''                                             | The player's chess women title in that period          |
+|               |           | UNIQUE(`player_id`, `period_id`)                                    |                                                        |
+
 ### `player_point_adjustment` table (players' point adjustments)
 
 > [!NOTE]
@@ -584,12 +599,27 @@
 | `prohibited_pairing_dimension`            | `TEXT`    |                                            | Grouping-dimension ID used to derive prohibited pairings (`NULL` = off)                                                                              |
 | `prohibited_pairing_dimension_is_hard`    | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean: whether the prohibited-pairing dimension is a hard constraint                                                                               |
 | `round_robin_participation_rule`          | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the round-robin &lt;50% participation rule (FIDE 6.6) applies — leavers dropped from the final standings.                           |
+| `multi_period`                            | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the tournament is reported to _FIDE_ in slices of at most 30 days (see `tournament_period`)                                          |
+| `tie_break_rating`                        | `TEXT`    | NOT NULL<br/>DEFAULT ''                    | Which rating the rating-based tie-breaks read (FIDE C.07:10): `''` for the first, `round` for each game's own slice, else a `tournament_period`(`id`) |
 | `deprecated_chessevent_user_id`           | `TEXT`    |                                            | _Deprecated_                                                                                                                                         |
 | `deprecated_chessevent_password`          | `TEXT`    |                                            | _Deprecated_                                                                                                                                         |
 | `deprecated_chessevent_event_id`          | `TEXT`    |                                            | _Deprecated_                                                                                                                                         |
 | `deprecated_chessevent_tournament_name`   | `TEXT`    |                                            | _Deprecated_                                                                                                                                         |
 | `deprecated_last_chessevent_download_md5` | `TEXT`    |                                            | _Deprecated_                                                                                                                                         |
 | `plugin_data`                             | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                                                                                      |
+
+### `tournament_period` table (rating periods)
+
+> [!NOTE]
+> :information_source: _FIDE_ rates a tournament as one event only when it lasts 30 days or less; a longer one is cut into slices of at most 30 days, each registered and submitted as a tournament of its own. A period runs from `first_round` to the round before the next period starts at. Every tournament has one, covering all its rounds.
+
+| Field           | Type      | Constraint                                                   | Description                                                                                      |
+|-----------------|-----------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The period ID                                                                                    |
+| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament the period belongs to                                                             |
+| `first_round`   | `INTEGER` | NOT NULL<br/>DEFAULT 1                                       | The round the period starts at; round 1 always starts one                                        |
+| `plugin_data`   | `TEXT`    |                                                              | Additional data used by plugins, in JSON format — where a plugin keeps a slice's own registration |
+|                 |           | UNIQUE(`tournament_id`, `first_round`)                       |                                                                                                  |
 
 ### `tournament_player` table (tournament player associations)
 

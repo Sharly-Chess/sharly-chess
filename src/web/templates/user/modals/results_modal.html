@@ -60,7 +60,7 @@
             hx-swap="morphdom"
             hx-indicator="#please-wait"
         {% endif %}
-    ><span class="result-color-chip {{ side }}"></span>{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ '1 - 0' if side == 'white' else '0 - 1' }}<br/><br/>{% if tp %}{{ tp.last_name }}<br/>{{ tp.first_name }}<br/>{{ tp.rating_str }}{% else %}<span class="fst-italic">{{ _('Forfeit') }}</span><br/><br/>{% endif %}{% if team %}<br/><span class="fs-6 fw-normal {% if side == 'white' %}text-muted{% else %}text-white-50{% endif %}">{{ team.name }}</span>{% endif %}</button>
+    ><span class="result-color-chip {{ side }}"></span>{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ '1 - 0' if side == 'white' else '0 - 1' }}<br/><br/>{% if tp %}{{ tp.last_name }}<br/>{{ tp.first_name }}<br/>{{ tp.rating_str_in_round(board.round) }}{% else %}<span class="fst-italic">{{ _('Forfeit') }}</span><br/><br/>{% endif %}{% if team %}<br/><span class="fs-6 fw-normal {% if side == 'white' %}text-muted{% else %}text-white-50{% endif %}">{{ team.name }}</span>{% endif %}</button>
 {% endmacro %}
 <style>
     .result-color-chip {

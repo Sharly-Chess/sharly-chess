@@ -26,6 +26,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Description of the databases](docs/technical-appendices/databases.md)
 - [Network](docs/technical-appendices/network.md)
 - [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
+- [Tournaments lasting more than 30 days](docs/technical-appendices/multi-period-tournaments.md)
 
 ### Sandbox
 

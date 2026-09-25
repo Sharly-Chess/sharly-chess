@@ -36,7 +36,15 @@
     {% endif %}
     {% set link_target = tournament_player if tournament_player else player %}
     {% set full_name = link_target.last_name ~ ' ' ~ link_target.first_name if last_name_first else link_target.full_name %}
-    {% set rating_suffix = (' (' ~ tournament_player.rating_str ~ ')') if (display_rating and tournament_player) else '' %}
+    {# A rating shown against a round is the one that round was played at,
+       which in a tournament reported in slices is not always the current
+       one. #}
+    {% set rating_shown = (
+        tournament_player.rating_str_in_round(rating_round)
+        if tournament_player and rating_round
+        else tournament_player.rating_str if tournament_player else ''
+    ) %}
+    {% set rating_suffix = (' (' ~ rating_shown ~ ')') if (display_rating and tournament_player) else '' %}
     {%- if tournament_player and client.can_update_players_history(tournament_player.tournament.id) -%}
         <a
             class="player-link{% if secondary_link %} player-secondary-link{% endif %}"

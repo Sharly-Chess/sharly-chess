@@ -4,6 +4,7 @@ from typing import IO, ClassVar
 from common.i18n import _
 from data.input_output import TournamentExporter
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
 from utils.enum import EventType
@@ -39,6 +40,17 @@ class PapiTournamentExporter(TournamentExporter):
     def file_extension(self) -> str:
         return 'papi'
 
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
+    @property
+    def exports_periods(self) -> bool:
+        # A tournament reported in slices is uploaded one slice at a time,
+        # each under its own homologation number.
+        return True
+
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
         file.close()
-        PapiConverter().write_papi_file(tournament, Path(file.name))
+        PapiConverter().write_papi_file(tournament, Path(file.name), period=period)

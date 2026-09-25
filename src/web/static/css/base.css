@@ -436,7 +436,14 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
 .input-block {
     display: flex;
     flex-wrap: wrap;
-    row-gap: .25rem;
+    row-gap: .5rem;
+}
+
+/* A field whose label always sits on its own line, so the field keeps its
+   shape whatever the length of the value shown. */
+.input-block-stacked {
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .tooltip.show {
@@ -2064,9 +2071,16 @@ input[type="color"].form-control {
 
 .form-fields-container {
     border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
     padding: 0.5rem 1rem;;
     margin: 1rem 0;
     background-color: rgba(var(--bs-body-bg-rgb), 0.30) ;
+}
+
+/* A period card groups fields of the form as .form-fields-container does,
+   so it is filled the same way. */
+.period-card {
+    background-color: rgba(var(--bs-body-bg-rgb), 0.30);
 }
 
 sup {

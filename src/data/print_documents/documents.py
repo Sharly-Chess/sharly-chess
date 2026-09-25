@@ -652,6 +652,7 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
             'scores': self.ordered_players,
+            'ranking_round': self.ranking_round,
         }
 
 

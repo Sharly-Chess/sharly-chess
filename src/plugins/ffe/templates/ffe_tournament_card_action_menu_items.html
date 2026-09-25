@@ -109,6 +109,29 @@
                         </button>
                     </span>
                 </li>
+                {# A tranche already submitted is sent again on its own, under
+                   the registration it was declared with — what a correction
+                   to a rated tranche needs. #}
+                {% if tournament.periods|length > 1 and client.can_publish_results %}
+                    {% for period in tournament.periods %}
+                        <li>
+                            <button
+                                class="dropdown-item text-nowrap small"
+                                hx-post="{{ url_for(
+                                    'ffe-upload-single-tournament',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                ) }}?period_id={{ period.id }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                <i class="bi-arrow-return-right pe-1"></i>
+                                {{ _('Upload period %(index)d', index=loop.index) }}
+                                · {{ period.rounds_str }}
+                            </button>
+                        </li>
+                    {% endfor %}
+                {% endif %}
                 {% endif %}
             </ul>
         </li>

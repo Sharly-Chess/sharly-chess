@@ -59,12 +59,23 @@ from data.tie_breaks.sets import (
     TieBreakSet,
 )
 from data.tournament import Tournament
+from data.tournament_period import (
+    TIE_BREAK_RATING_BY_ROUND,
+    PeriodSpan,
+    dates_exceed_period,
+    period_field_data,
+    period_field_suffix,
+    period_first_rounds,
+    period_spans,
+    period_too_long_message,
+)
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredTieBreakSet
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTieBreak,
     StoredTournament,
+    StoredTournamentPeriod,
     StoredScreen,
     StoredPairing,
     StoredPrizeGroup,
@@ -316,6 +327,8 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type: str | None = None
             enforce_roster_order: bool = False
             round_robin_participation_rule: bool = True
+            multi_period: bool = False
+            period_first_rounds_data: set[int] = set()
             rule_set: str | None = None
             rule_set_config: dict[str, Any] = {}
             stored_plugin_data: dict[str, dict[str, Any]] = {}
@@ -370,6 +383,11 @@ class TournamentAdminController(BaseEventAdminController):
                 round_robin_participation_rule = (
                     stored_tournament.round_robin_participation_rule
                 )
+                multi_period = stored_tournament.multi_period
+                period_first_rounds_data = {
+                    stored_period.first_round
+                    for stored_period in stored_tournament.stored_tournament_periods
+                }
                 rule_set = stored_tournament.rule_set
                 rule_set_config = stored_tournament.rule_set_config
                 for criterion in tournament_criteria:
@@ -388,6 +406,21 @@ class TournamentAdminController(BaseEventAdminController):
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action)
+            # A slice submitted under a registration of its own carries its
+            # own values, under the plugin's field names suffixed with the
+            # slice (``period_field_suffix``).
+            if action == 'update':
+                for period in web_context.get_admin_tournament().periods:
+                    if period.id is None:
+                        continue
+                    suffix = period_field_suffix(period.id)
+                    for plugin_data in period.plugin_data.values():
+                        plugin_form_data |= {
+                            f'{field}{suffix}': value
+                            for field, value in plugin_data.to_form_data(
+                                action=action
+                            ).items()
+                        }
 
             criteria_form_data: dict[str, str] = {}
             for criterion in tournament_criteria:
@@ -418,6 +451,9 @@ class TournamentAdminController(BaseEventAdminController):
                 dt = round_datetimes.get(round_num)
                 schedule_form_data[f'round_{round_num}_datetime'] = (
                     WebContext.value_to_form_data(dt) if dt else ''
+                )
+                schedule_form_data[f'round_{round_num}_period_start'] = (
+                    'on' if round_num in period_first_rounds_data else ''
                 )
 
             data = WebContext.values_dict_to_form_data(
@@ -485,6 +521,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'round_robin_participation_rule': (
                         'on' if round_robin_participation_rule else ''
                     ),
+                    'multi_period': 'on' if multi_period else '',
                     'rule_set': rule_set,
                     'date_range': WebContext.value_to_date_range_form_data(
                         start_date, stop_date
@@ -655,6 +692,15 @@ class TournamentAdminController(BaseEventAdminController):
                 ),
                 'schedule_min_date': format_date(schedule_min_date),
                 'schedule_max_date': format_date(schedule_max_date),
+                'dates_exceed_period': dates_exceed_period(
+                    schedule_min_date, schedule_max_date
+                ),
+                'period_spans': cls._form_data_period_spans(
+                    data, rounds, web_context.admin_tournament
+                ),
+                'period_field_templates': cls._period_field_templates(
+                    admin_event, web_context.admin_tournament
+                ),
             }
             | form_fields_templates_data
         )
@@ -946,6 +992,7 @@ class TournamentAdminController(BaseEventAdminController):
         round_robin_participation_rule = WebContext.form_data_to_bool(
             data, 'round_robin_participation_rule'
         )
+        multi_period = WebContext.form_data_to_bool(data, 'multi_period')
 
         rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
         rule_set_type: type[RuleSet] | None = None
@@ -1001,6 +1048,10 @@ class TournamentAdminController(BaseEventAdminController):
             except FormError as e:
                 errors[field] = str(e)
                 round_datetimes[round_num] = None
+
+        stored_tournament_periods = cls._read_tournament_periods(
+            data, rounds, multi_period, round_datetimes, errors
+        )
 
         plugin_manager.hook_for_event(
             web_context.get_admin_event(), 'validate_tournament_form_fields'
@@ -1058,6 +1109,13 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type=team_colour_type,
             enforce_roster_order=enforce_roster_order,
             round_robin_participation_rule=round_robin_participation_rule,
+            multi_period=multi_period,
+            stored_tournament_periods=stored_tournament_periods,
+            # Set from the tie-breaks modal, and carried through the
+            # rebuild so saving the tournament does not forget it.
+            tie_break_rating=(
+                tournament.stored_tournament.tie_break_rating if tournament else ''
+            ),
             rule_set=rule_set_id,
             rule_set_config=rule_set_config,
             plugin_data=plugin_data,
@@ -1073,6 +1131,125 @@ class TournamentAdminController(BaseEventAdminController):
             assert rule_set_type is not None
             rule_set_type(rule_set_config).apply_defaults(stored_tournament, system_id)
         return stored_tournament, errors
+
+    @classmethod
+    def _form_data_period_spans(
+        cls,
+        data: dict[str, str],
+        rounds: int,
+        tournament: Tournament | None = None,
+    ) -> list[PeriodSpan]:
+        """The periods the form currently describes, for the schedule
+        section to list. Read from the form data so that a re-render after
+        a validation error shows what the arbiter last set, and matched to
+        the stored periods so each can show what it carries."""
+        if not WebContext.form_data_to_bool(data, 'multi_period'):
+            return []
+        round_datetimes: dict[int, datetime | None] = {}
+        for round_nb in range(1, rounds + 1):
+            try:
+                round_datetimes[round_nb] = WebContext.form_data_to_datetime(
+                    data, f'round_{round_nb}_datetime'
+                )
+            except FormError:
+                round_datetimes[round_nb] = None
+        return period_spans(
+            period_first_rounds(cls._marked_period_rounds(data, rounds), rounds),
+            rounds,
+            round_datetimes,
+            {
+                period.first_round: period.id
+                for period in (tournament.periods if tournament else [])
+                if period.id is not None
+            },
+        )
+
+    @staticmethod
+    def _period_field_templates(
+        event: 'Event', tournament: Tournament | None
+    ) -> list[str]:
+        """The templates of the fields a rating period carries — what a
+        plugin asks for once per slice, such as the registration the slice
+        is submitted under."""
+        if tournament is None:
+            return []
+        results = plugin_manager.hook_for_event(
+            event, 'get_tournament_period_form_fields_template_and_data'
+        )(event=event, tournament=tournament)
+        return [template for template, __ in results]
+
+    @staticmethod
+    def _save_period_plugin_data(
+        database: EventDatabase,
+        stored_tournament: StoredTournament,
+        data: dict[str, str],
+    ) -> None:
+        """Store what the plugins keep about each slice.
+
+        A slice is submitted as a tournament of its own, so a plugin whose
+        service wants one registration per slice has its fields repeated
+        per slice (``period_field_suffix``). Each plugin reads its own
+        field names from the slice's share of the form and never learns
+        that slices exist."""
+        assert stored_tournament.id is not None
+        for stored_period in database.load_tournament_stored_periods(
+            stored_tournament.id
+        ):
+            assert stored_period.id is not None
+            period_data = period_field_data(data, stored_period.id)
+            if not period_data:
+                continue
+            plugin_data: dict[str, dict[str, Any]] = {}
+            for (
+                plugin_id,
+                plugin_data_class,
+            ) in Tournament.plugin_data_class_by_plugin_id().items():
+                previous = plugin_data_class.from_stored_value(
+                    stored_period.plugin_data.get(plugin_id, {})
+                )
+                plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                    period_data, previous_object=previous
+                ).to_stored_value()
+            database.set_tournament_period_plugin_data(stored_period.id, plugin_data)
+
+    @staticmethod
+    def _marked_period_rounds(data: dict[str, str], rounds: int) -> list[int]:
+        """The rounds the arbiter ticked as starting a rating period."""
+        return [
+            round_nb
+            for round_nb in range(2, rounds + 1)
+            if WebContext.form_data_to_bool(data, f'round_{round_nb}_period_start')
+        ]
+
+    @classmethod
+    def _read_tournament_periods(
+        cls,
+        data: dict[str, str],
+        rounds: int,
+        multi_period: bool,
+        round_datetimes: dict[int, datetime | None],
+        errors: dict[str, str],
+    ) -> list[StoredTournamentPeriod]:
+        """Read the tournament's rating periods from the form.
+
+        Round 1 starts one whatever the form says, and a tournament that is
+        not multi-period has that period alone. A period longer than FIDE
+        allows is reported on the round that starts it, which is where the
+        arbiter can split it."""
+        if not multi_period:
+            # Not a tournament FIDE wants cut up: its single period covers
+            # every round, however long it runs.
+            return [StoredTournamentPeriod(id=None, tournament_id=0, first_round=1)]
+        first_rounds = period_first_rounds(
+            cls._marked_period_rounds(data, rounds), rounds
+        )
+        for span in period_spans(first_rounds, rounds, round_datetimes):
+            if span.too_long:
+                errors[f'period_{span.first_round}'] = period_too_long_message(span)
+        return [
+            StoredTournamentPeriod(id=None, tournament_id=0, first_round=first_round)
+            for first_round in first_rounds
+        ]
 
     @staticmethod
     def _rule_set_config_form_value(config_field: RuleSetField, value: Any) -> str:
@@ -1334,6 +1511,7 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: FromQuery[int | None] = None,
         rounds: FromQuery[str | None] = None,
         date_range: FromQuery[str | None] = None,
+        multi_period: FromQuery[str | None] = None,
     ) -> Template:
         """Return just the schedule section for an outerHTML swap.
 
@@ -1376,7 +1554,19 @@ class TournamentAdminController(BaseEventAdminController):
             if key.startswith('round_') and key.endswith('_datetime')
         }
 
-        schedule_form_data: dict[str, str] = {}
+        marked_rounds = {
+            int(key.removeprefix('round_').removesuffix('_period_start'))
+            for key, value in request.query_params.items()
+            if key.startswith('round_') and key.endswith('_period_start') and value
+        }
+
+        # Fields a period carries (the registration it is submitted under)
+        # come back with the request and have to survive the re-render.
+        schedule_form_data: dict[str, str] = {'multi_period': multi_period or ''} | {
+            field: value
+            for field, value in request.query_params.items()
+            if '_period_' in field
+        }
         has_any_value = False
         for round_num in range(1, rounds_value + 1):
             field = f'round_{round_num}_datetime'
@@ -1390,6 +1580,9 @@ class TournamentAdminController(BaseEventAdminController):
                 )
                 if dt:
                     has_any_value = True
+            schedule_form_data[f'round_{round_num}_period_start'] = (
+                'on' if round_num in marked_rounds else ''
+            )
 
         # evaluate if the schedule section should be open or collapsed
         # if collapsed it should remain collapsed
@@ -1407,6 +1600,11 @@ class TournamentAdminController(BaseEventAdminController):
             'force_schedule_open': force_schedule_open,
             'schedule_min_date': format_date(min_date),
             'schedule_max_date': format_date(max_date),
+            'dates_exceed_period': dates_exceed_period(min_date, max_date),
+            'period_spans': self._form_data_period_spans(
+                schedule_form_data, rounds_value, tournament
+            ),
+            'period_field_templates': self._period_field_templates(event, tournament),
         }
 
         return HTMXTemplate(
@@ -1473,6 +1671,30 @@ class TournamentAdminController(BaseEventAdminController):
 
                 database.update_stored_tournament(stored_tournament)
                 assert stored_tournament.id is not None
+                database.set_tournament_periods(
+                    stored_tournament.id,
+                    [
+                        stored_period.first_round
+                        for stored_period in (
+                            stored_tournament.stored_tournament_periods
+                        )
+                    ],
+                )
+                self._save_period_plugin_data(database, stored_tournament, data)
+                # A slice merged into its neighbour takes the tie-break
+                # setting that named it with it, rather than leaving the
+                # tournament reading a slice it no longer has.
+                if stored_tournament.tie_break_rating not in (
+                    '',
+                    TIE_BREAK_RATING_BY_ROUND,
+                ) and stored_tournament.tie_break_rating not in {
+                    str(stored_period.id)
+                    for stored_period in database.load_tournament_stored_periods(
+                        stored_tournament.id
+                    )
+                }:
+                    stored_tournament.tie_break_rating = ''
+                    database.update_stored_tournament(stored_tournament)
                 database.reseed_tie_breaks_on_pairing_change(
                     stored_tournament.id,
                     tournament.stored_tournament.pairing,
@@ -1766,12 +1988,23 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: FromPath[int],
         exporter_id: FromPath[str],
+        period_id: FromQuery[int | None] = None,
     ) -> File | Template:
         web_context = TournamentAdminWebContext(
             request, tournament_id, exporter_id=exporter_id
         )
         tournament = web_context.get_admin_tournament()
         exporter = web_context.get_admin_exporter()
+        # A slice is exported as the tournament FIDE receives it; without
+        # one the file covers the tournament entire.
+        period = next(
+            (
+                candidate
+                for candidate in tournament.periods
+                if candidate.id == period_id
+            ),
+            None,
+        )
 
         temp_file = NamedTemporaryFile(
             delete=False,
@@ -1781,10 +2014,13 @@ class TournamentAdminController(BaseEventAdminController):
         )
         try:
             with temp_file:
-                exporter.dump_to_file(temp_file, tournament)
+                exporter.dump_to_file(temp_file, tournament, period)
             return File(
                 path=temp_file.name,
-                filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
+                filename=(
+                    f'{exporter.file_name(tournament, period)}'
+                    f'.{exporter.file_extension}'
+                ),
             )
         except Exception as exception:
             temp_file.close()
@@ -2107,7 +2343,25 @@ class TournamentAdminController(BaseEventAdminController):
         }
 
     @staticmethod
+    def _tie_break_rating_options(tournament: Tournament) -> dict[str, str]:
+        """Which of a player's ratings a rating-based tie-break may read.
+
+        Empty for a tournament rated in one go, where a player holds one
+        rating and there is nothing to choose."""
+        if len(tournament.periods) < 2:
+            return {}
+        return {
+            '': _('First rating'),
+            TIE_BREAK_RATING_BY_ROUND: _("Each game's own period"),
+        } | {
+            str(period.id): _('Period %(index)d (%(rounds)s)')
+            % {'index': period.index + 1, 'rounds': period.rounds_str}
+            for period in tournament.periods
+        }
+
+    @classmethod
     def _tie_breaks_modal_context(
+        cls,
         tournament: Tournament,
         success_message: str | None = None,
         save_as_error: str | None = None,
@@ -2120,6 +2374,7 @@ class TournamentAdminController(BaseEventAdminController):
             # list; the standings-oriented preset sets do not apply.
             return {
                 'modal': 'tie_breaks',
+                'tie_break_rating_options': {},
                 'tie_break_set_select_options': {},
                 'tie_break_set_custom_names': [],
                 'tie_break_set_save_as_error': None,
@@ -2153,6 +2408,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         context: dict[str, Any] = {
             'modal': 'tie_breaks',
+            'tie_break_rating_options': cls._tie_break_rating_options(tournament),
             'tie_break_set_select_options': select_options,
             'tie_break_set_custom_names': existing_custom_set_names,
             'tie_break_set_save_as_error': save_as_error,
@@ -2438,6 +2694,31 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
         tournament.tie_break_configuration.reorder(data.get('tie_break_ids', []))
+        return self._admin_base_event_render(
+            web_context.template_context | self._tie_breaks_modal_context(tournament)
+        )
+
+    @patch(
+        path='/tournament-tie-break-rating/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-tie-break-rating',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tournament_tie_break_rating(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Set which of a player's ratings the rating-based tie-breaks
+        read (C.07:10)."""
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        tournament.set_tie_break_rating(
+            WebContext.form_data_to_str(data, 'tie_break_rating') or ''
+        )
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )

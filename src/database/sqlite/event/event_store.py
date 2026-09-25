@@ -247,6 +247,26 @@ class StoredProhibitedPairingGroup:
 
 
 @dataclass
+class StoredTournamentPeriod:
+    """A rating period of a tournament: the slice of at most 30 days that
+    is reported to FIDE as a tournament of its own. ``first_round`` is the
+    round it starts at, and it runs to the round before the next period's
+    — so the periods of a tournament are contiguous and cover every round.
+    A tournament of 30 days or less has a single period starting at round
+    1, and every read path resolves against it as it does today."""
+
+    id: int | None
+    tournament_id: int
+    first_round: int = 1
+    # A slice is submitted as a tournament of its own, so a plugin whose
+    # service wants one registration per slice keeps that slice's
+    # identifiers here rather than on the tournament.
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
+
+
+@dataclass
 class StoredTournamentPlayer:
     tournament_id: int = 0
     player_id: int = 0
@@ -256,11 +276,32 @@ class StoredTournamentPlayer:
 
 
 @dataclass
+class StoredPlayerPeriod:
+    """A player as one slice of a long tournament knew them.
+
+    FIDE B.01 1.1.4 has both the ratings and the titles of a slice being
+    those in force while it was played, so a slice records the pair. An
+    empty title is a title held, or not held, exactly as the player's own
+    columns say."""
+
+    ratings: dict[int, dict[str, int | None]] = field(
+        default_factory=dict[int, dict[str, int | None]]
+    )
+    title: str = ''
+    women_title: str = ''
+
+
+@dataclass
 class StoredPlayer:
     id: int | None
     last_name: str = ''
     ratings: dict[int, dict[str, int | None]] = field(
         default_factory=dict[int, dict[str, int | None]]
+    )
+    # The rating periods, by id, where what the player held differed from
+    # the columns above, which are the first slice's.
+    periods: dict[int, StoredPlayerPeriod] = field(
+        default_factory=dict[int, StoredPlayerPeriod]
     )
     first_name: str | None = None
     date_of_birth: date | None = None
@@ -332,6 +373,8 @@ class StoredTournament:
     prohibited_pairing_dimension: str | None = None
     prohibited_pairing_dimension_is_hard: bool = True
     round_robin_participation_rule: bool = True
+    multi_period: bool = False
+    tie_break_rating: str = ''
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )
@@ -359,6 +402,9 @@ class StoredTournament:
     )
     stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
         default_factory=list['StoredProhibitedPairingGroup']
+    )
+    stored_tournament_periods: list[StoredTournamentPeriod] = field(
+        default_factory=list[StoredTournamentPeriod]
     )
 
     # Plugins can add their own tournament data
