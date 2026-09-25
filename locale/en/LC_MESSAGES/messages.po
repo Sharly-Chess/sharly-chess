@@ -735,6 +735,12 @@ msgstr ""
 msgid "Access log files"
 msgstr ""
 
+msgid "Access over the internet"
+msgstr ""
+
+msgid "Access over the internet has stopped"
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
@@ -1090,10 +1096,19 @@ msgstr ""
 msgid "Anonymous"
 msgstr ""
 
+msgid "Another machine signed in to this account is already serving this address."
+msgstr ""
+
 msgid "Antigua and Barbuda"
 msgstr ""
 
 msgid "Any number of devices can be controlled by the same display controller."
+msgstr ""
+
+msgid "Anyone with this address can reach the public screens."
+msgstr ""
+
+msgid "Apart from being public: this decides whether it leaves the venue at all, not who may look at it."
 msgstr ""
 
 msgid "Applicant's federation"
@@ -4897,6 +4912,9 @@ msgstr ""
 msgid "Main group"
 msgstr ""
 
+msgid "Making this server reachable…"
+msgstr ""
+
 msgid "Malawi"
 msgstr ""
 
@@ -6005,6 +6023,9 @@ msgid "Not logged in"
 msgstr ""
 
 msgid "Not paired for this round"
+msgstr ""
+
+msgid "Not reachable yet: this server is not shared over the internet. Turn it on in the Networks tab of the application window."
 msgstr ""
 
 msgid "Not specified"
@@ -7391,6 +7412,16 @@ msgstr ""
 msgid "Ratings update"
 msgstr ""
 
+msgid "Re-generate"
+msgstr ""
+
+#, python-format
+msgid "Reachable at %(address)s."
+msgstr ""
+
+msgid "Reachable over the internet"
+msgstr ""
+
 msgid "Read the documentation"
 msgstr ""
 
@@ -7451,6 +7482,12 @@ msgid "Reminder: you might have to update the players' information before printi
 msgstr ""
 
 msgid "Reminder: you might have to update the players' ratings before pairing."
+msgstr ""
+
+msgid "Remote access is not available."
+msgstr ""
+
+msgid "Remote access to the screens over the internet"
 msgstr ""
 
 msgid "Remove"
@@ -8234,6 +8271,9 @@ msgstr ""
 msgid "Serif"
 msgstr ""
 
+msgid "Serve it from here"
+msgstr ""
+
 msgid "Server is already running!"
 msgstr ""
 
@@ -8392,7 +8432,25 @@ msgstr ""
 msgid "Sierra Leone"
 msgstr ""
 
+msgid "Sign in"
+msgstr ""
+
+msgid "Sign in to make this server reachable from outside the venue."
+msgstr ""
+
+msgid "Sign out"
+msgstr ""
+
 msgid "Signature"
+msgstr ""
+
+msgid "Signed in for remote access."
+msgstr ""
+
+msgid "Signed out of remote access."
+msgstr ""
+
+msgid "Signing out…"
 msgstr ""
 
 msgid "Simple criteria"
@@ -8742,6 +8800,12 @@ msgid "Tags"
 msgstr ""
 
 msgid "Tajikistan"
+msgstr ""
+
+msgid "Taking a new address…"
+msgstr ""
+
+msgid "Taking this server off the internet…"
 msgstr ""
 
 msgid "Talk to us on Discord"
@@ -9288,6 +9352,10 @@ msgstr ""
 msgid "The pairing numbers of the tournament in descending order."
 msgstr ""
 
+#, python-brace-format
+msgid "The password must be at least {length} characters long."
+msgstr ""
+
 msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
 msgstr ""
 
@@ -9401,6 +9469,18 @@ msgid "The selected {competitors} have been merged."
 msgstr ""
 
 msgid "The settings are set and can no longer be changed."
+msgstr ""
+
+msgid "The sign-in could not be completed, consult the logs."
+msgstr ""
+
+msgid "The sign-in did not complete."
+msgstr ""
+
+msgid "The sign-in took too long, please try again."
+msgstr ""
+
+msgid "The sign-in was refused."
 msgstr ""
 
 msgid "The source event and tournament will not be deleted."
@@ -9787,6 +9867,12 @@ msgstr ""
 msgid "This screen type already belongs to a menu."
 msgstr ""
 
+msgid ""
+"This server will be given a different address on the internet.\n"
+"\n"
+"Every QR code and link already printed for the current address will stop working, and it cannot be given back."
+msgstr ""
+
 #, python-brace-format
 msgid "This set contains [{name}] twice in a row."
 msgstr ""
@@ -10016,6 +10102,10 @@ msgstr ""
 msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
+#, python-brace-format
+msgid "Too many failed attempts, please try again in {minutes} minutes."
+msgstr ""
+
 msgid "Too much information to display on a single projector?"
 msgstr ""
 
@@ -10167,6 +10257,12 @@ msgid "Turkiye"
 msgstr ""
 
 msgid "Turkmenistan"
+msgstr ""
+
+msgid "Turn off internet access"
+msgstr ""
+
+msgid "Turn on internet access"
 msgstr ""
 
 msgid "Two-sided (foldable)"
@@ -10509,6 +10605,9 @@ msgid "Use Fore Buchholz"
 msgstr ""
 
 msgid "Use a data source to import players from their identifier."
+msgstr ""
+
+msgid "Use a new address"
 msgstr ""
 
 msgid "Use a tournament's criteria"
@@ -11693,6 +11792,13 @@ msgstr ""
 
 #, python-brace-format
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"{reason}\n"
+"\n"
+"The screens are still served on the local network."
 msgstr ""
 
 #, python-brace-format
