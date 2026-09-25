@@ -10,6 +10,7 @@ from requests import Session
 
 from common.logger import get_logger
 from data.event import Event
+from data.player import Player
 from data.tournament import Tournament
 from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
@@ -61,6 +62,16 @@ def _forfeit_code(result: Result) -> str:
             return 'U'
         case _:
             return ''
+
+
+def _date_of_birth(player: Player) -> str:
+    """Chess-Results ``dob``: ``yyyymmdd`` when the full date is known,
+    ``yyyy0000`` when only the year is, empty otherwise."""
+    if player.date_of_birth:
+        return player.date_of_birth.strftime('%Y%m%d')
+    if player.year_of_birth:
+        return f'{player.year_of_birth}0000'
+    return ''
 
 
 def _upload_federation(event: Event) -> str:
@@ -320,7 +331,7 @@ class ChessResultsSession(Session):
                     'rtg': str(p.rating),
                     'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                     'rtgnat': str(getattr(ratings, 'national', '') or ''),
-                    'dob': str(p.year_of_birth),
+                    'dob': _date_of_birth(p),
                     'sex': ChessResultsPlayerGender.get_outer_value(p.gender) or '',
                     'fed': p.federation.name,
                     'board': '',
@@ -506,7 +517,7 @@ class ChessResultsSession(Session):
                         'rtg': str(member_tp.rating if member_tp else ''),
                         'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                         'rtgnat': str(getattr(ratings, 'national', '') or ''),
-                        'dob': str(player.year_of_birth or ''),
+                        'dob': _date_of_birth(player),
                         'sex': ChessResultsPlayerGender.get_outer_value(player.gender)
                         or '',
                         'fed': player.federation.name,

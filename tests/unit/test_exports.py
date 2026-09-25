@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from datetime import date
 from sqlite3 import IntegrityError
 from unittest import TestCase
 from unittest.mock import PropertyMock, patch
@@ -181,6 +182,34 @@ class TournamentExporterTestCase(TestCase):
         )
         assert changes_by_id[str(with_k_factor.id)] not in ('', '0')
         assert changes_by_id[str(tournament_players[1].id)] == ''
+
+    def test_chess_results_uploads_the_date_of_birth(self):
+        """``dob`` carries the full date as ``yyyymmdd`` when it is known,
+        ``yyyy0000`` when only the year is, and is empty otherwise."""
+        with_date, with_year, without = list(
+            self.tournament.tournament_players_by_pairing_number.values()
+        )[:3]
+        with_date.stored_player.date_of_birth = date(2009, 3, 7)
+        with_year.stored_player.date_of_birth = None
+        with_year.stored_player.year_of_birth = 1994
+        without.stored_player.date_of_birth = None
+        without.stored_player.year_of_birth = None
+
+        with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):
+            xml = ChessResultsSession(self.tournament).build_tournament_xml(
+                self.tournament,
+                sid='test-sid',
+                tnr='test-key',
+                creator_id='test-creator',
+                state=None,
+            )
+        dob_by_id = {
+            player.attrib['id']: player.attrib['dob']
+            for player in ET.fromstring(xml).findall('./players/player')
+        }
+        assert dob_by_id[str(with_date.id)] == '20090307'
+        assert dob_by_id[str(with_year.id)] == '19940000'
+        assert dob_by_id[str(without.id)] == ''
 
     def test_chess_results_getkey_escapes_tournament_name(self):
         """A tournament name with XML metacharacters (e.g. ``R&B``) must be

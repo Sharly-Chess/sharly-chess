@@ -200,7 +200,7 @@ This section is the one that allows the platform to authenticate the request.
 | Rtg | The main rating shown in the players lists (used to sort the starting rank) | O |
 | Rtgfide | The FIDE rating | O |
 | Rtgnat | The national rating | O |
-| Dob | The player's date of birth, in dd.mm.yyyy format. If only the year is known, then yyyy | O |
+| Dob | The player's date of birth, in yyyymmdd format. If only the year is known, then yyyy0000 | O |
 | Sex | `w` if the player is a woman, `m` if the player is a man, `c` if the player is a computer | O |
 | Fed | The player's federation (3-character FIDE code) | O |
 | Board | `0` for individual tournaments, otherwise the board number in the team | M |
