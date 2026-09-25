@@ -177,16 +177,35 @@ def _fmt(value: float) -> str:
     return str(int(value)) if value == int(value) else str(value)
 
 
-class _FfeTeamCupRuleSet(RuleSet, ABC):
-    """Shared scaffold for the two FFE team cups. Both share the
-    4-board team format, MP / GP scoring and colour rule; only roster
-    constraints (max size, Elo caps, parity) differ — those land in a
-    later phase."""
+class FfeTeamCompetitionRuleSet(RuleSet, ABC):
+    """A rule set for an FFE team competition, which can name where the
+    FFE site's team module expects its results."""
 
     @property
     @override
     def event_type(self) -> EventType:
         return EventType.TEAM
+
+    @staticmethod
+    def ffe_competition_id() -> int | None:
+        """Id of the competition in the FFE site's team module
+        (``SelectCompetition`` on ``Equipes.aspx``), for the results
+        upload; ``None`` for a competition the module does not manage."""
+        return None
+
+    @property
+    def ffe_division_name(self) -> str | None:
+        """Name of the site division (``SelectDivision``) matching the
+        configured phase, used to pre-select it in the tournament form;
+        ``None`` when the rule set cannot tell."""
+        return None
+
+
+class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
+    """Shared scaffold for the two FFE team cups. Both share the
+    4-board team format, MP / GP scoring and colour rule; only roster
+    constraints (max size, Elo caps, parity) differ — those land in a
+    later phase."""
 
     @override
     def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
@@ -210,20 +229,6 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         each competition turns it off for the phases its regulations
         exempt, from its own fields."""
         return True
-
-    @staticmethod
-    def ffe_competition_id() -> int | None:
-        """Id of the competition in the FFE site's team module
-        (``SelectCompetition`` on ``Equipes.aspx``), for the results
-        upload; ``None`` for a cup the module does not manage."""
-        return None
-
-    @property
-    def ffe_division_name(self) -> str | None:
-        """Name of the site division (``SelectDivision``) matching the
-        configured phase, used to pre-select it in the tournament form;
-        ``None`` when the rule set cannot tell."""
-        return None
 
     @property
     @override

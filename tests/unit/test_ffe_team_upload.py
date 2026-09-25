@@ -33,6 +33,7 @@ from plugins.ffe.ffe_upload_status import IncompatibleFFEUploadStatus
 from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.papi_mappers import PapiColor, PapiResult
 from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
+from plugins.fra_schools.fra_schools_rule_sets import ChampionnatScolaireRuleSet
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result, ScoreType
 
@@ -138,6 +139,26 @@ class SitePagesTestCase(TestCase):
     def test_the_match_report_form_has_four_boards(self) -> None:
         self.assertEqual(
             FFETeamSession.parse_board_count(page('match_report_form.html')), 4
+        )
+
+
+@pytest.mark.unit
+class RuleSetCompetitionTestCase(TestCase):
+    """The school championship goes to the site's school competitions,
+    its national final to the division of the national finals."""
+
+    def test_the_school_championship_names_its_competition(self) -> None:
+        self.assertEqual(
+            FFEUtils.rule_set_team_competition_id(ChampionnatScolaireRuleSet({})), 11
+        )
+
+    def test_only_the_national_final_names_its_division(self) -> None:
+        self.assertIsNone(
+            ChampionnatScolaireRuleSet({'phase': 'academic'}).ffe_division_name
+        )
+        self.assertEqual(
+            ChampionnatScolaireRuleSet({'phase': 'national-final'}).ffe_division_name,
+            'Finales Nationales',
         )
 
 
