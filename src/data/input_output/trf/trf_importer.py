@@ -370,7 +370,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         if not tie_breaks:
             tie_breaks = standard_tie_breaks
         if tie_breaks:
-            __, unknown = self._read_tie_breaks(tie_breaks, event)
+            __, unknown = self.read_tie_breaks(tie_breaks, event)
             if unknown:
                 features.append(
                     _('{code} Unknown tie-breaks: {tie_breaks}').format(
@@ -379,8 +379,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
                 )
 
-        if tournament.accelerated_rounds and not self._acceleration_is_importable(
-            tournament
+        if tournament.accelerated_rounds and not (
+            self._acceleration_is_importable(tournament)
+            or self._acceleration_is_in_encoded_type(tournament)
         ):
             features.append(_('250 Accelerated rounds'))
         if tournament.abnormal_points_assignments and not tournament.teams:
@@ -417,6 +418,17 @@ class TrfTournamentImporter(FileTournamentImporter):
         return not (
             variation is None or variation.id != StandardSwissVariation.static_id()
         )
+
+    @staticmethod
+    def _acceleration_is_in_encoded_type(trf_tournament: TrfTournament) -> bool:
+        """A published accelerated system (Baku) is imported from its 192
+        encoded type, which the 250 records written alongside only restate."""
+        from data.pairings.acceleration import AcceleratedSwissVariation
+
+        variation = TrfEncodedType.get_supported_pairing_variation(
+            trf_tournament.encoded_type or 'FIDE_DUTCH_2026'
+        )
+        return isinstance(variation, AcceleratedSwissVariation)
 
     def _populate_acceleration(
         self,
@@ -1180,9 +1192,12 @@ class TrfTournamentImporter(FileTournamentImporter):
                 database.replace_team_round_lineup(team_id, round_, lineup_entries)
 
     @classmethod
-    def _read_tie_breaks(
+    def read_tie_breaks(
         cls, tie_break_acronyms: list[str], event: Event
     ) -> tuple[list[TieBreak], list[str]]:
+        """The tie-breaks a 202 or 212 record names, and the acronyms among
+        them this program has no tie-break for. The checker reads the list
+        as well, to say what the standings were checked against."""
         tie_breaks: list[TieBreak] = []
         unknown_acronyms: list[str] = []
         manager = TieBreakManager(event)
@@ -1384,7 +1399,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             'PTS',
             *trf_tournament.tie_breaks,
         ]
-        tie_breaks = cls._read_tie_breaks(trf_tie_breaks, event)[0]
+        tie_breaks = cls.read_tie_breaks(trf_tie_breaks, event)[0]
         stored_tournament.stored_tie_breaks = [
             tie_break.to_stored_value() for tie_break in tie_breaks
         ]

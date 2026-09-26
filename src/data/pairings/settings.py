@@ -193,7 +193,14 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
         their names, and so could put a different player at the top of
         the list than the file does. Only a tournament whose players are
         not numbered yet is ranked by rating.
+
+        In a team tournament the initial-colour goes to the first-team of a
+        round-1 match when its TPN is odd, and the opposite colour when it is
+        even (C.04.6 art. 4.3.1), so it is read back that way from the first
+        match with a board.
         """
+        if tournament.is_team_tournament:
+            return cls._computed_team_value(tournament)
         return next(
             (
                 player.pairings[1].color
@@ -209,6 +216,28 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
             ),
             None,
         )
+
+    @classmethod
+    def _computed_team_value(cls, tournament: 'Tournament') -> BoardColor | None:
+        for team_board in tournament.get_round_team_boards(1):
+            stb = team_board.stored_team_board
+            if stb.team_b_id is None or not team_board.boards:
+                continue
+            white_team_id, _black_team_id = team_board.board_team_ids(
+                team_board.boards[0]
+            )
+            teams = [
+                tournament.teams_by_id[stb.team_a_id],
+                tournament.teams_by_id[stb.team_b_id],
+            ]
+            if any(team.pairing_number is None for team in teams):
+                continue
+            first_team = min(teams, key=lambda team: team.pairing_number or 0)
+            first_is_white = first_team.id == white_team_id
+            if (first_team.pairing_number or 0) % 2 == 0:
+                first_is_white = not first_is_white
+            return BoardColor.WHITE if first_is_white else BoardColor.BLACK
+        return None
 
     @classmethod
     def from_stored_value(cls, value: Any) -> BoardColor:

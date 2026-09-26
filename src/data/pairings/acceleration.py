@@ -1049,11 +1049,6 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         return 'FIDE_DUTCH_2026_BAKU'
 
     @property
-    def include_accelerated_rules_in_trf(self) -> bool:
-        # Acceleration already defined by the encoded type
-        return False
-
-    @property
     def are_groups_editable(self) -> bool:
         return False
 
@@ -1093,20 +1088,27 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         rounds = tournament.rounds
         draw_points = tournament.draw_points
         win_points = tournament.win_points
-        return [
+        full_point_rounds = self.full_point_rounds(rounds)
+        accelerated_rounds = self.accelerated_rounds(rounds)
+        rules = [
             AccelerationRule(
                 vpoints=win_points,
                 first_round=1,
-                last_round=self.full_point_rounds(rounds),
-                group=AccelerationGroup.A,
-            ),
-            AccelerationRule(
-                vpoints=draw_points,
-                first_round=self.full_point_rounds(rounds) + 1,
-                last_round=self.accelerated_rounds(rounds),
+                last_round=full_point_rounds,
                 group=AccelerationGroup.A,
             ),
         ]
+        # Up to two rounds, every accelerated round gives the full point.
+        if full_point_rounds < accelerated_rounds:
+            rules.append(
+                AccelerationRule(
+                    vpoints=draw_points,
+                    first_round=full_point_rounds + 1,
+                    last_round=accelerated_rounds,
+                    group=AccelerationGroup.A,
+                )
+            )
+        return rules
 
     @classmethod
     def _get_group_a_tooltip_lines(
