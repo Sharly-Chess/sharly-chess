@@ -2183,7 +2183,7 @@ class PlayerAdminController(BaseEventAdminController):
                 value = content_by_column_id[column.id][index]
                 try:
                     column.augment_stored_player_with_tournament(
-                        tournament, stored_player, value
+                        event, tournament, stored_player, value
                     )
                     if (
                         column.is_unique
@@ -2275,7 +2275,7 @@ class PlayerAdminController(BaseEventAdminController):
                         continue
                     value = content_by_column_id[column.id][index]
                     column.augment_stored_player_with_tournament(
-                        tournament, stored_player, value
+                        event, tournament, stored_player, value
                     )
                 if not in_rating_period:
                     keep_reliable_k_factors(stored_player)
