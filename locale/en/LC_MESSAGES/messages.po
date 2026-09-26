@@ -5786,6 +5786,9 @@ msgstr ""
 msgid "No prizes."
 msgstr ""
 
+msgid "No prohibited pairings were used for this round."
+msgstr ""
+
 msgid "No public events."
 msgstr ""
 
@@ -10287,10 +10290,6 @@ msgid "Unknown federation [{federation}]."
 msgstr ""
 
 msgid "Unknown federation."
-msgstr ""
-
-#, python-brace-format
-msgid "Unknown gender [{gender}]."
 msgstr ""
 
 msgid "Unknown group."
