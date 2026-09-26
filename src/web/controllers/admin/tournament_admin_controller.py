@@ -3,6 +3,7 @@ import random
 from collections import defaultdict, Counter
 from datetime import datetime
 from functools import partial
+from html import escape
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
@@ -1944,11 +1945,29 @@ class TournamentAdminController(BaseEventAdminController):
             importer.check_players_unicity(stored_players)
             importer.check_pairing_inconsistencies(stored_tournament)
             features = importer.get_not_importable_features(event)
+            sections: list[tuple[str, list[str]]] = []
+            if importer.adjustments:
+                sections.append(
+                    (
+                        _(
+                            'This file is in the {version} format. It was '
+                            'completed as follows:'
+                        ).format(version=importer.trf_version),
+                        importer.adjustments,
+                    )
+                )
             if features:
+                sections.append(
+                    (_("The following features won't be imported:"), features)
+                )
+            if sections:
                 message_type = 'warning'
-                message = _("The following features won't be imported:")
-                feature_list = ''.join(f'<li>{feature}</li>' for feature in features)
-                message += f'<ul class="mb-0">{feature_list}</ul>'
+                message = ''.join(
+                    f'{title}<ul class="mb-0">'
+                    + ''.join(f'<li>{escape(item)}</li>' for item in items)
+                    + '</ul>'
+                    for title, items in sections
+                )
 
         except (OptionError, ImporterError) as error:
             message = str(error)

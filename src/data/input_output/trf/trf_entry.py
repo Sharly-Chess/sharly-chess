@@ -103,8 +103,13 @@ class MultipleLinesEntry(TrfEntry):
 
 
 class SingleLineIntEntry(SingleLineEntry):
+    """The leading number of the value: programs append remarks to the
+    counts of 062 / 072 / 082 (``367 (309)``), and a value holding no
+    number is read as none."""
+
     def parse(self, data: str) -> Any:
-        return int(data.strip())
+        match = re.match(r'\s*(\d+)', data)
+        return int(match.group(1)) if match else 0
 
 
 class SingleLineListEntry(SingleLineEntry):
@@ -190,8 +195,8 @@ class PointSystemEntry(SingleLineEntry):
 class PlayerEntry(MultipleLinesEntry):
     LINE_PATTERN = re.compile(
         r'^(?P<id>[ \d]{4}) (?P<gender>[\w ])(?P<title>[\w ]{3}) '
-        r'(?P<name>.{33}) (?P<rating>[ \d]{4}) (?P<federation>[\w ]{3}) '
-        r'(?P<fide_id>[ \d]{11}) (?P<birth_date>.{10}) (?P<points>[ \d.]{4}) '
+        r'(?P<name>.{33}) (?P<rating>[ \d]{4}) (?P<federation>.{3}) '
+        r'(?P<fide_id>.{11}) (?P<birth_date>.{10}) (?P<points>[ \d.,/]{4}) '
         r'(?P<rank>[ \d]{4})(?P<games>(\s\s[ \d]{4} [bsw\- ] [1=0+wdl\-hfuz ]| {10})*)\s*$',
         re.IGNORECASE,
     )
@@ -239,6 +244,24 @@ class PlayerEntry(MultipleLinesEntry):
         if match is None:
             raise self.line_exception(data)
 
+        # Programs put other ids in the FIDE number column, and write the
+        # points with the decimal separator of the machine (``3,5``,
+        # ``3/5``). The text is kept for the importer to report.
+        unreadable: dict[str, str] = {}
+        fide_id_text = match.group('fide_id').strip()
+        fide_id: int | None = None
+        if fide_id_text.isdigit():
+            fide_id = int(fide_id_text)
+        elif fide_id_text:
+            unreadable['fide_id'] = fide_id_text
+        points_text = match.group('points').strip()
+        if re.search(r'[,/]', points_text):
+            unreadable['points'] = points_text
+        try:
+            points = float(re.sub(r'[,/]', '.', points_text) or 0)
+        except ValueError:
+            raise self.line_exception(data) from None
+
         return TrfPlayer(
             id=int(match.group('id')),
             gender=match.group('gender'),
@@ -246,9 +269,10 @@ class PlayerEntry(MultipleLinesEntry):
             name=match.group('name').strip(),
             rating=int_or_default(match.group('rating'), 0),
             federation=match.group('federation').strip(),
-            fide_id=int_or_default(match.group('fide_id')),
+            fide_id=fide_id,
             birth_date=match.group('birth_date').strip(),
-            points=float(match.group('points')),
+            points=points,
+            unreadable=unreadable,
             rank=int_or_default(match.group('rank')),
             # The regex captures each game including its leading
             # two whitespace separators; the parse loop expects games

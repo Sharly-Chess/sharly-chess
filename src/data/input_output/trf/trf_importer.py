@@ -1,5 +1,7 @@
+import io
 from collections import defaultdict
 from datetime import datetime, date, time
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from common.exception import ImporterError
@@ -25,6 +27,7 @@ from data.input_output.trf.trf_mappers import (
     TrfEncodedType,
     TrfPointSystemResult,
 )
+from data.input_output.trf.trf_legacy import TrfLegacyAdapter, TrfVersion
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.input_output.trf.trf_utils import parse_trf_date, parse_trf_year
 from data.pairings.settings import ColorSeedSetting
@@ -140,8 +143,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         file_path = self._get_option(FileOption).value
         assert file_path is not None
         tournament_rating = self._get_option(TournamentRatingOption).value
-        with open(file_path, encoding='utf-8') as file:
-            trf_tournament = TrfSerializer.load(file)
+        trf_tournament = self._load_trf_file(file_path)
         self._check_team_event_compatibility(event, trf_tournament)
         stored_tournament = self._read_trf_tournament(
             event, trf_tournament, stored_tournament
@@ -283,6 +285,38 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         return stored_tournament, stored_players
 
+    def _load_trf_file(self, file_path: Path) -> TrfTournament:
+        """The file as TRF26. Files older than UTF-8's spread carry the
+        Windows code page of the program that wrote them."""
+        content = file_path.read_bytes()
+        adjustments: list[str] = []
+        try:
+            text = content.decode('utf-8-sig')
+        except UnicodeDecodeError:
+            text = content.decode('cp1252', errors='replace')
+            adjustments.append(
+                _('The file is not in UTF-8: it was read as Windows-1252 (Latin-1).')
+            )
+        trf_tournament = TrfSerializer.load(io.StringIO(text, newline=None))
+        if not trf_tournament.players:
+            raise ImporterError(_('The file holds no player record (001).'))
+        adapter = TrfLegacyAdapter(trf_tournament)
+        adapter.adapt()
+        self._trf_version = adapter.version
+        self._adjustments = adjustments + adapter.adjustments
+        return trf_tournament
+
+    @property
+    def trf_version(self) -> TrfVersion:
+        """The version of the file last read."""
+        return self._trf_version
+
+    @property
+    def adjustments(self) -> list[str]:
+        """What was filled in for the file last read, the records of TRF26
+        its version lacks."""
+        return self._adjustments
+
     def _apply_prohibited_pairings(self, tournament: 'Tournament') -> None:
         """Resolve the parsed 260 pairing numbers to member ids (players
         for an individual tournament, teams for a team one) and write
@@ -318,8 +352,7 @@ class TrfTournamentImporter(FileTournamentImporter):
     def get_not_importable_features(self, event: Event) -> list[str]:
         file_path = self._get_option(FileOption).value
         assert file_path is not None
-        with open(file_path, encoding='utf-8') as file:
-            tournament = TrfSerializer.load(file)
+        tournament = self._load_trf_file(file_path)
         features: list[str] = []
         if tournament.teams and not event.is_team_event:
             features.append(
@@ -396,7 +429,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                 ).format(federation=event.federation)
             )
         if tournament.xx_fields:
-            features.append(_('XX fields'))
+            features.append(
+                _('XX fields: {fields}').format(fields=', '.join(tournament.xx_fields))
+            )
         if tournament.bb_fields:
             features.append(_('BB fields'))
 

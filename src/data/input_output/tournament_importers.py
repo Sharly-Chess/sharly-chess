@@ -470,7 +470,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                             player_id=other_player_id
                         )
                     )
-                if round_ not in pairings_by_round_by_player_id[player_id]:
+                if round_ not in pairings_by_round_by_player_id[other_player_id]:
                     raise ImporterError(
                         _('Player [{player_id}] - round {round}: ').format(
                             player_id=other_player_id, round=round_

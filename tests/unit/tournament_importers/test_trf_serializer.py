@@ -508,8 +508,8 @@ class TestTrfSerializer(TestCase):
             self.assertEqual(entry.parse(line[4:]), expected, line)
             self.assertEqual('299 ' + entry.format(expected), line, line)
 
-    def test_load_example_trf16(self):
-        filename = TRF_PATH / 'example_trf16.trf'
+    def test_load_example_trf06(self):
+        filename = TRF_PATH / 'example_trf06.trf'
         with open(filename) as f:
             tour = TrfSerializer.load(f)
 
@@ -541,6 +541,23 @@ class TestTrfSerializer(TestCase):
         self.assertEqual(tour.players[114].rating, 1994)
         self.assertEqual(tour.players[81].birth_date, '1965.09.07')
         self.assertEqual(tour.players[74].games[4], TrfGame(188, 'w', '1', 5))
+
+    def test_wrapped_player_lines_are_joined(self):
+        player = TrfPlayer(
+            id=1, name='Doe, John', games=[TrfGame(2, 'w', '1', 1)], points=1.0
+        )
+        line = TrfSerializer.dumps(TrfTournament(players=[player])).strip('\n')
+        line = line.splitlines()[-1]
+        tour = TrfSerializer.loads(f'{line}\n     2 b 0\n          \n')
+        self.assertEqual(
+            tour.players[0].games, [TrfGame(2, 'w', '1', 1), TrfGame(2, 'b', '0', 2)]
+        )
+        self.assertEqual(tour.joined_player_lines, [1])
+
+    def test_count_records_read_their_leading_number(self):
+        tour = TrfSerializer.loads('062 367 (309)\n072 none\n')
+        self.assertEqual(tour.num_players, 367)
+        self.assertEqual(tour.num_rated_players, 0)
 
     def test_load_example_trf26(self):
         filename = TRF_PATH / 'example_trf26.trf'
@@ -690,8 +707,8 @@ class TestTrfSerializer(TestCase):
             '9 w  3.0    13 b  2.5',
         )
 
-    def test_example_trf16_chinese_whispers(self):
-        self.chinese_whispers_from_file('example_trf16')
+    def test_example_trf06_chinese_whispers(self):
+        self.chinese_whispers_from_file('example_trf06')
 
     def test_example_trf26_chinese_whispers(self):
         self.chinese_whispers_from_file('example_trf26')
