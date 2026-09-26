@@ -232,6 +232,10 @@ class TournamentImporterTestCase(TestCase):
             Result.ZERO_POINT_BYE,
         )
 
+    def test_trf_file_without_players_is_refused(self):
+        with self.assertRaisesRegex(ImporterError, '001'):
+            self._import_trf(TrfTournament(name='Empty'))
+
     def test_trf_game_with_result_against_missing_player_is_refused(self):
         players = [self._trf_player(number, gender='m') for number in range(1, 3)]
         players[0].games = [TrfGame(9, 'b', '1', 1)]

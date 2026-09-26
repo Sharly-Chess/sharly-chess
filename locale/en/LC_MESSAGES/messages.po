@@ -9160,6 +9160,9 @@ msgstr ""
 msgid "The features your federation, your software or your events need can be added to Sharly Chess as a plugin."
 msgstr ""
 
+msgid "The file holds no player record (001)."
+msgstr ""
+
 msgid "The file is not a valid template archive (expected a zipped file)."
 msgstr ""
 

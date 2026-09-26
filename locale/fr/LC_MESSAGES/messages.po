@@ -9162,6 +9162,9 @@ msgstr "Le type d'événement ne peut pas être modifié après la création."
 msgid "The features your federation, your software or your events need can be added to Sharly Chess as a plugin."
 msgstr "Les fonctionnalités dont votre fédération, votre logiciel ou vos évènements ont besoin peuvent être ajoutées à Sharly Chess sous forme de plugin."
 
+msgid "The file holds no player record (001)."
+msgstr "Le fichier ne contient aucun enregistrement de joueur·euse (001)."
+
 msgid "The file is not a valid template archive (expected a zipped file)."
 msgstr "Le fichier n’est pas une archive de modèle valide (fichier .zip compressé attendu)."
 

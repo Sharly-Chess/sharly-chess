@@ -298,6 +298,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                 _('The file is not in UTF-8: it was read as Windows-1252 (Latin-1).')
             )
         trf_tournament = TrfSerializer.load(io.StringIO(text, newline=None))
+        if not trf_tournament.players:
+            raise ImporterError(_('The file holds no player record (001).'))
         adapter = TrfLegacyAdapter(trf_tournament)
         adapter.adapt()
         self._trf_version = adapter.version
