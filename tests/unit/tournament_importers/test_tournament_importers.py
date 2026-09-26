@@ -6,6 +6,7 @@ from unittest import TestCase
 import pytest
 
 from common import BASE_DIR
+from common.exception import ImporterError
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.input_output.tournament_importer_options import FileOption
@@ -19,10 +20,15 @@ from data.input_output.trf.trf_data import (
     TrfTournament,
 )
 from data.input_output.trf.trf_importer import TrfTournamentImporter
+from data.input_output.trf.trf_legacy import TrfVersion
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.loader import EventLoader
 from data.pairings.settings import ColorSeedSetting
-from data.pairings.variations import StandardTeamSwissVariation
+from data.pairings.variations import (
+    DoubleBergerRoundRobinVariation,
+    StandardSwissVariation,
+    StandardTeamSwissVariation,
+)
 from data.tournament import Tournament
 from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
@@ -121,6 +127,216 @@ class TournamentImporterTestCase(TestCase):
             Result.PAIRING_ALLOCATED_BYE,
         ]
         self.assertEqual(results, expected_results)
+        self.assertEqual(importer.trf_version, TrfVersion.TRF26)
+        self.assertEqual(importer.adjustments, [])
+
+    def _trf_file_importer(self, name: str) -> TrfTournamentImporter:
+        return TrfTournamentImporter(
+            [FileOption(BASE_DIR / 'tests' / 'trf' / f'{name}.trf')]
+        )
+
+    def test_trf06_import(self):
+        """A TRF06 file writes its byes as opponent 0000 and the points
+        they gave, and may leave a forfeit without a colour."""
+        importer = self._trf_file_importer('example_trf06')
+        tournament = self._import_tournament(importer)
+        self.assertEqual(importer.trf_version, TrfVersion.TRF06)
+        self.assertEqual(tournament.rounds, 7)
+        self.assertEqual(tournament.pairing_variation.id, StandardSwissVariation().id)
+        pab_player = tournament.tournament_players_by_pairing_number[282]
+        self.assertEqual(pab_player.pairings[5].result, Result.PAIRING_ALLOCATED_BYE)
+        forfeit_player = tournament.tournament_players_by_pairing_number[13]
+        self.assertEqual(forfeit_player.pairings[1].result, Result.FORFEIT_LOSS)
+        self.assertEqual(forfeit_player.pairings[1].color, BoardColor.WHITE)
+        self.assertEqual(forfeit_player.date_of_birth, date(1934, 6, 20))
+        adjustments = '\n'.join(importer.adjustments)
+        self.assertIn('pairing-allocated', adjustments)
+        self.assertIn('count for rating', adjustments)
+        self.assertIn('40/120, 60', adjustments)
+
+    def test_trf06_won_byes_are_full_point_byes_when_several(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 6)]
+        players[0].games = [TrfGame(2, 'w', '1', 1)]
+        players[1].games = [TrfGame(1, 'b', '0', 1)]
+        players[2].games = [TrfGame(0, '-', '+', 1)]
+        players[3].games = [TrfGame(0, '-', '1', 1)]
+        players[4].games = [TrfGame(0, '-', '=', 1)]
+        for player in players:
+            player.points = {'1': 1.0, '+': 1.0, '=': 0.5}.get(
+                player.games[0].result, 0.0
+            )
+        tournament = self._import_trf(TrfTournament(name='Byes', players=players))
+        results = [
+            tournament.tournament_players_by_pairing_number[number].pairings[1].result
+            for number in (3, 4, 5)
+        ]
+        self.assertEqual(
+            results,
+            [Result.FULL_POINT_BYE, Result.FULL_POINT_BYE, Result.HALF_POINT_BYE],
+        )
+
+    def test_icu_corpus(self):
+        """Real TRF06 / TRF16 exports of Swiss-Manager and Swiss Master, some
+        holding club codes and national ids in the FIDE columns, Latin-1
+        text, partial dates or wrapped lines: all import."""
+        icu_path = BASE_DIR / 'tests' / 'trf' / 'icu'
+        paths = sorted(icu_path.glob('*/*.tab'))
+        self.assertEqual(len(paths), 21)
+        for path in paths:
+            with self.subTest(path.relative_to(icu_path).as_posix()):
+                importer = TrfTournamentImporter([FileOption(path)])
+                tournament = self._import_tournament(importer)
+                self.assertNotEqual(importer.trf_version, TrfVersion.TRF26)
+                self.assertTrue(tournament.players)
+
+    def test_trf_fields_other_programs_fill_otherwise_are_repaired(self):
+        """Federations and titles the format does not define, numbers that
+        are not FIDE numbers and points written with a decimal comma are
+        read as far as they can be, not refused."""
+        players = [self._trf_player(number, gender='m') for number in range(1, 3)]
+        players[0].games = [TrfGame(2, 'w', '1', 1)]
+        players[1].games = [TrfGame(1, 'b', '0', 1)]
+        players[0].points = 1.0
+        players[0].title = 'XX'
+        players[0].federation = 'C.C'
+        players[0].fide_id = 99999
+        trf = TrfSerializer.dumps(TrfTournament(name='Repairs', players=players))
+        trf = trf.replace('      99999 1990/01/01  1.0', 'N0001234567 1990/01/01  1,0')
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trf', delete=False
+        ) as fh:
+            fh.write(trf)
+            trf_path = Path(fh.name)
+        try:
+            importer = TrfTournamentImporter([FileOption(trf_path)])
+            tournament = self._import_tournament(importer)
+        finally:
+            trf_path.unlink(missing_ok=True)
+        repaired = tournament.tournament_players_by_pairing_number[1]
+        self.assertEqual(repaired.title, PlayerTitle.NONE)
+        self.assertIsNone(repaired.fide_id)
+        self.assertEqual(repaired.federation.name, 'FID')
+        adjustments = '\n'.join(importer.adjustments)
+        for text in ('XX', 'C.C', 'N0001234567', '1,0'):
+            self.assertIn(text, adjustments)
+
+    def test_trf_game_without_result_against_missing_player_is_unpaired(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 4)]
+        players[0].games = [TrfGame(2, 'w', '1', 1), TrfGame(9, 'b', ' ', 2)]
+        players[1].games = [TrfGame(1, 'b', '0', 1), TrfGame(3, 'w', '1', 2)]
+        players[2].games = [TrfGame(0, '-', 'U', 1), TrfGame(2, 'b', '0', 2)]
+        players[0].points = players[1].points = players[2].points = 1.0
+        tournament = self._import_trf(TrfTournament(name='Missing', players=players))
+        self.assertEqual(
+            tournament.tournament_players_by_pairing_number[1].pairings[2].result,
+            Result.ZERO_POINT_BYE,
+        )
+
+    def test_trf_game_with_result_against_missing_player_is_refused(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 3)]
+        players[0].games = [TrfGame(9, 'b', '1', 1)]
+        with self.assertRaisesRegex(ImporterError, 'unknown player'):
+            self._import_trf(TrfTournament(name='Missing', players=players))
+
+    def test_trf16_byes_written_as_points_are_read_as_byes(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 4)]
+        players[0].games = [TrfGame(2, 'w', '1', 1)]
+        players[1].games = [TrfGame(1, 'b', '0', 1)]
+        players[2].games = [TrfGame(0, '-', '=', 1)]
+        players[0].points, players[2].points = 1.0, 0.5
+        players.append(self._trf_player(4, gender='m'))
+        players[3].games = [TrfGame(0, '-', 'H', 1)]
+        players[3].points = 0.5
+        tournament = self._import_trf(TrfTournament(name='Byes', players=players))
+        by_number = tournament.tournament_players_by_pairing_number
+        self.assertEqual(by_number[3].pairings[1].result, Result.HALF_POINT_BYE)
+
+    def test_trf06_partial_birth_dates_keep_their_year(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 3)]
+        players[0].birth_date = '1975.  .'
+        players[1].birth_date = '/  /'
+        tournament = self._import_trf(TrfTournament(name='Dates', players=players))
+        by_number = tournament.tournament_players_by_pairing_number
+        self.assertEqual(by_number[1].year_of_birth, 1975)
+        self.assertFalse(by_number[2].year_of_birth)
+
+    def test_trf06_day_first_round_dates_within_the_tournament(self):
+        tournament = self._import_trf(
+            TrfTournament(
+                name='Dates',
+                start_date='25.02.2011',
+                end_date='27.02.2011',
+                round_dates=['11.25.02', '11.27.02'],
+                players=[self._trf_player(1, gender='m')],
+            )
+        )
+        self.assertEqual(
+            [
+                datetime_.date() if datetime_ else None
+                for datetime_ in tournament.round_datetimes.values()
+            ],
+            [date(2011, 2, 25), date(2011, 2, 27)],
+        )
+
+    def test_trf_file_not_in_utf8_is_read_as_windows_1252(self):
+        trf = TrfSerializer.dumps(
+            TrfTournament(name='Réti', players=[self._trf_player(1, gender='m')])
+        )
+        with tempfile.NamedTemporaryFile(suffix='.trf', delete=False) as fh:
+            fh.write(trf.encode('cp1252'))
+            trf_path = Path(fh.name)
+        try:
+            importer = TrfTournamentImporter([FileOption(trf_path)])
+            tournament = self._import_tournament(importer)
+        finally:
+            trf_path.unlink(missing_ok=True)
+        self.assertEqual(tournament.name, 'Réti')
+        self.assertIn('Windows-1252', importer.adjustments[0])
+
+    def test_trf_opponent_without_the_round_is_refused(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 3)]
+        players[0].games = [TrfGame(2, 'w', '1', 1)]
+        with self.assertRaisesRegex(ImporterError, 'Pairing not found'):
+            self._import_trf(TrfTournament(name='Missing', players=players))
+
+    def test_trf06_round_robin_is_recognised_from_the_type(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 5)]
+        tournament = self._import_trf(
+            TrfTournament(name='RR', type='Rundenturnier (Doppel)', players=players)
+        )
+        self.assertEqual(
+            tournament.pairing_variation.id, DoubleBergerRoundRobinVariation().id
+        )
+        self.assertEqual(tournament.rounds, 6)
+
+    def test_trf16_round_being_paired(self):
+        """Round 5 of the file is not paired yet: the byes entered for it
+        are kept, the other players are still to be paired, and XXR gives
+        the length of the tournament."""
+        importer = self._trf_file_importer('javafo_sample2')
+        self.assertEqual(importer.get_not_importable_features(self.event), [])
+        tournament = self._import_tournament(importer)
+        self.assertEqual(importer.trf_version, TrfVersion.TRF16)
+        self.assertEqual(tournament.rounds, 9)
+        by_number = tournament.tournament_players_by_pairing_number
+        self.assertEqual(by_number[1].pairings[5].result, Result.NO_RESULT)
+        self.assertEqual(by_number[22].pairings[5].result, Result.ZERO_POINT_BYE)
+        self.assertEqual(by_number[43].pairings[5].result, Result.HALF_POINT_BYE)
+        self.assertEqual(by_number[1].year_of_birth, 1978)
+        adjustments = '\n'.join(importer.adjustments)
+        self.assertIn('XXR', adjustments)
+        self.assertNotIn('count for rating', adjustments)
+
+    def test_trf16_xxz_marks_next_round_absences(self):
+        importer = self._trf_file_importer('javafo_ranked_sample2')
+        self.assertEqual(importer.get_not_importable_features(self.event), [])
+        tournament = self._import_tournament(importer)
+        by_number = tournament.tournament_players_by_pairing_number
+        for number in (22, 28, 43):
+            self.assertEqual(
+                by_number[number].pairings[5].result, Result.ZERO_POINT_BYE
+            )
+        self.assertEqual(by_number[1].pairings[5].result, Result.NO_RESULT)
 
     def test_trf_individual_point_system_is_imported(self):
         trf_tournament = TrfTournament(
@@ -378,8 +594,6 @@ class TournamentImporterTestCase(TestCase):
     def test_trf_unsupported_type_is_rejected(self):
         """TRF files whose 192 tournament type is unknown or CUSTOM_* must
         be refused, not silently coerced to another pairing system."""
-        from common.exception import ImporterError
-
         base = (BASE_PATH / 'trf-import-test.trf').read_text(encoding='utf-8')
         self.assertIn('FIDE_DUTCH_2026_BAKU', base)
         for bad_type in ('CUSTOM_SCHILLER', 'CUSTOM_TEAM_ROUNDROBIN', 'WAT_IS_THIS'):
