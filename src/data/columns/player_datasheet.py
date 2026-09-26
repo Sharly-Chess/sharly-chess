@@ -8,6 +8,7 @@ from text_unidecode import unidecode
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.event import Event
 from data.player import Player, MIN_YOB, MAX_YOB
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
@@ -48,7 +49,11 @@ class DatasheetColumn(ABC):
         return False
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
         """Save the data of the cell value."""
         if self.is_required and not value:
@@ -440,7 +445,11 @@ class RatingColumn(DatasheetColumn):
                 return
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
         if not value:
             return
@@ -478,7 +487,11 @@ class RatingTypeColumn(DatasheetColumn):
                 return
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
         try:
             rating_type = PlayerRatingType.from_key(value)
