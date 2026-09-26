@@ -5786,6 +5786,9 @@ msgstr "Aucun prix défini."
 msgid "No prizes."
 msgstr "Aucun prix."
 
+msgid "No prohibited pairings were used for this round."
+msgstr "Aucune protection d'appariement n'a été utilisée pour cette ronde."
+
 msgid "No public events."
 msgstr "Aucun événement public."
 
@@ -10290,10 +10293,6 @@ msgstr "Fédération [{federation}] inconnue."
 
 msgid "Unknown federation."
 msgstr "Fédération inconnue."
-
-#, python-brace-format
-msgid "Unknown gender [{gender}]."
-msgstr "Genre [{gender}] inconnu."
 
 msgid "Unknown group."
 msgstr "Groupe inconnu."
