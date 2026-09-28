@@ -56,5 +56,8 @@ jobs:
                 python -m playwright install chromium
 
             - name: Run tests
+              # The Gacrux checks are left out: they fetch an external checker
+              # from GitHub and are run by hand for the endorsement, not on
+              # every pull request. See docs/technical-appendices/fide-endorsement.md.
               run: |
-                pytest -m "not release_only" --cov --cov-report=term-missing:skip-covered
+                pytest -m "not release_only and not gacrux" --cov --cov-report=term-missing:skip-covered

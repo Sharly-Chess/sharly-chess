@@ -1,8 +1,10 @@
 from abc import abstractmethod, ABC
 from decimal import Decimal
-from typing import Any
+from types import SimpleNamespace
+from typing import Any, cast
 from collections.abc import Callable
 from unittest import TestCase
+from unittest.mock import PropertyMock, patch
 
 from data.event import Event
 from data.loader import EventLoader
@@ -16,6 +18,7 @@ from data.tie_breaks.options import (
 )
 from data.tournament import Tournament
 from data.player import TournamentPlayer
+from utils.enum import BoardColor, Result
 from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,
@@ -1166,6 +1169,49 @@ class SwissDirectEncounterTieBreakTestCase(TieBreakTestCase):
 
 
 @pytest.mark.unit
+class GamesWonUnratedTestCase(TestCase):
+    """A game won over the board counts for WON and BWG whether or not it
+    is rated (TRF code W)."""
+
+    def _player(self) -> TournamentPlayer:
+        def pairing(result: Result, color: BoardColor) -> SimpleNamespace:
+            return SimpleNamespace(
+                result=result,
+                color=color,
+                opponent_id=2,
+                played=not result.is_unplayed,
+                requested_bye=False,
+                voluntary_unplayed=False,
+            )
+
+        pairings = {
+            1: pairing(Result.UNRATED_WIN, BoardColor.BLACK),
+            2: pairing(Result.WIN, BoardColor.WHITE),
+            3: pairing(Result.FORFEIT_WIN, BoardColor.BLACK),
+        }
+        return cast(
+            TournamentPlayer,
+            SimpleNamespace(
+                pairings=pairings,
+                tournament=SimpleNamespace(point_values=None),
+                game_counts_for_tie_breaks=lambda pairing: True,
+            ),
+        )
+
+    def test_games_won(self):
+        value = tie_breaks.GamesWonTieBreak().compute_player_value(
+            self._player(), after_round=3
+        )
+        self.assertEqual(value, 2)
+
+    def test_games_won_with_black(self):
+        value = tie_breaks.GamesWonWithBlackTieBreak().compute_player_value(
+            self._player(), after_round=3
+        )
+        self.assertEqual(value, 1)
+
+
+@pytest.mark.unit
 class PLSwissTieBreakTestCase(TieBreakTestCase):
     """Tests provided by Pierre Lapeyre (IA, Arbiter trainer).
     See docs/tie_breaks/Tiebreak_exercises-PL-2026.pptm"""
@@ -1359,6 +1405,76 @@ class MedianBuchholzWithByesTestCase(TieBreakTestCase):
             ),
             3.0,
         )
+
+
+@pytest.mark.unit
+class ForeBuchholzFinalRoundTestCase(TieBreakTestCase):
+    """Fore Buchholz has the paired games of the final round end in draws
+    (Art. 8.3), forfeits included, so that round counts as played.
+
+    Delta (#4) forfeits the final round to Echo (#5): the round contributes
+    Echo's score and is not a voluntary unplayed round, so Cut 1 takes the
+    lowest contribution (Art. 16.5.1). Alpha (#1) has a zero-point bye in
+    round 2 and forfeits the final round to Charlie (#3): the bye is no
+    longer at the end of the tournament and keeps its zero (Art. 16.3.2),
+    which Charlie's Fore Buchholz reads."""
+
+    @property
+    def json_file(self) -> str:
+        return 'fore-buchholz-final-round'
+
+    def test_adjusted_score_fore(self):
+        results = self.get_player_values(
+            lambda p: tie_breaks.TieBreak.adjusted_score(
+                p, after_round=self.tournament.rounds, adjust_fore=True
+            ),
+            only_ids=[1, 3, 4, 5],
+        )
+        self.assertEqual(results, {1: 0.5, 3: 1.5, 4: 0.5, 5: 2.5})
+
+    def test_fore_buchholz(self):
+        tie_break_ = tie_breaks.ForeBuchholzTieBreak()
+        results = self.get_tie_break_player_values(tie_break_, only_ids=[3, 4])
+        self.assertEqual(results, {3: 3.5, 4: 6.5})
+
+    def test_fore_buchholz_cut1(self):
+        tie_break_ = tie_breaks.ForeBuchholzTieBreak(
+            [options.CutterWithMedianTieBreakOption(Cut1TieBreakCutter.static_id())]
+        )
+        results = self.get_tie_break_player_values(tie_break_, only_ids=[4])
+        self.assertEqual(results, {4: 5.0})
+
+
+class ForeBuchholzPredeterminedPairingsTestCase(TieBreakTestCase):
+    """With pre-determined pairings a forfeit is a regular game (Art. 15.2),
+    so Fore Buchholz counts it against the scheduled opponent, as the /P
+    modifier does.
+
+    Delta (#4) forfeits round 2 to Echo (#5) and loses to Echo in round 3."""
+
+    @property
+    def json_file(self) -> str:
+        return 'fore-buchholz-predetermined'
+
+    def _delta(self, tie_break_: tie_breaks.TieBreak) -> float:
+        return self.get_tie_break_player_values(tie_break_, only_ids=[4])[4]
+
+    def test_a_forfeit_counts_as_played(self):
+        played = self._delta(
+            tie_breaks.ForeBuchholzTieBreak(
+                [options.PlayedModifierTieBreakOption(True)]
+            )
+        )
+        swiss = self._delta(tie_breaks.ForeBuchholzTieBreak())
+        with patch.object(
+            type(self.tournament.pairing_system),
+            'predetermined_pairings',
+            new_callable=PropertyMock,
+            return_value=True,
+        ):
+            predetermined = self._delta(tie_breaks.ForeBuchholzTieBreak())
+        self.assertEqual(predetermined, played)
+        self.assertNotEqual(predetermined, swiss)
 
 
 class KoyaTieBreakTestCase(TieBreakTestCase):

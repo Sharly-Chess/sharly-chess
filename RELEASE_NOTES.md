@@ -14,7 +14,7 @@
 - Separate players of the same club when distributing players on balanced tournaments, as much as possible (5.1.0)
 - Team competitions can be sent to the _FFE_ website: teams and match reports are filled in from the tournament with the group account, for the competition, division and group chosen in the tournament properties (5.1.0)
 - Team tournaments can be exported to the _Papi_ format, which describes them as individual Swiss tournaments (5.1.0)
-- The players' year of birth is now shown on _Chess-Results_ (5.1.1)
+- FIDE pairings (Dutch and team Swiss), team scores and tie-breaks, for individual and team tournaments, have been verified against _Gacrux_, an independent FIDE checker, on more than 100,000 generated tournaments (5.1.1)
 
 ## Players
 
@@ -33,3 +33,7 @@
 - Place cards can now be edited with an embedded editor (5.1.0)
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
+
+## Chess-Results
+
+- The players' year of birth is now shown on _Chess-Results_ (5.1.1)

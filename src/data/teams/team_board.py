@@ -208,6 +208,39 @@ class TeamBoard:
                 return False
         return saw_board
 
+    def no_board_played(self) -> bool:
+        """True when every board of the match was decided without a game —
+        a side left empty or a forfeit result — so the match itself was not
+        played. False while any board holds a game, played or still to
+        come."""
+        saw_board = False
+        for board in self.boards:
+            saw_board = True
+            pairing = board.optional_white_pairing or board.optional_black_pairing
+            if (
+                board.optional_white_tournament_player is not None
+                and board.black_tournament_player is not None
+                and pairing is not None
+                and pairing.result
+                not in (
+                    Result.FORFEIT_WIN,
+                    Result.FORFEIT_LOSS,
+                    Result.DOUBLE_FORFEIT,
+                )
+            ):
+                return False
+        return saw_board
+
+    def lost_by_both(self, game_points: tuple[float, float]) -> bool:
+        """True when neither team scored in a match that has a result: a
+        draw needs a point on each side, so such a match is lost by both."""
+        a_gp, b_gp = game_points
+        return (
+            a_gp == b_gp
+            and a_gp <= 0
+            and not all(board.no_result for board in self.boards)
+        )
+
     def match_points_pair(
         self, game_points: tuple[float, float] | None = None
     ) -> tuple[float, float] | None:
@@ -237,6 +270,8 @@ class TeamBoard:
             mp_a, mp_b = win_mp, loss_mp
         elif a_gp < b_gp:
             mp_a, mp_b = loss_mp, win_mp
+        elif self.lost_by_both((a_gp, b_gp)):
+            mp_a = mp_b = loss_mp
         else:
             mp_a = mp_b = draw_mp
         if self.team_all_forfeit(stb.team_a_id):

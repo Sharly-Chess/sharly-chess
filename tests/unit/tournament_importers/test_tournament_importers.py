@@ -375,6 +375,58 @@ class TournamentImporterTestCase(TestCase):
             tournament.team_primary_score_before_round(team.id, 2), earned - 3.0
         )
 
+    def test_trf_baku_export_states_its_accelerated_rounds(self):
+        """A Baku tournament is written with its 250 records as well as its
+        192 encoded type, so a reader that takes the acceleration from 250
+        records only pairs it the same; read back, it is Baku again, and
+        the 250 records are no feature left out."""
+        from data.pairings.random_tournaments import (
+            TournamentSettings,
+            generate_tournament_file,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            trf_path = Path(directory) / 'baku.trf'
+            generate_tournament_file(
+                TournamentSettings(players=20, rounds=4, acceleration=True),
+                trf_path,
+                seed=5,
+            )
+            lines = trf_path.read_text(encoding='utf-8').splitlines()
+            self.assertIn('192 FIDE_DUTCH_2026_BAKU', lines)
+            self.assertTrue(any(line.startswith('250 ') for line in lines))
+            importer = TrfTournamentImporter([FileOption(trf_path)])
+            tournament_id = importer.load_tournament(self.event)
+            features = importer.get_not_importable_features(self.event)
+        self.assertFalse(
+            any(feature.startswith('250') for feature in features), features
+        )
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self.event.tournaments_by_id[tournament_id]
+        self.assertIsInstance(tournament.pairing_variation, BakuSwissVariation)
+
+    def test_a_two_round_baku_tournament_is_paired(self):
+        """With two rounds, the only accelerated round gives the full point:
+        the 250 records name that round alone, and both rounds are paired."""
+        from data.pairings.random_tournaments import (
+            TournamentSettings,
+            generate_tournament_file,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            trf_path = Path(directory) / 'baku.trf'
+            generate_tournament_file(
+                TournamentSettings(players=8, rounds=2, acceleration=True),
+                trf_path,
+                seed=3,
+            )
+            records = [
+                line.split()[1:4]
+                for line in trf_path.read_text(encoding='utf-8').splitlines()
+                if line.startswith('250 ')
+            ]
+        self.assertEqual({tuple(record) for record in records}, {('1.0', '1', '1')})
+
     def test_trf_unsupported_type_is_rejected(self):
         """TRF files whose 192 tournament type is unknown or CUSTOM_* must
         be refused, not silently coerced to another pairing system."""
@@ -1300,6 +1352,47 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(standings[fpb_team.id].gp, n * 1.0)
         self.assertEqual(standings[pab_team.id].mp, pab_mp)
         self.assertEqual(standings[pab_team.id].gp, tournament.team_pab_game_points)
+
+    def test_trf_802_states_each_team_bye_as_it_was(self):
+        """Record 802 gives each team round its opponent, or the kind of bye,
+        and the game points: a zero-point, half-point, full-point or
+        pairing-allocated bye each as itself."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+        for r in (1, 2, 3):
+            for stb in list(
+                tournament.stored_tournament.stored_team_boards_by_round.get(r, [])
+            ):
+                from database.sqlite.event.event_database import EventDatabase
+
+                with EventDatabase(tournament.event.uniq_id, write=True) as db:
+                    if stb.id is not None:
+                        db.delete_stored_team_board(stb.id)
+            tournament.stored_tournament.stored_team_boards_by_round[r] = []
+        tournament.clear_team_cache()
+        for pairing_number, bye in ((1, 'ZPB'), (2, 'HPB'), (3, 'FPB'), (4, 'PAB')):
+            self._set_team_manual_bye(
+                tournament, teams_by_pn[pairing_number].id, 1, bye
+            )
+        records = tournament.to_trf(after_round=1).informative_team_results_records
+        boards = float(tournament.team_player_count or 0)
+        expected = {
+            1: ('ZPB', 0.0),
+            2: ('HPB', boards * 0.5),
+            3: ('FPB', boards * 1.0),
+            4: ('PAB', tournament.team_pab_game_points),
+        }
+        for record in records:
+            pairing_number = int(record.split()[0])
+            if pairing_number in expected:
+                bye, game_points = expected[pairing_number]
+                self.assertEqual(record.split()[-2:], [bye, f'{game_points:.1f}'])
 
     def test_create_team_round_pairing_flow(self):
         """Manual team pairing — first click creates a PAB envelope

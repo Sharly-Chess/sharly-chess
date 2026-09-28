@@ -99,6 +99,17 @@ tests = [
   "pytest-asyncio",
   "pytest-base-url",
   "pytest-xdist",
+  # Gacrux, an independent pairing and tie-break checker, runs over
+  # the TRF exports in `tests/gacrux`. Its `pyproject.toml` cannot be pip
+  # installed from the repository at the pinned commit (its package-dir
+  # points at the old layout), so `tests/gacrux/harness.py` fetches the
+  # commit it pins from GitHub into `tools/gacrux` instead; this is its
+  # one dependency.
+  "networkx >= 3.5",
+  # Names for the tournaments the generator invents, which is a
+  # development tool: a build has no Faker and falls back to numbering the
+  # players.
+  "Faker",
 ]
 
 scripts = [

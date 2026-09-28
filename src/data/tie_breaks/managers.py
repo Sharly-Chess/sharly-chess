@@ -1,3 +1,4 @@
+import re
 from functools import cached_property
 from typing import override
 
@@ -7,6 +8,17 @@ from data.tie_breaks.options import TieBreakOption
 from data.tie_breaks.tie_breaks import TieBreak
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager, EventBoundEntityManager
+
+
+def _split_descriptor(acronym: str) -> list[str]:
+    """The base acronym of a rank-order descriptor and its variation
+    acronyms: ``BH:GP/C1/P`` gives ``BH``, ``:GP``, ``C1``, ``P``. The
+    reference score of a team tie-break keeps its colon, which is what
+    the option it belongs to answers to."""
+    tokens = re.findall(r'^[^/:]*|:[^/:]*|/[^/:]*', acronym)
+    return [tokens[0]] + [
+        token if token.startswith(':') else token[1:] for token in tokens[1:] if token
+    ]
 
 
 class TieBreakManager(EventBoundEntityManager[TieBreak]):
@@ -77,7 +89,7 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
         if tie_break:
             return tie_break
         acronym = acronym.split('OTHER_', maxsplit=1)[-1]
-        base_acronym = acronym.split('/')[0]
+        base_acronym, *variation_acronyms = _split_descriptor(acronym)
         tie_break = next(
             (
                 tie_break
@@ -103,7 +115,7 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
                     break
         if not tie_break:
             return None
-        for variation_acronym in acronym.split('/')[1:]:
+        for variation_acronym in variation_acronyms:
             if not any(
                 option.set_value_from_variation_acronym(variation_acronym)
                 for option in tie_break.options
