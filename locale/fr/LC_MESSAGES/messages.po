@@ -584,6 +584,9 @@ msgstr "<smart_count> seconde |||| <smart_count> secondes"
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
+msgid "A PAB cannot be worth more than a win."
+msgstr "Une exemption ne peut pas valoir plus qu'une victoire."
+
 msgid "A Scheveningen is a match between exactly two teams."
 msgstr "Un Scheveningen est un match entre exactement deux équipes."
 
@@ -9860,8 +9863,8 @@ msgid "This field is required."
 msgstr "Ce champ est obligatoire."
 
 #, python-brace-format
-msgid "This file is in the {version} format. It will be completed as follows:"
-msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
+msgid "This file is in the {version} format. It was completed as follows:"
+msgstr ""
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
@@ -10373,6 +10376,9 @@ msgstr "Turquie"
 
 msgid "Turkmenistan"
 msgstr "Turkménistan"
+
+msgid "Two draws cannot be worth more than a win and a loss."
+msgstr "Deux nulles ne peuvent pas valoir plus qu'une victoire et une défaite."
 
 msgid "Two-sided (foldable)"
 msgstr "Recto verso (pliable)"
@@ -11048,6 +11054,9 @@ msgstr "Vainqueur"
 
 msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
+
+msgid "With the standard scoring system, a PAB is worth 1, ½ or 0."
+msgstr "Avec le système de points standard, une exemption vaut 1, ½ ou 0."
 
 msgid "Withdraw from tournament"
 msgstr "Forfait définitif"

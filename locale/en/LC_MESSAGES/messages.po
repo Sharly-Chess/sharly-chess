@@ -584,6 +584,9 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
+msgid "A PAB cannot be worth more than a win."
+msgstr ""
+
 msgid "A Scheveningen is a match between exactly two teams."
 msgstr ""
 
@@ -10372,6 +10375,9 @@ msgstr ""
 msgid "Turkmenistan"
 msgstr ""
 
+msgid "Two draws cannot be worth more than a win and a loss."
+msgstr ""
+
 msgid "Two-sided (foldable)"
 msgstr ""
 
@@ -10997,7 +11003,7 @@ msgstr ""
 msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
 msgstr ""
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (Zero-Point) players and the players with a Half-Point Bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr ""
 
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
@@ -11045,6 +11051,9 @@ msgid "Winner"
 msgstr ""
 
 msgid "With less players than prizes, some prizes will not be attributed."
+msgstr ""
+
+msgid "With the standard scoring system, a PAB is worth 1, ½ or 0."
 msgstr ""
 
 msgid "Withdraw from tournament"

@@ -157,6 +157,45 @@ def test_a_draw_cannot_be_worth_more_than_a_win(http: TestClient, event: str):
 
 
 @pytest.mark.unit
+def test_two_draws_cannot_be_worth_more_than_a_win_and_a_loss(
+    http: TestClient, event: str
+):
+    response = create_tournament(http, event, gp_win='2', gp_draw='1.5', gp_loss='0')
+    assert response.status_code == 200
+    assert 'Two draws cannot be worth more than a win and a loss.' in response.text
+    assert tournament_names(event) == [TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+def test_a_pab_cannot_be_worth_more_than_a_win(http: TestClient, event: str):
+    response = create_tournament(http, event, gp_pab='1.5')
+    assert response.status_code == 200
+    assert 'A PAB cannot be worth more than a win.' in response.text
+    assert tournament_names(event) == [TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+def test_a_standard_pab_is_worth_a_standard_result(http: TestClient, event: str):
+    response = create_tournament(http, event, gp_pab='0.25')
+    assert response.status_code == 200
+    assert 'With the standard scoring system, a PAB is worth 1, ½ or 0.' in (
+        response.text
+    )
+    assert tournament_names(event) == [TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+def test_a_custom_pab_may_be_any_value_up_to_a_win(http: TestClient, event: str):
+    response = create_tournament(
+        http, event, gp_win='3', gp_draw='1', gp_loss='0', gp_pab='2'
+    )
+    assert response.status_code == 200
+    assert sorted(tournament_names(event)) == sorted(
+        [TOURNAMENT_NAME, 'Second tournament']
+    )
+
+
+@pytest.mark.unit
 def test_game_points_cannot_be_negative(http: TestClient, event: str):
     """A negative score has no representation in the TRF the engine
     reads."""
