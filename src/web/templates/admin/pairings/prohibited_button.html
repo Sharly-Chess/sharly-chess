@@ -9,11 +9,8 @@
 >
     {% set _pp_round_paired = admin_tournament.round_has_pairings(admin_round) %}
     {% set pp_count = admin_tournament.prohibited_pairings.count_for_round(admin_round) %}
-    {# Once the round is paired the snapshot is frozen — nothing to
-       configure, and nothing to show when no groups were used. #}
     {% if client.can_use_pairing_engine(admin_tournament.id)
-        and admin_tournament.pairing_system.supports_prohibited_pairings
-        and (not _pp_round_paired or pp_count) %}
+        and admin_tournament.pairing_system.supports_prohibited_pairings %}
         <div
             {{ macros.tooltip_attributes(
                 'info',
@@ -21,7 +18,11 @@
                     '%(num)d prohibited-pairing group is configured for this round.',
                     '%(num)d prohibited-pairing groups are configured for this round.',
                     pp_count,
-                ) if pp_count else _('Configure prohibited pairings for this round.'),
+                ) if pp_count else (
+                    _('No prohibited pairings were used for this round.')
+                    if _pp_round_paired
+                    else _('Configure prohibited pairings for this round.')
+                ),
                 'top',
             ) }}
         >
