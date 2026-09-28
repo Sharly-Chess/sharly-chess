@@ -2513,6 +2513,11 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     for team in emptied:
                         next_team_index[team.id] = 0
+            dropped_players: list[Player] = []
+            if overwrite_players:
+                dropped_players = event.carry_over_reimported_players(
+                    event.players_replaced_by_import(tournament), stored_players
+                )
             with EventDatabase(event.uniq_id, True) as database:
                 if overwrite_players:
                     if tournament is not None:
@@ -2566,6 +2571,7 @@ class PlayerAdminController(BaseEventAdminController):
                             resort_tournament_ids.add(team.tournament_id)
                 if any(column.save_stored_event for column in used_columns):
                     database.update_stored_event(event.stored_event)
+            event.notify_players_deleted(dropped_players)
             Message.success(
                 request,
                 ngettext(

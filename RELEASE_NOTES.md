@@ -21,6 +21,8 @@
 ## Players
 
 - The player search can now be narrowed by federation, gender, age category and club (plus licence and league for _FFE_ searches), and the filters can be filled in one go from the criteria of any tournament of the event (5.1.0)
+- Players removed by the deletion of unpaired players, or by an import replacing the existing players, are now also deleted on _Sharly-Chess.com_, instead of being brought back by the next synchronisation; re-imported players stay linked to their _Sharly-Chess.com_ registration (5.1.1)
+- Players without a FIDE ID in the _FFE_ database, or with a FIDE ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
 
 ## Pairings
 

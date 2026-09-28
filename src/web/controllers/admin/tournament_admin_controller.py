@@ -2796,9 +2796,8 @@ class TournamentAdminController(BaseEventAdminController):
             for player in tournament.tournament_players
             if not player.has_real_pairings
         ]
-        with EventDatabase(event.uniq_id, True) as database:
-            for player in players:
-                database.delete_stored_player(player.id)
+        for player in players:
+            event.delete_player(player)
         Message.success(
             request,
             ngettext(

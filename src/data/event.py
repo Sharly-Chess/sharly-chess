@@ -496,7 +496,55 @@ class Event:
         tournament = player.optional_single_tournament
         if tournament is not None:
             tournament.unregister_rostered_player(player.id)
-        plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
+        self.notify_players_deleted([player])
+
+    def players_replaced_by_import(self, tournament: Tournament | None) -> list[Player]:
+        """The players an import deleting the existing ones removes from the
+        event: those only *tournament* holds, or all of them when the import
+        is made at the event level."""
+        if tournament is None:
+            return list(self.players)
+        return [
+            player
+            for player in tournament.tournament_players
+            if not any(
+                player.id in other.tournament_players_by_id
+                for other in self.tournaments
+                if other.id != tournament.id
+            )
+        ]
+
+    def carry_over_reimported_players(
+        self, replaced_players: list[Player], stored_players: list[StoredPlayer]
+    ) -> list[Player]:
+        """Give each imported player the plugin data of the replaced player
+        identified as the same person, so that the links to external services
+        survive the import. Returns the replaced players the import drops."""
+        unmatched_by_id = {player.id: player for player in replaced_players}
+        keys_by_player_id = {
+            player.id: self.get_player_identity_keys(player.stored_player)
+            for player in replaced_players
+        }
+        for stored_player in stored_players:
+            keys = self.get_player_identity_keys(stored_player)
+            match_id = next(
+                (
+                    player_id
+                    for player_id in unmatched_by_id
+                    if keys & keys_by_player_id[player_id]
+                ),
+                None,
+            )
+            if match_id is None:
+                continue
+            match = unmatched_by_id.pop(match_id)
+            for plugin_id, value in match.stored_player.plugin_data.items():
+                stored_player.plugin_data.setdefault(plugin_id, value)
+        return list(unmatched_by_id.values())
+
+    def notify_players_deleted(self, players: list[Player]) -> None:
+        for player in players:
+            plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
 
     def update_player(self, player: Player, new_stored_player: StoredPlayer) -> None:
         new_stored_player.id = player.id

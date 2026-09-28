@@ -251,7 +251,7 @@ class PlayerEntry(MultipleLinesEntry):
         fide_id_text = match.group('fide_id').strip()
         fide_id: int | None = None
         if fide_id_text.isdigit():
-            fide_id = int(fide_id_text)
+            fide_id = int(fide_id_text) or None
         elif fide_id_text:
             unreadable['fide_id'] = fide_id_text
         points_text = match.group('points').strip()
