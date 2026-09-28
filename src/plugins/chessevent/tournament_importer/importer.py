@@ -330,7 +330,7 @@ class ChessEventTournamentImporter(TournamentImporter):
 
         return StoredPlayer(
             id=player_id,
-            last_name=unidecode(player.last_name).upper(),
+            last_name=unidecode(player.last_name),
             first_name=unidecode(player.first_name).title(),
             date_of_birth=(epoch + timedelta(seconds=float(player.birth))).astimezone(
                 paris_tz

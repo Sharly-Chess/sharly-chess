@@ -124,7 +124,7 @@ class FFESqlServer(SqlServer):
         return StoredPlayer(
             id=None,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
-            last_name=row['Nom'].upper(),
+            last_name=row['Nom'],
             date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
             title=fide_title.open_value,

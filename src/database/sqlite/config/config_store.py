@@ -44,6 +44,7 @@ class StoredConfig:
     check_beta_versions: bool
     last_notified_version: str | None
     date_formatter: str
+    name_formatter: str
     federation: str | None = None
     locale: str | None = None
     stored_player_category_sets: list[StoredPlayerCategorySet] = field(

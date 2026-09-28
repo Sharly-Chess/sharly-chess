@@ -63,7 +63,9 @@ class PlaceCardType(IdentifiableEntity, ABC):
                 PlayerRatingType.ESTIMATED,
             ]
         ).short_name
-        place_card_player.last_name = last_name
+        place_card_player.last_name = (
+            SharlyChessConfig().name_formatter.format_last_name(last_name)
+        )
         place_card_player.first_name = _('First name')
         place_card_player.full_name = Player.player_full_name(
             place_card_player.first_name,

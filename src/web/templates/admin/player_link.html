@@ -35,7 +35,7 @@
         {% endif %}
     {% endif %}
     {% set link_target = tournament_player if tournament_player else player %}
-    {% set full_name = link_target.last_name ~ ' ' ~ link_target.first_name if last_name_first else link_target.full_name %}
+    {% set full_name = link_target.full_name %}
     {% set rating_suffix = (' (' ~ tournament_player.rating_str ~ ')') if (display_rating and tournament_player) else '' %}
     {%- if tournament_player and client.can_update_players_history(tournament_player.tournament.id) -%}
         <a

@@ -144,10 +144,12 @@ class LastNameColumn(DatasheetColumn):
         return True
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
-        stored_player.last_name = value.upper()
+        stored_player.last_name = value
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return cast(bool, unidecode(player.last_name) == unidecode(value.upper()))
+        return cast(
+            bool, unidecode(player.last_name).upper() == unidecode(value).upper()
+        )
 
 
 class FirstNameColumn(DatasheetColumn):

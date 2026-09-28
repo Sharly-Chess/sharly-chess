@@ -3851,6 +3851,9 @@ msgstr "Finlande"
 msgid "First FIDE rating (based only on this tournament)"
 msgstr "Premier classement FIDE (basé uniquement sur ce tournoi)"
 
+msgid "First Last"
+msgstr "Prénom Nom"
+
 msgid "First board is always White for team 1."
 msgstr "Le premier échiquier est toujours attribué aux Blancs pour l’équipe 1."
 
@@ -4822,6 +4825,9 @@ msgctxt "team ranking header loss"
 msgid "L"
 msgstr "D"
 
+msgid "LAST, First"
+msgstr "NOM, Prénom"
+
 msgid "Language:"
 msgstr "Langue :"
 
@@ -4871,6 +4877,9 @@ msgstr "Dernière mise à jour : {updated_at}"
 #, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
+
+msgid "Last, First"
+msgstr "Nom, Prénom"
 
 msgid "Latvia"
 msgstr "Lettonie"
@@ -5580,6 +5589,9 @@ msgstr "Nom"
 msgctxt "name column header"
 msgid "Name"
 msgstr "Nom"
+
+msgid "Name format:"
+msgstr "Format des noms :"
 
 msgid "Name:"
 msgstr "Nom :"
@@ -12274,10 +12286,6 @@ msgstr "Il y a {days} jours"
 #, python-brace-format
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
-
-#, python-brace-format
-msgid "{first_name} {last_name}"
-msgstr "{last_name} {first_name}"
 
 #, python-brace-format
 msgid "{first} — Pairing-Allocated Bye"

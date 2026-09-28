@@ -492,7 +492,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         value that varies from one example to the next."""
         first, last = _EXAMPLE_PLAYER_NAMES[example % len(_EXAMPLE_PLAYER_NAMES)]
         player.first_name = first
-        player.last_name = last
+        player.last_name = SharlyChessConfig().name_formatter.format_last_name(last)
         player.full_name = Player.player_full_name(first, last)
         player.club = _EXAMPLE_CLUB_NAMES[example % len(_EXAMPLE_CLUB_NAMES)]
         player.team_name = _EXAMPLE_TEAM_NAMES[example % len(_EXAMPLE_TEAM_NAMES)]

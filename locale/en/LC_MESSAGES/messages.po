@@ -3851,6 +3851,9 @@ msgstr ""
 msgid "First FIDE rating (based only on this tournament)"
 msgstr ""
 
+msgid "First Last"
+msgstr ""
+
 msgid "First board is always White for team 1."
 msgstr ""
 
@@ -4822,6 +4825,9 @@ msgctxt "team ranking header loss"
 msgid "L"
 msgstr ""
 
+msgid "LAST, First"
+msgstr ""
+
 msgid "Language:"
 msgstr ""
 
@@ -4870,6 +4876,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
+msgstr ""
+
+msgid "Last, First"
 msgstr ""
 
 msgid "Latvia"
@@ -5579,6 +5588,9 @@ msgstr ""
 
 msgctxt "name column header"
 msgid "Name"
+msgstr ""
+
+msgid "Name format:"
 msgstr ""
 
 msgid "Name:"
@@ -12271,10 +12283,6 @@ msgstr ""
 
 #, python-brace-format
 msgid "{family_type}-screen"
-msgstr ""
-
-#, python-brace-format
-msgid "{first_name} {last_name}"
 msgstr ""
 
 #, python-brace-format

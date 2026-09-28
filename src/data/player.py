@@ -20,6 +20,7 @@ from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 from utils import Utils
 from utils.date_time import format_date
+from utils.name_formatter import current_name_formatter
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -108,15 +109,19 @@ class Player:
         first_name: str | None,
         last_name: str,
     ) -> str:
-        if first_name:
-            return _('{first_name} {last_name}').format(
-                first_name=first_name or '', last_name=last_name
-            )
-        return last_name
+        return current_name_formatter().format(first_name, last_name)
 
     @cached_property
     def full_name(self) -> str:
         return self.player_full_name(self.first_name, self.last_name)
+
+    @property
+    def display_name_sort_key(self) -> tuple[str, str]:
+        return current_name_formatter().sort_key(self.first_name, self.last_name)
+
+    @property
+    def display_last_name(self) -> str:
+        return current_name_formatter().format_last_name(self.last_name)
 
     @cached_property
     def name_sort_key(self) -> tuple[str, str]:

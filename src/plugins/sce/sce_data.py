@@ -355,7 +355,7 @@ class SCEPlayerSyncData:
         yob = data['year_of_birth']
         sync_data = cls(
             tournament_id=tournament_id,
-            last_name=data['last_name'].upper(),
+            last_name=data['last_name'],
             first_name=data['first_name'],
             federation=data['federation'],
             # As SC.com YOB are mandatory, consider 1900 as an
