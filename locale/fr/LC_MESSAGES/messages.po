@@ -974,7 +974,7 @@ msgid "All caps"
 msgstr "Majuscules"
 
 msgid "All games count for rating: TRF06 cannot mark a game that should not (less than one move played)."
-msgstr "Toutes les parties comptent pour l'Elo : le TRF06 ne peut pas signaler une partie qui ne doit pas compter (moins d'un coup joué)."
+msgstr "Toutes les parties comptent pour le Elo : le TRF06 ne peut pas signaler une partie qui ne doit pas compter (moins d'un coup joué)."
 
 msgid "All groups"
 msgstr "Tous les groupes"
@@ -5958,14 +5958,14 @@ msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
 
 msgid "No tie-breaks: the file does not list them. Set them after the import."
-msgstr "Aucun départage : le fichier ne les indique pas. Définissez-les après l'import."
+msgstr "Aucun départage renseigné dans le fichier. Définissez-les après l'import."
 
 #, python-brace-format
 msgid "No time control: record 122 gives it as text only ({text})."
-msgstr "Aucune cadence : l'enregistrement 122 ne la donne qu'en texte libre ({text})."
+msgstr "Aucune cadence renseignée dans le fichier, l'enregistrement 122 ne la donne qu'en texte libre ({text})."
 
 msgid "No time control: the file does not give it."
-msgstr "Aucune cadence : le fichier ne l'indique pas."
+msgstr "Aucune cadence renseignée dans le fichier."
 
 msgid "No timer"
 msgstr "Aucun chronomètre"
@@ -6100,7 +6100,7 @@ msgstr "Non apparié·e pour cette ronde"
 
 #, python-brace-format
 msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as zero-point byes."
-msgstr "Pas encore apparié ({rounds}) : les cases vides sont lues comme des joueur·euses restant à apparier, et non comme des exemptions à zéro point."
+msgstr "Pas encore apparié ({rounds}) : les cases vides sont lues comme des joueur·euses restant à apparier, et non comme des exemptions à zéro point."
 
 msgid "Not specified"
 msgstr "Non spécifié"
@@ -6194,11 +6194,11 @@ msgstr "Nombre de rondes ({rounds}) lu dans XXR."
 
 #, python-brace-format
 msgid "Number of rounds set to {rounds}, from the rounds in the file: the file does not give it."
-msgstr "Nombre de rondes fixé à {rounds}, d'après les rondes du fichier : le fichier ne l'indique pas."
+msgstr "Nombre de rondes non renseigné dans le fichier, fixé à {rounds} d'après les rondes du fichier."
 
 #, python-brace-format
 msgid "Number of rounds set to {rounds}, the length of the round robin: the file does not give it."
-msgstr "Nombre de rondes fixé à {rounds}, la longueur du toutes-rondes : le fichier ne l'indique pas."
+msgstr "Nombre de rondes non renseigné dans le fichier, fixé à {rounds} d'après la longueur du toutes-rondes."
 
 msgid "Number of screens"
 msgstr "Nombre d'écrans"
@@ -6579,15 +6579,15 @@ msgstr "Système d'appariements"
 
 #, python-brace-format
 msgid "Pairing system set to FIDE Dutch: {reason}."
-msgstr "Système d'appariement fixé à FIDE Dutch : {reason}."
+msgstr "Système d'appariement fixé à FIDE Dutch : {reason}."
 
 #, python-brace-format
 msgid "Pairing system set to double round robin: {reason}."
-msgstr "Système d'appariement fixé à toutes-rondes aller-retour : {reason}."
+msgstr "Système d'appariement fixé à toutes-rondes aller-retour : {reason}."
 
 #, python-brace-format
 msgid "Pairing system set to round robin: {reason}."
-msgstr "Système d'appariement fixé à toutes-rondes : {reason}."
+msgstr "Système d'appariement fixé à toutes-rondes : {reason}."
 
 msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
 msgstr "Exempt / Bye / Partie non jouée — aucun adversaire."
@@ -8191,7 +8191,7 @@ msgid "Scoring and tie-break rules"
 msgstr "Règles de score et de départage"
 
 msgid "Scoring set to 1 / ½ / 0, the pairing-allocated bye worth a win: the file does not give it."
-msgstr "Barème fixé à 1 / ½ / 0, l'exemption d'appariement valant une victoire : le fichier ne l'indique pas."
+msgstr "Barème non renseigné dans le fichier, fixé à 1 / ½ / 0 avec l'exemption d'appariement valant une victoire."
 
 msgid "Scotland"
 msgstr "Écosse"
@@ -9256,7 +9256,7 @@ msgid "The file is not a valid template archive (expected a zipped file)."
 msgstr "Le fichier n’est pas une archive de modèle valide (fichier .zip compressé attendu)."
 
 msgid "The file is not in UTF-8: it was read as Windows-1252 (Latin-1)."
-msgstr "Le fichier n'est pas en UTF-8 : il a été lu en Windows-1252 (Latin-1)."
+msgstr "Le fichier n'est pas en UTF-8 : il a été lu en Windows-1252 (Latin-1)."
 
 msgid "The finishing position counted (e.g. 1 counts first places)."
 msgstr "La place à l'arrivée comptée (p. ex. 1 compte les premières places)."
@@ -9860,8 +9860,8 @@ msgid "This field is required."
 msgstr "Ce champ est obligatoire."
 
 #, python-brace-format
-msgid "This file is in the {version} format. It was completed as follows:"
-msgstr "Ce fichier est au format {version}. Il a été complété comme suit :"
+msgid "This file is in the {version} format. It will be completed as follows:"
+msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
@@ -11094,11 +11094,11 @@ msgstr "Format XLSX"
 
 #, python-brace-format
 msgid "XX fields: {fields}"
-msgstr "Champs XX : {fields}"
+msgstr "Champs XX : {fields}"
 
 #, python-brace-format
 msgid "XXZ: players {players} absent from round {round}."
-msgstr "XXZ : joueur·euses {players} absent·es de la ronde {round}."
+msgstr "XXZ : joueur·euses {players} absent·es de la ronde {round}."
 
 msgctxt "the letter to answer yes"
 msgid "Y"
@@ -11760,7 +11760,7 @@ msgstr "le fichier ne le code pas"
 
 #, python-brace-format
 msgid "the file does not code it, and describes the tournament as \"{type}\""
-msgstr "le fichier ne le code pas, et décrit le tournoi comme « {type} »"
+msgstr "le fichier ne le précise pas, et décrit le tournoi comme « {type} »"
 
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
@@ -11826,8 +11826,8 @@ msgstr "{code} Départages inconnus : {tie_breaks}"
 #, python-brace-format
 msgid "{count} birth date has no day or month: only its year, if any, is imported."
 msgid_plural "{count} birth dates have no day or month: only their year, if any, is imported."
-msgstr[0] "{count} date de naissance n'a ni jour ni mois : seule son année, s'il y en a une, est importée."
-msgstr[1] "{count} dates de naissance n'ont ni jour ni mois : seule leur année, s'il y en a une, est importée."
+msgstr[0] "{count} date de naissance n'a ni jour ni mois : seule son année, s'il y en a une, est importée."
+msgstr[1] "{count} dates de naissance n'ont ni jour ni mois : seule leur année, s'il y en a une, est importée."
 
 #, python-brace-format
 msgid "{count} club represented"
@@ -11862,8 +11862,8 @@ msgstr[1] "{count} horaires créés."
 #, python-brace-format
 msgid "{count} name has no comma between last and first name: it is imported whole as the last name."
 msgid_plural "{count} names have no comma between last and first name: they are imported whole as the last name."
-msgstr[0] "{count} nom n'a pas de virgule entre nom et prénom : il est importé en entier comme nom."
-msgstr[1] "{count} noms n'ont pas de virgule entre nom et prénom : ils sont importés en entier comme nom."
+msgstr[0] "{count} nom n'a pas de virgule entre nom et prénom : il est importé en entier comme nom."
+msgstr[1] "{count} noms n'ont pas de virgule entre nom et prénom : ils sont importés en entier comme nom."
 
 #, python-brace-format
 msgid "{count} player deleted."
@@ -11919,7 +11919,7 @@ msgstr "{matched} joueur·euses renseigné·es, {missing} introuvable·s dans ce
 
 #, python-brace-format
 msgid "{message}: players {players}."
-msgstr "{message} : joueur·euses {players}."
+msgstr "{message} : joueur·euses {players}."
 
 #, python-brace-format
 msgid "{name} (copy {num})"
