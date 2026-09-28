@@ -1,0 +1,33 @@
+{% set log_count = admin_tournament.pibes | length %}
+{% if admin_tournament.pairing_system.supports_fide_mode and (log_count or admin_tournament.fide_mode_exit_round) %}
+    <div
+        {{ macros.tooltip_attributes(
+            'info',
+            _('What has been recorded in the TRF: pairing integrity breaches and changes to the settings.'),
+            'top',
+        ) }}
+    >
+        <button
+            class="btn btn-outline-primary text-nowrap d-inline-flex align-items-center justify-content-center"
+            hx-get="{{ url_for(
+                'admin-pairings-fide-log-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round
+            ) }}"
+            hx-trigger="click"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <i class="bi-journal-text pe-1"></i>
+            {{ _('Log') }}
+            {% if log_count %}
+                <span class="badge rounded-pill text-bg-warning ms-2">
+                    <span style="position: relative; top: 1px;">{{ log_count }}</span>
+                </span>
+            {% endif %}
+        </button>
+    </div>
+{% endif %}

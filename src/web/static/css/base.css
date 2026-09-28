@@ -1509,6 +1509,13 @@ body[data-bs-theme=light] .nav {
         padding-bottom: 0.35rem;
     }
 
+    .btn.cap-centred {
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+        padding-top: calc(var(--bs-btn-padding-y) + 0.3rem);
+        padding-bottom: calc(var(--bs-btn-padding-y) + 0.3rem);
+    }
+
     .badge {
         text-box-trim: trim-both;
         text-box-edge: cap alphabetic;

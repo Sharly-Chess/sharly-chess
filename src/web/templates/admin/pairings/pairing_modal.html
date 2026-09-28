@@ -5,7 +5,7 @@
    public-screen result entry (user/modals/results_modal.html) is a
    separate template and keeps its large coloured tiles. #}
 
-{# Wrap action routing (direct hx call vs safety-mode confirmation) and
+{# Wrap action routing (direct hx call vs warning confirmation) and
    the disabled state once, reused by every button below. #}
 {% macro action_button(action, method, route, disabled, label, btn_class, tooltip='', icon='') %}
     {% if disabled and tooltip %}
@@ -21,7 +21,7 @@
                 hx-{{ method }}="{{ route }}"
             {% else %}
                 hx-get="{{ url_for(
-                    'admin-pairings-safety-mode-modal',
+                    'admin-pairings-warning-modal',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id,
                     round=admin_round,

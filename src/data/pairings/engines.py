@@ -256,6 +256,40 @@ class PairingEngine(ABC):
         Returns an explanation message if it is, None if it is not."""
         return self.invalid_player_count_message(tournament)
 
+    def expected_round_pairs(
+        self, tournament: 'Tournament', round_: int, stored_prohibitions: bool = False
+    ) -> set[tuple[int, int | None]]:
+        """The pairs the engine makes for *round_*, as
+        :func:`data.pairings.manual_pairing.round_pairs` reads them. With
+        *stored_prohibitions*, the prohibited pairings are those stored for
+        the round, as imported, rather than worked out again. Raises a
+        :class:`SharlyChessException` when the engine fails."""
+        prohibited_override = (
+            None
+            if stored_prohibitions
+            else self._expected_prohibited_override(tournament, round_)
+        )
+        tournament.set_for_round(round_)
+        return {
+            (stored_board.white_player_id, stored_board.black_player_id)
+            for stored_board in self._generate_stored_boards(
+                tournament, round_, prohibited_pairing_override=prohibited_override
+            )
+            if stored_board.white_player_id is not None
+        }
+
+    def _expected_prohibited_override(
+        self, tournament: 'Tournament', round_: int
+    ) -> 'list | None':
+        if not self.honors_prohibited_pairings:
+            return None
+        error, prohibited_override = self._resolve_and_snapshot_prohibited(
+            tournament, round_
+        )
+        if error:
+            raise SharlyChessException(error)
+        return prohibited_override
+
     def pairings_diff(
         self,
         tournament: 'Tournament',
@@ -1086,6 +1120,23 @@ class TeamSwissEngine(TeamPairingEngine):
             tournament, round_, team_pairs, partial_pairings=partial_pairings
         )
         return ''
+
+    @override
+    def expected_round_pairs(
+        self, tournament: 'Tournament', round_: int, stored_prohibitions: bool = False
+    ) -> set[tuple[int, int | None]]:
+        return set(
+            self._run_team_bbp(
+                tournament,
+                round_,
+                self._teams_for_tournament(tournament),
+                prohibited_pairing_override=(
+                    None
+                    if stored_prohibitions
+                    else self._expected_prohibited_override(tournament, round_)
+                ),
+            )
+        )
 
     def _prohibited_pairing_feasible(
         self, tournament: 'Tournament', round_: int, prohibited_lines: list

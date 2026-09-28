@@ -14,6 +14,7 @@ from litestar.testing import TestClient
 
 from data.loader import EventLoader
 from tests.test_config import TestUtils
+from utils.enum import Result
 
 EVENT_ID = 'test-admin-http'
 TOURNAMENT_NAME = 'test-admin-http-tournament'
@@ -306,17 +307,76 @@ UPDATE_FIELDS = {
     'rating': '1',
     'pairing_system': 'SWISS',
     'SWISS_pairing_variation': 'SWISS_STANDARD',
+    'fide_mode': 'on',
 }
+
+
+def update_fields(event: str) -> dict[str, str]:
+    """The update form as the modal sends it, the points already set."""
+    EventLoader.unload_event(event)
+    loaded = EventLoader().load_event(event)
+    game_points = loaded.tournaments_by_name[
+        TOURNAMENT_NAME
+    ].stored_tournament.game_points
+    return UPDATE_FIELDS | {
+        field: str(game_points[result.value])
+        for result, field in (
+            (Result.WIN, 'gp_win'),
+            (Result.DRAW, 'gp_draw'),
+            (Result.LOSS, 'gp_loss'),
+            (Result.ZERO_POINT_BYE, 'gp_zpb'),
+            (Result.PAIRING_ALLOCATED_BYE, 'gp_pab'),
+        )
+        if game_points and result.value in game_points
+    }
 
 
 @pytest.mark.unit
 def test_a_tournament_is_renamed(http: TestClient, event: str):
     response = http.patch(
         f'/tournament-update/{event}/{tournament_id(event)}',
-        data=UPDATE_FIELDS | {'name': 'Renamed tournament'},
+        data=update_fields(event) | {'name': 'Renamed tournament'},
     )
     assert response.status_code == 200
     assert tournament_names(event) == ['Renamed tournament']
+
+
+def tournament_fide_mode(event: str) -> tuple[bool, int | None]:
+    EventLoader.unload_event(event)
+    loaded = EventLoader().load_event(event)
+    tournament = loaded.tournaments_by_name[TOURNAMENT_NAME]
+    return tournament.fide_mode, tournament.fide_mode_exit_round
+
+
+@pytest.mark.unit
+def test_leaving_fide_mode_once_paired_must_be_confirmed(http: TestClient, event: str):
+    fields = update_fields(event) | {'name': TOURNAMENT_NAME}
+    del fields['fide_mode']
+    response = http.patch(
+        f'/tournament-update/{event}/{tournament_id(event)}', data=fields
+    )
+    assert response.status_code == 200
+    assert 'Leaving FIDE mode must be confirmed.' in response.text
+    assert tournament_fide_mode(event) == (True, None)
+
+
+@pytest.mark.unit
+def test_a_paired_tournament_leaves_fide_mode_for_good(http: TestClient, event: str):
+    fields = update_fields(event) | {
+        'name': TOURNAMENT_NAME,
+        'fide_mode_exit_confirmed': 'on',
+    }
+    del fields['fide_mode']
+    http.patch(f'/tournament-update/{event}/{tournament_id(event)}', data=fields)
+    fide_mode, exit_round = tournament_fide_mode(event)
+    assert not fide_mode
+    assert exit_round is not None
+
+    http.patch(
+        f'/tournament-update/{event}/{tournament_id(event)}',
+        data=update_fields(event) | {'name': TOURNAMENT_NAME},
+    )
+    assert tournament_fide_mode(event) == (False, exit_round)
 
 
 @pytest.mark.unit
@@ -327,7 +387,7 @@ def test_a_started_tournament_keeps_the_rating_it_was_played_on(
     has been played; the name is not."""
     response = http.patch(
         f'/tournament-update/{event}/{tournament_id(event)}',
-        data=UPDATE_FIELDS | {'name': TOURNAMENT_NAME, 'rating': '2'},
+        data=update_fields(event) | {'name': TOURNAMENT_NAME, 'rating': '2'},
     )
     assert response.status_code == 200
     assert "This field can't be updated once the tournament has started." in (

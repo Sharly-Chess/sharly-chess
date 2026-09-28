@@ -554,7 +554,10 @@ class FFET1Type(FFETournamentsDocumentType):
         }
 
 
-class FFET2Type(FFEDocumentType):
+class FFET2Type(FFETournamentsDocumentType):
+    """The minutes of the tournaments, where the arbiter reports what had to
+    be done by hand. Starts with what the tournaments logged for their TRF."""
+
     @staticmethod
     def static_id() -> str:
         return 'ffe-t2-tournament-report'
@@ -563,9 +566,33 @@ class FFET2Type(FFEDocumentType):
     def static_name() -> str:
         return _('T2 Minutes')
 
+    @property
+    def report_text(self) -> str:
+        return self.report_text_for(self.tournaments)
+
     @classmethod
-    def get_valid_option_types(cls) -> list[type[PrintOption]]:
-        return []
+    def report_text_for(cls, tournaments: list[Tournament]) -> str:
+        """The events *tournaments* logged, in French, one line each."""
+        sections: list[str] = []
+        for tournament in tournaments:
+            if not (pibes := tournament.pibes):
+                continue
+            lines = [f'{tournament.name} :']
+            for pibe in pibes:
+                line = f'- Ronde {pibe.round_} : {pibe.summary(tournament, "fr")}'
+                if pibe.date:
+                    line += f' ({pibe.date:%d/%m/%Y %H:%M})'
+                lines.append(line)
+            sections.append('\n'.join(lines))
+        return '\n\n'.join(sections) or 'Rien à signaler.'
+
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        return super().template_context(ffe_document) | {
+            'report_text': self.report_text
+        }
 
 
 class FFEArbiterCompensationType(FFETournamentsDocumentType):

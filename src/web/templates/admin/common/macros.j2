@@ -1857,14 +1857,36 @@ with_indicator: display a loading indicator, optional
 
 {% macro admin_title(
     title,
-    doc_ref
+    doc_ref,
+    fide_mode_badge=true
 ) %}
     <h5 class="admin-tab-title d-flex align-items-center gap-2 py-0 my-0 text-primary">
         {% if doc_ref %}
             {{ macros.doc_icon(doc_ref, 'fs-5') }}
         {% endif %}
         {{ title }}
+        {% if not fide_mode_badge %}
+        {% elif admin_tournament is defined and admin_tournament %}
+            {{ not_in_fide_mode_badge([admin_tournament] if admin_tournament.left_fide_mode else []) }}
+        {% elif admin_event is defined and admin_event %}
+            {{ not_in_fide_mode_badge(admin_event.tournaments | selectattr('left_fide_mode') | list) }}
+        {% endif %}
     </h5>
+{% endmacro %}
+
+{% macro not_in_fide_mode_badge(tournaments) %}
+    {% if tournaments %}
+        <span
+            class="badge text-bg-danger"
+            {{ macros.tooltip_attributes(
+                'warning',
+                _('Not in FIDE mode: %(tournaments)s', tournaments=tournaments | map(attribute='name') | join(', ')),
+                'bottom',
+            ) }}
+        >
+            <i class="bi-slash-circle pe-1"></i>{{ _('Not in FIDE mode') }}
+        </span>
+    {% endif %}
 {% endmacro %}
 
 {% macro display_controller_assign_dropdown(

@@ -48,6 +48,11 @@ class TrfSerializer:
         for field, value in tournament.bb_fields.items():
             fp.write(f'{field} {value}\n')
 
+        if tournament.log_comments:
+            fp.write('\n')
+            for comment in tournament.log_comments:
+                fp.write(f'### {comment}\n')
+
     #: A line holding round blocks only: the rest of a 001 record that an
     #: editor or a mail program wrapped.
     CONTINUATION_PATTERN = re.compile(

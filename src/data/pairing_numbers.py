@@ -10,6 +10,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import TYPE_CHECKING
 
+from data.pibes import Pibe, PibeType
 from database.sqlite.event.event_database import EventDatabase
 
 if TYPE_CHECKING:
@@ -112,6 +113,14 @@ class PairingNumbers:
         }
         if not tournament_players_by_updated_pairing_number:
             return
+        regeneration = self._regeneration(
+            current_tournament_players, sorted_tournament_players
+        )
+        numbering_before = {
+            player.pairing_number: player.id
+            for player in current_tournament_players
+            if player.pairing_number is not None
+        }
         for (
             pairing_number,
             tournament_player,
@@ -136,3 +145,62 @@ class PairingNumbers:
                 database.set_tournament_pairing_settings(
                     tournament.id, tournament.stored_pairing_settings
                 )
+        if regeneration:
+            tournament.log_pibe(
+                Pibe(
+                    PibeType.REGENERATION,
+                    tournament.current_round,
+                    regeneration,
+                    members=numbering_before,
+                )
+            )
+
+    def pending_regeneration(self) -> str:
+        """The reordering the next numbering would make of the players
+        already numbered (see :meth:`_regeneration`), read before it is
+        made."""
+        tournament = self.tournament
+        if tournament.pairing_system.pairing_numbers_are_frozen(tournament):
+            return ''
+        numbered_tournament_players = [
+            player
+            for player in tournament.tournament_players
+            if player.pairing_number is not None
+        ]
+        return self._regeneration(
+            numbered_tournament_players,
+            sorted(
+                numbered_tournament_players, key=attrgetter('starting_rank_sort_key')
+            ),
+        )
+
+    def _regeneration(
+        self,
+        numbered_tournament_players: list['TournamentPlayer'],
+        renumbered_tournament_players: list['TournamentPlayer'],
+    ) -> str:
+        """How renumbering the players reorders the ones already numbered,
+        in their former numbers: ``'18 19 21 => 21 18 19'``. Empty when the
+        order holds — the players inserted or removed only shift the
+        others — or when no pairing was made from the numbering yet."""
+        tournament = self.tournament
+        if not (tournament.fide_mode and tournament.has_pairings):
+            return ''
+        numbered_ids = {player.id for player in numbered_tournament_players}
+        before = sorted(
+            player.pairing_number or 0 for player in numbered_tournament_players
+        )
+        after = [
+            player.pairing_number or 0
+            for player in renumbered_tournament_players
+            if player.id in numbered_ids
+        ]
+        changed = [
+            index for index, number in enumerate(before) if number != after[index]
+        ]
+        if not changed:
+            return ''
+        span = slice(changed[0], changed[-1] + 1)
+        return (
+            f'{" ".join(map(str, before[span]))} => {" ".join(map(str, after[span]))}'
+        )

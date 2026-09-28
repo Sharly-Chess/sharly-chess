@@ -1,0 +1,35 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+
+<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ warning_macros.level_icon(3) }}
+                {{ _('Pairing rules broken') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>{{ _('This pairing breaks the absolute criteria of the pairing system:') }}</p>
+            <ul class="mb-0">
+                {% for violation in violations %}
+                    <li>{{ violation }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-{{ redirect_method | lower }}="{{ redirect_route }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-check-circle-fill pe-1"></i>
+                {{ _('Proceed') }}
+            </button>
+        </div>
+    </div>
+</div>

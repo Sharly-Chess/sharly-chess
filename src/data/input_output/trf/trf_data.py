@@ -165,6 +165,9 @@ class TrfTournament:
     )
     informative_team_pairings_records: list[str] = field(default_factory=list)
     informative_team_results_records: list[str] = field(default_factory=list)
+    #: The ``###`` comments written to log what befell the tournament
+    #: (FIDE mode left, pairing integrity breached), without the marker.
+    log_comments: list[str] = field(default_factory=list)
 
     xx_fields: dict[str, str] = field(default_factory=dict)
     bb_fields: dict[str, str] = field(default_factory=dict)

@@ -18,6 +18,7 @@ from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
+from data.pibes import Pibe, PibeType
 from data.player import Player, TournamentPlayer
 from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
@@ -66,7 +67,12 @@ from data.norms import (
     compute_high_level_tournament,
 )
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
+from database.sqlite.event.event_store import (
+    StoredBoard,
+    StoredPibe,
+    StoredPrizeGroup,
+    StoredTournament,
+)
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -641,6 +647,185 @@ class Tournament:
         tournaments created before the rule existed so their standings stay
         unchanged."""
         return bool(self.stored_tournament.round_robin_participation_rule)
+
+    @property
+    def fide_mode(self) -> bool:
+        """Whether the tournament runs in FIDE mode: the actions the FIDE
+        regulations prohibit are refused, and the pairing integrity breaching
+        events are logged. Only for the systems that support it."""
+        return (
+            self.pairing_system.supports_fide_mode and self.stored_tournament.fide_mode
+        )
+
+    @property
+    def left_fide_mode(self) -> bool:
+        """Whether the tournament could run in FIDE mode but does not."""
+        return self.pairing_system.supports_fide_mode and not self.fide_mode
+
+    @property
+    def fide_mode_exit_round(self) -> int | None:
+        """The first round played outside FIDE mode: the round it was left
+        at, or the first one if it was left before any pairing."""
+        if not self.left_fide_mode or not self.has_pairings:
+            return None
+        return self.stored_tournament.fide_mode_exit_round or 1
+
+    @property
+    def leaving_fide_mode_is_final(self) -> bool:
+        """Whether leaving FIDE mode can no longer be undone: once the first
+        round is paired, a tournament that leaves FIDE mode never re-enters
+        it."""
+        return self.has_pairings
+
+    def leave_fide_mode(self) -> None:
+        exit_round = self.current_round if self.has_pairings else None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.leave_tournament_fide_mode(self.id, exit_round)
+        self.stored_tournament.fide_mode = False
+        self.stored_tournament.fide_mode_exit_round = exit_round
+
+    @property
+    def manual_pairing_round(self) -> int | None:
+        """The round whose pairings are being edited by hand in FIDE mode:
+        from the first change until they are checked against the pairing
+        engine's."""
+        if not self.fide_mode:
+            return None
+        return self.stored_tournament.manual_pairing_round
+
+    def start_manual_pairing(self, round_: int) -> None:
+        """Start editing the pairings of *round_*, keeping its boards to put
+        them back if the editing is cancelled: the breach logged the last time
+        they were edited no longer stands."""
+        self._delete_pibes(PibeType.MPA, round_)
+        self._set_manual_pairing(
+            round_,
+            [
+                {
+                    'white': board.stored_board.white_player_id,
+                    'black': board.stored_board.black_player_id,
+                    'index': board.index,
+                    'fixed_number': board.stored_board.fixed_number,
+                    'result': board.result.value,
+                }
+                for board in self.get_round_boards(round_)
+                if board.stored_board.white_player_id is not None
+            ],
+        )
+
+    @property
+    def manual_pairing_start_boards(self) -> list[tuple[StoredBoard, Result]]:
+        """The boards of the round being edited as they were when the
+        editing started, each with its result from white's side."""
+        return [
+            (
+                StoredBoard(
+                    id=None,
+                    white_player_id=board['white'],
+                    black_player_id=board['black'],
+                    index=board['index'],
+                    fixed_number=board['fixed_number'],
+                ),
+                Result(board['result']),
+            )
+            for board in self.stored_tournament.manual_pairing_boards
+        ]
+
+    @property
+    def manual_pairing_start_pairs(self) -> set[tuple[int, int | None]] | None:
+        """The pairs of the round being edited when the editing started, by
+        player id; unknown in a team tournament, whose matches are not
+        kept."""
+        if self.is_team_tournament:
+            return None
+        return {
+            (stored_board.white_player_id, stored_board.black_player_id)
+            for stored_board, _result in self.manual_pairing_start_boards
+            if stored_board.white_player_id is not None
+        }
+
+    @property
+    def can_restore_manual_pairing(self) -> bool:
+        """Whether the boards of the round being edited can be put back as
+        they were: a team match also has its lineups, which are not kept."""
+        return self.manual_pairing_round is not None and not self.is_team_tournament
+
+    def end_manual_pairing(self, pibe: Pibe | None = None) -> None:
+        """Stop editing the pairings, logging the breach *pibe* when they
+        differ from the pairing engine's."""
+        if pibe is not None:
+            self.log_pibe(pibe)
+        self._set_manual_pairing(None, [])
+
+    def cancel_manual_pairing(self, round_: int) -> None:
+        """*round_* has been unpaired: nothing is left to check, and its
+        pairings no longer breach anything."""
+        self._delete_pibes(PibeType.MPA, round_)
+        if self.stored_tournament.manual_pairing_round == round_:
+            self._set_manual_pairing(None, [])
+
+    def _set_manual_pairing(
+        self, round_: int | None, boards: list[dict[str, Any]]
+    ) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_manual_pairing(self.id, round_, boards)
+        self.stored_tournament.manual_pairing_round = round_
+        self.stored_tournament.manual_pairing_boards = boards
+
+    def _delete_pibes(self, type_: PibeType, round_: int) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_tournament_stored_pibes(self.id, type_, round_)
+        self.stored_tournament.stored_pibes = [
+            stored_pibe
+            for stored_pibe in self.stored_tournament.stored_pibes
+            if (stored_pibe.type, stored_pibe.round_) != (type_, round_)
+        ]
+
+    @property
+    def pairing_number_members(self) -> dict[int, int]:
+        """The player (the team, when teams are paired) each pairing number
+        stands for."""
+        if self.is_team_tournament and self.pairing_system.paired_by_team:
+            return {
+                team.pairing_number: team.id
+                for team in self.teams
+                if team.pairing_number is not None and team.id is not None
+            }
+        return {
+            number: player.id
+            for number, player in self.tournament_players_by_pairing_number.items()
+            if player.id is not None
+        }
+
+    @property
+    def pibes(self) -> list[Pibe]:
+        """The pairing integrity breaching events, in the order they
+        occurred."""
+        return [
+            Pibe(
+                PibeType(stored_pibe.type),
+                stored_pibe.round_,
+                stored_pibe.description,
+                stored_pibe.date,
+                stored_pibe.members,
+            )
+            for stored_pibe in self.stored_tournament.stored_pibes
+        ]
+
+    def log_pibe(self, pibe: Pibe) -> None:
+        """Log *pibe*, with the player (or team) each pairing number stands
+        for now unless it says otherwise."""
+        stored_pibe = StoredPibe(
+            id=None,
+            tournament_id=self.id,
+            round_=pibe.round_,
+            type=pibe.type,
+            description=pibe.description,
+            members=pibe.members or self.pairing_number_members,
+        )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.add_stored_pibe(stored_pibe)
+        self.stored_tournament.stored_pibes.append(stored_pibe)
 
     @property
     def secondary_score_for_colours(self) -> bool:

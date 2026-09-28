@@ -23,11 +23,13 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ComponentPlacement('drag_handle'),
         ),
         summary=(
-            ComponentPlacement('participants', 'ms-auto'),
+            ComponentPlacement('participants'),
             ComponentPlacement('round_progress'),
             ComponentPlacement('illegal_moves'),
-            ComponentPlacement('rating', 'me-auto'),
+            ComponentPlacement('rating'),
+            ComponentPlacement('fide_mode'),
         ),
+        summary_class='justify-content-center',
         body=(
             ComponentPlacement('transfer'),
             ComponentPlacement('time_control'),

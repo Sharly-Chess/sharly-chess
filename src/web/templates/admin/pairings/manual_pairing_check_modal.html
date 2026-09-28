@@ -1,0 +1,92 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+
+{% set validate_route = url_for(
+    'admin-pairings-validate-manual-pairing',
+    event_uniq_id=admin_event.uniq_id,
+    tournament_id=admin_tournament.id,
+    round=admin_round,
+) ~ '?confirmed=1' %}
+{% set differs = engine_pairs or arbiter_pairs or engine_error %}
+
+{% macro bye_problem_list() %}
+    {% if bye_problems %}
+        <p class="mb-1">{{ _('The pairing-allocated bye breaks the rules:') }}</p>
+        <ul>
+            {% for problem in bye_problems %}
+                <li>{{ problem }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
+{% macro differences() %}
+    {% if engine_error %}
+        <p>{{ _('The pairing engine could not pair the round:') }} {{ engine_error }}</p>
+    {% else %}
+        <p>{{ _('The pairings of round %(round)d differ from those of the pairing engine:', round=admin_round) }}</p>
+        <div class="row g-2 mb-2">
+            <div class="col-6">
+                <div class="fw-bold">{{ _('Pairing engine') }}</div>
+                {% for label in engine_pairs %}
+                    <div class="small">{{ label }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-6">
+                <div class="fw-bold">{{ _('Your pairings') }}</div>
+                {% for label in arbiter_pairs %}
+                    <div class="small">{{ label }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <p class="small fst-italic">{{ _('Pairing numbers in brackets.') }}</p>
+    {% endif %}
+    {{ bye_problem_list() }}
+{% endmacro %}
+
+<div style="--bs-modal-width: min(90vw, 800px);" class="modal-dialog pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ warning_macros.level_icon(4 if differs else 3) }}
+                {{ _('Validate the pairings') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            {% if differs %}
+                {% call(button) warning_macros.double_confirmation(
+                    'manual-pairing-check',
+                    differences(),
+                    _(
+                        'Validating these pairings breaches the integrity of the pairings: '
+                        'it will be logged, and recorded in the TRF of the tournament.'
+                    ),
+                    _('Validate anyway'),
+                ) %}
+                    {% if button == 'cancel' %}
+                        data-bs-dismiss="modal"
+                    {% else %}
+                        hx-post="{{ validate_route }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                {% endcall %}
+            {% else %}
+                {{ bye_problem_list() }}
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        hx-post="{{ validate_route }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        {{ _('Validate anyway') }}
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

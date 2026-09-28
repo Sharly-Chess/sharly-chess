@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, override
 
 from common.i18n import _
 from data.pairings.systems import PairingSystem, swiss_style_permission_handler
-from data.safety_mode import PairingAction, PermissionHandler
+from data.permissions import PairingAction, PermissionHandler
 from utils.entity import EntityManager
 
 if TYPE_CHECKING:

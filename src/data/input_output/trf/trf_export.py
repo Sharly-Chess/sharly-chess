@@ -23,6 +23,7 @@ from data.input_output.trf.trf_data import (
 from data.input_output.trf.trf_mappers import TrfPointSystemResult
 from data.pairings.engines import _team_ui_sort_key
 from data.pairings.settings import ColorSeedSetting
+from data.pibes import fide_mode_exit_trf_comment
 from data.player import TournamentPlayer
 from utils.enum import (
     BoardColor,
@@ -119,7 +120,20 @@ class TrfExport:
             if prohibited_pairing_override is not None
             else self._prohibited_pairings()
         )
+        trf.log_comments = self._log_comments(after_round)
         return trf
+
+    def _log_comments(self, after_round: int) -> list[str]:
+        tournament = self.tournament
+        comments = [
+            pibe.trf_comment_for(tournament)
+            for pibe in tournament.pibes
+            if pibe.round_ <= after_round
+        ]
+        exit_round = tournament.fide_mode_exit_round
+        if exit_round is not None and exit_round <= after_round:
+            comments.append(fide_mode_exit_trf_comment(exit_round))
+        return comments
 
     def _shared_ranks(self) -> dict[int, int]:
         """Pairing number → rank, the same for players level on every
@@ -806,9 +820,9 @@ class TrfExport:
                 pairing_number,
                 player,
             ) in self.tournament.tournament_players_by_pairing_number.items():
-                result = player.pairings[round_].result
-                if result.is_next_round_bye:
-                    pairing_numbers_by_bye[result].append(pairing_number)
+                pairing = player.pairings.get(round_)
+                if pairing is not None and pairing.result.is_next_round_bye:
+                    pairing_numbers_by_bye[pairing.result].append(pairing_number)
             for bye, pairing_numbers in pairing_numbers_by_bye.items():
                 round_bye = TrfRoundBye(
                     type=bye.to_trf.upper(),

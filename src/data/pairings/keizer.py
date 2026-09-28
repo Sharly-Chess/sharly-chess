@@ -28,7 +28,7 @@ from data.pairings.settings import (
 )
 from data.pairings.systems import PairingSystem, SwissPairingSystem
 from data.pairings.variations import PairingVariation
-from data.safety_mode import PairingAction, PermissionHandler
+from data.permissions import PairingAction, PermissionHandler
 from database.sqlite.event.event_store import StoredBoard
 from utils.entity import EntityManager, EventBoundEntityManager
 from utils.enum import BoardColor, Result

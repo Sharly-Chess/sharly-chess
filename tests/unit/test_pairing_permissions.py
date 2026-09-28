@@ -4,7 +4,7 @@ from data.pairings.knockout import KnockoutPairingSystem, TeamKnockoutPairingSys
 from data.pairings.molter import MolterPairingSystem
 from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.systems import SwissPairingSystem, TeamRoundRobinPairingSystem
-from data.safety_mode import PairingAction, RoundStatus, SafetyMode
+from data.permissions import PairingAction, RoundStatus, WarningLevel
 
 
 @pytest.mark.parametrize(
@@ -17,11 +17,11 @@ from data.safety_mode import PairingAction, RoundStatus, SafetyMode
         TeamKnockoutPairingSystem(),
     ],
 )
-def test_unpairing_does_not_require_safety_mode_for_regenerable_pairings(
+def test_unpairing_does_not_warn_for_regenerable_pairings(
     pairing_system,
 ):
     allowed_actions = pairing_system.permission_handler.allowed_actions(
-        RoundStatus.CURRENT, SafetyMode.SAFE
+        RoundStatus.CURRENT, WarningLevel.NONE, fide_mode=True
     )
 
     assert PairingAction.FULL_UNPAIRING in allowed_actions
@@ -37,7 +37,7 @@ def test_unpairing_does_not_require_safety_mode_for_regenerable_pairings(
 )
 def test_a_freed_board_can_be_paired_again_from_the_table(pairing_system):
     allowed_actions = pairing_system.permission_handler.allowed_actions(
-        RoundStatus.CURRENT, SafetyMode.SAFE
+        RoundStatus.CURRENT, WarningLevel.NONE, fide_mode=True
     )
 
     assert PairingAction.MANUAL_UNPAIRING in allowed_actions
@@ -59,9 +59,9 @@ def test_a_knock_out_board_cannot_be_unpaired_on_its_own(pairing_system, round_s
     assert PairingAction.MANUAL_UNPAIRING not in existing_actions
 
 
-def test_swiss_unpairing_still_requires_safety_mode():
+def test_swiss_unpairing_asks_for_confirmation():
     allowed_actions = SwissPairingSystem().permission_handler.allowed_actions(
-        RoundStatus.CURRENT, SafetyMode.SAFE
+        RoundStatus.CURRENT, WarningLevel.NONE, fide_mode=True
     )
 
     assert PairingAction.FULL_UNPAIRING not in allowed_actions

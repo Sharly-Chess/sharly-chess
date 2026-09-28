@@ -10,7 +10,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
-from data.safety_mode import SafetyMode
+from data.permissions import WarningLevel
 from data.tournament import Tournament
 
 logger: Logger = get_logger()
@@ -521,20 +521,54 @@ class SessionPlayersImportUseDataSource(BoolSessionVariable):
         return 'players_import_use_data_source'
 
 
-class SessionPairingsSafetyMode(SessionVariable[SafetyMode]):
+class SessionPairingsUnlockedWarningLevel(SessionVariable[WarningLevel]):
+    """The highest warning level already confirmed on the pairings page
+    shown: actions up to it run without asking again."""
+
     @property
     def key(self) -> str:
-        return 'pairings_safety_mode'
+        return 'pairings_unlocked_warning_level'
 
     @property
-    def default_value(self) -> SafetyMode:
-        return SafetyMode.SAFE
+    def default_value(self) -> WarningLevel:
+        return WarningLevel.NONE
 
-    def get(self) -> SafetyMode:
-        return SafetyMode(super().get())
+    def get(self) -> WarningLevel:
+        try:
+            return WarningLevel(super().get())
+        except ValueError:
+            return self.default_value
 
-    def set(self, safety_mode: SafetyMode) -> None:
-        self.request.session[self.key] = safety_mode.value
+    def set(self, level: WarningLevel) -> None:
+        self.request.session[self.key] = int(level)
+
+
+class SessionTieBreaksUnlocked(SessionVariable[list[str]]):
+    """The tournaments whose fixed tie-breaks the user confirmed changing,
+    until their tie-breaks modal is opened again."""
+
+    @property
+    def key(self) -> str:
+        return 'tie_breaks_unlocked'
+
+    @property
+    def default_value(self) -> list[str]:
+        return []
+
+    @staticmethod
+    def _tournament_key(tournament: 'Tournament') -> str:
+        return f'{tournament.event.uniq_id}/{tournament.id}'
+
+    def contains(self, tournament: 'Tournament') -> bool:
+        return self._tournament_key(tournament) in self.get()
+
+    def add(self, tournament: 'Tournament') -> None:
+        if not self.contains(tournament):
+            self.set([*self.get(), self._tournament_key(tournament)])
+
+    def discard(self, tournament: 'Tournament') -> None:
+        key = self._tournament_key(tournament)
+        self.set([value for value in self.get() if value != key])
 
 
 @dataclass

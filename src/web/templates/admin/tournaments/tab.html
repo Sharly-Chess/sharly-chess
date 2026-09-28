@@ -6,7 +6,7 @@
 {% set collection_url = url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Tournaments'), 'tournaments') }}
+    {{ admin_macros.admin_title(_('Tournaments'), 'tournaments', fide_mode_badge=false) }}
     <script>
         preparePrintModal()
     </script>
