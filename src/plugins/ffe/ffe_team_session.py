@@ -1,13 +1,13 @@
 import contextlib
 import html
 import re
-import unicodedata
 from collections import Counter
 from urllib.parse import urlencode
 from dataclasses import dataclass, field
 from logging import Logger
 
 from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
+from text_unidecode import unidecode
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -83,11 +83,20 @@ SITE_RESULTS: dict[Result, str] = {
 UNMAPPED_SITE_RESULT: str = 'NonAttribue'
 
 
+SITE_NAME_MAX_LENGTH: int = 50
+
+
+def site_name(name: str) -> str:
+    """*name* as sent to the site, in ASCII: the site turns the
+    characters it does not store into spaces (œ included)."""
+    return ' '.join(unidecode(name).split())[:SITE_NAME_MAX_LENGTH].strip()
+
+
 def site_name_key(name: str) -> str:
-    """The site re-cases the names it stores and drops their accents:
-    names are compared through this key."""
-    stripped = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode()
-    return ' '.join(stripped.casefold().split())
+    """The site re-cases the names it stores and may rewrite their
+    punctuation: names are compared on their letters and digits."""
+    words = re.sub(r'[^a-z0-9]+', ' ', site_name(name).casefold())
+    return ' '.join(words.split())
 
 
 @dataclass(frozen=True)
@@ -579,7 +588,7 @@ class FFETeamSession(FFESession):
             {
                 '__EVENTTARGET': SAVE_TEAM_EVENT,
                 MAIN + 'TextGroupeId': str(self.group_id),
-                MAIN + 'TextEquipeNom': team.name[:50],
+                MAIN + 'TextEquipeNom': site_name(team.name),
                 MAIN + 'DropEquipeNr$DropDownNumeric': str(number),
                 MAIN + 'TextClub': club or '',
                 MAIN + 'TextCorrespondant': self._correspondent_licence(team) or '',
@@ -1078,7 +1087,7 @@ class FFETeamSession(FFESession):
 
     @staticmethod
     def _site_team_id(page: GroupPage, team: Team) -> int | None:
-        key = site_name_key(team.name[:50])
+        key = site_name_key(team.name)
         return next(
             (
                 site_id
