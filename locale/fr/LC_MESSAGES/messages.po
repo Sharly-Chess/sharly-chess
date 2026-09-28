@@ -9864,7 +9864,7 @@ msgstr "Ce champ est obligatoire."
 
 #, python-brace-format
 msgid "This file is in the {version} format. It was completed as follows:"
-msgstr ""
+msgstr "Ce fichier est au format {version}. Il a été complété comme suit :"
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
