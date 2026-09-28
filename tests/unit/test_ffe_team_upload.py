@@ -163,7 +163,7 @@ class RuleSetCompetitionTestCase(TestCase):
             'Finales Nationales',
         )
 
-          
+
 @pytest.mark.unit
 class SiteNameTestCase(TestCase):
     """Team names are sent in plain ASCII and matched back whatever the
