@@ -605,7 +605,7 @@ msgid "A competitor who has played in fewer than this many stages is left out of
 msgstr "Un compétiteur ayant joué moins d'étapes que ce nombre est exclu des classements. Laisser vide pour aucun minimum."
 
 msgid "A field left blank is given a random value. The rounds are paired by the pairing engine, the results come from the players' ratings and the standings from the tie-break engine."
-msgstr "Un champ laissé vide reçoit une valeur aléatoire. Les rondes sont appariées par le moteur d'appariement, les résultats découlent de l'Elo des joueur·euses et le classement du moteur de départage."
+msgstr "Un champ laissé vide reçoit une valeur aléatoire. Les rondes sont appariées par le moteur d'appariement, les résultats découlent du Elo des joueur·euses et le classement du moteur de départage."
 
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
@@ -3528,7 +3528,7 @@ msgid "Events ({num})"
 msgstr "Évènements ({num})"
 
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
-msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi. Les équipes que le fichier laisse vides sont également supprimées."
+msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi. Les équipes que le fichier laisse vides sont également supprimées."
 
 msgid "Example data"
 msgstr "Données d’exemple"
@@ -4212,7 +4212,7 @@ msgid "How many times the competitor finished in the chosen position (e.g. numbe
 msgstr "Combien de fois le compétiteur a terminé à la place choisie (p. ex. nombre de premières places). Un décompte, donc non pondéré."
 
 msgid "How much each player is rated below the one above them."
-msgstr "L'écart d'Elo entre chaque joueur·euse et celui ou celle qui le ou la précède."
+msgstr "L'écart de Elo entre chaque joueur·euse et le·la précédante."
 
 msgid "How the boards shown by these screens are chosen and ordered."
 msgstr "Comment les échiquiers affichés par ces écrans sont choisis et ordonnés."
@@ -4772,7 +4772,7 @@ msgid "Lebanon"
 msgstr "Liban"
 
 msgid "Left off, the tournament is entered and nothing else: a field waiting for its first pairing."
-msgstr "Décoché, le tournoi est seulement saisi: des joueur·euses en attente du premier appariement."
+msgstr "Décoché, le tournoi est seulement saisi : un champ en attente du premier appariement."
 
 msgid "Left wins"
 msgstr "Victoire gauche"
@@ -5613,7 +5613,7 @@ msgid "No affiliation"
 msgstr "Aucune affiliation"
 
 msgid "No affiliation set: the pairing cannot keep this team apart from teams of the same affiliation."
-msgstr "Aucune affiliation définie : l’appariement ne peut pas éviter que cette équipe rencontre des équipes de la même affiliation."
+msgstr "Aucune affiliation définie : l’appariement ne peut pas éviter que cette équipe rencontre des équipes de la même affiliation."
 
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
@@ -7891,17 +7891,17 @@ msgstr "La ronde {round} du numéro d'appariement {number} est déjà accélér�
 
 #, python-brace-format
 msgid "Round {round} of {rounds} could not be paired ({error}): the tournament was not generated."
-msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}): le tournoi n'a pas été généré."
+msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}) : le tournoi n'a pas été généré."
 
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr "Ronde {} commencée depuis %%s"
 
 msgid "Round-Robin"
-msgstr "Toutes rondes"
+msgstr "Toutes-rondes"
 
 msgid "Round-robin schedule"
-msgstr "Calendrier toutes rondes"
+msgstr "Calendrier toutes-rondes"
 
 msgid "Round:"
 msgstr "Ronde :"
@@ -8843,7 +8843,7 @@ msgid "Team Knock-out"
 msgstr "Coupe par équipes"
 
 msgid "Team Round-Robin"
-msgstr "Toutes Rondes par équipes"
+msgstr "Toutes-rondes par équipes"
 
 msgid "Team Swiss"
 msgstr "Suisse par équipes"
@@ -9411,7 +9411,7 @@ msgid "The rank of the last team to select."
 msgstr "Le classement de la dernière équipe à sélectionner."
 
 msgid "The rating of each player, strongest first, comma-separated. Given, it overrides the top rating and the step below."
-msgstr "L'Elo de chaque joueur·euse, du plus fort au plus faible, séparés par des virgules. S'il est indiqué, il remplace l'Elo le plus haut et l'écart ci-dessous."
+msgstr "Les Elo de chaque joueur·euse, du plus fort au plus faible, séparés par des virgules. S'il est indiqué, il remplace le Elo le plus haut et l'écart ci-dessous."
 
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
@@ -9723,7 +9723,7 @@ msgid "This document is only available for Scheveningen tournaments."
 msgstr "Ce document n'est disponible que pour les tournois au système Scheveningen."
 
 msgid "This document is only available for round-robin tournaments."
-msgstr "Ce document n'est disponible que pour les tournois toutes rondes."
+msgstr "Ce document n'est disponible que pour les tournois toutes-rondes."
 
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."

@@ -10890,7 +10890,7 @@ msgstr ""
 msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
 msgstr ""
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (Zero-Point) players and the players with a Half-Point Bye)."
 msgstr ""
 
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
