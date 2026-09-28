@@ -15,6 +15,7 @@ from utils.enum import Result, BoardColor, PlayerRatingType
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.input_output.trf.trf_data import TrfGame
+    from data.pibes import RatingCorrection
     from data.player import TournamentPlayer
 
 logger: Logger = get_logger()
@@ -229,9 +230,31 @@ class Pairing:
     def next_round_bye(self) -> bool:
         return self.result.is_next_round_bye
 
-    def to_trf(self, round_number: int) -> 'TrfGame':
+    def to_trf(
+        self, round_number: int, correction: Optional['RatingCorrection'] = None
+    ) -> 'TrfGame':
+        """The game as a TRF round, or as *correction* gives it when it
+        corrects this very game."""
         from data.input_output.trf.trf_data import TrfGame
         from data.input_output.trf.trf_mappers import TrfColor
+
+        player_id = self.tournament_player.id
+        if (
+            correction is not None
+            and player_id is not None
+            and correction.player_ids == {player_id, self.opponent_id}
+        ):
+            return TrfGame(
+                opponent_id=getattr(self.opponent, 'pairing_number', None),
+                color=TrfColor.get_outer_value(
+                    BoardColor.WHITE
+                    if player_id == correction.white_player_id
+                    else BoardColor.BLACK,
+                    False,
+                ),
+                result=correction.result_of(player_id).to_trf,
+                round=round_number,
+            )
 
         opponent_pn = getattr(self.opponent, 'pairing_number', None)
         if self.result.is_bye:

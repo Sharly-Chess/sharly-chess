@@ -53,7 +53,13 @@ from data.pairings.manual_pairing import (
     round_pairs,
     team_pairing_violations,
 )
-from data.pibes import Pibe, PibeType, describe_round_changes, round_snapshot
+from data.pibes import (
+    RATING_CORRECTION_RESULTS,
+    Pibe,
+    PibeType,
+    describe_round_changes,
+    round_snapshot,
+)
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import CheckInStatus, Result, ScoreType, TeamByeType
@@ -259,6 +265,17 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.correction_snapshot: dict[str, str] | None = None
         if action:
             self._pass_warning(action)
+
+    @property
+    def corrects_for_rating(self) -> bool:
+        """Whether the games of the round are corrected for the rating
+        report only, the rounds paired from it having been played
+        (C.04.2:4.3)."""
+        return (
+            self.admin_tournament is not None
+            and self.admin_tournament.pairing_system.supports_fide_mode
+            and self.round_status == RoundStatus.PAST
+        )
 
     def _pass_warning(self, action: PairingAction) -> None:
         """Run the checks of the warning *action* raises, the user having
@@ -584,6 +601,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_boards_sortable': self.admin_boards_sortable,
             'admin_board_sort': self.admin_board_sort,
             'round_status': self.round_status,
+            'corrects_for_rating': self.corrects_for_rating,
             'display_rankings': self.display_rankings,
             'unsafe_editing': self.unlocked_level.asks_user,
             'confirmation_unlocks_round': confirmation_unlocks_round,
@@ -3673,6 +3691,90 @@ class PairingsAdminController(BaseEventAdminController):
                 'board': web_context.admin_board,
                 'illegal_moves_changed': True,
             },
+        )
+
+    @put(
+        path='/pairing/rating-correction/{event_uniq_id:str}/{tournament_id:int}'
+        '/{round:int}/{board_id:int}/{white_player_id:int}/{result:int}',
+        name='admin-pairings-set-rating-correction',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+    )
+    async def htmx_admin_set_rating_correction(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
+        white_player_id: FromPath[int],
+        result: FromPath[int],
+    ) -> Template:
+        web_context = self._rating_correction_context(
+            request, tournament_id, round, board_id
+        )
+        board = web_context.get_admin_board()
+        if white_player_id not in (board.white_player_id, board.black_player_id):
+            raise ClientException(
+                f'Player [{white_player_id}] is not on board [{board_id}].'
+            )
+        if Result(result) not in RATING_CORRECTION_RESULTS:
+            raise ClientException(f'Result [{result}] cannot correct a game.')
+        web_context.get_admin_tournament().correct_for_rating(
+            board, white_player_id, Result(result)
+        )
+        return self._render_rating_correction(request, tournament_id, round, board_id)
+
+    @delete(
+        path='/pairing/rating-correction/{event_uniq_id:str}/{tournament_id:int}'
+        '/{round:int}/{board_id:int}',
+        name='admin-pairings-delete-rating-correction',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_delete_rating_correction(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
+    ) -> Template:
+        web_context = self._rating_correction_context(
+            request, tournament_id, round, board_id
+        )
+        web_context.get_admin_tournament().remove_rating_correction(
+            web_context.get_admin_board()
+        )
+        return self._render_rating_correction(request, tournament_id, round, board_id)
+
+    @staticmethod
+    def _rating_correction_context(
+        request: HTMXRequest, tournament_id: int, round_: int, board_id: int
+    ) -> 'PairingsAdminWebContext':
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round_, board_id=board_id
+        )
+        if not web_context.corrects_for_rating:
+            raise ClientException(
+                f'The games of round [{round_}] cannot be corrected for the '
+                'rating report.'
+            )
+        board = web_context.get_admin_board()
+        if board.white_player_id is None or board.black_player_id is None:
+            raise ClientException(f'Board [{board_id}] is not a game.')
+        return web_context
+
+    def _render_rating_correction(
+        self, request: HTMXRequest, tournament_id: int, round_: int, board_id: int
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round_,
+            board_id=board_id,
+            reload_event=True,
+        )
+        return self._admin_event_pairings_render(
+            web_context=web_context,
+            template_context={'modal': 'pairing', 'board': web_context.admin_board},
         )
 
     @get(

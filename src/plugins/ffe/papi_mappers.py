@@ -3,6 +3,7 @@ from enum import StrEnum, IntEnum
 from typing import Self
 
 from data.pairing import Pairing
+from data.pibes import RatingCorrection
 from data.pairings import PairingVariation, variations
 from data.pairings.systems import (
     RoundRobinPairingSystem,
@@ -298,6 +299,21 @@ class PapiRound:
             papi_color,
             pairing.opponent_id,
             cls._result_to_papi_result(pairing.result, pab_value),
+        )
+
+    @classmethod
+    def from_rating_correction(
+        cls, pairing: Pairing, correction: RatingCorrection, pab_value: Result
+    ) -> Self:
+        """The game of *pairing* as *correction* gives it for the rating."""
+        player_id = pairing.tournament_player.id
+        assert player_id is not None
+        return cls(
+            PapiColor.WHITE
+            if player_id == correction.white_player_id
+            else PapiColor.BLACK,
+            pairing.opponent_id,
+            cls._result_to_papi_result(correction.result_of(player_id), pab_value),
         )
 
     @classmethod

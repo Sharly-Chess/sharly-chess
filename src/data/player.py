@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer
+    from data.pibes import RatingCorrection
 
 MIN_YOB = 1900
 MAX_YOB = date.today().year
@@ -926,14 +927,22 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         self,
         after_round: int,
         next_round_pairings_as_zpb: bool,
+        rating_corrections: list['RatingCorrection'] | None = None,
     ) -> 'TrfPlayer':
+        """The player's 001 record, with the games of *rating_corrections*
+        as they were corrected."""
         from data.input_output.trf.trf_data import TrfPlayer, TrfGame, TrfNationalPlayer
 
         games: list[TrfGame] = []
         from data.input_output.trf.trf_mappers import TrfPlayerGender, TrfPlayerTitle
 
+        correction_by_round = {
+            correction.round_: correction
+            for correction in rating_corrections or []
+            if self.id in correction.player_ids
+        }
         for round_nb, pairing in self.pairings.items():
-            trf_game = pairing.to_trf(round_nb)
+            trf_game = pairing.to_trf(round_nb, correction_by_round.get(round_nb))
             if round_nb <= after_round:
                 games.append(trf_game)
             elif (

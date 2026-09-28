@@ -23,7 +23,7 @@ from data.input_output.trf.trf_data import (
 from data.input_output.trf.trf_mappers import TrfPointSystemResult
 from data.pairings.engines import _team_ui_sort_key
 from data.pairings.settings import ColorSeedSetting
-from data.pibes import fide_mode_exit_trf_comment
+from data.pibes import Pibe, RatingCorrection, fide_mode_exit_trf_comment
 from data.player import TournamentPlayer
 from utils.enum import (
     BoardColor,
@@ -49,8 +49,14 @@ class TrfExport:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list[TrfProhibitedPairing] | None = None,
+        rating_report: bool = False,
     ) -> TrfTournament:
+        """The tournament as a TRF. The *rating_report* gives the games
+        corrected for the rating in their 001 records, and says what the
+        pairings and the standings used instead; the pairing engine reads
+        the games as they were used."""
         tournament = self.tournament
+        corrections = tournament.rating_corrections if rating_report else []
         if after_round is None:
             after_round = tournament.rounds
         tournament.compute_tournament_player_ranks(after_round=after_round)
@@ -92,7 +98,7 @@ class TrfExport:
             ],
             time_control=tournament.time_control_trf25 or '',
             players=[
-                player.to_trf(after_round, next_round_pairings_as_zpb)
+                player.to_trf(after_round, next_round_pairings_as_zpb, corrections)
                 for player in tournament.tournament_players_by_pairing_number.values()
             ],
             accelerated_rounds=self.accelerated_rounds(),
@@ -120,15 +126,18 @@ class TrfExport:
             if prohibited_pairing_override is not None
             else self._prohibited_pairings()
         )
-        trf.log_comments = self._log_comments(after_round)
+        trf.log_comments = self._log_comments(after_round, corrections)
         return trf
 
-    def _log_comments(self, after_round: int) -> list[str]:
+    def _log_comments(
+        self, after_round: int, corrections: list[RatingCorrection]
+    ) -> list[str]:
         tournament = self.tournament
+        entries: list[Pibe | RatingCorrection] = [*tournament.pibes, *corrections]
         comments = [
-            pibe.trf_comment_for(tournament)
-            for pibe in tournament.pibes
-            if pibe.round_ <= after_round
+            entry.trf_comment_for(tournament)
+            for entry in entries
+            if entry.round_ <= after_round
         ]
         exit_round = tournament.fide_mode_exit_round
         if exit_round is not None and exit_round <= after_round:

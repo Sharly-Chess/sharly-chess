@@ -48,6 +48,7 @@ from database.sqlite.event.event_store import (
     StoredTeamPairingBlock,
     StoredTeamPointAdjustment,
     StoredPibe,
+    StoredRatingCorrection,
     StoredPlayerPointAdjustment,
     StoredTeamRoundLineupEntry,
 )
@@ -752,6 +753,9 @@ class EventDatabase(MigrationDatabase):
                 self.load_tournament_stored_prohibited_pairing_groups(id_)
             )
             stored_tournament.stored_pibes = self.load_tournament_stored_pibes(id_)
+            stored_tournament.stored_rating_corrections = (
+                self.load_tournament_stored_rating_corrections(id_)
+            )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 
@@ -1463,6 +1467,7 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `player_point_adjustment`')
         self.execute('DELETE FROM `team_point_adjustment`')
         self.execute('DELETE FROM `pibe`')
+        self.execute('DELETE FROM `rating_correction`')
 
     # ---------------------------------------------------------------------------------
     # StoredBoard
@@ -2148,6 +2153,60 @@ class EventDatabase(MigrationDatabase):
             'DELETE FROM `pibe` '
             'WHERE `tournament_id` = ? AND `type` = ? AND `round` = ?',
             (tournament_id, type_, round_),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredRatingCorrection
+    # ---------------------------------------------------------------------------------
+
+    def load_tournament_stored_rating_corrections(
+        self, tournament_id: int
+    ) -> list[StoredRatingCorrection]:
+        self.execute(
+            'SELECT * FROM `rating_correction` WHERE `tournament_id` = ? '
+            'ORDER BY `round`, `id`',
+            (tournament_id,),
+        )
+        return [
+            StoredRatingCorrection(
+                id=row['id'],
+                tournament_id=row['tournament_id'],
+                round_=row['round'],
+                white_player_id=row['white_player_id'],
+                black_player_id=row['black_player_id'],
+                result=row['result'],
+                date=self.load_datetime_from_database_field(row['date']),
+            )
+            for row in self.fetchall()
+        ]
+
+    def add_stored_rating_correction(
+        self, stored_rating_correction: StoredRatingCorrection
+    ) -> None:
+        self.execute(
+            'INSERT INTO `rating_correction` (`tournament_id`, `round`, '
+            '`white_player_id`, `black_player_id`, `result`, `date`) '
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            (
+                stored_rating_correction.tournament_id,
+                stored_rating_correction.round_,
+                stored_rating_correction.white_player_id,
+                stored_rating_correction.black_player_id,
+                stored_rating_correction.result,
+                self.dump_datetime_to_database_field(stored_rating_correction.date),
+            ),
+        )
+
+    def delete_stored_rating_correction(
+        self, tournament_id: int, round_: int, player_ids: tuple[int, int]
+    ) -> None:
+        """Delete the correction of the game the two players played in
+        *round_*, whichever had white."""
+        self.execute(
+            'DELETE FROM `rating_correction` '
+            'WHERE `tournament_id` = ? AND `round` = ? '
+            'AND `white_player_id` IN (?, ?) AND `black_player_id` IN (?, ?)',
+            (tournament_id, round_, *player_ids, *player_ids),
         )
 
     def set_tournament_manual_pairing(

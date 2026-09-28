@@ -230,6 +230,20 @@ class StoredPibe:
 
 
 @dataclass
+class StoredRatingCorrection:
+    """A game of a round too old to change, recorded differently in the
+    rating report: the colours the players had and the result of white."""
+
+    id: int | None
+    tournament_id: int
+    round_: int
+    white_player_id: int
+    black_player_id: int
+    result: int
+    date: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
 class StoredPlayerPointAdjustment:
     """Manual per-player, per-round bonus / penalty points for individual
     tournaments. A single ``delta`` (which may be negative) because those
@@ -378,6 +392,9 @@ class StoredTournament:
         default_factory=list[StoredPlayerPointAdjustment]
     )
     stored_pibes: list[StoredPibe] = field(default_factory=list[StoredPibe])
+    stored_rating_corrections: list[StoredRatingCorrection] = field(
+        default_factory=list[StoredRatingCorrection]
+    )
     stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
         default_factory=list['StoredProhibitedPairingGroup']
     )

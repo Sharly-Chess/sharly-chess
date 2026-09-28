@@ -575,13 +575,13 @@ class FFET2Type(FFETournamentsDocumentType):
         """The events *tournaments* logged, in French, one line each."""
         sections: list[str] = []
         for tournament in tournaments:
-            if not (pibes := tournament.pibes):
+            if not (entries := tournament.log_entries):
                 continue
             lines = [f'{tournament.name} :']
-            for pibe in pibes:
-                line = f'- Ronde {pibe.round_} : {pibe.summary(tournament, "fr")}'
-                if pibe.date:
-                    line += f' ({pibe.date:%d/%m/%Y %H:%M})'
+            for entry in entries:
+                line = f'- Ronde {entry.round_} : {entry.summary(tournament, "fr")}'
+                if entry.date:
+                    line += f' ({entry.date:%d/%m/%Y %H:%M})'
                 lines.append(line)
             sections.append('\n'.join(lines))
         return '\n\n'.join(sections) or 'Rien à signaler.'

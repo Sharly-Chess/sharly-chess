@@ -9,8 +9,9 @@
         <div class="modal-body">
             <p class="small">
                 {{ _(
-                    'The pairing integrity breaches and the changes to the settings of the '
-                    'tournament, recorded as comments in its TRF.'
+                    'The pairing integrity breaches, the changes to the settings of the '
+                    'tournament and the games corrected for the rating report, recorded '
+                    'as comments in its TRF.'
                 ) }}
             </p>
             {% if admin_tournament.fide_mode_exit_round %}
@@ -18,7 +19,7 @@
                     {{ _('FIDE mode was left at round %(round)d.', round=admin_tournament.fide_mode_exit_round) }}
                 </div>
             {% endif %}
-            {% if admin_tournament.pibes %}
+            {% if admin_tournament.log_entries %}
                 <table class="table table-sm table-striped mb-0">
                     <thead>
                         <tr>
@@ -29,12 +30,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pibe in admin_tournament.pibes %}
+                        {% for entry in admin_tournament.log_entries %}
                             <tr>
-                                <td>{{ pibe.round_ }}</td>
-                                <td class="text-nowrap">{{ pibe.type.label }}</td>
-                                <td class="small" {{ macros.tooltip_attributes('info', 'TRF : ' ~ pibe.trf_comment_for(admin_tournament), 'top') }}>{{ pibe.summary(admin_tournament) }}</td>
-                                <td class="text-nowrap small">{{ pibe.date_str }}</td>
+                                <td>{{ entry.round_ }}</td>
+                                <td class="text-nowrap">{{ entry.label }}</td>
+                                <td class="small" {{ macros.tooltip_attributes('info', 'TRF : ' ~ entry.trf_comment_for(admin_tournament), 'top') }}>{{ entry.summary(admin_tournament) }}</td>
+                                <td class="text-nowrap small">{{ entry.date_str }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

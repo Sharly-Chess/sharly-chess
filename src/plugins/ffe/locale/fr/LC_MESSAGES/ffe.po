@@ -725,6 +725,9 @@ msgstr "Le système d'appariement [{variation}] n'est pas reconnu par la FFE, qu
 msgid "The account of the group director on the FFE website (administration of team competitions)."
 msgstr "Le compte du·de la directeur·ice de groupe sur le site de la FFE (administration des compétitions par équipes)."
 
+msgid "The games corrected for the rating report are exported as corrected: the standings on the FFE website may differ from those of the tournament."
+msgstr "Les parties corrigées pour le rapport Elo sont exportées corrigées : le classement sur le site de la FFE peut différer de celui du tournoi."
+
 msgid "The match score cannot go below zero."
 msgstr "Le score du match ne peut pas être négatif."
 

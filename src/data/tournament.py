@@ -18,7 +18,7 @@ from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
-from data.pibes import Pibe, PibeType
+from data.pibes import Pibe, PibeType, RatingCorrection
 from data.player import Player, TournamentPlayer
 from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
@@ -70,6 +70,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredBoard,
     StoredPibe,
+    StoredRatingCorrection,
     StoredPrizeGroup,
     StoredTournament,
 )
@@ -826,6 +827,79 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.add_stored_pibe(stored_pibe)
         self.stored_tournament.stored_pibes.append(stored_pibe)
+
+    @property
+    def rating_corrections(self) -> list[RatingCorrection]:
+        """The games corrected for the rating report only, by round."""
+        return [
+            RatingCorrection(
+                stored.round_,
+                stored.white_player_id,
+                stored.black_player_id,
+                Result(stored.result),
+                stored.date,
+            )
+            for stored in self.stored_tournament.stored_rating_corrections
+        ]
+
+    def rating_correction_for(self, board: Board) -> RatingCorrection | None:
+        """The correction of the game on *board* for the rating report."""
+        players = {board.white_player_id, board.black_player_id}
+        return next(
+            (
+                correction
+                for correction in self.rating_corrections
+                if correction.round_ == board.round and correction.player_ids == players
+            ),
+            None,
+        )
+
+    def correct_for_rating(
+        self, board: Board, white_player_id: int, result: Result
+    ) -> None:
+        """Record the game on *board* in the rating report with
+        *white_player_id* as white, and the *result* of white, leaving the
+        board as the pairings and the standings used it; a game recorded as
+        it was played needs no correction."""
+        white_id, black_id = board.white_player_id, board.black_player_id
+        assert white_id is not None and black_id is not None
+        self.remove_rating_correction(board)
+        if white_player_id == white_id and result == board.result:
+            return
+        stored = StoredRatingCorrection(
+            id=None,
+            tournament_id=self.id,
+            round_=board.round,
+            white_player_id=white_player_id,
+            black_player_id=black_id if white_player_id == white_id else white_id,
+            result=result.value,
+        )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.add_stored_rating_correction(stored)
+        self.stored_tournament.stored_rating_corrections.append(stored)
+        self.stored_tournament.stored_rating_corrections.sort(
+            key=lambda correction: correction.round_
+        )
+
+    def remove_rating_correction(self, board: Board) -> None:
+        white_id, black_id = board.white_player_id, board.black_player_id
+        assert white_id is not None and black_id is not None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_rating_correction(
+                self.id, board.round, (white_id, black_id)
+            )
+        self.stored_tournament.stored_rating_corrections = [
+            stored
+            for stored in self.stored_tournament.stored_rating_corrections
+            if stored.round_ != board.round
+            or {stored.white_player_id, stored.black_player_id} != {white_id, black_id}
+        ]
+
+    @property
+    def log_entries(self) -> list[Pibe | RatingCorrection]:
+        """What the log lists: the pairing integrity breaching events, then
+        the games corrected for the rating report."""
+        return [*self.pibes, *self.rating_corrections]
 
     @property
     def secondary_score_for_colours(self) -> bool:
@@ -2379,6 +2453,7 @@ class Tournament:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
+        rating_report: bool = False,
     ) -> 'TrfTournament':
         from data.input_output.trf.trf_export import TrfExport
 
@@ -2386,6 +2461,7 @@ class Tournament:
             after_round=after_round,
             next_round_pairings_as_zpb=next_round_pairings_as_zpb,
             prohibited_pairing_override=prohibited_pairing_override,
+            rating_report=rating_report,
         )
 
     @property

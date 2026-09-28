@@ -801,6 +801,14 @@ class PapiConverter:
             warnings.append(warning)
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
             warnings.append(warning)
+        if tournament.rating_corrections:
+            warnings.append(
+                _(
+                    'The games corrected for the rating report are exported as '
+                    'corrected: the standings on the FFE website may differ from '
+                    'those of the tournament.'
+                )
+            )
         return '<br/>'.join(warnings) or None
 
     def write_papi_file(
@@ -1112,8 +1120,24 @@ class PapiConverter:
         # Convert rounds/pairings
         tournament = tournament_player.tournament
         eliminates = tournament.pairing_system.eliminates_participants
+        # Papi files are rated: the games corrected for the rating report
+        # are given as corrected, whatever the standings on the FFE website.
+        correction_by_round = {
+            correction.round_: correction
+            for correction in tournament.rating_corrections
+            if tournament_player.id in correction.player_ids
+        }
         for round_, pairing in tournament_player.pairings_by_round.items():
-            papi_round = PapiRound.from_pairing(pairing, pab_value)
+            correction = correction_by_round.get(round_)
+            if correction is not None and correction.player_ids == {
+                tournament_player.id,
+                pairing.opponent_id,
+            }:
+                papi_round = PapiRound.from_rating_correction(
+                    pairing, correction, pab_value
+                )
+            else:
+                papi_round = PapiRound.from_pairing(pairing, pab_value)
 
             # Get opponent index using the mapping from internal player ID to index
             opponent_index = None

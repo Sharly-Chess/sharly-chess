@@ -100,7 +100,8 @@
                 {% endif %}
             >
             {% endif %}
-                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
+                {% set _rating_correction = admin_tournament.rating_correction_for(board) if wtp and btp and admin_tournament.stored_tournament.stored_rating_corrections else none %}
+                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}{% if _rating_correction %}<span class="position-absolute" {{ macros.tooltip_attributes('warning', _rating_correction.summary(admin_tournament), 'top') }}>*</span>{% endif %}
                 {# Knock-out markers live inside the button so hovering/clicking
                    them counts as the button. The advancing side gets a numbered
                    badge; a drawn game a diagonally-cut warning corner. #}

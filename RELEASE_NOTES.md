@@ -45,6 +45,7 @@
 - In FIDE mode, editing the pairings of a round by hand is validated against the pairing engine at the end, or cancelled; the next round waits for the validation (5.2.0)
 - Manual pairings warn about repeated games, prohibited pairings, colour rules and ineligible pairing-allocated byes (5.2.0)
 - In FIDE mode, each correction to the previous round is confirmed and logged; older rounds cannot be changed (5.2.0)
+- A game of an older round found wrong can be corrected for the rating report only: the TRF and Papi exports give it as corrected, the TRF with a comment saying what the pairings and the standings used (5.2.0)
 - A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
 
 ## Documents

@@ -61,6 +61,10 @@ class Pibe:
     """The player (or team) each pairing number of the description stood
     for when the event was logged; empty for the current numbering."""
 
+    @property
+    def label(self) -> str:
+        return self.type.label
+
     def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
         return pibe_summary(self, tournament, locale)
 
@@ -78,6 +82,123 @@ class Pibe:
     @property
     def trf_comment(self) -> str:
         return f'{self.type} @ Round {self.round_}: {self.description}'
+
+
+RATING_CORRECTION_RESULTS = (
+    Result.WIN,
+    Result.DRAW,
+    Result.LOSS,
+    Result.FORFEIT_WIN,
+    Result.DOUBLE_FORFEIT,
+    Result.FORFEIT_LOSS,
+)
+"""The results a game can be corrected to for the rating report, from
+white's side."""
+
+
+@dataclass(frozen=True)
+class RatingCorrection:
+    """A game found wrong after the end of the next round: the pairings and
+    the standings keep what was recorded, and the rating report gets the
+    colours the players had and the result of white (C.04.2:4.3)."""
+
+    round_: int
+    white_player_id: int
+    black_player_id: int
+    result: Result
+    date: datetime | None = field(default=None, compare=False)
+
+    @property
+    def label(self) -> str:
+        return _('Rating report correction')
+
+    @property
+    def player_ids(self) -> frozenset[int]:
+        return frozenset((self.white_player_id, self.black_player_id))
+
+    def result_of(self, player_id: int) -> Result:
+        if player_id == self.white_player_id:
+            return self.result
+        return self.result.opposite_result
+
+    def recorded_board(self, tournament: 'Tournament') -> 'Board | None':
+        """The board the two players are recorded on in the round."""
+        return next(
+            (
+                board
+                for board in tournament.get_round_boards(self.round_)
+                if {board.white_player_id, board.black_player_id} == self.player_ids
+            ),
+            None,
+        )
+
+    def trf_comment_for(self, tournament: 'Tournament') -> str:
+        """The TRF comment, which gives the game as the pairings and the
+        standings used it, the 001 records giving it as corrected."""
+        number = _pairing_numbers(tournament)
+        used = self._recorded_game(tournament, number)
+        return (
+            f'Rating correction @ Round {self.round_}: '
+            f'{number(self.white_player_id)}-{number(self.black_player_id)} '
+            f'{_game_result(self.result)} in 001, '
+            f'{used} used for pairings and standings'
+        )
+
+    def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
+        def name(player_id: int) -> str:
+            player = tournament.tournament_players_by_id.get(player_id)
+            return player.full_name if player is not None else f'#{player_id}'
+
+        def game(white_id: int, black_id: int, result: Result) -> str:
+            return (
+                f'{name(white_id)} – {name(black_id)} '
+                f'{_readable_result(_game_result(result))}'
+            )
+
+        board = self.recorded_board(tournament)
+        corrected = game(self.white_player_id, self.black_player_id, self.result)
+        if board is None or board.white_player_id is None:
+            return _('For the rating report: {corrected}.', locale).format(
+                corrected=corrected
+            )
+        return _(
+            'For the rating report: {corrected} instead of {used}.', locale
+        ).format(
+            corrected=corrected,
+            used=game(
+                board.white_player_id,
+                board.black_player_id or 0,
+                board.result,
+            ),
+        )
+
+    @property
+    def date_str(self) -> str:
+        return format_datetime(self.date) if self.date else ''
+
+    def _recorded_game(
+        self, tournament: 'Tournament', number: Callable[[int], str]
+    ) -> str:
+        board = self.recorded_board(tournament)
+        if board is None or board.white_player_id is None:
+            return '*'
+        return (
+            f'{number(board.white_player_id)}-'
+            f'{number(board.black_player_id or 0)} {_board_result(board)}'
+        )
+
+
+def _pairing_numbers(tournament: 'Tournament') -> Callable[[int], str]:
+    def number(player_id: int) -> str:
+        player = tournament.tournament_players_by_id.get(player_id)
+        return str(player.pairing_number or 0) if player is not None else '0'
+
+    return number
+
+
+def _game_result(result: Result) -> str:
+    """A result of white in TRF codes, white's then black's: ``'1-0'``."""
+    return f'{result.to_trf.strip()}-{result.opposite_result.to_trf.strip()}'
 
 
 def fide_mode_exit_trf_comment(round_: int) -> str:
