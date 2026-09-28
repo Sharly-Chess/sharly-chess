@@ -9861,7 +9861,7 @@ msgid "This field is required."
 msgstr ""
 
 #, python-brace-format
-msgid "This file is in the {version} format. It was completed as follows:"
+msgid "This file is in the {version} format. It will be completed as follows:"
 msgstr ""
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."

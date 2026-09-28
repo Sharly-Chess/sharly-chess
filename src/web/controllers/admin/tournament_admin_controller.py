@@ -1965,7 +1965,7 @@ class TournamentAdminController(BaseEventAdminController):
                 sections.append(
                     (
                         _(
-                            'This file is in the {version} format. It was '
+                            'This file is in the {version} format. It will be '
                             'completed as follows:'
                         ).format(version=importer.trf_version),
                         importer.adjustments,
