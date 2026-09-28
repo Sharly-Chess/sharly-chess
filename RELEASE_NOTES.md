@@ -33,3 +33,7 @@
 - Place cards can now be edited with an embedded editor (5.1.0)
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
+
+## Chess-Results
+
+- The players' year of birth is now shown on _Chess-Results_ (5.1.1)

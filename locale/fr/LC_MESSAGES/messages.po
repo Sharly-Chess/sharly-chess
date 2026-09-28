@@ -5833,6 +5833,9 @@ msgstr "Aucun prix défini."
 msgid "No prizes."
 msgstr "Aucun prix."
 
+msgid "No prohibited pairings were used for this round."
+msgstr "Aucune protection d'appariement n'a été utilisée pour cette ronde."
+
 msgid "No public events."
 msgstr "Aucun événement public."
 
