@@ -43,6 +43,9 @@ class TrfPlayer:
     national_player_by_federation: dict[str, TrfNationalPlayer] = field(
         default_factory=dict
     )
+    #: Field name → text of the 001 fields that could not be read as the
+    #: format defines them.
+    unreadable: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -165,6 +168,9 @@ class TrfTournament:
 
     xx_fields: dict[str, str] = field(default_factory=dict)
     bb_fields: dict[str, str] = field(default_factory=dict)
+    #: Starting ranks of the 001 records that were split over several
+    #: lines and joined back.
+    joined_player_lines: list[int] = field(default_factory=list)
 
     @property
     def num_rounds_estimation(self) -> int:

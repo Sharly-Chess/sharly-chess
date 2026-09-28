@@ -46,14 +46,16 @@ def split_optional_ints(value: str, width: int) -> list[int | None]:
 #: for ``YYYY/MM/DD`` on all three, and that is what we write; the rest
 #: are forms found in files other programs produce, accepted so those
 #: files load. ``%y/%m/%d`` is what the Gacrux tournament generator
-#: writes, the two-digit year mapping to 1969-2068 as Python does it.
-#: Month names are resolved from the table below rather than through
+#: writes, the two-digit year mapping to 1969-2068 as Python does it;
+#: older files write the same year-first order with dots. Month names are resolved from the table below rather than through
 #: ``%b``, which reads the process locale and so would parse an English
 #: file only on an English-speaking machine.
 TRF_DATE_READ_FORMATS = (
     '%Y/%m/%d',
     '%y/%m/%d',
     '%Y-%m-%d',
+    '%Y.%m.%d',
+    '%y.%m.%d',
     '%d.%m.%Y',
     '%d. %m. %Y',
     '%d/%m/%Y',
@@ -121,6 +123,7 @@ def _parse_month_name_date(value: str) -> date | None:
 
 def parse_trf_year(value: str) -> int | None:
     """The year a birth date holds when it names no day: TRF26 writes an
-    unknown day and month as ``YYYY/00/00``."""
-    match = re.match(r'^(\d{4})[/-]00[/-]00$', value.strip())
+    unknown day and month as ``YYYY/00/00``, and older files often carry
+    the bare year."""
+    match = re.match(r'^(\d{4})(?:[/.-]00[/.-]00)?$', value.strip())
     return int(match.group(1)) if match else None

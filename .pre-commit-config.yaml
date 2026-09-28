@@ -6,8 +6,10 @@ repos:
     rev: v5.0.0
     hooks:
     -   id: trailing-whitespace
+        # Trailing blanks are the empty round blocks of these files.
+        exclude: '^tests/trf/(javafo_|icu/)'
     -   id: end-of-file-fixer
-        exclude: '\.po'
+        exclude: '\.po|^tests/trf/icu/'
     -   id: check-yaml
     -   id: check-added-large-files
         args: ['--maxkb=3072']
