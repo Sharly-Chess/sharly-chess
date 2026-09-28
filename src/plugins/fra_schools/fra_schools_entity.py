@@ -257,10 +257,6 @@ class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
     def cell_template(self) -> str | None:
         return '/fra_schools_player_school_cell.html'
 
-    @property
-    def is_tournament_column(self) -> bool:
-        return True
-
     def get_filter_key(self, player: Player) -> str:
         school = FRASchoolsUtils.get_player_school(player)
         return str(school.id) if school else ''
