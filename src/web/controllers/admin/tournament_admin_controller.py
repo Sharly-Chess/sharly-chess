@@ -816,16 +816,30 @@ class TournamentAdminController(BaseEventAdminController):
 
         # A win must be worth at least a draw, and a draw at least a
         # loss.
-        win_gp = game_points.get(Result.WIN.value)
-        draw_gp = game_points.get(Result.DRAW.value)
-        loss_gp = game_points.get(Result.LOSS.value)
-        if (
-            win_gp is not None
-            and draw_gp is not None
-            and loss_gp is not None
-            and not (loss_gp <= draw_gp <= win_gp)
-        ):
+        win_gp = game_points.get(Result.WIN.value, Result.WIN.point_value)
+        draw_gp = game_points.get(Result.DRAW.value, Result.DRAW.point_value)
+        loss_gp = game_points.get(Result.LOSS.value, Result.LOSS.point_value)
+        if not (loss_gp <= draw_gp <= win_gp):
             errors['gp_draw'] = _('Game points must satisfy loss ≤ draw ≤ win.')
+        elif 2 * draw_gp > win_gp + loss_gp:
+            errors['gp_draw'] = _(
+                'Two draws cannot be worth more than a win and a loss.'
+            )
+
+        # A team PAB is a whole match's game points, so only an
+        # individual PAB compares to a single game.
+        pab_gp = game_points.get(Result.PAIRING_ALLOCATED_BYE.value)
+        if pab_gp is not None and not event.is_team_event:
+            if pab_gp > win_gp:
+                errors['gp_pab'] = _('A PAB cannot be worth more than a win.')
+            elif (win_gp, draw_gp, loss_gp) == (1.0, 0.5, 0.0) and pab_gp not in (
+                win_gp,
+                draw_gp,
+                loss_gp,
+            ):
+                errors['gp_pab'] = _(
+                    'With the standard scoring system, a PAB is worth 1, ½ or 0.'
+                )
 
         team_player_count: int | None = None
         roster_max_size: int | None = None
@@ -1951,7 +1965,7 @@ class TournamentAdminController(BaseEventAdminController):
                 sections.append(
                     (
                         _(
-                            'This file is in the {version} format. It was '
+                            'This file is in the {version} format. It will be '
                             'completed as follows:'
                         ).format(version=importer.trf_version),
                         importer.adjustments,
