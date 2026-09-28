@@ -17,6 +17,7 @@
 - FIDE pairings (Dutch and team Swiss), team scores and tie-breaks, for individual and team tournaments, have been verified against _Gacrux_, an independent FIDE checker, on more than 100,000 generated tournaments (5.1.1)
 - Tournaments can be imported from TRF06 and TRF16 files; the import dialog lists every adjustment made to fill in what these older formats lack (5.1.1)
 - Scoring systems in which two draws are worth more than a win and a loss are refused, as are pairing-allocated byes worth more than a win or, with the standard scoring system, worth anything other than 1, ½ or 0 (5.1.1)
+- Team names with characters the _FFE_ website does not store, such as the œ of Sacré Cœur, no longer make the upload of team competitions fail (5.1.1)
 - The French School Championship is sent to the school competitions of the _FFE_ website, with the national finals division pre-selected for the national final (5.1.1)
 
 ## Players

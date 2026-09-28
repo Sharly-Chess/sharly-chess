@@ -27,6 +27,8 @@ from plugins.ffe.ffe_team_session import (
     DIVISION_SELECT,
     GROUP_SELECT,
     SiteOption,
+    site_name,
+    site_name_key,
 )
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_upload_status import IncompatibleFFEUploadStatus
@@ -159,6 +161,29 @@ class RuleSetCompetitionTestCase(TestCase):
         self.assertEqual(
             ChampionnatScolaireRuleSet({'phase': 'national-final'}).ffe_division_name,
             'Finales Nationales',
+        )
+
+          
+@pytest.mark.unit
+class SiteNameTestCase(TestCase):
+    """Team names are sent in plain ASCII and matched back whatever the
+    site does with their case and punctuation."""
+
+    def test_accents_are_stripped_and_ligatures_spelled_out(self) -> None:
+        self.assertEqual(site_name('Sacré Cœur'), 'Sacre Coeur')
+        self.assertEqual(site_name('ŒDIPE Æther Straße'), 'OEDIPE AEther Strasse')
+
+    def test_other_characters_become_spaces(self) -> None:
+        self.assertEqual(site_name('Lycée ★ Pasteur'), 'Lycee Pasteur')
+
+    def test_the_name_is_cut_to_the_site_length(self) -> None:
+        self.assertEqual(len(site_name('Cœur ' * 20)), 50)
+
+    def test_the_stored_name_matches_the_team(self) -> None:
+        self.assertEqual(site_name_key('SACRE COEUR'), site_name_key('Sacré Cœur'))
+        self.assertEqual(
+            site_name_key("Lycee Saint-Jean d'Angely"),
+            site_name_key('Lycée Saint Jean d Angély'),
         )
 
 
