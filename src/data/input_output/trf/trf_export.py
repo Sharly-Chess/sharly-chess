@@ -84,7 +84,10 @@ class TrfExport:
             # standings, PTS included — no longer prefixed here, since the
             # Points tie-break carries its own place in the list.
             standings_tie_breaks=[
-                tie_break.trf_acronym for tie_break in tournament.tie_breaks
+                tie_break.team_trf_acronym
+                if tournament.is_team_tournament
+                else tie_break.trf_acronym
+                for tie_break in tournament.tie_breaks
             ],
             time_control=tournament.time_control_trf25 or '',
             players=[
@@ -247,9 +250,18 @@ class TrfExport:
         rank_by_team_id: dict[int, int] = {}
         # Rank must match ``team_totals`` (bounded to ``after_round``) —
         # otherwise the in-progress round leaks into the TRF rank fed to
-        # bbpPairings (e.g. during complementary pairing).
+        # bbpPairings (e.g. during complementary pairing). The rank field
+        # allows ties, and teams the criteria leave level are level
+        # (C.07 Art. 4.2): they share the rank the standings reached them
+        # at, as the individual rank field does.
+        previous_key: tuple | None = None
+        shared_rank = 0
         for row in tournament.team_standings(after_round=after_round):
-            rank_by_team_id[row.team.id] = row.rank
+            key = (row.team.is_excluded_from_standings, row.rank_key)
+            if key != previous_key:
+                previous_key = key
+                shared_rank = row.rank
+            rank_by_team_id[row.team.id] = shared_rank
         nickname_by_team_id = self._team_nickname_map(tpn_by_team_id)
         trf_teams: list[TrfTeam] = []
         for team in teams:
@@ -540,15 +552,16 @@ class TrfExport:
             round_data = per_round.setdefault(team_board.round, {})
             a_gp, b_gp = team_board.game_points
             if stb.team_b_id is None:
-                # Team-level PAB.
+                bye_type = TeamByeType(stb.bye_type or TeamByeType.PAB)
+                bye_score = tournament.team_scoring.bye_score(bye_type)
                 round_data[stb.team_a_id] = (
                     None,
                     ' ',
                     ' ' * team_player_count,
                     ' ' * team_player_count,
-                    tournament.team_pab_game_points,
+                    bye_score[1] if bye_score is not None else 0.0,
                     False,
-                    TeamByeType.PAB,
+                    bye_type,
                 )
                 continue
 

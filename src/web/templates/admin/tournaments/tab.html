@@ -108,18 +108,44 @@
             </ul>
         </span>
         <span {{ macros.tooltip_attributes('info', _('Add a tournament to the event.'), 'top') }}>
-            <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-trigger="click, SC_Plus from:body"
-                hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-plus-square pe-1"></i>
-                {{ _('Create a tournament') }}
-            </button>
+            <div class="btn-group dropdown ms-1">
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-trigger="click, SC_Plus from:body"
+                    hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square pe-1"></i>
+                    {{ _('Create a tournament') }}
+                </button>
+                {% if DEVEL_ENV %}
+                    <button
+                        type="button"
+                        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <button
+                            class="dropdown-item text-nowrap"
+                            hx-get="{{ url_for(
+                                'admin-random-tournament-modal', event_uniq_id=admin_event.uniq_id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi bi-dice-5-fill pe-1"></i>
+                            {{ _('Generate a random tournament') }}
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
         </span>
     {% endif %}
 {% endblock %}

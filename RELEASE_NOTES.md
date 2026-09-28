@@ -14,11 +14,12 @@
 - Separate players of the same club when distributing players on balanced tournaments, as much as possible (5.1.0)
 - Team competitions can be sent to the _FFE_ website: teams and match reports are filled in from the tournament with the group account, for the competition, division and group chosen in the tournament properties (5.1.0)
 - Team tournaments can be exported to the _Papi_ format, which describes them as individual Swiss tournaments (5.1.0)
+- FIDE pairings (Dutch and team Swiss), team scores and tie-breaks, for individual and team tournaments, have been verified against _Gacrux_, an independent FIDE checker, on more than 100,000 generated tournaments (5.1.1)
 - Tournaments can be imported from TRF06 and TRF16 files; the import dialog lists every adjustment made to fill in what these older formats lack (5.1.1)
 
 ## Players
 
-- The player search can now be narrowed by federation, gender, age category and club (plus licence and league for _FFE_ searches), and the filters can be filled in one go from the criteria of any tournament of the event (5.0.3)
+- The player search can now be narrowed by federation, gender, age category and club (plus licence and league for _FFE_ searches), and the filters can be filled in one go from the criteria of any tournament of the event (5.1.0)
 
 ## Pairings
 
@@ -33,3 +34,7 @@
 - Place cards can now be edited with an embedded editor (5.1.0)
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
+
+## Chess-Results
+
+- The players' year of birth is now shown on _Chess-Results_ (5.1.1)
