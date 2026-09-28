@@ -22,7 +22,7 @@ from common.logger import (
 )
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
-from data.pairings.settings import BergerNumbersSetting
+from data.pairings.settings import BergerNumbersSetting, ReverseLastRoundsSetting
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils import Utils
@@ -619,10 +619,10 @@ class BergerPairingEngine(RoundRobinPairingEngine):
         return 1
 
     def get_round_pairings(
-        self, player_count: int, round_: int
+        self, tournament: 'Tournament', round_: int
     ) -> list[tuple[int, int]]:
-        """Pairings for the round *round_* of a tournament of *player_count* players."""
-        return self.get_berger_table(player_count)[round_]
+        """Pairings for the round *round_* of *tournament*, as Berger numbers."""
+        return self.get_berger_table(tournament.player_count)[round_]
 
     @classmethod
     @cache
@@ -664,7 +664,7 @@ class BergerPairingEngine(RoundRobinPairingEngine):
                 tournament
             ).items()
         }
-        pairings = self.get_round_pairings(tournament.player_count, round_)
+        pairings = self.get_round_pairings(tournament, round_)
         pab_player_id: int | None = None
         index = 0
         for pairing in pairings:
@@ -699,30 +699,41 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
     def player_encounters(self) -> int:
         return 2
 
-    def get_round_pairings(
-        self, player_count: int, round_: int
-    ) -> list[tuple[int, int]]:
-        """For double-round Berger, in the first half of the tournament
-        the pairings follow the Berger table, and in the second half it
-        follows it from round 1 but with black and white colors permuted.
+    @staticmethod
+    def source_round(
+        round_: int, single_rounds: int, reverse_last_rounds: bool
+    ) -> tuple[int, bool]:
+        """The Berger table round that round *round_* of a double
+        round-robin plays, and whether its colours are inverted.
 
-        The only exception is for the 2 last rounds of the first half, which
-        are supposed to be permuted to avoid players from tripling a color
-        (see FIDE Handbook section C.05.Annex 1)."""
-        berger_table = self.get_berger_table(player_count)
-        berger_table_round_count = self.get_single_encounter_round_count(player_count)
-        if round_ <= berger_table_round_count - 2:
-            return berger_table[round_]
-        if round_ == berger_table_round_count - 1:
-            return berger_table[round_ + 1]
-        if round_ == berger_table_round_count:
-            return berger_table[round_ - 1]
-        return [
-            (black_player, white_player)
-            for white_player, black_player in berger_table[
-                (round_ % (berger_table_round_count + 1)) + 1
-            ]
-        ]
+        The first cycle follows the Berger table and the second follows
+        it again from round 1 with colours inverted. With
+        *reverse_last_rounds*, the last two rounds of the first cycle are
+        played in reverse order so that no one plays the same colour
+        three times in a row (FIDE Handbook C.05 Annex 1). That needs at
+        least three rounds per cycle."""
+        if round_ > single_rounds:
+            return (round_ % (single_rounds + 1)) + 1, True
+        if reverse_last_rounds and single_rounds >= 3:
+            if round_ == single_rounds - 1:
+                return round_ + 1, False
+            if round_ == single_rounds:
+                return round_ - 1, False
+        return round_, False
+
+    def get_round_pairings(
+        self, tournament: 'Tournament', round_: int
+    ) -> list[tuple[int, int]]:
+        player_count = tournament.player_count
+        source_round, invert_colours = self.source_round(
+            round_,
+            self.get_single_encounter_round_count(player_count),
+            ReverseLastRoundsSetting.get_value(tournament),
+        )
+        pairings = self.get_berger_table(player_count)[source_round]
+        if invert_colours:
+            return [(black, white) for white, black in pairings]
+        return pairings
 
 
 def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
@@ -1377,7 +1388,7 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
 
     @abstractmethod
     def _compute_team_pairs(
-        self, teams: list['Team'], round_: int
+        self, tournament: 'Tournament', teams: list['Team'], round_: int
     ) -> list[tuple[int, int | None]]:
         """Return the list of (team_a_id, team_b_id) for the given
         round. ``team_b_id`` is ``None`` for a team-level bye."""
@@ -1401,7 +1412,7 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
             return {}
         last_round = min(tournament.rounds, self.get_round_count(len(teams)))
         return {
-            round_: self._compute_team_pairs(teams, round_)
+            round_: self._compute_team_pairs(tournament, teams, round_)
             for round_ in range(1, last_round + 1)
         }
 
@@ -1419,7 +1430,7 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
             )
         teams = self._teams_for_tournament(tournament)
         try:
-            team_pairs = self._compute_team_pairs(teams, round_)
+            team_pairs = self._compute_team_pairs(tournament, teams, round_)
         except Exception as e:
             logger.exception(e)
             return _('An error occurred. Consult the logs for more details.')
@@ -1443,7 +1454,7 @@ class TeamBergerEngine(TeamRoundRobinPairingEngine):
         return 1
 
     def _compute_team_pairs(
-        self, teams: list['Team'], round_: int
+        self, tournament: 'Tournament', teams: list['Team'], round_: int
     ) -> list[tuple[int, int | None]]:
         team_count = len(teams)
         if team_count < self.MIN_TEAMS:
@@ -1480,29 +1491,17 @@ class TeamDoubleBergerEngine(TeamBergerEngine):
         return 2
 
     def _compute_team_pairs(
-        self, teams: list['Team'], round_: int
+        self, tournament: 'Tournament', teams: list['Team'], round_: int
     ) -> list[tuple[int, int | None]]:
         team_count = len(teams)
         if team_count < self.MIN_TEAMS:
             return []
         berger_to_team = self._berger_to_team_id_map(teams)
-        single_rounds = self.get_single_encounter_round_count(team_count)
-        # Mirror the individual DoubleBergerPairingEngine remapping for
-        # the two last rounds of each half (anti-tripling-colour rule).
-        # That reversal only exists from three rounds per cycle up; with
-        # fewer (a two-team double round-robin = home and away) the cycle
-        # is taken straight, colours simply inverted on the way back.
-        if round_ <= single_rounds:
-            if single_rounds >= 3 and round_ == single_rounds - 1:
-                source_round = round_ + 1
-            elif single_rounds >= 3 and round_ == single_rounds:
-                source_round = round_ - 1
-            else:
-                source_round = round_
-            swap = False
-        else:
-            source_round = (round_ % (single_rounds + 1)) + 1
-            swap = True
+        source_round, swap = DoubleBergerPairingEngine.source_round(
+            round_,
+            self.get_single_encounter_round_count(team_count),
+            ReverseLastRoundsSetting.get_value(tournament),
+        )
         pairings = BergerPairingEngine.get_berger_table(team_count)[source_round]
         team_pairs: list[tuple[int, int | None]] = []
         for a_berger, b_berger in pairings:

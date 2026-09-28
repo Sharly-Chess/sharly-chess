@@ -19,6 +19,7 @@ from data.pairings.settings import (
     PairingSetting,
     ColorSeedSetting,
     BergerNumbersSetting,
+    ReverseLastRoundsSetting,
     AccelerationRule,
     AccelerationGroup,
 )
@@ -270,7 +271,7 @@ class DoubleBergerRoundRobinVariation(RoundRobinVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return [BergerNumbersSetting()]
+        return [BergerNumbersSetting(), ReverseLastRoundsSetting()]
 
     @property
     def engine(self) -> PairingEngine:
@@ -373,7 +374,7 @@ class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return []
+        return [ReverseLastRoundsSetting()]
 
     @property
     def engine(self) -> PairingEngine:

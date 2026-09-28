@@ -1,0 +1,12 @@
+<div class="row gy-2 gx-3">
+    {{ admin_macros.switch_input(
+        name=setting.id,
+        placeholder=setting.name,
+        tooltip_text=_(
+            'Play the last two rounds of the first cycle in reverse order, '
+            'as recommended by the FIDE Handbook, so that no one plays the '
+            'same colour three times in a row when the second cycle starts.'
+        ),
+        data=data, errors=errors
+    ) }}
+</div>

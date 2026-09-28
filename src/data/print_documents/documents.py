@@ -1760,7 +1760,6 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
         tournament: Tournament, engine: Any, rounds: int
     ) -> list[dict[str, Any]]:
         assert isinstance(engine, BergerPairingEngine)
-        player_count = tournament.player_count
         number_by_player = BergerNumbersSetting.get_value(tournament)
         player_by_number = {
             number: tournament.tournament_players_by_id[player_id]
@@ -1779,7 +1778,7 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
         for round_ in range(1, rounds + 1):
             matches: list[dict[str, Any]] = []
             exempt: str | None = None
-            for left_num, right_num in engine.get_round_pairings(player_count, round_):
+            for left_num, right_num in engine.get_round_pairings(tournament, round_):
                 left_player = player_by_number.get(left_num)
                 right_player = player_by_number.get(right_num)
                 if left_player is None or right_player is None:
