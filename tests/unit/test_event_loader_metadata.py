@@ -7,7 +7,7 @@ def test_newly_validated_metadata_is_reused(monkeypatch):
         uniq_id='event',
         name='Event',
         federation='FRA',
-        player_rating_type=1,
+        rating_method=1,
     )
     monkeypatch.setattr(EventLoader, '_valid_event_ids', set())
     monkeypatch.setattr(EventLoader, '_invalid_uniq_ids', set())

@@ -2,7 +2,7 @@ import io
 from collections import defaultdict
 from datetime import datetime, date, time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 from common.exception import ImporterError
 from common.i18n import _
@@ -50,7 +50,7 @@ from utils.enum import (
     TournamentRating,
     Result,
     BoardColor,
-    PlayerRatingType,
+    RatingMethod,
     TeamByeType,
 )
 from utils.time_control import parse_time_control_trf25
@@ -61,17 +61,6 @@ if TYPE_CHECKING:
 
 
 class TrfTournamentImporter(FileTournamentImporter):
-    #: TRF26 172 starting-rank methods, mapped to the rating a
-    #: tournament here would be set to. ``HBFN`` / ``LBFN`` (highest /
-    #: lowest of the two) and ``OTHER`` have no equivalent and are
-    #: reported instead.
-    STARTING_RANK_RATING_TYPES: ClassVar[dict[str, PlayerRatingType]] = {
-        'FIDE': PlayerRatingType.FIDE,
-        'FIDON': PlayerRatingType.FIDE,
-        'NRO': PlayerRatingType.NATIONAL,
-        'NIDOF': PlayerRatingType.NATIONAL,
-    }
-
     @staticmethod
     def static_id() -> str:
         return 'TRF'
@@ -380,7 +369,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
             )
         sr_method = tournament.starting_rank_method
-        if sr_method and sr_method not in self.STARTING_RANK_RATING_TYPES:
+        if sr_method and RatingMethod.from_trf_code(sr_method) is None:
             features.append(
                 _('172 Starting rank method {method}').format(method=sr_method)
             )
@@ -1404,11 +1393,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                     _('{string}: {value}').format(string='152', value=message)
                 ) from None
             stored_tournament.pairing_settings[ColorSeedSetting().id] = color.value
-        rating_type = cls.STARTING_RANK_RATING_TYPES.get(
-            trf_tournament.starting_rank_method
-        )
-        if rating_type is not None:
-            stored_tournament.player_rating_type = rating_type
+        rating_method = RatingMethod.from_trf_code(trf_tournament.starting_rank_method)
+        if rating_method is not None:
+            stored_tournament.rating_method = rating_method.value
         encoded_type = trf_tournament.encoded_type
         # Refuse files whose tournament type can't be honoured exactly: an
         # unknown code (no matching pairing system) or a CUSTOM_* code (a

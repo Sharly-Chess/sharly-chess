@@ -41,7 +41,7 @@ from database.sqlite.event.event_store import (
 from utils.types import PlayerRating
 from utils.enum import (
     EventType,
-    PlayerRatingType,
+    RatingMethod,
     Result,
     ScoreType,
     TeamByeType,
@@ -418,7 +418,7 @@ class RandomTournamentGenerator:
                     # rating the file states and the one the results are
                     # drawn from.
                     rating=TournamentRating.STANDARD.value,
-                    player_rating_type=PlayerRatingType.FIDE.value,
+                    rating_method=RatingMethod.FIDE.value,
                     team_player_count=settled.players_per_team,
                     team_colour_type=(
                         settled.team_colour_type.value

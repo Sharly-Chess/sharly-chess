@@ -30,6 +30,7 @@ from data.pairings.variations import (
     StandardTeamSwissVariation,
 )
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
@@ -41,12 +42,13 @@ from utils.enum import (
     BoardColor,
     EventType,
     PlayerGender,
-    PlayerRatingType,
     PlayerTitle,
+    RatingMethod,
     Result,
     ScoreType,
     TeamByeType,
     TeamColourType,
+    TournamentRating,
 )
 
 EVENT_ID = 'test-tournament-importers-event'
@@ -97,7 +99,9 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(
             tournament.pairing_settings.get(ColorSeedSetting().id), BoardColor.BLACK
         )
-        self.assertEqual(tournament.player_rating_type, PlayerRatingType.NATIONAL)
+        self.assertEqual(
+            tournament.stored_tournament.rating_method, RatingMethod.NATIONAL_FIDE
+        )
         self.assertEqual(tournament.pairing_variation.id, BakuSwissVariation().id)
 
         self.assertEqual(len(tournament.players), 16)
@@ -462,45 +466,58 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(first.pairings[1].color, BoardColor.WHITE)
         self.assertEqual(ColorSeedSetting.get_value(tournament), BoardColor.WHITE)
 
-    def test_trf_starting_rank_method_reflects_the_ratings_used(self):
-        """TRF26 172 states how the field was actually ranked, so it is
-        derived from the ratings that were used, not from the tournament
-        setting. Estimated ratings cannot be expressed in the format at
-        all, so a field carrying any of them is OTHER."""
-        rated = self._import_trf(
-            TrfTournament(
-                name='FIDE rated',
-                num_rounds=1,
-                starting_rank_federation='FRA',
-                starting_rank_method='FIDE',
-                players=[
-                    self._trf_player(number, rating=2000 + number) for number in (1, 2)
-                ],
-            )
-        )
-        trf = rated.to_trf(after_round=0)
-        self.assertEqual(trf.starting_rank_method, 'FIDE')
-        self.assertEqual(trf.starting_rank_federation, 'FRA')
+    def _use_event_without_plugins(self) -> None:
+        TestUtils.create_event(EVENT_ID, overrides={'enabled_plugins': []})
+        self.event = EventLoader().load_event(EVENT_ID)
 
-        unrated = self._import_trf(
-            TrfTournament(
-                name='Unrated',
-                num_rounds=1,
-                starting_rank_federation='FRA',
-                starting_rank_method='FIDE',
-                players=[self._trf_player(number, rating=0) for number in (1, 2)],
+    def test_trf_starting_rank_method_follows_the_rating_method(self):
+        """TRF26 172 states the rating method of the tournament. A method
+        that falls back to estimated ratings is OTHER once a player is
+        ranked on one, and the method it follows otherwise."""
+        self._use_event_without_plugins()
+        for method, has_estimated, expected in (
+            (RatingMethod.FIDE, False, 'FIDE'),
+            (RatingMethod.NATIONAL_FIDE, False, 'NIDOF'),
+            (RatingMethod.HIGHEST, True, 'HBFN'),
+            (RatingMethod.FIDE_NATIONAL_ESTIMATED, False, 'FIDON'),
+            (RatingMethod.FIDE_ESTIMATED, True, 'OTHER'),
+        ):
+            tournament = self._import_trf(
+                TrfTournament(
+                    name=f'Ranked by {method.name}',
+                    num_rounds=1,
+                    starting_rank_federation='FRA',
+                    starting_rank_method='FIDE',
+                    players=[
+                        self._trf_player(number, rating=2000 + number)
+                        for number in (1, 2)
+                    ],
+                )
             )
-        )
-        self.assertEqual(unrated.to_trf(after_round=0).starting_rank_method, 'OTHER')
+            with EventDatabase(EVENT_ID, write=True) as event_database:
+                tournament.stored_tournament.rating_method = method.value
+                event_database.update_stored_tournament(tournament.stored_tournament)
+                if has_estimated:
+                    player = next(iter(tournament.tournament_players))
+                    player.stored_player.ratings = {
+                        TournamentRating.STANDARD.value: {'estimated': 1500}
+                    }
+                    event_database.update_stored_player(player.stored_player)
+            self.event = EventLoader().load_event(EVENT_ID)
+            trf = self.event.tournaments_by_id[tournament.id].to_trf(after_round=0)
+            self.assertEqual(trf.starting_rank_method, expected, method)
+            self.assertEqual(trf.starting_rank_federation, 'FRA')
 
-    def test_trf_starting_rank_methods_map_to_a_rating_type(self):
-        """All four methods we can honour set the tournament's rating;
-        the rest are reported rather than silently reinterpreted."""
+    def test_trf_starting_rank_methods_map_to_a_rating_method(self):
+        """All five TRF26 methods we implement set the tournament's rating
+        method; the rest are reported rather than silently reinterpreted."""
+        self._use_event_without_plugins()
         for method, expected in (
-            ('FIDE', PlayerRatingType.FIDE),
-            ('FIDON', PlayerRatingType.FIDE),
-            ('NRO', PlayerRatingType.NATIONAL),
-            ('NIDOF', PlayerRatingType.NATIONAL),
+            ('FIDE', RatingMethod.FIDE),
+            ('FIDON', RatingMethod.FIDE_NATIONAL),
+            ('NRO', RatingMethod.NATIONAL),
+            ('NIDOF', RatingMethod.NATIONAL_FIDE),
+            ('HBFN', RatingMethod.HIGHEST),
         ):
             tournament = self._import_trf(
                 TrfTournament(
@@ -511,9 +528,9 @@ class TournamentImporterTestCase(TestCase):
                     players=[self._trf_player(1, rating=2000)],
                 )
             )
-            self.assertEqual(tournament.player_rating_type, expected, method)
+            self.assertEqual(tournament.rating_method, expected, method)
 
-        for method in ('HBFN', 'LBFN', 'OTHER'):
+        for method in ('LBFN', 'OTHER'):
             trf_tournament = TrfTournament(
                 name=f'Ranked by {method}',
                 num_rounds=1,

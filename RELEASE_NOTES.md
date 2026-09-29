@@ -18,6 +18,7 @@
 - Tournaments can be imported from TRF06 and TRF16 files; the import dialog lists every adjustment made to fill in what these older formats lack (5.1.1)
 - Scoring systems in which two draws are worth more than a win and a loss are refused, as are pairing-allocated byes worth more than a win or, with the standard scoring system, worth anything other than 1, ½ or 0 (5.1.1)
 - Team names with characters the _FFE_ website does not store, such as the œ of Sacré Cœur, no longer make the upload of team competitions fail (5.1.1)
+- The rating used to rank players can now be chosen among the TRF methods (FIDE, national, FIDE then national, national then FIDE, highest of FIDE, national and estimated), or a FIDE / national chain falling back to the estimated rating; existing tournaments keep ranking players as before, and _FFE_ tournaments always use FIDE, then national, then estimated (5.2.0)
 
 ## Players
 

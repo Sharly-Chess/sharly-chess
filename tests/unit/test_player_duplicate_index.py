@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from utils.enum import PlayerRatingType
+from utils.enum import RatingMethod
 from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredPlayer
 
@@ -13,7 +13,7 @@ def make_event(*players: StoredPlayer) -> Event:
             uniq_id='duplicate-test',
             name='Duplicate test',
             federation='FRA',
-            player_rating_type=PlayerRatingType.FIDE.value,
+            rating_method=RatingMethod.FIDE.value,
             enabled_plugins=['ffe'],
             stored_players=list(players),
         )

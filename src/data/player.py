@@ -2,6 +2,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
+from operator import attrgetter
 from typing import TYPE_CHECKING, Any, cast, ClassVar
 
 from babel.lists import format_list
@@ -28,6 +29,7 @@ from utils.enum import (
     TitleNorm,
     TournamentRating,
     PlayerRatingType,
+    RatingMethod,
     CheckInStatus,
 )
 from utils.types import (
@@ -288,21 +290,21 @@ class Player:
         """Rating + its source type for display in team/event contexts.
 
         Uses the team's tournament rating type (Standard/Rapid/Blitz) and
-        player-rating type (FIDE/National/Estimated) when the player is on a
-        team assigned to a tournament. Falls back to the event's default
-        cadence (the shared one when every tournament uses the same,
-        Standard otherwise) + event rating type for unassigned players."""
+        rating method when the player is on a team assigned to a tournament.
+        Falls back to the event's default cadence (the shared one when every
+        tournament uses the same, Standard otherwise) + event rating method
+        for unassigned players."""
         team = self.team
         if team is not None and team.tournament is not None:
             tournament = team.tournament
             return self.get_rating_and_type(
                 tournament.rating,
-                tournament.player_rating_type,
+                tournament.rating_method,
                 self.category,
             )
         return self.get_rating_and_type(
             self.event.default_tournament_rating,
-            self.event.player_rating_type,
+            self.event.rating_method,
             self.category,
         )
 
@@ -408,35 +410,32 @@ class Player:
     def get_rating_and_type(
         self,
         tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
+        rating_method: RatingMethod,
         category: PlayerCategory,
     ) -> PlayerRatingAndType:
         player_ratings = self.ratings[tournament_rating]
-        rating: int | None = None
-        type_: PlayerRatingType = PlayerRatingType.ESTIMATED
-        if player_rating_type == PlayerRatingType.FIDE:
-            rating = player_ratings.fide
-            type_ = PlayerRatingType.FIDE
-        elif player_rating_type == PlayerRatingType.NATIONAL:
-            rating = player_ratings.national
-            type_ = PlayerRatingType.NATIONAL
-        if rating is None:
-            rating_and_type = plugin_manager.hook_for_event(
-                self.event, 'get_player_rating'
+        rated = [
+            PlayerRatingAndType(value, rating_type)
+            for rating_type in rating_method.rating_types
+            if (value := player_ratings.get_type_value(rating_type)) is not None
+        ]
+        if rated:
+            if rating_method == RatingMethod.HIGHEST:
+                return max(rated, key=attrgetter('value'))
+            return rated[0]
+        if rating_method.falls_back_to_estimated:
+            default_rating = plugin_manager.hook_for_event(
+                self.event, 'get_default_player_rating'
             )(
                 tournament_rating=tournament_rating,
-                player_rating_type=player_rating_type,
                 player=self,
                 category=category,
             )
-            if rating_and_type:
-                return cast(PlayerRatingAndType, rating_and_type)
-            if player_ratings.estimated:
+            if default_rating is not None:
                 return PlayerRatingAndType(
-                    player_ratings.estimated, PlayerRatingType.ESTIMATED
+                    cast(int, default_rating), PlayerRatingType.ESTIMATED
                 )
-
-        return PlayerRatingAndType(rating or 0, type_)
+        return PlayerRatingAndType(0, rating_method.rating_types[0])
 
     @property
     def has_real_rating(self) -> bool:
@@ -472,13 +471,9 @@ class Player:
     def first_real_rating_str(self) -> str:
         for tournament_rating in TournamentRating:
             rating_and_type = self.get_rating_and_type(
-                tournament_rating, PlayerRatingType.FIDE, self.category
+                tournament_rating, RatingMethod.FIDE_NATIONAL, self.category
             )
-            if rating_and_type.type == PlayerRatingType.ESTIMATED:
-                rating_and_type = self.get_rating_and_type(
-                    tournament_rating, PlayerRatingType.NATIONAL, self.category
-                )
-            if rating_and_type.type != PlayerRatingType.ESTIMATED:
+            if rating_and_type.value:
                 return f'{rating_and_type} ({tournament_rating.acronym})'
         raise ValueError('Player expected to have a real rating')
 
@@ -612,9 +607,9 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return str(self._tournament_rating)
 
     def will_fide_override_with_standard_rating(
-        self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
+        self, tournament_rating: TournamentRating, rating_method: RatingMethod
     ) -> bool:
-        if player_rating_type != PlayerRatingType.FIDE:
+        if not rating_method.fide_first:
             # We only override for tournament that are using the FIDE ratings
             return False
 
@@ -632,16 +627,16 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     @cached_property
     def tournament_rating_is_overridden(self) -> bool:
         return self.rating_is_overridden(
-            self.tournament.rating, self.tournament.player_rating_type
+            self.tournament.rating, self.tournament.rating_method
         )
 
     def rating_is_overridden(
-        self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
+        self, tournament_rating: TournamentRating, rating_method: RatingMethod
     ) -> bool:
         return (
             self.tournament.override_unrated_rapid_blitz
             and self.will_fide_override_with_standard_rating(
-                tournament_rating, player_rating_type
+                tournament_rating, rating_method
             )
         )
 
@@ -652,7 +647,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     @property
     def rating_used_by_fide(self) -> PlayerRatingAndType:
         if self.will_fide_override_with_standard_rating(
-            self.tournament.rating, self.tournament.player_rating_type
+            self.tournament.rating, self.tournament.rating_method
         ):
             rating = self.ratings.get(TournamentRating.STANDARD)
             assert rating is not None
@@ -660,7 +655,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
         return self.get_rating_and_type(
-            self.tournament.rating, self.tournament.player_rating_type, self.category
+            self.tournament.rating, self.tournament.rating_method, self.category
         )
 
     @cached_property
@@ -672,7 +667,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
         return self.get_rating_and_type(
-            self.tournament.rating, self.tournament.player_rating_type, self.category
+            self.tournament.rating, self.tournament.rating_method, self.category
         )
 
     @property
@@ -693,7 +688,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 str(
                     self.get_rating_and_type(
                         tournament_rating,
-                        self.tournament.player_rating_type,
+                        self.tournament.rating_method,
                         self.category,
                     )
                 )
@@ -725,7 +720,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         `None` when it cannot be stated: the tournament is not played on
         FIDE ratings, the coefficient (k) of the player is only an estimate,
         or no game of theirs counts for the FIDE ratings."""
-        if self.tournament.player_rating_type != PlayerRatingType.FIDE:
+        if not self.tournament.rating_method.fide_first:
             return None
         k_factor, k_factor_is_estimated = self.fide_rating_coefficient
         if k_factor_is_estimated:

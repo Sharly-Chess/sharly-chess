@@ -32,7 +32,7 @@ from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingSystemManager, PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerProfileLink, TournamentPlayer
-from utils.types import PlayerRating, PlayerRatingAndType
+from utils.types import PlayerRating
 from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import (
     PlayerSplitter,
@@ -138,7 +138,7 @@ from plugins.utils import (
     TournamentConnectionField,
 )
 from utils.enum import (
-    PlayerRatingType,
+    RatingMethod,
     Result,
     TournamentRating,
 )
@@ -598,32 +598,24 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def get_player_rating(
+    def get_forced_rating_method(self, event: 'Event') -> RatingMethod:
+        return RatingMethod.FIDE_NATIONAL_ESTIMATED
+
+    @hookimpl
+    def get_default_player_rating(
         self,
         tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
         player: 'Player',
         category: 'PlayerCategory',
-    ) -> PlayerRatingAndType | None:
-        # In France, regardless of the player_rating_type of the tournament,
-        # the FIDE rating is used, if available, falling back to the national rating
-        ratings = player.ratings[tournament_rating]
-        if ratings.fide is not None:
-            return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
-        if ratings.national is not None:
-            return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
-        if ratings.estimated is not None:
-            return PlayerRatingAndType(ratings.estimated, PlayerRatingType.ESTIMATED)
+    ) -> int:
         if tournament_rating == TournamentRating.STANDARD:
-            value = 1299 if isinstance(category, JuniorCategory) else 1399
-        else:
-            value = 1199
-            if isinstance(category, JuniorCategory):
-                if category.age_limit <= 10:
-                    value = 799
-                elif category.age_limit <= 14:
-                    value = 999
-        return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
+            return 1299 if isinstance(category, JuniorCategory) else 1399
+        if isinstance(category, JuniorCategory):
+            if category.age_limit <= 10:
+                return 799
+            if category.age_limit <= 14:
+                return 999
+        return 1199
 
     @hookimpl
     def augment_trf_national_player(

@@ -3648,6 +3648,10 @@ msgctxt "name for rating type FIDE"
 msgid "FIDE"
 msgstr ""
 
+msgctxt "rating method"
+msgid "FIDE"
+msgstr ""
+
 #, python-format
 msgid "FIDE %(fide_id)s"
 msgstr ""
@@ -3685,6 +3689,18 @@ msgstr ""
 
 #, python-brace-format
 msgid "FIDE {id}"
+msgstr ""
+
+msgctxt "rating method"
+msgid "FIDE → estimated"
+msgstr ""
+
+msgctxt "rating method"
+msgid "FIDE → national"
+msgstr ""
+
+msgctxt "rating method"
+msgid "FIDE → national → estimated"
 msgstr ""
 
 msgid "FIDE-rated present"
@@ -4191,6 +4207,10 @@ msgid "Hide"
 msgstr ""
 
 msgid "Higher seed plays White"
+msgstr ""
+
+msgctxt "rating method"
+msgid "Highest"
 msgstr ""
 
 msgid "Highlight"
@@ -5489,6 +5509,10 @@ msgctxt "name for rating type national"
 msgid "National"
 msgstr ""
 
+msgctxt "rating method"
+msgid "National"
+msgstr ""
+
 msgid "National Arbiter"
 msgstr ""
 
@@ -5504,6 +5528,18 @@ msgid "National rating support for unknown player [{player}]."
 msgstr ""
 
 msgid "National team championship (1.4.3b)"
+msgstr ""
+
+msgctxt "rating method"
+msgid "National → FIDE"
+msgstr ""
+
+msgctxt "rating method"
+msgid "National → FIDE → estimated"
+msgstr ""
+
+msgctxt "rating method"
+msgid "National → estimated"
 msgstr ""
 
 msgid "Natural (pairing order)"
@@ -6892,9 +6928,6 @@ msgstr ""
 msgid "Player pairings"
 msgstr ""
 
-msgid "Player ratings to use by default:"
-msgstr ""
-
 msgid "Player selection (by alphabetical order)"
 msgstr ""
 
@@ -7530,10 +7563,10 @@ msgstr ""
 msgid "Rating ranges"
 msgstr ""
 
-msgid "Rating step"
+msgid "Rating source:"
 msgstr ""
 
-msgid "Rating to use:"
+msgid "Rating step"
 msgstr ""
 
 msgid "Rating type"
@@ -8678,6 +8711,9 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
+msgid "Source:"
+msgstr ""
+
 msgid "Sources"
 msgstr ""
 
@@ -9126,6 +9162,18 @@ msgstr ""
 msgid "The FIDE coefficient (k) of the player. When left empty, the coefficient shown is estimated from the rating and the age of the player."
 msgstr ""
 
+msgid "The FIDE rating, otherwise the estimated rating."
+msgstr ""
+
+msgid "The FIDE rating, otherwise the national rating, otherwise the estimated rating."
+msgstr ""
+
+msgid "The FIDE rating, otherwise the national rating. Players with neither are ranked at 0 (TRF: FIDON)."
+msgstr ""
+
+msgid "The FIDE rating. Players without one are ranked at 0 (TRF: FIDE)."
+msgstr ""
+
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
@@ -9289,6 +9337,9 @@ msgstr ""
 msgid "The groups are very uneven, so most of the bracket is byes — consider a different grouping or none."
 msgstr ""
 
+msgid "The highest of the FIDE, national and estimated ratings (TRF: HBFN)."
+msgstr ""
+
 msgid "The image is too large (max 2 MB)."
 msgstr ""
 
@@ -9369,6 +9420,18 @@ msgid "The minimum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
+msgstr ""
+
+msgid "The national rating, otherwise the FIDE rating, otherwise the estimated rating."
+msgstr ""
+
+msgid "The national rating, otherwise the FIDE rating. Players with neither are ranked at 0 (TRF: NIDOF)."
+msgstr ""
+
+msgid "The national rating, otherwise the estimated rating."
+msgstr ""
+
+msgid "The national rating. Players without one are ranked at 0 (TRF: NRO)."
 msgstr ""
 
 msgid "The network on which the devices are connected."

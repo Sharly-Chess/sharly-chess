@@ -15,7 +15,7 @@ from common.i18n.utils import by, normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
-from utils.enum import PlayerRatingType
+from utils.enum import RatingMethod
 from data.screens.display_controller import DisplayController
 from data.screens.family import Family
 from data.player import Player, TournamentPlayer
@@ -129,9 +129,19 @@ class Event:
     def is_team_event(self) -> bool:
         return self.event_type == EventType.TEAM
 
+    @cached_property
+    def forced_rating_method(self) -> RatingMethod | None:
+        """The rating method a plugin imposes on every tournament."""
+        return cast(
+            RatingMethod | None,
+            plugin_manager.hook_for_event(self, 'get_forced_rating_method')(event=self),
+        )
+
     @property
-    def player_rating_type(self) -> PlayerRatingType:
-        return PlayerRatingType(self.stored_event.player_rating_type)
+    def rating_method(self) -> RatingMethod:
+        return self.forced_rating_method or RatingMethod(
+            self.stored_event.rating_method
+        )
 
     @property
     def default_tournament_rating(self) -> TournamentRating:

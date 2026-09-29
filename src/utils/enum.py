@@ -764,6 +764,183 @@ class PlayerRatingType(IntEnum):
         return self.short_name
 
 
+class RatingMethod(IntEnum):
+    """How the tournament rating of a player is chosen among their ratings.
+
+    The first five are the TRF26 172 methods. Under those, a player with no
+    rating from the lists they name has a tournament rating of 0; only
+    HIGHEST also takes a manually entered (estimated) rating into account.
+    The others fall back to the estimated rating, which TRF26 can only
+    describe as OTHER."""
+
+    FIDE = 1
+    NATIONAL = 2
+    FIDE_NATIONAL = 3
+    NATIONAL_FIDE = 4
+    HIGHEST = 5
+    FIDE_ESTIMATED = 6
+    NATIONAL_ESTIMATED = 7
+    FIDE_NATIONAL_ESTIMATED = 8
+    NATIONAL_FIDE_ESTIMATED = 9
+
+    @property
+    def rating_types(self) -> tuple[PlayerRatingType, ...]:
+        """The ratings looked at, in order of preference (all of them are
+        compared for HIGHEST)."""
+        match self:
+            case RatingMethod.FIDE:
+                return (PlayerRatingType.FIDE,)
+            case RatingMethod.NATIONAL:
+                return (PlayerRatingType.NATIONAL,)
+            case RatingMethod.FIDE_NATIONAL:
+                return (PlayerRatingType.FIDE, PlayerRatingType.NATIONAL)
+            case RatingMethod.NATIONAL_FIDE:
+                return (PlayerRatingType.NATIONAL, PlayerRatingType.FIDE)
+            case RatingMethod.HIGHEST:
+                return (
+                    PlayerRatingType.FIDE,
+                    PlayerRatingType.NATIONAL,
+                    PlayerRatingType.ESTIMATED,
+                )
+            case RatingMethod.FIDE_ESTIMATED:
+                return (PlayerRatingType.FIDE, PlayerRatingType.ESTIMATED)
+            case RatingMethod.NATIONAL_ESTIMATED:
+                return (PlayerRatingType.NATIONAL, PlayerRatingType.ESTIMATED)
+            case RatingMethod.FIDE_NATIONAL_ESTIMATED:
+                return (
+                    PlayerRatingType.FIDE,
+                    PlayerRatingType.NATIONAL,
+                    PlayerRatingType.ESTIMATED,
+                )
+            case RatingMethod.NATIONAL_FIDE_ESTIMATED:
+                return (
+                    PlayerRatingType.NATIONAL,
+                    PlayerRatingType.FIDE,
+                    PlayerRatingType.ESTIMATED,
+                )
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def falls_back_to_estimated(self) -> bool:
+        return self in (
+            RatingMethod.FIDE_ESTIMATED,
+            RatingMethod.NATIONAL_ESTIMATED,
+            RatingMethod.FIDE_NATIONAL_ESTIMATED,
+            RatingMethod.NATIONAL_FIDE_ESTIMATED,
+        )
+
+    @property
+    def fide_first(self) -> bool:
+        """Whether the FIDE rating is preferred to any other."""
+        return (
+            self != RatingMethod.HIGHEST
+            and self.rating_types[0] == PlayerRatingType.FIDE
+        )
+
+    @property
+    def trf_code(self) -> str:
+        """The TRF26 172 code of the method, or of the method it follows
+        until the estimated rating of a player is needed."""
+        match self:
+            case RatingMethod.FIDE | RatingMethod.FIDE_ESTIMATED:
+                return 'FIDE'
+            case RatingMethod.NATIONAL | RatingMethod.NATIONAL_ESTIMATED:
+                return 'NRO'
+            case RatingMethod.FIDE_NATIONAL | RatingMethod.FIDE_NATIONAL_ESTIMATED:
+                return 'FIDON'
+            case RatingMethod.NATIONAL_FIDE | RatingMethod.NATIONAL_FIDE_ESTIMATED:
+                return 'NIDOF'
+            case RatingMethod.HIGHEST:
+                return 'HBFN'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def from_trf_code(cls, code: str) -> 'RatingMethod | None':
+        for method in (
+            cls.FIDE,
+            cls.NATIONAL,
+            cls.FIDE_NATIONAL,
+            cls.NATIONAL_FIDE,
+            cls.HIGHEST,
+        ):
+            if method.trf_code == code:
+                return method
+        return None
+
+    @property
+    def name(self) -> str:
+        match self:
+            case RatingMethod.FIDE:
+                return pgettext('rating method', 'FIDE')
+            case RatingMethod.NATIONAL:
+                return pgettext('rating method', 'National')
+            case RatingMethod.FIDE_NATIONAL:
+                return pgettext('rating method', 'FIDE → national')
+            case RatingMethod.NATIONAL_FIDE:
+                return pgettext('rating method', 'National → FIDE')
+            case RatingMethod.HIGHEST:
+                return pgettext('rating method', 'Highest')
+            case RatingMethod.FIDE_ESTIMATED:
+                return pgettext('rating method', 'FIDE → estimated')
+            case RatingMethod.NATIONAL_ESTIMATED:
+                return pgettext('rating method', 'National → estimated')
+            case RatingMethod.FIDE_NATIONAL_ESTIMATED:
+                return pgettext('rating method', 'FIDE → national → estimated')
+            case RatingMethod.NATIONAL_FIDE_ESTIMATED:
+                return pgettext('rating method', 'National → FIDE → estimated')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def description(self) -> str:
+        match self:
+            case RatingMethod.FIDE:
+                return _(
+                    'The FIDE rating. Players without one are ranked at 0 (TRF: FIDE).'
+                )
+            case RatingMethod.NATIONAL:
+                return _(
+                    'The national rating. Players without one are ranked at 0 '
+                    '(TRF: NRO).'
+                )
+            case RatingMethod.FIDE_NATIONAL:
+                return _(
+                    'The FIDE rating, otherwise the national rating. Players '
+                    'with neither are ranked at 0 (TRF: FIDON).'
+                )
+            case RatingMethod.NATIONAL_FIDE:
+                return _(
+                    'The national rating, otherwise the FIDE rating. Players '
+                    'with neither are ranked at 0 (TRF: NIDOF).'
+                )
+            case RatingMethod.HIGHEST:
+                return _(
+                    'The highest of the FIDE, national and estimated ratings '
+                    '(TRF: HBFN).'
+                )
+            case RatingMethod.FIDE_ESTIMATED:
+                return _('The FIDE rating, otherwise the estimated rating.')
+            case RatingMethod.NATIONAL_ESTIMATED:
+                return _('The national rating, otherwise the estimated rating.')
+            case RatingMethod.FIDE_NATIONAL_ESTIMATED:
+                return _(
+                    'The FIDE rating, otherwise the national rating, otherwise '
+                    'the estimated rating.'
+                )
+            case RatingMethod.NATIONAL_FIDE_ESTIMATED:
+                return _(
+                    'The national rating, otherwise the FIDE rating, otherwise '
+                    'the estimated rating.'
+                )
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class PlayerTitle(StrEnum):
     """The possible FIDE player titles: GM, IM, WGM, FM, WIM, CM, WFM, WCM.
     Also includes the "no title" case.

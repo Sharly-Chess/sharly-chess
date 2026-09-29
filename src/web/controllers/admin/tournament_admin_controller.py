@@ -17,12 +17,12 @@ from litestar.status_codes import HTTP_200_OK
 
 from common import DEVEL_ENV
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.i18n import _, ngettext, pgettext
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.board import Board
-from utils.enum import PlayerRatingType
+from utils.enum import RatingMethod
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
 from data.championship.championship_loader import ChampionshipLoader
@@ -300,7 +300,7 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes: int | None = None
             last_rounds_no_byes: int | None = None
             location: str | None = None
-            player_rating_type: int | None = None
+            rating_method: int | None = None
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: next(
                     iter(system.variation_manager(admin_event).options())
@@ -342,7 +342,7 @@ class TournamentAdminController(BaseEventAdminController):
                 max_byes = stored_tournament.max_byes
                 last_rounds_no_byes = stored_tournament.last_rounds_no_byes
                 location = stored_tournament.location
-                player_rating_type = stored_tournament.player_rating_type
+                rating_method = stored_tournament.rating_method
                 start_date = admin_tournament.start_date
                 stop_date = admin_tournament.stop_date
                 rating = admin_tournament.rating.value
@@ -432,7 +432,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'max_byes': max_byes,
                     'last_rounds_no_byes': last_rounds_no_byes,
                     'location': location,
-                    'player_rating_type': player_rating_type,
+                    'rating_method': rating_method,
                     'rounds': rounds,
                     'rating': rating,
                     'pairing_system': pairing_system.id,
@@ -521,16 +521,21 @@ class TournamentAdminController(BaseEventAdminController):
             key: value for __, data in plugin_results for key, value in data.items()
         }
 
-        player_rating_type_options: dict[str, str] = {
-            '': '',
-            str(PlayerRatingType.FIDE.value): _('FIDE'),
-            str(PlayerRatingType.NATIONAL.value): pgettext(
-                'name for rating type national', 'National'
-            ),
+        rating_method_options: dict[str, str | SelectOption] = {
+            '': _('Use default - {option}').format(option=admin_event.rating_method),
+        } | {
+            str(rating_method.value): SelectOption(
+                rating_method.name, rating_method.description
+            )
+            for rating_method in RatingMethod
         }
-        player_rating_type_options[''] = _('Use default - {option}').format(
-            option=player_rating_type_options[str(admin_event.player_rating_type.value)]
-        )
+        fide_first_rating_methods = [
+            str(rating_method.value)
+            for rating_method in RatingMethod
+            if rating_method.fide_first
+        ]
+        if admin_event.rating_method.fide_first:
+            fide_first_rating_methods.append('')
 
         # data and errors are always populated by the if/else block above
         assert data is not None
@@ -618,7 +623,8 @@ class TournamentAdminController(BaseEventAdminController):
                 'cloned_tournament': web_context.admin_tournament
                 if action == 'clone'
                 else None,
-                'player_rating_type_options': player_rating_type_options,
+                'rating_method_options': rating_method_options,
+                'fide_first_rating_methods': fide_first_rating_methods,
                 'is_team_event': admin_event.is_team_event,
                 'BoardColor': BoardColor,
                 'score_type_options': {t.value: str(t) for t in ScoreType},
@@ -785,7 +791,7 @@ class TournamentAdminController(BaseEventAdminController):
         max_byes = WebContext.form_data_to_int(data, 'max_byes')
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
-        player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
+        rating_method = WebContext.form_data_to_int(data, 'rating_method')
         override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
         )
@@ -1053,7 +1059,7 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
             location=location,
-            player_rating_type=player_rating_type,
+            rating_method=rating_method,
             start_date=start_date,
             stop_date=stop_date,
             # 0 = unset; a system that settles its own count keeps it (worked

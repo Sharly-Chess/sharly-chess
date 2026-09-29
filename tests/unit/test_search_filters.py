@@ -7,7 +7,7 @@ from datetime import date
 
 import pytest
 
-from utils.enum import PlayerRatingType
+from utils.enum import RatingMethod
 from data.criteria.managers import SearchFilterManager
 from data.event import Event
 from data.player_categories import NoCategory
@@ -39,7 +39,7 @@ def _event(criteria: dict | None = None, tournaments: bool = True) -> Event:
             uniq_id='search-filters-test',
             name='Search filters test',
             federation='FRA',
-            player_rating_type=PlayerRatingType.FIDE.value,
+            rating_method=RatingMethod.FIDE.value,
             enabled_plugins=[],
             age_category_base_date=BASE_DATE,
             age_categories=AGE_CATEGORIES,

@@ -38,8 +38,7 @@ if TYPE_CHECKING:
     from data.pairings.systems import PairingSystem
     from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import Player, PlayerProfileLink, TournamentPlayer
-    from utils.types import PlayerRatingAndType
-    from utils.enum import PlayerRatingType
+    from utils.enum import RatingMethod
     from data.player_categories import PlayerCategory
     from plugins.migration import PluginMigrationManager
     from data.print_documents import (
@@ -208,14 +207,18 @@ class AppHookSpecs:
         """Add federation identifiers to the identity line of a player's"""
 
     @hookspec(firstresult=True)
-    def get_player_rating(
+    def get_default_player_rating(
         self,
         tournament_rating: TournamentRating,
-        player_rating_type: 'PlayerRatingType',
         player: 'Player',
         category: 'PlayerCategory',
-    ) -> Optional['PlayerRatingAndType']:
-        """Get the estimated rating of a player."""
+    ) -> int | None:
+        """Get the estimated rating of a player who has none, under a rating
+        method that falls back to the estimated rating."""
+
+    @hookspec(firstresult=True)
+    def get_forced_rating_method(self, event: 'Event') -> Optional['RatingMethod']:
+        """Get the rating method imposed on the event and its tournaments."""
 
     @hookspec
     def validate_player_tournament_move(

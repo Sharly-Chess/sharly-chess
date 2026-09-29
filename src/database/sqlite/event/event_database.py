@@ -53,7 +53,7 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
-from utils.enum import Extension, EventType
+from utils.enum import Extension, EventType, RatingMethod
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -311,7 +311,7 @@ class EventDatabase(MigrationDatabase):
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
-            player_rating_type=row.get('player_rating_type', 3),
+            rating_method=row.get('rating_method', RatingMethod.FIDE.value),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
@@ -399,7 +399,7 @@ class EventDatabase(MigrationDatabase):
                 'public',
                 'federation',
                 'location',
-                'player_rating_type',
+                'rating_method',
                 'background_color',
                 'message_text',
                 'message_color',
@@ -653,7 +653,7 @@ class EventDatabase(MigrationDatabase):
             start_date=cls.load_date_from_database_field(row['start_date']),
             stop_date=cls.load_date_from_database_field(row['stop_date']),
             location=row['location'],
-            player_rating_type=row['player_rating_type'],
+            rating_method=row['rating_method'],
             override_unrated_rapid_blitz=cls.load_bool_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
@@ -765,7 +765,7 @@ class EventDatabase(MigrationDatabase):
                 'rating',
                 'pairing',
                 'location',
-                'player_rating_type',
+                'rating_method',
                 'last_rounds_no_byes',
                 'override_unrated_rapid_blitz',
                 'team_player_count',

@@ -67,6 +67,7 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
     PlayerRatingType,
+    RatingMethod,
     Result,
 )
 
@@ -1144,24 +1145,28 @@ class PapiConverter:
         self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
     ) -> int:
         # Override unrated rapid/blitz rating in the export
-        # When exporting to Papi we can safely assume that the player type for the tournament rating is FIDE
+        # Papi files are for the FFE, which ranks on the FIDE rating, else the national one
         if tournament_player.rating_is_overridden(
-            tournament_rating, PlayerRatingType.FIDE
+            tournament_rating, RatingMethod.FIDE_NATIONAL_ESTIMATED
         ):
             tournament_rating = TournamentRating.STANDARD
         return tournament_player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
+            tournament_rating,
+            RatingMethod.FIDE_NATIONAL_ESTIMATED,
+            tournament_player.category,
         ).value
 
     def _get_papi_elo_type(
         self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
     ) -> str:
         if tournament_player.rating_is_overridden(
-            tournament_rating, PlayerRatingType.FIDE
+            tournament_rating, RatingMethod.FIDE_NATIONAL_ESTIMATED
         ):
             tournament_rating = TournamentRating.STANDARD
         rating_and_type = tournament_player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
+            tournament_rating,
+            RatingMethod.FIDE_NATIONAL_ESTIMATED,
+            tournament_player.category,
         )
         rating_type = rating_and_type.type
         default_rating = PapiPlayerRatingType.get_outer_value(

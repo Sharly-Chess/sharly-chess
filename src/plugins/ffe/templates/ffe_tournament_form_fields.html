@@ -1,10 +1,10 @@
-<input id="player-rating-type-hidden" type="hidden" name="player_rating_type" value="3">
+<input id="rating-method-hidden" type="hidden" name="rating_method" value="8">
 <script>
     $(document).ready(function() {
-        $('#player-rating-type').val('3').trigger('change');
-        $('#player-rating-type').prop('disabled', true);
+        $('#rating-method').val('8').trigger('change');
+        $('#rating-method').prop('disabled', true);
 
-        const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
+        const ratingTypeContainer = document.getElementById('rating-method-input-container');
         new bootstrap.Tooltip(ratingTypeContainer, {
             title: '{{ _('The FFE always uses the FIDE rating when available.') }}',
             placement: 'top',

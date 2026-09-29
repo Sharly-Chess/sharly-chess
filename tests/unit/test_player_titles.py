@@ -7,7 +7,7 @@ title outranks it on the combined FIDE ladder."""
 import pytest
 
 from common.exception import SharlyChessException
-from utils.enum import PlayerRatingType
+from utils.enum import RatingMethod
 from data.columns.player_datasheet import TitleColumn, WomenTitleColumn
 from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredPlayer
@@ -20,7 +20,7 @@ def _player(title: str = '', women_title: str = ''):
             uniq_id='title-test',
             name='Title test',
             federation='FRA',
-            player_rating_type=PlayerRatingType.FIDE.value,
+            rating_method=RatingMethod.FIDE.value,
             enabled_plugins=[],
             stored_players=[
                 StoredPlayer(id=1, last_name='X', title=title, women_title=women_title)

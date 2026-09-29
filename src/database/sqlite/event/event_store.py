@@ -310,7 +310,7 @@ class StoredTournament:
     check_in_open: bool = True
     rounds: int = 1
     rating: int = 1
-    player_rating_type: int | None = None
+    rating_method: int | None = None
     last_update: datetime = field(default_factory=datetime.now)
     last_player_update: datetime | None = None
     last_pairing_update: datetime | None = None
@@ -546,7 +546,7 @@ class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
-    player_rating_type: int
+    rating_method: int
     public: bool = False
     location: str | None = None
     background_color: str | None = None

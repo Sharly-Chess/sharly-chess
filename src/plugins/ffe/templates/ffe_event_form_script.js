@@ -3,8 +3,8 @@ var changeMonthTooltip = null;
 var previousFfeEnabled = null;
 $('#{{ plugin.form_key }}').change(function () {
     if (this.checked) {
-        $('#player-rating-type,#player-rating-type-hidden').val('3').trigger('change');
-        const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
+        $('#rating-method,#rating-method-hidden').val('8').trigger('change');
+        const ratingTypeContainer = document.getElementById('rating-method-input-container');
         ratingTypeTooltip = new bootstrap.Tooltip(ratingTypeContainer, {
             title: `{{ _('The FFE always uses the FIDE rating when available.') }}`,
             placement: 'top',
@@ -30,8 +30,8 @@ $('#{{ plugin.form_key }}').change(function () {
         }
     }
     previousFfeEnabled = this.checked;
-    $('#player-rating-type').prop('disabled', this.checked);
-    $('#player-rating-type-hidden').prop('disabled', !this.checked);
+    $('#rating-method').prop('disabled', this.checked);
+    $('#rating-method-hidden').prop('disabled', !this.checked);
     $('#age-category-change-month').prop('disabled', this.checked);
     $('#age-category-change-month-hidden').prop('disabled', !this.checked);
 

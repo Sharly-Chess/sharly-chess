@@ -21,13 +21,13 @@ from common import (
     is_valid_email,
 )
 from common.exception import FormError, SharlyChessException
-from common.i18n import _, locales, pgettext
+from common.i18n import _, locales
 from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from utils.enum import PlayerRatingType
+from utils.enum import RatingMethod
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.event_metadata import EventMetadata
@@ -88,6 +88,7 @@ from web.session import (
     SessionUserAccountPasswordHash,
 )
 from web.urls import admin_event_url
+from web.utils import SelectOption
 
 logger: Logger = get_logger()
 
@@ -536,7 +537,7 @@ class IndexAdminController(BaseAdminController):
             config = SharlyChessConfig()
             allow_multi_tournament_players = True
             federation = config.federation.name if config.federation else ''
-            player_rating_type = PlayerRatingType.FIDE.value
+            rating_method = RatingMethod.FIDE.value
             event_type = EventType.INDIVIDUAL.value
             location: str | None = None
             age_category_base_date: date | None = None
@@ -575,7 +576,7 @@ class IndexAdminController(BaseAdminController):
             organiser_email = stored_event.organiser_email
             organiser_director = stored_event.organiser_director
             tag_ids = stored_event.tag_ids
-            player_rating_type = stored_event.player_rating_type
+            rating_method = stored_event.rating_method
             event_type = stored_event.event_type.value
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
@@ -604,7 +605,7 @@ class IndexAdminController(BaseAdminController):
                     'allow_multi_tournament_players': allow_multi_tournament_players,
                     'federation': federation,
                     'event_type': event_type,
-                    'player_rating_type': player_rating_type,
+                    'rating_method': rating_method,
                     'location': location,
                     'organiser_name': organiser_name,
                     'organiser_home_page': organiser_home_page,
@@ -686,9 +687,9 @@ class IndexAdminController(BaseAdminController):
         if organiser_email and not is_valid_email(organiser_email):
             errors[field] = _('Please supply a valid email address.')
 
-        player_rating_type: int = (
-            WebContext.form_data_to_int(data, 'player_rating_type')
-            or PlayerRatingType.FIDE.value
+        rating_method: int = (
+            WebContext.form_data_to_int(data, 'rating_method')
+            or RatingMethod.FIDE.value
         )
 
         age_categories = WebContext.form_data_to_list_str(data, 'age_categories')
@@ -764,7 +765,7 @@ class IndexAdminController(BaseAdminController):
             age_category_change_month=age_category_change_month,
             age_categories=age_categories,
             tag_ids=tag_ids,
-            player_rating_type=player_rating_type,
+            rating_method=rating_method,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # Defaults edited in other tabs
@@ -816,11 +817,11 @@ class IndexAdminController(BaseAdminController):
                 event_type.value: str(event_type) for event_type in EventType
             },
             'event_type_locked': event_type_locked,
-            'player_rating_type_options': {
-                str(PlayerRatingType.FIDE.value): _('FIDE'),
-                str(PlayerRatingType.NATIONAL.value): pgettext(
-                    'name for rating type national', 'National'
-                ),
+            'rating_method_options': {
+                str(rating_method.value): SelectOption(
+                    rating_method.name, rating_method.description
+                )
+                for rating_method in RatingMethod
             },
             'has_multi_tournament_players': event
             and event.has_multi_tournament_players,

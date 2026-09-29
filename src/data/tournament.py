@@ -54,6 +54,7 @@ from utils.enum import (
     TeamSortMode,
     TournamentRating,
     PlayerRatingType,
+    RatingMethod,
     RoleType,
     PlayerTitle,
     CheckInStatus,
@@ -399,11 +400,13 @@ class Tournament:
         return TournamentRating(self.stored_tournament.rating)
 
     @cached_property
-    def player_rating_type(self) -> PlayerRatingType:
+    def rating_method(self) -> RatingMethod:
+        if self.event.forced_rating_method is not None:
+            return self.event.forced_rating_method
         return (
-            PlayerRatingType(self.stored_tournament.player_rating_type)
-            if self.stored_tournament.player_rating_type is not None
-            else self.event.player_rating_type
+            RatingMethod(self.stored_tournament.rating_method)
+            if self.stored_tournament.rating_method is not None
+            else self.event.rating_method
         )
 
     @property

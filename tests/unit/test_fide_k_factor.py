@@ -17,7 +17,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import PlayerRatingType, TournamentRating
+from utils.enum import RatingMethod, TournamentRating
 from utils.types import PlayerRating
 
 EVENT_ID = 'test-fide-k-factor'
@@ -120,7 +120,7 @@ class TournamentPlayerKFactorTestCase(TestCase):
                 id=1,
                 name='k-factor',
                 rating=TournamentRating.STANDARD.value,
-                player_rating_type=PlayerRatingType.FIDE.value,
+                rating_method=RatingMethod.FIDE.value,
                 stored_tournament_players=[
                     StoredTournamentPlayer(tournament_id=1, player_id=PLAYER_ID)
                 ],

@@ -365,36 +365,21 @@ class TrfExport:
         return assignments
 
     def _starting_rank_method(self) -> str:
-        """TRF26 172 — how the participants were ranked. Derived from the
-        ratings actually used rather than from the tournament setting:
-        the setting only states a preference, and which fallback fired
-        is what the receiver needs in order to reproduce the ranking.
+        """TRF26 172 — how the participants were ranked.
 
-        Estimated ratings (and the floors a rule set may supply) have no
-        place in the format, so a tournament that used any of them is
-        ranked by a method the TRF cannot express — which is what
-        ``OTHER`` is for."""
+        A method that falls back to estimated ratings is ranked by the
+        method it follows until a player has no rating from the lists it
+        names; once one of them is ranked on an estimated rating, the
+        ranking is one the TRF cannot express, which is what ``OTHER`` is
+        for."""
         tournament = self.tournament
-        used = {player.rating_type for player in tournament.players}
-        if not used:
-            # Nothing to describe yet; state the preference.
-            return (
-                'FIDE'
-                if tournament.player_rating_type == PlayerRatingType.FIDE
-                else 'NRO'
-            )
-        if PlayerRatingType.ESTIMATED in used:
+        rating_method = tournament.rating_method
+        if rating_method.falls_back_to_estimated and any(
+            player.rating_type == PlayerRatingType.ESTIMATED and player.rating
+            for player in tournament.players
+        ):
             return 'OTHER'
-        if used == {PlayerRatingType.FIDE}:
-            return 'FIDE'
-        if used == {PlayerRatingType.NATIONAL}:
-            return 'NRO'
-        # Both were used, so a fallback fired: say which way round.
-        return (
-            'FIDON'
-            if tournament.player_rating_type == PlayerRatingType.FIDE
-            else 'NIDOF'
-        )
+        return rating_method.trf_code
 
     def _individuals_point_system(self) -> dict[str, float]:
         """TRF26 162 record — game-point values per result symbol.

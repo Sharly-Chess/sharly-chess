@@ -118,7 +118,7 @@
         class="text-nowrap"
         {{ macros.tooltip_attributes(
             'info',
-            _('%(rating)s (%(rating_type)s)', rating=item.rating, rating_type=item.player_rating_type.name),
+            _('%(rating)s (%(rating_type)s)', rating=item.rating, rating_type=item.rating_method.name),
             'top',
         ) }}
     >

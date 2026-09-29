@@ -66,10 +66,11 @@
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='player_rating_type',
-                            label=_('Rating to use:'),
+                            name='rating_method',
+                            label=_('Source:'),
                             tooltip_text=_('Affects the rating that will be chosen for each player.'),
-                            select_options=player_rating_type_options,
+                            select_options=rating_method_options,
+                            tooltip_select=true,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -87,12 +88,9 @@
                         ) }}
                     </div>
                     <script>
-                        $('#rating,#player-rating-type').change(function() {
-                            const fideRatingValues = ['3'];
-                            {% if admin_event.player_rating_type == 3 %}
-                                fideRatingValues.push('');
-                            {% endif %}
-                            if ($('#rating').val() !== '1' && fideRatingValues.includes($('#player-rating-type').val())) {
+                        $('#rating,#rating-method').change(function() {
+                            const fideRatingValues = {{ fide_first_rating_methods|tojson }};
+                            if ($('#rating').val() !== '1' && fideRatingValues.includes($('#rating-method').val())) {
                                 $('#estimated-ratings').show();
                             } else {
                                 $('#estimated-ratings').hide();

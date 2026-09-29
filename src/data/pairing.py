@@ -316,17 +316,17 @@ class Pairing:
         comment = ''
         opponent_rating_overridden = not opponent.rating_is_overridden(
             tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
+            tournament_player.tournament.rating_method,
         ) and opponent.will_fide_override_with_standard_rating(
             tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
+            tournament_player.tournament.rating_method,
         )
         player_rating_overridden = not tournament_player.rating_is_overridden(
             tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
+            tournament_player.tournament.rating_method,
         ) and tournament_player.will_fide_override_with_standard_rating(
             tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
+            tournament_player.tournament.rating_method,
         )
 
         if opponent_rating_overridden and player_rating_overridden:
