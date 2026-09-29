@@ -20,6 +20,16 @@
     justify-content: center;
 }
 
+/* The club column takes the space left over by the other columns and
+   ellipsizes long names instead of wrapping them. */
+.ranking-screen-set .club {
+    width: 100%;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .user-screen-content {
     --font-size: 100;
     font-size: calc(var(--font-size) * 1%)
