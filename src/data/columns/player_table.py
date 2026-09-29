@@ -218,7 +218,7 @@ class ClubColumn(TournamentPlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-start'
+        return 'text-start club'
 
 
 class PointsColumn(TournamentPlayerTableColumn):
