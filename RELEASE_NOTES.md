@@ -46,7 +46,7 @@
 
 ## Championships
 
-- The championship rankings, on screen and printed, now show the players' year of birth and club (5.1.1)
+- The championship rankings show the players' club, on screen and printed, and their year of birth on screen (5.1.1)
 
 ## Chess-Results
 

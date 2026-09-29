@@ -65,7 +65,6 @@
                     {% if not is_team %}
                         <th>{{ pgettext('category column header', 'Cat.') }}</th>
                         <th class="center">{{ pgettext('gender column header', 'Gen.') }}</th>
-                        <th title="{{ _('Date of birth') }}">{{ pgettext('date-of-birth column header', 'DOB') }}</th>
                     {% endif %}
                     <th>{{ pgettext('federation column header', 'Fed.') }}</th>
                     {% if not is_team %}
@@ -91,7 +90,6 @@
                         {% if not is_team %}
                             <td>{{ row.category or '—' }}</td>
                             <td class="center">{{ row.gender or '—' }}</td>
-                            <td {% if row.date_of_birth %}title="{{ row.date_of_birth }}"{% endif %}>{{ row.year_of_birth or '—' }}</td>
                         {% endif %}
                         <td>{{ row.federation or '—' }}</td>
                         {% if not is_team %}
