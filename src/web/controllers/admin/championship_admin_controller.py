@@ -922,7 +922,9 @@ class ChampionshipAdminController(BaseAdminController):
                 'shortcut': f'{pgettext("keyboard shortcut for the configuration tab", "SC_C")} from:body',
             },
             'sources': {
-                'title': pgettext('with shortcut indication', 'Sources'),
+                'title': pgettext('with shortcut indication', 'Sources ({num})').format(
+                    num=len(championship.sources) or '-'
+                ),
                 'icon_class': 'bi-diagram-3-fill',
                 'shortcut': f'{pgettext("keyboard shortcut for the sources tab", "SC_S")} from:body',
             },
