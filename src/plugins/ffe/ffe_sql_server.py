@@ -136,7 +136,7 @@ class FFESqlServer(SqlServer):
                     row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
                 ).stored_value,
             },
-            fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
+            fide_id=int((row['FideCode'] or '').strip("' ") or 0) or None,
             federation=row['Federation'],
             club=row['ClubNom'] if row['ClubNom'] else '',
             plugin_data={

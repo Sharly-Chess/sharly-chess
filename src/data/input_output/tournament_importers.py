@@ -11,6 +11,7 @@ from data.input_output.tournament_importer_options import (
     FileOption,
 )
 from data.loader import EventLoader
+from data.player import Player
 from data.tie_breaks.tie_breaks import PointsTieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -214,6 +215,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         )
         self.check_players_unicity(stored_players)
         self.check_pairing_inconsistencies(stored_tournament)
+        dropped_players: list[Player] = []
+        if tournament:
+            dropped_players = event.carry_over_reimported_players(
+                event.players_replaced_by_import(tournament), stored_players
+            )
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:
                 database.delete_players_in_tournament(tournament.id)
@@ -226,6 +232,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             )
             if self.stored_event_modified:
                 database.update_stored_event(event.stored_event)
+        event.notify_players_deleted(dropped_players)
         event = EventLoader().load_event(event.uniq_id)
         tournament = event.tournaments_by_id[tournament_id]
         tournament.set_tournament_players_pairing_numbers()

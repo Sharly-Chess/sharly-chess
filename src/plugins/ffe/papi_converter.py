@@ -550,7 +550,7 @@ class PapiConverter:
         fide_id: int | None = None
         if papi_player.fideCode:
             try:
-                fide_id = int(papi_player.fideCode.replace("'", '').strip())
+                fide_id = int(papi_player.fideCode.replace("'", '').strip()) or None
             except ValueError:
                 logger.warning('Invalid FIDE ID [%s], ignored.', papi_player.fideCode)
 
