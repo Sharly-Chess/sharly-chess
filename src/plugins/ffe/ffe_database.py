@@ -1,12 +1,11 @@
 import re
 from contextlib import suppress
-from datetime import datetime, date
+from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
 from packaging.version import Version
-from text_unidecode import unidecode
 
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
@@ -19,7 +18,12 @@ from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
+from plugins.ffe.utils import (
+    PlayerFFELicence,
+    FfePlayerPluginData,
+    FfeNameKey,
+    ffe_database_name_keys,
+)
 from utils.enum import (
     TournamentRating,
     PlayerRatingType,
@@ -238,22 +242,25 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
     def get_stored_players_by_name_keys(
-        self, name_keys: list[tuple[str, str, date]]
+        self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
-        query_array = ', '.join('(?, ?, ?)' for _ in name_keys)
-        params: list[str] = []
-        for name_key in name_keys:
-            params += [
-                unidecode(name_key[0]),
-                unidecode(name_key[1]),
-                self.dump_date_to_database_field(name_key[2]) or '',
-            ]
+        last_names = {name_key[0] for name_key in name_keys}
+        first_names = {name_key[1] for name_key in name_keys}
         self.execute(
             'SELECT * FROM player '
-            f'WHERE (last_name, first_name, date_of_birth) IN ({query_array})',
-            tuple(params),
+            f'WHERE last_name COLLATE NOCASE IN ({", ".join("?" * len(last_names))}) '
+            f'AND first_name COLLATE NOCASE IN ({", ".join("?" * len(first_names))})',
+            (*last_names, *first_names),
         )
-        return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+        keys = set(name_keys)
+        return [
+            stored_player
+            for row in self.fetchall()
+            if keys
+            & ffe_database_name_keys(
+                stored_player := self.get_stored_player_from_row(row)
+            )
+        ]
 
     @classmethod
     def _process_filters(cls, filters: dict) -> tuple[list[str], list[Any]]:

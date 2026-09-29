@@ -78,8 +78,10 @@ class PlayerComparator:
         fields: list[PlayerUpdaterField],
         player: Player,
         match_stored_player: StoredPlayer | None = None,
+        not_found: bool = False,
     ):
         self.player = player
+        self.not_found = not_found
         self.match_player: Player | None = None
         if match_stored_player:
             match_stored_player.id = 0
@@ -145,6 +147,11 @@ class DataSource(IdentifiableEntity, ABC):
     ) -> list[StoredPlayer] | None:
         """Get a list of stored players matching the given players."""
 
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        """Whether the player carries an identifier of the data source, and
+        should therefore be found in it."""
+        return False
+
     async def get_player_comparators(
         self,
         players: list[Player],
@@ -187,7 +194,12 @@ class DataSource(IdentifiableEntity, ABC):
                         player.fide_k_factor_reference_date in covered_dates,
                     ),
                 )
-            player_comparator = PlayerComparator(fields, player, match_player)
+            player_comparator = PlayerComparator(
+                fields,
+                player,
+                match_player,
+                match_player is None and self.expects_match(player.stored_player),
+            )
             if not diff_only or player_comparator.diff_field_ids:
                 player_comparators.append(player_comparator)
         return player_comparators
@@ -581,6 +593,9 @@ class FideDataSource(LocalDataSource):
 
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return bool(player1.fide_id) and player1.fide_id == player2.fide_id
+
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        return bool(stored_player.fide_id)
 
     async def get_match_stored_players(
         self, players: list[Player]

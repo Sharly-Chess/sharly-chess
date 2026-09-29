@@ -6,7 +6,6 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
-from text_unidecode import unidecode
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -24,7 +23,12 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
 )
-from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
+from plugins.ffe.utils import (
+    FfePlayerPluginData,
+    PlayerFFELicence,
+    FfeNameKey,
+    ffe_database_name_keys,
+)
 from utils.enum import TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
@@ -341,42 +345,26 @@ class FFESqlServer(SqlServer):
     NAME_KEYS_PAGE_SIZE = 30
 
     async def _get_stored_players_by_name_keys_page(
-        self, name_keys: list[tuple[str, str, date]]
+        self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
-        name_str_keys: list[str] = []
-        name_dob_str_keys: list[str] = []
-        for name_key in name_keys:
-            name_str_key = '|'.join(
-                (unidecode(name_key[0]).upper(), unidecode(name_key[1]).upper())
-            )
-            name_str_keys.append(name_str_key)
-            name_dob_str_keys.append(
-                '|'.join((name_str_key, name_key[2].strftime('%Y-%m-%d')))
-            )
+        name_str_keys = list({'|'.join(name_key[:2]) for name_key in name_keys})
         name_query = "UPPER(joueur.Nom) + '|' + UPPER(Joueur.Prenom)"
-        query_array = ', '.join('%s' for _ in name_keys)
+        query_array = ', '.join('%s' for _ in name_str_keys)
         stored_players = await self._get_stored_players_by_condition(
             f'{name_query} IN ({query_array})',
             name_str_keys,
         )
         # DOB formatting is too expensive in SQL Server, we have to do the
         # matching only on the name, and match the DOB in python
+        keys = set(name_keys)
         return [
             stored_player
             for stored_player in stored_players
-            if stored_player.date_of_birth
-            and '|'.join(
-                (
-                    stored_player.last_name.upper(),
-                    (stored_player.first_name or '').upper(),
-                    stored_player.date_of_birth.strftime('%Y-%m-%d'),
-                )
-            )
-            in name_dob_str_keys
+            if keys & ffe_database_name_keys(stored_player)
         ]
 
     async def get_stored_players_by_name_keys(
-        self, name_keys: list[tuple[str, str, date]]
+        self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
         stored_players: list[StoredPlayer] = []
         while name_keys:

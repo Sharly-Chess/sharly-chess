@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from datetime import date
 from typing import cast
 
-from text_unidecode import unidecode
 
 from common.exception import SharlyChessException
 from common.i18n import _, pgettext
@@ -40,7 +38,14 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueDatasheetColumn,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
-from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, get_data
+from plugins.ffe.utils import (
+    FFEUtils,
+    FfePlayerPluginData,
+    FfeNameKey,
+    ffe_database_name_keys,
+    ffe_name_key,
+    get_data,
+)
 
 
 logger = get_logger()
@@ -183,7 +188,7 @@ class _FfeDataSource(ABC):
         self,
         ffe_licence_numbers: list[str],
         fide_ids: list[int],
-        name_keys: list[tuple[str, str, date]],
+        name_keys: list[FfeNameKey],
     ) -> list[StoredPlayer] | None:
         """Fetch player matches in the data source. Return None if it fails."""
 
@@ -194,12 +199,40 @@ class _FfeDataSource(ABC):
         )
 
     @staticmethod
-    def _get_name_key(stored_player: StoredPlayer) -> tuple[str, str, date] | None:
+    def _get_name_key(stored_player: StoredPlayer) -> FfeNameKey | None:
         first_name = stored_player.first_name
-        dob = stored_player.date_of_birth
-        if first_name and dob:
-            return unidecode(stored_player.last_name), unidecode(first_name), dob
+        birth = stored_player.date_of_birth or stored_player.year_of_birth
+        if first_name and birth:
+            return ffe_name_key(stored_player.last_name, first_name, birth)
         return None
+
+    @classmethod
+    def _get_match_keys(
+        cls, stored_player: StoredPlayer
+    ) -> list[str | int | FfeNameKey]:
+        """The keys identifying the player in the FFE database, strongest first."""
+        keys: list[str | int | FfeNameKey] = []
+        if licence_number := cls._get_licence_number(stored_player):
+            keys.append(licence_number)
+        if fide_id := stored_player.fide_id:
+            keys.append(fide_id)
+        if name_key := cls._get_name_key(stored_player):
+            keys.append(name_key)
+        return keys
+
+    @classmethod
+    def _get_ffe_keys(
+        cls, ffe_stored_player: StoredPlayer
+    ) -> set[str | int | FfeNameKey]:
+        """The keys by which a player of the FFE database is found."""
+        keys: set[str | int | FfeNameKey] = set(
+            ffe_database_name_keys(ffe_stored_player)
+        )
+        if licence_number := cls._get_licence_number(ffe_stored_player):
+            keys.add(licence_number)
+        if fide_id := ffe_stored_player.fide_id:
+            keys.add(fide_id)
+        return keys
 
     @classmethod
     def _check_player_match(
@@ -207,31 +240,52 @@ class _FfeDataSource(ABC):
         player1: StoredPlayer,
         player2: StoredPlayer,
     ) -> bool:
-        if licence_key := cls._get_licence_number(player1):
-            return licence_key == cls._get_licence_number(player2)
-        if fide_id := player1.fide_id:
-            return fide_id == player2.fide_id
-        if name_key := cls._get_name_key(player1):
-            return name_key == cls._get_name_key(player2)
-        return False
+        return not cls._get_ffe_keys(player2).isdisjoint(cls._get_match_keys(player1))
+
+    @classmethod
+    def _expects_match(cls, stored_player: StoredPlayer) -> bool:
+        return bool(cls._get_licence_number(stored_player))
 
     async def _get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
-        licence_numbers: list[str] = []
-        fide_ids: list[int] = []
-        name_keys: list[tuple[str, str, date]] = []
-        for player in players:
-            stored_player = player.stored_player
-            if licence_number := self._get_licence_number(stored_player):
-                licence_numbers.append(licence_number)
-            elif fide_id := stored_player.fide_id:
-                fide_ids.append(fide_id)
-            elif name_key := self._get_name_key(stored_player):
-                name_keys.append(name_key)
-        return await self._get_ffe_match_stored_players(
-            licence_numbers, fide_ids, name_keys
-        )
+        """Look the players up by their strongest key, falling back to the next
+        one for the players it does not find."""
+        pending_keys = [
+            keys
+            for player in players
+            if (keys := self._get_match_keys(player.stored_player))
+        ]
+        match_stored_players: list[StoredPlayer] = []
+        while pending_keys:
+            licence_numbers: list[str] = []
+            fide_ids: list[int] = []
+            name_keys: list[FfeNameKey] = []
+            for keys in pending_keys:
+                key = keys[0]
+                if isinstance(key, str):
+                    licence_numbers.append(key)
+                elif isinstance(key, int):
+                    fide_ids.append(key)
+                else:
+                    name_keys.append(key)
+            stored_players = await self._get_ffe_match_stored_players(
+                licence_numbers, fide_ids, name_keys
+            )
+            if stored_players is None:
+                return None
+            match_stored_players += stored_players
+            found_keys = {
+                key
+                for stored_player in stored_players
+                for key in self._get_ffe_keys(stored_player)
+            }
+            pending_keys = [
+                keys[1:]
+                for keys in pending_keys
+                if keys[0] not in found_keys and len(keys) > 1
+            ]
+        return match_stored_players
 
     @property
     def _search_fields(self) -> list[str]:
@@ -301,6 +355,9 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return self._check_player_match(player1, player2)
 
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        return self._expects_match(stored_player)
+
     async def get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
@@ -310,7 +367,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         self,
         ffe_licence_numbers: list[str],
         fide_ids: list[int],
-        name_keys: list[tuple[str, str, date]],
+        name_keys: list[FfeNameKey],
     ) -> list[StoredPlayer] | None:
         database = FfeDatabase()
         if not database.exists():
@@ -389,6 +446,9 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return self._check_player_match(player1, player2)
 
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        return self._expects_match(stored_player)
+
     async def get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
@@ -398,7 +458,7 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
         self,
         ffe_licence_numbers: list[str],
         fide_ids: list[int],
-        name_keys: list[tuple[str, str, date]],
+        name_keys: list[FfeNameKey],
     ) -> list[StoredPlayer] | None:
         try:
             async with FFESqlServer() as server:

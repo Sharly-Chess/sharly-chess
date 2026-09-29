@@ -1,10 +1,12 @@
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from functools import partial
 from typing import Self, Any, TYPE_CHECKING
+
+from text_unidecode import unidecode
 
 from common.i18n import _, pgettext
 from data.account import Account
@@ -45,6 +47,27 @@ from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+FfeNameKey = tuple[str, str, date | int]
+"""Last name, first name and date or year of birth of a player."""
+
+
+def ffe_name_key(last_name: str, first_name: str, birth: date | int) -> FfeNameKey:
+    return unidecode(last_name).upper(), unidecode(first_name).upper(), birth
+
+
+def ffe_database_name_keys(stored_player: StoredPlayer) -> set[FfeNameKey]:
+    """The name keys of a player of the FFE database, by date and by year of
+    birth."""
+    first_name = stored_player.first_name
+    date_of_birth = stored_player.date_of_birth
+    if not first_name or not date_of_birth:
+        return set()
+    return {
+        ffe_name_key(stored_player.last_name, first_name, date_of_birth),
+        ffe_name_key(stored_player.last_name, first_name, date_of_birth.year),
+    }
+
 
 FFE_UPLOAD_DELAY = 3
 FFE_EPOCH = datetime(2000, 1, 1)
