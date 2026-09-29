@@ -152,6 +152,8 @@
                                 class="w-100"
                                 {% if not client.can_set_half_point_bye(admin_tournament.id) %}
                                     {{ macros.tooltip_attributes('warning', _('You are not allowed to set Half-Point Byes.'), 'right') }}
+                                {% elif not tournament_player.byes_allowed %}
+                                    {{ macros.tooltip_attributes('info', _('The player is not eligible for byes.'), 'top') }}
                                 {% elif no_bye_possible %}
                                     {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=tournament_player.tournament.last_rounds_no_byes), 'top') }}
                                 {% elif not hpb_possible %}
@@ -169,6 +171,7 @@
                                     class="btn btn-outline-primary w-100"
                                     {% if (
                                         not client.can_set_half_point_bye(admin_tournament.id)
+                                        or not tournament_player.byes_allowed
                                         or no_bye_possible
                                         or not hpb_possible
                                     ) %}

@@ -3510,6 +3510,9 @@ msgstr ""
 msgid "El Salvador"
 msgstr ""
 
+msgid "Eligible for byes"
+msgstr ""
+
 msgctxt "individual knock-out"
 msgid "Eliminated"
 msgstr ""
@@ -7102,6 +7105,10 @@ msgid "Player [{player_id}]: {error}"
 msgstr ""
 
 #, python-brace-format
+msgid "Player [{player_name}] is not eligible for byes."
+msgstr ""
+
+#, python-brace-format
 msgid "Player [{player}] already exists in the event."
 msgstr ""
 
@@ -9931,7 +9938,13 @@ msgstr ""
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr ""
 
+msgid "The player has already been assigned a bye."
+msgstr ""
+
 msgid "The player has already been paired, removing them from the tournament is impossible."
+msgstr ""
+
+msgid "The player is not eligible for byes."
 msgstr ""
 
 msgid "The players are split by pairing number into group A, the first half of the players rounded up to an even number, and group B, the other players."
@@ -11497,6 +11510,9 @@ msgid "What the player needs in round {round} to achieve each norm. \"any OTB re
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
+msgstr ""
+
+msgid "When disabled, no Half-Point Bye can be assigned to the player."
 msgstr ""
 
 msgid "When enabled, a warning is shown if a per-round lineup places players in a different order than the team roster. The lineup can still be reordered freely."

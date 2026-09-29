@@ -339,6 +339,10 @@ class Player:
         return self.stored_player.fixed
 
     @property
+    def byes_allowed(self) -> bool:
+        return self.stored_player.byes_allowed
+
+    @property
     def check_in(self) -> bool:
         return self.stored_player.check_in
 

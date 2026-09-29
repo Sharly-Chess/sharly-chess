@@ -1046,7 +1046,7 @@ class EventDatabase(MigrationDatabase):
             'SELECT `id`, `last_name`, `ratings`, `first_name`, '
             '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
             '`comment`, `owed`, `paid`, `title`, `women_title`, `fide_id`, '
-            '`federation`, `club`, `fixed`, `check_in`, `team_id`, '
+            '`federation`, `club`, `fixed`, `byes_allowed`, `check_in`, `team_id`, '
             '`team_index`, `plugin_data` FROM `player`'
         )
         assert self.cursor is not None
@@ -1070,6 +1070,7 @@ class EventDatabase(MigrationDatabase):
             federation,
             club,
             fixed,
+            byes_allowed,
             check_in,
             team_id,
             team_index,
@@ -1099,6 +1100,7 @@ class EventDatabase(MigrationDatabase):
                     federation=federation,
                     club=club,
                     fixed=fixed,
+                    byes_allowed=self.load_bool_from_database_field(byes_allowed),
                     check_in=self.load_bool_from_database_field(check_in),
                     team_id=team_id,
                     team_index=team_index,
@@ -1126,6 +1128,7 @@ class EventDatabase(MigrationDatabase):
                 'federation',
                 'club',
                 'fixed',
+                'byes_allowed',
                 'check_in',
                 'year_of_birth',
                 'team_id',

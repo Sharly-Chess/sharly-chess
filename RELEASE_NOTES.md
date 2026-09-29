@@ -39,6 +39,7 @@
 - Players without a _FIDE_ ID in the _FFE_ database, or with a _FIDE_ ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
 - Players' names are stored as entered; first names written all in capitals or all in lower case are displayed capitalised (5.2.0)
 - The players tab is sorted by the name displayed first (5.2.0)
+- Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 
 ## Pairings
 
