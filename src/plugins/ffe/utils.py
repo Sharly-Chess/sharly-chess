@@ -91,9 +91,9 @@ class FFEUtils:
     def rule_set_team_competition_id(rule_set: 'RuleSet | None') -> int | None:
         """The FFE team-module competition of *rule_set*, ``None`` when it
         is not an FFE team competition."""
-        from plugins.ffe.ffe_rule_sets import _FfeTeamCupRuleSet
+        from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet
 
-        if not isinstance(rule_set, _FfeTeamCupRuleSet):
+        if not isinstance(rule_set, FfeTeamCompetitionRuleSet):
             return None
         return rule_set.ffe_competition_id()
 

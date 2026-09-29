@@ -29,13 +29,11 @@ Not encoded, for want of somewhere to put it:
 from typing import Any, override, TYPE_CHECKING, cast
 
 from common.i18n import _, ngettext
-from data.rule_sets import RuleSet
 from data.rule_sets.rule_sets import PointAdjustment, RuleSetField
-from plugins.ffe.ffe_rule_sets import _FfeTeamCupRuleSet
+from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet, _FfeTeamCupRuleSet
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.fra_schools import PLUGIN_NAME as FRA_SCHOOLS_PLUGIN_NAME
 from utils.enum import (
-    EventType,
     PlayerGender,
     Result,
     ScoreType,
@@ -135,7 +133,7 @@ def _round_breakdown(team: 'Team', round_: int) -> list[tuple[int, bool, bool]]:
     return _FfeTeamCupRuleSet._team_board_breakdown(team_board, team.id)
 
 
-class ChampionnatScolaireRuleSet(RuleSet):
+class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     """FFE *Championnat de France des écoles et collèges* (J03), team
     phases — 8-board teams of schoolchildren, 3/2/1 match points and a
     game-point score that counts wins only."""
@@ -159,10 +157,19 @@ class ChampionnatScolaireRuleSet(RuleSet):
             'score, 9-round Swiss for the national final.'
         )
 
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 11
+
     @property
     @override
-    def event_type(self) -> EventType:
-        return EventType.TEAM
+    def ffe_division_name(self) -> str | None:
+        # The academic phase has one division per académie, which the
+        # rule set doesn't know.
+        if self.is_national_final:
+            return 'Finales Nationales'
+        return None
 
     # -----------------------------------------------------------------
     # Configuration
