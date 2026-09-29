@@ -6889,6 +6889,9 @@ msgstr ""
 msgid "Player list"
 msgstr ""
 
+msgid "Player not found in the data source."
+msgstr ""
+
 msgid "Player pairings"
 msgstr ""
 

@@ -6891,6 +6891,9 @@ msgstr "Lignes de joueur·euse coupées sur plusieurs lignes, rassemblées (joue
 msgid "Player list"
 msgstr "Liste des joueurs"
 
+msgid "Player not found in the data source."
+msgstr "Joueur·euse introuvable dans la source de données."
+
 msgid "Player pairings"
 msgstr "Appariements par joueur·euse"
 
