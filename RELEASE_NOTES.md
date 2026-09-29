@@ -44,6 +44,10 @@
 
 - Long club names on ranking screens are cut short with an ellipsis instead of wrapping (5.1.1)
 
+## Championships
+
+- The championship rankings, on screen and printed, now show the players' year of birth and club (5.1.1)
+
 ## Chess-Results
 
 - The players' year of birth is now shown on _Chess-Results_ (5.1.1)

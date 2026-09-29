@@ -346,6 +346,9 @@ class ChampionshipAdminController(BaseAdminController):
             category = ''
             gender = ''
             federation = ''
+            club = ''
+            year_of_birth: int | None = None
+            date_of_birth = ''
             if championship.competitor_type == ChampionshipCompetitorType.TEAM:
                 team = cast(ReconciledTeam, competitor)
                 name = team.name
@@ -357,8 +360,12 @@ class ChampionshipAdminController(BaseAdminController):
                 name = f'{player.last_name}, {player.first_name}'
                 secondary = str(player.fide_id or '')
                 category = championship.player_age_category(player)
+                year_of_birth = player.year_of_birth
+                if player.date_of_birth:
+                    date_of_birth = format_date(player.date_of_birth)
                 genders: list[str] = []
                 federations: list[str] = []
+                clubs: list[str] = []
                 for player_participation in player.participations:
                     source_player = getattr(
                         player_participation, 'tournament_player', None
@@ -373,8 +380,14 @@ class ChampionshipAdminController(BaseAdminController):
                     )
                     if federation_name and federation_name not in federations:
                         federations.append(federation_name)
+                    club_name = getattr(
+                        getattr(source_player, 'club', None), 'name', ''
+                    )
+                    if club_name and club_name not in clubs:
+                        clubs.append(club_name)
                 gender = ' / '.join(genders)
                 federation = ' / '.join(federations)
+                club = ' / '.join(clubs)
             counted_participations = (
                 best_participations(
                     competitor,
@@ -427,6 +440,9 @@ class ChampionshipAdminController(BaseAdminController):
                     'category': category,
                     'gender': gender,
                     'federation': federation,
+                    'club': club,
+                    'year_of_birth': year_of_birth,
+                    'date_of_birth': date_of_birth,
                     'rule_cells': rule_cells_by_competitor[id(competitor)],
                     'stages': stages,
                     'used_stage_count': len(used_stages),
