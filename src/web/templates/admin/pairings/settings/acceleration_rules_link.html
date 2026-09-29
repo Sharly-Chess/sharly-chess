@@ -1,0 +1,17 @@
+<a
+    class="btn btn-outline-secondary text-nowrap me-auto"
+    href="{{ url_for(
+        'document-view',
+        event_uniq_id=admin_event.uniq_id,
+        document='acceleration-rules',
+    ) ~ '?options=' ~ (('tournament=' ~ admin_tournament.id) | urlencode) }}"
+    target="_blank"
+    {{ macros.tooltip_attributes(
+        'info',
+        _('Print the rules of the system as saved for this tournament.'),
+        'top',
+    ) }}
+>
+    <i class="bi-printer-fill pe-1"></i>
+    {{ _('Print the rules') }}
+</a>

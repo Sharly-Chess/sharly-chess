@@ -55,6 +55,7 @@
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
 - The FFE T2 minutes open with the events logged for the chosen tournaments (5.2.0)
+- The rules of the accelerated systems can be printed, from the documents or from the pairing settings: the rules of the system, the groups, the virtual points granted round by round and the players of each group (5.2.0)
 
 ## Screens
 

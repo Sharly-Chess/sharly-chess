@@ -1,0 +1,136 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    .acceleration {
+        max-width: 18cm;
+        margin: 0 auto;
+    }
+    .acceleration h2 {
+        font-size: 14pt;
+        margin: 16pt 0 6pt;
+    }
+    .acceleration p {
+        margin: 0 0 6pt;
+        text-align: justify;
+    }
+    .acceleration table {
+        border-collapse: collapse;
+        margin-bottom: 6pt;
+    }
+    .acceleration th,
+    .acceleration td {
+        border: 0.5pt solid #999;
+        padding: 2pt 8pt;
+        white-space: nowrap;
+    }
+    .acceleration th {
+        font-weight: bold;
+    }
+    .acceleration .number {
+        text-align: right;
+    }
+    .acceleration .center {
+        text-align: center;
+    }
+    .acceleration .players td,
+    .acceleration .players th {
+        padding: 1pt 8pt;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class="page-subtitle">{{ tournament.name }}</div>
+    <div class="acceleration">
+        <h2>{{ variation.name }}</h2>
+        {% for paragraph in description %}
+            <p>{{ paragraph }}</p>
+        {% endfor %}
+        <p>
+            {{ _(
+                'Virtual points are added to the score of the players for '
+                'the pairing only. They are not part of the standings.'
+            ) }}
+        </p>
+        <p>{{ scoring }}</p>
+
+        {% if groups %}
+            <h2>{{ _('Groups') }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{ _('Group') }}</th>
+                        <th>{{ _('Pairing numbers') }}</th>
+                        <th>{{ _('Players') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in groups %}
+                        <tr>
+                            <td class="center">{{ group.group }}</td>
+                            <td class="center">{{ group.first }}–{{ group.last }}</td>
+                            <td class="number">{{ group.count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <h2>{{ _('Virtual points') }}</h2>
+        {% if rules %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{ _('Rounds') }}</th>
+                        <th>{{ _('Players') }}</th>
+                        {% if show_thresholds %}
+                            <th>{{ _('Points scored from') }}</th>
+                        {% endif %}
+                        <th>{{ _('Virtual points') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rule in rules %}
+                        <tr>
+                            <td>{{ rule.rounds }}</td>
+                            <td>{{ rule.players }}</td>
+                            {% if show_thresholds %}
+                                <td class="number">{{ rule.threshold }}</td>
+                            {% endif %}
+                            <td class="number">{{ rule.vpoints }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{{ _('No virtual points are given.') }}</p>
+        {% endif %}
+
+        {% if players %}
+            <h2>{{ _('Players') }}</h2>
+            <table class="players">
+                <thead>
+                    <tr>
+                        <th>{{ pgettext('pairing number column header', 'No.') }}</th>
+                        <th>{{ _('Name') }}</th>
+                        <th>{{ _('Rating') }}</th>
+                        {% if groups %}
+                            <th>{{ _('Group') }}</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                        <tr>
+                            <td class="number">{{ player.number or '' }}</td>
+                            <td>{{ player.name }}</td>
+                            <td class="number">{{ player.rating }}</td>
+                            {% if groups %}
+                                <td class="center">{{ player.group }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

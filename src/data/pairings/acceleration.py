@@ -747,6 +747,19 @@ class AcceleratedSwissVariation(SwissVariation, ABC):
     def vpoints_use_pairing_numbers(self) -> bool:
         return True
 
+    @property
+    def rules_link_template(self) -> str | None:
+        return '/admin/tournaments/acceleration_rules_link.html'
+
+    @property
+    def settings_footer_template(self) -> str | None:
+        return '/admin/pairings/settings/acceleration_rules_link.html'
+
+    @abstractmethod
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        """The rules of the system as they apply to the tournament's
+        scoring, one paragraph per item."""
+
 
 class AccelerationSwissVariation(AcceleratedSwissVariation, ABC):
     """Accelerations whose virtual points follow from the group a player
@@ -1052,6 +1065,30 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
     def are_groups_editable(self) -> bool:
         return False
 
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        return [
+            _(
+                'The Baku acceleration method of the FIDE Handbook '
+                '(C.04.7.1), applied with the FIDE (Dutch) system.'
+            ),
+            _(
+                'The players are split by pairing number into group A, the '
+                'first half of the players rounded up to an even number, '
+                'and group B, the other players.'
+            ),
+            _(
+                'The accelerated rounds are the first half of the rounds, '
+                'rounded up. In the first half of the accelerated rounds, '
+                'rounded up, each group A player gets {win} virtual points; '
+                'in the other accelerated rounds, {draw}. Group B players '
+                'get no virtual points.'
+            ).format(
+                win=Utils.points_str(tournament.win_points),
+                draw=Utils.points_str(tournament.draw_points),
+            ),
+            _('No virtual points are given after the accelerated rounds.'),
+        ]
+
     @classmethod
     def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
         return current_round <= cls.accelerated_rounds(tournament.rounds)
@@ -1141,6 +1178,21 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
     def static_name() -> str:
         return _('Haley system')
 
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        return [
+            _(
+                'The players are split by pairing number into two groups: '
+                'group A, the first pairing numbers, and group B, the '
+                'others.'
+            ),
+            _(
+                'In rounds 1 and 2, each group A player gets {win} virtual '
+                'points, the points of a win. Group B players get no '
+                'virtual points.'
+            ).format(win=Utils.points_str(tournament.win_points)),
+            _('From round 3, no virtual points are given.'),
+        ]
+
     def get_tournament_accelerated_rules(
         self, tournament: 'Tournament'
     ) -> list[AccelerationRule]:
@@ -1195,6 +1247,25 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Soft Haley system')
+
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        return [
+            _(
+                'The players are split by pairing number into two groups: '
+                'group A, the first pairing numbers, and group B, the '
+                'others.'
+            ),
+            _(
+                'In rounds 1 and 2, each group A player gets {win} virtual '
+                'points, the points of a win.'
+            ).format(win=Utils.points_str(tournament.win_points)),
+            _(
+                'In round 2, each group B player gets {draw} virtual points, '
+                'the points of a draw. Group B players get no virtual points '
+                'in round 1.'
+            ).format(draw=Utils.points_str(tournament.draw_points)),
+            _('From round 3, no virtual points are given.'),
+        ]
 
     def get_tournament_accelerated_rules(
         self, tournament: 'Tournament'
@@ -1265,6 +1336,40 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Progressive accelerated system')
+
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        win_points = tournament.win_points
+        draw_points = tournament.draw_points
+        return [
+            _(
+                'The players are split by pairing number into three groups: '
+                'group A, the first pairing numbers, then group B, then '
+                'group C.'
+            ),
+            _(
+                'Up to the third-to-last round (round {round}), each player '
+                'starts with {a} virtual points in group A, {b} in group B '
+                'and none in group C, and gets {draw} more virtual points for '
+                'every {step} points scored in the previous rounds, up to '
+                '{max} virtual points.'
+            ).format(
+                round=tournament.rounds - 2,
+                a=Utils.points_str(2 * win_points),
+                b=Utils.points_str(win_points),
+                draw=Utils.points_str(draw_points),
+                step=Utils.points_str(3 * draw_points),
+                max=Utils.points_str(2 * win_points),
+            ),
+            _(
+                'A player who has scored at least half of the points that '
+                'can be scored in the tournament ({half}) gets {max} '
+                'virtual points.'
+            ).format(
+                half=Utils.points_str(tournament.rounds * win_points / 2),
+                max=Utils.points_str(2 * win_points),
+            ),
+            _('No virtual points are given in the last two rounds.'),
+        ]
 
     def get_tournament_accelerated_rules(
         self, tournament: 'Tournament'
@@ -1418,6 +1523,20 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
     def static_name() -> str:
         return _('Custom accelerated system')
 
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        return [
+            _(
+                'The arbiter defines the acceleration rule by rule. Each '
+                'rule gives virtual points to a range of pairing numbers '
+                'over a range of rounds; the rules do not overlap, so at '
+                'most one of them applies to a player in a round.'
+            ),
+            _(
+                'A player covered by no rule in a round gets no virtual '
+                'points in that round.'
+            ),
+        ]
+
     @property
     def settings(self) -> list[PairingSetting]:
         return [*super().settings, CustomAccelerationSetting()]
@@ -1558,6 +1677,19 @@ class InitialScoreSwissVariation(AcceleratedSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Initial score accelerated system')
+
+    def rules_description(self, tournament: 'Tournament') -> list[str]:
+        return [
+            _(
+                'The arbiter gives each player an initial score, typically '
+                'carried over from an earlier tournament of the event.'
+            ),
+            _(
+                'A player gets their initial score as virtual points in '
+                'every round of the tournament. A player with no initial '
+                'score gets no virtual points.'
+            ),
+        ]
 
     @property
     def settings(self) -> list[PairingSetting]:

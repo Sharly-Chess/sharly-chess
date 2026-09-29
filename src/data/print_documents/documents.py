@@ -28,10 +28,11 @@ from data.pairings.engines import (
     RoundRobinPairingEngine,
     TeamRoundRobinPairingEngine,
 )
+from data.pairings.acceleration import AcceleratedSwissVariation
 from data.pairings.fixed_table import PairingTableProvider
 from data.pairings.molter import MolterPairingSystem
 from data.pairings.scheveningen import ScheveningenPairingSystem
-from data.pairings.settings import BergerNumbersSetting
+from data.pairings.settings import AccelerationRule, BergerNumbersSetting
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -1646,6 +1647,156 @@ class ScheveningenTablePrintDocument(FixedPairingTablePrintDocument):
     @property
     def no_table_message(self) -> str:
         return _('No Scheveningen table is available for this tournament size.')
+
+
+class AccelerationRulesPrintDocument(PrintDocument):
+    """The acceleration a Swiss tournament is paired with: the rules of
+    the system, then how they apply to the tournament — the groups, the
+    virtual points granted (the rules exported as TRF 250 records) and
+    the players with their group."""
+
+    hide_for_team_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'acceleration-rules'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Acceleration rules')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/acceleration_rules.html'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            isinstance(tournament.pairing_variation, AcceleratedSwissVariation)
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self) -> None:
+        super().validate_options()
+        if not isinstance(self.tournament.pairing_variation, AcceleratedSwissVariation):
+            raise OptionError(
+                _(
+                    'This document is only available for tournaments paired '
+                    'with an accelerated system.'
+                ),
+                self._get_option(TournamentPrintOption),
+            )
+
+    @staticmethod
+    def _rounds_str(first_round: int, last_round: int) -> str:
+        if first_round == last_round:
+            return _('Round {round}').format(round=first_round)
+        return _('Rounds {min_round}-{max_round}').format(
+            min_round=first_round, max_round=last_round
+        )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        variation = tournament.pairing_variation
+        assert isinstance(variation, AcceleratedSwissVariation)
+        players = sorted(
+            tournament.tournament_players,
+            key=lambda player: (
+                player.pairing_number
+                if player.pairing_number is not None
+                else float('inf'),
+                player.full_name.lower(),
+            ),
+        )
+        players_by_number = {
+            player.pairing_number: player
+            for player in players
+            if player.pairing_number is not None
+        }
+        number_ranges_by_group = variation.get_acceleration_number_range_by_group(
+            tournament
+        )
+
+        def group_of(player: TournamentPlayer) -> str:
+            number = player.pairing_number
+            if number is None:
+                return ''
+            return next(
+                (
+                    str(group)
+                    for group, (first, last) in number_ranges_by_group.items()
+                    if first <= number <= last
+                ),
+                '',
+            )
+
+        def rule_players(rule: AccelerationRule) -> str:
+            if rule.group is not None:
+                return _('Group {group}').format(group=rule.group)
+            number_range = rule.resolved_number_range(tournament)
+            assert number_range is not None
+            first, last = number_range
+            if first != last:
+                return _('Nos. {first}–{last}').format(first=first, last=last)
+            player = players_by_number.get(first)
+            if player is None:
+                return _('No. {number}').format(number=first)
+            return _('No. {number} ({name})').format(
+                number=first, name=player.full_name
+            )
+
+        rules = variation.get_tournament_accelerated_rules(tournament)
+        return {
+            'tournament': tournament,
+            'variation': variation,
+            'description': variation.rules_description(tournament),
+            'scoring': _(
+                'Rounds: {rounds}. Points for a win: {win}, for a draw: {draw}.'
+            ).format(
+                rounds=tournament.rounds,
+                win=Utils.points_str(tournament.win_points),
+                draw=Utils.points_str(tournament.draw_points),
+            ),
+            'groups': [
+                {
+                    'group': str(group),
+                    'first': first,
+                    'last': last,
+                    'count': last - first + 1,
+                }
+                for group, (first, last) in number_ranges_by_group.items()
+            ],
+            'show_thresholds': any(rule.points_threshold for rule in rules),
+            'rules': [
+                {
+                    'rounds': self._rounds_str(*rule.resolved_round_range(tournament)),
+                    'players': rule_players(rule),
+                    'threshold': Utils.points_str(rule.points_threshold),
+                    'vpoints': Utils.points_str(rule.vpoints),
+                }
+                for rule in rules
+            ],
+            'players': [
+                {
+                    'number': player.pairing_number,
+                    'name': player.full_name,
+                    'rating': player.rating,
+                    'group': group_of(player),
+                }
+                for player in players
+            ],
+        }
 
 
 class RoundRobinSchedulePrintDocument(PrintDocument):
