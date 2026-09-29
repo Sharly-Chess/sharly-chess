@@ -17,15 +17,15 @@
 - FIDE pairings (Dutch and team Swiss), team scores and tie-breaks, for individual and team tournaments, have been verified against _Gacrux_, an independent FIDE checker, on more than 100,000 generated tournaments (5.1.1)
 - Tournaments can be imported from TRF06 and TRF16 files; the import dialog lists every adjustment made to fill in what these older formats lack (5.1.1)
 - Scoring systems in which two draws are worth more than a win and a loss are refused, as are pairing-allocated byes worth more than a win or, with the standard scoring system, worth anything other than 1, ½ or 0 (5.1.1)
-- Team names with characters the _FFE_ website does not store, such as the œ of Sacré Cœur, no longer make the upload of team competitions fail (5.1.1)
+- Team names with characters the _FFE_ website does not store, such as the "œ" of "Sacré Cœur", no longer make the upload of team competitions fail (5.1.1)
 - The French School Championship is sent to the school competitions of the _FFE_ website, with the national finals division pre-selected for the national final (5.1.1)
 
 ## Players
 
 - The player search can now be narrowed by federation, gender, age category and club (plus licence and league for _FFE_ searches), and the filters can be filled in one go from the criteria of any tournament of the event (5.1.0)
 - Players removed by the deletion of unpaired players, or by an import replacing the existing players, are now also deleted on _Sharly-Chess.com_, instead of being brought back by the next synchronisation; re-imported players stay linked to their _Sharly-Chess.com_ registration (5.1.1)
-- The _FFE_ player update now finds players whose licence number is wrong or unknown, by their FIDE ID or else by their name and date (or year) of birth, and proposes the correct licence number; names are compared regardless of case and accents; players still not found despite their licence number (or FIDE ID for the FIDE database) are highlighted in the update window (5.1.1)
-- Players without a FIDE ID in the _FFE_ database, or with a FIDE ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
+- The _FFE_ player update now finds players whose licence number is wrong or unknown, by their _FIDE_ ID or else by their name and date (or year) of birth, and proposes the correct licence number; names are compared regardless of case and accents; players still not found despite their licence number (or FIDE ID for the FIDE database) are highlighted in the update window (5.1.1)
+- Players without a _FIDE_ ID in the _FFE_ database, or with a _FIDE_ ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
 
 ## Pairings
 
