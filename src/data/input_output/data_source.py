@@ -558,8 +558,9 @@ class LocalDataSource(DataSource, ABC):
         self.database.activate_for_federation(federation)
 
     def on_app_init(self) -> None:
+        # A missing database is installed by the background check, once the
+        # server is up: its conversion would otherwise delay the startup.
         self.database.check()
-        self.database.install_if_missing()
 
     @property
     def search_error_icon(self) -> str:

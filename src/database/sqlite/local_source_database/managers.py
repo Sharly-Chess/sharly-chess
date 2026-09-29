@@ -1,10 +1,18 @@
+from threading import Event, Thread
 from typing import override
+
 from database.sqlite.local_source_database import delays, actions
 from database.sqlite.local_source_database.actions import OutdatedAction
 from database.sqlite.local_source_database.databases import LocalSourceDatabase
 from database.sqlite.local_source_database.delays import OutdatedDelay
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager
+
+#: How often the active databases are checked against their outdate delay,
+#: the shortest of which is a day.
+_CHECK_INTERVAL = 60 * 60
+#: Set to ask for a check before the interval is over.
+_check_now = Event()
 
 
 class LocalSourceDatabaseManager(EntityManager[LocalSourceDatabase]):
@@ -61,6 +69,33 @@ class LocalSourceDatabaseManager(EntityManager[LocalSourceDatabase]):
     def install_missing(self) -> None:
         for database in self.objects():
             database.install_if_missing()
+
+    def check_active(self) -> None:
+        for database in self.active_objects():
+            database.check()
+
+    def start_checking(self) -> None:
+        """Installs what is missing and checks the active databases in the
+        background, once at the start of the server and then at every
+        interval, so that a delay expiring while the application runs is
+        seen the same day and what a lost connection prevented is caught up
+        on."""
+
+        def check() -> None:
+            while True:
+                manager = LocalSourceDatabaseManager()
+                manager.install_missing()
+                manager.check_active()
+                _check_now.wait(_CHECK_INTERVAL)
+                _check_now.clear()
+
+        Thread(target=check, daemon=True).start()
+
+    @staticmethod
+    def check_soon() -> None:
+        """Asks the background thread for a pass without waiting for its
+        next one, the connection having just come back."""
+        _check_now.set()
 
 
 class OutdatedDelayManager(EntityManager[OutdatedDelay]):

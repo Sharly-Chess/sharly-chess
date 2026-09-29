@@ -1,10 +1,11 @@
 import re
 import zipfile
 from contextlib import suppress
-from datetime import date
+from datetime import date, datetime
 from enum import StrEnum
 from logging import Logger
 from pathlib import Path
+from time import sleep
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 from typing import Any, override
@@ -21,8 +22,8 @@ from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import GitHubLocalSourcePlayerDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
-from database.sqlite.local_source_database.actions import NotifOutdatedAction
-from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
+from database.sqlite.local_source_database.actions import AutoUpdateOutdatedAction
+from database.sqlite.local_source_database.delays import DailyOutdatedDelay
 from utils.enum import (
     TournamentRating,
 )
@@ -40,6 +41,10 @@ class FideSource(StrEnum):
 
 
 FIDE_SOURCE = FideSource.OFFICIAL_LIST
+
+#: Long enough between two batches for the web server to be served, short
+#: enough to leave the conversion time dominated by its own work.
+_BATCH_PAUSE = 0.005
 
 
 class FideDatabase(GitHubLocalSourcePlayerDatabase):
@@ -215,6 +220,11 @@ class FideDatabase(GitHubLocalSourcePlayerDatabase):
                         self._report_players_stored(count)
                         if count % (self._INSERT_BATCH_SIZE * 20) == 0:
                             logger.info(self.log_prefix + '%d players stored…', count)
+                        # Reading the XML is Python work holding the GIL for
+                        # the couple of minutes it takes, which leaves the web
+                        # server unable to answer. Between two batches it gets
+                        # its turn.
+                        sleep(_BATCH_PAUSE)
         if batch:
             database.executemany(query, batch)
             count += len(batch)
@@ -231,9 +241,18 @@ class FideDatabase(GitHubLocalSourcePlayerDatabase):
     def default_stored_database(self) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=self.id,
-            outdate_delay=MonthFirstDayOutdatedDelay.static_id(),
-            outdate_action=NotifOutdatedAction.static_id(),
+            outdate_delay=DailyOutdatedDelay.static_id(),
+            outdate_action=AutoUpdateOutdatedAction.static_id(),
         )
+
+    @override
+    def _source_changed_since(self, updated_at: datetime) -> bool | None:
+        if FIDE_SOURCE != FideSource.OFFICIAL_LIST:
+            return None
+        last_modified = self._source_last_modified(self._URL)
+        if last_modified is None:
+            return None
+        return last_modified.timestamp() > updated_at.timestamp()
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(

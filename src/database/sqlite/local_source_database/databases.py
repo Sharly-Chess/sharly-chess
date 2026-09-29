@@ -8,6 +8,7 @@ import threading
 import zipfile
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime
 from math import floor
 from pathlib import Path
 from sqlite3 import connect, DatabaseError
@@ -15,10 +16,11 @@ from time import time
 from typing import override, ClassVar
 
 from packaging.version import Version
-from requests import Response, get
+from requests import RequestException, Response, get, head
 
 from common import (
     DEVEL_ENV,
+    REQUEST_TIMEOUT,
     SHARLY_CHESS_VERSION,
     TEMPFILE_DIR,
     DATA_SOURCES_DIR,
@@ -144,6 +146,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     is_updating: bool = False
     update_status: bool | None = None
+    #: Whether the outcome of the ongoing update is told to the user, which
+    #: only an update they asked for is.
+    notify_update: bool = True
     max_update_time: datetime | None = None
     #: What the ongoing update is doing, shown next to its button.
     progress: str = ''
@@ -373,7 +378,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         """Offers the database in the application, installing it when
         possible."""
         self._set_is_active(True)
-        self.install_if_missing()
+        self.install_if_missing(notify=True)
 
     def deactivate(self) -> None:
         """Withdraws the database from the application, deleting its file."""
@@ -382,25 +387,33 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     def activate_for_federation(self, federation: str) -> None:
         """Activates the database of a federation the first time it is
-        needed; a database the user has removed stays removed."""
+        needed; a database the user has removed stays removed.
+
+        The installation is left to the background check: this runs while
+        the application starts, and nobody is waiting in front of a
+        database they have not asked for."""
         if self.federation != federation:
             return
         if self.stored_source_database.is_active is not None:
             return
-        self.activate()
+        self._set_is_active(True)
 
-    def install_if_missing(self) -> None:
+    def install_if_missing(self, notify: bool = False) -> None:
         """Installs an active database whose file is missing (never
-        installed, or a failed installation)."""
+        installed, or a failed installation). *notify* is True when the user
+        asked for it and is waiting for the outcome."""
         if TEST_ENV or self.is_manual or not self.is_active_by_choice:
             return
         if self.is_updating:
             return
         if self.exists():
             return
-        if not NetworkMonitor.connected():
+        # Tested rather than taken from the monitor, which has not probed
+        # anything yet when the application starts and assumes a connection.
+        if not NetworkMonitor.connected(use_cached=False):
+            logger.info(self.log_prefix + 'Not connected, installation postponed.')
             return
-        self.update()
+        self.update(notify=notify)
 
     @classmethod
     def publish_database_status_updated(cls) -> None:
@@ -480,10 +493,14 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             case _:
                 return _('{days} days ago').format(days=days_since_update)
 
-    def stop_update(self, status: bool) -> None:
+    def stop_update(self, status: bool, notify: bool | None = None) -> None:
+        """Ends the update, telling the user how it went when they asked for
+        it. *notify* overrides that, for an outcome worth no message."""
         cls = self.__class__
         cls.is_updating = False
-        cls.update_status = status
+        if notify is None:
+            notify = cls.notify_update
+        cls.update_status = status if notify else None
         cls.max_update_time = None
         cls.progress = ''
         logger.debug(self.log_prefix + f'Update stopped with status {int(status)}')
@@ -516,6 +533,37 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         if self.is_outdated:
             self.outdate_action.on_outdated(self)
         return True
+
+    def _source_changed_since(self, updated_at: datetime) -> bool | None:
+        """Whether the source published something newer than the copy taken
+        at *updated_at*, None when there is no way to tell and the update
+        has to go ahead."""
+        return None
+
+    def _source_last_modified(self, url: str) -> datetime | None:
+        """The date the server gives for *url*, None when it gives none or
+        cannot be reached."""
+        try:
+            response: Response = head(
+                url,
+                headers=self._HEADERS,
+                allow_redirects=True,
+                timeout=REQUEST_TIMEOUT,
+            )
+            response.raise_for_status()
+        except RequestException as ex:
+            logger.debug(self.log_prefix + 'Could not read [%s]: %s.', url, ex)
+            return None
+        last_modified = response.headers.get('Last-Modified')
+        if not last_modified:
+            return None
+        try:
+            return parsedate_to_datetime(last_modified)
+        except (TypeError, ValueError):
+            logger.debug(
+                self.log_prefix + 'Unreadable date [%s] for [%s].', last_modified, url
+            )
+            return None
 
     def _download_file(self, url: str, target: Path) -> bool:
         """Downloads *url* to *target*, returns False on failure."""
@@ -605,9 +653,14 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             zip_target.unlink(missing_ok=True)
         return True
 
-    def update(self, source_file: Path | None = None) -> None:
+    def update(self, source_file: Path | None = None, notify: bool = True) -> None:
         """Start a thread updating the database, from a source file the
-        user provides (deleted once used) instead of a download when given."""
+        user provides (deleted once used) instead of a download when given.
+
+        *notify* is False for an update the user did not ask for, whose
+        failure belongs in the log rather than on their screen: a site that
+        cannot be reached would otherwise report itself at every check."""
+        self.__class__.notify_update = notify
         update_thread = threading.Thread(
             target=self._update, args=(source_file,), daemon=True
         )
@@ -637,6 +690,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         if source_file is None and not NetworkMonitor.connected():
             logger.warning(self.log_prefix + 'Not connected, impossible to update.')
             return self.stop_update(False)
+        if (
+            source_file is None
+            and self.exists()
+            and (updated_at := self.updated_at)
+            and self._source_changed_since(updated_at) is False
+        ):
+            logger.info(self.log_prefix + 'Source unchanged, kept as it is.')
+            self._mark_updated()
+            # Nothing was rebuilt, so the user is not told that it was.
+            return self.stop_update(True, notify=False)
         self.publish_database_status_updated()
         with tempfile.TemporaryDirectory(dir=TEMPFILE_DIR) as tmpdir:
             tmp_dir: Path = Path(tmpdir)
@@ -735,13 +798,18 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 )
                 return self.stop_update(False)
 
-        self.stored_source_database.updated_at = time()
-        self.update_stored_source_database(self.stored_source_database)
+        self._mark_updated()
         logger.info(
             self.log_prefix + 'Database successfully updated in %.1f s.',
             time() - start,
         )
         return self.stop_update(True)
+
+    def _mark_updated(self) -> None:
+        """Records that the copy is the source's current state, so that the
+        outdate delay runs again from now."""
+        self.stored_source_database.updated_at = time()
+        self.update_stored_source_database(self.stored_source_database)
 
 
 class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
