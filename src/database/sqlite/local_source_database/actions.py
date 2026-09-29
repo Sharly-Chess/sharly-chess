@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from common.i18n import _
+from common.network import NetworkMonitor
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:
@@ -40,5 +41,12 @@ class AutoUpdateOutdatedAction(OutdatedAction):
         return _('Auto-update')
 
     def on_outdated(self, database: 'LocalSourceDatabase') -> None:
-        if not database.is_updating:
-            database.update()
+        if database.is_updating:
+            return
+        if not NetworkMonitor.connected():
+            # An update would fail and be reported as an error, again at
+            # every check, so the database is only signalled as outdated
+            # until the connection comes back.
+            database.outdated_warning = True
+            return
+        database.update(notify=False)
