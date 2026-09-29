@@ -11,8 +11,18 @@
         {% if championship.competitor_type == competitor_type_individual %}
             <td class="text-center compact-col text-nowrap">{% if row.category %}{{ row.category }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
             <td class="text-center compact-col text-nowrap">{% if row.gender %}{{ row.gender }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+            <td class="text-center compact-col text-nowrap">
+                {% if row.year_of_birth %}
+                    <span {% if row.date_of_birth %}{{ macros.tooltip_attributes('', row.date_of_birth, 'top') }}{% endif %}>{{ row.year_of_birth }}</span>
+                {% else %}
+                    <span class="text-body-secondary">—</span>
+                {% endif %}
+            </td>
         {% endif %}
         <td class="text-center compact-col text-nowrap">{% if row.federation %}{{ row.federation }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+        {% if championship.competitor_type == competitor_type_individual %}
+            <td class="text-start text-nowrap">{% if row.club %}{{ row.club }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+        {% endif %}
         <td class="p-0"></td>
         {% for cell in row.rule_cells %}
             {% if cell.manual %}
@@ -117,8 +127,12 @@
                 {% if championship.competitor_type == competitor_type_individual %}
                     <th class="text-center compact-col">{{ pgettext('category column header', 'Cat.') }}</th>
                     <th class="text-center compact-col">{{ pgettext('gender column header', 'Gen.') }}</th>
+                    <th class="text-center compact-col" {{ macros.tooltip_attributes('', _('Date of birth'), 'top') }}>{{ pgettext('date-of-birth column header', 'DOB') }}</th>
                 {% endif %}
                 <th class="text-center compact-col">{{ pgettext('federation column header', 'Fed.') }}</th>
+                {% if championship.competitor_type == competitor_type_individual %}
+                    <th class="text-start">{{ pgettext('club column header', 'Club') }}</th>
+                {% endif %}
                 <th class="p-0" style="width: 0.75rem"></th>
                 {% for header in ranking_rule_labels %}
                     <th

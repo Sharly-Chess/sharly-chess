@@ -8683,9 +8683,10 @@ msgstr "Source"
 msgid "Sources"
 msgstr "Sources"
 
+#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Sources"
-msgstr "<u>S</u>ources"
+msgid "Sources ({num})"
+msgstr "<u>S</u>ources ({num})"
 
 msgid "South Africa"
 msgstr "Afrique du Sud"
