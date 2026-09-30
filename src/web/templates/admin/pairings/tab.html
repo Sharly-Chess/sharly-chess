@@ -122,10 +122,10 @@
                 <div class="col-12 col-lg-3 d-none d-lg-block"></div>
             {% endif %}
             <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} d-flex gap-2 align-items-end">
-                <div class="flex-grow-1 d-flex align-items-center gap-3">
+                <div class="flex-grow-1 d-flex align-items-center gap-3 mb-2">
                     {% if unsafe_editing %}
                         <i
-                            class="text-danger bi bi-exclamation-triangle-fill fs-4 mb-2"
+                            class="text-danger bi bi-exclamation-triangle-fill fs-4 d-flex"
                             {% if admin_tournament.manual_pairing_round == admin_round %}
                                 {{ macros.tooltip_attributes('warning', _('The pairings of this round are being edited. Validate or cancel the editing to exit this mode.'), 'right') }}
                             {% else %}
@@ -138,7 +138,7 @@
                        to expand. #}
                     {% if is_team_paired_mode and not display_rankings and admin_team_boards %}
                         <div
-                            class="form-check form-switch mb-1 flex-shrink-0"
+                            class="form-check form-switch mb-0 flex-shrink-0"
                             {{ macros.tooltip_attributes('info', _('Show/hide all individual games.'), 'top') }}
                         >
                             <input
