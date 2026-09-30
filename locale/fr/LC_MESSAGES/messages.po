@@ -2117,6 +2117,10 @@ msgstr "Les couleurs sont tirées au sort pour chaque partie."
 msgid "Colours given to games the file pairs without a colour ({rounds})."
 msgstr "Couleurs attribuées aux parties appariées sans couleur dans le fichier ({rounds})."
 
+#, python-brace-format
+msgid "Colours of {pairs} swapped."
+msgstr "Permutation de {pairs}."
+
 msgid "Columns"
 msgstr "Colonnes"
 
@@ -7928,6 +7932,14 @@ msgstr "Le résultat [{result}] est incompatible avec le résultat de l'adversai
 #, python-brace-format
 msgid "Result of {pair} changed from {before} to {after}."
 msgstr "Résultat de {pair} corrigé de {before} en {after}."
+
+#, python-brace-format
+msgid "Result of {pair} cleared (previously {before})."
+msgstr "Résultat de {pair} effacé (précédemment {before})."
+
+#, python-brace-format
+msgid "Result of {pair} entered: {after}."
+msgstr "Résultat de {pair} saisi : {after}."
 
 msgid "Results"
 msgstr "Résultats"

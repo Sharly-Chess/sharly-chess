@@ -2117,6 +2117,10 @@ msgstr ""
 msgid "Colours given to games the file pairs without a colour ({rounds})."
 msgstr ""
 
+#, python-brace-format
+msgid "Colours of {pairs} swapped."
+msgstr ""
+
 msgid "Columns"
 msgstr ""
 
@@ -7925,6 +7929,14 @@ msgstr ""
 
 #, python-brace-format
 msgid "Result of {pair} changed from {before} to {after}."
+msgstr ""
+
+#, python-brace-format
+msgid "Result of {pair} cleared (previously {before})."
+msgstr ""
+
+#, python-brace-format
+msgid "Result of {pair} entered: {after}."
 msgstr ""
 
 msgid "Results"

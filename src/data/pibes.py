@@ -286,8 +286,8 @@ _READABLE_RESULTS = {
     '1': '1',
     '0': '0',
     '=': '½',
-    '+': '1F',
-    '-': '0F',
+    '+': '1',
+    '-': 'F',
     'W': '1',
     'L': '0',
     'D': '½',
@@ -463,12 +463,24 @@ def _correction_summary(
     pairs, colon, results = part.partition(': ')
     if colon and '=>' in results and '=>' not in pairs:
         before, _arrow, after = results.partition(' => ')
+        if after == '*':
+            return _('Result of {pair} cleared (previously {before}).', locale).format(
+                pair=_pair_name(pairs, name), before=_readable_result(before)
+            )
+        if before == '*':
+            return _('Result of {pair} entered: {after}.', locale).format(
+                pair=_pair_name(pairs, name), after=_readable_result(after)
+            )
         return _('Result of {pair} changed from {before} to {after}.', locale).format(
             pair=_pair_name(pairs, name),
             before=_readable_result(before),
             after=_readable_result(after),
         )
     engine, _arrow, actual = part.partition(' => ')
+    if (swapped := _swapped_pairs(engine, actual)) is not None:
+        return _('Colours of {pairs} swapped.', locale).format(
+            pairs=', '.join(_pair_name(pair, name) for pair in swapped)
+        )
     return _('{what}: {pairings}', locale).format(
         what=_('Pairings of the round changed', locale),
         pairings=_pairs_summary(engine, actual, name, locale),
@@ -489,10 +501,25 @@ def _pairs_summary(
     )
 
 
+def _swapped_pairs(before: str, after: str) -> list[str] | None:
+    """The pairs of *after*, when they are those of *before* with their
+    colours swapped."""
+    before_pairs, after_pairs = before.split(), after.split()
+    if not after_pairs or any('=' in pair for pair in after_pairs):
+        return None
+    reversed_pairs = {'-'.join(reversed(pair.split('-'))) for pair in before_pairs}
+    return after_pairs if reversed_pairs == set(after_pairs) else None
+
+
 def _readable_result(result: str) -> str:
+    """A result in TRF codes, ``'1-0'`` or ``'---'`` (a double forfeit),
+    as the result buttons show it."""
     if result == '*':
         return '…'
-    return '-'.join(_READABLE_RESULTS.get(code, code) for code in result.split('-', 1))
+    white, black = result[0], result[2:]
+    return (
+        f'{_READABLE_RESULTS.get(white, white)}-{_READABLE_RESULTS.get(black, black)}'
+    )
 
 
 def _pair_name(token: str, name: Callable[[str], str]) -> str:

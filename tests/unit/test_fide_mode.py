@@ -229,6 +229,34 @@ class PibeSummaryTestCase(TestCase):
             f'Result of {self.name(6)} – {self.name(7)} changed from 1-0 to ½-½.',
         )
 
+    def test_forfeits_read_as_on_the_result_buttons(self):
+        self.assertEqual(
+            self.summary(PibeType.CORRECTION, '6-7: 0-1 => ---'),
+            f'Result of {self.name(6)} – {self.name(7)} changed from 0-1 to F-F.',
+        )
+        self.assertEqual(
+            self.summary(PibeType.CORRECTION, '6-7: 1-0 => +--'),
+            f'Result of {self.name(6)} – {self.name(7)} changed from 1-0 to 1-F.',
+        )
+
+    def test_a_cleared_result_gives_the_former_one(self):
+        self.assertEqual(
+            self.summary(PibeType.CORRECTION, '6-7: --- => *'),
+            f'Result of {self.name(6)} – {self.name(7)} cleared (previously F-F).',
+        )
+
+    def test_an_entered_result_is_given(self):
+        self.assertEqual(
+            self.summary(PibeType.CORRECTION, '6-7: * => =-='),
+            f'Result of {self.name(6)} – {self.name(7)} entered: ½-½.',
+        )
+
+    def test_swapped_colours_are_named_as_such(self):
+        self.assertEqual(
+            self.summary(PibeType.CORRECTION, '6-7 => 7-6'),
+            f'Colours of {self.name(7)} – {self.name(6)} swapped.',
+        )
+
     def test_a_few_pairings_are_named(self):
         self.assertEqual(
             self.summary(PibeType.MPA, '1-2 3=PAB => 1-3 2=PAB'),
