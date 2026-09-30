@@ -34,6 +34,7 @@ class NormResult(CoreMapper[str, Result]):
             Result.UNRATED_PENALTY_DL: '=',
             Result.REST_GAME: '+',
             Result.NO_RESULT: '',
+            Result.ADJOURNED: '',
         }
         if core_object in norm_result_by_result:
             return norm_result_by_result[core_object]

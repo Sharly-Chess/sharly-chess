@@ -78,6 +78,9 @@ class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
 
 
 class TrfResult(CoreMapper[str, Result]):
+    UNKNOWN: ClassVar[str] = '?'
+    """An adjourned game, or a game not played yet."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, Result]:
         return {
@@ -93,6 +96,7 @@ class TrfResult(CoreMapper[str, Result]):
             'F': Result.FULL_POINT_BYE,
             'U': Result.PAIRING_ALLOCATED_BYE,
             'Z': Result.ZERO_POINT_BYE,
+            TrfResult.UNKNOWN: Result.ADJOURNED,
         }
 
     @classmethod
@@ -121,16 +125,28 @@ class TrfResult(CoreMapper[str, Result]):
         has_opponent: bool = False,
         is_round_robin: bool = False,
     ) -> Result:
+        """Any symbol the format does not define is an unknown result, as
+        is the one it defines for it: a game with an unknown result against
+        an opponent is an adjourned game."""
         if outer_value == ' ':
             if has_opponent:
                 return Result.NO_RESULT
             if is_round_robin:
                 return Result.REST_GAME
             return Result.ZERO_POINT_BYE
-        return super().get_core_object(outer_value)
+        outer_value = outer_value.upper()
+        if has_opponent and outer_value not in cls.outer_values():
+            return Result.ADJOURNED
+        result = super().get_core_object(outer_value)
+        if result.is_adjourned and not has_opponent:
+            raise KeyError(outer_value)
+        return result
 
 
 class TrfPointSystemResult(CoreMapper[str, Result]):
+    UNKNOWN: ClassVar[str] = 'X'
+    """The symbol giving the points of an unknown result."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, Result]:
         return {

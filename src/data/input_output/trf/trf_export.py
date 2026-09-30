@@ -24,6 +24,7 @@ from data.input_output.trf.trf_mappers import TrfPointSystemResult
 from data.pairings.engines import _team_ui_sort_key
 from data.pairings.settings import ColorSeedSetting
 from data.pibes import Pibe, RatingCorrection, fide_mode_exit_trf_comment
+from data.pairing import Pairing
 from data.player import TournamentPlayer
 from utils.enum import (
     BoardColor,
@@ -50,11 +51,12 @@ class TrfExport:
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list[TrfProhibitedPairing] | None = None,
         rating_report: bool = False,
+        for_engine: bool = False,
     ) -> TrfTournament:
         """The tournament as a TRF. The *rating_report* gives the games
         corrected for the rating in their 001 records, and says what the
         pairings and the standings used instead; the pairing engine reads
-        the games as they were used."""
+        the games as they were used, and adjourned games as draws."""
         tournament = self.tournament
         corrections = tournament.rating_corrections if rating_report else []
         if after_round is None:
@@ -82,7 +84,9 @@ class TrfExport:
             ],
             num_rounds=tournament.rounds,
             initial_color=seed_setting.get_value(tournament).value,
-            individuals_point_system=self._individuals_point_system(),
+            individuals_point_system=self._individuals_point_system(
+                after_round, for_engine
+            ),
             starting_rank_method=self._starting_rank_method(),
             starting_rank_federation=tournament.event.federation or '',
             pairing_controller_id='Sharly Chess',
@@ -98,7 +102,9 @@ class TrfExport:
             ],
             time_control=tournament.time_control_trf25 or '',
             players=[
-                player.to_trf(after_round, next_round_pairings_as_zpb, corrections)
+                player.to_trf(
+                    after_round, next_round_pairings_as_zpb, corrections, for_engine
+                )
                 for player in tournament.tournament_players_by_pairing_number.values()
             ],
             accelerated_rounds=self.accelerated_rounds(),
@@ -111,6 +117,8 @@ class TrfExport:
         shared_rank = self._shared_ranks()
         for trf_player in trf.players:
             trf_player.rank = shared_rank[trf_player.id]
+        if not for_engine and self._has_adjourned_games(after_round):
+            self._count_unplayed_games_as_draws(trf, after_round)
         if tournament.is_team_tournament:
             self._populate_team(
                 trf,
@@ -419,12 +427,19 @@ class TrfExport:
             else 'NIDOF'
         )
 
-    def _individuals_point_system(self) -> dict[str, float]:
+    def _individuals_point_system(
+        self, after_round: int, for_engine: bool
+    ) -> dict[str, float]:
         """TRF26 162 record — game-point values per result symbol.
         Only emits values that have been overridden vs the FIDE
         defaults; readers fall back to W=1 / D=0.5 / L=0 / ZPB=LOSS /
         PAB=WIN when a symbol is absent. bbpPairings ``--team``
-        accepts the full W / D / L / A (ZPB) / P (PAB) alphabet."""
+        accepts the full W / D / L / A (ZPB) / P (PAB) alphabet.
+
+        ``X`` gives the value of the unknown results: an adjourned game
+        counts as a draw, a game not played yet as nothing unless it sits
+        beside adjourned games, when it counts as a draw too and the
+        points of its players say so."""
         raw = self.tournament.stored_tournament.game_points or {}
         result: dict[str, float] = {}
         for outcome_value, value in raw.items():
@@ -436,7 +451,52 @@ class TrfExport:
             if not symbol:
                 continue
             result[symbol] = float(value)
+        if (
+            not for_engine
+            and (unknown := self._unknown_result_points(after_round)) is not None
+        ):
+            result[TrfPointSystemResult.UNKNOWN] = unknown
         return result
+
+    def _pairings_up_to(self, after_round: int) -> list[Pairing]:
+        return [
+            pairing
+            for player in self.tournament.tournament_players_by_pairing_number.values()
+            for round_, pairing in player.pairings.items()
+            if round_ <= after_round
+        ]
+
+    def _has_adjourned_games(self, after_round: int) -> bool:
+        return any(
+            pairing.result.is_adjourned for pairing in self._pairings_up_to(after_round)
+        )
+
+    def _unknown_result_points(self, after_round: int) -> float | None:
+        """The points of an unknown result, or None when there is none."""
+        if self._has_adjourned_games(after_round):
+            return float(Result.ADJOURNED.points(self.tournament.point_values))
+        if any(
+            pairing.paired_no_result for pairing in self._pairings_up_to(after_round)
+        ):
+            return 0.0
+        return None
+
+    def _count_unplayed_games_as_draws(
+        self, trf: TrfTournament, after_round: int
+    ) -> None:
+        """Add the value of a draw to the 001 points of each player with a
+        game not played yet, which ``X`` values as a draw beside the
+        adjourned games."""
+        draw = Result.ADJOURNED.points(self.tournament.point_values)
+        trf_player_by_id = {trf_player.id: trf_player for trf_player in trf.players}
+        for player in self.tournament.tournament_players_by_pairing_number.values():
+            unplayed = sum(
+                pairing.paired_no_result
+                for round_, pairing in player.pairings.items()
+                if round_ <= after_round
+            )
+            if unplayed and player.pairing_number in trf_player_by_id:
+                trf_player_by_id[player.pairing_number].points += unplayed * draw
 
     def _team_oodo_records(
         self,

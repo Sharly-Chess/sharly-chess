@@ -1969,6 +1969,58 @@ class Tournament:
             and player.pairings[round_].opponent_id is not None
         )
 
+    def adjourned_boards(self, before_round: int | None = None) -> list[Board]:
+        """The boards of the adjourned games, of the rounds before
+        *before_round* if given."""
+        return [
+            board
+            for board in self._boards_by_round_and_index
+            if board.result.is_adjourned
+            and (before_round is None or board.round < before_round)
+        ]
+
+    def boards_without_final_result(self) -> list[Board]:
+        """The games of the tournament whose result is not known yet:
+        adjourned, or not played yet."""
+        return [
+            board
+            for board in self._boards_by_round_and_index
+            if board.result.is_adjourned
+            or (
+                board.no_result
+                and board.stored_board.white_player_id is not None
+                and board.stored_board.black_player_id is not None
+            )
+        ]
+
+    @property
+    def _boards_by_round_and_index(self) -> list[Board]:
+        return sorted(
+            self.boards_by_id.values(), key=lambda board: (board.round, board.index)
+        )
+
+    @property
+    def has_provisional_results(self) -> bool:
+        """Whether the standings count adjourned games as draws."""
+        return bool(self.adjourned_boards())
+
+    def breaches_adjournment(self, board: Board, result: Result) -> bool:
+        """Whether entering *result* for the adjourned game of *board*
+        breaches the integrity of the pairings: the next round was paired
+        with the game counting as a draw, and *result* is not one."""
+        return (
+            self.logs_pairing_breaches
+            and board.result.is_adjourned
+            and result
+            not in (
+                Result.DRAW,
+                Result.UNRATED_DRAW,
+                Result.ADJOURNED,
+                Result.NO_RESULT,
+            )
+            and self.round_has_pairings(board.round + 1)
+        )
+
     def is_round_paired(self, round_: int) -> bool:
         return all(
             player.pairings[round_].opponent_id is not None
@@ -2480,6 +2532,7 @@ class Tournament:
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
         rating_report: bool = False,
+        for_engine: bool = False,
     ) -> 'TrfTournament':
         from data.input_output.trf.trf_export import TrfExport
 
@@ -2488,6 +2541,7 @@ class Tournament:
             next_round_pairings_as_zpb=next_round_pairings_as_zpb,
             prohibited_pairing_override=prohibited_pairing_override,
             rating_report=rating_report,
+            for_engine=for_engine,
         )
 
     @property

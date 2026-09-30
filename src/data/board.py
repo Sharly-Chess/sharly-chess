@@ -3,6 +3,7 @@ from datetime import datetime
 from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
+from common.i18n import _
 from database.sqlite.event.event_store import StoredBoard, set_stored_fields
 from database.sqlite.event.event_database import EventDatabase
 from utils.date_time import format_time
@@ -295,6 +296,16 @@ class Board:  # noqa: PLW1641
     @property
     def no_result(self) -> bool:
         return self.result == Result.NO_RESULT
+
+    @property
+    def round_and_players_str(self) -> str:
+        white = self.optional_white_tournament_player
+        black = self.black_tournament_player
+        return _('Round {round}: {white} – {black}').format(
+            round=self.round,
+            white=white.full_name if white else '—',
+            black=black.full_name if black else '—',
+        )
 
     @property
     def result_str(self) -> str:

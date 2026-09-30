@@ -45,8 +45,10 @@ CHESS_RESULTS_SOURCE = 13
 def _forfeit_code(result: Result) -> str:
     """Chess-Results ``forfeit`` marker: ``K`` for forfeits, ``D`` for
     penalty results (0-0 and the half-point penalties), ``U`` for
-    unrated results, empty otherwise."""
+    unrated results, ``H`` for adjourned games, empty otherwise."""
     match result:
+        case Result.ADJOURNED:
+            return 'H'
         case Result.FORFEIT_LOSS | Result.FORFEIT_WIN | Result.DOUBLE_FORFEIT:
             return 'K'
         case (
@@ -62,6 +64,14 @@ def _forfeit_code(result: Result) -> str:
             return 'U'
         case _:
             return ''
+
+
+def _result_points(result: Result, point_values: dict[Result, float]) -> str:
+    """Chess-Results ``reswhite`` / ``resblack``: empty for an adjourned
+    game, which the ``forfeit`` marker gives instead."""
+    if result.is_adjourned:
+        return ''
+    return str(result.points(point_values) or '')
 
 
 def _date_of_birth(player: Player) -> str:
@@ -388,11 +398,11 @@ class ChessResultsSession(Session):
                             if board.black_tournament_player
                             else -1
                         ),
-                        'reswhite': str(
-                            board.white_pairing.result.points(point_values) or ''
+                        'reswhite': _result_points(
+                            board.white_pairing.result, point_values
                         ),
-                        'resblack': str(
-                            board.black_pairing.result.points(point_values) or ''
+                        'resblack': _result_points(
+                            board.black_pairing.result, point_values
                         )
                         if board.black_tournament_player
                         else '',
@@ -659,13 +669,13 @@ class ChessResultsSession(Session):
                             'blackno': str(no_by_player_id.get(btp.id, 0))
                             if btp
                             else '0',
-                            'reswhite': str(
-                                white_pairing.result.points(point_values) or ''
+                            'reswhite': _result_points(
+                                white_pairing.result, point_values
                             )
                             if white_pairing
                             else '',
-                            'resblack': str(
-                                black_pairing.result.points(point_values) or ''
+                            'resblack': _result_points(
+                                black_pairing.result, point_values
                             )
                             if black_pairing
                             else '',

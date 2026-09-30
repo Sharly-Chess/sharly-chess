@@ -2,10 +2,17 @@
     class="ranking-screen-set"
 >
     <h2 class="set-title text-center">
-        {% if data.ranking_round %}
-            {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=data.ranking_round) }}
+        {% set _set_title %}
+            {%- if data.ranking_round -%}
+                {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=data.ranking_round) }}
+            {%- else -%}
+                {{ screen_set.name_for_ranking }}
+            {%- endif -%}
+        {% endset %}
+        {% if tournament.adjourned_boards(before_round=(data.ranking_round or tournament.rounds) + 1) %}
+            {{ _('%(title)s (provisional)', title=_set_title) }}
         {% else %}
-            {{ screen_set.name_for_ranking }}
+            {{ _set_title }}
         {% endif %}
     </h2>
     {% set player_columns = columns_by_tournament_id[tournament.id] %}

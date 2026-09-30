@@ -68,6 +68,7 @@ STANDINGS_EVENT: str = MAIN + 'LinkCmdClassement'
 # listed on the left ("Blanc"), whatever the colours on the board.
 SITE_RESULTS: dict[Result, str] = {
     Result.NO_RESULT: 'None',
+    Result.ADJOURNED: 'None',
     Result.WIN: 'GainBlanc',
     Result.LOSS: 'GainNoir',
     Result.DRAW: 'Nulle',

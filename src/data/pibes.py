@@ -333,6 +333,33 @@ def _team_round_snapshot(tournament: 'Tournament', round_: int) -> dict[str, str
     return snapshot
 
 
+def adjournment_description(tournament: 'Tournament', board: 'Board') -> str:
+    """The result entered for the adjourned game of *board*, in the notation
+    of the TRF comments: ``'17-5 1-0'``, or the team match and the results
+    of its boards, ``'3-8: 1-0 =-= 0-1 1-0'``."""
+    team_board = board.team_board
+    if (
+        tournament.is_team_tournament
+        and tournament.pairing_system.paired_by_team
+        and team_board is not None
+        and team_board.team_b is not None
+    ):
+        return (
+            f'{team_board.team_a.pairing_number or 0}-'
+            f'{team_board.team_b.pairing_number or 0}: '
+            + ' '.join(
+                _board_result(team_board_board)
+                for team_board_board in team_board.boards
+            )
+        )
+    white = board.optional_white_tournament_player
+    black = board.black_tournament_player
+    return (
+        f'{white.pairing_number if white else 0}-'
+        f'{black.pairing_number if black else 0} {_board_result(board)}'
+    )
+
+
 def describe_round_changes(before: dict[str, str], after: dict[str, str]) -> str:
     """What changed between two snapshots of a round, in the notation of the
     TRF comments: ``'19-7 44=PAB => 19-44 7=PAB'`` for the pairings,
@@ -398,6 +425,18 @@ def pibe_summary(
             return ' '.join(
                 _correction_summary(part, name, locale)
                 for part in pibe.description.split(', ')
+            )
+        case PibeType.ADJOURNMENT:
+            pair, results = _adjournment_parts(pibe.description)
+            return _(
+                'Result of the adjourned game {pair} entered as {result}, after '
+                'the next round was paired with the game counting as a draw.',
+                locale,
+            ).format(
+                pair=_pair_name(pair, name),
+                result=', '.join(
+                    _readable_result(result) for result in results.split()
+                ),
             )
         case PibeType.MPA | PibeType.IMPORT | PibeType.CONFIGURATION:
             engine, _arrow, actual = pibe.description.partition(' => ')
@@ -471,9 +510,20 @@ def rewrite_member_numbers(
                 pair, colon, results = part.partition(': ')
                 parts.append(f'{token(pair)}: {results}' if colon else sides(part))
             return ', '.join(parts)
+        case PibeType.ADJOURNMENT:
+            pair, results = _adjournment_parts(description)
+            return description.replace(pair, token(pair), 1)
         case PibeType.MPA | PibeType.IMPORT | PibeType.CONFIGURATION:
             return sides(description)
     return description
+
+
+def _adjournment_parts(description: str) -> tuple[str, str]:
+    """The pair and the results of an adjournment description."""
+    pair, colon, results = description.partition(': ')
+    if not colon:
+        pair, _space, results = description.partition(' ')
+    return pair, results
 
 
 def _member_pairing_number(tournament: 'Tournament', member_id: int) -> int | None:

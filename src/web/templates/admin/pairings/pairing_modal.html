@@ -271,6 +271,12 @@
                         </div>
                     </div>
 
+                    {% if board.result.is_adjourned %}
+                        <p class="small text-muted mt-2 mb-0">
+                            {{ _('The game counts as a draw until its result is entered, which can be done at any time.') }}
+                        </p>
+                    {% endif %}
+
                     <hr class="my-3" />
                 {% endif %}
 
@@ -378,7 +384,11 @@
                         data-bs-target="#rare-results-admin"
                     >
                         <i class="bi bi-chevron-down pe-1"></i>
-                        {{ _('Access unrated and penalty results.') }}
+                        {% if admin_tournament.pairing_system.supports_adjourned_games %}
+                            {{ _('Access unrated, penalty and adjourned results.') }}
+                        {% else %}
+                            {{ _('Access unrated and penalty results.') }}
+                        {% endif %}
                     </button>
                     <div class="collapse" id="rare-results-admin">
                         {# Each group is a category header followed by its
@@ -419,11 +429,23 @@
                                 {% endfor %}
                             </div>
                         {% endfor %}
+                        {% if admin_tournament.pairing_system.supports_adjourned_games %}
+                            <div class="row g-2 mt-3">
+                                <div class="col-12">
+                                    {{ result_button(
+                                        21,
+                                        special_locked or board.result.is_adjourned,
+                                        _('Adjourned'),
+                                        'btn-outline-primary',
+                                    ) }}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
 
-                {% if corrects_for_rating and wtp and btp %}
+                {% if corrects_for_rating and wtp and btp and not board.result.is_adjourned %}
                     {% set rating_correction = admin_tournament.rating_correction_for(board) %}
                     {% set rating_white_id = rating_correction.white_player_id if rating_correction else wtp.id %}
                     {% set rating_result = rating_correction.result.value if rating_correction else board.result.value %}

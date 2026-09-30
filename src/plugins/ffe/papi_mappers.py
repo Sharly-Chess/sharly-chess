@@ -333,7 +333,12 @@ class PapiRound:
                 return PapiResult.LOSS
             case Result.DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
+            case (
+                Result.NO_RESULT
+                | Result.ZERO_POINT_BYE
+                | Result.REST_GAME
+                | Result.ADJOURNED
+            ):
                 return PapiResult.UNPLAYED_OR_NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS

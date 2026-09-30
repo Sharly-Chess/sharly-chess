@@ -215,6 +215,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         if self.checks_imported_rounds:
             self.post_import_task.append(self._check_imported_rounds)
 
+        unknown_is_unplayed = self._unknown_results_are_unplayed(trf_tournament)
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
         stored_boards_by_round: dict[int, list[StoredBoard]] = defaultdict(list)
@@ -268,7 +269,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                     and result.is_no_board_bye
                 ):
                     continue
-                stored_pairing, stored_board = self._read_trf_game(trf_game, player_id)
+                stored_pairing, stored_board = self._read_trf_game(
+                    trf_game, player_id, unknown_is_unplayed
+                )
                 if stored_board:
                     if player_id in board_id_by_player_id_by_round[round_nb]:
                         board_id = board_id_by_player_id_by_round[round_nb][player_id]
@@ -528,15 +531,26 @@ class TrfTournamentImporter(FileTournamentImporter):
 
     @staticmethod
     def _unknown_point_system_symbols(trf_tournament: TrfTournament) -> list[str]:
-        """162 result symbols with no equivalent here — 'X' (unknown
-        result, e.g. an adjourned game) is the one the spec defines."""
+        """162 result symbols with no equivalent here."""
         unknown: list[str] = []
         for symbol in trf_tournament.individuals_point_system:
+            if symbol == TrfPointSystemResult.UNKNOWN:
+                continue
             try:
                 TrfPointSystemResult.get_core_object(symbol)
             except KeyError:
                 unknown.append(symbol)
         return sorted(unknown)
+
+    @staticmethod
+    def _unknown_results_are_unplayed(trf_tournament: TrfTournament) -> bool:
+        """Whether the unknown results are games not played yet rather than
+        adjourned games: their 162 value is then nothing instead of the
+        value of a draw."""
+        points = trf_tournament.individuals_point_system.get(
+            TrfPointSystemResult.UNKNOWN
+        )
+        return points is not None and points == 0
 
     @staticmethod
     def _populate_game_points(
@@ -1531,12 +1545,14 @@ class TrfTournamentImporter(FileTournamentImporter):
 
     @staticmethod
     def _read_trf_game(
-        trf_game: TrfGame, player_id: int
+        trf_game: TrfGame, player_id: int, unknown_is_unplayed: bool = False
     ) -> tuple[StoredPairing, StoredBoard | None]:
         stored_board: StoredBoard | None = None
         result = TrfResult.get_core_object(
             trf_game.result, has_opponent=bool(trf_game.opponent_id)
         )
+        if result.is_adjourned and unknown_is_unplayed:
+            result = Result.NO_RESULT
         color = TrfColor.get_core_object(trf_game.color)
         stored_pairing = StoredPairing(
             tournament_id=0,

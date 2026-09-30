@@ -661,10 +661,11 @@
                                 {% set unavailable = exporter.is_unavailable_message(tournament) %}
                                 {% if unavailable %}
                                     <li {{ macros.tooltip_attributes('warning', unavailable, 'right') }}>
-                                        <button class="dropdown-item text-secondary" disabled>{{ exporter.name }}</button>
+                                        <button class="dropdown-item text-secondary" disabled>{{ exporter.label(tournament) }}</button>
                                     </li>
                                 {% else %}
                                     {% set warning_message = exporter.warning_message(tournament) %}
+                                    {% set tooltip = exporter.tooltip_for(tournament) %}
                                     <li
                                         class="dropdown-item text-start cursor-pointer"
                                         {% if exporter.data_loss_modal_redirect %}
@@ -687,11 +688,11 @@
                                         {% endif %}
                                         {% if warning_message %}
                                             {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
-                                        {% elif exporter.tooltip %}
-                                            {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                                        {% elif tooltip %}
+                                            {{ macros.tooltip_attributes('info', tooltip, 'right') }}
                                         {% endif %}
                                     >
-                                        {{ exporter.name }}
+                                        {{ exporter.label(tournament) }}
                                     </li>
                                 {% endif %}
                             {% endfor %}

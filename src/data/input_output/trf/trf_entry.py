@@ -197,7 +197,7 @@ class PlayerEntry(MultipleLinesEntry):
         r'^(?P<id>[ \d]{4}) (?P<gender>[\w ])(?P<title>[\w ]{3}) '
         r'(?P<name>.{33}) (?P<rating>[ \d]{4}) (?P<federation>.{3}) '
         r'(?P<fide_id>.{11}) (?P<birth_date>.{10}) (?P<points>[ \d.,/]{4}) '
-        r'(?P<rank>[ \d]{4})(?P<games>(\s\s[ \d]{4} [bsw\- ] [1=0+wdl\-hfuz ]| {10})*)\s*$',
+        r'(?P<rank>[ \d]{4})(?P<games>(\s\s[ \d]{4} [bsw\- ] .| {10})*)\s*$',
         re.IGNORECASE,
     )
 

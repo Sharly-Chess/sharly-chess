@@ -5,7 +5,13 @@
     hx-indicator="#please-wait"
 >
     <div class="d-flex">
-        <h4>{{ _('Ranking') }}</h4>
+        <h4>
+            {% if admin_tournament.has_provisional_results %}
+                {{ _('%(title)s (provisional)', title=_('Ranking')) }}
+            {% else %}
+                {{ _('Ranking') }}
+            {% endif %}
+        </h4>
         <div class="flex-grow-1"></div>
         {% if admin_tournament.tie_break_configuration.has_manual_values %}
             <button

@@ -1,0 +1,48 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+
+{% with white=adjourned_board.optional_white_tournament_player, black=adjourned_board.black_tournament_player %}
+<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ warning_macros.level_icon(3) }}
+                {{ _('Adjourned game') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>
+                {{ _(
+                    'The game %(white)s – %(black)s of round %(round)d was adjourned, and '
+                    'round %(next_round)d was paired with it counting as a draw.',
+                    white=white.full_name if white else '—',
+                    black=black.full_name if black else '—',
+                    round=adjourned_board.round,
+                    next_round=adjourned_board.round + 1,
+                ) }}
+            </p>
+            <p class="mb-0">
+                {{ _(
+                    'Entering %(result)s breaches the integrity of the pairings. It will be '
+                    'logged, and recorded in the TRF of the tournament.',
+                    result=new_result,
+                ) }}
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-{{ redirect_method | lower }}="{{ redirect_route }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-check-circle-fill pe-1"></i>
+                {{ _('Proceed') }}
+            </button>
+        </div>
+    </div>
+</div>
+{% endwith %}

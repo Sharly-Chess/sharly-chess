@@ -287,6 +287,10 @@ msgid "%(system)s (automatic)"
 msgstr "%(system)s (automatique)"
 
 #, python-format
+msgid "%(title)s (provisional)"
+msgstr "%(title)s (provisoire)"
+
+#, python-format
 msgid "%f to %l"
 msgstr "%f à %l"
 
@@ -629,6 +633,13 @@ msgstr "Un nombre est attendu."
 msgid "A pairing number between 1 and {max} is expected."
 msgstr "Un numéro d'appariement compris entre 1 et {max} est attendu."
 
+msgid "A partial TRF, for data exchange during the tournament, which is not finished."
+msgstr "Un TRF partiel, pour l'échange de données en cours de tournoi, celui-ci n'étant pas terminé."
+
+#, python-brace-format
+msgid "A partial TRF, for data exchange during the tournament: the games without a result are exported as unknown results ({games})."
+msgstr "Un TRF partiel, pour l'échange de données en cours de tournoi : les parties sans résultat sont exportées comme résultats inconnus ({games})."
+
 msgid "A player covered by no rule in a round gets no virtual points in that round."
 msgstr "Un·e joueur·euse couvert·e par aucune règle dans une ronde ne reçoit aucun point virtuel dans cette ronde."
 
@@ -763,6 +774,9 @@ msgstr "Accéder aux fichiers de logs"
 
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
+
+msgid "Access unrated, penalty and adjourned results."
+msgstr "Accéder aux résultats non homologués, pénalisés et ajournés"
 
 msgid "Account"
 msgstr "Compte"
@@ -910,8 +924,15 @@ msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
 msgid "Additional information"
 msgstr "Informations complémentaires"
 
+msgid "Adjourned"
+msgstr "Ajournée"
+
 msgid "Adjourned game"
 msgstr "Partie ajournée"
+
+#, python-brace-format
+msgid "Adjourned game logged: {adjournment}"
+msgstr "Partie ajournée consignée : {adjournment}"
 
 msgid "Administration"
 msgstr "Administration"
@@ -3551,6 +3572,10 @@ msgstr "Entrer des résultats"
 msgid "Enter the result"
 msgstr "Saisir le résultat"
 
+#, python-format
+msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
+msgstr "Saisir %(result)s porte atteinte à l'intégrité des appariements. Ce sera consigné, et enregistré dans le TRF du tournoi."
+
 msgid "Equatorial Guinea"
 msgstr "Guinée équatoriale"
 
@@ -4531,6 +4556,9 @@ msgstr "Inclure les joueur·euses"
 
 msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
+
+msgid "Includes adjourned games, counted as draws."
+msgstr "Comprend des parties ajournées, comptées comme nulles."
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
@@ -8045,6 +8073,10 @@ msgid "Result [{result}] is incompatible with the opponent's result [{opponent_r
 msgstr "Le résultat [{result}] est incompatible avec le résultat de l'adversaire [{opponent_result}]."
 
 #, python-brace-format
+msgid "Result of the adjourned game {pair} entered as {result}, after the next round was paired with the game counting as a draw."
+msgstr "Résultat de la partie ajournée {pair} saisi comme {result}, après l'appariement de la ronde suivante où la partie comptait comme nulle."
+
+#, python-brace-format
 msgid "Result of {pair} changed from {before} to {after}."
 msgstr "Résultat de {pair} corrigé de {before} en {after}."
 
@@ -8288,6 +8320,16 @@ msgstr "La ronde {round} du numéro d'appariement {number} est déjà accélér�
 #, python-brace-format
 msgid "Round {round} of {rounds} could not be paired ({error}): the tournament was not generated."
 msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}) : le tournoi n'a pas été généré."
+
+#, python-brace-format
+msgid "Round {round} was paired with an adjourned game counting as a draw:"
+msgid_plural "Round {round} was paired with {count} adjourned games counting as draws:"
+msgstr[0] "La ronde {round} a été appariée avec une partie ajournée comptée comme nulle :"
+msgstr[1] "La ronde {round} a été appariée avec {count} parties ajournées comptées comme nulles :"
+
+#, python-brace-format
+msgid "Round {round}: {white} – {black}"
+msgstr "Ronde {round} : {white} – {black}"
 
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
@@ -9218,6 +9260,12 @@ msgstr "Fichier TRF"
 msgid "TRF26"
 msgstr "TRF26"
 
+msgid "TRF26 (ITDX)"
+msgstr "TRF26 (ITDX)"
+
+msgid "TRF26 (final)"
+msgstr "TRF26 (final)"
+
 msgid "Table"
 msgstr "Table"
 
@@ -9606,6 +9654,9 @@ msgstr "Le fichier n’est pas une archive de modèle valide (fichier .zip compr
 msgid "The file is not in UTF-8: it was read as Windows-1252 (Latin-1)."
 msgstr "Le fichier n'est pas en UTF-8 : il a été lu en Windows-1252 (Latin-1)."
 
+msgid "The final report of the tournament, with the games corrected for the rating report."
+msgstr "Le rapport final du tournoi, avec les parties corrigées pour le rapport Elo."
+
 msgid "The finishing position counted (e.g. 1 counts first places)."
 msgstr "La place à l'arrivée comptée (p. ex. 1 compte les premières places)."
 
@@ -9626,6 +9677,13 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
+
+#, python-format
+msgid "The game %(white)s – %(black)s of round %(round)d was adjourned, and round %(next_round)d was paired with it counting as a draw."
+msgstr "La partie %(white)s – %(black)s de la ronde %(round)d a été ajournée, et la ronde %(next_round)d a été appariée en la comptant comme nulle."
+
+msgid "The game counts as a draw until its result is entered, which can be done at any time."
+msgstr "La partie compte comme nulle jusqu'à la saisie de son résultat, possible à tout moment."
 
 msgid "The game points scored on board 1 over the tournament; if that leaves the teams level, the next board down decides, and so on."
 msgstr "Les points de parties marqués au 1er échiquier sur l'ensemble du tournoi ; si les équipes restent à égalité, l'échiquier suivant départage, et ainsi de suite."
@@ -11825,6 +11883,10 @@ msgstr "[{white}] et [{black}] se sont déjà rencontré·es."
 msgid "[{white}] and [{black}] must not be paired together."
 msgstr "[{white}] et [{black}] ne doivent pas être apparié·es ensemble."
 
+msgctxt "adjourned game"
+msgid "adj."
+msgstr "ajo."
+
 msgid "all the boards"
 msgstr "tous les échiquiers"
 
@@ -12497,6 +12559,10 @@ msgstr "{status_code} - Erreur inconnue"
 #, python-brace-format
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#, python-brace-format
+msgid "{title} (provisional)"
+msgstr "{title} (provisoire)"
 
 #, python-brace-format
 msgid "{title} {full_name}"

@@ -28,6 +28,14 @@ class TournamentExporter(IdentifiableEntity, ABC):
         """Tooltip to display on the export button."""
         return None
 
+    def label(self, tournament: Tournament) -> str:
+        """Name of the export of *tournament*."""
+        return self.name
+
+    def tooltip_for(self, tournament: Tournament) -> str | None:
+        """Tooltip to display on the export button of *tournament*."""
+        return self.tooltip
+
     @property
     def data_loss_modal_redirect(self) -> bool:
         """Defines if the export button should redirect to the data loss warning modal."""
@@ -91,8 +99,50 @@ class Trf26TournamentExporter(TournamentExporter):
             )
         return None
 
+    @staticmethod
+    def is_final(tournament: Tournament) -> bool:
+        """Whether the TRF is the final report of *tournament*: every round
+        played and every game with its result. Before that, it is a partial
+        TRF for data exchange during the tournament (ITDX), where the games
+        without a result are unknown results."""
+        return (
+            tournament.round_has_pairings(tournament.rounds)
+            and tournament.is_round_finished(tournament.rounds)
+            and not tournament.boards_without_final_result()
+        )
+
+    def label(self, tournament: Tournament) -> str:
+        if self.is_final(tournament):
+            return _('TRF26 (final)')
+        return _('TRF26 (ITDX)')
+
+    def tooltip_for(self, tournament: Tournament) -> str | None:
+        if self.is_final(tournament):
+            return _(
+                'The final report of the tournament, with the games corrected '
+                'for the rating report.'
+            )
+        if boards := tournament.boards_without_final_result():
+            return _(
+                'A partial TRF, for data exchange during the tournament: the '
+                'games without a result are exported as unknown results ({games}).'
+            ).format(games=', '.join(board.round_and_players_str for board in boards))
+        return _(
+            'A partial TRF, for data exchange during the tournament, which is '
+            'not finished.'
+        )
+
+    @staticmethod
+    @override
+    def file_name(tournament: Tournament) -> str:
+        if Trf26TournamentExporter.is_final(tournament):
+            return tournament.sanitized_name
+        return f'{tournament.sanitized_name}-itdx'
+
     def dump_to_file(self, file: IO, tournament: Tournament) -> None:
-        trf_tournament = TrfSerializer.dumps(tournament.to_trf(rating_report=True))
+        trf_tournament = TrfSerializer.dumps(
+            tournament.to_trf(rating_report=self.is_final(tournament))
+        )
         file.write(unicode_normalize(trf_tournament))
 
 
