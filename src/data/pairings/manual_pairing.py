@@ -78,7 +78,7 @@ def _colour_violation(
 
 
 def _colour_name(colour: BoardColor) -> str:
-    return _('white') if colour == BoardColor.WHITE else _('black')
+    return _('White') if colour == BoardColor.WHITE else _('Black')
 
 
 def _have_played(

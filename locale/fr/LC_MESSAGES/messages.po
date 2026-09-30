@@ -1902,7 +1902,7 @@ msgid "Changing the number of rounds from %(before)d to %(after)d once the tourn
 msgstr "Passer de %(before)d à %(after)d rondes une fois le tournoi commencé n'est pas conforme au règlement FIDE."
 
 msgid "Changing the tie-breaks once the tournament has started is not compliant with the FIDE regulations: they are published before it starts."
-msgstr "Modifier les départages une fois le tournoi commencé n'est pas conforme au règlement FIDE : ils sont publiés avant son début."
+msgstr "Modifier les départages une fois le tournoi commencé n'est pas conforme au règlement FIDE : ils sont publiés avant le début du tournoi."
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
@@ -2272,7 +2272,7 @@ msgstr "Correction"
 
 #, python-brace-format
 msgid "Correction logged: {correction}"
-msgstr "Correction consignée : {correction}"
+msgstr "Correction enregistrée : {correction}"
 
 msgid "Correction of the previous round"
 msgstr "Correction de la ronde précédente"
@@ -3934,11 +3934,11 @@ msgstr "Pour les joueur·euses n'ayant pas de classement FIDE en rapide ou en bl
 
 #, python-brace-format
 msgid "For the rating report: {corrected} instead of {used}."
-msgstr "Pour le rapport Elo : {corrected} au lieu de {used}."
+msgstr "Pour le rapport Elo : {corrected} au lieu de {used}."
 
 #, python-brace-format
 msgid "For the rating report: {corrected}."
-msgstr "Pour le rapport Elo : {corrected}."
+msgstr "Pour le rapport Elo : {corrected}."
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
@@ -6215,7 +6215,7 @@ msgstr "Hors mode FIDE"
 
 #, python-format
 msgid "Not in FIDE mode: %(tournaments)s"
-msgstr "Hors mode FIDE : %(tournaments)s"
+msgstr "Hors mode FIDE : %(tournaments)s"
 
 msgid "Not logged in"
 msgstr "Non connecté"
@@ -6247,7 +6247,7 @@ msgid "Nothing further — leave the teams tied"
 msgstr "Rien de plus — laisser les équipes à égalité"
 
 msgid "Nothing has been recorded."
-msgstr "Rien n'a été consigné."
+msgstr "Rien n'a été enregistré."
 
 msgid "Notification"
 msgstr "Notification"
@@ -7939,7 +7939,7 @@ msgstr "Résultat de {pair} effacé (précédemment {before})."
 
 #, python-brace-format
 msgid "Result of {pair} entered: {after}."
-msgstr "Résultat de {pair} saisi : {after}."
+msgstr "Résultat de {pair} saisi : {after}."
 
 msgid "Results"
 msgstr "Résultats"
@@ -8350,7 +8350,7 @@ msgid "Save points"
 msgstr "Enregistrer les points"
 
 msgid "Saving this player changes the order of the pairing numbers, from which rounds have already been paired. This breaches the integrity of the pairings, and will be logged in the TRF:"
-msgstr "Enregistrer ce·tte joueur·euse modifie l'ordre des numéros d'appariement, à partir desquels des rondes ont déjà été appariées. Cela porte atteinte à l'intégrité des appariements, et sera consigné dans le TRF :"
+msgstr "Enregistrer ce·tte joueur·euse modifie l'ordre des numéros d'appariement, à partir desquels des rondes ont déjà été appariées. Cela porte atteinte à l'intégrité des appariements, et sera consigné dans le TRF :"
 
 msgid "Schedule"
 msgstr "Horaires"
@@ -9400,7 +9400,7 @@ msgid "The category has been renamed."
 msgstr "La catégorie a été renommée."
 
 msgid "The change will be recorded in the TRF of the tournament."
-msgstr "La modification sera inscrite dans le TRF du tournoi."
+msgstr "La modification sera consignée dans le TRF du tournoi."
 
 msgid "The coefficient can be used to weight this tournament’s points and tie-break values in the championship ranking."
 msgstr "Le coefficient permet de pondérer les points et les valeurs de départage de ce tournoi dans le classement du Grand Prix."
@@ -9427,7 +9427,7 @@ msgid "The currency used to represent monetary prizes (defaults to the currency 
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
 msgid "The current round was paired from this one: this correction breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
-msgstr "La ronde en cours a été appariée à partir de celle-ci : cette correction porte atteinte à l'intégrité des appariements. Elle sera consignée, et inscrite dans le TRF du tournoi."
+msgstr "La ronde en cours a été appariée à partir de celle-ci : cette correction porte atteinte à l'intégrité des appariements. Elle sera enregistrée, et consignée dans le TRF du tournoi."
 
 msgid "The data folder could not be added to the Microsoft Defender exception list."
 msgstr "Le dossier des données n'a pas pu être ajouté à la liste d'exclusions de Microsoft Defender."
@@ -9460,7 +9460,7 @@ msgid "The features your federation, your software or your events need can be ad
 msgstr "Les fonctionnalités dont votre fédération, votre logiciel ou vos évènements ont besoin peuvent être ajoutées à Sharly Chess sous forme de plugin."
 
 msgid "The file had to be completed to be imported, and the pairing engine paired the rounds with what was filled in. A wrong assumption can make a round differ:"
-msgstr "Le fichier a dû être complété pour être importé, et le moteur d'appariement a apparié les rondes avec ce qui a été ajouté. Une hypothèse erronée peut expliquer qu'une ronde diffère :"
+msgstr "Le fichier a dû être complété pour être importé, et le moteur d'appariement a apparié les rondes avec ce qui a été ajouté. Une hypothèse erronée peut expliquer qu'une ronde diffère :"
 
 msgid "The file holds no player record (001)."
 msgstr "Le fichier ne contient aucun enregistrement de joueur·euse (001)."
@@ -9666,10 +9666,10 @@ msgid "The organisation to which the team belongs (for example a club, league, o
 msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, une ligue ou une école). Les affiliations peuvent être utilisées par les règles d'appariement pour éviter d'apparier des équipes liées."
 
 msgid "The pairing engine could not pair the round:"
-msgstr "Le moteur d'appariement n'a pas pu apparier la ronde :"
+msgstr "Le moteur d'appariement n'a pas pu apparier la ronde :"
 
 msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
-msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi et les parties corrigées pour le rapport Elo, inscrites en commentaire dans son TRF."
+msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi et les parties corrigées pour le rapport Elo, consignées en commentaire dans son TRF."
 
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
@@ -9691,19 +9691,19 @@ msgid "The pairing numbers of {count} players were changed, after an update to t
 msgstr "Les numéros d'appariement de {count} joueur·euses ont changé, suite à une modification des joueur·euses."
 
 msgid "The pairing-allocated bye breaks the rules:"
-msgstr "L'exemption attribuée par l'appariement enfreint les règles :"
+msgstr "L'exemption attribuée par l'appariement enfreint les règles :"
 
 #, python-format
 msgid "The pairings of round %(round)d are being edited by hand. Validate them to check them against the pairing engine: until then, the next round cannot be paired."
-msgstr "Les appariements de la ronde %(round)d sont en cours de modification manuelle. Validez-les pour les comparer à ceux du moteur d'appariement : d'ici là, la ronde suivante ne peut pas être appariée."
+msgstr "Les appariements de la ronde %(round)d sont en cours de modification manuelle. Validez-les pour les comparer à ceux du moteur d'appariement : d'ici là, la ronde suivante ne peut pas être appariée."
 
 #, python-format
 msgid "The pairings of round %(round)d differ from those of the pairing engine:"
-msgstr "Les appariements de la ronde %(round)d diffèrent de ceux du moteur d'appariement :"
+msgstr "Les appariements de la ronde %(round)d diffèrent de ceux du moteur d'appariement :"
 
 #, python-format
-msgid "The pairings of round %(round)d no longer match those of the pairing engine: this breach of the integrity of the pairings will be logged too."
-msgstr "Les appariements de la ronde %(round)d ne correspondent plus à ceux du moteur d'appariement : cette atteinte à l'intégrité des appariements sera également consignée."
+msgid "The pairings of round %(round)d no longer match those of the pairing engine: this breach of the integrity of the pairings will be logged and recorded in the TRF of the tournament."
+msgstr "Les appariements de la ronde %(round)d ne correspondent plus à ceux du moteur d'appariement : cette atteinte à l'intégrité des appariements sera enregistrée et consignée dans le TRF du tournoi."
 
 #, python-brace-format
 msgid "The pairings of round {round} are back as they were."
@@ -9718,7 +9718,7 @@ msgid "The pairings of round {round} match the pairing engine."
 msgstr "Les appariements de la ronde {round} sont conformes à ceux du moteur d'appariement."
 
 msgid "The pairings of these rounds differ from those of the pairing engine. This breaches the integrity of the pairings: it has been logged, and will be recorded in the TRF of the tournament."
-msgstr "Les appariements de ces rondes diffèrent de ceux du moteur d'appariement. Cela porte atteinte à l'intégrité des appariements : c'est consigné, et sera inscrit dans le TRF du tournoi."
+msgstr "Les appariements de ces rondes diffèrent de ceux du moteur d'appariement. Cela porte atteinte à l'intégrité des appariements : c'est enregistré, et sera consigné dans le TRF du tournoi."
 
 msgid "The pairings of this round are being edited. Validate or cancel the editing to exit this mode."
 msgstr "Les appariements de cette ronde sont en cours de modification. Validez ou annulez la modification pour sortir de ce mode."
@@ -9916,7 +9916,7 @@ msgid "The tournament has not yet started."
 msgstr "Le tournoi n'est pas encore commencé."
 
 msgid "The tournament has started: in FIDE mode, its tie-breaks are fixed."
-msgstr "Le tournoi a commencé : en mode FIDE, ses départages sont figés."
+msgstr "Le tournoi a commencé : en mode FIDE, ses départages sont figés."
 
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
@@ -10126,7 +10126,7 @@ msgstr "Ce champ est obligatoire."
 
 #, python-brace-format
 msgid "This file is in the {version} format. It will be completed as follows:"
-msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
+msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
@@ -10157,7 +10157,7 @@ msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
 
 msgid "This pairing breaks the absolute criteria of the pairing system:"
-msgstr "Cet appariement enfreint les critères absolus du système d'appariement :"
+msgstr "Cet appariement enfreint les critères absolus du système d'appariement :"
 
 #, python-brace-format
 msgid "This pairing system requires at least {n} teams."
@@ -10253,7 +10253,7 @@ msgstr "Cet ensemble contient [{name}] deux fois de suite."
 
 #, python-format
 msgid "This starts editing the pairings of round %(round)d by hand. When you are done, validate the pairings: they will be checked against the pairing engine. Until then, the next round cannot be paired."
-msgstr "Vous commencez à modifier manuellement les appariements de la ronde %(round)d. Une fois terminé, validez les appariements : ils seront comparés à ceux du moteur d'appariement. D'ici là, la ronde suivante ne peut pas être appariée."
+msgstr "Vous commencez à modifier manuellement les appariements de la ronde %(round)d. Une fois terminé, validez les appariements : ils seront comparés à ceux du moteur d'appariement. D'ici là, la ronde suivante ne peut pas être appariée."
 
 msgid "This team has already been paired; its tournament cannot be changed."
 msgstr "Cette équipe a déjà été appariée, elle ne peut changer de tournoi."
@@ -10535,7 +10535,7 @@ msgstr "Tournoi [%(tournament)s] ajouté."
 
 #, python-format
 msgid "Tournament [%(tournament)s] will leave FIDE mode for good: it can never return to it."
-msgstr "Le tournoi [%(tournament)s] quittera définitivement le mode FIDE : il ne pourra jamais y revenir."
+msgstr "Le tournoi [%(tournament)s] quittera définitivement le mode FIDE : il ne pourra jamais y revenir."
 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
@@ -11081,9 +11081,6 @@ msgstr "Valider et apparier"
 msgid "Validate anyway"
 msgstr "Valider quand même"
 
-msgid "Validate pairings"
-msgstr "Valider les appariements"
-
 msgid "Validate the pairings"
 msgstr "Valider les appariements"
 
@@ -11092,7 +11089,7 @@ msgid "Validate the pairings of round {round} first."
 msgstr "Validez d'abord les appariements de la ronde {round}."
 
 msgid "Validating these pairings breaches the integrity of the pairings: it will be logged, and recorded in the TRF of the tournament."
-msgstr "Valider ces appariements porte atteinte à l'intégrité des appariements : ce sera consigné, et inscrit dans le TRF du tournoi."
+msgstr "Valider ces appariements porte atteinte à l'intégrité des appariements : ce sera enregistré, et consigné dans le TRF du tournoi."
 
 msgid "Value"
 msgstr "Valeur"
@@ -11272,7 +11269,7 @@ msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
-msgstr "Ce qui a été inscrit dans le TRF : atteintes à l'intégrité des appariements, modifications des paramètres et parties corrigées pour le rapport Elo."
+msgstr "Ce qui a été inscrit dans le TRF : atteintes à l'intégrité des appariements, modifications des paramètres et parties corrigées pour le rapport Elo."
 
 msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
 msgstr "Ce qui départage les deux dernières équipes lorsqu'elles sont à égalité à la fois aux points de match et aux points de parties, en se fondant sur les échiquiers de leur confrontation."
@@ -11620,11 +11617,11 @@ msgstr "Zoom arrière"
 
 #, python-brace-format
 msgid "[{first}] and [{second}] have already played each other."
-msgstr "[{first}] et [{second}] se sont déjà rencontrées."
+msgstr "[{first}] et [{second}] se sont déjà rencontré·es."
 
 #, python-brace-format
 msgid "[{first}] and [{second}] must not be paired together."
-msgstr "[{first}] et [{second}] ne doivent pas être appariées ensemble."
+msgstr "[{first}] et [{second}] ne doivent pas être apparié·es ensemble."
 
 #, python-brace-format
 msgid "[{id}] is a reserved item id."
@@ -11644,7 +11641,7 @@ msgstr "[{player}] aurait une différence de couleurs de {difference}."
 
 #, python-brace-format
 msgid "[{player}] would play {colour} for the third time in a row."
-msgstr "[{player}] aurait {colour} pour la troisième fois de suite."
+msgstr "[{player}] jouerait les {colour} pour la troisième fois de suite."
 
 #, python-brace-format
 msgid "[{value}] is not a positive value."
@@ -11693,9 +11690,6 @@ msgstr "auto"
 #, python-brace-format
 msgid "best {num} stages"
 msgstr "{num} meilleures étapes"
-
-msgid "black"
-msgstr "les noirs"
 
 #, python-brace-format
 msgid "boards from #{first} to #{last}"
@@ -12148,9 +12142,6 @@ msgstr "contre %(team)s"
 msgid "was %(r)s"
 msgstr "était %(r)s"
 
-msgid "white"
-msgstr "les blancs"
-
 msgid "win required"
 msgstr "victoire requise"
 
@@ -12356,7 +12347,7 @@ msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
 
 #, python-brace-format
 msgid "{what}: {pairings}"
-msgstr "{what} : {pairings}"
+msgstr "{what} : {pairings}"
 
 msgid "—"
 msgstr "—"

@@ -9700,7 +9700,7 @@ msgid "The pairings of round %(round)d differ from those of the pairing engine:"
 msgstr ""
 
 #, python-format
-msgid "The pairings of round %(round)d no longer match those of the pairing engine: this breach of the integrity of the pairings will be logged too."
+msgid "The pairings of round %(round)d no longer match those of the pairing engine: this breach of the integrity of the pairings will be logged and recorded in the TRF of the tournament."
 msgstr ""
 
 #, python-brace-format
@@ -11079,9 +11079,6 @@ msgstr ""
 msgid "Validate anyway"
 msgstr ""
 
-msgid "Validate pairings"
-msgstr ""
-
 msgid "Validate the pairings"
 msgstr ""
 
@@ -11692,9 +11689,6 @@ msgstr ""
 msgid "best {num} stages"
 msgstr ""
 
-msgid "black"
-msgstr ""
-
 #, python-brace-format
 msgid "boards from #{first} to #{last}"
 msgstr ""
@@ -12144,9 +12138,6 @@ msgstr ""
 
 #, python-format
 msgid "was %(r)s"
-msgstr ""
-
-msgid "white"
 msgstr ""
 
 msgid "win required"
