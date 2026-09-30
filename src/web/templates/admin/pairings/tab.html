@@ -138,11 +138,11 @@
                        to expand. #}
                     {% if is_team_paired_mode and not display_rankings and admin_team_boards %}
                         <div
-                            class="form-check form-switch mb-0 flex-shrink-0"
+                            class="form-check form-switch mb-0 flex-shrink-0 d-flex align-items-center gap-2 ps-0"
                             {{ macros.tooltip_attributes('info', _('Show/hide all individual games.'), 'top') }}
                         >
                             <input
-                                class="form-check-input"
+                                class="form-check-input m-0"
                                 type="checkbox"
                                 id="expand-all-team-blocks"
                                 checked
