@@ -1,7 +1,8 @@
 """A team Swiss has no FIDE mode, but logs the pairing integrity breaching
 events all the same: a change to a round the next ones were paired from
 asks for a confirmation and is logged, and changing the number of rounds
-once started is logged without a warning."""
+once started is logged without a warning. Its games are not corrected for
+the rating report only."""
 
 import contextlib
 from collections.abc import Iterator
@@ -157,3 +158,17 @@ def test_a_rounds_change_is_logged_without_a_warning(tournament: Tournament):
 
     assert [pibe.type for pibe in logs][:1] == [PibeType.ROUNDS]
     assert warning == {}
+
+
+@pytest.mark.unit
+def test_a_team_swiss_has_no_rating_report_correction(
+    http: TestClient, tournament: Tournament
+):
+    board = first_game(tournament, 1)
+
+    http.put(
+        f'/pairing/rating-correction/{EVENT_ID}/{tournament.id}/1'
+        f'/{board.identifier}/{board.white_player_id}/{Result.DRAW.value}'
+    )
+
+    assert load().rating_corrections == []

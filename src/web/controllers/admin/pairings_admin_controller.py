@@ -273,7 +273,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         (C.04.2:4.3)."""
         return (
             self.admin_tournament is not None
-            and self.admin_tournament.pairing_system.logs_pairing_breaches
+            and self.admin_tournament.pairing_system.supports_fide_mode
             and self.round_status == RoundStatus.PAST
         )
 
