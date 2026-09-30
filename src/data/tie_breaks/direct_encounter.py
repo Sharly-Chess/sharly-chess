@@ -46,9 +46,10 @@ def rank_by_encounters[K: Hashable](
     Art. 6.2: when every game between them was played, the standings between
     them place them all, each subgroup being ranked again among itself.
     Art. 6.3: with games missing, a participant is placed only when alone at
-    the top whatever those games would have given, and Art. 6 is then
-    reapplied to the rest. A group the encounters cannot split goes to
-    *fallback* (the next score of a team, say), or is left level.
+    the top whatever those games would have given, then the next one on the
+    same standings, and so on; Art. 6 is then reapplied to the rest. A group
+    the encounters cannot split goes to *fallback* (the next score of a
+    team, say), or is left level.
     """
     if len(group) == 1:
         values[group[0]] = min_value
@@ -59,13 +60,18 @@ def rank_by_encounters[K: Hashable](
         lowest != highest for lowest, highest in min_max_by_key.values()
     )
     if len(subgroups) > 1 and games_missing:
-        top = subgroups[-1]
-        if len(top) == 1:
-            rest = [key for key in group if key != top[0]]
+        placed: list[K] = []
+        rest = list(group)
+        while len(subgroups) > 1 and len(subgroups[-1]) == 1:
+            placed.append(subgroups[-1][0])
+            rest.remove(subgroups[-1][0])
+            subgroups = split_by_score({key: min_max_by_key[key] for key in rest})
+        if placed:
             rank_by_encounters(
                 rest, min_max, values, min_value=min_value, fallback=fallback
             )
-            values[top[0]] = min_value + len(rest)
+            for rank, key in enumerate(reversed(placed)):
+                values[key] = min_value + len(rest) + rank
             return
         subgroups = [list(group)]
     if len(subgroups) > 1:
