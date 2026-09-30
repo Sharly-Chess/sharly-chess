@@ -30,6 +30,8 @@ def compute_round_board_numbers(
     the round is numbered compactly: each fixed number is honoured once (the
     earliest board in index order wins a clash) and every remaining board
     takes the next free number, so the round has neither gaps nor duplicates.
+    A board taken out of the round (unpaired) still holds its place, so the
+    other boards keep their numbers.
     """
     if leave_holes:
         return {
@@ -41,14 +43,30 @@ def compute_round_board_numbers(
         if fixed and fixed not in used:
             numbers[identifier] = fixed
             used.add(fixed)
+    present = {standard for _identifier, _fixed, standard in entries}
+    last = max(present, default=first_board_number - 1)
+    slots: list[tuple[int, int | None]] = sorted(
+        [
+            *(
+                (standard, identifier)
+                for identifier, _fixed, standard in entries
+                if identifier not in numbers
+            ),
+            *(
+                (standard, None)
+                for standard in range(first_board_number, last + 1)
+                if standard not in present
+            ),
+        ],
+        key=lambda slot: slot[0],
+    )
     counter = first_board_number
-    for identifier, _fixed, _standard in entries:
-        if identifier in numbers:
-            continue
+    for _standard, occupant in slots:
         while counter in used:
             counter += 1
-        numbers[identifier] = counter
         used.add(counter)
+        if occupant is not None:
+            numbers[occupant] = counter
     return numbers
 
 
