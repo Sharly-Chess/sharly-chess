@@ -698,9 +698,10 @@ class TrfTournamentImporter(FileTournamentImporter):
         return result
 
     def _check_imported_rounds(self, tournament: 'Tournament') -> None:
-        """Check the imported rounds against the pairing engine, in FIDE
-        mode, and log the ones that differ as import breaches."""
-        if not tournament.fide_mode:
+        """Check the imported rounds against the pairing engine, where the
+        pairing integrity breaches are logged, and log the ones that differ
+        as import breaches."""
+        if not tournament.logs_pairing_breaches:
             return
         self.import_breaches = imported_round_breaches(tournament)
         for round_, missing, extra in self.import_breaches:

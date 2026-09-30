@@ -273,7 +273,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         (C.04.2:4.3)."""
         return (
             self.admin_tournament is not None
-            and self.admin_tournament.pairing_system.supports_fide_mode
+            and self.admin_tournament.pairing_system.logs_pairing_breaches
             and self.round_status == RoundStatus.PAST
         )
 
@@ -323,7 +323,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 )
             self.unlocked_level = WarningLevel.CONFIRMATION
             return
-        if tournament.fide_mode and self.round_status == RoundStatus.PREVIOUS:
+        if tournament.logs_pairing_breaches and self.round_status in (
+            RoundStatus.PREVIOUS,
+            RoundStatus.PAST,
+        ):
             self.correction_snapshot = round_snapshot(tournament, self.admin_round)
         if (
             level > self.unlocked_level

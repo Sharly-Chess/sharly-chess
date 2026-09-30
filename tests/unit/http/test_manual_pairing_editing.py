@@ -38,7 +38,7 @@ def permute_first_board(
         if board.black_player_id is not None
     ][skip]
     response = http.patch(
-        f'/pairing/permute/{EVENT_ID}/{tournament.id}/1/{board.id}?confirmed=1'
+        f'/pairing/permute/{EVENT_ID}/{tournament.id}/1/{board.identifier}?confirmed=1'
     )
     assert response.status_code == 200
 
@@ -67,11 +67,11 @@ def test_results_are_entered_while_the_pairings_are_edited(
     board = untouched_board(EVENT.tournament())
 
     http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
         f'/{Result.WIN.value}'
     )
 
-    assert EVENT.tournament().boards_by_id[board.id].result == Result.WIN
+    assert EVENT.tournament().boards_by_id[board.identifier].result == Result.WIN
 
 
 @pytest.mark.unit
@@ -82,7 +82,7 @@ def test_cancelling_keeps_the_results_entered_meanwhile(
     board = untouched_board(EVENT.tournament())
     pair = (board.white_player_id, board.black_player_id)
     http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
         f'/{Result.WIN.value}'
     )
 
@@ -184,7 +184,7 @@ def test_a_forfeit_winner_given_the_bye_is_warned(
     for index, board in enumerate(boards):
         result = Result.FORFEIT_WIN if index == 0 else Result.WIN
         http.put(
-            f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
+            f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
             f'/{result.value}'
         )
     winner_id = boards[0].white_player_id

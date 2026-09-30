@@ -184,7 +184,7 @@ class PairingNumbers:
         order holds — the players inserted or removed only shift the
         others — or when no pairing was made from the numbering yet."""
         tournament = self.tournament
-        if not (tournament.fide_mode and tournament.has_pairings):
+        if not (tournament.logs_pairing_breaches and tournament.has_pairings):
             return ''
         numbered_ids = {player.id for player in numbered_tournament_players}
         before = sorted(

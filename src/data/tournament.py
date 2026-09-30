@@ -659,6 +659,15 @@ class Tournament:
         )
 
     @property
+    def logs_pairing_breaches(self) -> bool:
+        """Whether the pairing integrity breaching events are logged: in
+        FIDE mode, and always for the systems that log them without it."""
+        pairing_system = self.pairing_system
+        return pairing_system.logs_pairing_breaches and (
+            self.fide_mode or not pairing_system.supports_fide_mode
+        )
+
+    @property
     def left_fide_mode(self) -> bool:
         """Whether the tournament could run in FIDE mode but does not."""
         return self.pairing_system.supports_fide_mode and not self.fide_mode

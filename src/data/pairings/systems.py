@@ -225,8 +225,15 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     @property
     def supports_fide_mode(self) -> bool:
         """Whether the tournament can run in FIDE mode, where the actions
-        prohibited by the FIDE regulations are refused and the pairing
-        integrity breaching events are logged."""
+        prohibited by the FIDE regulations are refused, the settings fixed
+        before it starts are guarded and the pairings edited by hand are
+        checked against the pairing engine."""
+        return False
+
+    @property
+    def logs_pairing_breaches(self) -> bool:
+        """Whether the tournament logs the pairing integrity breaching
+        events: in FIDE mode where it has it, always where it does not."""
         return False
 
     @property
@@ -387,6 +394,11 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     def supports_fide_mode(self) -> bool:
         return True
 
+    @property
+    @override
+    def logs_pairing_breaches(self) -> bool:
+        return True
+
     @override
     def variation_manager(self, event: 'Event') -> EntityManager['SwissVariation']:
         from data.pairings.managers import SwissVariationManager
@@ -531,7 +543,7 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
 
     @property
     @override
-    def supports_fide_mode(self) -> bool:
+    def logs_pairing_breaches(self) -> bool:
         return True
 
     def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:

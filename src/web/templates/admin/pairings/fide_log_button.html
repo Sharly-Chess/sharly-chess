@@ -1,5 +1,5 @@
 {% set log_count = admin_tournament.log_entries | length %}
-{% if admin_tournament.pairing_system.supports_fide_mode and (log_count or admin_tournament.fide_mode_exit_round) %}
+{% if admin_tournament.pairing_system.logs_pairing_breaches and (log_count or admin_tournament.fide_mode_exit_round) %}
     <div
         {{ macros.tooltip_attributes(
             'info',

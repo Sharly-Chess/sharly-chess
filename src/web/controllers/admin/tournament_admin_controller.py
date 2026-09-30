@@ -1147,13 +1147,14 @@ class TournamentAdminController(BaseEventAdminController):
     def _rounds_change(
         tournament: Tournament, stored_tournament: StoredTournament
     ) -> tuple[list[Pibe], dict[str, Any]]:
-        """What changing the number of rounds of a started FIDE-mode
-        tournament logs in its TRF, the change and the difference it makes to
-        the pairings of the last paired round, and the context of the warning
+        """What changing the number of rounds of a started tournament logs in
+        its TRF, the change and the difference it makes to the pairings of the
+        last paired round, and, in FIDE mode, the context of the warning
         asking to confirm it. Nothing when the round count stays."""
+        leaves_fide_mode = tournament.fide_mode and not stored_tournament.fide_mode
         if not (
-            tournament.fide_mode
-            and stored_tournament.fide_mode
+            tournament.logs_pairing_breaches
+            and not leaves_fide_mode
             and tournament.started
             and stored_tournament.rounds
             and stored_tournament.rounds != tournament.rounds
@@ -1179,6 +1180,8 @@ class TournamentAdminController(BaseEventAdminController):
                     f'{describe_pairs(tournament, extra)}',
                 )
             )
+        if not tournament.fide_mode:
+            return logs, {}
         return logs, {
             'rounds_change': {
                 'before': tournament.rounds,
@@ -1229,6 +1232,9 @@ class TournamentAdminController(BaseEventAdminController):
         Before the first pairing it can be switched freely. After, leaving it
         takes the double confirmation, and is for good."""
         fide_mode = WebContext.form_data_to_bool(data, 'fide_mode')
+        if tournament is not None and not tournament.pairing_system.supports_fide_mode:
+            stored_tournament = tournament.stored_tournament
+            return stored_tournament.fide_mode, stored_tournament.fide_mode_exit_round
         if tournament is None or not tournament.leaving_fide_mode_is_final:
             return fide_mode, None
         stored_tournament = tournament.stored_tournament
@@ -1626,7 +1632,7 @@ class TournamentAdminController(BaseEventAdminController):
             rounds_change_logs, rounds_change_context = self._rounds_change(
                 tournament, stored_tournament
             )
-            if rounds_change_logs and not WebContext.form_data_to_bool(
+            if rounds_change_context and not WebContext.form_data_to_bool(
                 data, 'rounds_change_confirmed'
             ):
                 return self._admin_event_tournaments_render(
@@ -2733,12 +2739,18 @@ class TournamentAdminController(BaseEventAdminController):
         self, web_context: TournamentAdminWebContext
     ) -> Iterator[None]:
         """Wrap a change to the tie-breaks: refused while they are fixed and
-        locked, logged in the TRF when they are fixed."""
+        locked, logged in the TRF once the tournament has started."""
         tournament = web_context.get_admin_tournament()
-        if not self.tie_breaks_fixed(tournament):
+        if not (
+            tournament.logs_pairing_breaches
+            and tournament.started
+            and tournament.tie_break_config_purpose != TieBreakPurpose.ADVANCEMENT
+        ):
             yield
             return
-        if not SessionTieBreaksUnlocked(web_context.request).contains(tournament):
+        if self.tie_breaks_fixed(tournament) and not SessionTieBreaksUnlocked(
+            web_context.request
+        ).contains(tournament):
             raise ClientException(
                 f'The tie-breaks of tournament [{tournament.name}] are fixed.'
             )

@@ -1511,7 +1511,7 @@ class PlayerAdminController(BaseEventAdminController):
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         if tournament_id != player.optional_single_tournament_id:
             return None
-        if not event.tournaments_by_id[tournament_id].fide_mode:
+        if not event.tournaments_by_id[tournament_id].logs_pairing_breaches:
             return None
         preview_event = EventLoader.get(None).load_event(event.uniq_id)
         preview_player = preview_event.players_by_id[player.id]
