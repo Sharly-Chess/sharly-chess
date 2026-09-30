@@ -120,7 +120,19 @@ class PibeTestCase(TestCase):
     def test_trf_comments(self):
         self.assertEqual(
             Pibe(PibeType.CORRECTION, 4, '6-17: 1-0 => 0-1').trf_comment,
-            'Correction @ Round 4: 6-17: 1-0 => 0-1',
+            'Correction @ Round 4: result of 6-17 changed from 1-0 to 0-1',
+        )
+        self.assertEqual(
+            Pibe(PibeType.CORRECTION, 4, '6-17: --- => *').trf_comment,
+            'Correction @ Round 4: result of 6-17 cleared (was 0F-0F)',
+        )
+        self.assertEqual(
+            Pibe(PibeType.CORRECTION, 4, '6-17 => 17-6').trf_comment,
+            'Correction @ Round 4: colours of 17-6 swapped',
+        )
+        self.assertEqual(
+            Pibe(PibeType.MPA, 5, '12-3 9-4 => 12-4 9-3').trf_comment,
+            "MPA @ Round 5: 12-4, 9-3 instead of the engine's 12-3, 9-4",
         )
         self.assertEqual(fide_mode_exit_trf_comment(3), 'FIDE mode exited @ Round 3')
 
@@ -185,7 +197,9 @@ class TournamentFideModeTestCase(TestCase):
 
         trf = TrfSerializer.dumps(TrfExport(self.tournament).build())
 
-        self.assertIn('### Correction @ Round 2: 1-2: 1-0 => 0-1\n', trf)
+        self.assertIn(
+            '### Correction @ Round 2: result of 1-2 changed from 1-0 to 0-1\n', trf
+        )
         self.assertIn(f'### {fide_mode_exit_trf_comment(exit_round)}\n', trf)
 
     def test_a_result_correction_is_described_by_pairing_numbers(self):
@@ -304,5 +318,6 @@ class PibeSummaryTestCase(TestCase):
             'changed from 1-0 to 0-1.',
         )
         self.assertEqual(
-            pibe.trf_comment_for(tournament), 'Correction @ Round 3: 7-6: 1-0 => 0-1'
+            pibe.trf_comment_for(tournament),
+            'Correction @ Round 3: result of 7-6 changed from 1-0 to 0-1',
         )

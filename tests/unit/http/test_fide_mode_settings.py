@@ -181,4 +181,4 @@ def test_the_log_lists_what_was_recorded(http: TestClient, tournament: Tournamen
     response = http.get(f'/pairings/fide-log-modal/{EVENT_ID}/{tournament.id}/5')
 
     assert response.status_code == 200
-    assert '6-17: 1-0 =&gt; 0-1' in response.text
+    assert 'result of 6-17 changed from 1-0 to 0-1' in response.text

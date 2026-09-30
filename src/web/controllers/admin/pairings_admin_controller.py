@@ -362,7 +362,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         tournament.log_pibe(pibe)
         Message.info(
             self.request,
-            _('Correction logged: {correction}').format(correction=pibe.trf_comment),
+            _('Correction logged: {correction}').format(
+                correction=pibe.summary(tournament)
+            ),
         )
 
     def _awaits_board_winner(self, board: Board) -> bool:

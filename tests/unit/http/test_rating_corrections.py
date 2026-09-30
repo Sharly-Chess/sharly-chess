@@ -120,8 +120,8 @@ def test_the_rating_report_says_what_the_pairings_used(
     tournament = EVENT.tournament()
     game = f'{white.pairing_number}-{black.pairing_number}'
     assert tournament.to_trf(rating_report=True).log_comments == [
-        f'Rating correction @ Round 1: {game} 0-1 in 001, '
-        f'{game} 1-0 used for pairings and standings'
+        f'Rating correction @ Round 1: {game} recorded as 0-1 for rating, '
+        '1-0 used for pairings and standings'
     ]
     assert tournament.to_trf().log_comments == []
     assert [entry.round_ for entry in tournament.log_entries] == [1]
@@ -179,3 +179,22 @@ def test_the_papi_export_gives_the_corrected_game(
     assert by_name[black.last_name].rounds[1].color == PapiColor.WHITE
     assert by_name[black.last_name].rounds[1].result == PapiResult.DRAW_OR_HPB
     assert by_name[white.last_name].rounds[1].color == PapiColor.BLACK
+
+
+@pytest.mark.unit
+def test_the_rating_report_says_which_colours_the_pairings_used(
+    http: TestClient, tournament: Tournament
+):
+    board = first_game(tournament)
+    white = board.optional_white_tournament_player
+    black = board.black_tournament_player
+    assert white is not None and black is not None and black.id is not None
+
+    correct(http, tournament, board, black.id, Result.DRAW)
+
+    assert EVENT.tournament().to_trf(rating_report=True).log_comments == [
+        f'Rating correction @ Round 1: {black.pairing_number}-{white.pairing_number} '
+        '1/2-1/2 recorded for rating, '
+        f'{white.pairing_number}-{black.pairing_number} 1-0 used for pairings '
+        'and standings'
+    ]

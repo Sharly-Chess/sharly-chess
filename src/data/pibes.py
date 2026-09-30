@@ -72,7 +72,7 @@ class Pibe:
         """The TRF comment, in the pairing numbers of today."""
         return (
             f'{self.type} @ Round {self.round_}: '
-            f'{pibe_trf_description(self, tournament)}'
+            f'{trf_sentence(self.type, pibe_trf_description(self, tournament))}'
         )
 
     @property
@@ -81,7 +81,10 @@ class Pibe:
 
     @property
     def trf_comment(self) -> str:
-        return f'{self.type} @ Round {self.round_}: {self.description}'
+        return (
+            f'{self.type} @ Round {self.round_}: '
+            f'{trf_sentence(self.type, self.description)}'
+        )
 
 
 RATING_CORRECTION_RESULTS = (
@@ -136,12 +139,24 @@ class RatingCorrection:
         """The TRF comment, which gives the game as the pairings and the
         standings used it, the 001 records giving it as corrected."""
         number = _pairing_numbers(tournament)
-        used = self._recorded_game(tournament, number)
+        game = f'{number(self.white_player_id)}-{number(self.black_player_id)}'
+        result = _trf_readable_result(_game_result(self.result))
+        prefix = f'Rating correction @ Round {self.round_}: '
+        board = self.recorded_board(tournament)
+        if board is None or board.white_player_id is None:
+            return f'{prefix}{game} recorded as {result} for rating'
+        used_game = (
+            f'{number(board.white_player_id)}-{number(board.black_player_id or 0)}'
+        )
+        used_result = _trf_readable_result(_board_result(board))
+        if used_game == game:
+            return (
+                f'{prefix}{game} recorded as {result} for rating, '
+                f'{used_result} used for pairings and standings'
+            )
         return (
-            f'Rating correction @ Round {self.round_}: '
-            f'{number(self.white_player_id)}-{number(self.black_player_id)} '
-            f'{_game_result(self.result)} in 001, '
-            f'{used} used for pairings and standings'
+            f'{prefix}{game} {result} recorded for rating, '
+            f'{used_game} {used_result} used for pairings and standings'
         )
 
     def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
@@ -176,17 +191,6 @@ class RatingCorrection:
     def date_str(self) -> str:
         return format_datetime(self.date) if self.date else ''
 
-    def _recorded_game(
-        self, tournament: 'Tournament', number: Callable[[int], str]
-    ) -> str:
-        board = self.recorded_board(tournament)
-        if board is None or board.white_player_id is None:
-            return '*'
-        return (
-            f'{number(board.white_player_id)}-'
-            f'{number(board.black_player_id or 0)} {_board_result(board)}'
-        )
-
 
 def _pairing_numbers(tournament: 'Tournament') -> Callable[[int], str]:
     def number(player_id: int) -> str:
@@ -199,6 +203,70 @@ def _pairing_numbers(tournament: 'Tournament') -> Callable[[int], str]:
 def _game_result(result: Result) -> str:
     """A result of white in TRF codes, white's then black's: ``'1-0'``."""
     return f'{result.to_trf.strip()}-{result.opposite_result.to_trf.strip()}'
+
+
+_TRF_READABLE_RESULTS = {
+    '1': '1',
+    '0': '0',
+    '=': '1/2',
+    '+': '1F',
+    '-': '0F',
+    'W': '1U',
+    'D': '1/2U',
+    'L': '0U',
+}
+
+
+def _trf_readable_result(result: str) -> str:
+    """A result in TRF codes, ``'1-0'`` or ``'---'`` (a double forfeit),
+    in plain ASCII: ``'1-0'``, ``'0F-0F'``; ``'*'`` without a result."""
+    if result == '*':
+        return '*'
+    white, black = result[0], result[2:]
+    return (
+        f'{_TRF_READABLE_RESULTS.get(white, white)}-'
+        f'{_TRF_READABLE_RESULTS.get(black, black)}'
+    )
+
+
+def trf_sentence(type_: PibeType, description: str) -> str:
+    """*description* as the plain English of the TRF comments, in pairing
+    numbers: the rating officer reads it next to the 001 records."""
+    before, _arrow, after = description.partition(' => ')
+    match type_:
+        case PibeType.MPA | PibeType.IMPORT | PibeType.CONFIGURATION:
+            return f"{_trf_pairs(after)} instead of the engine's {_trf_pairs(before)}"
+        case PibeType.CORRECTION:
+            return '; '.join(_trf_correction(part) for part in description.split(', '))
+        case PibeType.REGENERATION:
+            return f'players renumbered out of order: {after} instead of {before}'
+        case PibeType.ROUNDS:
+            return f'number of rounds changed from {before} to {after}'
+        case PibeType.TIE_BREAKS:
+            return f'tie-breaks changed from {before} to {after}'
+    return description
+
+
+def _trf_pairs(pairs: str) -> str:
+    return ', '.join(pairs.split()) or 'none'
+
+
+def _trf_correction(part: str) -> str:
+    pair, colon, results = part.partition(': ')
+    if colon and '=>' in results and '=>' not in pair:
+        before, _arrow, after = results.partition(' => ')
+        if after == '*':
+            return f'result of {pair} cleared (was {_trf_readable_result(before)})'
+        if before == '*':
+            return f'result of {pair} entered: {_trf_readable_result(after)}'
+        return (
+            f'result of {pair} changed from {_trf_readable_result(before)} '
+            f'to {_trf_readable_result(after)}'
+        )
+    before, _arrow, after = part.partition(' => ')
+    if (swapped := _swapped_pairs(before, after)) is not None:
+        return f'colours of {", ".join(swapped)} swapped'
+    return f'pairings {_trf_pairs(after)} instead of {_trf_pairs(before)}'
 
 
 def fide_mode_exit_trf_comment(round_: int) -> str:
