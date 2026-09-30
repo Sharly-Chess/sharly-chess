@@ -971,7 +971,7 @@ msgstr "Évènements"
 
 msgctxt "all teams absent"
 msgid "All absent"
-msgstr "Toutes présentes"
+msgstr "Toutes absentes"
 
 msgid "All caps"
 msgstr "Majuscules"
