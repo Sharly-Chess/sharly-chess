@@ -1614,6 +1614,12 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
             'the opponents played over the board.'
         ).format(tie_break=_('Fore Buchholz') if self.fore_modifier else _('Buchholz'))
 
+    @property
+    def display_decimals(self) -> int | None:
+        # Averages over different numbers of opponents can be closer than
+        # a hundredth.
+        return 3
+
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:

@@ -1517,3 +1517,14 @@ class KoyaAcronymTestCase(TestCase):
 
     def test_no_limit_leaves_the_acronym_bare(self):
         self.assertEqual(tie_breaks.KoyaTieBreak().trf_acronym, 'KS')
+
+
+@pytest.mark.unit
+def test_aob_is_displayed_to_three_decimals():
+    """Averages over 9 and 8 opponents can differ by less than a hundredth:
+    427/9 and 379.5/8 both read 47.44 to two decimals."""
+    from utils.types import TieBreakValue
+
+    tie_break = tie_breaks.AverageOfBuchholzTieBreak()
+    assert str(TieBreakValue(tie_break, 427 / 9)) == '47.444'
+    assert str(TieBreakValue(tie_break, 379.5 / 8)) == '47.438'
