@@ -280,8 +280,14 @@
                tooltip too, but a disabled button is not somewhere an arbiter
                thinks to hover — the reason has to be on the page. Its own
                column in the row, so it sits under the buttons and lines up
-               with the table below. #}
-            {% if not display_rankings and pairings_generation_disabled_message %}
+               with the table below. A round with nobody left to pair needs
+               no explaining. #}
+            {% set round_fully_paired = (
+                admin_tournament.round_has_pairings(admin_round)
+                and not admin_unpaired
+                and not admin_team_unpaired
+            ) %}
+            {% if not display_rankings and pairings_generation_disabled_message and not round_fully_paired %}
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3 d-none d-lg-block"></div>
                 {% endif %}
