@@ -703,6 +703,10 @@ msgstr ""
 msgid "Absent"
 msgstr ""
 
+msgctxt "absent teams"
+msgid "Absent"
+msgstr ""
+
 msgid "Absent (hole in lineup)"
 msgstr ""
 
@@ -7239,6 +7243,10 @@ msgstr ""
 msgid "Prepare the settings of the pairing system."
 msgstr ""
 
+msgid "Present"
+msgstr ""
+
+msgctxt "present teams"
 msgid "Present"
 msgstr ""
 

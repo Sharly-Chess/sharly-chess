@@ -703,6 +703,10 @@ msgstr "Absence :"
 msgid "Absent"
 msgstr "Absent·e"
 
+msgctxt "absent teams"
+msgid "Absent"
+msgstr "Absentes"
+
 msgid "Absent (hole in lineup)"
 msgstr "Absent·e (trou dans la composition)"
 
@@ -7243,6 +7247,10 @@ msgstr "Préparer les paramètres du système d'appariement."
 
 msgid "Present"
 msgstr "Présent·e"
+
+msgctxt "present teams"
+msgid "Present"
+msgstr "Présentes"
 
 msgid "Present and to pair"
 msgstr "Présent·e et à apparier"
