@@ -6220,6 +6220,9 @@ msgstr "Hors mode FIDE : %(tournaments)s"
 msgid "Not logged in"
 msgstr "Non connecté"
 
+msgid "Not paired"
+msgstr "Non apparié·e"
+
 msgid "Not paired for this round"
 msgstr "Non apparié·e pour cette ronde"
 
@@ -6738,6 +6741,9 @@ msgstr "Système d'appariement fixé à toutes-rondes aller-retour : {reason}."
 #, python-brace-format
 msgid "Pairing system set to round robin: {reason}."
 msgstr "Système d'appariement fixé à toutes-rondes : {reason}."
+
+msgid "Pairing-Allocated Bye"
+msgstr "Exempt"
 
 msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
 msgstr "Exempt / Bye / Partie non jouée — aucun adversaire."
@@ -12300,6 +12306,14 @@ msgstr "{name} (copie)"
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
 msgstr "{n} joueur·euses par équipe non pris en charge (les tables FFE couvrent {sizes} ; les effectifs plus grands que le maximum peuvent être réparties en blocs)."
+
+#, python-brace-format
+msgid "{opponent}, with Black"
+msgstr "{opponent}, avec les noirs"
+
+#, python-brace-format
+msgid "{opponent}, with White"
+msgstr "{opponent}, avec les blancs"
 
 #, python-brace-format
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."

@@ -6220,6 +6220,9 @@ msgstr ""
 msgid "Not logged in"
 msgstr ""
 
+msgid "Not paired"
+msgstr ""
+
 msgid "Not paired for this round"
 msgstr ""
 
@@ -6735,6 +6738,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Pairing system set to round robin: {reason}."
+msgstr ""
+
+msgid "Pairing-Allocated Bye"
 msgstr ""
 
 msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
@@ -12297,6 +12303,14 @@ msgstr ""
 
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
+msgstr ""
+
+#, python-brace-format
+msgid "{opponent}, with Black"
+msgstr ""
+
+#, python-brace-format
+msgid "{opponent}, with White"
 msgstr ""
 
 #, python-brace-format

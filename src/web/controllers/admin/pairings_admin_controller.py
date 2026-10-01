@@ -46,12 +46,14 @@ from data.pairings.manual_pairing import (
     bye_eligibility_violations,
     bye_violations,
     changed_pairs,
-    differing_pairs,
     colour_violations,
     describe_pairs,
+    differing_pairs,
+    moved_member_seats,
     pair_labels,
     pairing_violations,
     round_pairs,
+    seat_rows,
     team_pairing_violations,
 )
 from data.pibes import (
@@ -2750,6 +2752,9 @@ class PairingsAdminController(BaseEventAdminController):
                     'engine_error': engine_error,
                     'engine_pairs': pair_labels(tournament, missing),
                     'arbiter_pairs': pair_labels(tournament, extra),
+                    'seat_rows': seat_rows(
+                        tournament, moved_member_seats(start, actual, expected)
+                    ),
                 },
             )
         tournament.end_manual_pairing(

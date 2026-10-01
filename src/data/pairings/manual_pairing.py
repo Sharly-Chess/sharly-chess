@@ -268,7 +268,7 @@ def changed_pairs(
     the rest of the round. All of them when *start* is not known."""
     if start is None:
         return pairs
-    changed = {member for pair in start ^ actual for member in pair}
+    changed = _moved_members(start, actual)
     return {pair for pair in pairs if changed.intersection(pair)}
 
 
@@ -276,24 +276,50 @@ def differing_pairs(
     start: RoundPairs | None, actual: RoundPairs, expected: RoundPairs
 ) -> tuple[RoundPairs, RoundPairs]:
     """The pairs of *expected* missing from *actual*, and those of *actual*
-    it does not expect, that the change from *start* to *actual* accounts
-    for: the ones of the members moved, then of the members they now meet
-    or should meet, and so on, so that both sides name the same members.
-    All of them when *start* is not known."""
-    missing, extra = expected - actual, actual - expected
-    if start is None:
-        return missing, extra
-    members = {
-        member for pair in start ^ actual for member in pair if member is not None
-    }
-    while True:
-        involved = {pair for pair in missing | extra if members.intersection(pair)}
-        reached = members | {
-            member for pair in involved for member in pair if member is not None
-        }
-        if reached == members:
-            return missing & involved, extra & involved
-        members = reached
+    it does not expect, among those of the members moved between *start*
+    and *actual*."""
+    return (
+        changed_pairs(start, actual, expected - actual),
+        changed_pairs(start, actual, actual - expected),
+    )
+
+
+type Seat = tuple[int | None, bool]
+"""A member's opponent in a round, ``None`` for the pairing-allocated bye,
+and whether the member has white."""
+
+
+def moved_member_seats(
+    start: RoundPairs | None, actual: RoundPairs, expected: RoundPairs
+) -> list[tuple[int, Seat | None, Seat | None]]:
+    """For each member moved between *start* and *actual* — each member when
+    *start* is not known — whose seat differs from the pairing engine's: the
+    member, their seat in *expected*, then in *actual*; ``None`` when not
+    paired."""
+    engine_seats, actual_seats = _seats(expected), _seats(actual)
+    members = (
+        _moved_members(start, actual)
+        if start is not None
+        else set(engine_seats) | set(actual_seats)
+    )
+    return [
+        (member, engine_seats.get(member), actual_seats.get(member))
+        for member in sorted(members)
+        if engine_seats.get(member) != actual_seats.get(member)
+    ]
+
+
+def _seats(pairs: RoundPairs) -> dict[int, Seat]:
+    seats: dict[int, Seat] = {}
+    for white, black in pairs:
+        seats[white] = (black, True)
+        if black is not None:
+            seats[black] = (white, False)
+    return seats
+
+
+def _moved_members(start: RoundPairs, actual: RoundPairs) -> set[int]:
+    return {member for pair in start ^ actual for member in pair if member is not None}
 
 
 def describe_pairs(tournament: 'Tournament', pairs: RoundPairs) -> str:
@@ -319,22 +345,22 @@ def _pairing_number_reader(tournament: 'Tournament') -> Callable[[int], int]:
     return lambda id_: players[id_].pairing_number or 0
 
 
+def _member_namer(tournament: 'Tournament') -> Callable[[int], str]:
+    """A member's name followed by their pairing number."""
+    number = _pairing_number_reader(tournament)
+    if _team_paired(tournament):
+        teams = tournament.event.teams_by_id
+        return lambda id_: f'{teams[id_].name} ({number(id_)})'
+    players = tournament.tournament_players_by_id
+    return lambda id_: f'{players[id_].full_name} ({number(id_)})'
+
+
 def pair_labels(tournament: 'Tournament', pairs: RoundPairs) -> list[str]:
     """*pairs* as the arbiter reads them, each member's name followed by
     their pairing number, in the order of the first member's pairing
     number."""
     number = _pairing_number_reader(tournament)
-    if _team_paired(tournament):
-        teams = tournament.event.teams_by_id
-
-        def name(id_: int) -> str:
-            return f'{teams[id_].name} ({number(id_)})'
-    else:
-        players = tournament.tournament_players_by_id
-
-        def name(id_: int) -> str:
-            return f'{players[id_].full_name} ({number(id_)})'
-
+    name = _member_namer(tournament)
     return [
         (
             _('{first} — Pairing-Allocated Bye').format(first=name(first))
@@ -342,6 +368,31 @@ def pair_labels(tournament: 'Tournament', pairs: RoundPairs) -> list[str]:
             else f'{name(first)} — {name(second)}'
         )
         for first, second in sorted(pairs, key=lambda pair: number(pair[0]))
+    ]
+
+
+def seat_rows(
+    tournament: 'Tournament', seats: list[tuple[int, Seat | None, Seat | None]]
+) -> list[tuple[str, str, str]]:
+    """*seats* as the arbiter reads them: the member, then their opponent and
+    colour with the pairing engine, then in the round, in the order of the
+    members' pairing numbers."""
+    number = _pairing_number_reader(tournament)
+    name = _member_namer(tournament)
+
+    def seat(value: Seat | None) -> str:
+        if value is None:
+            return _('Not paired')
+        opponent, white = value
+        if opponent is None:
+            return _('Pairing-Allocated Bye')
+        if white:
+            return _('{opponent}, with White').format(opponent=name(opponent))
+        return _('{opponent}, with Black').format(opponent=name(opponent))
+
+    return [
+        (name(member), seat(engine), seat(actual))
+        for member, engine, actual in sorted(seats, key=lambda row: number(row[0]))
     ]
 
 

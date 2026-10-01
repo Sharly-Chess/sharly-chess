@@ -34,20 +34,24 @@
         {% endif %}
     {% else %}
         <p>{{ _('The pairings of round %(round)d differ from those of the pairing engine:', round=admin_round) }}</p>
-        <div class="row g-2 mb-2">
-            <div class="col-6">
-                <div class="fw-bold">{{ _('Pairing engine') }}</div>
-                {% for label in engine_pairs %}
-                    <div class="small">{{ label }}</div>
+        <table class="table table-sm small mb-2" style="--bs-table-bg: transparent; --bs-table-color: inherit; --bs-table-border-color: currentColor;">
+            <thead>
+                <tr>
+                    <th>{{ _('Player') }}</th>
+                    <th>{{ _('Pairing engine') }}</th>
+                    <th>{{ _('Your pairings') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member, engine, actual in seat_rows %}
+                    <tr>
+                        <td>{{ member }}</td>
+                        <td>{{ engine }}</td>
+                        <td>{{ actual }}</td>
+                    </tr>
                 {% endfor %}
-            </div>
-            <div class="col-6">
-                <div class="fw-bold">{{ _('Your pairings') }}</div>
-                {% for label in arbiter_pairs %}
-                    <div class="small">{{ label }}</div>
-                {% endfor %}
-            </div>
-        </div>
+            </tbody>
+        </table>
         <p class="small fst-italic">{{ _('Pairing numbers in brackets.') }}</p>
     {% endif %}
     {{ bye_problem_list() }}
