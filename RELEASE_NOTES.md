@@ -19,6 +19,7 @@
 - Scoring systems in which two draws are worth more than a win and a loss are refused, as are pairing-allocated byes worth more than a win or, with the standard scoring system, worth anything other than 1, ½ or 0 (5.1.1)
 - Team names with characters the _FFE_ website does not store, such as the "œ" of "Sacré Cœur", no longer make the upload of team competitions fail (5.1.1)
 - The French School Championship is sent to the school competitions of the _FFE_ website, with the national finals division pre-selected for the national final (5.1.1)
+- Requested byes (half-point, full-point and zero-point) are now sent to _Sharly-Chess.com_, whose crosstables showed an empty cell and a wrong total for those rounds (5.1.2)
 - The "All absent" button of the team check-in window is no longer labelled "Toutes présentes" in French (5.1.2)
 
 ## Players

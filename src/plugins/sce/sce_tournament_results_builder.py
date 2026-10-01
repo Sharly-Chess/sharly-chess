@@ -287,6 +287,23 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
             }
             # TODO (Molrn) Add pairing custom fields to support Handicap games
             pairings.append(entry)
+
+        for player in tournament.tournament_players_by_pairing_number.values():
+            if player.is_excluded_from_standings:
+                continue
+            pairing = player.pairings[round_]
+            if pairing.board is not None or pairing.result == Result.NO_RESULT:
+                continue
+            pairings.append(
+                {
+                    'round': round_,
+                    'board': 0,
+                    'whitePairingNumber': player.pairing_number,
+                    'blackPairingNumber': -2,
+                    'whiteResult': pairing.result.value,
+                    'blackResult': Result.NO_RESULT.value,
+                }
+            )
     return pairings
 
 
