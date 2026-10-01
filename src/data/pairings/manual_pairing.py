@@ -272,6 +272,30 @@ def changed_pairs(
     return {pair for pair in pairs if changed.intersection(pair)}
 
 
+def differing_pairs(
+    start: RoundPairs | None, actual: RoundPairs, expected: RoundPairs
+) -> tuple[RoundPairs, RoundPairs]:
+    """The pairs of *expected* missing from *actual*, and those of *actual*
+    it does not expect, that the change from *start* to *actual* accounts
+    for: the ones of the members moved, then of the members they now meet
+    or should meet, and so on, so that both sides name the same members.
+    All of them when *start* is not known."""
+    missing, extra = expected - actual, actual - expected
+    if start is None:
+        return missing, extra
+    members = {
+        member for pair in start ^ actual for member in pair if member is not None
+    }
+    while True:
+        involved = {pair for pair in missing | extra if members.intersection(pair)}
+        reached = members | {
+            member for pair in involved for member in pair if member is not None
+        }
+        if reached == members:
+            return missing & involved, extra & involved
+        members = reached
+
+
 def describe_pairs(tournament: 'Tournament', pairs: RoundPairs) -> str:
     """*pairs* in pairing numbers, as in the TRF comments: ``'19-7 44=PAB'``."""
     number = _pairing_number_reader(tournament)
@@ -344,8 +368,7 @@ def rounds_change_breach(
     finally:
         stored_tournament.rounds = current_rounds
     actual = round_pairs(tournament, round_)
-    missing = changed_pairs(before, after, after - actual)
-    extra = changed_pairs(before, after, actual - after)
+    missing, extra = differing_pairs(before, after, actual)
     if not (missing or extra):
         return None
     return missing, extra

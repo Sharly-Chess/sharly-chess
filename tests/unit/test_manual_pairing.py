@@ -13,6 +13,8 @@ from data.pairings.manual_pairing import (
     bye_eligibility_violations,
     bye_violations,
     changed_pairs,
+    RoundPairs,
+    differing_pairs,
     colour_preference,
     colour_violations,
     describe_pairs,
@@ -281,3 +283,27 @@ def test_only_the_pairs_of_the_players_moved_count():
 
     assert self_check == {(1, 3), (2, 4), (4, 3)}
     assert changed_pairs(None, actual, {(1, 2)}) == {(1, 2)}
+
+
+@pytest.mark.unit
+def test_both_sides_name_the_same_players():
+    expected: RoundPairs = {(1, 3), (7, 15), (8, 5), (10, 2)}
+    start: RoundPairs = {(1, 3), (8, 10), (7, 2), (15, 5)}
+    actual: RoundPairs = {(1, 8), (3, 10), (7, 2), (15, 5)}
+
+    missing, extra = differing_pairs(start, actual, expected)
+
+    assert missing == expected
+    assert extra == actual
+
+
+@pytest.mark.unit
+def test_byes_do_not_link_the_players_given_them():
+    expected = {(1, 2), (3, 4), (5, None)}
+    start = {(1, 2), (3, 4), (6, None)}
+    actual = {(2, 1), (3, 4), (6, None)}
+
+    missing, extra = differing_pairs(start, actual, expected)
+
+    assert missing == {(1, 2)}
+    assert extra == {(2, 1)}

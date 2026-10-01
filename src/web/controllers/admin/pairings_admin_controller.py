@@ -46,6 +46,7 @@ from data.pairings.manual_pairing import (
     bye_eligibility_violations,
     bye_violations,
     changed_pairs,
+    differing_pairs,
     colour_violations,
     describe_pairs,
     pair_labels,
@@ -2726,8 +2727,7 @@ class PairingsAdminController(BaseEventAdminController):
             logger.exception(sce)
             engine_error = getattr(sce, 'detail', '') or _('no reason was given.')
             expected = set()
-        missing = changed_pairs(start, actual, expected - actual)
-        extra = changed_pairs(start, actual, actual - expected)
+        missing, extra = differing_pairs(start, actual, expected)
         if not (bye_problems or missing or extra or engine_error):
             tournament.end_manual_pairing()
             Message.success(
