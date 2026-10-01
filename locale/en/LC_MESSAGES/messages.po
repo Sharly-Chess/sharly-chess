@@ -6765,6 +6765,9 @@ msgstr ""
 msgid "Pairings by player"
 msgstr ""
 
+msgid "Pairings changed by hand"
+msgstr ""
+
 msgid "Pairings edited by hand and validated although they differ from those of the pairing engine"
 msgstr ""
 
@@ -7727,6 +7730,9 @@ msgid "Ready"
 msgstr ""
 
 msgid "Reason"
+msgstr ""
+
+msgid "Reason given by the pairing engine:"
 msgstr ""
 
 msgid "Received a Full-Point Bye for the next round"
@@ -9663,7 +9669,8 @@ msgstr ""
 msgid "The organisation to which the team belongs (for example a club, league, or school). Affiliations may be used by pairing rules to avoid pairing related teams."
 msgstr ""
 
-msgid "The pairing engine could not pair the round:"
+#, python-format
+msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr ""
 
 msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
@@ -9705,6 +9712,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "The pairings of round {round} are back as they were."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} are being edited: validate or cancel them before changing the pairings of another round."
 msgstr ""
 
 #, python-brace-format
@@ -11849,6 +11860,9 @@ msgid "my-screen"
 msgstr ""
 
 msgid "no"
+msgstr ""
+
+msgid "no reason was given."
 msgstr ""
 
 msgid "no tie-break selected"

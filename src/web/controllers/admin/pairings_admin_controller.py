@@ -2601,6 +2601,27 @@ class PairingsAdminController(BaseEventAdminController):
                 _('This action is not possible for this round.'),
             )
             return self._admin_event_pairings_render(web_context)
+        manual_pairing_round = tournament.manual_pairing_round
+        if (
+            manual_pairing_round is not None
+            and manual_pairing_round != round
+            and starts_manual_pairing(
+                protected_action, web_context.round_status, tournament.fide_mode
+            )
+        ):
+            return self._admin_event_pairings_render(
+                web_context,
+                {
+                    'modal': 'information',
+                    'information_messages': [
+                        _(
+                            'The pairings of round {round} are being edited: '
+                            'validate or cancel them before changing the '
+                            'pairings of another round.'
+                        ).format(round=manual_pairing_round)
+                    ],
+                },
+            )
         return self._warning_modal_render(
             web_context, protected_action, redirect_method, redirect_route
         )
@@ -2703,7 +2724,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         except SharlyChessException as sce:
             logger.exception(sce)
-            engine_error = str(sce)
+            engine_error = getattr(sce, 'detail', '') or _('no reason was given.')
             expected = set()
         missing = changed_pairs(start, actual, expected - actual)
         extra = changed_pairs(start, actual, actual - expected)

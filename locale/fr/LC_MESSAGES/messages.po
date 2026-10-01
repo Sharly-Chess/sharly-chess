@@ -6767,6 +6767,9 @@ msgstr "Appariements par échiquier"
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
+msgid "Pairings changed by hand"
+msgstr "Appariements modifiés à la main"
+
 msgid "Pairings edited by hand and validated although they differ from those of the pairing engine"
 msgstr "Appariements modifiés à la main et validés bien qu'ils diffèrent de ceux du moteur d'appariement"
 
@@ -7730,6 +7733,9 @@ msgstr "Prêt"
 
 msgid "Reason"
 msgstr "Raison"
+
+msgid "Reason given by the pairing engine:"
+msgstr "Raison donnée par le moteur d'appariement :"
 
 msgid "Received a Full-Point Bye for the next round"
 msgstr "Ont reçu un bye point entier pour la ronde à venir"
@@ -9665,8 +9671,9 @@ msgstr "Le numéro de la dernière équipe à sélectionner."
 msgid "The organisation to which the team belongs (for example a club, league, or school). Affiliations may be used by pairing rules to avoid pairing related teams."
 msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, une ligue ou une école). Les affiliations peuvent être utilisées par les règles d'appariement pour éviter d'apparier des équipes liées."
 
-msgid "The pairing engine could not pair the round:"
-msgstr "Le moteur d'appariement n'a pas pu apparier la ronde :"
+#, python-format
+msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
+msgstr "Le moteur d'appariement n'a pas pu apparier la ronde %(round)d : vos appariements ne peuvent pas être comparés aux siens."
 
 msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
 msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi et les parties corrigées pour le rapport Elo, consignées en commentaire dans son TRF."
@@ -9708,6 +9715,10 @@ msgstr "Les appariements de la ronde %(round)d ne correspondent plus à ceux du 
 #, python-brace-format
 msgid "The pairings of round {round} are back as they were."
 msgstr "Les appariements de la ronde {round} ont été rétablis."
+
+#, python-brace-format
+msgid "The pairings of round {round} are being edited: validate or cancel them before changing the pairings of another round."
+msgstr "Les appariements de la ronde {round} sont en cours de modification : validez-les ou annulez la modification avant de modifier les appariements d'une autre ronde."
 
 #, python-brace-format
 msgid "The pairings of round {round} have been validated."
@@ -11852,6 +11863,9 @@ msgstr "mon-ecran"
 
 msgid "no"
 msgstr "non"
+
+msgid "no reason was given."
+msgstr "aucune raison n'a été donnée."
 
 msgid "no tie-break selected"
 msgstr "aucun départage sélectionné"

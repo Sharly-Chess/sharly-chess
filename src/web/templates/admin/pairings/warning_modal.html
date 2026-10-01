@@ -15,10 +15,10 @@
                 {{ warning_macros.level_icon(warning_level) }}
                 {% if warning_level == 5 %}
                     {{ _('Prohibited in FIDE mode') }}
-                {% elif is_correction %}
-                    {{ _('Correction of the previous round') }}
                 {% elif starts_manual_pairing %}
                     {{ _('Manual pairing') }}
+                {% elif is_correction %}
+                    {{ _('Correction of the previous round') }}
                 {% else %}
                     {{ _('Protected pairings editing') }}
                 {% endif %}

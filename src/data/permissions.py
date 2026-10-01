@@ -140,14 +140,24 @@ MANUAL_PAIRING_ACTIONS = frozenset(
 )
 
 
+PREVIOUS_ROUND_MANUAL_PAIRING_ACTIONS = frozenset(
+    {PairingAction.MANUAL_PAIRING, PairingAction.MANUAL_UNPAIRING}
+)
+
+
 def starts_manual_pairing(
     action: PairingAction, round_status: RoundStatus, fide_mode: bool
 ) -> bool:
-    """Whether *action* edits the pairings of the round being paired, which
-    in FIDE mode is done within a manual pairing: explicitly validated at the
-    end, when the pairings are checked against the pairing engine's."""
+    """Whether *action* edits the pairings of a round, which in FIDE mode is
+    done within a manual pairing: explicitly validated at the end, when the
+    pairings are checked against the pairing engine's. In the previous
+    round, the games are taken apart or put together that way; its colours,
+    like its results, are corrected one by one."""
+    if not fide_mode:
+        return False
+    if round_status == RoundStatus.PREVIOUS:
+        return action in PREVIOUS_ROUND_MANUAL_PAIRING_ACTIONS
     return (
-        fide_mode
-        and round_status in (RoundStatus.CURRENT, RoundStatus.NEXT)
+        round_status in (RoundStatus.CURRENT, RoundStatus.NEXT)
         and action in MANUAL_PAIRING_ACTIONS
     )

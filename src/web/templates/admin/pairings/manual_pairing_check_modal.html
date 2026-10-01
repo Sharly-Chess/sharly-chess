@@ -21,7 +21,17 @@
 
 {% macro differences() %}
     {% if engine_error %}
-        <p>{{ _('The pairing engine could not pair the round:') }} {{ engine_error }}</p>
+        <p class="mb-1">
+            {{ _('The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own.', round=admin_round) }}
+        </p>
+        <p class="small fst-italic">{{ _('Reason given by the pairing engine:') }} {{ engine_error }}</p>
+        {% if arbiter_pairs %}
+            <div class="fw-bold">{{ _('Pairings changed by hand') }}</div>
+            {% for label in arbiter_pairs %}
+                <div class="small">{{ label }}</div>
+            {% endfor %}
+            <p class="small fst-italic mt-2">{{ _('Pairing numbers in brackets.') }}</p>
+        {% endif %}
     {% else %}
         <p>{{ _('The pairings of round %(round)d differ from those of the pairing engine:', round=admin_round) }}</p>
         <div class="row g-2 mb-2">
