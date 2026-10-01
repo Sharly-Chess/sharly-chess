@@ -36,6 +36,7 @@
 - Results entered on an administration pairings screen now notify the other administration screens immediately, as results entered on an input screen already did (5.1.0)
 - The team ranking of fixed-table tournaments (Molter) now shows the game points and the tie-breaks, which were all displayed as zero (5.1.0)
 - Bonus / penalty points can no longer be given to an individual player of a team event from the player's record: team events adjust whole teams (5.1.0)
+- Unpairing a board no longer renumbers the other tables of the round in compact table numbering (5.1.2)
 
 ## Documents
 

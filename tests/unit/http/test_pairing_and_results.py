@@ -342,3 +342,56 @@ def test_unpairing_the_tournament_empties_every_round(
     assert not any(
         paired.get_round_boards(round_) for round_ in range(1, paired.rounds + 1)
     )
+
+
+@pytest.fixture
+def compact_tournament() -> Iterator[Tournament]:
+    EVENT.create(event={'enabled_plugins': []}, json_file='tec-swiss-unpaired')
+    yield EVENT.tournament()
+    EVENT.delete()
+
+
+@pytest.mark.unit
+def test_unpairing_a_board_keeps_the_other_table_numbers(
+    http: TestClient, compact_tournament: Tournament
+):
+    """Tables are announced once a round is paired: taking one board out
+    leaves every other board at the table it was given."""
+    tournament = compact_tournament
+    assert not tournament.leave_fixed_board_holes
+    http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
+    boards = sorted(EVENT.tournament().get_round_boards(1), key=lambda b: b.index)
+    assert len(boards) > 3
+    before = {board.id: board.number for board in boards}
+    unpaired = boards[1]
+    response = http.delete(
+        f'/pairing/unpair/{EVENT_ID}/{tournament.id}/1/{unpaired.id}?confirmed=1'
+    )
+    assert response.status_code == 200
+    after = {board.id: board.number for board in EVENT.tournament().get_round_boards(1)}
+    del before[unpaired.id]
+    assert after == before
+
+
+@pytest.mark.unit
+def test_pairing_again_after_unpairing_fills_the_vacated_table(
+    http: TestClient, compact_tournament: Tournament
+):
+    tournament = compact_tournament
+    http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
+    boards = sorted(EVENT.tournament().get_round_boards(1), key=lambda b: b.index)
+    before = {board.id: board.number for board in boards}
+    unpaired = boards[1]
+    http.delete(
+        f'/pairing/unpair/{EVENT_ID}/{tournament.id}/1/{unpaired.id}?confirmed=1'
+    )
+    for player_id in (unpaired.white_player_id, unpaired.black_player_id):
+        response = http.patch(
+            f'/pairings/pair-player/{EVENT_ID}/{tournament.id}/{player_id}/1'
+        )
+        assert response.status_code == 200
+    after = {board.id: board.number for board in EVENT.tournament().get_round_boards(1)}
+    table = before.pop(unpaired.id)
+    repaired = next(board_id for board_id in after if board_id not in before)
+    assert after.pop(repaired) == table
+    assert after == before
