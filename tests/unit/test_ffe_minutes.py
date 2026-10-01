@@ -40,9 +40,21 @@ class FFEMinutesTestCase(TestCase):
         text = FFET2Type.report_text_for([self._tournament()])
 
         players = self._tournament().tournament_players_by_pairing_number
-        self.assertIn(f'{TOURNAMENT_ID} :', text)
+        self.assertIn(f'{TOURNAMENT_ID} (mode FIDE) :', text)
         self.assertIn(
             f'- Ronde 4 : Résultat de {players[6].full_name} – '
             f'{players[7].full_name} corrigé de 1-0 en 0-1.',
             text,
+        )
+
+    def test_leaving_fide_mode_is_reported(self):
+        tournament = self._tournament()
+        tournament.leave_fide_mode()
+        exit_round = self._tournament().fide_mode_exit_round
+        assert exit_round is not None
+
+        text = FFET2Type.report_text_for([self._tournament()])
+
+        self.assertEqual(
+            text, f'{TOURNAMENT_ID} (mode FIDE quitté à la ronde {exit_round}) :'
         )

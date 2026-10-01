@@ -575,15 +575,11 @@ class FFET2Type(FFETournamentsDocumentType):
         """The events *tournaments* logged, in French, one line each."""
         sections: list[str] = []
         for tournament in tournaments:
-            if not (entries := tournament.log_entries):
+            entries = tournament.log_entries
+            exit_round = tournament.fide_mode_exit_round
+            if not entries and exit_round is None:
                 continue
-            if tournament.fide_mode:
-                fide_mode_status = 'mode FIDE'
-            else:
-                fide_mode_status = (
-                    f'mode FIDE quitté à la ronde {tournament.fide_mode_exit_round}'
-                )
-            lines = [f'{tournament.name} ({fide_mode_status}) :']
+            lines = [f'{tournament.name}{cls._fide_mode_status(tournament)} :']
             for entry in entries:
                 line = f'- Ronde {entry.round_} : {entry.summary(tournament, "fr")}'
                 if entry.date:
@@ -591,6 +587,18 @@ class FFET2Type(FFETournamentsDocumentType):
                 lines.append(line)
             sections.append('\n'.join(lines))
         return '\n\n'.join(sections) or 'Rien à signaler.'
+
+    @staticmethod
+    def _fide_mode_status(tournament: Tournament) -> str:
+        """Whether *tournament* runs in FIDE mode, or the round it left it
+        at, for the systems that have it."""
+        if not tournament.pairing_system.supports_fide_mode:
+            return ''
+        if tournament.fide_mode:
+            return ' (mode FIDE)'
+        if (exit_round := tournament.fide_mode_exit_round) is not None:
+            return f' (mode FIDE quitté à la ronde {exit_round})'
+        return ' (hors mode FIDE)'
 
     def template_context(
         self,
