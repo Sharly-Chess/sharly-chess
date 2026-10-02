@@ -5,6 +5,7 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {% include 'pairing_settings_button.html' %}
     {% if not admin_tournament.has_pairings %}
         <div
             {% if not client.can_use_pairing_engine(admin_tournament.id) %}

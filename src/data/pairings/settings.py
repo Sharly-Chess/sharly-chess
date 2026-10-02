@@ -350,6 +350,47 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         return [field for field in data if field.startswith(self.player_field_base)]
 
 
+class ReverseLastRoundsSetting(PairingSetting[bool]):
+    """Whether a double round-robin plays the last two rounds of the
+    first cycle in reverse order, so that no participant plays the same
+    colour three times in a row across the two cycles (FIDE Handbook
+    C.05 Annex 1, a recommendation)."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'REVERSE_LAST_ROUNDS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Reverse the last two rounds of the first cycle')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/reverse_last_rounds.html'
+
+    def tooltip_representation(self, value: bool) -> str | None:
+        return _('yes') if value else _('no')
+
+    def from_form_data(self, data: dict[str, str]) -> bool:
+        return data.get(self.id) == 'on'
+
+    def to_form_data(self, object_: bool) -> dict[str, str]:
+        return {self.id: 'on' if object_ else ''}
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        return {}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> bool:
+        return True
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> bool:
+        return bool(value)
+
+
 class KeizerRounding(StrEnum):
     NONE = 'NONE'
     HALF = 'HALF'

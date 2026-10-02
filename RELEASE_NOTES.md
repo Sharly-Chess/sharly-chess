@@ -48,6 +48,8 @@
 - In FIDE mode, each correction to the previous round is confirmed and logged; older rounds cannot be changed (5.2.0)
 - A game of an older round found wrong can be corrected for the rating report only: the TRF and Papi exports give it as corrected, the TRF with a comment saying what the pairings and the standings used (5.2.0)
 - A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
+- Double round robins can choose whether the last two rounds of the first cycle are reversed, as recommended by FIDE to avoid three games in a row with the same colour (5.2.0)
+- Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
 
 ## Documents
 
