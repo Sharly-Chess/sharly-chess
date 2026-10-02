@@ -1757,10 +1757,6 @@ class AccelerationRulesPrintDocument(PrintDocument):
             )
 
         rules = variation.get_tournament_accelerated_rules(tournament)
-        for player in tournament.players:
-            logger.error(
-                f'{player.pairing_number}. {player.full_name}: {player.pairings_by_round[1]}'
-            )
         return {
             'tournament': tournament,
             'variation': variation,

@@ -10,6 +10,8 @@ from data.pairings.acceleration import (
     AcceleratedSwissVariation,
     CustomAccelerationSetting,
     CustomAccelerationSwissVariation,
+    InitialPairingScoreSetting,
+    InitialScoreSwissVariation,
     ProgressiveSwissVariation,
 )
 from data.pairings.settings import AccelerationRule
@@ -23,8 +25,10 @@ TOURNAMENT_NAME = 'test-acceleration-rules-http-tournament'
 EVENT = EventUnderTest(EVENT_ID, TOURNAMENT_NAME)
 
 
-def create_tournament(variation: type[SwissVariation]) -> int:
-    EVENT.create(json_file='tec-swiss')
+def create_tournament(
+    variation: type[SwissVariation], json_file: str | None = 'tec-swiss'
+) -> int:
+    EVENT.create(json_file=json_file)
     with EventDatabase(EVENT_ID, True) as database:
         stored_tournament = database.load_stored_tournaments()[0]
         stored_tournament.pairing = variation.static_id()
@@ -138,6 +142,38 @@ def test_the_pairing_settings_link_to_the_printed_rules(
 
 
 @pytest.mark.unit
+def test_the_unsaved_pairing_settings_print_from_the_form(
+    http: TestClient, cleanup: None
+):
+    tournament_id = create_tournament(InitialScoreSwissVariation, json_file=None)
+    response = http.get(
+        f'/pairings/settings-modal/{EVENT_ID}/{tournament_id}/1',
+        params={'configure': '1'},
+    )
+    assert response.status_code == 200
+    assert (
+        f'/pairings/settings-print-check/{EVENT_ID}/{tournament_id}/1' in response.text
+    )
+    assert '/acceleration-rules?' not in response.text
+
+
+@pytest.mark.unit
+def test_the_rules_print_the_settings_of_the_form_without_saving_them(
+    http: TestClient, cleanup: None
+):
+    tournament_id, data = initial_score_form_data('4.5')
+    response = http.post(
+        f'/pairings/settings-print/{EVENT_ID}/{tournament_id}/1', data=data
+    )
+    assert response.status_code == 200
+    assert 'No. 3 (CHARLINE)' in response.text
+    assert '4½' in response.text
+    assert InitialPairingScoreSetting.static_id() not in (
+        EVENT.tournament().stored_pairing_settings
+    )
+
+
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ('variation', 'linked'),
     [(ProgressiveSwissVariation, True), (StandardSwissVariation, False)],
@@ -149,3 +185,46 @@ def test_the_tournament_card_links_to_the_printed_rules(
     response = http.get(f'/event/{EVENT_ID}/tournaments')
     assert response.status_code == 200
     assert ('/acceleration-rules?' in response.text) is linked
+
+
+def initial_score_form_data(score: str) -> tuple[int, dict[str, str]]:
+    """The form data of the pairing settings, the third player given
+    *score* as initial score; with the ID of the tournament."""
+    tournament_id = create_tournament(InitialScoreSwissVariation)
+    tournament = EVENT.tournament()
+    player = next(
+        player for player in tournament.tournament_players if player.pairing_number == 3
+    )
+    data: dict[str, str] = {}
+    for setting in tournament.pairing_variation.settings:
+        data |= setting.get_form_data(tournament)
+    data[InitialPairingScoreSetting().player_field(player.id)] = score
+    return tournament_id, data
+
+
+@pytest.mark.unit
+def test_the_rules_are_printed_once_the_settings_of_the_form_are_checked(
+    http: TestClient, cleanup: None
+):
+    tournament_id, data = initial_score_form_data('4.5')
+    response = http.post(
+        f'/pairings/settings-print-check/{EVENT_ID}/{tournament_id}/1', data=data
+    )
+    assert response.status_code == 200
+    trigger = response.headers['HX-Trigger']
+    assert 'do_print_pairing_settings' in trigger
+    assert f'/pairings/settings-print/{EVENT_ID}/{tournament_id}/1' in trigger
+
+
+@pytest.mark.unit
+def test_the_errors_of_the_settings_are_shown_in_the_form_instead_of_printing(
+    http: TestClient, cleanup: None
+):
+    tournament_id, data = initial_score_form_data('500')
+    response = http.post(
+        f'/pairings/settings-print-check/{EVENT_ID}/{tournament_id}/1', data=data
+    )
+    assert response.status_code == 200
+    assert 'do_print_pairing_settings' not in str(response.headers)
+    assert 'id="modal-form"' in response.text
+    assert 'A value between 0 and 99.9 is expected.' in response.text

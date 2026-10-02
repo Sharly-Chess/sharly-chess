@@ -2280,6 +2280,9 @@ msgstr[1] ""
 msgid "Corners"
 msgstr ""
 
+msgid "Correct the pairing settings before printing the rules."
+msgstr ""
+
 msgid "Correction"
 msgstr ""
 
@@ -7499,7 +7502,7 @@ msgstr ""
 msgid "Print the rules"
 msgstr ""
 
-msgid "Print the rules of the system as saved for this tournament."
+msgid "Print the rules with the settings above, without saving them."
 msgstr ""
 
 msgid "Private"

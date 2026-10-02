@@ -15,9 +15,9 @@ from data.pairings.engines import BbpPairings, TeamSwissEngine
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import ClientRefresh, HTMXRequest
-from litestar.enums import RequestEncodingType
+from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body, FromPath, FromQuery
-from litestar.response import Template
+from litestar.response import Response, Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
@@ -31,9 +31,11 @@ from data.event import Event
 from data.teams.team import Team
 from data.teams.team_board import TeamBoard
 from data.print_documents.documents import (
+    AccelerationRulesPrintDocument,
     PairingPrintDocument,
     PlayerRankingPrintDocument,
 )
+from data.print_documents.options import TournamentPrintOption
 from data.loader import EventLoader
 from data.permissions import (
     PairingAction,
@@ -3213,16 +3215,106 @@ class PairingsAdminController(BaseEventAdminController):
             web_context, data, tournament.get_pairing_settings_data_errors(data)
         )
 
-    @staticmethod
-    def _save_pairing_settings_data(
-        tournament: Tournament, data: dict[str, str]
-    ) -> None:
-        stored_settings: dict[str, Any] = {}
-        for setting in tournament.pairing_variation.settings:
-            stored_settings[setting.id] = setting.to_stored_value(
-                setting.from_form_data(data)
+    @post(
+        path='/pairings/settings-print-check/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-settings-print-check',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_pairings_settings_print_check(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        for_pairing: FromQuery[bool] = False,
+    ) -> Template:
+        """Check the settings of the form before their rules are printed:
+        the errors are shown in the form, as when saving, otherwise the
+        client is asked to print them."""
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        if errors := tournament.get_pairing_settings_data_errors(data):
+            return self._render_pairings_settings_modal(
+                web_context, data, errors, for_pairing=for_pairing
             )
-        tournament.update_pairing_settings(stored_settings)
+        return HTMXTemplate(
+            template_name='/common/empty.html',
+            re_swap='none',
+            trigger_event='do_print_pairing_settings',
+            after='receive',
+            params={
+                'url': request.app.route_reverse(
+                    'pairings-settings-print',
+                    event_uniq_id=tournament.event.uniq_id,
+                    tournament_id=tournament_id,
+                    round=round,
+                )
+            },
+        )
+
+    @post(
+        path='/pairings/settings-print/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-settings-print',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_pairings_settings_print(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template | Response[str]:
+        """Print the acceleration rules with the settings of the form,
+        which are not saved. The form is checked beforehand by
+        ``pairings-settings-print-check``."""
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        if tournament.get_pairing_settings_data_errors(data):
+            return Response(
+                _('Correct the pairing settings before printing the rules.'),
+                media_type=MediaType.TEXT,
+            )
+        document = AccelerationRulesPrintDocument(
+            web_context.client,
+            [TournamentPrintOption(tournament.event, tournament.id)],
+        )
+        with tournament.previewing_pairing_settings(
+            self._pairing_settings_from_data(tournament, data)
+        ):
+            document_context = document.template_context
+        return Template(
+            template_name=document.template_name,
+            context=web_context.template_context
+            | {'document': document}
+            | document_context,
+        )
+
+    @staticmethod
+    def _pairing_settings_from_data(
+        tournament: Tournament, data: dict[str, str]
+    ) -> dict[str, Any]:
+        return {
+            setting.id: setting.to_stored_value(setting.from_form_data(data))
+            for setting in tournament.pairing_variation.settings
+        }
+
+    @classmethod
+    def _save_pairing_settings_data(
+        cls, tournament: Tournament, data: dict[str, str]
+    ) -> None:
+        tournament.update_pairing_settings(
+            cls._pairing_settings_from_data(tournament, data)
+        )
 
     @post(
         path='/pairings/validate-absents/{event_uniq_id:str}/{tournament_id:int}/{round:int}',

@@ -2280,6 +2280,9 @@ msgstr[1] "Continuer avec %(num)d rondes ?"
 msgid "Corners"
 msgstr "Coins"
 
+msgid "Correct the pairing settings before printing the rules."
+msgstr "Corrigez les paramètres d'appariement avant d'imprimer les règles."
+
 msgid "Correction"
 msgstr "Correction"
 
@@ -7501,8 +7504,8 @@ msgstr "Score principal :"
 msgid "Print the rules"
 msgstr "Imprimer les règles"
 
-msgid "Print the rules of the system as saved for this tournament."
-msgstr "Imprimer les règles du système telles qu'enregistrées pour ce tournoi."
+msgid "Print the rules with the settings above, without saving them."
+msgstr "Imprimer les règles avec les paramètres ci-dessus, sans les enregistrer."
 
 msgid "Private"
 msgstr "Privé"
