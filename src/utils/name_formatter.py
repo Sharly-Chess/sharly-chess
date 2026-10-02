@@ -12,11 +12,21 @@ class NameFormatter(IdentifiableEntity, ABC):
     def format_last_name(self, last_name: str) -> str:
         return last_name.upper() if self.capitalise_last_name else last_name
 
+    @staticmethod
+    def format_first_name(first_name: str) -> str:
+        """Capitalises a first name written all in capitals or all in lower
+        case, which tells nothing of its case. Mixed case is kept as written."""
+        if first_name.isupper() or first_name.islower():
+            return first_name.title()
+        return first_name
+
     def format(self, first_name: str | None, last_name: str) -> str:
         """The full name of a person."""
         if not first_name:
             return self.format_last_name(last_name)
-        return self._format(first_name, self.format_last_name(last_name))
+        return self._format(
+            self.format_first_name(first_name), self.format_last_name(last_name)
+        )
 
     @abstractmethod
     def _format(self, first_name: str, last_name: str) -> str:

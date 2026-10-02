@@ -565,7 +565,7 @@ class PapiConverter:
         return StoredPlayer(
             id=None,
             last_name=papi_player.lastName,
-            first_name=papi_player.firstName.title() if papi_player.firstName else None,
+            first_name=papi_player.firstName or None,
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             gender=gender.value,

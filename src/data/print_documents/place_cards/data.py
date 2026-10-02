@@ -48,7 +48,7 @@ class PlaceCardPlayer:
                 self.rating = str(tournament_player.rating)
             self.rating_type = tournament_player.rating_type.short_name
             self.full_name = tournament_player.full_name
-            self.first_name = tournament_player.first_name
+            self.first_name = tournament_player.display_first_name
             self.last_name = tournament_player.display_last_name
             if tournament_player.year_of_birth:
                 self.year_of_birth = str(tournament_player.year_of_birth)

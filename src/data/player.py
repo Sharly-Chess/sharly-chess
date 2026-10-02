@@ -120,6 +120,10 @@ class Player:
         return current_name_formatter().sort_key(self.first_name, self.last_name)
 
     @property
+    def display_first_name(self) -> str:
+        return current_name_formatter().format_first_name(self.first_name)
+
+    @property
     def display_last_name(self) -> str:
         return current_name_formatter().format_last_name(self.last_name)
 

@@ -1,6 +1,6 @@
 import pytest
 
-from utils.name_formatter import NameFormatterManager
+from utils.name_formatter import NameFormatter, NameFormatterManager
 
 
 @pytest.mark.unit
@@ -53,3 +53,27 @@ def test_names_are_sorted_by_the_name_displayed_first(
 ):
     formatter = NameFormatterManager().get_object(formatter_id)
     assert formatter.sort_key('Jean', 'Tour') == expected
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ('first_name', 'expected'),
+    [
+        ('JEAN-PIERRE', 'Jean-Pierre'),
+        ('jean-pierre', 'Jean-Pierre'),
+        ('ÉLODIE', 'Élodie'),
+        ('JoAnne', 'JoAnne'),
+        ('Marie Ève', 'Marie Ève'),
+        ('', ''),
+    ],
+)
+def test_a_first_name_is_capitalised_only_when_its_case_tells_nothing(
+    first_name: str, expected: str
+):
+    assert NameFormatter.format_first_name(first_name) == expected
+
+
+@pytest.mark.unit
+def test_a_full_name_capitalises_the_first_name():
+    formatter = NameFormatterManager().get_object('FIRST_LAST')
+    assert formatter.format('JEAN', 'Tour') == 'Jean Tour'
