@@ -1501,7 +1501,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         trf_title = TrfPlayerTitle.get_core_object(trf_player.title)
         stored_player = StoredPlayer(
             id=trf_player.id,
-            last_name=trf_player.name.split(',')[0].strip().upper(),
+            last_name=trf_player.name.split(',')[0].strip(),
             ratings=ratings,
             first_name=(
                 trf_player.name.split(',')[1].strip()

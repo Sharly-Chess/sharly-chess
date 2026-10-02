@@ -115,7 +115,7 @@ def test_a_player_who_has_not_played_is_deleted(
     assert created.status_code == 200
     entered = EVENT.tournament().tournament_players
     assert len(entered) == before + 1
-    latecomer = next(player for player in entered if player.last_name == 'LATECOMER')
+    latecomer = next(player for player in entered if player.last_name == 'Latecomer')
     response = http.delete(f'/player-delete/{EVENT_ID}/{latecomer.id}')
     assert response.status_code == 200
     assert len(EVENT.tournament().tournament_players) == before
@@ -174,9 +174,9 @@ def test_a_player_is_stored_as_the_form_was_filled_in(
     entered = next(
         player
         for player in EVENT.tournament().tournament_players
-        if player.last_name == 'DOE'
+        if player.last_name == 'doe'
     )
-    assert entered.first_name == 'John'
+    assert entered.first_name == 'john'
     assert entered.date_of_birth == date(2000, 10, 30)
     assert entered.gender == PlayerGender.MAN
     assert entered.club.name == 'SC Club'
@@ -204,7 +204,7 @@ def test_a_player_is_renamed_and_then_removed(http: TestClient, tournament: Tour
     entered = next(
         player
         for player in EVENT.tournament().tournament_players
-        if player.last_name == 'DOE'
+        if player.last_name == 'doe'
     )
 
     renamed = http.patch(
@@ -216,7 +216,7 @@ def test_a_player_is_renamed_and_then_removed(http: TestClient, tournament: Tour
         player.last_name
         for player in EVENT.tournament().tournament_players
         if player.id == entered.id
-    ] == ['HOE']
+    ] == ['hoe']
 
     removed = http.delete(f'/player-delete/{EVENT_ID}/{entered.id}')
     assert removed.status_code == 200

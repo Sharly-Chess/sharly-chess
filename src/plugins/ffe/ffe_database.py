@@ -87,8 +87,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         fide_title = PlayerTitle(row['fide_title'])
         return StoredPlayer(
             id=0,
-            first_name=row['first_name'].title() if row['first_name'] else '',
-            last_name=row['last_name'].upper(),
+            first_name=row['first_name'] or '',
+            last_name=row['last_name'],
             date_of_birth=datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date(),
             gender=PlayerGender(row['gender']),
             title=fide_title.open_value,

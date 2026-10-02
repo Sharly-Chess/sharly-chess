@@ -123,8 +123,8 @@ class FFESqlServer(SqlServer):
         fide_title = PapiPlayerTitle.get_core_object(row['FideTitre'] or '')
         return StoredPlayer(
             id=None,
-            first_name=row['Prenom'].title() if row['Prenom'] else '',
-            last_name=row['Nom'].upper(),
+            first_name=row['Prenom'] or '',
+            last_name=row['Nom'],
             date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
             title=fide_title.open_value,

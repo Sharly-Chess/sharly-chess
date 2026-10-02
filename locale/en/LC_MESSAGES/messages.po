@@ -1805,6 +1805,9 @@ msgstr ""
 msgid "Cape Verde"
 msgstr ""
 
+msgid "Capitalise last names"
+msgstr ""
+
 msgid "Captain"
 msgstr ""
 
@@ -3870,6 +3873,9 @@ msgstr ""
 msgid "First FIDE rating (based only on this tournament)"
 msgstr ""
 
+msgid "First Last"
+msgstr ""
+
 msgid "First board is always White for team 1."
 msgstr ""
 
@@ -3902,6 +3908,9 @@ msgid "First round"
 msgstr ""
 
 msgid "First team:"
+msgstr ""
+
+msgid "First, Last"
 msgstr ""
 
 msgid "Fixed board"
@@ -4872,6 +4881,9 @@ msgstr ""
 msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
 msgstr ""
 
+msgid "Last First"
+msgstr ""
+
 msgid "Last board:"
 msgstr ""
 
@@ -4911,6 +4923,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
+msgstr ""
+
+msgid "Last, First"
 msgstr ""
 
 msgid "Latvia"
@@ -5620,6 +5635,9 @@ msgstr ""
 
 msgctxt "name column header"
 msgid "Name"
+msgstr ""
+
+msgid "Name format:"
 msgstr ""
 
 msgid "Name:"
@@ -12398,10 +12416,6 @@ msgstr ""
 
 #, python-brace-format
 msgid "{family_type}-screen"
-msgstr ""
-
-#, python-brace-format
-msgid "{first_name} {last_name}"
 msgstr ""
 
 #, python-brace-format

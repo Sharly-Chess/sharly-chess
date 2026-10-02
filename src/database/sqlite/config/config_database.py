@@ -99,6 +99,10 @@ class ConfigDatabase(MigrationDatabase):
             last_notified_version=row['last_notified_version'],
             locale=row['locale'],
             date_formatter=row['date_formatter'],
+            name_formatter=row['name_formatter'],
+            capitalise_last_name=self.load_bool_from_database_field(
+                row['capitalise_last_name']
+            ),
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -130,6 +134,8 @@ class ConfigDatabase(MigrationDatabase):
                 'last_notified_version',
                 'locale',
                 'date_formatter',
+                'name_formatter',
+                'capitalise_last_name',
             ],
         )
         field_sets = (f'`{f}` = ?' for f in fields)

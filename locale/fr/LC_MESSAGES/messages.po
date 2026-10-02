@@ -1101,7 +1101,7 @@ msgid "Alternate colours"
 msgstr "Alterner les couleurs"
 
 msgid "An error found after the end of the next round is corrected for the rating report only: the pairings and the standings keep the game as recorded."
-msgstr "Une erreur découverte après la fin de la ronde suivante n'est corrigée que pour le rapport Elo : les appariements et le classement conservent la partie telle qu'elle a été saisie."
+msgstr "Une erreur découverte après la fin de la ronde suivante n'est corrigée que pour le rapport Elo : les appariements et le classement conservent la partie telle qu'elle a été saisie."
 
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
@@ -1804,6 +1804,9 @@ msgstr "Impossible de répartir les {remaining} joueur·euses restant·es dans u
 
 msgid "Cape Verde"
 msgstr "Cap-Vert"
+
+msgid "Capitalise last names"
+msgstr "Noms de famille en majuscules"
 
 msgid "Captain"
 msgstr "Capitaine"
@@ -3870,6 +3873,9 @@ msgstr "Finlande"
 msgid "First FIDE rating (based only on this tournament)"
 msgstr "Premier classement FIDE (basé uniquement sur ce tournoi)"
 
+msgid "First Last"
+msgstr "Prénom Nom"
+
 msgid "First board is always White for team 1."
 msgstr "Le premier échiquier est toujours attribué aux Blancs pour l’équipe 1."
 
@@ -3903,6 +3909,9 @@ msgstr "Première ronde"
 
 msgid "First team:"
 msgstr "Première équipe :"
+
+msgid "First, Last"
+msgstr "Prénom, Nom"
 
 msgid "Fixed board"
 msgstr "Échiquier fixe"
@@ -4872,6 +4881,9 @@ msgstr "Laos"
 msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
 msgstr "Plus grand nombre de joueur·euses qu'une équipe peut avoir dans son effectif, laisser vide pour aucune limite."
 
+msgid "Last First"
+msgstr "Nom Prénom"
+
 msgid "Last board:"
 msgstr "Dernier échiquier :"
 
@@ -4912,6 +4924,9 @@ msgstr "Dernière mise à jour : {updated_at}"
 #, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
+
+msgid "Last, First"
+msgstr "Nom, Prénom"
 
 msgid "Latvia"
 msgstr "Lettonie"
@@ -5621,6 +5636,9 @@ msgstr "Nom"
 msgctxt "name column header"
 msgid "Name"
 msgstr "Nom"
+
+msgid "Name format:"
+msgstr "Format des noms :"
 
 msgid "Name:"
 msgstr "Nom :"
@@ -7426,7 +7444,7 @@ msgstr "Des points selon le classement final — le vainqueur marque autant de p
 
 #, python-brace-format
 msgid "Points for a win: {win}, for a draw: {draw}."
-msgstr "Points pour une victoire : {win}, pour une nulle : {draw}."
+msgstr "Points pour une victoire : {win}, pour une nulle : {draw}."
 
 msgid "Points per place:"
 msgstr "Points par place :"
@@ -7826,7 +7844,7 @@ msgid "Reason"
 msgstr "Raison"
 
 msgid "Reason given by the pairing engine:"
-msgstr "Raison donnée par le moteur d'appariement :"
+msgstr "Raison donnée par le moteur d'appariement :"
 
 msgid "Received a Full-Point Bye for the next round"
 msgstr "Ont reçu un bye point entier pour la ronde à venir"
@@ -8309,7 +8327,7 @@ msgstr "Rondes {min_round}-{max_round}"
 
 #, python-brace-format
 msgid "Rounds: {rounds}."
-msgstr "Rondes : {rounds}."
+msgstr "Rondes : {rounds}."
 
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
@@ -9462,7 +9480,7 @@ msgstr "L'URL de l'image à afficher."
 
 #, python-brace-format
 msgid "The accelerated rounds are the first half of the rounds, rounded up. In the first half of the accelerated rounds, rounded up, each group A player gets {win} virtual points; in the other accelerated rounds, {draw}. Group B players get no virtual points."
-msgstr "Les rondes accélérées sont la première moitié des rondes, arrondie au supérieur. Dans la première moitié des rondes accélérées, arrondie au supérieur, chaque joueur·euse du groupe A reçoit {win} points virtuels ; dans les autres rondes accélérées, {draw}. Les joueur·euses du groupe B ne reçoivent aucun point virtuel."
+msgstr "Les rondes accélérées sont la première moitié des rondes, arrondie au supérieur. Dans la première moitié des rondes accélérées, arrondie au supérieur, chaque joueur·euse du groupe A reçoit {win} points virtuels ; dans les autres rondes accélérées, {draw}. Les joueur·euses du groupe B ne reçoivent aucun point virtuel."
 
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non connecté·es."
@@ -9784,7 +9802,7 @@ msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, un
 
 #, python-format
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
-msgstr "Le moteur d'appariement n'a pas pu apparier la ronde %(round)d : vos appariements ne peuvent pas être comparés aux siens."
+msgstr "Le moteur d'appariement n'a pas pu apparier la ronde %(round)d : vos appariements ne peuvent pas être comparés aux siens."
 
 msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
 msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi et les parties corrigées pour le rapport Elo, consignées en commentaire dans son TRF."
@@ -9829,7 +9847,7 @@ msgstr "Les appariements de la ronde {round} ont été rétablis."
 
 #, python-brace-format
 msgid "The pairings of round {round} are being edited: validate or cancel them before changing the pairings of another round."
-msgstr "Les appariements de la ronde {round} sont en cours de modification : validez-les ou annulez la modification avant de modifier les appariements d'une autre ronde."
+msgstr "Les appariements de la ronde {round} sont en cours de modification : validez-les ou annulez la modification avant de modifier les appariements d'une autre ronde."
 
 #, python-brace-format
 msgid "The pairings of round {round} have been validated."
@@ -9864,10 +9882,10 @@ msgid "The players are split by pairing number into group A, the first half of t
 msgstr "Les joueur·euses sont réparti·es par numéro d'appariement entre le groupe A, la première moitié des joueur·euses arrondie au nombre pair supérieur, et le groupe B, les autres joueur·euses."
 
 msgid "The players are split by pairing number into three groups: group A, the first pairing numbers, then group B, then group C."
-msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en trois groupes : le groupe A, les premiers numéros d'appariement, puis le groupe B, puis le groupe C."
+msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en trois groupes : le groupe A, les premiers numéros d'appariement, puis le groupe B, puis le groupe C."
 
 msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
-msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en deux groupes : le groupe A, les premiers numéros d'appariement, et le groupe B, les autres."
+msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en deux groupes : le groupe A, les premiers numéros d'appariement, et le groupe B, les autres."
 
 msgid "The points are not among the ranking criteria."
 msgstr "Les points ne font pas partie des critères de classement."
@@ -12401,10 +12419,6 @@ msgstr "Il y a {days} jours"
 #, python-brace-format
 msgid "{family_type}-screen"
 msgstr "ecran-{family_type}"
-
-#, python-brace-format
-msgid "{first_name} {last_name}"
-msgstr "{last_name} {first_name}"
 
 #, python-brace-format
 msgid "{first} — Pairing-Allocated Bye"

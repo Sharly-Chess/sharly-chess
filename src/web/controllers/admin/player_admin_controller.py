@@ -316,7 +316,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         sorted_players = sorted(
             players,
-            key=lambda player: sort_key_function(player) + player.name_sort_key,
+            key=lambda player: sort_key_function(player) + player.display_name_sort_key,
             reverse=not is_asc,
         )
         return [player.id for player in sorted_players]
@@ -1167,7 +1167,7 @@ class PlayerAdminController(BaseEventAdminController):
             return False
         return bool(
             stored.first_name == existing.first_name
-            and stored.last_name == existing.last_name
+            and normalized_key(stored.last_name) == normalized_key(existing.last_name)
         )
 
     @classmethod
@@ -1364,8 +1364,8 @@ class PlayerAdminController(BaseEventAdminController):
 
         return StoredPlayer(
             id=None,
-            first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
-            last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
+            first_name=WebContext.form_data_to_str(data, 'first_name') or '',
+            last_name=WebContext.form_data_to_str(data, 'last_name') or '',
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             gender=WebContext.form_data_to_str(data, 'gender')

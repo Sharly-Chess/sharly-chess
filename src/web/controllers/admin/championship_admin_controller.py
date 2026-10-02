@@ -198,7 +198,9 @@ class ChampionshipAdminController(BaseAdminController):
                 name = competitor.name
                 secondary = competitor.federation
             else:
-                name = f'{competitor.last_name}, {competitor.first_name}'
+                name = SharlyChessConfig().name_formatter.format(
+                    competitor.first_name, competitor.last_name
+                )
                 secondary = str(competitor.fide_id or '')
             participations = []
             categories: list[str] = []
@@ -357,7 +359,9 @@ class ChampionshipAdminController(BaseAdminController):
                 federation = team.federation
             else:
                 player = cast(ReconciledPlayer, competitor)
-                name = f'{player.last_name}, {player.first_name}'
+                name = SharlyChessConfig().name_formatter.format(
+                    player.first_name, player.last_name
+                )
                 secondary = str(player.fide_id or '')
                 category = championship.player_age_category(player)
                 year_of_birth = player.year_of_birth

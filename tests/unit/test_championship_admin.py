@@ -189,7 +189,7 @@ def test_competitor_rows_select_players_and_carry_all_source_entries():
 
     row = ChampionshipAdminController._competitor_rows(cast(Any, championship))[0]
 
-    assert row['name'] == 'MURER, Brian'
+    assert row['name'] == 'MURER Brian'
     assert row['secondary'] == '651038188'
     assert row['category'] == 'U12'
     assert row['gender'] == 'M'

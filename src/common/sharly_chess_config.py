@@ -37,6 +37,7 @@ from utils.enum import Result, Extension
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 from utils.date_time import DateFormatterManager
+from utils.name_formatter import NameFormatter, NameFormatterManager
 from utils.program_variables import ProgramVar
 
 if TYPE_CHECKING:
@@ -55,6 +56,7 @@ class SharlyChessConfig(metaclass=Singleton):
         self.web_port: int | None = None
         self._stored_config: StoredConfig | None = None
         self._date_formatter: DateFormatter | None = None
+        self._name_formatter: NameFormatter | None = None
         self._federations_by_locale: dict[str, dict[str, str]] = {}
 
     @staticmethod
@@ -179,6 +181,10 @@ class SharlyChessConfig(metaclass=Singleton):
         self._date_formatter = DateFormatterManager().get_object(
             stored_config.date_formatter
         )
+        self._name_formatter = NameFormatterManager().get_object(
+            stored_config.name_formatter
+        )
+        self._name_formatter.capitalise_last_name = stored_config.capitalise_last_name
         enable_experimental_features(stored_config.experimental)
         plugin_manager.reload_register()
         self._stored_config = stored_config
@@ -253,6 +259,13 @@ class SharlyChessConfig(metaclass=Singleton):
     def date_formatter(self) -> DateFormatter:
         assert self._date_formatter is not None
         return self._date_formatter
+
+    @property
+    def name_formatter(self) -> NameFormatter:
+        if self._name_formatter is None:
+            self.load_and_set_env()
+        assert self._name_formatter is not None
+        return self._name_formatter
 
     @property
     def default_player_category_set(self) -> 'PlayerCategorySet':

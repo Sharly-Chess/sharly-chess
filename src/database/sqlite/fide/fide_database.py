@@ -96,8 +96,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
         }
         return StoredPlayer(
             id=None,
-            first_name=row['first_name'].title() if row['first_name'] else '',
-            last_name=row['last_name'].upper(),
+            first_name=row['first_name'] or '',
+            last_name=row['last_name'],
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
