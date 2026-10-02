@@ -172,6 +172,12 @@
     {% endif %}
 {% endmacro %}
 
+{% macro pairing_rules_link(item) %}
+    {% if item.pairing_variation.rules_link_template %}
+        {% include item.pairing_variation.rules_link_template %}
+    {% endif %}
+{% endmacro %}
+
 {% macro pairing(item, view, placement) %}
     {% set warning_message = item.pairing_warning_message %}
     {% set pairing_name = (
@@ -182,6 +188,7 @@
     {% if view == 'list' %}
         <span class="text-truncate" title="{{ pairing_name }}">
             {{ pairing_name }}
+            {{ pairing_rules_link(item) }}
             {% if warning_message %}<i class="bi-exclamation-triangle-fill text-warning ms-1" {{ macros.tooltip_attributes('warning', warning_message, 'top') }}></i>{% endif %}
         </span>
     {% else %}
@@ -199,6 +206,7 @@
                         ></i>
                     {% endif %}
                 {% endwith %}
+                {{ pairing_rules_link(item) }}
                 {% if warning_message %}
                     <i
                         class="bi-exclamation-triangle-fill text-warning ps-1"

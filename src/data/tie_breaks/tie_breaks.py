@@ -13,7 +13,11 @@ from typing import TYPE_CHECKING, SupportsFloat, Any
 from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
-from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
+from data.pairings.systems import (
+    RoundRobinPairingSystem,
+    SwissPairingSystem,
+    TeamRoundRobinPairingSystem,
+)
 from data.player import TournamentPlayer
 from data.tie_breaks.categories import (
     TieBreakCategory,
@@ -1136,7 +1140,7 @@ class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
         """Buchholz depends on which opponents were played, so it
         gives the same value to every player in a round-robin."""
-        return [RoundRobinPairingSystem()]
+        return [RoundRobinPairingSystem(), TeamRoundRobinPairingSystem()]
 
     @cached_property
     def legacy_03_2026(self) -> bool:

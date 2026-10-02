@@ -51,6 +51,8 @@
 - In FIDE mode, each correction to the previous round is confirmed and logged; older rounds cannot be changed (5.2.0)
 - A game of an older round found wrong can be corrected for the rating report only: the TRF and Papi exports give it as corrected, the TRF with a comment saying what the pairings and the standings used (5.2.0)
 - A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
+- Double round robins can choose whether the last two rounds of the first cycle are reversed, as recommended by FIDE to avoid three games in a row with the same colour (5.2.0)
+- Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
 
 ## Documents
 
@@ -58,6 +60,7 @@
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
 - The FFE T2 minutes open with the events logged for the chosen tournaments (5.2.0)
+- The rules of the accelerated systems can be printed, from the documents or from the pairing settings: the rules of the system, the groups, the virtual points granted round by round and the players of each group (5.2.0)
 
 ## Screens
 

@@ -1,0 +1,37 @@
+{% if settings_read_only %}
+    <a
+        class="btn btn-outline-primary text-nowrap me-auto"
+        href="{{ url_for(
+            'document-view',
+            event_uniq_id=admin_event.uniq_id,
+            document='acceleration-rules',
+        ) ~ '?options=' ~ (('tournament=' ~ admin_tournament.id) | urlencode) }}"
+        target="_blank"
+    >
+        <i class="bi-printer-fill pe-1"></i>
+        {{ _('Print the rules') }}
+    </a>
+{% else %}
+    <button
+        type="button"
+        class="btn btn-outline-primary text-nowrap me-auto"
+        hx-post="{{ url_for(
+            'pairings-settings-print-check',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round,
+        ) ~ ('?for_pairing=1' if settings_for_pairing else '') }}"
+        hx-include="#modal-form"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt="this"
+        {{ macros.tooltip_attributes(
+            'info',
+            _('Print the rules with the settings above, without saving them.'),
+            'top',
+        ) }}
+    >
+        <i class="bi-printer-fill pe-1"></i>
+        {{ _('Print the rules') }}
+    </button>
+{% endif %}

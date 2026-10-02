@@ -1,7 +1,8 @@
 from datetime import date, datetime
 import weakref
 from collections import Counter, defaultdict
-from collections.abc import Collection
+from collections.abc import Collection, Iterator
+from contextlib import contextmanager
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
@@ -1139,6 +1140,22 @@ class Tournament:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
         self.stored_tournament.pairing_settings = pairing_settings
         Utils.reset_cached_properties(self, 'pairing_settings')
+
+    @contextmanager
+    def previewing_pairing_settings(
+        self, pairing_settings: dict[str, Any]
+    ) -> Iterator[None]:
+        """Read the tournament with *pairing_settings* in place of the
+        stored ones, without saving them. The block must not await: the
+        loaded tournament is shared by every request."""
+        stored_pairing_settings = self.stored_tournament.pairing_settings
+        self.stored_tournament.pairing_settings = pairing_settings
+        Utils.reset_cached_properties(self, 'pairing_settings')
+        try:
+            yield
+        finally:
+            self.stored_tournament.pairing_settings = stored_pairing_settings
+            Utils.reset_cached_properties(self, 'pairing_settings')
 
     def get_pairing_settings_data_errors(self, data: dict[str, str]) -> dict[str, Any]:
         return self.pairing_variation.get_settings_data_errors(self, data)

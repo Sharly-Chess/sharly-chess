@@ -48,6 +48,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.RoundRobinSchedulePrintDocument,
             documents.MolterTablePrintDocument,
             documents.ScheveningenTablePrintDocument,
+            documents.AccelerationRulesPrintDocument,
             documents.MatchSheetsPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
