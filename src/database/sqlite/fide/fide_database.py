@@ -196,6 +196,16 @@ class FideDatabase(LocalSourcePlayerDatabase):
             return self._get_player_from_row(player_row)
         return None
 
+    def get_stored_players_by_fide_ids(
+        self, player_fide_ids: list[int]
+    ) -> list[StoredPlayer]:
+        query_array = ','.join('?' for _ in player_fide_ids)
+        self.execute(
+            f'SELECT * FROM `player` WHERE `fide_id` IN ({query_array})',
+            player_fide_ids,
+        )
+        return [self._get_player_from_row(player_row) for player_row in self.fetchall()]
+
     def covers_rating_period(self, day: date) -> bool:
         """Whether the installed database is the rating list of *day*'s period.
 

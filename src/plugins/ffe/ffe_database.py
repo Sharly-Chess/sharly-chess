@@ -229,6 +229,14 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
+    def get_stored_players_by_ffe_ids(self, ffe_ids: list[int]) -> list[StoredPlayer]:
+        query_array = ','.join('?' for _ in ffe_ids)
+        self.execute(
+            f'SELECT * FROM `player` WHERE `ffe_id` IN ({query_array})',
+            ffe_ids,
+        )
+        return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+
     def get_stored_players_by_fide_ids(self, fide_ids: list[int]) -> list[StoredPlayer]:
         query_array = ', '.join('?' for _ in fide_ids)
         self.execute(

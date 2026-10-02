@@ -32,6 +32,10 @@ function keyboardShortcutManager(event) {
             if (event.ctrlKey || event.altKey) {
                 break
             }
+            if (event.shiftKey) {
+                document.body.dispatchEvent(new CustomEvent("SC_Shift_Plus"));
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_Plus"));
             break;
 

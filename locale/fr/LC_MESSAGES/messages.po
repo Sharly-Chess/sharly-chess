@@ -841,6 +841,9 @@ msgstr "Ajouter un groupe"
 msgid "Add manual estimated ratings"
 msgstr "Ajouter des classement estimés manuels"
 
+msgid "Add multiple players"
+msgstr "Ajouter plusieurs joueur·euses"
+
 msgid "Add period"
 msgstr "Ajouter une période"
 
@@ -11720,6 +11723,18 @@ msgstr "{title} {full_name} {rating}{rating_type}"
 #, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
+
+#, python-brace-format
+msgid "{added_count} player added and "
+msgid_plural "{added_count} players added and "
+msgstr[0] "{added_count} joueur·euse ajouté·e et "
+msgstr[1] "{added_count} joueur·euses ajouté·es et "
+
+#, python-brace-format
+msgid "{removed_count} player removed."
+msgid_plural "{removed_count} players removed."
+msgstr[0] "{removed_count} joueur·euse supprimé·e."
+msgstr[1] "{removed_count} joueur·euses supprimé·es."
 
 msgid "—"
 msgstr "—"

@@ -348,6 +348,18 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         with FfeDatabase() as database:
             return database.get_stored_player_by_ffe_id(int(player_source_id))
 
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> list[StoredPlayer]:
+        with FfeDatabase() as database:
+            return database.get_stored_players_by_ffe_ids(
+                [
+                    int(player_source_id)
+                    for player_source_id in player_source_ids
+                    if player_source_id.isdigit()
+                ]
+            )
+
     @property
     def import_identifier_column(self) -> DatasheetColumn:
         return self._import_identifier_column
@@ -442,6 +454,18 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
         async with FFESqlServer() as ffe_sql_server:
             return await ffe_sql_server.get_stored_player_by_ffe_id(
                 int(player_source_id)
+            )
+
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> list[StoredPlayer]:
+        async with FFESqlServer() as ffe_sql_server:
+            return await ffe_sql_server.get_stored_players_by_ffe_ids(
+                [
+                    int(player_source_id)
+                    for player_source_id in player_source_ids
+                    if player_source_id.isdigit()
+                ]
             )
 
     async def _search_player(

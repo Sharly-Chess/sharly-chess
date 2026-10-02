@@ -96,23 +96,53 @@
                         {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
                     {% endif %}
                 >
-                    <button
-                        data-testid="add-player-button"
-                        class="btn btn-primary text-nowrap"
-                        hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                        {% if add_player_error_message %}
-                            disabled
-                        {% else %}
-                            hx-trigger="click, SC_Plus from:body"
-                        {% endif %}
-                    >
-                        <i class="bi-plus-square pe-1"></i>
-                        {{ _('Add') }}
-                    </button>
+                    <div class="btn-group dropdown">
+                        <button
+                            data-testid="add-player-button"
+                            class="btn btn-primary text-nowrap"
+                            hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            {% if add_player_error_message %}
+                                disabled
+                            {% else %}
+                                hx-trigger="click, SC_Plus from:body"
+                            {% endif %}
+                        >
+                            <i class="bi-plus-square pe-1"></i>
+                            {{ _('Add') }}
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <button
+                                data-testid="add-player-button"
+                                class="dropdown-item"
+                                hx-get="{{ url_for('admin-player-bulk-add-modal', event_uniq_id=admin_event.uniq_id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                {% if add_player_error_message %}
+                                    disabled
+                                {% else %}
+                                    hx-trigger="click, SC_Shift_Plus from:body"
+                                {% endif %}
+                            >
+                                <i class="bi bi-shift"></i>
+                                <i class="bi-plus-square pe-1"></i>
+                                {{ _('Add multiple') }}
+                            </button>
+                        </div>
+                    </div>
                 </span>
             </div>
             <div class="top-nav-collapsible w-100 d-flex flex-wrap gap-2 pt-1">

@@ -1,0 +1,127 @@
+{% if connection_error %}
+    <i class="{{ data_source.search_error_icon }} text-danger pe-1"></i>
+    <span class="fst-italic">{{ connection_error }}</span>
+{% else %}
+    {% set selected_rows = row_count - import_errors_by_index|length %}
+    <div class="d-flex">
+        {% if not overwrite_players and admin_tournament and admin_tournament.tournament_players %}
+            <div class="form-check form-switch d-inline-block pe-3">
+                <input
+                    id="duplicated-switch"
+                    class="form-check-input"
+                    type="checkbox"
+                    onclick="$('.duplicated-row').toggle(this.checked)"
+                    checked
+                />
+                <label class="form-check-label"> {{ _('Existing players') }}</label>
+                <i
+                    class="bi-info-circle-fill ps-1"
+                    {{ macros.tooltip_attributes('', _(
+                        'Show the rows of players already existing in '
+                        'the tournament and the duplicated rows. '
+                    )) }}
+                ></i>
+            </div>
+        {% endif %}
+    </div>
+
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-post=""
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <table id="bulk-add-table" class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center" data-datasource="{{ data_source.id }}">
+            <thead class="modal-table-sticky-header">
+                <tr>
+                    <th class="text-nowrap text-start">
+                        <!-- <input
+                            type="checkbox"
+                            class="form-check-input blue-checkbox"
+                            onclick="
+                                $('.row-index-checkbox').prop('checked', this.checked);
+                                $('.row-index-checkbox').trigger('change');"
+                            checked
+                        />
+                        <span id="checked-player-count">{{ selected_rows }}</span>/{{ row_count }}-->
+                    </th>
+                    {% for name, _ in used_columns %}
+                        <th class="text-nowrap text-start">
+                            {{ name }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in search_results %}
+                    <tr onclick="onRowClick(this, event)" style="cursor:pointer" {% if player.in_tournament %}data-in-tournament="{{ player.in_tournament }}"{% endif %} data-id="{{ player.datasource_id }}">
+                        <td>
+                            <span class="d-flex">
+                                <input
+                                    class="form-check-input blue-checkbox row-index-checkbox ps-1"
+                                    style="opacity:1"
+                                    type="checkbox"
+                                    name="row_indexes"
+                                    value="{{ loop.index }}"
+                                    {% if player.in_tournament %}checked{% endif %}
+                                    disabled
+                                />
+                                <div class="flex-grow-1"></div>
+                            </span>
+                        </td>
+                        {% for _, field in used_columns %}
+                            {% if field == "category" %}
+                                {% set value = player.category_name %}
+                            {% else %}
+                                {% set value = player[field] %}
+                            {% endif %}
+                            <td class="text-nowrap text-start text-ellipsis mw-15em">
+                                {{ value }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    <style>
+    .table-striped>tbody>tr.green>td {
+        background-color: rgba(var(--bs-success-rgb), 0.6);
+    }
+
+    .table-striped>tbody>tr.red>td {
+        background-color: rgba(var(--bs-danger-rgb), 0.6);
+    }
+    </style>
+    <script>
+    updatePageDisplay({{page}} || 1, {{pages}} || 1)
+
+    function onRowClick(row, event) {
+        console.log(row);
+        let checkbox = $(row).find("input[type=checkbox]");
+        //console.log(val)
+        checkbox.prop("checked", !checkbox.prop("checked"))
+        if (row.dataset.inTournament) {
+            if (checkbox.is(":checked")){
+                $(row).removeClass("red")
+                playersRemoved = playersRemoved.filter(x => x != row.dataset.inTournament)
+            } else {
+                $(row).addClass("red")
+                playersRemoved.push(row.dataset.inTournament)
+            }
+        } else {
+            if (checkbox.is(":checked")){
+                $(row).addClass("green")
+                playersAdded.push(row.dataset.id)
+            } else {
+                $(row).removeClass("green")
+                playersAdded = playersAdded.filter(x => x != row.dataset.id)
+            }
+        }
+        console.log(playersAdded, playersRemoved)
+        //event.preventDefault()
+    }
+
+    </script>
+{% endif %}

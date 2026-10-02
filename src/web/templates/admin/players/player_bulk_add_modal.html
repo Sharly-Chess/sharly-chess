@@ -1,0 +1,190 @@
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-player-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Add multiple players') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if 'alert' in errors %}
+                {% with type='error', message=errors['alert'] %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <h4>
+                {{ pgettext('player search section title', 'Search') }}
+            </h4>
+            {% with usage = 'bulk-add' %}
+                {% include '/admin/common/search_filter_form.html' %}
+                {% include '/admin/common/player_search.html' %}
+            {% endwith %}
+
+            <div class="row gy-2 gx-3 py-3">
+                <div class="col-12 col-sm-6">
+                    {{ admin_macros.select_input(
+                        name='tournament_id',
+                        label=_('Tournament:'),
+                        select_options=tournament_options,
+                        onchange="$('#search-input')[0].dispatchEvent(new CustomEvent('refresh_search_query', {bubbles: true, cancelable: true}));",
+                    ) }}
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div id="page-controls" class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end">
+                        <div class="d-inline-flex gap-1">
+                            <span {{ macros.tooltip_attributes('info', _('First page'), 'bottom') }}>
+                                <button
+                                    class="btn btn-outline-primary text-nowrap"
+                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-target="#bulk-search-result-container"
+                                    hx-indicator="#please-wait"
+                                    hx-on::after-request="window.scrollTo(0, 0)"
+                                    {% if false %}
+                                        disabled
+                                    {% else %}
+                                        hx-trigger="click, SC_Ctrl_Shift_ArrowLeft from:body"
+                                    {% endif %}
+                                    hx-vals='js:{
+                                        search: $("#search-input").val(),
+                                        page: 1,
+                                        data_source_id: $("#data-source-select").val(),
+                                        usage: "{{ usage }}",
+                                        filters: getFilters(),
+                                        tournament_id: $("#tournament-id").val() || 1,
+                                        {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
+                                    }'
+                                >
+                                    <i class="bi bi-skip-backward-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                            <span {{ macros.tooltip_attributes('info', _('Previous page'), 'bottom') }}>
+                                <button
+                                    class="btn btn-outline-primary text-nowrap"
+                                    style="transform: scaleX(-1);"
+                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-target="#bulk-search-result-container"
+                                    hx-indicator="#please-wait"
+                                    hx-on::after-request="window.scrollTo(0, 0)"
+                                    {% if false %}
+                                        disabled
+                                    {% else %}
+                                        hx-trigger="click, SC_Shift_ArrowLeft from:body"
+                                    {% endif %}
+                                    hx-vals='js:{
+                                        search: $("#search-input").val(),
+                                        page: currentPage - 1,
+                                        data_source_id: $("#data-source-select").val(),
+                                        usage: "{{ usage }}",
+                                        filters: getFilters(),
+                                        tournament_id: $("#tournament-id").val() || 1,
+                                    }'
+                                >
+                                    <i class="bi bi-play-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                            <div style="width:150px">
+                                {{ admin_macros.number_input(
+                                    name='page_number',
+                                    label=_('Page:'),
+                                ) }}
+                            </div>/ <span id="page-count">1</span>
+                            <span {{ macros.tooltip_attributes('info', _('Next page'), 'bottom') }}>
+                                <button
+                                    class="btn btn-outline-primary text-nowrap"
+                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-target="#bulk-search-result-container"
+                                    hx-indicator="#please-wait"
+                                    hx-on::after-request="window.scrollTo(0, 0)"
+                                    {% if false %}
+                                        disabled
+                                    {% else %}
+                                        hx-trigger="click, SC_Shift_ArrowRight from:body"
+                                    {% endif %}
+                                    hx-vals='js:{
+                                        search: $("#search-input").val(),
+                                        page: currentPage + 1,
+                                        data_source_id: $("#data-source-select").val(),
+                                        usage: "{{ usage }}",
+                                        filters: getFilters(),
+                                        tournament_id: $("#tournament-id").val() || 1,
+                                        {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
+                                    }'
+                                >
+                                    <i class="bi-play-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                            <span {{ macros.tooltip_attributes('info', _('Last page'), 'bottom') }}>
+                                <button
+                                    class="btn btn-outline-primary text-nowrap"
+                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-target="#bulk-search-result-container"
+                                    hx-indicator="#please-wait"
+                                    hx-on::after-request="window.scrollTo(0, 0)"
+                                    {% if false %}
+                                        disabled
+                                    {% else %}
+                                        hx-trigger="click, SC_Ctrl_Shift_ArrowRight from:body"
+                                    {% endif %}
+                                    hx-vals='js:{
+                                        search: $("#search-input").val(),
+                                        page: pageCount,
+                                        data_source_id: $("#data-source-select").val(),
+                                        usage: "{{ usage }}",
+                                        filters: getFilters(),
+                                        tournament_id: $("#tournament-id").val() || 1,
+                                        {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
+                                    }'
+                                >
+                                    <i class="bi bi-fast-forward-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="bulk-search-result-container">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <span id="submit-button-container">
+                <button
+                    class="text-nowrap white btn btn-primary"
+                    hx-post="{{ url_for('admin-player-bulk-add', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-trigger="click, SC_Ctrl_Shift_ArrowRight from:body"
+                    hx-vals='js:{
+                        players_added: playersAdded,
+                        players_removed: playersRemoved,
+                        data_source: $("#bulk-add-table").data("datasource"),
+                        tournament_id: $("#tournament-id").val(),
+                    }'
+                    hx-target="body"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Add selection') }}
+                </button>
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+var currentPage;
+var pageCount;
+var playersAdded = [];
+var playersRemoved = [];
+
+function updatePageDisplay(current, count) {
+    currentPage = current;
+    pageCount = count;
+
+    $("#page-number").val(currentPage || 1)
+    $("#page-count").html(pageCount || 1)
+}
+</script>

@@ -23,13 +23,19 @@
                 name="search"
                 class="dropdown form-control"
                 type="search"
-                hx-trigger="keyup changed delay:400ms, data_source_change, filter_change"
-                hx-target="#search-results"
-                hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                hx-trigger="keyup changed delay:400ms, data_source_change, filter_change, refresh_search_query"
+                {% if usage == 'bulk-add' %}
+                    hx-target="#bulk-search-result-container"
+                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                {% else %}
+                    hx-target="#search-results"
+                    hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                {% endif %}
                 hx-vals='js:{
                     data_source_id: $("#data-source-select").val(),
                     usage: "{{ usage }}",
                     filters: getFilters(),
+                    {% if usage == 'bulk-add' %}tournament_id: $("#tournament-id").val(),{% endif %}
                     {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
                 }'
                 hx-on::before-request="refreshSearchResultsVisibility();"

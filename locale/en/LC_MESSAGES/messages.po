@@ -841,6 +841,9 @@ msgstr ""
 msgid "Add manual estimated ratings"
 msgstr ""
 
+msgid "Add multiple players"
+msgstr ""
+
 msgid "Add period"
 msgstr ""
 
@@ -11718,6 +11721,18 @@ msgstr ""
 #, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr ""
+
+#, python-brace-format
+msgid "{added_count} player added and "
+msgid_plural "{added_count} players added and "
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{removed_count} player removed."
+msgid_plural "{removed_count} players removed."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "—"
 msgstr ""

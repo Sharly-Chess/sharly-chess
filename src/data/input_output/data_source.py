@@ -304,6 +304,13 @@ class DataSource(IdentifiableEntity, ABC):
         """Get a player by its identifier in the data source."""
 
     @abstractmethod
+    async def get_stored_players_by_source_ids(
+        self,
+        player_source_ids: list[str],
+    ) -> list[StoredPlayer]:
+        """Get a list of players from their identifiers in the data source."""
+
+    @abstractmethod
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         """Get the id of the player in the source formatted as a string."""
 
@@ -609,6 +616,19 @@ class FideDataSource(LocalDataSource):
         with FideDatabase() as database:
             return database.get_stored_player_by_fide_id(
                 player_fide_id=int(player_source_id),
+            )
+
+    async def get_stored_players_by_source_ids(
+        self,
+        player_source_ids: list[str],
+    ) -> list[StoredPlayer]:
+        with FideDatabase() as database:
+            return database.get_stored_players_by_fide_ids(
+                player_fide_ids=[
+                    int(player_source_id)
+                    for player_source_id in player_source_ids
+                    if player_source_id.isdigit()
+                ]
             )
 
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:

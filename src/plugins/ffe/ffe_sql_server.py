@@ -300,6 +300,14 @@ class FFESqlServer(SqlServer):
             'joueur.Ref = %s', [player_ffe_id]
         )
 
+    async def get_stored_players_by_ffe_ids(
+        self,
+        player_ffe_ids: list[int],
+    ) -> list[StoredPlayer]:
+        return await self._get_stored_players_by_condition(
+            f'joueur.Ref IN ({", ".join(["%s"] * len(player_ffe_ids))})', player_ffe_ids
+        )
+
     async def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
