@@ -577,7 +577,13 @@ class FFET2Type(FFETournamentsDocumentType):
         for tournament in tournaments:
             if not (entries := tournament.log_entries):
                 continue
-            lines = [f'{tournament.name} :']
+            if tournament.fide_mode:
+                fide_mode_status = 'mode FIDE'
+            else:
+                fide_mode_status = (
+                    f'mode FIDE quitté à la ronde {tournament.fide_mode_exit_round}'
+                )
+            lines = [f'{tournament.name} ({fide_mode_status}) :']
             for entry in entries:
                 line = f'- Ronde {entry.round_} : {entry.summary(tournament, "fr")}'
                 if entry.date:
