@@ -35,6 +35,7 @@ from data.pairings.acceleration import (
     Acceleration3GroupsSwissVariation,
 )
 from plugins.utils import PluginUtils
+from utils import Utils
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -116,6 +117,44 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('"Niçois" accelerated system')
+
+    def rules_description(self, tournament: Tournament) -> list[str]:
+        win_points = tournament.win_points
+        draw_points = tournament.draw_points
+        return [
+            _(
+                'The players are split by pairing number into three groups: '
+                'group A, the first pairing numbers, then group B, then '
+                'group C.'
+            ),
+            _(
+                'Up to the third-to-last round (round {round}), group A '
+                'players get {max} virtual points. Group B players start '
+                'with {b} virtual points and get {draw} more once they have '
+                'scored {b_first} points, and {draw} more again once they '
+                'have scored {b_second}. Group C players start with none and '
+                'get {draw} more virtual points for every {c_step} points '
+                'scored in the previous rounds. No player gets more than '
+                '{max} virtual points.'
+            ).format(
+                round=tournament.rounds - 2,
+                max=Utils.points_str(2 * win_points),
+                b=Utils.points_str(win_points),
+                draw=Utils.points_str(draw_points),
+                b_first=Utils.points_str(3 * draw_points),
+                b_second=Utils.points_str(5 * draw_points),
+                c_step=Utils.points_str(2 * draw_points),
+            ),
+            _(
+                'A player who has scored at least half of the points that '
+                'can be scored in the tournament ({half}) gets {max} '
+                'virtual points.'
+            ).format(
+                half=Utils.points_str(tournament.rounds * win_points / 2),
+                max=Utils.points_str(2 * win_points),
+            ),
+            _('No virtual points are given in the last two rounds.'),
+        ]
 
     @classmethod
     def compute_virtual_points(

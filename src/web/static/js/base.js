@@ -245,6 +245,25 @@ window.addEventListener("do_print_championship", function(event) {
     document.body.removeChild(form);
 })
 
+// The settings of the pairing settings form are printed without being
+// saved, so they are posted to the new tab.
+window.addEventListener("do_print_pairing_settings", function(event) {
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = event.detail.url;
+    form.target = '_blank';
+    for (const [name, value] of new FormData(document.getElementById('modal-form'))) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+})
+
 window.addEventListener("download_ready", function () {
     // Workaround for htmx not automatically doing this when redirecting
     // https://github.com/bigskysoftware/htmx/issues/3189

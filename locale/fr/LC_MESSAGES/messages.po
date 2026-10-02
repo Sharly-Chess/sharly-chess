@@ -629,11 +629,21 @@ msgstr "Un nombre est attendu."
 msgid "A pairing number between 1 and {max} is expected."
 msgstr "Un numéro d'appariement compris entre 1 et {max} est attendu."
 
+msgid "A player covered by no rule in a round gets no virtual points in that round."
+msgstr "Un·e joueur·euse couvert·e par aucune règle dans une ronde ne reçoit aucun point virtuel dans cette ronde."
+
+msgid "A player gets their initial score as virtual points in every round of the tournament. A player with no initial score gets no virtual points."
+msgstr "Chaque joueur·euse reçoit son score initial en points virtuels à chaque ronde du tournoi. Un·e joueur·euse sans score initial ne reçoit aucun point virtuel."
+
 msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
 msgstr "Un·e joueur·euse commence chaque ronde avec ces points ajoutés à ceux qu'il·elle a marqués. Ils ne sont utilisés que pour l'appariement, jamais pour le classement, et ne font pas partie des résultats transmis pour l'évolution du classement des joueur·euses."
 
 msgid "A player that withdrew or was expelled having completed less than half of their games is not ranked, and their games are annulled: they no longer count in the opponents' scores and tie-breaks."
 msgstr "Un·e joueur·euse qui a abandonné ou a été exclu·e après avoir disputé moins de la moitié de ses parties n'est pas classé·e, et ses parties sont annulées : elles ne comptent plus dans les points et les départages de ses adversaires."
+
+#, python-brace-format
+msgid "A player who has scored at least half of the points that can be scored in the tournament ({half}) gets {max} virtual points."
+msgstr "Un·e joueur·euse qui a marqué au moins la moitié des points pouvant être marqués dans le tournoi ({half}) reçoit {max} points virtuels."
 
 #, python-brace-format
 msgid "A player with {column}=[{value}] already exists in the event."
@@ -732,6 +742,9 @@ msgstr "Rondes accélérées"
 
 msgid "Acceleration groups"
 msgstr "Groupes d'accélération"
+
+msgid "Acceleration rules"
+msgstr "Règles d'accélération"
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
@@ -2267,6 +2280,9 @@ msgstr[1] "Continuer avec %(num)d rondes ?"
 msgid "Corners"
 msgstr "Coins"
 
+msgid "Correct the pairing settings before printing the rules."
+msgstr "Corrigez les paramètres d'appariement avant d'imprimer les règles."
+
 msgid "Correction"
 msgstr "Correction"
 
@@ -3314,6 +3330,9 @@ msgstr "Chaque joueurŸeuse conserve la catégorie qu'il a à cette date pour to
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
 
+msgid "Each rule gives virtual points to a range of pairing numbers over a range of rounds."
+msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes."
+
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
 
@@ -4010,6 +4029,9 @@ msgstr "Depuis la gauche"
 msgid "From right"
 msgstr "Depuis la droite"
 
+msgid "From round 3, no virtual points are given."
+msgstr "À partir de la ronde 3, aucun point virtuel n'est attribué."
+
 msgid "From the rule set"
 msgstr "Issu du jeu de règles"
 
@@ -4205,8 +4227,15 @@ msgstr "Grouper par"
 msgid "Group {group_id}"
 msgstr "Groupe {group_id}"
 
+#, python-brace-format
+msgid "Group {group}"
+msgstr "Groupe {group}"
+
 msgid "Grouped"
 msgstr "Groupé"
+
+msgid "Groups"
+msgstr "Groupes"
 
 msgid "Groups can't be edited for this pairing system."
 msgstr "Les groupes ne peuvent être mis à jour pour ce système d'appariement."
@@ -4443,6 +4472,18 @@ msgstr "En mode FIDE, les appariements interdits sont annoncés avant la premiè
 
 msgid "In play"
 msgstr "En jeu"
+
+#, python-brace-format
+msgid "In round 2, each group B player gets {draw} virtual points, the points of a draw. Group B players get no virtual points in round 1."
+msgstr "À la ronde 2, chaque joueur·euse du groupe B reçoit {draw} points virtuels, les points d'une nulle. Les joueur·euses du groupe B ne reçoivent aucun point virtuel à la ronde 1."
+
+#, python-brace-format
+msgid "In rounds 1 and 2, each group A player gets {win} virtual points, the points of a win."
+msgstr "Aux rondes 1 et 2, chaque joueur·euse du groupe A reçoit {win} points virtuels, les points d'une victoire."
+
+#, python-brace-format
+msgid "In rounds 1 and 2, each group A player gets {win} virtual points, the points of a win. Group B players get no virtual points."
+msgstr "Aux rondes 1 et 2, chaque joueur·euse du groupe A reçoit {win} points virtuels, les points d'une victoire. Les joueur·euses du groupe B ne reçoivent aucun point virtuel."
 
 #, python-brace-format
 msgid "In team events, the tie-break is calculated using {score} as the reference score."
@@ -6122,12 +6163,33 @@ msgstr "Aucun changement détecté."
 msgid "No usable table for {t} teams of {p} players."
 msgstr "Aucune table utilisable pour {t} équipes de {p} joueur·euses."
 
+msgid "No virtual points are given after the accelerated rounds."
+msgstr "Aucun point virtuel n'est attribué après les rondes accélérées."
+
+msgid "No virtual points are given in the last two rounds."
+msgstr "Aucun point virtuel n'est attribué lors des deux dernières rondes."
+
+msgid "No virtual points are given."
+msgstr "Aucun point virtuel n'est attribué."
+
 msgctxt "NB column header"
+msgid "No."
+msgstr "N°"
+
+msgctxt "pairing number column header"
 msgid "No."
 msgstr "N°"
 
 msgid "No. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
+
+#, python-brace-format
+msgid "No. {number}"
+msgstr "N° {number}"
+
+#, python-brace-format
+msgid "No. {number} ({name})"
+msgstr "N° {number} ({name})"
 
 msgid "Non-monetary"
 msgstr "Non monétaire"
@@ -6185,6 +6247,10 @@ msgstr "Macédoine du Nord"
 
 msgid "Norway"
 msgstr "Norvège"
+
+#, python-brace-format
+msgid "Nos. {first}–{last}"
+msgstr "N° {first}–{last}"
 
 #, python-brace-format
 msgid "Not FIDE numbers ({values}), left empty"
@@ -7115,6 +7181,9 @@ msgstr "Les joueur·euses ne peuvent pas être réparti·es dans un évènement 
 msgid "Players check-in list"
 msgstr "Pointage des joueur·euses"
 
+msgid "Players for round 1"
+msgstr "Joueur·euses à la ronde 1"
+
 #, python-format
 msgid "Players from #%(first)d to #%(last)d"
 msgstr "Joueur·euses de %(first)d à %(last)d"
@@ -7355,8 +7424,15 @@ msgstr "Points attribués par place à l'arrivée : {table}. Les places au-del�
 msgid "Points by finishing position — the winner scores the field size, down to 1 for last. The top finishers also get a percentage of their ranking points as a bonus. Scaling with field size, it combines tournaments of very different sizes fairly."
 msgstr "Des points selon le classement final — le vainqueur marque autant de points qu’il y a de participants, jusqu’à 1 pour le dernier. Les mieux classé·es reçoivent en plus un pourcentage de leurs points de classement en bonus. S’adaptant à la taille du tournoi, cette règle combine équitablement des tournois de tailles très différentes."
 
+#, python-brace-format
+msgid "Points for a win: {win}, for a draw: {draw}."
+msgstr "Points pour une victoire : {win}, pour une nulle : {draw}."
+
 msgid "Points per place:"
 msgstr "Points par place :"
+
+msgid "Points scored from"
+msgstr "Points marqués à partir de"
 
 #, python-brace-format
 msgid "Points written with another decimal separator ({values}), read with a point"
@@ -7427,6 +7503,12 @@ msgstr "Ronde précédente"
 
 msgid "Primary score:"
 msgstr "Score principal :"
+
+msgid "Print the rules"
+msgstr "Imprimer les règles"
+
+msgid "Print the rules with the settings above, without saving them."
+msgstr "Imprimer les règles avec les paramètres ci-dessus, sans les enregistrer."
 
 msgid "Private"
 msgstr "Privé"
@@ -8224,6 +8306,10 @@ msgstr "Rondes désigné comme jouant"
 #, python-brace-format
 msgid "Rounds {min_round}-{max_round}"
 msgstr "Rondes {min_round}-{max_round}"
+
+#, python-brace-format
+msgid "Rounds: {rounds}."
+msgstr "Rondes : {rounds}."
 
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
@@ -9341,6 +9427,9 @@ msgstr "Thaïlande"
 msgid "The \"Manual\" tie-break settles the match by play-off, so any tie-break listed below it never applies. Move \"Manual\" to the end of the list."
 msgstr "Le départage « Manuel » règle le match par barrage : tout départage situé en dessous ne s’applique jamais. Déplacez « Manuel » en fin de liste."
 
+msgid "The Baku acceleration method of the FIDE Handbook (C.04.7.1), applied with the FIDE (Dutch) system."
+msgstr "La méthode d'accélération de Bakou du Handbook FIDE (C.04.7.1), appliquée avec le système FIDE (hollandais)."
+
 msgid "The FIDE coefficient (k) of the player. When left empty, the coefficient shown is estimated from the rating and the age of the player."
 msgstr "Le coefficient FIDE (k) du·de la joueur·euse. Laissé vide, le coefficient affiché est estimé à partir du classement et de l'âge du·de la joueur·euse."
 
@@ -9371,6 +9460,10 @@ msgstr "L'export TRF n'est pas disponible pour ce système d'appariement : son 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
+#, python-brace-format
+msgid "The accelerated rounds are the first half of the rounds, rounded up. In the first half of the accelerated rounds, rounded up, each group A player gets {win} virtual points; in the other accelerated rounds, {draw}. Group B players get no virtual points."
+msgstr "Les rondes accélérées sont la première moitié des rondes, arrondie au supérieur. Dans la première moitié des rondes accélérées, arrondie au supérieur, chaque joueur·euse du groupe A reçoit {win} points virtuels ; dans les autres rondes accélérées, {draw}. Les joueur·euses du groupe B ne reçoivent aucun point virtuel."
+
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non connecté·es."
 
@@ -9382,6 +9475,12 @@ msgstr "L'administrateur·ice a toutes les permissions."
 
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
 msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutée pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
+
+msgid "The arbiter defines the acceleration rule by rule."
+msgstr "L'arbitre définit l'accélération règle par règle."
+
+msgid "The arbiter gives each player an initial score, typically carried over from an earlier tournament of the event."
+msgstr "L'arbitre attribue à chaque joueur·euse un score initial, généralement repris d'un tournoi précédent de l'événement."
 
 msgid "The archive is not a valid place card template."
 msgstr "L’archive n’est pas un modèle de chevalet valide."
@@ -9761,6 +9860,15 @@ msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
 
+msgid "The players are split by pairing number into group A, the first half of the players rounded up to an even number, and group B, the other players."
+msgstr "Les joueur·euses sont réparti·es par numéro d'appariement entre le groupe A, la première moitié des joueur·euses arrondie au nombre pair supérieur, et le groupe B, les autres joueur·euses."
+
+msgid "The players are split by pairing number into three groups: group A, the first pairing numbers, then group B, then group C."
+msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en trois groupes : le groupe A, les premiers numéros d'appariement, puis le groupe B, puis le groupe C."
+
+msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
+msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en deux groupes : le groupe A, les premiers numéros d'appariement, et le groupe B, les autres."
+
 msgid "The points are not among the ranking criteria."
 msgstr "Les points ne font pas partie des critères de classement."
 
@@ -9855,6 +9963,9 @@ msgstr "La règle a été enregistrée."
 
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
+
+msgid "The rules do not overlap, so at most one of them applies to a player in a round."
+msgstr "Les règles ne se chevauchent pas, donc au plus une d'entre elles s'applique à un·e joueur·euse dans une ronde."
 
 #, python-format
 msgid "The schedule was configured with %(scheduled)d round(s), but this pairing system will play %(calculated)d."
@@ -10114,6 +10225,9 @@ msgstr "Ce document n'est disponible que pour les tournois toutes-rondes."
 
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."
+
+msgid "This document is only available for tournaments paired with an accelerated system."
+msgstr "Ce document n'est disponible que pour les tournois appariés avec un système accéléré."
 
 msgid "This event can't be used by the current version of Sharly Chess."
 msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sharly Chess."
@@ -10929,6 +11043,10 @@ msgid "Unusual results"
 msgstr "Résultats inhabituels"
 
 #, python-brace-format
+msgid "Up to the third-to-last round (round {round}), each player starts with {a} virtual points in group A, {b} in group B and none in group C, and gets {draw} more virtual points for every {step} points scored in the previous rounds, up to {max} virtual points."
+msgstr "Jusqu'à l'antépénultième ronde (ronde {round}), chaque joueur·euse part de {a} points virtuels dans le groupe A, {b} dans le groupe B et aucun dans le groupe C, et reçoit {draw} point virtuel de plus pour chaque tranche de {step} points marqués lors des rondes précédentes, jusqu'à {max} points virtuels."
+
+#, python-brace-format
 msgid "Upcoming ({num})"
 msgstr "À venir ({num})"
 
@@ -11189,6 +11307,9 @@ msgstr "Voir le menu."
 
 msgid "Virtual points"
 msgstr "Points virtuels"
+
+msgid "Virtual points are added to the score of the players for the pairing only, they are not part of the standings."
+msgstr "Les points virtuels s'ajoutent au score des joueur·euses pour l'appariement uniquement, ils ne comptent pas dans le classement."
 
 msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
 msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."

@@ -36,6 +36,10 @@ msgstr ""
 msgid "A or B"
 msgstr ""
 
+#, python-brace-format
+msgid "A player who has scored at least half of the points that can be scored in the tournament ({half}) gets {max} virtual points."
+msgstr ""
+
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -502,6 +506,9 @@ msgstr ""
 msgid "No tournament configured for FFE upload."
 msgstr ""
 
+msgid "No virtual points are given in the last two rounds."
+msgstr ""
+
 msgctxt "FFE licence"
 msgid "None"
 msgstr "None"
@@ -732,6 +739,9 @@ msgstr ""
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr ""
 
+msgid "The players are split by pairing number into three groups: group A, the first pairing numbers, then group B, then group C."
+msgstr ""
+
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
@@ -804,6 +814,10 @@ msgid "Unrated"
 msgstr "Unrated"
 
 msgid "Up to date"
+msgstr ""
+
+#, python-brace-format
+msgid "Up to the third-to-last round (round {round}), group A players get {max} virtual points. Group B players start with {b} virtual points and get {draw} more once they have scored {b_first} points, and {draw} more again once they have scored {b_second}. Group C players start with none and get {draw} more virtual points for every {c_step} points scored in the previous rounds. No player gets more than {max} virtual points."
 msgstr ""
 
 msgid "Upload"
