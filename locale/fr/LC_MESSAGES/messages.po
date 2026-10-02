@@ -3327,6 +3327,9 @@ msgstr "Chaque joueurŸeuse conserve la catégorie qu'il a à cette date pour to
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
 
+msgid "Each rule gives virtual points to a range of pairing numbers over a range of rounds."
+msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes."
+
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
 
@@ -7172,6 +7175,9 @@ msgstr "Les joueur·euses ne peuvent pas être réparti·es dans un évènement 
 msgid "Players check-in list"
 msgstr "Pointage des joueur·euses"
 
+msgid "Players for round 1"
+msgstr "Joueur·euses à la ronde 1"
+
 #, python-format
 msgid "Players from #%(first)d to #%(last)d"
 msgstr "Joueur·euses de %(first)d à %(last)d"
@@ -7411,6 +7417,10 @@ msgstr "Points attribués par place à l'arrivée : {table}. Les places au-del�
 
 msgid "Points by finishing position — the winner scores the field size, down to 1 for last. The top finishers also get a percentage of their ranking points as a bonus. Scaling with field size, it combines tournaments of very different sizes fairly."
 msgstr "Des points selon le classement final — le vainqueur marque autant de points qu’il y a de participants, jusqu’à 1 pour le dernier. Les mieux classé·es reçoivent en plus un pourcentage de leurs points de classement en bonus. S’adaptant à la taille du tournoi, cette règle combine équitablement des tournois de tailles très différentes."
+
+#, python-brace-format
+msgid "Points for a win: {win}, for a draw: {draw}."
+msgstr "Points pour une victoire : {win}, pour une nulle : {draw}."
 
 msgid "Points per place:"
 msgstr "Points par place :"
@@ -8289,8 +8299,8 @@ msgid "Rounds {min_round}-{max_round}"
 msgstr "Rondes {min_round}-{max_round}"
 
 #, python-brace-format
-msgid "Rounds: {rounds}. Points for a win: {win}, for a draw: {draw}."
-msgstr "Rondes : {rounds}. Points pour une victoire : {win}, pour une nulle : {draw}."
+msgid "Rounds: {rounds}."
+msgstr "Rondes : {rounds}."
 
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
@@ -9457,8 +9467,8 @@ msgstr "L'administrateur·ice a toutes les permissions."
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
 msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutée pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
 
-msgid "The arbiter defines the acceleration rule by rule. Each rule gives virtual points to a range of pairing numbers over a range of rounds; the rules do not overlap, so at most one of them applies to a player in a round."
-msgstr "L'arbitre définit l'accélération règle par règle. Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes ; les règles ne se chevauchent pas, donc au plus une d'entre elles s'applique à un·e joueur·euse dans une ronde."
+msgid "The arbiter defines the acceleration rule by rule."
+msgstr "L'arbitre définit l'accélération règle par règle."
 
 msgid "The arbiter gives each player an initial score, typically carried over from an earlier tournament of the event."
 msgstr "L'arbitre attribue à chaque joueur·euse un score initial, généralement repris d'un tournoi précédent de l'événement."
@@ -9944,6 +9954,9 @@ msgstr "La règle a été enregistrée."
 
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
+
+msgid "The rules do not overlap, so at most one of them applies to a player in a round."
+msgstr "Les règles ne se chevauchent pas, donc au plus une d'entre elles s'applique à un·e joueur·euse dans une ronde."
 
 #, python-format
 msgid "The schedule was configured with %(scheduled)d round(s), but this pairing system will play %(calculated)d."
@@ -11286,8 +11299,8 @@ msgstr "Voir le menu."
 msgid "Virtual points"
 msgstr "Points virtuels"
 
-msgid "Virtual points are added to the score of the players for the pairing only. They are not part of the standings."
-msgstr "Les points virtuels s'ajoutent au score des joueur·euses pour l'appariement uniquement. Ils ne comptent pas dans le classement."
+msgid "Virtual points are added to the score of the players for the pairing only, they are not part of the standings."
+msgstr "Les points virtuels s'ajoutent au score des joueur·euses pour l'appariement uniquement, ils ne comptent pas dans le classement."
 
 msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
 msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."

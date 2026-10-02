@@ -1525,11 +1525,14 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
 
     def rules_description(self, tournament: 'Tournament') -> list[str]:
         return [
+            _('The arbiter defines the acceleration rule by rule.'),
             _(
-                'The arbiter defines the acceleration rule by rule. Each '
-                'rule gives virtual points to a range of pairing numbers '
-                'over a range of rounds; the rules do not overlap, so at '
-                'most one of them applies to a player in a round.'
+                'Each rule gives virtual points to a range of pairing '
+                'numbers over a range of rounds.'
+            ),
+            _(
+                'The rules do not overlap, so at most one of them applies '
+                'to a player in a round.'
             ),
             _(
                 'A player covered by no rule in a round gets no virtual '

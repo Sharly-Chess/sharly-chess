@@ -1757,14 +1757,18 @@ class AccelerationRulesPrintDocument(PrintDocument):
             )
 
         rules = variation.get_tournament_accelerated_rules(tournament)
+        for player in tournament.players:
+            logger.error(
+                f'{player.pairing_number}. {player.full_name}: {player.pairings_by_round[1]}'
+            )
         return {
             'tournament': tournament,
             'variation': variation,
             'description': variation.rules_description(tournament),
-            'scoring': _(
-                'Rounds: {rounds}. Points for a win: {win}, for a draw: {draw}.'
-            ).format(
+            'rounds': _('Rounds: {rounds}.').format(
                 rounds=tournament.rounds,
+            ),
+            'scoring': _('Points for a win: {win}, for a draw: {draw}.').format(
                 win=Utils.points_str(tournament.win_points),
                 draw=Utils.points_str(tournament.draw_points),
             ),
@@ -1774,6 +1778,14 @@ class AccelerationRulesPrintDocument(PrintDocument):
                     'first': first,
                     'last': last,
                     'count': last - first + 1,
+                    'r1_count': len(
+                        [
+                            player
+                            for player in tournament.players
+                            if first <= (player.pairing_number or 0) <= last
+                            and not player.pairings_by_round[1].next_round_bye
+                        ]
+                    ),
                 }
                 for group, (first, last) in number_ranges_by_group.items()
             ],

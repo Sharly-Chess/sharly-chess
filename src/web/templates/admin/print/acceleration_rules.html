@@ -11,7 +11,6 @@
     }
     .acceleration p {
         margin: 0 0 6pt;
-        text-align: justify;
     }
     .acceleration table {
         border-collapse: collapse;
@@ -48,9 +47,10 @@
         <p>
             {{ _(
                 'Virtual points are added to the score of the players for '
-                'the pairing only. They are not part of the standings.'
+                'the pairing only, they are not part of the standings.'
             ) }}
         </p>
+        <p>{{ rounds }}</p>
         <p>{{ scoring }}</p>
 
         {% if groups %}
@@ -61,6 +61,7 @@
                         <th>{{ _('Group') }}</th>
                         <th>{{ _('Pairing numbers') }}</th>
                         <th>{{ _('Players') }}</th>
+                        <th>{{ _('Players for round 1') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,6 +70,7 @@
                             <td class="center">{{ group.group }}</td>
                             <td class="center">{{ group.first }}–{{ group.last }}</td>
                             <td class="number">{{ group.count }}</td>
+                            <td class="number">{{ group.r1_count }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
