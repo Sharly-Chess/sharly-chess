@@ -4091,6 +4091,10 @@ msgstr "Bye point entier (obsolète)"
 msgid "Full-Point Bye attributed to team [{team}]."
 msgstr "Bye à point entier attribué à l’équipe [{team}]"
 
+#, python-brace-format
+msgid "Full-Point Bye given to {name}."
+msgstr "Bye point entier attribué à {name}."
+
 msgid "Full-point byes"
 msgstr "Byes point entier"
 
@@ -9869,8 +9873,8 @@ msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, un
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr "Le moteur d'appariement n'a pas pu apparier la ronde %(round)d : vos appariements ne peuvent pas être comparés aux siens."
 
-msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
-msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi et les parties corrigées pour le rapport Elo, consignées en commentaire dans son TRF."
+msgid "The pairing integrity breaches, the changes to the settings of the tournament, the games corrected for the rating report and the full-point byes, recorded as comments in its TRF."
+msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi, les parties corrigées pour le rapport Elo et les byes point entier, consignés en commentaire dans son TRF."
 
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."

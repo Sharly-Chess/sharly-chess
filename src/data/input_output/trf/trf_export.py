@@ -23,7 +23,12 @@ from data.input_output.trf.trf_data import (
 from data.input_output.trf.trf_mappers import TrfPointSystemResult
 from data.pairings.engines import _team_ui_sort_key
 from data.pairings.settings import ColorSeedSetting
-from data.pibes import Pibe, RatingCorrection, fide_mode_exit_trf_comment
+from data.pibes import (
+    FullPointBye,
+    Pibe,
+    RatingCorrection,
+    fide_mode_exit_trf_comment,
+)
 from data.pairing import Pairing
 from data.player import TournamentPlayer
 from utils.enum import (
@@ -141,7 +146,11 @@ class TrfExport:
         self, after_round: int, corrections: list[RatingCorrection]
     ) -> list[str]:
         tournament = self.tournament
-        entries: list[Pibe | RatingCorrection] = [*tournament.pibes, *corrections]
+        entries: list[Pibe | RatingCorrection | FullPointBye] = [
+            *tournament.pibes,
+            *corrections,
+            *tournament.full_point_byes,
+        ]
         comments = [
             entry.trf_comment_for(tournament)
             for entry in entries

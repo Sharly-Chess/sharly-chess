@@ -6,8 +6,11 @@ from collections.abc import Iterator
 import pytest
 from litestar.testing import TestClient
 
+from data.input_output.trf.trf_export import TrfExport
+from data.input_output.trf.trf_serializer import TrfSerializer
 from data.player import TournamentPlayer
 from data.tournament import Tournament
+from plugins.ffe.print_documents.ffe_types import FFET2Type
 from tests.unit.http.events import EventUnderTest
 from utils.enum import Result
 
@@ -112,3 +115,23 @@ def test_a_player_with_a_bye_stays_eligible(http: TestClient, tournament: Tourna
     )
     assert response.status_code == 200
     assert the_player().byes_allowed
+
+
+@pytest.mark.unit
+def test_a_full_point_bye_is_logged(http: TestClient, tournament: Tournament):
+    """Full-point byes are deprecated, so the log points each one out: in
+    the TRF and in the minutes of the arbiter."""
+    create_player(http, tournament, byes_allowed='on')
+    assert EVENT.tournament().log_entries == []
+
+    set_bye(http, the_player(), Result.FULL_POINT_BYE)
+    tournament = EVENT.tournament()
+    (pairing_number, player), *_ = (
+        tournament.tournament_players_by_pairing_number.items()
+    )
+    trf = TrfSerializer.dumps(TrfExport(tournament).build(after_round=1))
+    assert f'### Full-point bye @ Round 1: player {pairing_number}\n' in trf
+    assert (
+        f'- Ronde 1 : Bye point entier attribué à {player.full_name}.'
+        in FFET2Type.report_text_for([tournament])
+    )

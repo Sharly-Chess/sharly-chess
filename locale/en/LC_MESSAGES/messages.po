@@ -4091,6 +4091,10 @@ msgstr ""
 msgid "Full-Point Bye attributed to team [{team}]."
 msgstr ""
 
+#, python-brace-format
+msgid "Full-Point Bye given to {name}."
+msgstr ""
+
 msgid "Full-point byes"
 msgstr ""
 
@@ -9867,7 +9871,7 @@ msgstr ""
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr ""
 
-msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
+msgid "The pairing integrity breaches, the changes to the settings of the tournament, the games corrected for the rating report and the full-point byes, recorded as comments in its TRF."
 msgstr ""
 
 msgid "The pairing number can't be greater than the player count."
