@@ -1,0 +1,152 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+
+{% set is_correction = admin_tournament.fide_mode and round_status == 'PREVIOUS' %}
+{% macro action_attributes(leave_fide_mode=false) %}
+    hx-{{ redirect_method | lower }}="{{ redirect_route }}{% if leave_fide_mode %}{{ '&' if '?' in redirect_route else '?' }}leave_fide_mode=1{% endif %}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+{% endmacro %}
+
+<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ warning_macros.level_icon(warning_level) }}
+                {% if warning_level == 5 %}
+                    {{ _('Prohibited in FIDE mode') }}
+                {% elif starts_manual_pairing %}
+                    {{ _('Manual pairing') }}
+                {% elif is_correction %}
+                    {{ _('Correction of the previous round') }}
+                {% else %}
+                    {{ _('Protected pairings editing') }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="modal-body">
+            <div id="warning-explanation">
+                {% if action == 'FULL_UNPAIRING' %}
+                    <p>
+                        {{ _(
+                            'Unpairing a published round can be very inconvenient for players. '
+                            'Additionally, you will lose any manual adjustments.'
+                        ) }}
+                    </p>
+                    <p>
+                        {{ _(
+                            'For these reasons, it is strongly discouraged to unpair a round. '
+                            'It is instead recommended to use manual pairings to handle unusual situations.'
+                        ) }}
+                    </p>
+                {% elif round_status == 'NEXT' and action == 'MANUAL_PAIRING' %}
+                    <p>
+                        {{ _(
+                            'Pairings should strictly abide by the rules of the tournament, '
+                            'and not be biased by the arbiter. For this reason, '
+                            'pairing manually is strongly discouraged.'
+                        ) }}
+                    </p>
+                {% else %}
+                    <h6>
+                        {{
+                            _('Displayed round: %(round)d', round=admin_round) ~ ' - ' ~
+                            _('Current round: %(round)d', round=admin_tournament.current_round)
+                        }}
+                    </h6>
+                    {% if round_status == 'PAST' %}
+                        <p>
+                            {{ _(
+                                'The FIDE rules stipulate that only the pairings of the round '
+                                '<b>prior</b> to the current one may be modified. Changes to '
+                                'pairings previous to this should be made at the <b>end</b> of '
+                                'the tournament, <b>after</b> the rankings have been published, '
+                                'and solely for the computation of the FIDE ratings.'
+                            ) }}
+                        </p>
+                    {% elif round_status == 'PREVIOUS' %}
+                        <p>
+                            {{ _(
+                                'You are trying to modify the pairings of the previous round. '
+                                'This will have an impact on pairings and rankings of all future rounds.'
+                            ) }}
+                        </p>
+                    {% elif round_status == 'CURRENT' %}
+                        <p>
+                            {{ _(
+                                'You are trying to manually edit the pairings of the current round. '
+                                'Pairings should only be altered to handle unusual situations.'
+                            ) }}
+                        </p>
+                    {% endif %}
+                {% endif %}
+                {% if warning_level == 5 %}
+                    <p class="mb-0 fw-bold">
+                        {{ _('This action is not allowed in FIDE mode. To proceed, the tournament must leave FIDE mode.') }}
+                    </p>
+                {% elif starts_manual_pairing %}
+                    <p class="mb-0">
+                        {{ _(
+                            'This starts editing the pairings of round %(round)d by hand. When you are '
+                            'done, validate the pairings: they will be checked against the pairing '
+                            'engine. Until then, the next round cannot be paired.',
+                            round=admin_round,
+                        ) }}
+                    </p>
+                {% elif is_correction %}
+                    <p class="mb-0">
+                        {{ _(
+                            'The current round was paired from this one: this correction '
+                            'breaches the integrity of the pairings. It will be logged, and '
+                            'recorded in the TRF of the tournament.'
+                        ) }}
+                    </p>
+                {% else %}
+                    <p class="mb-0">
+                        {{ _(
+                            'By executing this operation, you are enabling an unsafe mode '
+                            'for this round, allowing other unsafe operations.'
+                        ) }}
+                    </p>
+                {% endif %}
+            </div>
+            {% if warning_level == 5 %}
+                {% call(button) warning_macros.double_confirmation(
+                    'leave-fide-mode',
+                    _('Leaving FIDE mode is not compliant with the FIDE regulations.'),
+                    warning_macros.leave_fide_mode_consequences(admin_tournament),
+                    _('Leave FIDE mode and proceed'),
+                    hidden=true,
+                ) %}
+                    {% if button == 'cancel' %}
+                        data-bs-dismiss="modal"
+                    {% else %}
+                        {{ action_attributes(leave_fide_mode=true) }}
+                    {% endif %}
+                {% endcall %}
+            {% endif %}
+        </div>
+        <div id="warning-buttons" class="modal-footer">
+            <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            {% if warning_level == 5 %}
+                <button
+                    class="btn btn-outline-danger text-nowrap"
+                    onclick="
+                        $('#warning-explanation, #warning-buttons').addClass('d-none');
+                        $('#leave-fide-mode').removeClass('d-none');
+                    "
+                >
+                    {{ _('Leave FIDE mode…') }}
+                </button>
+            {% else %}
+                <button class="btn btn-primary text-nowrap" {{ action_attributes() }}>
+                    <i class="bi-check-circle-fill pe-1"></i>
+                    {{ _('Proceed') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>

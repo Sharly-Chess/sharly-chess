@@ -44,10 +44,15 @@
                     ) }}
                 ></i>
             {% endif %}
+            {{ admin_macros.not_in_fide_mode_badge([item] if item.left_fide_mode else []) }}
         </span>
     {% else %}
         <span class="fw-bold text-truncate d-block">{{ item.name }}</span>
     {% endif %}
+{% endmacro %}
+
+{% macro fide_mode(item, view, placement) %}
+    {{ admin_macros.not_in_fide_mode_badge([item] if item.left_fide_mode else []) }}
 {% endmacro %}
 
 {% macro status(item, view, placement) %}

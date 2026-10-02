@@ -554,7 +554,10 @@ class FFET1Type(FFETournamentsDocumentType):
         }
 
 
-class FFET2Type(FFEDocumentType):
+class FFET2Type(FFETournamentsDocumentType):
+    """The minutes of the tournaments, where the arbiter reports what had to
+    be done by hand. Starts with what the tournaments logged for their TRF."""
+
     @staticmethod
     def static_id() -> str:
         return 'ffe-t2-tournament-report'
@@ -563,9 +566,47 @@ class FFET2Type(FFEDocumentType):
     def static_name() -> str:
         return _('T2 Minutes')
 
+    @property
+    def report_text(self) -> str:
+        return self.report_text_for(self.tournaments)
+
     @classmethod
-    def get_valid_option_types(cls) -> list[type[PrintOption]]:
-        return []
+    def report_text_for(cls, tournaments: list[Tournament]) -> str:
+        """The events *tournaments* logged, in French, one line each."""
+        sections: list[str] = []
+        for tournament in tournaments:
+            entries = tournament.log_entries
+            exit_round = tournament.fide_mode_exit_round
+            if not entries and exit_round is None:
+                continue
+            lines = [f'{tournament.name}{cls._fide_mode_status(tournament)} :']
+            for entry in entries:
+                line = f'- Ronde {entry.round_} : {entry.summary(tournament, "fr")}'
+                if entry.date:
+                    line += f' ({entry.date:%d/%m/%Y %H:%M})'
+                lines.append(line)
+            sections.append('\n'.join(lines))
+        return '\n\n'.join(sections) or 'Rien à signaler.'
+
+    @staticmethod
+    def _fide_mode_status(tournament: Tournament) -> str:
+        """Whether *tournament* runs in FIDE mode, or the round it left it
+        at, for the systems that have it."""
+        if not tournament.pairing_system.supports_fide_mode:
+            return ''
+        if tournament.fide_mode:
+            return ' (mode FIDE)'
+        if (exit_round := tournament.fide_mode_exit_round) is not None:
+            return f' (mode FIDE quitté à la ronde {exit_round})'
+        return ' (hors mode FIDE)'
+
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        return super().template_context(ffe_document) | {
+            'report_text': self.report_text
+        }
 
 
 class FFEArbiterCompensationType(FFETournamentsDocumentType):

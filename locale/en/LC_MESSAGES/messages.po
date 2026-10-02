@@ -785,6 +785,12 @@ msgstr ""
 msgid "Actions / Access levels"
 msgstr ""
 
+msgid "Actions prohibited by the FIDE regulations are refused, and the corrections that breach the integrity of the pairings are logged in the TRF. Once the first round is paired, a tournament that leaves FIDE mode never returns to it."
+msgstr ""
+
+msgid "Actions prohibited by the FIDE regulations will be allowed, the tournament will be flagged as not in FIDE mode, and its TRF will record the round FIDE mode was left at, from which its data can no longer be trusted."
+msgstr ""
+
 msgctxt "active account"
 msgid "Active"
 msgstr ""
@@ -891,6 +897,9 @@ msgstr ""
 msgid "Additional information"
 msgstr ""
 
+msgid "Adjourned game"
+msgstr ""
+
 msgid "Administration"
 msgstr ""
 
@@ -926,6 +935,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "After round #{round}"
+msgstr ""
+
+msgid "After the change to the number of rounds, pairings that differ from those of the pairing engine"
 msgstr ""
 
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
@@ -1036,6 +1048,9 @@ msgstr ""
 msgid "Allow a player to take part in multiple tournaments."
 msgstr ""
 
+msgid "Allow more byes"
+msgstr ""
+
 msgid "Allow multi-tournament players"
 msgstr ""
 
@@ -1070,6 +1085,9 @@ msgid "Alphabetical"
 msgstr ""
 
 msgid "Alternate colours"
+msgstr ""
+
+msgid "An error found after the end of the next round is corrected for the rating report only: the pairings and the standings keep the game as recorded."
 msgstr ""
 
 msgid "An error occurred. Consult the logs for more details."
@@ -1758,6 +1776,9 @@ msgstr ""
 msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
 msgstr ""
 
+msgid "Cancel editing"
+msgstr ""
+
 msgid "Candidate Master"
 msgstr ""
 
@@ -1861,10 +1882,26 @@ msgstr ""
 msgid "Championships"
 msgstr ""
 
+msgid "Change the number of rounds"
+msgstr ""
+
 msgid "Change the player's tournament."
 msgstr ""
 
+msgid "Change the tie-breaks"
+msgstr ""
+
+msgid "Change the tie-breaks…"
+msgstr ""
+
 msgid "Changelog"
+msgstr ""
+
+#, python-format
+msgid "Changing the number of rounds from %(before)d to %(after)d once the tournament has started is not compliant with the FIDE regulations."
+msgstr ""
+
+msgid "Changing the tie-breaks once the tournament has started is not compliant with the FIDE regulations: they are published before it starts."
 msgstr ""
 
 msgid "Check connection"
@@ -2080,6 +2117,10 @@ msgstr ""
 msgid "Colours given to games the file pairs without a colour ({rounds})."
 msgstr ""
 
+#, python-brace-format
+msgid "Colours of {pairs} swapped."
+msgstr ""
+
 msgid "Columns"
 msgstr ""
 
@@ -2224,6 +2265,16 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Corners"
+msgstr ""
+
+msgid "Correction"
+msgstr ""
+
+#, python-brace-format
+msgid "Correction logged: {correction}"
+msgstr ""
+
+msgid "Correction of the previous round"
 msgstr ""
 
 msgid "Costa Rica"
@@ -2444,6 +2495,9 @@ msgid "Current championships"
 msgstr ""
 
 msgid "Current events"
+msgstr ""
+
+msgid "Current pairings"
 msgstr ""
 
 msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
@@ -2746,6 +2800,9 @@ msgid "Delete the timer."
 msgstr ""
 
 msgid "Delete the tournament."
+msgstr ""
+
+msgid "Delete the tournament…"
 msgstr ""
 
 msgid "Delete this category."
@@ -3231,6 +3288,9 @@ msgstr ""
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
+msgid "Each change will be recorded in the TRF of the tournament, with the round and the former list of tie-breaks."
+msgstr ""
+
 msgid "Each competitor row carries a popover with the per-stage breakdown."
 msgstr ""
 
@@ -3678,6 +3738,13 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
+msgid "FIDE mode"
+msgstr ""
+
+#, python-format
+msgid "FIDE mode was left at round %(round)d."
+msgstr ""
+
 msgid "FIDE rating lost"
 msgstr ""
 
@@ -3863,6 +3930,14 @@ msgid "For each round, the opponent total {opp} multiplied by the team {own} obt
 msgstr ""
 
 msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
+msgstr ""
+
+#, python-brace-format
+msgid "For the rating report: {corrected} instead of {used}."
+msgstr ""
+
+#, python-brace-format
+msgid "For the rating report: {corrected}."
 msgstr ""
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
@@ -4342,6 +4417,12 @@ msgstr ""
 msgid "Import players to tournament [%(tournament)s]"
 msgstr ""
 
+msgid "Imported pairings"
+msgstr ""
+
+msgid "Imported pairings that differ from those of the pairing engine"
+msgstr ""
+
 msgid "Imported player"
 msgstr ""
 
@@ -4355,6 +4436,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
+msgstr ""
+
+msgid "In FIDE mode, the prohibited pairings are announced before the first round and cannot change once it is paired."
 msgstr ""
 
 msgid "In play"
@@ -4432,6 +4516,9 @@ msgid "Indonesia"
 msgstr ""
 
 msgid "Info"
+msgstr ""
+
+msgid "Information"
 msgstr ""
 
 #, python-brace-format
@@ -4695,6 +4782,9 @@ msgstr ""
 msgid "Keep fractions"
 msgstr ""
 
+msgid "Keep the tournament"
+msgstr ""
+
 msgid "Keizer"
 msgstr ""
 
@@ -4795,7 +4885,22 @@ msgctxt "event tag name"
 msgid "League"
 msgstr ""
 
+msgid "Leave FIDE mode"
+msgstr ""
+
+msgid "Leave FIDE mode and proceed"
+msgstr ""
+
+msgid "Leave FIDE mode…"
+msgstr ""
+
 msgid "Leave all unchecked to print every match."
+msgstr ""
+
+msgid "Leaving FIDE mode is not compliant with the FIDE regulations."
+msgstr ""
+
+msgid "Leaving FIDE mode must be confirmed."
 msgstr ""
 
 msgid "Lebanon"
@@ -4885,6 +4990,9 @@ msgid "Location"
 msgstr ""
 
 msgid "Locked: team is already paired."
+msgstr ""
+
+msgid "Log"
 msgstr ""
 
 msgid "Log in"
@@ -5040,6 +5148,9 @@ msgid "Manual"
 msgstr ""
 
 msgid "Manual groups"
+msgstr ""
+
+msgid "Manual pairing"
 msgstr ""
 
 msgid "Manual tie-break"
@@ -6099,7 +6210,17 @@ msgstr ""
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
 msgstr ""
 
+msgid "Not in FIDE mode"
+msgstr ""
+
+#, python-format
+msgid "Not in FIDE mode: %(tournaments)s"
+msgstr ""
+
 msgid "Not logged in"
+msgstr ""
+
+msgid "Not paired"
 msgstr ""
 
 msgid "Not paired for this round"
@@ -6126,6 +6247,9 @@ msgid "Notes"
 msgstr ""
 
 msgid "Nothing further — leave the teams tied"
+msgstr ""
+
+msgid "Nothing has been recorded."
 msgstr ""
 
 msgid "Notification"
@@ -6195,8 +6319,15 @@ msgstr ""
 msgid "Number of prizes"
 msgstr ""
 
+msgid "Number of rounds"
+msgstr ""
+
 #, python-brace-format
 msgid "Number of rounds ({rounds}) read from XXR."
+msgstr ""
+
+#, python-brace-format
+msgid "Number of rounds changed from {before} to {after}."
 msgstr ""
 
 #, python-brace-format
@@ -6449,6 +6580,9 @@ msgstr ""
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr ""
 
+msgid "Overwrite the result of the pairing when using the keyboard shortcuts. In FIDE mode, each correction to the previous round is confirmed separately."
+msgstr ""
+
 msgctxt "owed column header"
 msgid "Owed"
 msgstr ""
@@ -6537,6 +6671,9 @@ msgstr ""
 msgid "Pairing allocated bye. Defaults to the Win value."
 msgstr ""
 
+msgid "Pairing engine"
+msgstr ""
+
 #, python-brace-format
 msgid "Pairing generation failed: {details}"
 msgstr ""
@@ -6567,10 +6704,19 @@ msgstr ""
 msgid "Pairing numbers"
 msgstr ""
 
+msgid "Pairing numbers exchanged"
+msgstr ""
+
+msgid "Pairing numbers in brackets."
+msgstr ""
+
 msgid "Pairing numbers selection"
 msgstr ""
 
 msgid "Pairing order:"
+msgstr ""
+
+msgid "Pairing rules broken"
 msgstr ""
 
 msgid "Pairing settings"
@@ -6592,6 +6738,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Pairing system set to round robin: {reason}."
+msgstr ""
+
+msgid "Pairing-Allocated Bye"
 msgstr ""
 
 msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
@@ -6622,6 +6771,12 @@ msgstr ""
 msgid "Pairings by player"
 msgstr ""
 
+msgid "Pairings changed by hand"
+msgstr ""
+
+msgid "Pairings edited by hand and validated although they differ from those of the pairing engine"
+msgstr ""
+
 #, python-brace-format
 msgid "Pairings for round #{round}"
 msgstr ""
@@ -6650,6 +6805,9 @@ msgid "Pairings generation not allowed if there are fewer teams than rounds."
 msgstr ""
 
 msgid "Pairings generation not allowed while an acceleration rule extends past the last round. Adjust the acceleration settings or the number of rounds."
+msgstr ""
+
+msgid "Pairings of the round changed"
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
@@ -7350,6 +7508,9 @@ msgstr ""
 msgid "Prohibited"
 msgstr ""
 
+msgid "Prohibited in FIDE mode"
+msgstr ""
+
 msgid "Prohibited pairings"
 msgstr ""
 
@@ -7385,6 +7546,9 @@ msgid "Publish tournament rules"
 msgstr ""
 
 msgid "Puerto Rico"
+msgstr ""
+
+msgid "Put the pairings back as they were before editing."
 msgstr ""
 
 msgid "QR Code"
@@ -7541,6 +7705,9 @@ msgstr ""
 msgid "Rating ranges"
 msgstr ""
 
+msgid "Rating report correction"
+msgstr ""
+
 msgid "Rating step"
 msgstr ""
 
@@ -7569,6 +7736,9 @@ msgid "Ready"
 msgstr ""
 
 msgid "Reason"
+msgstr ""
+
+msgid "Reason given by the pairing engine:"
 msgstr ""
 
 msgid "Received a Full-Point Bye for the next round"
@@ -7633,6 +7803,9 @@ msgstr ""
 msgid "Remove from team"
 msgstr ""
 
+msgid "Remove the correction"
+msgstr ""
+
 msgid "Remove the player from the event."
 msgstr ""
 
@@ -7658,6 +7831,9 @@ msgid "Rename the category"
 msgstr ""
 
 msgid "Rename this category."
+msgstr ""
+
+msgid "Renumbering"
 msgstr ""
 
 msgid "Replace"
@@ -7761,6 +7937,18 @@ msgstr ""
 
 #, python-brace-format
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
+msgstr ""
+
+#, python-brace-format
+msgid "Result of {pair} changed from {before} to {after}."
+msgstr ""
+
+#, python-brace-format
+msgid "Result of {pair} cleared (previously {before})."
+msgstr ""
+
+#, python-brace-format
+msgid "Result of {pair} entered: {after}."
 msgstr ""
 
 msgid "Results"
@@ -7928,6 +8116,10 @@ msgstr ""
 
 #, python-format
 msgid "Round %(current)d of %(total)d"
+msgstr ""
+
+#, python-format
+msgid "Round %(round)d"
 msgstr ""
 
 #, python-format
@@ -8155,6 +8347,9 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+msgid "Save again to confirm."
+msgstr ""
+
 msgid "Save current tie-breaks as custom set"
 msgstr ""
 
@@ -8162,6 +8357,9 @@ msgid "Save group"
 msgstr ""
 
 msgid "Save points"
+msgstr ""
+
+msgid "Saving this player changes the order of the pairing numbers, from which rounds have already been paired. This breaches the integrity of the pairings, and will be logged in the TRF:"
 msgstr ""
 
 msgid "Schedule"
@@ -9138,6 +9336,9 @@ msgstr ""
 msgid "The FIDE coefficient (k) of the player. When left empty, the coefficient shown is estimated from the rating and the age of the player."
 msgstr ""
 
+msgid "The FIDE regulations allow a player one half-point bye per tournament. Allow more only if the regulations of the tournament provide for it."
+msgstr ""
+
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
@@ -9208,6 +9409,9 @@ msgstr ""
 msgid "The category has been renamed."
 msgstr ""
 
+msgid "The change will be recorded in the TRF of the tournament."
+msgstr ""
+
 msgid "The coefficient can be used to weight this tournament’s points and tie-break values in the championship ranking."
 msgstr ""
 
@@ -9230,6 +9434,9 @@ msgid "The crosstable shows all the results of the players, while the club is pr
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr ""
+
+msgid "The current round was paired from this one: this correction breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr ""
 
 msgid "The data folder could not be added to the Microsoft Defender exception list."
@@ -9260,6 +9467,9 @@ msgid "The event type cannot be changed after creation."
 msgstr ""
 
 msgid "The features your federation, your software or your events need can be added to Sharly Chess as a plugin."
+msgstr ""
+
+msgid "The file had to be completed to be imported, and the pairing engine paired the rounds with what was filled in. A wrong assumption can make a round differ:"
 msgstr ""
 
 msgid "The file holds no player record (001)."
@@ -9465,6 +9675,13 @@ msgstr ""
 msgid "The organisation to which the team belongs (for example a club, league, or school). Affiliations may be used by pairing rules to avoid pairing related teams."
 msgstr ""
 
+#, python-format
+msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
+msgstr ""
+
+msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
+msgstr ""
+
 msgid "The pairing number can't be greater than the player count."
 msgstr ""
 
@@ -9478,6 +9695,47 @@ msgid "The pairing numbers of the tournament in ascending order."
 msgstr ""
 
 msgid "The pairing numbers of the tournament in descending order."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairing numbers of {count} players were changed, after an update to the players."
+msgstr ""
+
+msgid "The pairing-allocated bye breaks the rules:"
+msgstr ""
+
+#, python-format
+msgid "The pairings of round %(round)d are being edited by hand. Validate them to check them against the pairing engine: until then, the next round cannot be paired."
+msgstr ""
+
+#, python-format
+msgid "The pairings of round %(round)d differ from those of the pairing engine:"
+msgstr ""
+
+#, python-format
+msgid "The pairings of round %(round)d no longer match those of the pairing engine: this breach of the integrity of the pairings will be logged and recorded in the TRF of the tournament."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} are back as they were."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} are being edited: validate or cancel them before changing the pairings of another round."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} have been validated."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} match the pairing engine."
+msgstr ""
+
+msgid "The pairings of these rounds differ from those of the pairing engine. This breaches the integrity of the pairings: it has been logged, and will be recorded in the TRF of the tournament."
+msgstr ""
+
+msgid "The pairings of this round are being edited. Validate or cancel the editing to exit this mode."
 msgstr ""
 
 msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
@@ -9496,6 +9754,9 @@ msgid "The player has already been paired, removing them from the tournament is 
 msgstr ""
 
 msgid "The points are not among the ranking criteria."
+msgstr ""
+
+msgid "The points cannot be changed in FIDE mode once the tournament has started. Leave FIDE mode to change them."
 msgstr ""
 
 msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
@@ -9669,6 +9930,9 @@ msgstr ""
 msgid "The tournament has not yet started."
 msgstr ""
 
+msgid "The tournament has started: in FIDE mode, its tie-breaks are fixed."
+msgstr ""
+
 msgid "The tournament is finished."
 msgstr ""
 
@@ -9798,6 +10062,9 @@ msgstr ""
 msgid "This account is not active, anonymous users can not log in to it."
 msgstr ""
 
+msgid "This action is not allowed in FIDE mode. To proceed, the tournament must leave FIDE mode."
+msgstr ""
+
 msgid "This action is not possible for this round."
 msgstr ""
 
@@ -9904,6 +10171,9 @@ msgstr ""
 msgid "This name is already used."
 msgstr ""
 
+msgid "This pairing breaks the absolute criteria of the pairing system:"
+msgstr ""
+
 #, python-brace-format
 msgid "This pairing system requires at least {n} teams."
 msgstr ""
@@ -9996,6 +10266,10 @@ msgstr ""
 msgid "This set contains [{name}] twice in a row."
 msgstr ""
 
+#, python-format
+msgid "This starts editing the pairings of round %(round)d by hand. When you are done, validate the pairings: they will be checked against the pairing engine. Until then, the next round cannot be paired."
+msgstr ""
+
 msgid "This team has already been paired; its tournament cannot be changed."
 msgstr ""
 
@@ -10084,6 +10358,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Tie-breaks are managed by rule set \"{name}\". Change the rule set on the tournament to edit them."
+msgstr ""
+
+#, python-brace-format
+msgid "Tie-breaks changed from {before} to {after}."
 msgstr ""
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
@@ -10270,6 +10548,10 @@ msgstr ""
 msgid "Tournament [%(tournament)s] added."
 msgstr ""
 
+#, python-format
+msgid "Tournament [%(tournament)s] will leave FIDE mode for good: it can never return to it."
+msgstr ""
+
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
@@ -10288,6 +10570,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Tournament [{tournament}] has been updated."
+msgstr ""
+
+#, python-brace-format
+msgid "Tournament [{tournament}] has left FIDE mode."
 msgstr ""
 
 #, python-brace-format
@@ -10807,6 +11093,19 @@ msgstr ""
 msgid "Validate and pair"
 msgstr ""
 
+msgid "Validate anyway"
+msgstr ""
+
+msgid "Validate the pairings"
+msgstr ""
+
+#, python-brace-format
+msgid "Validate the pairings of round {round} first."
+msgstr ""
+
+msgid "Validating these pairings breaches the integrity of the pairings: it will be logged, and recorded in the TRF of the tournament."
+msgstr ""
+
 msgid "Value"
 msgstr ""
 
@@ -10968,9 +11267,6 @@ msgstr ""
 msgid "Warning: too many players selected."
 msgstr ""
 
-msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
-msgstr ""
-
 msgctxt "wednesday"
 msgid "We"
 msgstr ""
@@ -10985,6 +11281,9 @@ msgid "Weight each counted stage’s value by the tournament’s coefficient."
 msgstr ""
 
 msgid "Welcome to Sharly Chess!"
+msgstr ""
+
+msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr ""
 
 msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
@@ -11292,6 +11591,9 @@ msgstr ""
 msgid "You must create a tournament before creating these screens."
 msgstr ""
 
+msgid "Your pairings"
+msgstr ""
+
 msgid "Your text here"
 msgstr ""
 
@@ -11329,7 +11631,31 @@ msgid "Zoom out"
 msgstr ""
 
 #, python-brace-format
+msgid "[{first}] and [{second}] have already played each other."
+msgstr ""
+
+#, python-brace-format
+msgid "[{first}] and [{second}] must not be paired together."
+msgstr ""
+
+#, python-brace-format
 msgid "[{id}] is a reserved item id."
+msgstr ""
+
+#, python-brace-format
+msgid "[{player}] gets the pairing-allocated bye although other players who could have it have a lower score."
+msgstr ""
+
+#, python-brace-format
+msgid "[{player}] has already had a pairing-allocated bye, a win by forfeit or a full-point bye."
+msgstr ""
+
+#, python-brace-format
+msgid "[{player}] would have a colour difference of {difference}."
+msgstr ""
+
+#, python-brace-format
+msgid "[{player}] would play {colour} for the third time in a row."
 msgstr ""
 
 #, python-brace-format
@@ -11338,6 +11664,18 @@ msgstr ""
 
 #, python-brace-format
 msgid "[{value}] is not a valid value format."
+msgstr ""
+
+#, python-brace-format
+msgid "[{white}] and [{black}] both play the colour opposite to the one they should have."
+msgstr ""
+
+#, python-brace-format
+msgid "[{white}] and [{black}] have already played each other."
+msgstr ""
+
+#, python-brace-format
+msgid "[{white}] and [{black}] must not be paired together."
 msgstr ""
 
 msgid "all the boards"
@@ -11528,6 +11866,9 @@ msgid "my-screen"
 msgstr ""
 
 msgid "no"
+msgstr ""
+
+msgid "no reason was given."
 msgstr ""
 
 msgid "no tie-break selected"
@@ -11826,6 +12167,10 @@ msgid "yes"
 msgstr ""
 
 #, python-brace-format
+msgid "{after} instead of {before}."
+msgstr ""
+
+#, python-brace-format
 msgctxt "senior age category"
 msgid "{age_limit}+"
 msgstr ""
@@ -11847,6 +12192,10 @@ msgid "{count} birth date has no day or month: only its year, if any, is importe
 msgid_plural "{count} birth dates have no day or month: only their year, if any, is imported."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} boards differ."
+msgstr ""
 
 #, python-brace-format
 msgid "{count} club represented"
@@ -11929,6 +12278,10 @@ msgid "{first_name} {last_name}"
 msgstr ""
 
 #, python-brace-format
+msgid "{first} — Pairing-Allocated Bye"
+msgstr ""
+
+#, python-brace-format
 msgid "{label} (best {num} stages)"
 msgstr ""
 
@@ -11950,6 +12303,14 @@ msgstr ""
 
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
+msgstr ""
+
+#, python-brace-format
+msgid "{opponent}, with Black"
+msgstr ""
+
+#, python-brace-format
+msgid "{opponent}, with White"
 msgstr ""
 
 #, python-brace-format
@@ -12008,6 +12369,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
+msgstr ""
+
+#, python-brace-format
+msgid "{what}: {pairings}"
 msgstr ""
 
 msgid "—"

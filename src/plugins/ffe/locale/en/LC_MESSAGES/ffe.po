@@ -720,6 +720,9 @@ msgstr ""
 msgid "The account of the group director on the FFE website (administration of team competitions)."
 msgstr ""
 
+msgid "The games corrected for the rating report are exported as corrected: the standings on the FFE website may differ from those of the tournament."
+msgstr ""
+
 msgid "The match score cannot go below zero."
 msgstr ""
 

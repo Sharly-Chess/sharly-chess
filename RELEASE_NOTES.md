@@ -21,6 +21,12 @@
 - The French School Championship is sent to the school competitions of the _FFE_ website, with the national finals division pre-selected for the national final (5.1.1)
 - Requested byes (half-point, full-point and zero-point) are now sent to _Sharly-Chess.com_, whose crosstables showed an empty cell and a wrong total for those rounds (5.1.2)
 - The "All absent" button of the team check-in window is no longer labelled "Toutes présentes" in French (5.1.2)
+- FIDE mode for Swiss tournaments: actions prohibited by the FIDE regulations are refused unless the tournament leaves FIDE mode, which is final once the first round is paired and recorded in the TRF (5.2.0)
+- Team Swiss tournaments log the corrections to rounds already paired from and the changes to the number of rounds and the tie-breaks, each change asking only for a confirmation (5.2.0)
+- Warnings follow the levels of the FIDE Technical Commission: a notice, a confirmation, or a double confirmation that spells out the consequences (5.2.0)
+- In FIDE mode, once started, the points and the pairing-allocated bye value are fixed, the number of rounds and the tie-breaks change only after a double confirmation, and prohibited pairings are fixed after the first round (5.2.0)
+- Allowing more than one half-point bye per player asks for confirmation in FIDE mode (5.2.0)
+- After a TRF import, each imported round is checked against the pairing engine, and the rounds that differ are listed and logged (5.2.0)
 
 ## Players
 
@@ -37,12 +43,18 @@
 - The team ranking of fixed-table tournaments (Molter) now shows the game points and the tie-breaks, which were all displayed as zero (5.1.0)
 - Bonus / penalty points can no longer be given to an individual player of a team event from the player's record: team events adjust whole teams (5.1.0)
 - Unpairing a board no longer renumbers the other tables of the round in compact table numbering (5.1.2)
+- In FIDE mode, editing the pairings of a round by hand is validated against the pairing engine at the end, or cancelled; the next round waits for the validation (5.2.0)
+- Manual pairings warn about repeated games, prohibited pairings, colour rules and ineligible pairing-allocated byes (5.2.0)
+- In FIDE mode, each correction to the previous round is confirmed and logged; older rounds cannot be changed (5.2.0)
+- A game of an older round found wrong can be corrected for the rating report only: the TRF and Papi exports give it as corrected, the TRF with a comment saying what the pairings and the standings used (5.2.0)
+- A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
 
 ## Documents
 
 - Place cards can now be edited with an embedded editor (5.1.0)
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
+- The FFE T2 minutes open with the events logged for the chosen tournaments (5.2.0)
 
 ## Screens
 

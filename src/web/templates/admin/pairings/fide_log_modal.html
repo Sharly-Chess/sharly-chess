@@ -1,0 +1,48 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div style="--bs-modal-width: min(92vw, 800px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">{{ _('Log') }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+        </div>
+        <div class="modal-body">
+            <p class="small">
+                {{ _(
+                    'The pairing integrity breaches, the changes to the settings of the '
+                    'tournament and the games corrected for the rating report, recorded '
+                    'as comments in its TRF.'
+                ) }}
+            </p>
+            {% if admin_tournament.fide_mode_exit_round %}
+                <div class="alert alert-danger py-2">
+                    {{ _('FIDE mode was left at round %(round)d.', round=admin_tournament.fide_mode_exit_round) }}
+                </div>
+            {% endif %}
+            {% if admin_tournament.log_entries %}
+                <table class="table table-sm table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Round') }}</th>
+                            <th>{{ _('Event') }}</th>
+                            <th>{{ _('Details') }}</th>
+                            <th>{{ _('Date') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in admin_tournament.log_entries %}
+                            <tr>
+                                <td>{{ entry.round_ }}</td>
+                                <td class="text-nowrap">{{ entry.label }}</td>
+                                <td class="small" {{ macros.tooltip_attributes('info', 'TRF : ' ~ entry.trf_comment_for(admin_tournament), 'top') }}>{{ entry.summary(admin_tournament) }}</td>
+                                <td class="text-nowrap small">{{ entry.date_str }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="fst-italic">{{ _('Nothing has been recorded.') }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

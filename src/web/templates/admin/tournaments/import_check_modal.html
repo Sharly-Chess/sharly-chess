@@ -1,0 +1,72 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+
+<div style="--bs-modal-width: min(90vw, 800px);" class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ warning_macros.level_icon(3) }}
+                {{ _('Imported pairings') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <p>
+                {{ _(
+                    'The pairings of these rounds differ from those of the pairing engine. '
+                    'This breaches the integrity of the pairings: it has been logged, and '
+                    'will be recorded in the TRF of the tournament.'
+                ) }}
+            </p>
+            {% if import_adjustments %}
+                <div class="alert alert-info py-2">
+                    {{ _(
+                        'The file had to be completed to be imported, and the pairing '
+                        'engine paired the rounds with what was filled in. A wrong '
+                        'assumption can make a round differ:'
+                    ) }}
+                    <ul class="mb-0">
+                        {% for adjustment in import_adjustments %}
+                            <li>{{ adjustment }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% for breach in import_breaches %}
+                <h6 class="mt-3">{{ _('Round %(round)d', round=breach.round) }}</h6>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="fw-bold">{{ _('Pairing engine') }}</div>
+                        {% for label in breach.engine_pairs %}
+                            <div class="small">{{ label }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-6">
+                        <div class="fw-bold">{{ _('Imported pairings') }}</div>
+                        {% for label in breach.imported_pairs %}
+                            <div class="small">{{ label }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <p class="small fst-italic mt-2 mb-0">{{ _('Pairing numbers in brackets.') }}</p>
+        </div>
+        <div class="modal-footer">
+            <button
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tournament-delete-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-trash-fill pe-1"></i>
+                {{ _('Delete the tournament…') }}
+            </button>
+            <button class="btn btn-primary text-nowrap" data-bs-dismiss="modal" autofocus>
+                <i class="bi-check-circle-fill pe-1"></i>
+                {{ _('Keep the tournament') }}
+            </button>
+        </div>
+    </div>
+</div>

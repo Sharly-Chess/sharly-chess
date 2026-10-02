@@ -92,7 +92,7 @@ class Trf26TournamentExporter(TournamentExporter):
         return None
 
     def dump_to_file(self, file: IO, tournament: Tournament) -> None:
-        trf_tournament = TrfSerializer.dumps(tournament.to_trf())
+        trf_tournament = TrfSerializer.dumps(tournament.to_trf(rating_report=True))
         file.write(unicode_normalize(trf_tournament))
 
 

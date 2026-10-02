@@ -5,7 +5,7 @@
    public-screen result entry (user/modals/results_modal.html) is a
    separate template and keeps its large coloured tiles. #}
 
-{# Wrap action routing (direct hx call vs safety-mode confirmation) and
+{# Wrap action routing (direct hx call vs warning confirmation) and
    the disabled state once, reused by every button below. #}
 {% macro action_button(action, method, route, disabled, label, btn_class, tooltip='', icon='') %}
     {% if disabled and tooltip %}
@@ -21,7 +21,7 @@
                 hx-{{ method }}="{{ route }}"
             {% else %}
                 hx-get="{{ url_for(
-                    'admin-pairings-safety-mode-modal',
+                    'admin-pairings-warning-modal',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id,
                     round=admin_round,
@@ -421,6 +421,77 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% endif %}
+
+                {% if corrects_for_rating and wtp and btp %}
+                    {% set rating_correction = admin_tournament.rating_correction_for(board) %}
+                    {% set rating_white_id = rating_correction.white_player_id if rating_correction else wtp.id %}
+                    {% set rating_result = rating_correction.result.value if rating_correction else board.result.value %}
+                    <hr class="my-3" />
+                    <h6 class="mb-1">{{ _('Rating report correction') }}</h6>
+                    <p class="small text-muted mb-2">
+                        {{ _(
+                            'An error found after the end of the next round is corrected for the '
+                            'rating report only: the pairings and the standings keep the game as '
+                            'recorded.'
+                        ) }}
+                    </p>
+                    {% for white_tp, black_tp in [(wtp, btp), (btp, wtp)] %}
+                        <div class="small fw-bold mt-2 mb-1">
+                            <span class="board-color-chip white"></span>{{ white_tp.full_name }}
+                            –
+                            <span class="board-color-chip black"></span>{{ black_tp.full_name }}
+                        </div>
+                        <div class="row g-2">
+                            {% for result_id, label in [(3, '1 – 0'), (2, '½ – ½'), (1, '0 – 1'), (6, '1 – F'), (5, 'F – F'), (4, 'F – 1')] %}
+                                <div class="col-4 col-md-2">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary w-100 text-nowrap {% if white_tp.id == rating_white_id and result_id == rating_result %}active{% endif %}"
+                                        {% if not can_update %}
+                                            disabled
+                                        {% else %}
+                                            hx-put="{{ url_for(
+                                                'admin-pairings-set-rating-correction',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                round=admin_round,
+                                                board_id=board.identifier,
+                                                white_player_id=white_tp.id,
+                                                result=result_id,
+                                            ) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                        {% endif %}
+                                    >{{ label }}</button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    {% if rating_correction %}
+                        <div class="alert alert-warning py-2 mt-3 mb-0 d-flex align-items-center gap-2">
+                            <div class="flex-grow-1 small">{{ rating_correction.summary(admin_tournament) }}</div>
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                {% if not can_update %}
+                                    disabled
+                                {% else %}
+                                    hx-delete="{{ url_for(
+                                        'admin-pairings-delete-rating-correction',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=admin_round,
+                                        board_id=board.identifier,
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endif %}
+                            >
+                                <i class="bi bi-trash pe-1"></i>{{ _('Remove the correction') }}
+                            </button>
+                        </div>
+                    {% endif %}
                 {% endif %}
 
                 {# Knock-out: a drawn game still needs a qualifier. Shown at

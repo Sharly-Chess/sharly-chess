@@ -214,6 +214,36 @@ class StoredTeamPointAdjustment:
 
 
 @dataclass
+class StoredPibe:
+    """A pairing integrity breaching event: something done to a round after
+    the rounds that followed were paired from it."""
+
+    id: int | None
+    tournament_id: int
+    round_: int
+    type: str
+    description: str
+    date: datetime = field(default_factory=datetime.now)
+    members: dict[int, int] = field(default_factory=dict)
+    """The player (or team) each pairing number of the description stood
+    for when the event was logged."""
+
+
+@dataclass
+class StoredRatingCorrection:
+    """A game of a round too old to change, recorded differently in the
+    rating report: the colours the players had and the result of white."""
+
+    id: int | None
+    tournament_id: int
+    round_: int
+    white_player_id: int
+    black_player_id: int
+    result: int
+    date: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
 class StoredPlayerPointAdjustment:
     """Manual per-player, per-round bonus / penalty points for individual
     tournaments. A single ``delta`` (which may be negative) because those
@@ -332,6 +362,10 @@ class StoredTournament:
     prohibited_pairing_dimension: str | None = None
     prohibited_pairing_dimension_is_hard: bool = True
     round_robin_participation_rule: bool = True
+    fide_mode: bool = True
+    fide_mode_exit_round: int | None = None
+    manual_pairing_round: int | None = None
+    manual_pairing_boards: list[dict[str, Any]] = field(default_factory=list)
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )
@@ -356,6 +390,10 @@ class StoredTournament:
     )
     stored_player_point_adjustments: list[StoredPlayerPointAdjustment] = field(
         default_factory=list[StoredPlayerPointAdjustment]
+    )
+    stored_pibes: list[StoredPibe] = field(default_factory=list[StoredPibe])
+    stored_rating_corrections: list[StoredRatingCorrection] = field(
+        default_factory=list[StoredRatingCorrection]
     )
     stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
         default_factory=list['StoredProhibitedPairingGroup']

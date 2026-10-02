@@ -36,6 +36,7 @@
         {% endif %}
     {% endwith %}
     {% include 'prohibited_button.html' %}
+    {% include 'fide_log_button.html' %}
     {% include 'pairing_settings_button.html' %}
     </span>
     {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}
@@ -44,6 +45,7 @@
             {{ macros.tooltip_attributes('', (
                 _('You are not allowed to generate the pairings.')
                 if not can_use_pairing_engine else
+                manual_pairing_pending_message or
                 pairings_generation_disabled_message or
                 set_all_present_message or
                 _('Generate pairings for this round.')
@@ -53,6 +55,7 @@
                 class="btn btn-outline-primary text-nowrap"
                 {% if
                     not client.can_use_pairing_engine(admin_tournament.id)
+                    or manual_pairing_pending_message
                     or pairings_generation_disabled_message
                     or set_all_present_message
                 %}
@@ -137,7 +140,7 @@
                         hx-post="{{ action_route }}"
                     {% else %}
                         hx-get="{{ url_for(
-                            'admin-pairings-safety-mode-modal',
+                            'admin-pairings-warning-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
@@ -188,7 +191,7 @@
                             hx-post="{{ action_route }}"
                         {% else %}
                             hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
+                                'admin-pairings-warning-modal',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 round=admin_round,

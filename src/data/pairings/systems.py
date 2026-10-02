@@ -3,12 +3,12 @@ from functools import cache, cached_property
 from typing import TYPE_CHECKING, override
 
 from common.i18n import _
-from data.safety_mode import (
+from data.permissions import (
     PairingAction,
     PermissionHandler,
     Permission,
     RoundStatus,
-    SafetyMode,
+    WarningLevel,
 )
 from utils.entity import IdentifiableEntity, EntityManager
 
@@ -30,50 +30,52 @@ def swiss_style_permission_handler(
 ) -> PermissionHandler[PairingAction]:
     """Permissions for round-by-round systems using the Swiss pairing tab.
 
-    With *protect_unpairing*, unpairing goes through the protected-editing
-    modal: a Swiss decides each round from the ones before it, so dropping a
-    round changes what the next pairing would have been. Without it, unpairing
-    is plain: a table- or bracket-driven schedule pairs the same way whatever
+    With *protect_unpairing*, unpairing asks for confirmation: a Swiss
+    decides each round from the ones before it, so dropping a round changes
+    what the next pairing would have been. Without it, unpairing is plain: a table- or bracket-driven schedule pairs the same way whatever
     is undone.
 
     *unpair_boards* offers the single-board unpairing. A system that says who
     meets whom has no second answer to give once a board is freed, so it
     leaves the round short of a match and hands the arbiter the round.
     """
-    full_unpairing_mode = (
-        SafetyMode.FIDE_INCOMPATIBLE if protect_unpairing else SafetyMode.SAFE
+    full_unpairing_level = (
+        WarningLevel.CONFIRMATION if protect_unpairing else WarningLevel.NONE
     )
     manual_unpairing_rules = (
         {
-            RoundStatus.PAST: SafetyMode.FIDE_INCOMPATIBLE,
-            RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
-            RoundStatus.CURRENT: SafetyMode.UNSAFE,
+            RoundStatus.PAST: WarningLevel.FIDE_PROHIBITED,
+            RoundStatus.PREVIOUS: WarningLevel.CONFIRMATION,
+            RoundStatus.CURRENT: WarningLevel.CONFIRMATION,
         }
         if protect_unpairing
         else {
-            RoundStatus.PAST: SafetyMode.SAFE,
-            RoundStatus.PREVIOUS: SafetyMode.SAFE,
-            RoundStatus.CURRENT: SafetyMode.SAFE,
+            RoundStatus.PAST: WarningLevel.NONE,
+            RoundStatus.PREVIOUS: WarningLevel.NONE,
+            RoundStatus.CURRENT: WarningLevel.NONE,
         }
     )
     return PermissionHandler(
         [
-            Permission(PairingAction.FULL_PAIRING, {RoundStatus.NEXT: SafetyMode.SAFE}),
             Permission(
-                PairingAction.PARTIAL_PAIRING, {RoundStatus.CURRENT: SafetyMode.UNSAFE}
+                PairingAction.FULL_PAIRING, {RoundStatus.NEXT: WarningLevel.NONE}
+            ),
+            Permission(
+                PairingAction.PARTIAL_PAIRING,
+                {RoundStatus.CURRENT: WarningLevel.CONFIRMATION},
             ),
             Permission(
                 PairingAction.MANUAL_PAIRING,
                 {
-                    RoundStatus.PAST: SafetyMode.FIDE_INCOMPATIBLE,
-                    RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
-                    RoundStatus.CURRENT: SafetyMode.UNSAFE,
-                    RoundStatus.NEXT: SafetyMode.FIDE_INCOMPATIBLE,
+                    RoundStatus.PAST: WarningLevel.FIDE_PROHIBITED,
+                    RoundStatus.PREVIOUS: WarningLevel.CONFIRMATION,
+                    RoundStatus.CURRENT: WarningLevel.CONFIRMATION,
+                    RoundStatus.NEXT: WarningLevel.CONFIRMATION,
                 },
             ),
             Permission(
                 PairingAction.FULL_UNPAIRING,
-                {RoundStatus.CURRENT: full_unpairing_mode},
+                {RoundStatus.CURRENT: full_unpairing_level},
             ),
             *(
                 [Permission(PairingAction.MANUAL_UNPAIRING, manual_unpairing_rules)]
@@ -83,27 +85,27 @@ def swiss_style_permission_handler(
             Permission(
                 PairingAction.COLOR_PERMUTE,
                 {
-                    RoundStatus.PAST: SafetyMode.FIDE_INCOMPATIBLE,
-                    RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
-                    RoundStatus.CURRENT: SafetyMode.UNSAFE,
+                    RoundStatus.PAST: WarningLevel.FIDE_PROHIBITED,
+                    RoundStatus.PREVIOUS: WarningLevel.CONFIRMATION,
+                    RoundStatus.CURRENT: WarningLevel.CONFIRMATION,
                 },
             ),
             Permission(
                 PairingAction.RESULT_UPDATE,
                 {
-                    RoundStatus.PAST: SafetyMode.FIDE_INCOMPATIBLE,
-                    RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
-                    RoundStatus.CURRENT: SafetyMode.SAFE,
+                    RoundStatus.PAST: WarningLevel.FIDE_PROHIBITED,
+                    RoundStatus.PREVIOUS: WarningLevel.CONFIRMATION,
+                    RoundStatus.CURRENT: WarningLevel.NONE,
                 },
             ),
             Permission(
                 PairingAction.BYE_UPDATE,
                 {
-                    RoundStatus.PAST: SafetyMode.FIDE_INCOMPATIBLE,
-                    RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
-                    RoundStatus.CURRENT: SafetyMode.SAFE,
-                    RoundStatus.NEXT: SafetyMode.SAFE,
-                    RoundStatus.FUTURE: SafetyMode.SAFE,
+                    RoundStatus.PAST: WarningLevel.FIDE_PROHIBITED,
+                    RoundStatus.PREVIOUS: WarningLevel.CONFIRMATION,
+                    RoundStatus.CURRENT: WarningLevel.NONE,
+                    RoundStatus.NEXT: WarningLevel.NONE,
+                    RoundStatus.FUTURE: WarningLevel.NONE,
                 },
             ),
         ]
@@ -218,6 +220,20 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         than half of their games is dropped from the final standings and
         their games annulled. The rule is defined for an all-play-all, so
         default False."""
+        return False
+
+    @property
+    def supports_fide_mode(self) -> bool:
+        """Whether the tournament can run in FIDE mode, where the actions
+        prohibited by the FIDE regulations are refused, the settings fixed
+        before it starts are guarded and the pairings edited by hand are
+        checked against the pairing engine."""
+        return False
+
+    @property
+    def logs_pairing_breaches(self) -> bool:
+        """Whether the tournament logs the pairing integrity breaching
+        events: in FIDE mode where it has it, always where it does not."""
         return False
 
     @property
@@ -373,6 +389,16 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     def static_name() -> str:
         return _('Swiss')
 
+    @property
+    @override
+    def supports_fide_mode(self) -> bool:
+        return True
+
+    @property
+    @override
+    def logs_pairing_breaches(self) -> bool:
+        return True
+
     @override
     def variation_manager(self, event: 'Event') -> EntityManager['SwissVariation']:
         from data.pairings.managers import SwissVariationManager
@@ -473,16 +499,16 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
             Permission(
                 PairingAction.RESULT_UPDATE,
                 {
-                    RoundStatus.PAST: SafetyMode.UNSAFE,
-                    RoundStatus.PREVIOUS: SafetyMode.UNSAFE,
-                    RoundStatus.CURRENT: SafetyMode.SAFE,
-                    RoundStatus.NEXT: SafetyMode.SAFE,
-                    RoundStatus.FUTURE: SafetyMode.SAFE,
+                    RoundStatus.PAST: WarningLevel.CONFIRMATION,
+                    RoundStatus.PREVIOUS: WarningLevel.CONFIRMATION,
+                    RoundStatus.CURRENT: WarningLevel.NONE,
+                    RoundStatus.NEXT: WarningLevel.NONE,
+                    RoundStatus.FUTURE: WarningLevel.NONE,
                 },
             ),
             Permission(
                 PairingAction.COLOR_PERMUTE,
-                dict.fromkeys(RoundStatus, SafetyMode.FIDE_INCOMPATIBLE),
+                dict.fromkeys(RoundStatus, WarningLevel.FIDE_PROHIBITED),
             ),
         ]
         return PermissionHandler(permissions)
@@ -514,6 +540,11 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     @staticmethod
     def static_name() -> str:
         return _('Team Swiss')
+
+    @property
+    @override
+    def logs_pairing_breaches(self) -> bool:
+        return True
 
     def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
         # The numbering orders the players within a score group, so it has

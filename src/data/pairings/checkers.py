@@ -533,9 +533,9 @@ class BbpPairingsChecker(BbpPairings):
                         database.update_stored_event(stored_event)
                     EventLoader.unload_event(event_uniq_id)
                 event = EventLoader().load_event(event_uniq_id)
-                tournament_id = TrfTournamentImporter(
-                    [FileOption(trf_input_file_path)]
-                ).load_tournament(event)
+                importer = TrfTournamentImporter([FileOption(trf_input_file_path)])
+                importer.checks_imported_rounds = False
+                tournament_id = importer.load_tournament(event)
                 event = EventLoader().load_event(event_uniq_id)
                 tournament = event.tournaments_by_id[tournament_id]
                 tournament_check = TournamentCheck.from_object(tournament)

@@ -24,6 +24,9 @@ from data.input_output.trf.trf_legacy import TrfVersion
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.loader import EventLoader
 from data.pairings.settings import ColorSeedSetting
+from data.input_output.trf.trf_export import TrfExport
+from data.pibes import PibeType
+from database.sqlite.event.event_database import EventDatabase
 from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     StandardSwissVariation,
@@ -376,6 +379,68 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(tournament.point_values[Result.DRAW], 1.0)
         self.assertEqual(tournament.point_values[Result.LOSS], 0.0)
         self.assertEqual(tournament.point_values[Result.PAIRING_ALLOCATED_BYE], 3.0)
+
+    def _engine_paired_trf(self) -> TrfTournament:
+        """The TRF of a tournament whose first round the engine paired."""
+        TestUtils.create_tournament(
+            EVENT_ID, 'Engine paired', json_file='tec-swiss-unpaired'
+        )
+        event = EventLoader().load_event(EVENT_ID)
+        tournament = event.tournaments_by_name['Engine paired']
+        tournament.check_in_all_players(True)
+        event = EventLoader().load_event(EVENT_ID)
+        tournament = event.tournaments_by_name['Engine paired']
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        self.event = EventLoader().load_event(EVENT_ID)
+        return TrfExport(self.event.tournaments_by_name['Engine paired']).build()
+
+    def test_engine_pairings_import_without_a_breach(self):
+        tournament = self._import_trf(self._engine_paired_trf())
+
+        self.assertEqual(tournament.pibes, [])
+
+    def test_imported_pairings_unlike_the_engine_are_logged(self):
+        trf = self._engine_paired_trf()
+        first = next(player for player in trf.players if player.games[0].color == 'w')
+        second = next(
+            player for player in trf.players if player.id == first.games[0].opponent_id
+        )
+        first.games[0].color, second.games[0].color = 'b', 'w'
+
+        tournament = self._import_trf(trf)
+
+        self.assertEqual([pibe.type for pibe in tournament.pibes], [PibeType.IMPORT])
+        self.assertEqual(tournament.pibes[0].round_, 1)
+        self.assertEqual(
+            tournament.pibes[0].description,
+            f'{first.id}-{second.id} => {second.id}-{first.id}',
+        )
+
+    def test_a_trf_import_turns_fide_mode_back_on(self):
+        TestUtils.create_tournament(EVENT_ID, 'Imported into')
+        with EventDatabase(EVENT_ID, write=True) as database:
+            stored_tournament = next(
+                stored
+                for stored in database.load_stored_tournaments()
+                if stored.name == 'Imported into'
+            )
+            stored_tournament.fide_mode = False
+            database.update_stored_tournament(stored_tournament)
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-import-test.trf')]
+        )
+        tournament_id = importer.load_tournament(
+            self.event, self.event.tournaments_by_name['Imported into']
+        )
+        self.event = EventLoader().load_event(EVENT_ID)
+        self.assertTrue(self.event.tournaments_by_id[tournament_id].fide_mode)
+
+    def test_trf_import_is_in_fide_mode(self):
+        tournament = self._import_tournament(
+            TrfTournamentImporter([FileOption(BASE_PATH / 'trf-import-test.trf')])
+        )
+        self.assertTrue(tournament.fide_mode)
 
     def test_trf_national_rating_of_the_event_federation_is_used(self):
         """TRF26 allows one National Rating Support record per

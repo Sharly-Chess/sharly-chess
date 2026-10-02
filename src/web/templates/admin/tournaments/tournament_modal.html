@@ -1,3 +1,4 @@
+{% import "/admin/common/warning_macros.j2" as warning_macros with context %}
 <div class="modal-dialog modal-dialog-scrollable admin-tournament-edit-modal">
     <div class="modal-content">
         {# Required for time pickers #}
@@ -54,6 +55,58 @@
                     <div class="col-12 col-md-6">
                         {% include 'tournament_rounds_field.html' %}
                     </div>
+                    {% if rounds_change %}
+                        <div class="col-12">
+                            <input type="hidden" name="rounds_change_confirmed" id="rounds-change-confirmed" value="">
+                            {% set rounds_change_message %}
+                                {{ _(
+                                    'Changing the number of rounds from %(before)d to %(after)d once the '
+                                    'tournament has started is not compliant with the FIDE regulations.',
+                                    before=rounds_change.before, after=rounds_change.after,
+                                ) }}
+                            {% endset %}
+                            {% set rounds_change_consequences %}
+                                <p class="mb-1">{{ _('The change will be recorded in the TRF of the tournament.') }}</p>
+                                {% if rounds_change.engine_pairs or rounds_change.arbiter_pairs %}
+                                    <p class="mb-1">
+                                        {{ _(
+                                            'The pairings of round %(round)d no longer match those of the pairing '
+                                            'engine: this breach of the integrity of the pairings will be logged and '
+                                            'recorded in the TRF of the tournament.',
+                                            round=rounds_change.round,
+                                        ) }}
+                                    </p>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="fw-bold">{{ _('Pairing engine') }}</div>
+                                            {% for label in rounds_change.engine_pairs %}
+                                                <div class="small">{{ label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="fw-bold">{{ _('Current pairings') }}</div>
+                                            {% for label in rounds_change.arbiter_pairs %}
+                                                <div class="small">{{ label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="small fst-italic mb-0">{{ _('Pairing numbers in brackets.') }}</p>
+                                {% endif %}
+                            {% endset %}
+                            {% call(button) warning_macros.double_confirmation(
+                                'rounds-change',
+                                rounds_change_message,
+                                rounds_change_consequences,
+                                _('Change the number of rounds'),
+                            ) %}
+                                {% if button == 'cancel' %}
+                                    onclick="$('#rounds').val('{{ rounds_change.before }}'); $('#rounds-change').addClass('d-none');"
+                                {% else %}
+                                    onclick="$('#rounds-change-confirmed').val('on'); document.getElementById('modal-form').requestSubmit();"
+                                {% endif %}
+                            {% endcall %}
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
@@ -299,6 +352,25 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <input type="hidden" name="max_byes_confirmed" id="max-byes-confirmed" value="{{ data.get('max_byes_confirmed', '') }}">
+                    {% if max_byes_change %}
+                        <div class="col-12">
+                            {% call(button) warning_macros.confirmation(
+                                'max-byes-change',
+                                _(
+                                    'The FIDE regulations allow a player one half-point bye per tournament. '
+                                    'Allow more only if the regulations of the tournament provide for it.'
+                                ),
+                                _('Allow more byes'),
+                            ) %}
+                                {% if button == 'cancel' %}
+                                    onclick="$('#max-byes').val('{{ admin_tournament.stored_tournament.max_byes if admin_tournament and admin_tournament.stored_tournament.max_byes is not none else '' }}'); $('#max-byes-change').addClass('d-none');"
+                                {% else %}
+                                    onclick="$('#max-byes-confirmed').val('on'); document.getElementById('modal-form').requestSubmit();"
+                                {% endif %}
+                            {% endcall %}
+                        </div>
+                    {% endif %}
                     <div class="col-12 col-md-6 bye-option">
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',
@@ -388,6 +460,75 @@
                             }
                             $('#pairing-system').on('change', syncParticipationRule);
                             syncParticipationRule();
+                        })();
+                    </script>
+                    {% set fide_mode_final = admin_tournament and admin_tournament.leaving_fide_mode_is_final %}
+                    {% set fide_mode_left = fide_mode_final and not admin_tournament.stored_tournament.fide_mode %}
+                    <div class="col-12 fide-mode-option">
+                        {{ admin_macros.switch_input(
+                            name='fide_mode',
+                            placeholder=_('FIDE mode'),
+                            tooltip_text=(
+                                _('FIDE mode was left at round %(round)d.', round=admin_tournament.fide_mode_exit_round)
+                                if fide_mode_left and admin_tournament.fide_mode_exit_round
+                                else _(
+                                    'Actions prohibited by the FIDE regulations are refused, '
+                                    'and the corrections that breach the integrity of the '
+                                    'pairings are logged in the TRF. Once the first round is '
+                                    'paired, a tournament that leaves FIDE mode never returns to it.'
+                                )
+                            ),
+                            disabled=fide_mode_left,
+                            data=data, errors=errors
+                        ) }}
+                        {% if fide_mode_final and not fide_mode_left %}
+                            <input type="hidden" name="fide_mode_exit_confirmed" id="fide-mode-exit-confirmed" value="">
+                            {% call(button) warning_macros.double_confirmation(
+                                'fide-mode-exit',
+                                _('Leaving FIDE mode is not compliant with the FIDE regulations.'),
+                                warning_macros.leave_fide_mode_consequences(admin_tournament),
+                                _('Leave FIDE mode'),
+                                hidden=true,
+                            ) %}
+                                {% if button == 'cancel' %}
+                                    onclick="$('#fide-mode').prop('checked', true); resetFideModeExit();"
+                                {% else %}
+                                    onclick="$('#fide-mode-exit-confirmed').val('on'); $('#fide-mode-exit').addClass('d-none');"
+                                {% endif %}
+                            {% endcall %}
+                            <script>
+                                function resetFideModeExit() {
+                                    const box = $('#fide-mode-exit');
+                                    box.addClass('d-none');
+                                    box.find('[data-step="1"]').removeClass('d-none');
+                                    box.find('[data-step="2"]').addClass('d-none');
+                                    $('#fide-mode-exit-confirmed').val('');
+                                }
+                                $('#fide-mode').on('change', function () {
+                                    if (this.checked) {
+                                        resetFideModeExit();
+                                    } else {
+                                        $('#fide-mode-exit').removeClass('d-none');
+                                    }
+                                });
+                            </script>
+                        {% endif %}
+                    </div>
+                    <script>
+                        (function () {
+                            const FIDE_MODE = {{
+                                pairing_systems
+                                | selectattr('supports_fide_mode')
+                                | map(attribute='id')
+                                | list
+                                | tojson
+                            }};
+                            function syncFideMode() {
+                                const id = $('#pairing-system').val() || '';
+                                $('.fide-mode-option').toggle(FIDE_MODE.includes(id));
+                            }
+                            $('#pairing-system').on('change', syncFideMode);
+                            syncFideMode();
                         })();
                     </script>
                 </div>

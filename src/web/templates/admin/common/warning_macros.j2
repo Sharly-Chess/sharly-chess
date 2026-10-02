@@ -1,0 +1,87 @@
+{% macro level_icon(level, css_class='') %}
+    {% if level == 2 %}
+        <i class="bi-info-circle-fill text-info pe-2 {{ css_class }}"></i>
+    {% elif level == 3 %}
+        <i class="bi-exclamation-triangle-fill text-warning pe-2 {{ css_class }}"></i>
+    {% elif level == 4 %}
+        <i class="bi-exclamation-octagon-fill text-danger pe-2 {{ css_class }}"></i>
+    {% else %}
+        <i class="bi-slash-circle-fill text-danger pe-2 {{ css_class }}"></i>
+    {% endif %}
+{% endmacro %}
+
+{# A level-4 warning: the first step states that the action breaks the
+   regulations, the second spells out its consequences and backs out by
+   default. The caller gives the attributes of the 'cancel' and 'confirm'
+   buttons, stacked beside the message to leave it room. #}
+{% macro double_confirmation(id, first_message, consequences, confirm_label, hidden=false) %}
+    <div id="{{ id }}" class="double-confirmation {% if hidden %}d-none{% endif %}">
+        <div data-step="1" class="alert alert-danger d-flex align-items-center mb-2">
+            {{ level_icon(4, 'align-self-start') }}
+            <div class="flex-grow-1 align-self-start">{{ first_message }}</div>
+            <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
+                <button type="button" class="btn btn-sm btn-outline-danger text-nowrap cap-centred" {{ caller('cancel') }}>
+                    <i class="bi-x-circle-fill pe-1"></i>
+                    {{ _('Cancel') }}
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-danger text-nowrap cap-centred"
+                    onclick="
+                        const box = this.closest('.double-confirmation');
+                        box.querySelector('[data-step=\'1\']').classList.add('d-none');
+                        box.querySelector('[data-step=\'2\']').classList.remove('d-none');
+                        box.querySelector('[data-step=\'2\'] [data-default]').focus();
+                    "
+                >
+                    {{ _('Continue') }}
+                </button>
+            </div>
+        </div>
+        <div data-step="2" class="alert alert-danger d-flex align-items-center mb-2 d-none">
+            {{ level_icon(4, 'align-self-start') }}
+            <div class="flex-grow-1 align-self-start">{{ consequences }}</div>
+            <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
+                <button type="button" class="btn btn-sm btn-danger text-nowrap cap-centred" data-default {{ caller('cancel') }}>
+                    <i class="bi-x-circle-fill pe-1"></i>
+                    {{ _('Cancel') }}
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger text-nowrap cap-centred" {{ caller('confirm') }}>
+                    {{ confirm_label }}
+                </button>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{# A level-3 warning: the action breaks the regulations but does no harm,
+   and is confirmed once. The caller gives the attributes of the 'cancel'
+   and 'confirm' buttons. #}
+{% macro confirmation(id, message, confirm_label) %}
+    <div id="{{ id }}" class="alert alert-warning d-flex align-items-center mb-2">
+        {{ level_icon(3, 'align-self-start') }}
+        <div class="flex-grow-1 align-self-start">{{ message }}</div>
+        <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
+            <button type="button" class="btn btn-sm btn-warning text-nowrap cap-centred" {{ caller('cancel') }}>
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-warning text-nowrap cap-centred" {{ caller('confirm') }}>
+                {{ confirm_label }}
+            </button>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro leave_fide_mode_consequences(tournament) %}
+    <p class="mb-1">
+        {{ _('Tournament [%(tournament)s] will leave FIDE mode for good: it can never return to it.', tournament=tournament.name) }}
+    </p>
+    <p class="mb-0">
+        {{ _(
+            'Actions prohibited by the FIDE regulations will be allowed, the tournament '
+            'will be flagged as not in FIDE mode, and its TRF will record the round '
+            'FIDE mode was left at, from which its data can no longer be trusted.'
+        ) }}
+    </p>
+{% endmacro %}

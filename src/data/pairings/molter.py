@@ -23,7 +23,7 @@ from data.pairings.molter_recipes import (
 )
 from data.pairings.settings import PairingSetting
 from data.pairings.systems import swiss_style_permission_handler
-from data.safety_mode import PairingAction, PermissionHandler
+from data.permissions import PairingAction, PermissionHandler
 from utils.entity import EntityManager, EventBoundEntityManager
 
 if TYPE_CHECKING:

@@ -1,8 +1,10 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
 {% set advancement = admin_tournament.tie_break_config_purpose == 'ADVANCEMENT' %}
 {% set config_tie_breaks = admin_tournament.tie_breaks_by_id %}
 {# Advancement tie-breaks are hand-picked and never rule-set managed; the
    "points alone" caveat is a standings notion and does not apply. #}
 {% set rule_set_managed = (not advancement) and admin_tournament.rule_set_managed_tie_breaks %}
+{% set editing_locked = rule_set_managed or tie_breaks_locked %}
 {% set only_the_points = (not advancement) and admin_tournament.tie_break_configuration.only_points %}
 {# A definite width, not fit-content: sizing to the content meant the
    dialog moved whenever the content did — opening the custom-sets section,
@@ -63,7 +65,7 @@
         </div>
         {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
         <div class="modal-body">
-            {% if not rule_set_managed %}
+            {% if not editing_locked %}
                 <div class="d-flex justify-content-end mb-3">
                     <button
                         class="btn btn-primary text-nowrap"
@@ -126,10 +128,49 @@
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
+            {% if tie_breaks_locked and not rule_set_managed %}
+                <div id="tie-breaks-unlock-start" class="d-flex align-items-center gap-2 mb-3">
+                    <div class="flex-grow-1 small">
+                        {{ _('The tournament has started: in FIDE mode, its tie-breaks are fixed.') }}
+                    </div>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger text-nowrap"
+                        onclick="$('#tie-breaks-unlock-start').addClass('d-none'); $('#tie-breaks-unlock').removeClass('d-none');"
+                    >
+                        {{ _('Change the tie-breaks…') }}
+                    </button>
+                </div>
+                {% call(button) warning_macros.double_confirmation(
+                    'tie-breaks-unlock',
+                    _(
+                        'Changing the tie-breaks once the tournament has started is not '
+                        'compliant with the FIDE regulations: they are published before it starts.'
+                    ),
+                    _(
+                        'Each change will be recorded in the TRF of the tournament, '
+                        'with the round and the former list of tie-breaks.'
+                    ),
+                    _('Change the tie-breaks'),
+                    hidden=true,
+                ) %}
+                    {% if button == 'cancel' %}
+                        onclick="$('#tie-breaks-unlock').addClass('d-none'); $('#tie-breaks-unlock-start').removeClass('d-none');"
+                    {% else %}
+                        hx-post="{{ url_for(
+                            'admin-tie-breaks-unlock',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                {% endcall %}
+            {% endif %}
             {# The points alone means nothing has been chosen to break ties,
                which is worth saying plainly — an arbiter who forgets leaves
                the standings undecided below the score. #}
-            {% if only_the_points and not rule_set_managed %}
+            {% if only_the_points and not editing_locked %}
                 {% with type='warning', message=_(
                     'No tie-breaks defined other than points.'
                 ), hide_remove_button=true, icon='bi-exclamation-triangle-fill' %}
@@ -147,7 +188,7 @@
             {% endif %}
             {% if config_tie_breaks %}
                 {% set reorder_enabled = (
-                    not rule_set_managed and config_tie_breaks|length > 1
+                    not editing_locked and config_tie_breaks|length > 1
                 ) %}
                 <form
                     class="{% if reorder_enabled %}sortable{% endif %} d-flex flex-column gap-2"
@@ -194,7 +235,7 @@
                                             ></i>
                                         {% endif %}
                                     {% endif %}
-                                    {% if not rule_set_managed %}
+                                    {% if not editing_locked %}
                                         {% if tie_break.allow_multiple %}
                                              <button
                                                 class="btn btn-sm btn-outline-primary"
@@ -274,7 +315,7 @@
                     {% endfor %}
                 </form>
                 {# Tie-beak sets can be applied at any time. #}
-                {% if not rule_set_managed and tie_break_set_select_options %}
+                {% if not editing_locked and tie_break_set_select_options %}
                     <div class="mt-3">
                         <form
                             id="tie-break-set-apply-form"
@@ -333,7 +374,7 @@
                 {% endif %}
                 {% set save_as_invalid = invalid_messages_by_id|length > 0 %}
                 {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
-                {% if not advancement and not rule_set_managed and not only_the_points and (not save_as_invalid or has_custom_sets) %}
+                {% if not advancement and not editing_locked and not only_the_points and (not save_as_invalid or has_custom_sets) %}
                     <div class="mt-3">
                         <button
                             type="button"
@@ -440,7 +481,7 @@
                                     </script>
                                 {% endif %}
                             </div>
-                            {% if not rule_set_managed and has_custom_sets %}
+                            {% if not editing_locked and has_custom_sets %}
                                 <div class="text-end mt-3">
                                     <button
                                         type="button"

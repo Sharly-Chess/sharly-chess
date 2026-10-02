@@ -1,3 +1,4 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
 <div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-player-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -55,6 +56,23 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% if regeneration %}
+                    <div class="alert alert-warning d-flex">
+                        {{ warning_macros.level_icon(3) }}
+                        <div>
+                            <p class="mb-1">
+                                {{ _(
+                                    'Saving this player changes the order of the pairing numbers, '
+                                    'from which rounds have already been paired. This breaches the '
+                                    'integrity of the pairings, and will be logged in the TRF:'
+                                ) }}
+                            </p>
+                            <p class="mb-1 font-monospace">{{ regeneration }}</p>
+                            <p class="mb-0">{{ _('Save again to confirm.') }}</p>
+                        </div>
+                    </div>
+                    <input type="hidden" name="regeneration_confirmed" value="on">
+                {% endif %}
                 <h4>
                     {{ _('Identity') }}
                 </h4>

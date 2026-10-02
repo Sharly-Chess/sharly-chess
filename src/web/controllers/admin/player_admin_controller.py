@@ -2,6 +2,7 @@ import csv
 from collections import defaultdict, Counter
 from collections.abc import Callable
 from contextlib import suppress
+from dataclasses import replace
 from datetime import date
 from functools import cached_property
 from itertools import islice
@@ -48,6 +49,8 @@ from data.player import (
     MAX_K_FACTOR,
 )
 from utils.types import PlayerRating
+from data.loader import EventLoader
+from data.pibes import Pibe, PibeType
 from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -745,6 +748,7 @@ class PlayerAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
         warning_message: str | None = None,
         redirect_to: str | None = None,
+        regeneration: str | None = None,
     ) -> Template:
         request = web_context.request
         event = web_context.get_admin_event()
@@ -994,6 +998,7 @@ class PlayerAdminController(BaseEventAdminController):
             ),
             'data_sources': DataSourceManager().objects(),
             'warning_message': warning_message,
+            'regeneration': regeneration,
             'add_other_active': SessionPlayersAddOtherActive(request).get(),
             'modal': 'player',
             'action': action,
@@ -1494,6 +1499,32 @@ class PlayerAdminController(BaseEventAdminController):
             )
         return self._render_players_tab(web_context)
 
+    @staticmethod
+    def _pending_regeneration(
+        event: Event, player: Player, stored_player: StoredPlayer, data: dict[str, str]
+    ) -> str | None:
+        """The TRF comment of the pairing integrity breach saving the player
+        would make, by renumbering the players of a tournament paired from
+        the numbering."""
+        if event.is_team_event:
+            return None
+        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+        if tournament_id != player.optional_single_tournament_id:
+            return None
+        if not event.tournaments_by_id[tournament_id].logs_pairing_breaches:
+            return None
+        preview_event = EventLoader.get(None).load_event(event.uniq_id)
+        preview_player = preview_event.players_by_id[player.id]
+        preview_player.replace_stored_player(replace(stored_player, id=player.id))
+        preview_tournament = preview_event.tournaments_by_id[tournament_id]
+        if not (
+            description := preview_tournament.pairing_numbers.pending_regeneration()
+        ):
+            return None
+        return Pibe(
+            PibeType.REGENERATION, preview_tournament.current_round, description
+        ).trf_comment
+
     def _update_player(
         self,
         web_context: PlayerAdminWebContext,
@@ -1507,6 +1538,14 @@ class PlayerAdminController(BaseEventAdminController):
         if not stored_player:
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
+            )
+        if not WebContext.form_data_to_bool(data, 'regeneration_confirmed') and (
+            regeneration := self._pending_regeneration(
+                event, player, stored_player, data
+            )
+        ):
+            return self._render_players_form_modal(
+                web_context, action, data=data, regeneration=regeneration
             )
         event.update_player(player, stored_player)
         if event.is_team_event:

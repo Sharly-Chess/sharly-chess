@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
 
 <div style="--bs-modal-width: min(92vw, 560px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
     <div class="modal-content bg-secondary-subtle">
@@ -74,6 +75,47 @@
                     <div class="fst-italic">{{ _('No prohibited pairings were used for this round.') }}</div>
                 {% endif %}
             {% else %}
+                {% if pp_fide_locked %}
+                    <div id="pp-fide-locked" class="alert alert-danger d-flex align-items-center mb-3">
+                        {{ warning_macros.level_icon(5, 'align-self-start') }}
+                        <div class="flex-grow-1 align-self-start">
+                            {{ _(
+                                'In FIDE mode, the prohibited pairings are announced before the '
+                                'first round and cannot change once it is paired.'
+                            ) }}
+                        </div>
+                        <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger text-nowrap cap-centred"
+                                onclick="$('#pp-fide-locked').addClass('d-none'); $('#pp-leave-fide-mode').removeClass('d-none');"
+                            >
+                                {{ _('Leave FIDE mode…') }}
+                            </button>
+                        </div>
+                    </div>
+                    {% call(button) warning_macros.double_confirmation(
+                        'pp-leave-fide-mode',
+                        _('Leaving FIDE mode is not compliant with the FIDE regulations.'),
+                        warning_macros.leave_fide_mode_consequences(admin_tournament),
+                        _('Leave FIDE mode'),
+                        hidden=true,
+                    ) %}
+                        {% if button == 'cancel' %}
+                            onclick="$('#pp-leave-fide-mode').addClass('d-none'); $('#pp-fide-locked').removeClass('d-none');"
+                        {% else %}
+                            hx-post="{{ url_for(
+                                'admin-prohibited-pairings-leave-fide-mode',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=pp_round,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% endif %}
+                    {% endcall %}
+                {% endif %}
+                <fieldset {% if pp_fide_locked %}disabled{% endif %}>
                 {# ---- Dimension (auto grouping) ---- #}
                 <form
                     id="pp-config-form"
@@ -342,6 +384,7 @@
                         </script>
                     </div>
                 {% endif %}
+                </fieldset>
             {% endif %}
         </div>
     </div>

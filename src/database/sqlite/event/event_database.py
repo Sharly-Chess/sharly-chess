@@ -47,6 +47,8 @@ from database.sqlite.event.event_store import (
     StoredTeamGroup,
     StoredTeamPairingBlock,
     StoredTeamPointAdjustment,
+    StoredPibe,
+    StoredRatingCorrection,
     StoredPlayerPointAdjustment,
     StoredTeamRoundLineupEntry,
 )
@@ -687,6 +689,12 @@ class EventDatabase(MigrationDatabase):
             round_robin_participation_rule=cls.load_bool_from_database_field(
                 row['round_robin_participation_rule']
             ),
+            fide_mode=cls.load_bool_from_database_field(row['fide_mode']),
+            fide_mode_exit_round=row['fide_mode_exit_round'],
+            manual_pairing_round=row['manual_pairing_round'],
+            manual_pairing_boards=cls.load_json_from_database_field(
+                row['manual_pairing_boards'], []
+            ),
         )
 
     @staticmethod
@@ -744,6 +752,10 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.stored_prohibited_pairing_groups = (
                 self.load_tournament_stored_prohibited_pairing_groups(id_)
             )
+            stored_tournament.stored_pibes = self.load_tournament_stored_pibes(id_)
+            stored_tournament.stored_rating_corrections = (
+                self.load_tournament_stored_rating_corrections(id_)
+            )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 
@@ -780,6 +792,8 @@ class EventDatabase(MigrationDatabase):
                 'prohibited_pairing_dimension',
                 'prohibited_pairing_dimension_is_hard',
                 'round_robin_participation_rule',
+                'fide_mode',
+                'fide_mode_exit_round',
             ],
         ) | {
             'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),
@@ -1443,15 +1457,17 @@ class EventDatabase(MigrationDatabase):
     def delete_all_stored_pairings(self) -> None:
         """Undo every round: the pairings and the boards they were played
         on, the team matches those boards sit in, the lineups fielded for
-        them and the adjustments made to them. A pairing left without its
-        board — or a board without its pairing — is an event no round can be
-        drawn in."""
+        them, the adjustments made to them and the integrity breaches logged
+        against them. A pairing left without its board — or a board without
+        its pairing — is an event no round can be drawn in."""
         self.execute('DELETE FROM `pairing`')
         self.execute('DELETE FROM `board`')
         self.execute('DELETE FROM `team_board`')
         self.execute('DELETE FROM `team_round_lineup`')
         self.execute('DELETE FROM `player_point_adjustment`')
         self.execute('DELETE FROM `team_point_adjustment`')
+        self.execute('DELETE FROM `pibe`')
+        self.execute('DELETE FROM `rating_correction`')
 
     # ---------------------------------------------------------------------------------
     # StoredBoard
@@ -2080,6 +2096,144 @@ class EventDatabase(MigrationDatabase):
             '`delta` = excluded.`delta`, '
             '`reason` = excluded.`reason`',
             (tournament_id, player_id, round_, delta, reason),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredPibe
+    # ---------------------------------------------------------------------------------
+
+    def load_tournament_stored_pibes(self, tournament_id: int) -> list[StoredPibe]:
+        self.execute(
+            'SELECT * FROM `pibe` WHERE `tournament_id` = ? ORDER BY `id`',
+            (tournament_id,),
+        )
+        return [
+            StoredPibe(
+                id=row['id'],
+                tournament_id=row['tournament_id'],
+                round_=row['round'],
+                type=row['type'],
+                description=row['description'],
+                date=self.load_datetime_from_database_field(row['date']),
+                members={
+                    int(number): member_id
+                    for number, member_id in (
+                        self.load_json_from_database_field(row['members'], {}) or {}
+                    ).items()
+                },
+            )
+            for row in self.fetchall()
+        ]
+
+    def add_stored_pibe(self, stored_pibe: StoredPibe) -> None:
+        self.execute(
+            'INSERT INTO `pibe` '
+            '(`tournament_id`, `round`, `type`, `description`, `date`, `members`) '
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            (
+                stored_pibe.tournament_id,
+                stored_pibe.round_,
+                stored_pibe.type,
+                stored_pibe.description,
+                self.dump_datetime_to_database_field(stored_pibe.date),
+                self.dump_to_json_database_field(
+                    {
+                        str(number): member
+                        for number, member in stored_pibe.members.items()
+                    },
+                    {},
+                ),
+            ),
+        )
+
+    def delete_tournament_stored_pibes(
+        self, tournament_id: int, type_: str, round_: int
+    ) -> None:
+        self.execute(
+            'DELETE FROM `pibe` '
+            'WHERE `tournament_id` = ? AND `type` = ? AND `round` = ?',
+            (tournament_id, type_, round_),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredRatingCorrection
+    # ---------------------------------------------------------------------------------
+
+    def load_tournament_stored_rating_corrections(
+        self, tournament_id: int
+    ) -> list[StoredRatingCorrection]:
+        self.execute(
+            'SELECT * FROM `rating_correction` WHERE `tournament_id` = ? '
+            'ORDER BY `round`, `id`',
+            (tournament_id,),
+        )
+        return [
+            StoredRatingCorrection(
+                id=row['id'],
+                tournament_id=row['tournament_id'],
+                round_=row['round'],
+                white_player_id=row['white_player_id'],
+                black_player_id=row['black_player_id'],
+                result=row['result'],
+                date=self.load_datetime_from_database_field(row['date']),
+            )
+            for row in self.fetchall()
+        ]
+
+    def add_stored_rating_correction(
+        self, stored_rating_correction: StoredRatingCorrection
+    ) -> None:
+        self.execute(
+            'INSERT INTO `rating_correction` (`tournament_id`, `round`, '
+            '`white_player_id`, `black_player_id`, `result`, `date`) '
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            (
+                stored_rating_correction.tournament_id,
+                stored_rating_correction.round_,
+                stored_rating_correction.white_player_id,
+                stored_rating_correction.black_player_id,
+                stored_rating_correction.result,
+                self.dump_datetime_to_database_field(stored_rating_correction.date),
+            ),
+        )
+
+    def delete_stored_rating_correction(
+        self, tournament_id: int, round_: int, player_ids: tuple[int, int]
+    ) -> None:
+        """Delete the correction of the game the two players played in
+        *round_*, whichever had white."""
+        self.execute(
+            'DELETE FROM `rating_correction` '
+            'WHERE `tournament_id` = ? AND `round` = ? '
+            'AND `white_player_id` IN (?, ?) AND `black_player_id` IN (?, ?)',
+            (tournament_id, round_, *player_ids, *player_ids),
+        )
+
+    def set_tournament_manual_pairing(
+        self,
+        tournament_id: int,
+        round_: int | None,
+        boards: list[dict[str, Any]],
+    ) -> None:
+        self.execute(
+            'UPDATE `tournament` SET `manual_pairing_round` = ?, '
+            '`manual_pairing_boards` = ?, `last_update` = ? WHERE `id` = ?',
+            (
+                round_,
+                self.dump_to_json_database_field(boards, []),
+                self.now_as_database_timestamp(),
+                tournament_id,
+            ),
+        )
+
+    def leave_tournament_fide_mode(
+        self, tournament_id: int, exit_round: int | None
+    ) -> None:
+        self.execute(
+            'UPDATE `tournament` SET '
+            '`fide_mode` = 0, `fide_mode_exit_round` = ?, `last_update` = ? '
+            'WHERE `id` = ?',
+            (exit_round, self.now_as_database_timestamp(), tournament_id),
         )
 
     # ---------------------------------------------------------------------------------

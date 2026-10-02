@@ -39,7 +39,7 @@ from data.pairings.fixed_table import (
 from data.pairings.settings import PairingSetting
 from data.pairings.systems import PairingSystem, swiss_style_permission_handler
 from data.pairings.variations import PairingVariation
-from data.safety_mode import PairingAction, PermissionHandler
+from data.permissions import PairingAction, PermissionHandler
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils.entity import EntityManager, EventBoundEntityManager
 

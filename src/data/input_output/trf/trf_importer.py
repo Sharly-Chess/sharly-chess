@@ -30,7 +30,9 @@ from data.input_output.trf.trf_mappers import (
 from data.input_output.trf.trf_legacy import TrfLegacyAdapter, TrfVersion
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.input_output.trf.trf_utils import parse_trf_date, parse_trf_year
+from data.pairings.manual_pairing import describe_pairs, imported_round_breaches
 from data.pairings.settings import ColorSeedSetting
+from data.pibes import Pibe, PibeType
 from data.tie_breaks import TieBreak, TieBreakManager
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -136,6 +138,9 @@ class TrfTournamentImporter(FileTournamentImporter):
     # numbers) from 260 records, expanded per round. Resolved to member
     # ids and written as per-round snapshots once the tournament is live.
     _pending_prohibited_snapshots: dict[int, list[list[int]]]
+    #: Whether the imported rounds are checked against the pairing engine.
+    #: The pairing checker, which compares them itself, turns it off.
+    checks_imported_rounds: bool = True
 
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
@@ -150,6 +155,10 @@ class TrfTournamentImporter(FileTournamentImporter):
         )
         self._populate_acceleration(stored_tournament, trf_tournament)
         stored_tournament.rating = tournament_rating
+        # An imported tournament runs in FIDE mode, whatever the tournament
+        # it was imported into was set to before it started.
+        stored_tournament.fide_mode = True
+        stored_tournament.fide_mode_exit_round = None
         self._pending_teams = self._read_trf_teams(trf_tournament)
         # OOdO records (TRF26 300) carry the per-round team lineups in
         # board order; the team-board reconstruction below uses them to
@@ -203,6 +212,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
         if self._pending_prohibited_snapshots:
             self.post_import_task.append(self._apply_prohibited_pairings)
+        if self.checks_imported_rounds:
+            self.post_import_task.append(self._check_imported_rounds)
 
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
@@ -685,6 +696,23 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
             result.append((stored_team, list(trf_team.player_ids)))
         return result
+
+    def _check_imported_rounds(self, tournament: 'Tournament') -> None:
+        """Check the imported rounds against the pairing engine, where the
+        pairing integrity breaches are logged, and log the ones that differ
+        as import breaches."""
+        if not tournament.logs_pairing_breaches:
+            return
+        self.import_breaches = imported_round_breaches(tournament)
+        for round_, missing, extra in self.import_breaches:
+            tournament.log_pibe(
+                Pibe(
+                    PibeType.IMPORT,
+                    round_,
+                    f'{describe_pairs(tournament, missing)} => '
+                    f'{describe_pairs(tournament, extra)}',
+                )
+            )
 
     def _write_stored_tournament(
         self,

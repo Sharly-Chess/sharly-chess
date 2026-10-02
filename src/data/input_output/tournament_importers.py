@@ -39,6 +39,9 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         super().__init__(options)
         self.stored_event_modified = False
         self.post_import_task: list[Callable[[Tournament], None]] = []
+        self.import_breaches: list[tuple[int, set, set]] = []
+        """The imported rounds whose pairings are not the engine's, each
+        with the engine's pairs and the imported ones that differ."""
         if self.reorder_boards:
             self.post_import_task.append(self._reorder_tournament_boards)
 
