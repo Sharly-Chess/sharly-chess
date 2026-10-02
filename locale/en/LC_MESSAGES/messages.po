@@ -1792,6 +1792,9 @@ msgstr ""
 msgid "Cape Verde"
 msgstr ""
 
+msgid "Capitalise last names"
+msgstr ""
+
 msgid "Captain"
 msgstr ""
 
@@ -3888,6 +3891,9 @@ msgstr ""
 msgid "First team:"
 msgstr ""
 
+msgid "First, Last"
+msgstr ""
+
 msgid "Fixed board"
 msgstr ""
 
@@ -4825,9 +4831,6 @@ msgctxt "team ranking header loss"
 msgid "L"
 msgstr ""
 
-msgid "LAST, First"
-msgstr ""
-
 msgid "Language:"
 msgstr ""
 
@@ -4835,6 +4838,9 @@ msgid "Laos"
 msgstr ""
 
 msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
+msgstr ""
+
+msgid "Last First"
 msgstr ""
 
 msgid "Last board:"

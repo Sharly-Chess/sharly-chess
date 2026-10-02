@@ -410,6 +410,7 @@ class SharlyChessServerToga(toga.App):
         self.locale_select: toga.Selection | None = None
         self.date_formatter_select: toga.Selection | None = None
         self.name_formatter_select: toga.Selection | None = None
+        self.capitalise_last_name_switch: toga.Switch | None = None
         self.experimental_switch: toga.Switch | None = None
 
         # Setup content, displayed while the settings have not been set
@@ -715,6 +716,7 @@ class SharlyChessServerToga(toga.App):
             self._settings_row(_('Federation:'), self._build_federation_select()),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
+            self._settings_row('', self._build_capitalise_last_name_switch()),
             self._settings_row('', self.launch_browser_switch),
         ]
         if config.experimental_features:
@@ -873,6 +875,14 @@ class SharlyChessServerToga(toga.App):
         )
         return self.name_formatter_select
 
+    def _build_capitalise_last_name_switch(self) -> toga.Switch:
+        self.capitalise_last_name_switch = toga.Switch(
+            text=_('Capitalise last names'),
+            value=SharlyChessConfig().stored_config.capitalise_last_name,
+            on_change=self._on_capitalise_last_name_switch_change,
+        )
+        return self.capitalise_last_name_switch
+
     def _build_setup_content(self) -> None:
         """The content displayed while the settings of the application have not
         been set: the application can not be used before they are."""
@@ -907,6 +917,7 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
+            self._settings_row('', self._build_capitalise_last_name_switch()),
             self.setup_start_button,
         )
         assert isinstance(self.main_window, toga.Window)
@@ -953,6 +964,11 @@ class SharlyChessServerToga(toga.App):
 
     def _on_name_formatter_change(self, widget: toga.Selection, **kwargs: Any) -> None:
         self._update_config('name_formatter', getattr(widget.value, 'name_formatter'))  # noqa: B009
+
+    def _on_capitalise_last_name_switch_change(
+        self, widget: toga.Switch, **kwargs: Any
+    ) -> None:
+        self._update_config('capitalise_last_name', widget.value)
 
     def _on_experimental_switch_change(
         self, widget: toga.Switch, **kwargs: Any

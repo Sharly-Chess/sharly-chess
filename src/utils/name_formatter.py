@@ -6,8 +6,11 @@ from utils.entity import EntityManager, IdentifiableEntity
 
 
 class NameFormatter(IdentifiableEntity, ABC):
+    #: Whether last names are displayed in capitals.
+    capitalise_last_name: bool = False
+
     def format_last_name(self, last_name: str) -> str:
-        return last_name
+        return last_name.upper() if self.capitalise_last_name else last_name
 
     def format(self, first_name: str | None, last_name: str) -> str:
         """The full name of a person."""
@@ -24,26 +27,23 @@ class NameFormatter(IdentifiableEntity, ABC):
         return normalized_key(last_name), normalized_key(first_name)
 
 
-class UpperLastFirstNameFormatter(NameFormatter):
-    @staticmethod
-    def static_id() -> str:
-        return 'UPPER_LAST_FIRST'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('LAST, First')
-
-    def format_last_name(self, last_name: str) -> str:
-        return last_name.upper()
-
-    def _format(self, first_name: str, last_name: str) -> str:
-        return f'{last_name}, {first_name}'
-
-
 class LastFirstNameFormatter(NameFormatter):
     @staticmethod
     def static_id() -> str:
         return 'LAST_FIRST'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Last First')
+
+    def _format(self, first_name: str, last_name: str) -> str:
+        return f'{last_name} {first_name}'
+
+
+class LastCommaFirstNameFormatter(NameFormatter):
+    @staticmethod
+    def static_id() -> str:
+        return 'LAST_COMMA_FIRST'
 
     @staticmethod
     def static_name() -> str:
@@ -69,12 +69,29 @@ class FirstLastNameFormatter(NameFormatter):
         return normalized_key(first_name), normalized_key(last_name)
 
 
+class FirstCommaLastNameFormatter(NameFormatter):
+    @staticmethod
+    def static_id() -> str:
+        return 'FIRST_COMMA_LAST'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('First, Last')
+
+    def _format(self, first_name: str, last_name: str) -> str:
+        return f'{first_name}, {last_name}'
+
+    def sort_key(self, first_name: str | None, last_name: str) -> tuple[str, str]:
+        return normalized_key(first_name), normalized_key(last_name)
+
+
 class NameFormatterManager(EntityManager[NameFormatter]):
     def entity_types(self) -> list[type[NameFormatter]]:
         return [
-            UpperLastFirstNameFormatter,
             LastFirstNameFormatter,
+            LastCommaFirstNameFormatter,
             FirstLastNameFormatter,
+            FirstCommaLastNameFormatter,
         ]
 
 

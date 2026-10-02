@@ -7,7 +7,7 @@
 - The event export feature has been moved to the event's configuration window (5.1.0)
 - A reminder to update player data is shown before distributing players across tournaments (5.1.0)
 - The administration interface adapts to phone screens (5.1.0)
-- A name format setting (LAST, First / Last, First / First Last) sets how players' names are displayed, whatever the language (5.2.0)
+- A name format setting (Last First / Last, First / First Last / First, Last), with an option to display last names in capitals, sets how players' names are displayed, whatever the language (5.2.0)
 
 ## Tournaments
 
@@ -35,7 +35,7 @@
 - Players removed by the deletion of unpaired players, or by an import replacing the existing players, are now also deleted on _Sharly-Chess.com_, instead of being brought back by the next synchronisation; re-imported players stay linked to their _Sharly-Chess.com_ registration (5.1.1)
 - The _FFE_ player update now finds players whose licence number is wrong or unknown, by their _FIDE_ ID or else by their name and date (or year) of birth, and proposes the correct licence number; names are compared regardless of case and accents; players still not found despite their licence number (or FIDE ID for the FIDE database) are highlighted in the update window (5.1.1)
 - Players without a _FIDE_ ID in the _FFE_ database, or with a _FIDE_ ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
-- Players' last names are stored as entered or imported, no longer in capitals (5.2.0)
+- Players' names are stored as entered: last names are no longer put in capitals, nor first names capitalised (5.2.0)
 - The players tab is sorted by the name displayed first (5.2.0)
 
 ## Pairings

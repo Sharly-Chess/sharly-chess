@@ -176,7 +176,7 @@ def test_a_player_is_stored_as_the_form_was_filled_in(
         for player in EVENT.tournament().tournament_players
         if player.last_name == 'doe'
     )
-    assert entered.first_name == 'John'
+    assert entered.first_name == 'john'
     assert entered.date_of_birth == date(2000, 10, 30)
     assert entered.gender == PlayerGender.MAN
     assert entered.club.name == 'SC Club'

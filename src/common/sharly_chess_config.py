@@ -184,6 +184,7 @@ class SharlyChessConfig(metaclass=Singleton):
         self._name_formatter = NameFormatterManager().get_object(
             stored_config.name_formatter
         )
+        self._name_formatter.capitalise_last_name = stored_config.capitalise_last_name
         enable_experimental_features(stored_config.experimental)
         plugin_manager.reload_register()
         self._stored_config = stored_config

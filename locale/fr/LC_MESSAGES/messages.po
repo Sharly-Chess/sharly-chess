@@ -1792,6 +1792,9 @@ msgstr "Impossible de répartir les {remaining} joueur·euses restant·es dans u
 msgid "Cape Verde"
 msgstr "Cap-Vert"
 
+msgid "Capitalise last names"
+msgstr "Noms de famille en majuscules"
+
 msgid "Captain"
 msgstr "Capitaine"
 
@@ -3888,6 +3891,9 @@ msgstr "Première ronde"
 msgid "First team:"
 msgstr "Première équipe :"
 
+msgid "First, Last"
+msgstr "Prénom, Nom"
+
 msgid "Fixed board"
 msgstr "Échiquier fixe"
 
@@ -4825,9 +4831,6 @@ msgctxt "team ranking header loss"
 msgid "L"
 msgstr "D"
 
-msgid "LAST, First"
-msgstr "NOM, Prénom"
-
 msgid "Language:"
 msgstr "Langue :"
 
@@ -4836,6 +4839,9 @@ msgstr "Laos"
 
 msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
 msgstr "Plus grand nombre de joueur·euses qu'une équipe peut avoir dans son effectif, laisser vide pour aucune limite."
+
+msgid "Last First"
+msgstr "Nom Prénom"
 
 msgid "Last board:"
 msgstr "Dernier échiquier :"

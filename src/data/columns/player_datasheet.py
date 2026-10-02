@@ -161,10 +161,12 @@ class FirstNameColumn(DatasheetColumn):
         return player.first_name
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
-        stored_player.first_name = value.title() or None
+        stored_player.first_name = value or None
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return cast(bool, unidecode(player.first_name) == unidecode(value.title()))
+        return cast(
+            bool, unidecode(player.first_name).upper() == unidecode(value).upper()
+        )
 
 
 class DateOfBirthColumn(DatasheetColumn):

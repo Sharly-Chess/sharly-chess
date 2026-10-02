@@ -1364,7 +1364,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         return StoredPlayer(
             id=None,
-            first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
+            first_name=WebContext.form_data_to_str(data, 'first_name') or '',
             last_name=WebContext.form_data_to_str(data, 'last_name') or '',
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
