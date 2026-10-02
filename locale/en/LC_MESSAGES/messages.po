@@ -7011,6 +7011,9 @@ msgstr ""
 msgid "Play a match for third place between the two losing semi-finalists, alongside the final."
 msgstr ""
 
+msgid "Play the last two rounds of the first cycle in reverse order, as recommended by the FIDE Handbook, so that no one plays the same colour three times in a row when the second cycle starts."
+msgstr ""
+
 msgid "Played"
 msgstr ""
 
@@ -8069,6 +8072,9 @@ msgid "Return to tournament"
 msgstr ""
 
 msgid "Reverse order"
+msgstr ""
+
+msgid "Reverse the last two rounds of the first cycle"
 msgstr ""
 
 msgid "Reversed"
