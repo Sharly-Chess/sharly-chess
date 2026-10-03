@@ -138,7 +138,6 @@
                 </table>
             {% endif %}
             {% if databases %}
-            <h4>{{ _('Local databases') }}</h4>
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >
@@ -159,11 +158,9 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for database in databases %}
-                        {% include 'database_row.html' %}
-                    {% endfor %}
-                </tbody>
+                {% for database in databases %}
+                    {% include 'database_row.html' %}
+                {% endfor %}
             </table>
             {% endif %}
             {% if not databases and not online_data_sources %}

@@ -4994,6 +4994,10 @@ msgstr "Dernier échiquier :"
 msgid "Last check"
 msgstr "Dernière vérification"
 
+#, python-format
+msgid "Last check: %(date)s"
+msgstr "Dernière vérification : %(date)s"
+
 msgid "Last match:"
 msgstr "Dernier match :"
 
@@ -5142,9 +5146,6 @@ msgstr "Lituanie"
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
-
-msgid "Local databases"
-msgstr "Bases de données locales"
 
 msgid "Location"
 msgstr "Lieu"
@@ -5919,6 +5920,10 @@ msgstr "Nouveau chronomètre"
 msgid "New tournament"
 msgstr "Nouveau tournoi"
 
+#, python-format
+msgid "Newer versions of these lists are available: %(lists)s. Update them before relying on this check."
+msgstr "Des versions plus récentes de ces listes sont disponibles : %(lists)s. Mettez-les à jour avant de vous fier à cette vérification."
+
 msgid "Next round"
 msgstr "Ronde suivante"
 
@@ -6062,6 +6067,9 @@ msgstr "Aucune connexion à internet"
 
 msgid "No item selected."
 msgstr "Aucun élément sélectionné."
+
+msgid "No list rates the player"
+msgstr "Aucune liste ne classe le·la joueur·euse"
 
 msgid "No marks"
 msgstr "Aucune marque"
@@ -6448,6 +6456,9 @@ msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entie
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
 msgstr "Il n'y a pas de bye disponible (requis : 1)."
 
+msgid "Not found in the lists:"
+msgstr "Introuvables dans les listes :"
+
 msgid "Not in FIDE mode"
 msgstr "Hors mode FIDE"
 
@@ -6624,6 +6635,9 @@ msgstr "Oct"
 msgid "October"
 msgstr "Octobre"
 
+msgid "Official FIDE rating"
+msgstr "Classement FIDE officiel"
+
 msgid "Official FIDE rating:"
 msgstr "Classement FIDE officiel :"
 
@@ -6644,14 +6658,8 @@ msgstr "Une catégorie peut être désignée comme la catégorie principale pour
 msgid "Ongoing"
 msgstr "En cours"
 
-msgid "Online database: connection established"
-msgstr "Base en ligne : connexion établie"
-
-msgid "Online database: connection failed"
-msgstr "Base en ligne : échec de la connexion"
-
-msgid "Online database: no internet connection"
-msgstr "Base en ligne : pas de connexion internet"
+msgid "Online database"
+msgstr "Base en ligne"
 
 msgid "Online sources"
 msgstr "Sources en ligne"
@@ -8012,6 +8020,9 @@ msgstr "Classement retenu :"
 msgid "Rating lists"
 msgstr "Listes de classement"
 
+msgid "Rating lists used"
+msgstr "Listes de classement utilisées"
+
 msgid "Rating lists:"
 msgstr "Listes de classement :"
 
@@ -8051,8 +8062,18 @@ msgstr "Classements"
 msgid "Ratings of the earlier periods"
 msgstr "Classements des périodes précédentes"
 
+msgid "Ratings set by the arbiter"
+msgstr "Classements saisis par l'arbitre"
+
+msgid "Ratings the lists now give differently"
+msgstr "Classements que les listes donnent désormais différemment"
+
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
+
+#, python-format
+msgid "Ratings update for tournament [%(tournament)s]"
+msgstr "Mise à jour des classements du tournoi [%(tournament)s]"
 
 msgid "Read online"
 msgstr "Lue en ligne"
@@ -10230,6 +10251,9 @@ msgstr "Les classements par ordre croissant."
 msgid "The ratings in descending order."
 msgstr "Les classements par ordre décroissant."
 
+msgid "The ratings of all the players are those of the lists."
+msgstr "Les classements de tou·tes les joueur·euses sont ceux des listes."
+
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
 
@@ -10302,6 +10326,12 @@ msgstr "Les événements et tournois sources ne seront pas supprimés."
 
 msgid "The source has been removed."
 msgstr "La source a été retirée."
+
+#, python-format
+msgid "The source of the rating of %(num)d player will be brought up to date, without changing their rating."
+msgid_plural "The sources of the ratings of %(num)d players will be brought up to date, without changing their ratings."
+msgstr[0] "La source du classement de %(num)d joueur·euse sera mise à jour, sans changer son classement."
+msgstr[1] "Les sources des classements de %(num)d joueur·euses seront mises à jour, sans changer leurs classements."
 
 #, python-brace-format
 msgid "The source of the rating of {count} player was brought up to date."
@@ -10457,6 +10487,9 @@ msgstr "Les contraintes sur ces joueur·euses de fin de classement ont été sup
 
 msgid "These lower-ranked teams were released so the round could be paired."
 msgstr "Les contraintes sur ces équipes de fin de classement ont été supprimées pour apparier la ronde."
+
+msgid "These players keep the value the arbiter entered, unless they are selected to take the value of the lists."
+msgstr "Ces joueur·euses gardent la valeur saisie par l'arbitre, sauf s'ils·elles sont sélectionné·es pour prendre la valeur des listes."
 
 msgid "These plugins are installed together with this one."
 msgstr "Ces plug-ins sont installés en même temps que celui-ci."
@@ -11115,11 +11148,8 @@ msgstr "Trinité-et-Tobago"
 msgid "Trophy, medal"
 msgstr "Trophée, médaille"
 
-msgid "Try the installed copy first"
-msgstr "Essayer d'abord la copie installée"
-
-msgid "Try the online database first"
-msgstr "Essayer d'abord la base en ligne"
+msgid "Try first:"
+msgstr "Essayer d'abord :"
 
 msgctxt "tuesday"
 msgid "Tu"
@@ -11428,6 +11458,9 @@ msgstr "Recherche de mises à jour échouée (pas de connection internet)"
 
 msgid "Update tag"
 msgstr "Modifier l'étiquette"
+
+msgid "Update the lists"
+msgstr "Mettre à jour les listes"
 
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
@@ -11843,6 +11876,9 @@ msgstr "Vainqueur"
 
 msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
+
+msgid "With the lists"
+msgstr "Selon les listes"
 
 msgid "With the standard scoring system, a PAB is worth 1, ½ or 0."
 msgstr "Avec le système de points standard, une exemption vaut 1, ½ ou 0."
@@ -12620,6 +12656,9 @@ msgstr "le fichier ne le code pas"
 msgid "the file does not code it, and describes the tournament as \"{type}\""
 msgstr "le fichier ne le précise pas, et décrit le tournoi comme « {type} »"
 
+msgid "the installed copy"
+msgstr "la copie installée"
+
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
 
@@ -12628,6 +12667,9 @@ msgstr "le nombre de coups doit être un entier positif."
 
 msgid "the number of moves must not be specified for the final period."
 msgstr "le nombre de coups ne doit pas être spécifié pour la période finale."
+
+msgid "the online database"
+msgstr "la base en ligne"
 
 msgid "the server address on the networks to which it is connected:"
 msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"

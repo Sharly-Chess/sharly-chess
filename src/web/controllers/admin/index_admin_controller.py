@@ -1857,10 +1857,6 @@ class IndexAdminController(BaseAdminController):
             'outdate_delay_options': OutdatedDelayManager().options(),
             'outdate_action_options': OutdatedActionManager().options(),
             'online_versions_by_database': _online_versions_by_database(),
-            'read_online_options': {
-                '': _('Try the installed copy first'),
-                'on': _('Try the online database first'),
-            },
             'modal': 'database',
         }
 
@@ -2085,12 +2081,12 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         web_context = AdminWebContext(request)
         try:
-            data_source = OnlineDataSourceManager().get_object(data_source_id)
-            await data_source.reload_connection_status()
+            data_source = DataSourceManager().get_object(data_source_id)
         except KeyError:
-            raise NotFoundException(
-                f'Unknown data source [{data_source_id}].'
-            ) from None
+            data_source = None
+        if not isinstance(data_source, OnlineDataSource):
+            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+        await data_source.reload_connection_status()
         template_context = self._database_modal_context()
         return self._admin_render(
             web_context=web_context,
