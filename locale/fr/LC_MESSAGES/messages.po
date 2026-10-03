@@ -8044,6 +8044,12 @@ msgstr "Réinitialiser le départage manuel"
 msgid "Reset order"
 msgstr "Rétablir l'ordre"
 
+msgid "Reset the absent/present status of all the players."
+msgstr "Réinitialiser le statut absent·e/présent·e de tou·tes les joueur·euses."
+
+msgid "Reset the absent/present status of all the teams."
+msgstr "Réinitialiser le statut absente/présente de toutes les équipes."
+
 msgid "Reset zoom"
 msgstr "Réinitialiser le zoom"
 

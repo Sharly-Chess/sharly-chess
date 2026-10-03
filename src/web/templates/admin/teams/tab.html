@@ -58,21 +58,25 @@
 
 {% block top_right_nav %}
     {% include '/admin/common/collection_controls.html' %}
-    <button
-        class="btn btn-outline-primary text-nowrap ms-1"
-        {% if not admin_event.teams %}
-            disabled
-        {% else %}
-            hx-get="{{ url_for('admin-team-check-in-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        {% endif %}
+    <div
+        {{ macros.tooltip_attributes('info', _('Reset the absent/present status of all the teams.'), 'top') }}
     >
-        <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
-        {{ _('Check-in') }}
-    </button>
+        <button
+            class="btn btn-outline-primary text-nowrap ms-1"
+            {% if not admin_event.teams %}
+                disabled
+            {% else %}
+                hx-get="{{ url_for('admin-team-check-in-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% endif %}
+        >
+            <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
+            {{ _('Check-in') }}
+        </button>
+    </div>
     {% if client.can_update_tournaments %}
         <button
             class="btn btn-outline-primary text-nowrap ms-1"
