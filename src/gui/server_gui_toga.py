@@ -738,7 +738,7 @@ class SharlyChessServerToga(toga.App):
 
         # About view
         self.about_view = toga.Box(style=self.compact_view_style, gap=7)
-        current_version_message = _('Current version: Sharly Chess {version}').format(
+        current_version_message = _('Sharly Chess {version}').format(
             version=SHARLY_CHESS_VERSION
         )
         self.check_beta_switch = toga.Switch(
@@ -754,8 +754,10 @@ class SharlyChessServerToga(toga.App):
         )
         changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
         self.about_view.add(
-            toga.Label(_('Updates'), style=title_style),
+            toga.Label(_('Current version'), style=title_style),
             toga.Label(current_version_message, text_align='center'),
+            toga.Divider(margin=(5, 0)),
+            toga.Label(_('Updates'), style=title_style),
             self.latest_version_label,
             toga.Box(
                 children=[self.latest_version_btn, changelog_button],
