@@ -1889,6 +1889,15 @@ with_indicator: display a loading indicator, optional
     {% endif %}
 {% endmacro %}
 
+{% macro provisional_badge() %}
+    <span
+        class="badge provisional-badge fs-6 align-middle"
+        {{ macros.tooltip_attributes('warning', _('Adjourned games count as draws until their result is entered.'), 'bottom') }}
+    >
+        <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
+    </span>
+{% endmacro %}
+
 {% macro display_controller_assign_dropdown(
     display_controllers,
     object_type,
