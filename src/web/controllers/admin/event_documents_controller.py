@@ -20,7 +20,10 @@ from data.print_documents import (
     PrintDocumentOptionManager,
     PrintOption,
 )
-from data.print_documents.documents import PlayerListPrintDocument
+from data.print_documents.documents import (
+    PlayerListPrintDocument,
+    QRCodePrintDocument,
+)
 from data.print_documents.options import TournamentsPrintOption
 from data.print_documents.options import TournamentPrintOption
 from data.tournament import Tournament
@@ -178,6 +181,10 @@ class EventDocumentsController(BaseEventAdminController):
         allowed_tournaments = cls._allowed_tournaments(web_context)
         if len(allowed_tournaments) == 1:
             tournament_ids = [allowed_tournaments[0].id]
+        if document_id is None and not PlayerListPrintDocument.is_available(
+            allowed_tournaments
+        ):
+            document_id = QRCodePrintDocument.static_id()
 
         default_data = cls.default_document_picker_data(
             event,
@@ -232,10 +239,7 @@ class EventDocumentsController(BaseEventAdminController):
     ) -> list[int] | None:
         for option in options:
             if isinstance(option, TournamentPrintOption):
-                # Only reached once validate_options() has passed, and it
-                # rejects a tournament option with nothing chosen.
-                assert option.value is not None
-                return [option.value]
+                return [option.value] if option.value is not None else None
             if isinstance(option, TournamentsPrintOption):
                 return cast(list[int] | None, option.value)
         return None
