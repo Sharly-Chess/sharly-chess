@@ -304,7 +304,7 @@ def test_the_tournament_modal_opens_for_every_action(
 
 UPDATE_FIELDS = {
     'rounds': '5',
-    'rating': '1',
+    'cadence': '1',
     'pairing_system': 'SWISS',
     'SWISS_pairing_variation': 'SWISS_STANDARD',
     'fide_mode': 'on',
@@ -387,7 +387,7 @@ def test_a_started_tournament_keeps_the_rating_it_was_played_on(
     has been played; the name is not."""
     response = http.patch(
         f'/tournament-update/{event}/{tournament_id(event)}',
-        data=update_fields(event) | {'name': TOURNAMENT_NAME, 'rating': '2'},
+        data=update_fields(event) | {'name': TOURNAMENT_NAME, 'cadence': '2'},
     )
     assert response.status_code == 200
     assert "This field can't be updated once the tournament has started." in (

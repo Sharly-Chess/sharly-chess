@@ -25,6 +25,11 @@ from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
 from data.point_adjustments import PointAdjustments
 from data.point_system import PointSystem
+from data.rating_sequences import (
+    RatingSequence,
+    sequence_from_keys,
+    sequence_name,
+)
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -60,8 +65,9 @@ from utils.enum import (
     ScoreType,
     TeamColourType,
     TeamSortMode,
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
+    RatingPreference,
     RoleType,
     PlayerTitle,
     CheckInStatus,
@@ -516,20 +522,38 @@ class Tournament:
         return self.pairing_variation.system()
 
     @cached_property
-    def rating(self) -> TournamentRating:
-        return TournamentRating(self.stored_tournament.rating)
+    def cadence(self) -> Cadence:
+        return Cadence(self.stored_tournament.cadence)
 
     @cached_property
-    def player_rating_type(self) -> PlayerRatingType:
-        return (
-            PlayerRatingType(self.stored_tournament.player_rating_type)
-            if self.stored_tournament.player_rating_type is not None
-            else self.event.player_rating_type
+    def rating_preference(self) -> RatingPreference:
+        """Which kind of rating the players are ranked on, and which is
+        fallen back on: the one a plugin imposes, else the tournament's,
+        else the event's."""
+        if (forced := self.event.forced_rating_preference) is not None:
+            return forced
+        if self.stored_tournament.rating_preference is not None:
+            return RatingPreference(self.stored_tournament.rating_preference)
+        return self.event.rating_preference
+
+    @cached_property
+    def rating_sequence(self) -> RatingSequence:
+        """The lists the ratings are looked up in, in order (TEC Manual
+        3.9.5.7), the default of the cadence when none was chosen."""
+        if self.stored_tournament.rating_sequence:
+            return sequence_from_keys(self.stored_tournament.rating_sequence)
+        return self.event.default_rating_sequence(self.cadence, self.rating_preference)
+
+    @property
+    def rating_sequence_name(self) -> str:
+        source = self.event.national_rating_source
+        return sequence_name(
+            self.rating_sequence, source.national_source_name if source else None
         )
 
     @property
-    def override_unrated_rapid_blitz(self) -> bool:
-        return self.stored_tournament.override_unrated_rapid_blitz
+    def uses_fide_ratings(self) -> bool:
+        return PlayerRatingType.FIDE in self.rating_preference.kinds
 
     # -------------------------------------------------------------------------
     # Team tournament settings

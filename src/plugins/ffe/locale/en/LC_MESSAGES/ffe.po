@@ -700,9 +700,6 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
-msgid "The FFE always uses the FIDE rating when available."
-msgstr ""
-
 msgid "The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here."
 msgstr ""
 
@@ -815,10 +812,6 @@ msgstr ""
 #, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr ""
-
-msgctxt "singular for unrated player"
-msgid "Unrated"
-msgstr "Unrated"
 
 msgid "Up to date"
 msgstr ""

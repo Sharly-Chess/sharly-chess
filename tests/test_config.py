@@ -14,7 +14,7 @@ from urllib import parse
 from playwright.sync_api import Page, Locator, expect
 
 from common import BASE_DIR, TMP_DIR
-from utils.enum import PlayerRatingType
+from utils.enum import RatingPreference
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
@@ -124,7 +124,7 @@ class TestUtils:
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
-        'player_rating_type': PlayerRatingType.FIDE.value,
+        'rating_preference': RatingPreference.FIDE.value,
         'background_color': '#ffffff',
         'message_text': '',
         'message_color': '#000000',
@@ -415,7 +415,7 @@ class TestUtils:
             'pairing': StandardSwissVariation.static_id(),
             'current_round': None,
             'rounds': 7,
-            'rating': 1,
+            'cadence': 1,
             'stored_prize_groups': [],
             'plugin_data': None,
         }

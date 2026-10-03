@@ -7,6 +7,9 @@
         hx-vals='js:{
             outdate_delay: $("#{{ database.id }}-outdate-delay").val(),
             outdate_action: $("#{{ database.id }}-outdate-action").val(),
+            {% if database.id in databases_with_online_source %}
+                read_online: $("#{{ database.id }}-read-online").val(),
+            {% endif %}
         }'
         hx-target="#database-{{ database.id }}-row"
         hx-swap="outerHTML"
@@ -16,6 +19,17 @@
     <th>
         {{ database.name }}
         <div id="{{ database.id }}-content" class="small fw-normal text-secondary"></div>
+        {% if database.id in databases_with_online_source %}
+            <div class="mt-1 fw-normal">
+                {{ admin_macros.select_content(
+                    id=database.id ~ '-read-online',
+                    name='read_online',
+                    selected=['on' if database.stored_source_database.read_online else ''],
+                    options=read_online_options,
+                    onchange="$('#database-" ~ database.id ~ "-submit').click()",
+                ) }}
+            </div>
+        {% endif %}
     </th>
     <td>
         {{ admin_macros.select_content(

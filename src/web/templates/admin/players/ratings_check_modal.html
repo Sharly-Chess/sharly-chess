@@ -1,0 +1,199 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% set show_tournament = not admin_tournament and admin_event.tournaments_by_id|length > 1 %}
+{% set changes = rating_check.changes %}
+{% set arbiter_values = rating_check.arbiter_values %}
+{% set source_updates = rating_check.source_updates %}
+
+{% macro rating_cell(rating, description) %}
+    <span {{ macros.tooltip_attributes('info', description, 'top') if description }}>{{ rating }}</span>
+{% endmacro %}
+
+{% macro rows_table(rows, checked) %}
+    <table class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto align-middle">
+        <thead class="modal-table-sticky-header">
+            <tr>
+                <th scope="col" class="text-center">
+                    <input
+                        class="form-check-input blue-checkbox d-block mx-auto my-0"
+                        type="checkbox"
+                        onclick="$(this).closest('table').find('input.player-id-checkbox').prop('checked', this.checked);"
+                        {% if checked %}checked{% endif %}
+                    />
+                </th>
+                <th scope="col">{{ _('Player') }}</th>
+                {% if show_tournament %}
+                    <th scope="col">{{ _('Tournament') }}</th>
+                {% endif %}
+                <th scope="col" class="text-end">{{ _('Tournament rating') }}</th>
+                <th scope="col"></th>
+                <th scope="col">{{ _('With the lists') }}</th>
+                <th scope="col" class="text-end">{{ _('Official FIDE rating') }}</th>
+                <th scope="col"></th>
+                <th scope="col">{{ _('With the lists') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td class="text-center">
+                        {% if row.changes_rating %}
+                            <input
+                                type="checkbox"
+                                name="player_ids"
+                                value="{{ row.player.id }}"
+                                class="form-check-input blue-checkbox d-block mx-auto my-0 player-id-checkbox"
+                                {% if checked %}checked{% endif %}
+                            />
+                        {% endif %}
+                    </td>
+                    <td class="text-nowrap">{{ row.player.full_name }}</td>
+                    {% if show_tournament %}
+                        {% set _tournament = row.player.optional_single_tournament %}
+                        <td class="text-nowrap">{{ _tournament.name if _tournament else '' }}</td>
+                    {% endif %}
+                    <td class="text-nowrap text-end">{{ rating_cell(row.current_rating, row.current_description) }}</td>
+                    <td><i class="bi-arrow-right text-secondary"></i></td>
+                    <td class="text-nowrap {% if row.current_rating.value != row.proposed_rating.value %}text-warning fw-bold{% endif %}">
+                        {% if row.changes_rating %}
+                            {{ rating_cell(row.proposed_rating, row.proposed_description) }}
+                        {% else %}
+                            <span class="text-secondary">{{ _('No list rates the player') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-nowrap text-end">{{ row.current_official or '-' }}</td>
+                    <td><i class="bi-arrow-right text-secondary"></i></td>
+                    <td class="text-nowrap {% if (row.current_official.value if row.current_official else 0) != (row.proposed_official.value if row.proposed_official else 0) %}text-warning fw-bold{% endif %}">
+                        {{ row.proposed_official or '-' }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+<div id="ratings-check-modal" class="modal-dialog modal-dialog-scrollable" style="max-width: min(95vw, 1100px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
+                    {{ _('Ratings update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+                {% else %}
+                    {{ _('Ratings update') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% for data_source in choosable_lists %}
+                {% set _source = data_source.national_source_id %}
+                {% set _online = _source in online_sources %}
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span>{{ _('%(list)s read from:', list=data_source.national_source_name) }}</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        {% for value, label in [(false, _('the installed copy')), (true, _('the online source'))] %}
+                            <button
+                                type="button"
+                                class="btn {% if _online == value %}btn-primary{% else %}btn-outline-primary{% endif %}"
+                                hx-get="{{ url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab=tab) }}"
+                                hx-vals='{"source": "{{ _source }}", "online": "{{ value|lower }}"{% if admin_tournament %}, "tournament_id": "{{ admin_tournament.id }}"{% endif %}}'
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                {% if _online == value or not client.can_manage_source_databases %}disabled{% endif %}
+                            >
+                                {{ label }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% if rating_check.lists %}
+                <ul class="list-unstyled">
+                    {% for data_source in rating_check.lists %}
+                        {% with message, is_warning = data_source.info_or_warning_message %}
+                            <li class="{% if is_warning %}text-danger{% endif %}">
+                                <strong>{{ data_source.name }}</strong>{% if message %} · {{ message }}{% endif %}
+                            </li>
+                        {% endwith %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-warning">{{ _('No rating list holding these players is installed.') }}</p>
+            {% endif %}
+            {% if stale_lists %}
+                <div class="alert alert-warning d-flex align-items-center gap-3">
+                    <span class="flex-grow-1">
+                        {{ _('Newer versions of these lists are available: %(lists)s. Update them before relying on this check.', lists=stale_lists|map(attribute='name')|join(', ')) }}
+                    </span>
+                    {% if client.can_manage_source_databases %}
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-primary text-nowrap"
+                            hx-post="{{ url_for('admin-databases-update') }}?{% for database in stale_lists %}database_ids={{ database.id }}{% if not loop.last %}&{% endif %}{% endfor %}"
+                            hx-disabled-elt="this"
+                        >
+                            <i class="bi-arrow-repeat pe-1"></i>
+                            {{ _('Update the lists') }}
+                        </button>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-patch="{{ url_for('admin-event-ratings-update', event_uniq_id=admin_event.uniq_id, tab=tab) }}"
+                {% if admin_tournament %}
+                    hx-vals='{"tournament_id": "{{ admin_tournament.id }}"}'
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-disabled-elt="#update-ratings-button"
+            >
+                {% if changes %}
+                    <h5>{{ _('Ratings the lists now give differently') }}</h5>
+                    {{ rows_table(changes, true) }}
+                {% endif %}
+                {% if arbiter_values %}
+                    <h5>{{ _('Ratings set by the arbiter') }}</h5>
+                    <p class="form-text">
+                        {{ _('These players keep the value the arbiter entered, unless they are selected to take the value of the lists.') }}
+                    </p>
+                    {{ rows_table(arbiter_values, false) }}
+                {% endif %}
+                {% if not changes and not arbiter_values %}
+                    <p>{{ _('The ratings of all the players are those of the lists.') }}</p>
+                {% endif %}
+                {% if source_updates %}
+                    <p class="form-text">
+                        {{ ngettext(
+                            'The source of the rating of %(num)d player will be brought up to date, without changing their rating.',
+                            'The sources of the ratings of %(num)d players will be brought up to date, without changing their ratings.',
+                            source_updates|length,
+                        ) }}
+                    </p>
+                {% endif %}
+                {% if rating_check.not_found %}
+                    <p class="form-text text-warning">
+                        {{ _('Not found in the lists:') }}
+                        {{ rating_check.not_found|map(attribute='full_name')|join(', ') }}
+                    </p>
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                id="update-ratings-button"
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+                {% if not rating_check.rows %}disabled{% endif %}
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Update') }}
+            </button>
+        </div>
+    </div>
+</div>

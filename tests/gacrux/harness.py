@@ -686,7 +686,7 @@ def _prepare(
     unrated players, say), which the ranking drops on its own."""
     specs, unsupported = _split_specs(tie_breaks)
     left_out = [(tie_break, 'no Gacrux equivalent') for tie_break in unsupported]
-    if TrfExport(tournament)._starting_rank_method() == 'OTHER':
+    if TrfExport(tournament)._starting_rank_method(rating_report=True) == 'OTHER':
         # The ratings the tournament ranked on (estimates among them) are
         # not in the file, so nothing computed from ratings can be.
         rating_based = [

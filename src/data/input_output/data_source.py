@@ -1,7 +1,6 @@
 import asyncio
 import copy
 from abc import ABC, abstractmethod
-from dataclasses import replace
 from datetime import date, datetime
 from functools import cached_property
 from logging import Logger
@@ -25,9 +24,6 @@ from data.input_output.player_updater_fields import (
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
-    StandardRatingUpdaterField,
-    RapidRatingUpdaterField,
-    BlitzRatingUpdaterField,
     FederationUpdaterField,
 )
 from data.player import Player, PlayerProfileLink
@@ -40,7 +36,7 @@ from database.sqlite.local_source_database.databases import LocalSourcePlayerDat
 from plugins.manager import plugin_manager
 from utils.date_time import format_datetime
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import Cadence, PlayerRatingType
 
 logger: Logger = get_logger()
 
@@ -182,6 +178,10 @@ class DataSource(IdentifiableEntity, ABC):
     #: one federation; None for a data source without national identifiers.
     national_source_id: ClassVar[str | None] = None
 
+    #: The cadences the national rating of the data source is published
+    #: for; one publishing the standard one alone rates every cadence on it.
+    national_cadences: ClassVar[frozenset[Cadence]] = frozenset(Cadence)
+
     @property
     @abstractmethod
     def is_available(self) -> bool:
@@ -311,15 +311,6 @@ class DataSource(IdentifiableEntity, ABC):
         match_stored_players = await self.get_match_stored_players(players)
         if match_stored_players is None:
             return None
-        k_factors_by_fide_id = self._fide_k_factors_by_fide_id(match_stored_players)
-        database = FideDatabase()
-        covered_dates = {
-            reference_date
-            for reference_date in {
-                player.fide_k_factor_reference_date for player in players
-            }
-            if database.covers_rating_period(reference_date)
-        }
         player_comparators: list[PlayerComparator] = []
         for player in players:
             match_player = next(
@@ -332,15 +323,6 @@ class DataSource(IdentifiableEntity, ABC):
                 ),
                 None,
             )
-            if match_player is not None:
-                match_player = self._with_k_factors(
-                    match_player,
-                    self._k_factors_for_player(
-                        player,
-                        k_factors_by_fide_id.get(match_player.fide_id or 0, {}),
-                        player.fide_k_factor_reference_date in covered_dates,
-                    ),
-                )
             player_comparator = PlayerComparator(
                 fields,
                 player,
@@ -350,77 +332,6 @@ class DataSource(IdentifiableEntity, ABC):
             if not diff_only or player_comparator.diff_field_ids:
                 player_comparators.append(player_comparator)
         return player_comparators
-
-    @staticmethod
-    def _k_factors_for_player(
-        player: Player,
-        database_k_factors: dict[int, int | None],
-        in_rating_period: bool,
-    ) -> dict[int, int | None]:
-        """The k-factors the update proposes for a player: the ones of the
-        database inside its rating period, and outside of it what remains
-        trustworthy of them, the player keeping their own where nothing
-        does."""
-        if in_rating_period:
-            return database_k_factors
-        k_factors: dict[int, int | None] = {}
-        for tournament_rating in TournamentRating:
-            tr_value = tournament_rating.value
-            k_factor = reliable_k_factor(
-                database_k_factors.get(tr_value),
-                player.ratings[tournament_rating].fide,
-                player.year_of_birth,
-            )
-            k_factors[tr_value] = (
-                k_factor
-                if k_factor is not None
-                else player.ratings[tournament_rating].k_factor
-            )
-        return k_factors
-
-    @staticmethod
-    def _fide_k_factors_by_fide_id(
-        match_stored_players: list[StoredPlayer],
-    ) -> dict[int, dict[int, int | None]]:
-        """Read the k-factors of the matched players in the FIDE database,
-        so that they are brought over whatever the data source is."""
-        database = FideDatabase()
-        fide_ids = [
-            match_stored_player.fide_id
-            for match_stored_player in match_stored_players
-            if match_stored_player.fide_id
-        ]
-        if not fide_ids or not database.exists():
-            return {}
-        with database:
-            fide_stored_players = database.get_stored_players_by_fide_id(fide_ids)
-        return {
-            fide_stored_player.fide_id: {
-                tr_value: PlayerRating.from_stored_value(stored_rating).k_factor
-                for tr_value, stored_rating in fide_stored_player.ratings.items()
-            }
-            for fide_stored_player in fide_stored_players
-            if fide_stored_player.fide_id
-        }
-
-    @staticmethod
-    def _with_k_factors(
-        match_stored_player: StoredPlayer,
-        k_factors: dict[int, int | None],
-    ) -> StoredPlayer:
-        ratings: dict[int, dict[str, int | None]] = {}
-        for tournament_rating in TournamentRating:
-            tr_value = tournament_rating.value
-            rating = PlayerRating.from_stored_value(
-                match_stored_player.ratings.get(tr_value, {})
-            )
-            rating.k_factor = k_factors.get(tr_value)
-            ratings[tr_value] = rating.stored_value
-        return replace(match_stored_player, ratings=ratings)
-
-    # --------------------------------------------------------------------------
-    # Player search
-    # --------------------------------------------------------------------------
 
     @property
     def search_element_name(self) -> str:
@@ -513,7 +424,7 @@ class DataSource(IdentifiableEntity, ABC):
             src_stored_player.transient_arbiter_titles['fide'] = (
                 fide_stored_player.transient_arbiter_titles.get('fide', '')
             )
-            for rating_type in TournamentRating:
+            for rating_type in Cadence:
                 stored_fide_rating = fide_stored_player.ratings.get(
                     rating_type.value, None
                 )
@@ -525,8 +436,13 @@ class DataSource(IdentifiableEntity, ABC):
                 source_rating = PlayerRating.from_stored_value(
                     src_stored_player.ratings.get(rating_type.value, None) or {}
                 )
-                if source_rating.fide is None:
-                    source_rating.fide = fide_player_rating.fide
+                # The FIDE list is the authority on FIDE ratings, a copy a
+                # national list holds may be staler
+                source_rating.set_value_from_type(
+                    fide_player_rating.fide,
+                    PlayerRatingType.FIDE,
+                    fide_player_rating.origins.get(PlayerRatingType.FIDE),
+                )
                 source_rating.k_factor = (
                     fide_player_rating.k_factor
                     if in_rating_period
@@ -796,9 +712,6 @@ class FideDataSource(LocalDataSource):
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
-            StandardRatingUpdaterField([PlayerRatingType.FIDE]),
-            RapidRatingUpdaterField([PlayerRatingType.FIDE]),
-            BlitzRatingUpdaterField([PlayerRatingType.FIDE]),
             FederationUpdaterField(),
         ]
 

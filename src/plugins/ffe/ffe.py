@@ -26,13 +26,19 @@ from data.criteria.tournament_criteria import (
     TournamentCriterion,
     GenderTournamentCriterion,
 )
-from data.input_output import DataSource, TournamentExporter, TournamentImporter
+from data.input_output import (
+    DataSource,
+    DataSourceManager,
+    TournamentExporter,
+    TournamentImporter,
+)
 from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingSystemManager, PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, TournamentPlayer
-from utils.types import PlayerRating, PlayerRatingAndType
+from utils.types import PlayerRating
+from data.rating_sequences import RatingList, RatingListFamily, RatingSequence
 from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import (
     PlayerSplitter,
@@ -143,8 +149,9 @@ from plugins.utils import (
 )
 from utils.enum import (
     PlayerRatingType,
+    RatingPreference,
     Result,
-    TournamentRating,
+    Cadence,
 )
 from web.admin.collection import ListColumn
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
@@ -480,9 +487,11 @@ class FfePlugin(Plugin):
             # nothing more to get from the online database for local searches
             return
         ffe_stored_player: StoredPlayer | None = None
-        if data_source.id != FfeOnlineDataSource.static_id():
-            # Try to get more information by requesting the FFE SQL server
-            ffe_stored_player = None
+        # The FFE list is read where the user chose to read it, online or
+        # from its installed copy, which the ratings checks read it from too
+        if data_source.id != FfeOnlineDataSource.static_id() and (
+            DataSourceManager().reads_online(NATIONAL_SOURCE_ID)
+        ):
             try:
                 # Try to get more information by requesting the FFE database
                 async with FFESqlServer() as ffe_sql_server:
@@ -501,7 +510,7 @@ class FfePlugin(Plugin):
                         player_fide_id=fide_id,
                     )
         if ffe_stored_player:
-            for rating_type in TournamentRating:
+            for rating_type in Cadence:
                 stored_rating = stored_player.ratings.get(rating_type.value, None)
                 rating = (
                     PlayerRating.from_stored_value(stored_rating)
@@ -513,17 +522,14 @@ class FfePlugin(Plugin):
                 )
                 if ffe_stored_rating:
                     ffe_rating = PlayerRating.from_stored_value(ffe_stored_rating)
-                    augmented_rating = PlayerRating(
-                        fide=rating.fide
-                        if rating and rating.fide is not None
-                        else ffe_rating.fide,
-                        national=rating.national
-                        if rating and rating.national is not None
-                        else ffe_rating.national,
-                        estimated=rating.estimated
-                        if rating and rating.estimated is not None
-                        else ffe_rating.estimated,
-                    )
+                    augmented_rating = rating or PlayerRating()
+                    for kind in (PlayerRatingType.FIDE, PlayerRatingType.NATIONAL):
+                        if augmented_rating.get_type_value(kind) is None:
+                            augmented_rating.set_value_from_type(
+                                ffe_rating.get_type_value(kind),
+                                kind,
+                                ffe_rating.origins.get(kind),
+                            )
                     stored_player.ratings[rating_type.value] = (
                         augmented_rating.stored_value
                     )
@@ -575,32 +581,41 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
-    def get_player_rating(
+    def get_forced_rating_preference(self, event: 'Event') -> RatingPreference:
+        # In France the FIDE rating is used if available, falling back to
+        # the national rating
+        return RatingPreference.FIDE_THEN_NATIONAL
+
+    @hookimpl
+    def get_default_rating_sequence(
         self,
-        tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
+        event: 'Event',
+        cadence: Cadence,
+        preference: RatingPreference,
+    ) -> RatingSequence | None:
+        if preference != RatingPreference.FIDE_THEN_NATIONAL:
+            return None
+        sequence = [RatingList(RatingListFamily.FIDE, cadence)]
+        if cadence != Cadence.STANDARD:
+            sequence.append(RatingList(RatingListFamily.FIDE, Cadence.STANDARD))
+        sequence.append(RatingList(RatingListFamily.NATIONAL, cadence))
+        return tuple(sequence)
+
+    @hookimpl
+    def get_prescribed_rating(
+        self,
+        tournament_rating: Cadence,
         player: 'Player',
         category: 'PlayerCategory',
-    ) -> PlayerRatingAndType | None:
-        # In France, regardless of the player_rating_type of the tournament,
-        # the FIDE rating is used, if available, falling back to the national rating
-        ratings = player.ratings[tournament_rating]
-        if ratings.fide is not None:
-            return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
-        if ratings.national is not None:
-            return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
-        if ratings.estimated is not None:
-            return PlayerRatingAndType(ratings.estimated, PlayerRatingType.ESTIMATED)
-        if tournament_rating == TournamentRating.STANDARD:
-            value = 1299 if isinstance(category, JuniorCategory) else 1399
-        else:
-            value = 1199
-            if isinstance(category, JuniorCategory):
-                if category.age_limit <= 10:
-                    value = 799
-                elif category.age_limit <= 14:
-                    value = 999
-        return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
+    ) -> int:
+        if tournament_rating == Cadence.STANDARD:
+            return 1299 if isinstance(category, JuniorCategory) else 1399
+        if isinstance(category, JuniorCategory):
+            if category.age_limit <= 10:
+                return 799
+            if category.age_limit <= 14:
+                return 999
+        return 1199
 
     @hookimpl
     def augment_trf_national_player(

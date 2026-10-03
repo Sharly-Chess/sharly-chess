@@ -1,12 +1,9 @@
-import copy
 from abc import ABC, abstractmethod
 
 from common.i18n import _, pgettext
 from data.player import Player
 from database.sqlite.event.event_store import StoredPlayer
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating, PlayerRatingType
-from utils.types import PlayerRating
 
 
 class PlayerUpdaterField(IdentifiableEntity, ABC):
@@ -240,103 +237,6 @@ class GenderPlayerUpdater(PlayerUpdaterField):
 
     def get_cell_content(self, player: Player, match_player: Player) -> str:
         return match_player.gender.short_name
-
-
-class RatingUpdaterField(PlayerUpdaterField, ABC):
-    def __init__(self, rating_types: list[PlayerRatingType] | None = None):
-        self.rating_types = rating_types or list(PlayerRatingType)
-
-    @staticmethod
-    @abstractmethod
-    def tournament_rating() -> TournamentRating:
-        """Type of tournament rating this field is applied to."""
-
-    @classmethod
-    def static_id(cls) -> str:
-        return f'rating_{cls.tournament_rating().form_key}'
-
-    @classmethod
-    def static_name(cls) -> str:
-        return cls.tournament_rating().short_name
-
-    @property
-    def _with_k_factor(self) -> bool:
-        return PlayerRatingType.FIDE in self.rating_types
-
-    def is_updated(self, player: Player, match_player: Player) -> bool:
-        src_ratings = player.ratings[self.tournament_rating()]
-        match_ratings = match_player.ratings[self.tournament_rating()]
-        if self._with_k_factor and src_ratings.k_factor != match_ratings.k_factor:
-            return True
-        return any(
-            src_ratings.get_type_value(rt) != match_ratings.get_type_value(rt)
-            for rt in self.rating_types
-        )
-
-    def updated_tooltip_message(self, player: Player, match_player: Player) -> str:
-        message = super().updated_tooltip_message(player, match_player)
-        src_ratings = player.ratings[self.tournament_rating()]
-        match_ratings = match_player.ratings[self.tournament_rating()]
-        if (
-            PlayerRatingType.FIDE in self.rating_types
-            and src_ratings.fide is not None
-            and match_ratings.fide is None
-        ):
-            message += f' ({_("FIDE rating lost")})'
-        return message
-
-    def update_player(
-        self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ) -> None:
-        tr = self.tournament_rating().value
-        src_ratings = PlayerRating.from_stored_value(stored_player.ratings.get(tr, {}))
-        match_ratings = PlayerRating.from_stored_value(
-            match_stored_player.ratings.get(tr, {})
-        )
-        for rating_type in self.rating_types:
-            src_ratings.set_value_from_type(
-                match_ratings.get_type_value(rating_type), rating_type
-            )
-        if self._with_k_factor:
-            src_ratings.k_factor = match_ratings.k_factor
-        stored_player.ratings[tr] = src_ratings.stored_value
-
-    def _format_ratings(self, ratings: PlayerRating) -> str:
-        if self._with_k_factor and ratings.k_factor is not None:
-            return f'{ratings} (K{ratings.k_factor})'
-        return str(ratings)
-
-    def get_string_value(self, player: Player) -> str:
-        return self._format_ratings(player.ratings[self.tournament_rating()])
-
-    def get_composed_string_value(self, _player: Player, match_player: Player) -> str:
-        ratings = copy.deepcopy(_player.ratings[self.tournament_rating()])
-        match_ratings = match_player.ratings[self.tournament_rating()]
-        for rating_type in self.rating_types:
-            ratings.set_value_from_type(
-                match_ratings.get_type_value(rating_type), rating_type
-            )
-        if self._with_k_factor:
-            ratings.k_factor = match_ratings.k_factor
-        return self._format_ratings(ratings)
-
-
-class StandardRatingUpdaterField(RatingUpdaterField):
-    @staticmethod
-    def tournament_rating() -> TournamentRating:
-        return TournamentRating.STANDARD
-
-
-class RapidRatingUpdaterField(RatingUpdaterField):
-    @staticmethod
-    def tournament_rating() -> TournamentRating:
-        return TournamentRating.RAPID
-
-
-class BlitzRatingUpdaterField(RatingUpdaterField):
-    @staticmethod
-    def tournament_rating() -> TournamentRating:
-        return TournamentRating.BLITZ
 
 
 class FederationUpdaterField(PlayerUpdaterField):

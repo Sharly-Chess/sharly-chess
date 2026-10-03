@@ -41,10 +41,11 @@ from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from data.pairings.acceleration import BakuSwissVariation
 from tests.test_config import TestUtils
 from utils.enum import (
+    Cadence,
     BoardColor,
     EventType,
     PlayerGender,
-    PlayerRatingType,
+    RatingPreference,
     PlayerTitle,
     Result,
     ScoreType,
@@ -100,7 +101,10 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(
             tournament.pairing_settings.get(ColorSeedSetting().id), BoardColor.BLACK
         )
-        self.assertEqual(tournament.player_rating_type, PlayerRatingType.NATIONAL)
+        self.assertEqual(
+            tournament.stored_tournament.rating_preference,
+            RatingPreference.NATIONAL_THEN_FIDE,
+        )
         self.assertEqual(tournament.pairing_variation.id, BakuSwissVariation().id)
 
         self.assertEqual(len(tournament.players), 16)
@@ -527,11 +531,11 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(first.pairings[1].color, BoardColor.WHITE)
         self.assertEqual(ColorSeedSetting.get_value(tournament), BoardColor.WHITE)
 
-    def test_trf_starting_rank_method_reflects_the_ratings_used(self):
-        """TRF26 172 states how the field was actually ranked, so it is
-        derived from the ratings that were used, not from the tournament
-        setting. Estimated ratings cannot be expressed in the format at
-        all, so a field carrying any of them is OTHER."""
+    def test_trf_starting_rank_method_is_the_one_of_the_preference(self):
+        """TRF26 172 states the method of the tournament's rating
+        preference. A value no list supplied is carried in a pseudo-NRS
+        record of a partial TRF, but cannot be expressed in the final
+        report, which states OTHER for a field ranked on any of them."""
         rated = self._import_trf(
             TrfTournament(
                 name='FIDE rated',
@@ -544,7 +548,9 @@ class TournamentImporterTestCase(TestCase):
             )
         )
         trf = rated.to_trf(after_round=0)
-        self.assertEqual(trf.starting_rank_method, 'FIDE')
+        self.assertEqual(
+            trf.starting_rank_method, rated.rating_preference.starting_rank_method
+        )
         self.assertEqual(trf.starting_rank_federation, 'FRA')
 
         unrated = self._import_trf(
@@ -556,16 +562,99 @@ class TournamentImporterTestCase(TestCase):
                 players=[self._trf_player(number, rating=0) for number in (1, 2)],
             )
         )
-        self.assertEqual(unrated.to_trf(after_round=0).starting_rank_method, 'OTHER')
+        # The federation of the event prescribes an estimate for them,
+        # which a partial TRF carries in MMM records and the final report
+        # cannot carry at all
+        partial = unrated.to_trf(after_round=0)
+        self.assertEqual(
+            partial.starting_rank_method,
+            unrated.rating_preference.starting_rank_method,
+        )
+        self.assertIn('MMM', partial.other_starting_rank_federations)
+        self.assertEqual(
+            unrated.to_trf(after_round=0, rating_report=True).starting_rank_method,
+            'OTHER',
+        )
 
-    def test_trf_starting_rank_methods_map_to_a_rating_type(self):
-        """All four methods we can honour set the tournament's rating;
-        the rest are reported rather than silently reinterpreted."""
+    def test_trf_pseudo_nrs_records_carry_the_sources_of_the_ratings(self):
+        """A partial TRF names the list each tournament rating came from in
+        a pseudo-NRS record (TEC Manual 3.9.6.2.b), which the import reads
+        back; the pairing engine is given none, and the final report only
+        the national records whose rating ranked a player."""
+        tournament = self._import_trf(
+            TrfTournament(
+                name='Pseudo NRS',
+                num_rounds=1,
+                starting_rank_federation='FRA',
+                starting_rank_method='FIDE',
+                other_starting_rank_federations=['RRR'],
+                players=[
+                    TrfPlayer(
+                        id=1,
+                        name='Rapid, Only',
+                        federation='FRA',
+                        rank=1,
+                        national_player_by_federation={
+                            'RRR': TrfNationalPlayer(player_id=1, rating=1700)
+                        },
+                    ),
+                    TrfPlayer(
+                        id=2,
+                        name='Standard, Rated',
+                        federation='FRA',
+                        rating=1800,
+                        rank=2,
+                    ),
+                ],
+            )
+        )
+        # FIDE's own lists for a standard tournament, which reach the
+        # rapid list
+        stored_tournament = tournament.stored_tournament
+        stored_tournament.rating_sequence = ['fide:1', 'fide:2', 'fide:3']
+        with EventDatabase(EVENT_ID, write=True) as database:
+            database.update_stored_tournament(stored_tournament)
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self.event.tournaments_by_id[tournament.id]
+        rapid_player = next(
+            player
+            for player in tournament.tournament_players
+            if player.last_name == 'Rapid'
+        )
+        self.assertEqual(rapid_player.ratings[Cadence.RAPID].fide, 1700)
+
+        partial = tournament.to_trf(after_round=0)
+        [rapid_record] = [
+            player
+            for player in partial.players
+            if player.id == rapid_player.pairing_number
+        ]
+        self.assertEqual(rapid_record.national_player_by_federation['RRR'].rating, 1700)
+        self.assertIn('RRR', partial.other_starting_rank_federations)
+        self.assertIn('SSS', partial.other_starting_rank_federations)
+        reloaded = TrfSerializer.loads(TrfSerializer.dumps(partial))
+        self.assertEqual(
+            reloaded.other_starting_rank_federations,
+            partial.other_starting_rank_federations,
+        )
+
+        engine = tournament.to_trf(after_round=0, for_engine=True)
+        self.assertEqual(engine.starting_rank_method, '')
+        self.assertFalse(engine.national_players_by_federation)
+        final = tournament.to_trf(after_round=0, rating_report=True)
+        # Nobody was ranked on a national rating
+        self.assertFalse(final.national_players_by_federation)
+
+    def test_trf_starting_rank_methods_map_to_a_rating_preference(self):
+        """Every coded method sets the tournament's rating preference;
+        OTHER is reported rather than silently reinterpreted."""
         for method, expected in (
-            ('FIDE', PlayerRatingType.FIDE),
-            ('FIDON', PlayerRatingType.FIDE),
-            ('NRO', PlayerRatingType.NATIONAL),
-            ('NIDOF', PlayerRatingType.NATIONAL),
+            ('FIDE', RatingPreference.FIDE),
+            ('FIDON', RatingPreference.FIDE_THEN_NATIONAL),
+            ('NRO', RatingPreference.NATIONAL),
+            ('NIDOF', RatingPreference.NATIONAL_THEN_FIDE),
+            ('HBFN', RatingPreference.HIGHEST),
+            ('LBFN', RatingPreference.LOWEST),
         ):
             tournament = self._import_trf(
                 TrfTournament(
@@ -576,9 +665,11 @@ class TournamentImporterTestCase(TestCase):
                     players=[self._trf_player(1, rating=2000)],
                 )
             )
-            self.assertEqual(tournament.player_rating_type, expected, method)
+            self.assertEqual(
+                tournament.stored_tournament.rating_preference, expected, method
+            )
 
-        for method in ('HBFN', 'LBFN', 'OTHER'):
+        for method in ('OTHER',):
             trf_tournament = TrfTournament(
                 name=f'Ranked by {method}',
                 num_rounds=1,

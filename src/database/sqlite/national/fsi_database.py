@@ -10,6 +10,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 from utils.enum import PlayerGender
 
 
@@ -22,6 +23,7 @@ class FsiDatabase(NationalPlayerDatabase):
 
     federation = 'ITA'
     acronym = 'FSI'
+    national_cadences = frozenset({Cadence.STANDARD})
 
     _URL = 'https://www.torneionline.com/dwn/allin.csv'
 

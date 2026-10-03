@@ -21,13 +21,13 @@ from common import (
     is_valid_email,
 )
 from common.exception import FormError, SharlyChessException
-from common.i18n import _, locales, pgettext
+from common.i18n import _, locales
 from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from utils.enum import PlayerRatingType
+from utils.enum import RatingPreference
 from data.event import Event
 from data.input_output import DataSourceManager, OnlineDataSourceManager
 from data.event_metadata import EventMetadata
@@ -90,6 +90,22 @@ from web.session import (
 from web.urls import admin_event_url
 
 logger: Logger = get_logger()
+
+
+def _databases_with_online_source() -> set[str]:
+    """The installed copies of the lists that also have an online source,
+    which the user chooses between."""
+    manager = DataSourceManager()
+    database_ids: set[str] = set()
+    for data_source in manager.active_objects():
+        if not data_source.national_source_id:
+            continue
+        installed, online = manager.installed_and_online_sources(
+            data_source.national_source_id
+        )
+        if installed is not None and online is not None:
+            database_ids.add(installed.database.id)
+    return database_ids
 
 
 class IndexAdminController(BaseAdminController):
@@ -535,8 +551,9 @@ class IndexAdminController(BaseAdminController):
             public = False
             config = SharlyChessConfig()
             allow_multi_tournament_players = True
+            check_ratings = True
             federation = config.federation.name if config.federation else ''
-            player_rating_type = PlayerRatingType.FIDE.value
+            rating_preference = RatingPreference.FIDE.value
             event_type = EventType.INDIVIDUAL.value
             location: str | None = None
             age_category_base_date: date | None = None
@@ -565,6 +582,7 @@ class IndexAdminController(BaseAdminController):
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
             public = stored_event.public
             allow_multi_tournament_players = admin_event.allow_multi_tournament_players
+            check_ratings = admin_event.check_ratings
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
@@ -575,7 +593,7 @@ class IndexAdminController(BaseAdminController):
             organiser_email = stored_event.organiser_email
             organiser_director = stored_event.organiser_director
             tag_ids = stored_event.tag_ids
-            player_rating_type = stored_event.player_rating_type
+            rating_preference = admin_event.rating_preference.value
             event_type = stored_event.event_type.value
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
@@ -602,9 +620,10 @@ class IndexAdminController(BaseAdminController):
                     'name': name,
                     'public': public,
                     'allow_multi_tournament_players': allow_multi_tournament_players,
+                    'check_ratings': check_ratings,
                     'federation': federation,
                     'event_type': event_type,
-                    'player_rating_type': player_rating_type,
+                    'rating_preference': rating_preference,
                     'location': location,
                     'organiser_name': organiser_name,
                     'organiser_home_page': organiser_home_page,
@@ -686,10 +705,7 @@ class IndexAdminController(BaseAdminController):
         if organiser_email and not is_valid_email(organiser_email):
             errors[field] = _('Please supply a valid email address.')
 
-        player_rating_type: int = (
-            WebContext.form_data_to_int(data, 'player_rating_type')
-            or PlayerRatingType.FIDE.value
-        )
+        rating_preference = WebContext.form_data_to_int(data, 'rating_preference')
 
         age_categories = WebContext.form_data_to_list_str(data, 'age_categories')
         age_category_base_date: date | None = None
@@ -702,6 +718,7 @@ class IndexAdminController(BaseAdminController):
         age_category_change_month = (
             WebContext.form_data_to_int(data, 'age_category_change_month') or 1
         )
+        check_ratings = WebContext.form_data_to_bool(data, 'check_ratings')
         allow_multi_tournament_players = WebContext.form_data_to_bool(
             data, 'allow_multi_tournament_players'
         )
@@ -755,6 +772,7 @@ class IndexAdminController(BaseAdminController):
             event_type=event_type,
             public=bool(public),
             allow_multi_tournament_players=allow_multi_tournament_players,
+            check_ratings=check_ratings,
             location=location,
             organiser_name=organiser_name,
             organiser_home_page=organiser_home_page,
@@ -764,7 +782,7 @@ class IndexAdminController(BaseAdminController):
             age_category_change_month=age_category_change_month,
             age_categories=age_categories,
             tag_ids=tag_ids,
-            player_rating_type=player_rating_type,
+            rating_preference=rating_preference,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # Defaults edited in other tabs
@@ -816,12 +834,12 @@ class IndexAdminController(BaseAdminController):
                 event_type.value: str(event_type) for event_type in EventType
             },
             'event_type_locked': event_type_locked,
-            'player_rating_type_options': {
-                str(PlayerRatingType.FIDE.value): _('FIDE'),
-                str(PlayerRatingType.NATIONAL.value): pgettext(
-                    'name for rating type national', 'National'
-                ),
+            'rating_preference_options': {
+                str(preference.value): str(preference)
+                for preference in RatingPreference
             },
+            'rating_preference_locked': event is not None
+            and event.forced_rating_preference is not None,
             'has_multi_tournament_players': event
             and event.has_multi_tournament_players,
             'force_organiser_open': any(
@@ -1839,6 +1857,11 @@ class IndexAdminController(BaseAdminController):
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager().options(),
             'outdate_action_options': OutdatedActionManager().options(),
+            'databases_with_online_source': _databases_with_online_source(),
+            'read_online_options': {
+                '': _('Players and ratings from the installed copy'),
+                'on': _('Players and ratings from the online source'),
+            },
             'modal': 'database',
         }
 
@@ -1879,6 +1902,10 @@ class IndexAdminController(BaseAdminController):
             action = OutdatedActionManager().get_object(action_id)
         stored_database.outdate_delay = delay.id
         stored_database.outdate_action = action.id
+        if 'read_online' in data:
+            stored_database.read_online = WebContext.form_data_to_bool(
+                data, 'read_online'
+            )
         database.update_stored_source_database(stored_database)
         database.check()
         return HTMXTemplate(
@@ -1906,6 +1933,27 @@ class IndexAdminController(BaseAdminController):
     async def _database_update(self, database_id: FromPath[str]) -> Reswap:
         database = LocalSourceDatabaseManager().get_object(database_id)
         database.update()
+        return Reswap(content=None, method='none', status_code=HTTP_200_OK)
+
+    @post(
+        path='/databases-update',
+        name='admin-databases-update',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def _databases_update(
+        self, database_ids: FromQuery[list[str] | None] = None
+    ) -> Reswap:
+        """Update every active list in one go (VCL Q136), or the ones
+        named."""
+        for database in LocalSourceDatabaseManager().objects():
+            if database_ids is not None and database.id not in database_ids:
+                continue
+            if (
+                database.is_active
+                and not database.is_manual
+                and not database.is_updating
+            ):
+                database.update()
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
     @post(

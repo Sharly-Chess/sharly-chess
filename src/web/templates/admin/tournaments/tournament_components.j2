@@ -123,7 +123,7 @@
         class="text-nowrap"
         {{ macros.tooltip_attributes(
             'info',
-            _('%(rating)s (%(rating_type)s)', rating=item.rating, rating_type=item.player_rating_type.name),
+            _('%(rating)s (%(rating_type)s)', rating=item.cadence, rating_type=item.rating_preference),
             'top',
         ) }}
     >
@@ -132,7 +132,7 @@
             <i class="bi-arrow-right text-secondary px-1"></i>
             <span class="num">{{ item.max_player_rating }}</span>
         {% else %}
-            {{ item.rating }}
+            {{ item.cadence }}
         {% endif %}
     </span>
 {% endmacro %}
@@ -461,17 +461,11 @@
                     last_rounds_no_byes=tournament.last_rounds_no_byes,
                 ) }}
             </div>
-            {% if tournament.rating != 1 %}
-                <div>
-                    {{ _('Unrated players') }}
-                    <i class="bi-arrow-right px-1"></i>
-                    {{
-                        _('standard ratings')
-                        if tournament.override_unrated_rapid_blitz
-                        else _('estimated ratings')
-                    }}
-                </div>
-            {% endif %}
+            <div>
+                {{ _('Rating lists') }}
+                <i class="bi-arrow-right px-1"></i>
+                {{ tournament.rating_sequence_name }}
+            </div>
         </section>
     {% endset %}
 

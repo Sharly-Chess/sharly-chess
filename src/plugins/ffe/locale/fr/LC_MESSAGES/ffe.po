@@ -705,9 +705,6 @@ msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il p
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-msgid "The FFE always uses the FIDE rating when available."
-msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
-
 msgid "The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here."
 msgstr "La FFE ferme cette homologation une fois sa période envoyée à la FIDE : demandez à Erick Mouret de la rouvrir, afin de pouvoir continuer à y publier les résultats du tournoi entier."
 
@@ -820,10 +817,6 @@ msgstr "Valeur inconnue (attendu : {expected})."
 #, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
-
-msgctxt "singular for unrated player"
-msgid "Unrated"
-msgstr "Non-classé·e"
 
 msgid "Up to date"
 msgstr "À jour"

@@ -11,6 +11,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 
 
 class JcfDatabase(NationalPlayerDatabase):
@@ -24,6 +25,7 @@ class JcfDatabase(NationalPlayerDatabase):
 
     federation = 'JPN'
     acronym = 'JCF'
+    national_cadences = frozenset({Cadence.STANDARD, Cadence.RAPID})
 
     _MEDIA_URL = (
         'https://japanchess.org/wp-json/wp/v2/media'

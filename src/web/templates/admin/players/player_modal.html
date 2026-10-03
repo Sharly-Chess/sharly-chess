@@ -327,137 +327,142 @@
                         </small>
                     {% endif %}
                 </h4>
+                {% if is_team_event %}
+                    {% set _rating_context_key = team_tournament_ids.get(data['team_id'] or '', '') %}
+                {% else %}
+                    {% set _rating_context_key = data['tournament_id'] or '' %}
+                {% endif %}
+                {% set _rating_context = rating_contexts.get(_rating_context_key, rating_contexts['']) %}
+                <input type="hidden" name="ratings" value="{{ data['ratings'] }}">
                 <div class="row gy-2 gx-3">
-                    {% set show_estimated_ratings = (
-                        data['standard_rating_estimated'] or
-                        data['rapid_rating_estimated'] or
-                        data['blitz_rating_estimated']
-                    ) %}
-                    {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
-                        <div class="col-4">
-                            {%
-                                with
-                                    fide=tournament_rating.form_key ~ '_rating_fide',
-                                    national=tournament_rating.form_key ~ '_rating_national',
-                                    estimated=tournament_rating.form_key ~ '_rating_estimated',
-                                    k=tournament_rating.form_key ~ '_rating_k'
-                            %}
-                                {%
-                                    with
-                                        fide_id=fide|replace('_', '-'),
-                                        national_id=national|replace('_', '-'),
-                                        estimated_id=estimated|replace('_', '-'),
-                                        k_id=k|replace('_', '-')
-                                %}
-                                    <label class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input
-                                            name="{{ fide }}"
-                                            type="number"
-                                            id="{{ fide_id }}"
-                                            data-testid="{{ fide_id }}"
-                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %} mb-2"
-                                            aria-describedby="{{ fide_id }}-help {{ fide_id }}-error"
-                                            value="{{ data[fide] }}"
-                                        />
-                                        <div>{{ rating_type_labels['fide'] }}</div>
-                                        <input
-                                            name="{{ k }}"
-                                            type="number"
-                                            id="{{ k_id }}"
-                                            data-testid="{{ k_id }}"
-                                            class="form-control d-inline {% if k in errors %}is-invalid{% endif %} mb-2"
-                                            style="max-width: 4.5rem"
-                                            aria-describedby="{{ k_id }}-help {{ k_id }}-error"
-                                            placeholder="{{ k_factor_placeholders[tournament_rating] }}"
-                                            min="{{ min_k_factor }}"
-                                            max="{{ max_k_factor }}"
-                                            value="{{ data[k] }}"
-                                        />
-                                        <div
-                                            {{ macros.tooltip_attributes('info', _(
-                                                'The FIDE coefficient (k) of the player. '
-                                                'When left empty, the coefficient shown is estimated '
-                                                'from the rating and the age of the player.'
-                                            )) }}
-                                        >
-                                            {{ pgettext('FIDE rating coefficient', 'K') }}
-                                        </div>
-                                    </div>
-                                    {% if fide in errors %}
-                                        <div id="{{ fide_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[fide] }}
-                                        </div>
-                                    {% endif %}
-                                    {% if k in errors %}
-                                        <div id="{{ k_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[k] }}
-                                        </div>
-                                    {% endif %}
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input
-                                            name="{{ national }}"
-                                            type="number"
-                                            id="{{ national_id }}"
-                                            data-testid="{{ national_id }}"
-                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %} mb-2"
-                                            aria-describedby="{{ national_id }}-help {{ national_id }}-error"
-                                            value="{{ data[national] }}"
-                                        />
-                                        <div>{{ rating_type_labels['national'] }}</div>
-                                    </div>
-                                    {% if national in errors %}
-                                        <div id="{{ national_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[national] }}
-                                        </div>
-                                    {% endif %}
-                                    <div
-                                        class="estimated-container d-flex align-items-center gap-2"
-                                        {% if not show_estimated_ratings %}
-                                            style="display:none !important"
-                                        {% endif %}
-                                    >
-                                        <input
-                                            name="{{ estimated }}"
-                                            type="number"
-                                            id="{{ estimated_id }}"
-                                            data-testid="{{ estimated_id }}"
-                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %}"
-                                            aria-describedby="{{ estimated_id }}-help {{ estimated_id }}-error"
-                                            value="{{ data[estimated] }}"
-                                        />
-                                        <div>{{ rating_type_labels['estimated'] }}</div>
-                                    </div>
-                                    {% if estimated in errors %}
-                                        <div id="{{ estimated_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[estimated] }}
-                                        </div>
-                                    {% endif %}
-                                {% endwith %}
-                            {% endwith %}
+                    <div class="col-12 col-md-6">
+                        <label class="form-check-label d-block pb-1" for="tournament-rating">
+                            {{ _('Tournament rating') }}
+                            (<span id="rating-cadence">{{ _rating_context['cadence'] }}</span>):
+                        </label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input
+                                name="tournament_rating"
+                                type="number"
+                                id="tournament-rating"
+                                data-testid="tournament-rating"
+                                class="form-control d-inline {% if 'tournament_rating' in errors %}is-invalid{% endif %}"
+                                aria-describedby="tournament-rating-description tournament-rating-error"
+                                placeholder="{{ _rating_context['placeholder'] }}"
+                                value="{{ data['tournament_rating'] }}"
+                            />
+                            <div id="rating-suffix" class="text-nowrap">{{ _rating_context['suffix'] }}</div>
                         </div>
-                    {% endfor %}
-                    {% if not show_estimated_ratings %}
-                        <div class="text-center">
-                            <button
-                                id="add-estimated"
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                {{ macros.tooltip_attributes('info', _(
-                                    'Players may have default estimated ratings depending on the activated plugins.'
-                                )) }}
+                        {% if 'tournament_rating' in errors %}
+                            <div id="tournament-rating-error" class="form-text invalid-feedback" style="display: block">
+                                {{ errors['tournament_rating'] }}
+                            </div>
+                        {% endif %}
+                        <div id="tournament-rating-description" class="form-text">{{ _rating_context['description'] }}</div>
+                        <div id="rating-choices-container" class="form-text mt-2 {% if not _rating_context['choices'] %}d-none{% endif %}">
+                            {{ _('Rating chosen:') }}
+                            <div id="rating-choices" class="ps-2">
+                                {% for choice in _rating_context['choices'] %}
+                                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                                        <input
+                                            class="form-check-input rating-choice flex-shrink-0"
+                                            style="margin: 0; position: relative; top: 0.14em"
+                                            type="radio"
+                                            name="rating_pin"
+                                            id="rating-pin-{{ loop.index }}"
+                                            value="{{ choice['key'] }}"
+                                            {% if choice['key'] == (data['rating_pin'] or '') %}checked{% endif %}
+                                        />
+                                        <label class="form-check-label" for="rating-pin-{{ loop.index }}">{{ choice['label'] }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-check-label d-block pb-1">{{ _('Official FIDE rating:') }}</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <div id="official-rating" class="form-control-plaintext flex-grow-1">{{ _rating_context['official'] }}</div>
+                            <div
+                                id="rating-k-container"
+                                class="d-flex align-items-center gap-2 flex-shrink-0 {% if not _rating_context['has_official'] %}d-none{% endif %}"
                             >
-                                <i class="bi-plus-circle pe-1"></i>
-                                {{ _('Add manual estimated ratings') }}
-                            </button>
-                            <script>
-                                $('#add-estimated').click(function (e) {
-                                    $('.estimated-container').css('display', 'flex');
-                                    $(this).parent().css('display', 'none');
-                                })
-                            </script>
+                                <div
+                                    {{ macros.tooltip_attributes('info', _(
+                                        'The FIDE coefficient (k) of the player. '
+                                        'When left empty, the coefficient shown is estimated '
+                                        'from the rating and the age of the player.'
+                                    )) }}
+                                >
+                                    {{ pgettext('FIDE rating coefficient', 'K') }}
+                                </div>
+                                <input
+                                    name="rating_k"
+                                    type="number"
+                                    id="rating-k"
+                                    data-testid="rating-k"
+                                    class="form-control d-inline {% if 'rating_k' in errors %}is-invalid{% endif %}"
+                                    style="max-width: 4.5rem"
+                                    aria-describedby="rating-k-error"
+                                    placeholder="{{ _rating_context['k_placeholder'] }}"
+                                    min="{{ min_k_factor }}"
+                                    max="{{ max_k_factor }}"
+                                    value="{{ data['rating_k'] }}"
+                                    {% if not _rating_context['has_official'] %}disabled{% endif %}
+                                />
+                            </div>
                         </div>
-                    {% endif %}
+                        {% if 'rating_k' in errors %}
+                            <div id="rating-k-error" class="form-text invalid-feedback" style="display: block">
+                                {{ errors['rating_k'] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <script>
+                        (() => {
+                            const ratingContexts = {{ rating_contexts|tojson }};
+                            const teamTournamentIds = {{ team_tournament_ids|tojson }};
+                            function showRatingContext() {
+                                const key = $('#team-id').length
+                                    ? (teamTournamentIds[$('#team-id').val()] || '')
+                                    : ($('#tournament-id').val() || '');
+                                const context = ratingContexts[key] || ratingContexts[''];
+                                $('#rating-cadence').text(context.cadence);
+                                $('#tournament-rating').val(context.value).attr('placeholder', context.placeholder);
+                                $('#rating-suffix').html(context.suffix);
+                                $('#tournament-rating-description').text(context.description);
+                                $('#rating-choices').empty().append(
+                                    context.choices.map((choice, index) => $('<div class="d-flex align-items-baseline gap-2 mb-2">').append(
+                                        $('<input class="form-check-input rating-choice flex-shrink-0" style="margin: 0; position: relative; top: 0.14em" type="radio" name="rating_pin">')
+                                            .attr('id', `rating-pin-${index + 1}`)
+                                            .val(choice.key)
+                                            .prop('checked', choice.key === context.pinned),
+                                        $('<label class="form-check-label">')
+                                            .attr('for', `rating-pin-${index + 1}`)
+                                            .html(choice.label),
+                                    ))
+                                );
+                                $('#rating-choices-container').toggleClass('d-none', !context.choices.length);
+                                currentChoices = context.choices;
+                                $('#official-rating').html(context.official);
+                                $('#rating-k-container').toggleClass('d-none', !context.has_official);
+                                $('#rating-k')
+                                    .val(context.k)
+                                    .attr('placeholder', context.k_placeholder)
+                                    .prop('disabled', !context.has_official);
+                            }
+                            let currentChoices = {{ _rating_context['choices']|tojson }};
+                            $('#tournament-id, #team-id').on('change', showRatingContext);
+                            $('#rating-choices').on('change', '.rating-choice', function () {
+                                const choice = currentChoices.find((choice) => choice.key === this.value);
+                                if (choice) {
+                                    $('#tournament-rating').val(choice.value);
+                                    $('#rating-suffix').html(choice.suffix);
+                                    $('#tournament-rating-description').text(choice.description);
+                                }
+                            });
+                        })();
+                    </script>
                 </div>
                 {% if earlier_period_ratings %}
                     <button
@@ -508,38 +513,6 @@
                         </table>
                     </div>
                 {% endif %}
-                <script>
-                    (function () {
-                        // Section B-02-8.3.3 of the FIDE handbook.
-                        function estimateKFactor(fideRating, yearOfBirth) {
-                            if (!fideRating) {
-                                return 40;
-                            }
-                            if (fideRating > 2400) {
-                                return 10;
-                            }
-                            var age = new Date().getFullYear() - yearOfBirth;
-                            if (yearOfBirth && age <= 18 && fideRating < 2300) {
-                                return 40;
-                            }
-                            return 20;
-                        }
-                        function updateKFactorPlaceholders() {
-                            var yearMatch = ($('#date-of-birth').val() || '').match(/\d{4}/);
-                            var yearOfBirth = yearMatch ? parseInt(yearMatch[0], 10) : null;
-                            {% for tournament_rating in tournament_ratings_strings %}
-                                {% set key = tournament_rating.form_key|replace('_', '-') %}
-                                $('#{{ key }}-rating-k').attr('placeholder', estimateKFactor(
-                                    parseInt($('#{{ key }}-rating-fide').val(), 10),
-                                    yearOfBirth
-                                ));
-                            {% endfor %}
-                        }
-                        $('#date-of-birth, input[name$="_rating_fide"]').on(
-                            'input change', updateKFactorPlaceholders
-                        );
-                    })();
-                </script>
             </form>
         </div>
         <div class="modal-footer">

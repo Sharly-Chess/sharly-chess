@@ -13,7 +13,7 @@ from data.tie_breaks import team_tie_breaks as ttb
 from data.tie_breaks.team_tie_breaks import ESBVariant
 from data.tie_breaks.cutters import TieBreakCutter
 from data.tournament import Tournament
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 from plugins.ffe import ffe_tie_breaks as ffe_tb
 from plugins.ffe.ffe_tie_breaks import PapiBuchholzType
 from utils import CoreMapper
@@ -49,13 +49,13 @@ class ChessResultPairingSystem(CoreMapper[tuple[str, str], PairingSystem]):
         }
 
 
-class ChessResultTournamentRating(CoreMapper[str, TournamentRating]):
+class ChessResultCadence(CoreMapper[str, Cadence]):
     @classmethod
-    def _core_object_by_outer_value(cls) -> dict[str, TournamentRating]:
+    def _core_object_by_outer_value(cls) -> dict[str, Cadence]:
         return {
-            '1': TournamentRating.STANDARD,
-            '2': TournamentRating.RAPID,
-            '3': TournamentRating.BLITZ,
+            '1': Cadence.STANDARD,
+            '2': Cadence.RAPID,
+            '3': Cadence.BLITZ,
         }
 
 
