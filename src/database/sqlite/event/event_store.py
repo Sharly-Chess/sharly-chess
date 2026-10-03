@@ -307,6 +307,7 @@ class StoredPlayer:
     federation: str = 'FID'
     club: str | None = None
     fixed: int | None = None
+    byes_allowed: bool = True
     check_in: bool = False
     team_id: int | None = None
     team_index: int | None = None

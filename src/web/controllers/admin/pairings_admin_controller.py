@@ -1888,6 +1888,14 @@ class PairingsAdminController(BaseEventAdminController):
                     byes += 1
                 case Result.FULL_POINT_BYE:
                     byes += 2
+        if not player.byes_allowed:
+            Message.error(
+                request,
+                _('Player [{player_name}] is not eligible for byes.').format(
+                    player_name=player.full_name
+                ),
+            )
+            return self._admin_event_pairings_render(web_context)
         if byes >= tournament.max_byes:
             Message.error(
                 request,

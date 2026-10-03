@@ -3510,6 +3510,9 @@ msgstr "Égypte"
 msgid "El Salvador"
 msgstr "El Salvador"
 
+msgid "Eligible for byes"
+msgstr "Éligible aux byes"
+
 msgctxt "individual knock-out"
 msgid "Eliminated"
 msgstr "Éliminé·es"
@@ -4087,6 +4090,10 @@ msgstr "Bye point entier (obsolète)"
 #, python-brace-format
 msgid "Full-Point Bye attributed to team [{team}]."
 msgstr "Bye à point entier attribué à l’équipe [{team}]"
+
+#, python-brace-format
+msgid "Full-Point Bye given to {name}."
+msgstr "Bye point entier attribué à {name}."
 
 msgid "Full-point byes"
 msgstr "Byes point entier"
@@ -7104,6 +7111,10 @@ msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
 #, python-brace-format
+msgid "Player [{player_name}] is not eligible for byes."
+msgstr "Le·la joueur·euse [{player_name}] n'est pas éligible aux byes."
+
+#, python-brace-format
 msgid "Player [{player}] already exists in the event."
 msgstr "Le·la joueur·euse [{player}] existe déjà dans l'évènement."
 
@@ -9862,8 +9873,8 @@ msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, un
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr "Le moteur d'appariement n'a pas pu apparier la ronde %(round)d : vos appariements ne peuvent pas être comparés aux siens."
 
-msgid "The pairing integrity breaches, the changes to the settings of the tournament and the games corrected for the rating report, recorded as comments in its TRF."
-msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi et les parties corrigées pour le rapport Elo, consignées en commentaire dans son TRF."
+msgid "The pairing integrity breaches, the changes to the settings of the tournament, the games corrected for the rating report and the full-point byes, recorded as comments in its TRF."
+msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi, les parties corrigées pour le rapport Elo et les byes point entier, consignés en commentaire dans son TRF."
 
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
@@ -9933,8 +9944,14 @@ msgstr "Les permissions de ce compte ne peuvent être modifiées."
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires classé·es FIDE."
 
+msgid "The player has already been assigned a bye."
+msgstr "Un bye a déjà été attribué au·à la joueur·euse."
+
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
+
+msgid "The player is not eligible for byes."
+msgstr "Le·la joueur·euse n'est pas éligible aux byes."
 
 msgid "The players are split by pairing number into group A, the first half of the players rounded up to an even number, and group B, the other players."
 msgstr "Les joueur·euses sont réparti·es par numéro d'appariement entre le groupe A, la première moitié des joueur·euses arrondie au nombre pair supérieur, et le groupe B, les autres joueur·euses."
@@ -11500,6 +11517,9 @@ msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser 
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
+
+msgid "When disabled, no Half-Point Bye can be assigned to the player."
+msgstr "Lorsque désactivé, aucun bye ne peut être attribué au·à la joueur·euse."
 
 msgid "When enabled, a warning is shown if a per-round lineup places players in a different order than the team roster. The lineup can still be reordered freely."
 msgstr "Lorsqu'activé, un avertissement est montré si une composition d'équipe pour une ronde ne respecte pas l'ordre de l'effectif. La composition peut néanmoins être réordonnée librement."

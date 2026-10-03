@@ -775,6 +775,7 @@ class PlayerAdminController(BaseEventAdminController):
             owed: float = 0.0
             paid: float = 0.0
             fixed: int | None = None
+            byes_allowed: bool = True
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             stored_player = search_stored_player
             tournament_id: int | None = None
@@ -806,6 +807,7 @@ class PlayerAdminController(BaseEventAdminController):
                 owed = stored_player.owed
                 paid = stored_player.paid
                 fixed = stored_player.fixed
+                byes_allowed = stored_player.byes_allowed
                 stored_plugin_data = stored_player.plugin_data
             if action == FormAction.CREATE:
                 if len(event.sorted_not_finished_tournaments) == 1:
@@ -866,6 +868,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'owed': owed,
                     'paid': paid,
                     'fixed': fixed or None,
+                    'byes_allowed': byes_allowed,
                     'date_of_birth': date_of_birth,
                     'redirect_to': redirect_to,
                 }
@@ -981,6 +984,8 @@ class PlayerAdminController(BaseEventAdminController):
             'tournament_options': tournament_options,
             'team_options': team_options,
             'team_locked': team_locked,
+            'byes_locked': admin_player is not None
+            and cls._player_has_byes(admin_player),
             'is_team_event': event.is_team_event,
             'search_filters': search_filter_manager.get_filters(),
             'filters_by_tournament': json.dumps(
@@ -1335,6 +1340,24 @@ class PlayerAdminController(BaseEventAdminController):
         )
         return errors
 
+    @staticmethod
+    def _player_has_byes(player: Player) -> bool:
+        tournament_player = player.optional_single_tournament_player
+        return tournament_player is not None and tournament_player.byes_count > 0
+
+    @classmethod
+    def _byes_allowed_from_data(
+        cls,
+        data: dict[str, str],
+        tournament: Tournament | None,
+        player: Player | None,
+    ) -> bool:
+        if tournament is None or tournament.is_team_tournament:
+            return player.byes_allowed if player else True
+        if player and cls._player_has_byes(player):
+            return True
+        return WebContext.form_data_to_bool(data, 'byes_allowed')
+
     @classmethod
     def _stored_player_from_data(
         cls,
@@ -1400,6 +1423,7 @@ class PlayerAdminController(BaseEventAdminController):
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
+            byes_allowed=cls._byes_allowed_from_data(data, tournament, player),
             # Carry the existing team membership through the rebuild; team
             # changes are applied separately (and skipped for paired
             # players) so it must not be wiped here.
@@ -1685,7 +1709,11 @@ class PlayerAdminController(BaseEventAdminController):
             fpb_disabled_message = _(
                 'Not enough byes available to set a Full-Point Bye (required: 2).'
             )
-        if round_ > tournament.rounds - tournament.last_rounds_no_byes:
+        if not tournament_player.byes_allowed:
+            message = _('The player is not eligible for byes.')
+            hpb_disabled_message = message
+            fpb_disabled_message = message
+        elif round_ > tournament.rounds - tournament.last_rounds_no_byes:
             message = ngettext(
                 "Byes can't be set for the last round of the tournament.",
                 "Byes can't be set for the last {rounds} rounds of the tournament.",
@@ -1840,8 +1868,14 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
+        bye = Result(result)
+        if (
+            bye in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)
+            and not player.byes_allowed
+        ):
+            raise ClientException(f'Player [{player.id}] is not eligible for byes.')
         player.single_tournament.set_player_byes(
-            player.single_tournament_player, {round: Result(result)}
+            player.single_tournament_player, {round: bye}
         )
         return self._render_player_records_modal(web_context)
 

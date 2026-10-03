@@ -462,3 +462,40 @@ def test_a_stated_tie_break_list_and_acceleration_are_kept():
         settled = settings.settled(random.Random(seed))
         assert settled.tie_breaks == ['PTS', 'SB']
         assert settled.acceleration is False
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'settings, entrant',
+    [
+        (
+            TournamentSettings(
+                players=12, rounds=4, full_point_byes=Frequency(count=2)
+            ),
+            'player',
+        ),
+        (
+            TournamentSettings(
+                teams=6,
+                players_per_team=2,
+                rounds=4,
+                full_point_byes=Frequency(count=2),
+            ),
+            'team',
+        ),
+    ],
+)
+def test_each_full_point_bye_is_commented(
+    tmp_path: Path, settings: TournamentSettings, entrant: str
+):
+    """Every pairing number of a 240 F record gets a comment of its own."""
+    trf_path = tmp_path / 'full-point-byes.trf'
+    generate_tournament_file(settings, trf_path, seed=31)
+    lines = trf_path.read_text(encoding='ascii').splitlines()
+    expected = sorted(
+        f'### Full-point bye @ Round {int(fields[2])}: {entrant} {int(number)}'
+        for fields in (line.split() for line in lines if line.startswith('240 F'))
+        for number in fields[3:]
+    )
+    assert len(expected) == 2
+    assert sorted(line for line in lines if 'Full-point bye' in line) == expected

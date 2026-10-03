@@ -19,7 +19,7 @@ from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
-from data.pibes import Pibe, PibeType, RatingCorrection
+from data.pibes import FullPointBye, Pibe, PibeType, RatingCorrection
 from data.player import Player, TournamentPlayer
 from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
@@ -60,6 +60,7 @@ from utils.enum import (
     PlayerTitle,
     CheckInStatus,
     TitleNorm,
+    TeamByeType,
 )
 
 from utils.types import BigTournamentExemption
@@ -906,10 +907,28 @@ class Tournament:
         ]
 
     @property
-    def log_entries(self) -> list[Pibe | RatingCorrection]:
-        """What the log lists: the pairing integrity breaching events, then
-        the games corrected for the rating report."""
-        return [*self.pibes, *self.rating_corrections]
+    def log_entries(self) -> list[Pibe | RatingCorrection | FullPointBye]:
+        """What the log lists: the pairing integrity breaching events, the
+        games corrected for the rating report, then the full-point byes."""
+        return [*self.pibes, *self.rating_corrections, *self.full_point_byes]
+
+    @property
+    def full_point_byes(self) -> list[FullPointBye]:
+        if self.is_team_tournament and self.pairing_system.paired_by_team:
+            return [
+                FullPointBye(round_, team_id=team_board.stored_team_board.team_a_id)
+                for round_ in range(1, self.rounds + 1)
+                for team_board in self.get_round_team_boards(round_)
+                if team_board.stored_team_board.team_b_id is None
+                and team_board.stored_team_board.bye_type == TeamByeType.FPB
+            ]
+        return [
+            FullPointBye(round_, player_id=player.id)
+            for round_ in range(1, self.rounds + 1)
+            for player in self.sorted_tournament_players
+            if (pairing := player.pairings.get(round_)) is not None
+            and pairing.full_point_bye
+        ]
 
     @property
     def secondary_score_for_colours(self) -> bool:

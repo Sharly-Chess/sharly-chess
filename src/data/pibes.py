@@ -269,6 +269,45 @@ def _trf_correction(part: str) -> str:
     return f'pairings {_trf_pairs(after)} instead of {_trf_pairs(before)}'
 
 
+@dataclass(frozen=True)
+class FullPointBye:
+    """A full-point bye given to a player, or to a team of a tournament paired
+    by team. Full-point byes are deprecated (C.05:6.7.4), so the log points
+    each one out, although the TRF codes it."""
+
+    round_: int
+    player_id: int | None = None
+    team_id: int | None = None
+    date: datetime | None = field(default=None, compare=False)
+
+    @property
+    def label(self) -> str:
+        return _('Full-Point Bye')
+
+    @property
+    def date_str(self) -> str:
+        return ''
+
+    def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
+        if self.team_id is not None:
+            team = tournament.event.teams_by_id.get(self.team_id)
+            name = team.name if team is not None else f'#{self.team_id}'
+        else:
+            player = tournament.tournament_players_by_id.get(self.player_id or 0)
+            name = player.full_name if player is not None else f'#{self.player_id}'
+        return _('Full-Point Bye given to {name}.', locale).format(name=name)
+
+    def trf_comment_for(self, tournament: 'Tournament') -> str:
+        """The TRF comment, in the pairing numbers of today."""
+        if self.team_id is not None:
+            team = tournament.event.teams_by_id.get(self.team_id)
+            number = team.pairing_number if team is not None else None
+            entrant = f'team {number or 0}'
+        else:
+            entrant = f'player {_pairing_numbers(tournament)(self.player_id or 0)}'
+        return f'Full-point bye @ Round {self.round_}: {entrant}'
+
+
 def fide_mode_exit_trf_comment(round_: int) -> str:
     return f'FIDE mode exited @ Round {round_}'
 

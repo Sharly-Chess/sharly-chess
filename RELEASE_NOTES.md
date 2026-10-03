@@ -39,6 +39,7 @@
 - Players without a _FIDE_ ID in the _FFE_ database, or with a _FIDE_ ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
 - Players' names are stored as entered; first names written all in capitals or all in lower case are displayed capitalised (5.2.0)
 - The players tab is sorted by the name displayed first (5.2.0)
+- Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 
 ## Pairings
 
@@ -55,6 +56,7 @@
 - A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
 - Double round robins can choose whether the last two rounds of the first cycle are reversed, as recommended by FIDE to avoid three games in a row with the same colour (5.2.0)
 - Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
+- Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the FFE T2 minutes (5.2.0)
 
 ## Documents
 
