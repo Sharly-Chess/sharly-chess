@@ -442,6 +442,14 @@ class FfePlugin(Plugin):
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
+        # The national identifier of a player taken from another federation's
+        # list is that federation's, and nothing here can tell whether it is
+        # well formed.
+        if WebContext.form_data_to_str(data, 'national_source') not in (
+            None,
+            NATIONAL_SOURCE_ID,
+        ):
+            return
         ffe_licence_number = WebContext.form_data_to_str(data, field := 'national_id')
         if ffe_licence_number and not PlayerFFELicence.validate(ffe_licence_number):
             errors[field] = _(
