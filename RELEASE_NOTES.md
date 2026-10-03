@@ -7,7 +7,6 @@
 - The event export feature has been moved to the event's configuration window (5.1.0)
 - A reminder to update player data is shown before distributing players across tournaments (5.1.0)
 - The administration interface adapts to phone screens (5.1.0)
-- In dark mode, radio buttons no longer look selected while none of their options is chosen (5.1.3)
 
 ## Tournaments
 
