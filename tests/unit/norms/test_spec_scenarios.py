@@ -25,11 +25,13 @@ from tests.unit.norms.test_searcher import (
     _im,
     _real_searcher,
     _untitled,
+    as_norm_opponent,
     as_tournament,
     as_tournament_player,
     make_inputs,
 )
 from data.norms import (
+    NormInputs,
     TitleNormEvaluator,
 )
 from data.player import TournamentPlayer
@@ -41,7 +43,8 @@ def _player_ns(**kwargs) -> SimpleNamespace:
     """SimpleNamespace player/opponent double that also exposes the
     derived title attributes/methods the norm code reads (`held_titles`,
     `strongest_title`, `title_on_norm_ladder`), computed from `title` /
-    `women_title`."""
+    `women_title`, and the per-round readings — which for a double with
+    no slices answer the same whatever the round."""
     title = kwargs.get('title', PlayerTitle.NONE)
     women = kwargs.get('women_title', PlayerTitle.NONE)
     kwargs.setdefault('women_title', women)
@@ -52,6 +55,9 @@ def _player_ns(**kwargs) -> SimpleNamespace:
     kwargs['title_on_norm_ladder'] = lambda title_norm: (
         women if title_norm.player_title.is_women else title
     )
+    rating = kwargs.get('rating', 0)
+    kwargs.setdefault('rating_in_round', lambda _round: rating)
+    kwargs.setdefault('held_titles_in_round', lambda _round: kwargs['held_titles'])
     return SimpleNamespace(**kwargs)
 
 
@@ -701,6 +707,12 @@ class TestProportionalThresholdsAllowRescue:
 # ===========================================================================
 
 
+def _counted_opponents(inputs: NormInputs) -> list[object]:
+    """The opponents a norm counted. They are held as read in the round
+    they were played in, so the stand-in itself is one step down."""
+    return [opponent.player for opponent in inputs.opponents]
+
+
 def _fake_pairing(result: Result, opponent: FakeOpponent | None) -> SimpleNamespace:
     """Minimal pairing duck-type. `unplayed`/`played` are read by the
     Tournament-side checks (1.4.3d / 1.5.6a)."""
@@ -803,7 +815,7 @@ class TestRule_1_4_2a_NON_excluded:
         inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
         assert non_opp.id in inputs.ignored_opponents_ids
         # The NON opponent isn't in the mix at all.
-        assert non_opp not in inputs.opponents
+        assert non_opp not in _counted_opponents(inputs)
         assert Federation('NON') not in inputs.federations_counter
 
 
@@ -834,7 +846,7 @@ class TestRule_1_4_2a_FID_nuance:
         assert Federation('FID') not in inputs.federations_counter
         # ...but the game is still counted (played + the opponent's title).
         assert inputs.played_games == 2
-        assert fid_opp in inputs.opponents
+        assert fid_opp in _counted_opponents(inputs)
         # 1.4.3 sees only USA → one distinct federation.
         _, num_feds, _own = evaluator.federation_count_requirement(inputs)
         assert num_feds == 1
@@ -957,7 +969,7 @@ class TestRule_1_4_2b_RR_unrated_zero:
         evaluator = TitleNormEvaluator(player)
         inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
         assert doomed_opp.id in inputs.ignored_opponents_ids
-        assert doomed_opp not in inputs.opponents
+        assert doomed_opp not in _counted_opponents(inputs)
 
     def test_unrated_opponent_with_a_draw_NOT_excluded_in_rr(self):
         """If the unrated opponent scored anything but 0 against rated
@@ -986,7 +998,7 @@ class TestRule_1_4_2b_RR_unrated_zero:
             include_last_forfeit_as_loss=False
         )
         assert survivor.id not in inputs.ignored_opponents_ids
-        assert survivor in inputs.opponents
+        assert survivor in _counted_opponents(inputs)
 
     def test_unrated_opponent_zero_NOT_excluded_in_swiss(self):
         """1.4.2b is RR-only. In a Swiss event, the same opponent is kept
@@ -1012,7 +1024,7 @@ class TestRule_1_4_2b_RR_unrated_zero:
         )
         # 1.4.2b doesn't apply in Swiss → opponent is in the mix.
         assert doomed_opp.id not in inputs.ignored_opponents_ids
-        assert doomed_opp in inputs.opponents
+        assert doomed_opp in _counted_opponents(inputs)
 
 
 # ===========================================================================
@@ -2024,7 +2036,7 @@ class TestRoundAuditTrail:
         r1 = next(e for e in inputs.round_audit if e.round_ == 1)
         assert r1.decision == RoundDecision.INCLUDED
         assert r1.reason_key == 'included'
-        assert r1.opponent is opp
+        assert r1.opponent is not None and r1.opponent.player is opp
         assert r1.raw_result == Result.WIN
         assert r1.effective_result == Result.WIN
 
@@ -2055,7 +2067,7 @@ class TestRoundAuditTrail:
         r1 = next(e for e in inputs.round_audit if e.round_ == 1)
         assert r1.decision == RoundDecision.EXCLUDED
         assert r1.reason_key == 'rule_1_4_2a'
-        assert r1.opponent is non_opp
+        assert r1.opponent is not None and r1.opponent.player is non_opp
         assert r1.effective_result is None
 
     def test_1_4_2b_RR_unrated_zero_excluded(self):
@@ -2207,7 +2219,7 @@ class TestRoundAuditTrail:
     def test_search_marks_dropped_rounds_in_audit(self):
         """When the subset search drops rounds via 1.4.1e/f, the result's
         audit lists those rounds as DROPPED with a 1.4.1e or 1.4.1f reason."""
-        from data.norms.inputs import NormInputs, RoundDecision
+        from data.norms.inputs import RoundDecision
 
         # Drive `_search_subsets` directly so we don't have to stub
         # tournament-wide attributes (1.4.3d / 1.5.6a).
@@ -2237,7 +2249,7 @@ class TestRoundAuditTrail:
         inputs.round_audit = [
             RoundAuditEntry(
                 round_=r,
-                opponent=as_tournament_player(opp),
+                opponent=as_norm_opponent(opp),
                 raw_result=res,
                 effective_result=res,
                 decision=RoundDecision.INCLUDED,

@@ -131,9 +131,12 @@ def _round_counts_156a(
     eligible: list[TournamentPlayer], round_: int
 ) -> HighLevelRoundCounts:
     """FIDE-rated present this round, plus the top-40 rating average. The
-    average is 0.0 when fewer than 40 are present (insufficient data)."""
+    average is 0.0 when fewer than 40 are present (insufficient data).
+
+    The check is made of one round, so the ratings are those of the slice
+    that round belongs to (B.01 1.1.4)."""
     present = [p for p in eligible if _is_present_at_round(p, round_)]
-    top_rated = sorted((p.rating for p in present), reverse=True)[:40]
+    top_rated = sorted((p.rating_in_round(round_) for p in present), reverse=True)[:40]
     avg = sum(top_rated) / len(top_rated) if len(top_rated) >= 40 else 0.0
     return HighLevelRoundCounts(
         round_=round_,

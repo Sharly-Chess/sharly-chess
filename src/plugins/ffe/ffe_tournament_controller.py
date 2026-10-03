@@ -5,7 +5,7 @@ from typing import Annotated, Any
 
 from litestar import post, get
 from litestar.enums import RequestEncodingType
-from litestar.params import Body, FromPath
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
@@ -67,12 +67,18 @@ class FfeTournamentController(BaseEventAdminController):
         ],
     ) -> Template:
         ffe_auth_valid: bool | None = None
+        # The fields of a rating period carry the suffix of the period they
+        # belong to, and the answer has to come back named the same way —
+        # it replaces the block it was asked from.
+        field_suffix: str = str(data.get('field_suffix') or '')
+        id_field = f'ffe_id{field_suffix}'
+        password_field = f'ffe_password{field_suffix}'
 
         if NetworkMonitor.connected():
             ffe_id: int = 0
             with contextlib.suppress(ValueError):
-                ffe_id = WebContext.form_data_to_int(data, 'ffe_id') or 0
-            ffe_password: str = WebContext.form_data_to_str(data, 'ffe_password') or ''
+                ffe_id = WebContext.form_data_to_int(data, id_field) or 0
+            ffe_password: str = WebContext.form_data_to_str(data, password_field) or ''
 
             if ffe_id and ffe_password:
                 ffe_auth_valid = await asyncio.to_thread(
@@ -82,19 +88,20 @@ class FfeTournamentController(BaseEventAdminController):
         errors = {}
         # Compare to False, None means 'unable to check'
         if ffe_auth_valid is False:
-            errors['ffe_id'] = _('Invalid FFE certification number or password.')
-            errors['ffe_password'] = _('Invalid FFE certification number or password.')
+            errors[id_field] = _('Invalid FFE certification number or password.')
+            errors[password_field] = _('Invalid FFE certification number or password.')
 
         return HTMXTemplate(
             template_name='ffe_tournament_ffe_auth_fields.html',
             context={
                 'data': {
-                    'ffe_id': data['ffe_id'],
-                    'ffe_password': data['ffe_password'],
+                    id_field: data.get(id_field, ''),
+                    password_field: data.get(password_field, ''),
                 },
                 'ffe_auth_valid': ffe_auth_valid is True,
-                'ffe_password_visible': data['ffe_password_visible'] == 'true',
+                'ffe_password_visible': data.get('ffe_password_visible') == 'true',
                 'event_uniq_id': event_uniq_id,
+                'field_suffix': field_suffix,
                 'errors': errors,
             },
         )
@@ -309,10 +316,16 @@ class FfeTournamentController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         tournament_id: FromPath[int],
+        period_id: FromQuery[int | None] = None,
     ) -> Template:
+        """Send the tournament to the FFE site — or one of its periods,
+        which is how a tranche already submitted is sent again after a
+        correction."""
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        FfeBackgroundUploader.upload_tournament(tournament.event.uniq_id, tournament.id)
+        FfeBackgroundUploader.upload_tournament(
+            tournament.event.uniq_id, tournament.id, period_id=period_id
+        )
         if FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(
                 request,
