@@ -2558,9 +2558,8 @@ msgstr "Ronde courante : %(round)d"
 msgid "Current title:"
 msgstr "Titre actuel :"
 
-#, python-brace-format
-msgid "Current version: Sharly Chess {version}"
-msgstr "Version actuelle : Sharly Chess {version}"
+msgid "Current version"
+msgstr "Version actuelle"
 
 #, python-brace-format
 msgid "Currently displaying rotator [{name}]"
@@ -8895,6 +8894,10 @@ msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela
 #, python-brace-format
 msgid "Sharly Chess {latest} is available, you have {current}."
 msgstr "Sharly Chess {latest} est disponible, vous avez la version {current}."
+
+#, python-brace-format
+msgid "Sharly Chess {version}"
+msgstr "Sharly Chess {version}"
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."

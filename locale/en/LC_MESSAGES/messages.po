@@ -2558,8 +2558,7 @@ msgstr ""
 msgid "Current title:"
 msgstr ""
 
-#, python-brace-format
-msgid "Current version: Sharly Chess {version}"
+msgid "Current version"
 msgstr ""
 
 #, python-brace-format
@@ -8892,6 +8891,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Sharly Chess {latest} is available, you have {current}."
+msgstr ""
+
+#, python-brace-format
+msgid "Sharly Chess {version}"
 msgstr ""
 
 msgid "Should only be used when the wrong player has been added by mistake."
