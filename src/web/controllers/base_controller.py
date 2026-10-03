@@ -3,6 +3,7 @@ from collections.abc import Callable, Mapping
 from itertools import cycle
 from math import isfinite
 import re
+import sys
 import time
 from datetime import datetime, date
 from logging import Logger
@@ -450,10 +451,14 @@ class WebContext:
     @property
     def has_app_window(self) -> bool:
         """Whether the application runs with a window of its own, which is
-        where the settings and the plugins are managed then."""
-        from gui.server_gui_toga import SharlyChessServerToga
-
-        return SharlyChessServerToga.instance is not None
+        where the settings and the plugins are managed then. The window module
+        is loaded only to open the window, and cannot be loaded without a
+        display."""
+        server_gui = sys.modules.get('gui.server_gui_toga')
+        return (
+            server_gui is not None
+            and server_gui.SharlyChessServerToga.instance is not None
+        )
 
 
 class BaseController(Controller):

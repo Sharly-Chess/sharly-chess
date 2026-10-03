@@ -7,6 +7,7 @@
 - The event export feature has been moved to the event's configuration window (5.1.0)
 - A reminder to update player data is shown before distributing players across tournaments (5.1.0)
 - The administration interface adapts to phone screens (5.1.0)
+- On Linux, the server starts again without a display (on a headless server), in console mode (5.1.3)
 
 ## Tournaments
 

@@ -100,7 +100,6 @@ try:
         print_interactive_info,
         set_logging_config,
     )
-    from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
 
     logger = get_logger()
@@ -525,6 +524,8 @@ try:
         if gtk_available:
             logger.info('Creating Toga application...')
             try:
+                from gui.server_gui_toga import SharlyChessServerToga
+
                 app = SharlyChessServerToga(
                     debug=debug, profile=args.profile, port=port
                 )
