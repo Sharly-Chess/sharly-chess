@@ -90,6 +90,12 @@ class FRASchool(PluginData):
         return self.name
 
     @property
+    def short_label(self) -> str:
+        if self.postal_code:
+            return f'{self.name} ({self.postal_code})'
+        return self.name
+
+    @property
     def label(self) -> str:
         label = self.name
         if self.city:
@@ -99,7 +105,7 @@ class FRASchool(PluginData):
         return label
 
     LABEL_PATTERN = re.compile(
-        r'^(?P<name>.*), (?P<city>[^,]*) \((?P<postal_code>.{5})\)$'
+        r'^(?P<name>.*), (?P<city>[^,]*?)(?: \((?P<postal_code>.{5})\))?$'
     )
 
     @classmethod

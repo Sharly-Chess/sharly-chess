@@ -8,6 +8,7 @@ from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.pairings.fixed_table import FixedPairingTable
+    from data.player import Player
     from data.teams.team import Team
     from database.sqlite.event.event_store import StoredTournament
 
@@ -279,6 +280,17 @@ class RuleSet(IdentifiableEntity, ABC):
         encapsulate every cup-specific check here so the core stays
         agnostic of any one federation's rule shape."""
         return []
+
+    def player_rating_in_team_average(self, player: 'Player') -> int | None:
+        """The rating ``player`` counts for in their team's average rating,
+        which numbers the teams when they are sorted on it. Default: their
+        event-default rating."""
+        return player.event_default_rating
+
+    def team_average_rating_explanation(self, team: 'Team') -> str | None:
+        """Why ``team``'s average rating differs from the mean of its
+        players' ratings, shown next to it; ``None`` when it doesn't."""
+        return None
 
     @property
     def tie_break_overrides_by_pairing(self) -> dict[str, list[tuple[str, dict]]]:

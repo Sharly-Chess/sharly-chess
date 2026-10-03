@@ -6,7 +6,7 @@
     </div>
     {% set raw = data.get(option.id) or [] %}
     {% set selected_ids = (raw if raw is iterable and raw is not string else [raw]) | map('string') | list %}
-    <div id="{{ option.id }}-list" class="d-flex flex-column gap-1">
+    <div id="{{ option.id }}-list" class="match-sheet-list d-flex flex-column gap-1">
         <div class="form-text text-muted match-sheet-empty">
             {{ _('No paired team matches for this round.') }}
         </div>
