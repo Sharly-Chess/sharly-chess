@@ -231,10 +231,15 @@ class Pairing:
         return self.result.is_next_round_bye
 
     def to_trf(
-        self, round_number: int, correction: Optional['RatingCorrection'] = None
+        self,
+        round_number: int,
+        correction: Optional['RatingCorrection'] = None,
+        for_engine: bool = False,
     ) -> 'TrfGame':
         """The game as a TRF round, or as *correction* gives it when it
-        corrects this very game."""
+        corrects this very game. The pairing engine reads an adjourned game
+        as the draw it counts as; other readers get an unknown result for
+        it, and for a game not played yet."""
         from data.input_output.trf.trf_data import TrfGame
         from data.input_output.trf.trf_mappers import TrfColor
 
@@ -274,9 +279,19 @@ class Pairing:
             color=TrfColor.get_outer_value(
                 self.color, self.result.is_bye or opponent_id == 0
             ),
-            result=self.result.to_trf,
+            result=self._trf_result(for_engine),
             round=round_number,
         )
+
+    def _trf_result(self, for_engine: bool) -> str:
+        from data.input_output.trf.trf_mappers import TrfResult
+
+        if for_engine:
+            if self.result.is_adjourned:
+                return Result.DRAW.to_trf
+        elif self.paired_no_result:
+            return TrfResult.UNKNOWN
+        return self.result.to_trf
 
     @property
     def color(self) -> BoardColor | None:

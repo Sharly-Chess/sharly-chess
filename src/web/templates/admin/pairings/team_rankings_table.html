@@ -6,7 +6,13 @@
 {% set primary_is_gp = not primary_is_mp %}
 {% set team_tie_breaks = admin_tournament.team_tie_breaks %}
 <div class="d-flex">
-    <h4>{{ _('Team ranking') }}</h4>
+    <h4>
+        {% if admin_tournament.has_provisional_results %}
+            {{ _('%(title)s (provisional)', title=_('Team ranking')) }}
+        {% else %}
+            {{ _('Team ranking') }}
+        {% endif %}
+    </h4>
 </div>
 <table
     id="team-rankings-table"

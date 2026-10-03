@@ -140,7 +140,7 @@ class SetResultGuard(BaseGuard):
             )
         # Both result forms offer the forfeits behind this right, and a
         # request is not bound by what a form offered it.
-        if result.is_special_result or result.is_forfeit:
+        if result.is_special_result or result.is_forfeit or result.is_adjourned:
             self._authorize_tournament_action(
                 AuthAction.SET_SPECIAL_RESULTS, client, request
             )

@@ -937,6 +937,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         after_round: int,
         next_round_pairings_as_zpb: bool,
         rating_corrections: list['RatingCorrection'] | None = None,
+        for_engine: bool = False,
     ) -> 'TrfPlayer':
         """The player's 001 record, with the games of *rating_corrections*
         as they were corrected."""
@@ -951,7 +952,9 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             if self.id in correction.player_ids
         }
         for round_nb, pairing in self.pairings.items():
-            trf_game = pairing.to_trf(round_nb, correction_by_round.get(round_nb))
+            trf_game = pairing.to_trf(
+                round_nb, correction_by_round.get(round_nb), for_engine
+            )
             if round_nb <= after_round:
                 games.append(trf_game)
             elif (

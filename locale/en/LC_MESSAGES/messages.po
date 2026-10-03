@@ -287,6 +287,10 @@ msgid "%(system)s (automatic)"
 msgstr ""
 
 #, python-format
+msgid "%(title)s (provisional)"
+msgstr ""
+
+#, python-format
 msgid "%f to %l"
 msgstr ""
 
@@ -629,6 +633,13 @@ msgstr ""
 msgid "A pairing number between 1 and {max} is expected."
 msgstr ""
 
+msgid "A partial TRF, for data exchange during the tournament, which is not finished."
+msgstr ""
+
+#, python-brace-format
+msgid "A partial TRF, for data exchange during the tournament: the games without a result are exported as unknown results ({games})."
+msgstr ""
+
 msgid "A player covered by no rule in a round gets no virtual points in that round."
 msgstr ""
 
@@ -762,6 +773,9 @@ msgid "Access log files"
 msgstr ""
 
 msgid "Access unrated and penalty results."
+msgstr ""
+
+msgid "Access unrated, penalty and adjourned results."
 msgstr ""
 
 msgid "Account"
@@ -910,7 +924,14 @@ msgstr ""
 msgid "Additional information"
 msgstr ""
 
+msgid "Adjourned"
+msgstr ""
+
 msgid "Adjourned game"
+msgstr ""
+
+#, python-brace-format
+msgid "Adjourned game logged: {adjournment}"
 msgstr ""
 
 msgid "Administration"
@@ -3551,6 +3572,10 @@ msgstr ""
 msgid "Enter the result"
 msgstr ""
 
+#, python-format
+msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
+msgstr ""
+
 msgid "Equatorial Guinea"
 msgstr ""
 
@@ -4530,6 +4555,9 @@ msgid "Include players"
 msgstr ""
 
 msgid "Include private player data (emails, phone numbers, etc.)"
+msgstr ""
+
+msgid "Includes adjourned games, counted as draws."
 msgstr ""
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
@@ -8043,6 +8071,10 @@ msgid "Result [{result}] is incompatible with the opponent's result [{opponent_r
 msgstr ""
 
 #, python-brace-format
+msgid "Result of the adjourned game {pair} entered as {result}, after the next round was paired with the game counting as a draw."
+msgstr ""
+
+#, python-brace-format
 msgid "Result of {pair} changed from {before} to {after}."
 msgstr ""
 
@@ -8285,6 +8317,16 @@ msgstr ""
 
 #, python-brace-format
 msgid "Round {round} of {rounds} could not be paired ({error}): the tournament was not generated."
+msgstr ""
+
+#, python-brace-format
+msgid "Round {round} was paired with an adjourned game counting as a draw:"
+msgid_plural "Round {round} was paired with {count} adjourned games counting as draws:"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "Round {round}: {white} – {black}"
 msgstr ""
 
 #, python-brace-format, python-format
@@ -9216,6 +9258,12 @@ msgstr ""
 msgid "TRF26"
 msgstr ""
 
+msgid "TRF26 (ITDX)"
+msgstr ""
+
+msgid "TRF26 (final)"
+msgstr ""
+
 msgid "Table"
 msgstr ""
 
@@ -9604,6 +9652,9 @@ msgstr ""
 msgid "The file is not in UTF-8: it was read as Windows-1252 (Latin-1)."
 msgstr ""
 
+msgid "The final report of the tournament, with the games corrected for the rating report."
+msgstr ""
+
 msgid "The finishing position counted (e.g. 1 counts first places)."
 msgstr ""
 
@@ -9623,6 +9674,13 @@ msgid "The following features won't be imported:"
 msgstr ""
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
+msgstr ""
+
+#, python-format
+msgid "The game %(white)s – %(black)s of round %(round)d was adjourned, and round %(next_round)d was paired with it counting as a draw."
+msgstr ""
+
+msgid "The game counts as a draw until its result is entered, which can be done at any time."
 msgstr ""
 
 msgid "The game points scored on board 1 over the tournament; if that leaves the teams level, the next board down decides, and so on."
@@ -11823,6 +11881,10 @@ msgstr ""
 msgid "[{white}] and [{black}] must not be paired together."
 msgstr ""
 
+msgctxt "adjourned game"
+msgid "adj."
+msgstr ""
+
 msgid "all the boards"
 msgstr ""
 
@@ -12494,6 +12556,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{string}: {value}"
+msgstr ""
+
+#, python-brace-format
+msgid "{title} (provisional)"
 msgstr ""
 
 #, python-brace-format

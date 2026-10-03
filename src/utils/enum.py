@@ -102,6 +102,8 @@ class Result(IntEnum):
     UNRATED_PENALTY_DL = 19  # 0.5-0
     UNRATED_PENALTY_LD = 20  # 0-0.5
 
+    ADJOURNED = 21  # counts as a draw until the game is finished
+
     def __str__(self) -> str:
         match self:
             case Result.WIN:
@@ -143,6 +145,8 @@ class Result(IntEnum):
                 return '0-½'
             case Result.UNRATED_PENALTY_LD:
                 return '0-½ (U)'
+            case Result.ADJOURNED:
+                return pgettext('adjourned game', 'adj.')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -174,6 +178,7 @@ class Result(IntEnum):
                 | Result.HALF_POINT_BYE
                 | Result.PENALTY_DL
                 | Result.UNRATED_PENALTY_DL
+                | Result.ADJOURNED
             ):
                 return 0.5
             case (
@@ -219,6 +224,7 @@ class Result(IntEnum):
                 | Result.HALF_POINT_BYE
                 | Result.PENALTY_DL
                 | Result.UNRATED_PENALTY_DL
+                | Result.ADJOURNED
             ):
                 value = values.get(Result.DRAW)
             case (
@@ -283,6 +289,8 @@ class Result(IntEnum):
                 return Result.UNRATED_PENALTY_LD
             case Result.UNRATED_PENALTY_LD:
                 return Result.UNRATED_PENALTY_DL
+            case Result.ADJOURNED:
+                return Result.ADJOURNED
             case (
                 Result.ZERO_POINT_BYE
                 | Result.HALF_POINT_BYE
@@ -308,6 +316,8 @@ class Result(IntEnum):
     @property
     def to_crosstable(self) -> str:
         match self:
+            case Result.ADJOURNED:
+                return '?'
             case (
                 Result.LOSS
                 | Result.UNRATED_LOSS
@@ -340,6 +350,8 @@ class Result(IntEnum):
     def to_berger_table(self) -> str:
         # Berger grids read nicer with ½ for a draw (matching the Pts and
         # tie-break columns) than the TRF '=' symbol.
+        if self == Result.ADJOURNED:
+            return '?'
         if self.is_draw:
             return '½'
         return self.to_trf
@@ -366,6 +378,7 @@ class Result(IntEnum):
                 | Result.UNRATED_PENALTY_LL
                 | Result.PENALTY_LD
                 | Result.UNRATED_PENALTY_LD
+                | Result.ADJOURNED
             ):
                 return '*'
             case _:
@@ -398,12 +411,19 @@ class Result(IntEnum):
 
     @property
     def is_draw(self) -> bool:
+        """A drawn game, an adjourned game counting as a draw until it is
+        finished."""
         return self in (
             Result.DRAW,
             Result.UNRATED_DRAW,
             Result.PENALTY_DL,
             Result.UNRATED_PENALTY_DL,
+            Result.ADJOURNED,
         )
+
+    @property
+    def is_adjourned(self) -> bool:
+        return self == Result.ADJOURNED
 
     @property
     def is_unrated_draw(self) -> bool:
@@ -537,6 +557,7 @@ class Result(IntEnum):
             cls.UNRATED_PENALTY_LL,
             cls.UNRATED_PENALTY_DL,
             cls.UNRATED_PENALTY_LD,
+            cls.ADJOURNED,
         )
 
 

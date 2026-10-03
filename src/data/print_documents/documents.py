@@ -103,6 +103,14 @@ if TYPE_CHECKING:
 logger: logging.Logger = get_logger()
 
 
+def provisional_title(title: str, tournament: Tournament, round_: int) -> str:
+    """*title*, said to be provisional when the standings after *round_*
+    count adjourned games as draws."""
+    if tournament.adjourned_boards(before_round=round_ + 1):
+        return _('{title} (provisional)').format(title=title)
+    return title
+
+
 class PrintDocument(OptionHandler[PrintOption], ABC):
     def __init__(
         self,
@@ -431,7 +439,11 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
     def title(self) -> str:
         if self.ranking_round == 0:
             return _('Ranking before the first round')
-        return _('Ranking after round #{round}').format(round=self.ranking_round)
+        return provisional_title(
+            _('Ranking after round #{round}').format(round=self.ranking_round),
+            self.tournament,
+            self.ranking_round,
+        )
 
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
@@ -461,7 +473,11 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     def title(self) -> str:
         if self.ranking_round == 0:
             return _('Crosstable before the first round')
-        return _('Crosstable after round #{round}').format(round=self.ranking_round)
+        return provisional_title(
+            _('Crosstable after round #{round}').format(round=self.ranking_round),
+            self.tournament,
+            self.ranking_round,
+        )
 
     @property
     def include_player_history(self) -> bool:
@@ -1059,7 +1075,11 @@ class TeamRankingPrintDocument(PrintDocument):
     def title(self) -> str:
         if self.ranking_round == 0:
             return _('Team ranking before the first round')
-        return _('Team ranking after round #{round}').format(round=self.ranking_round)
+        return provisional_title(
+            _('Team ranking after round #{round}').format(round=self.ranking_round),
+            self.tournament,
+            self.ranking_round,
+        )
 
     @override
     def validate_options(self) -> None:
@@ -1131,7 +1151,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name
+        return provisional_title(self.name, self.tournament, self.tournament.rounds)
 
     @property
     def template_name(self) -> str:
@@ -1286,7 +1306,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name
+        return provisional_title(self.name, self.tournament, self.ranking_round)
 
     @property
     def ranking_round(self) -> int:

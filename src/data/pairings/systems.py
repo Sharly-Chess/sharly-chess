@@ -237,6 +237,12 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return False
 
     @property
+    def supports_adjourned_games(self) -> bool:
+        """Whether a game can be recorded as adjourned, counting as a draw
+        until its result is entered."""
+        return False
+
+    @property
     def eliminates_participants(self) -> bool:
         """Whether losing takes a participant out of the tournament, so
         the field shrinks each round (a knock-out). A knocked-out player
@@ -381,6 +387,11 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
 
 
 class SwissPairingSystem(PairingSystem['SwissVariation']):
+    @property
+    @override
+    def supports_adjourned_games(self) -> bool:
+        return True
+
     @staticmethod
     def static_id() -> str:
         return 'SWISS'
@@ -430,6 +441,11 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
 
 
 class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
+    @property
+    @override
+    def supports_adjourned_games(self) -> bool:
+        return True
+
     @staticmethod
     def static_id() -> str:
         return 'ROUND_ROBIN'
@@ -533,6 +549,11 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
 
 
 class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
+    @property
+    @override
+    def supports_adjourned_games(self) -> bool:
+        return True
+
     @staticmethod
     def static_id() -> str:
         return 'TEAM_SWISS'
@@ -591,6 +612,11 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
 
 
 class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
+    @property
+    @override
+    def supports_adjourned_games(self) -> bool:
+        return True
+
     @staticmethod
     def static_id() -> str:
         return 'TEAM_ROUND_ROBIN'

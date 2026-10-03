@@ -62,6 +62,7 @@ from data.pibes import (
     RATING_CORRECTION_RESULTS,
     Pibe,
     PibeType,
+    adjournment_description,
     describe_round_changes,
     round_snapshot,
 )
@@ -205,7 +206,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_filtered_boards = [
                 b
                 for b in self.admin_boards
-                if b.result == Result.NO_RESULT or self._awaits_board_winner(b)
+                if b.result in (Result.NO_RESULT, Result.ADJOURNED)
+                or self._awaits_board_winner(b)
             ]
         else:
             self.admin_filtered_boards = self.admin_boards
@@ -268,8 +270,17 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.unlocked_level = max(self.unlocked_level, WarningLevel.CONFIRMATION)
         self.requires_refresh = False
         self.correction_snapshot: dict[str, str] | None = None
-        if action:
+        if action and not self.updates_adjourned_game(action):
             self._pass_warning(action)
+
+    def updates_adjourned_game(self, action: PairingAction) -> bool:
+        """Whether *action* enters the result of an adjourned game, which is
+        allowed at any time without warning."""
+        return (
+            action == PairingAction.RESULT_UPDATE
+            and self.admin_board is not None
+            and self.admin_board.result.is_adjourned
+        )
 
     @property
     def corrects_for_rating(self) -> bool:
@@ -372,6 +383,26 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.request,
             _('Correction logged: {correction}').format(
                 correction=pibe.summary(tournament)
+            ),
+        )
+
+    def log_adjournment(self, board_id: int) -> None:
+        """Log the result entered for the adjourned game of *board_id* after
+        the next round was paired."""
+        tournament = self.get_admin_tournament()
+        event = EventLoader.get(self.request).load_event(tournament.event.uniq_id)
+        reloaded_tournament = event.tournaments_by_id[tournament.id]
+        board = reloaded_tournament.boards_by_id[board_id]
+        pibe = Pibe(
+            PibeType.ADJOURNMENT,
+            board.round,
+            adjournment_description(reloaded_tournament, board),
+        )
+        tournament.log_pibe(pibe)
+        Message.info(
+            self.request,
+            _('Adjourned game logged: {adjournment}').format(
+                adjournment=pibe.trf_comment
             ),
         )
 
@@ -572,6 +603,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 self.round_status, self.unlocked_level, self.admin_tournament.fide_mode
             )
             existing_actions = permission_handler.existing_actions(self.round_status)
+            if self.updates_adjourned_game(PairingAction.RESULT_UPDATE):
+                allowed_actions.append(PairingAction.RESULT_UPDATE)
             confirmation_unlocks_round = permission_handler.confirmation_unlocks_round(
                 self.round_status, self.admin_tournament.fide_mode
             )
@@ -636,7 +669,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     and not (
                         SessionPairingsShowWithoutResults(self.request).get()
                         and tb.boards
-                        and all(board.result != Result.NO_RESULT for board in tb.boards)
+                        and all(
+                            board.result not in (Result.NO_RESULT, Result.ADJOURNED)
+                            for board in tb.boards
+                        )
                         and not self._awaits_team_match_winner(tb)
                     )
                 ]
@@ -1089,6 +1125,13 @@ class PairingsAdminController(BaseEventAdminController):
         target_board_id: int | None
         if result not in (Result.admin_imputable_results()):
             raise ClientException(f'Invalid result [{result}].')
+        if (
+            result == Result.ADJOURNED
+            and not tournament.pairing_system.supports_adjourned_games
+        ):
+            raise ClientException(
+                f'Games cannot be adjourned in tournament [{tournament.id}].'
+            )
 
         context = web_context.template_context
 
@@ -1103,6 +1146,26 @@ class PairingsAdminController(BaseEventAdminController):
                 )
         else:
             r = Result(result)
+            breaches_adjournment = tournament.breaches_adjournment(board, r)
+            if breaches_adjournment and not request.query_params.get('confirmed'):
+                return self._admin_event_pairings_render(
+                    web_context,
+                    {
+                        'modal': 'adjournment',
+                        'adjourned_board': board,
+                        'new_result': r,
+                        'redirect_method': 'PUT',
+                        'redirect_route': request.app.route_reverse(
+                            'admin-pairings-set-result',
+                            event_uniq_id=event.uniq_id,
+                            tournament_id=tournament_id,
+                            round=round_,
+                            board_id=board_id,
+                            result=result,
+                        )
+                        + '?confirmed=1',
+                    },
+                )
             if r.is_special_result:  # noqa: SIM102
                 if message := plugin_manager.hook_for_event(
                     event, 'signal_special_result_set'
@@ -1111,6 +1174,8 @@ class PairingsAdminController(BaseEventAdminController):
 
             tournament.add_result(board, r)
             web_context.log_correction()
+            if breaches_adjournment:
+                web_context.log_adjournment(board.identifier)
             self.publish_new_user_results(
                 channels, event.uniq_id, tournament.id, round_
             )
@@ -1356,6 +1421,8 @@ class PairingsAdminController(BaseEventAdminController):
                 result = Result.LOSS if left_is_white else Result.WIN
             case 'Digit3' | 'Numpad3':
                 result = Result.DRAW
+            case 'KeyA':
+                result = Result.ADJOURNED
             case _:
                 return HTMXTemplate(
                     template_name='/common/empty.html',
@@ -1365,17 +1432,21 @@ class PairingsAdminController(BaseEventAdminController):
         validate_result = data['validate_result'] == 'true'
         if not validate_result:
             web_context = PairingsAdminWebContext(
-                request, tournament_id=tournament_id, round_=round
+                request, tournament_id=tournament_id, round_=round, board_id=board_id
             )
             tournament = web_context.get_admin_tournament()
             permission_handler = tournament.pairing_system.permission_handler
-            if PairingAction.RESULT_UPDATE in (
-                permission_handler.existing_actions(web_context.round_status)
-            ) and PairingAction.RESULT_UPDATE not in (
-                permission_handler.allowed_actions(
-                    web_context.round_status,
-                    web_context.unlocked_level,
-                    tournament.fide_mode,
+            if (
+                not web_context.updates_adjourned_game(PairingAction.RESULT_UPDATE)
+                and PairingAction.RESULT_UPDATE
+                in (permission_handler.existing_actions(web_context.round_status))
+                and PairingAction.RESULT_UPDATE
+                not in (
+                    permission_handler.allowed_actions(
+                        web_context.round_status,
+                        web_context.unlocked_level,
+                        tournament.fide_mode,
+                    )
                 )
             ):
                 return self._warning_modal_render(
@@ -2337,17 +2408,41 @@ class PairingsAdminController(BaseEventAdminController):
                         'calculated_rounds': calculated,
                     },
                 )
+        adjourned_boards: list[Board] = []
         if error := tournament.generate_round_pairings(round_):
             Message.error(request, error)
         else:
             Message.success(request, _('Pairings successfully generated.'))
+            adjourned_boards = tournament.adjourned_boards(before_round=round_)
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament.id,
             round_=round_,
             reload_event=True,
         )
+        if adjourned_boards:
+            return self._admin_event_pairings_render(
+                web_context,
+                {
+                    'modal': 'information',
+                    'information_messages': self._adjourned_games_messages(
+                        round_, adjourned_boards
+                    ),
+                },
+            )
         return self._admin_event_pairings_render(web_context)
+
+    @staticmethod
+    def _adjourned_games_messages(round_: int, boards: list[Board]) -> list[str]:
+        return [
+            ngettext(
+                'Round {round} was paired with an adjourned game counting as a draw:',
+                'Round {round} was paired with {count} adjourned games counting as '
+                'draws:',
+                len(boards),
+            ).format(round=round_, count=len(boards)),
+            *(board.round_and_players_str for board in boards),
+        ]
 
     @post(
         path='/pairings/generate/{event_uniq_id:str}/{tournament_id:int}/{round:int}',

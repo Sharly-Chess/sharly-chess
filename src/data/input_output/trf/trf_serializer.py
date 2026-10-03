@@ -56,7 +56,7 @@ class TrfSerializer:
     #: A line holding round blocks only: the rest of a 001 record that an
     #: editor or a mail program wrapped.
     CONTINUATION_PATTERN = re.compile(
-        r'^(?=.*\d)(  [ \d]{4} [bsw\- ] [1=0+wdl\-hfuz ])+\s*$', re.IGNORECASE
+        r'^(?=.*\d)(  [ \d]{4} [bsw\- ] .)+\s*$', re.IGNORECASE
     )
 
     @classmethod

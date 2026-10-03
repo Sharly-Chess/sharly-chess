@@ -720,6 +720,9 @@
 
             const code = event.code;
             const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
+            {% if admin_tournament and admin_tournament.pairing_system.supports_adjourned_games %}
+                validCodes.push('KeyA');
+            {% endif %}
             if (validCodes.includes(code)) {
                 event.preventDefault();
                 handleShortCutKey(code);

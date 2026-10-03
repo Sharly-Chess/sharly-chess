@@ -396,6 +396,7 @@ class BbpPairings(PairingEngine):
             pairings_file_path = pairings_dir / 'pairings-output.txt'
             trf_tournament = tournament.to_trf(
                 after_round=round_ - 1,
+                for_engine=True,
                 next_round_pairings_as_zpb=partial_pairings,
                 prohibited_pairing_override=prohibited_pairing_override,
             )
@@ -504,6 +505,7 @@ class BbpPairings(PairingEngine):
             checklist_file_path.unlink(missing_ok=True)
             trf_tournament = tournament.to_trf(
                 after_round=round_ - 1,
+                for_engine=True,
                 next_round_pairings_as_zpb=False,
             )
             with open(trfx_file_path, 'w', encoding='utf-8') as trf_file:
@@ -1205,7 +1207,7 @@ class TeamSwissEngine(TeamPairingEngine):
         """
         from data.input_output.trf.trf_serializer import TrfSerializer
 
-        trf_tournament = tournament.to_trf(after_round=round_ - 1)
+        trf_tournament = tournament.to_trf(after_round=round_ - 1, for_engine=True)
         with tempfile.TemporaryDirectory() as tmpdir:
             pairings_dir = Path(tmpdir)
             trf_path = pairings_dir / 'team-pairings-input.trfx'
@@ -1251,6 +1253,7 @@ class TeamSwissEngine(TeamPairingEngine):
         trf_id_by_team_id = self._build_trf_id_map(teams)
         trf_tournament = tournament.to_trf(
             after_round=round_ - 1,
+            for_engine=True,
             next_round_pairings_as_zpb=partial_pairings,
             prohibited_pairing_override=prohibited_pairing_override,
         )

@@ -281,15 +281,27 @@ class TeamBoard:
         return mp_a, mp_b
 
     @property
+    def has_adjourned_game(self) -> bool:
+        return any(board.result.is_adjourned for board in self.boards)
+
+    @property
     def match_score_pair(self) -> tuple[str, str] | None:
         """``(team_a_score, team_b_score)`` strings following the
         tournament's primary score, or ``None`` for an unplayed match
         or a bye envelope. Lets callers orient the score from either
-        team's perspective (crosstables)."""
+        team's perspective (crosstables). A score counting adjourned games
+        as draws is marked as provisional."""
         if self.stored_team_board.team_b_id is None:
             return None
         if self.boards and all(board.no_result for board in self.boards):
             return None
+        score_pair = self._match_score_pair
+        if self.has_adjourned_game:
+            return f'{score_pair[0]}*', f'{score_pair[1]}*'
+        return score_pair
+
+    @property
+    def _match_score_pair(self) -> tuple[str, str]:
         tournament = self.tournament
         if tournament.primary_score == ScoreType.MATCH_POINTS:
             match_points = self.match_points_pair()
@@ -302,11 +314,9 @@ class TeamBoard:
             if self.team_all_forfeit(self.stored_team_board.team_a_id)
             else f'{a_gp:g}'
         )
-        b_str = (
-            'F'
-            if self.team_all_forfeit(self.stored_team_board.team_b_id)
-            else f'{b_gp:g}'
-        )
+        team_b_id = self.stored_team_board.team_b_id
+        assert team_b_id is not None
+        b_str = 'F' if self.team_all_forfeit(team_b_id) else f'{b_gp:g}'
         return a_str, b_str
 
     @property

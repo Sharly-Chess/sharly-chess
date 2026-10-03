@@ -1103,6 +1103,7 @@ class KashdanTieBreak(PlayerRecordTieBreak):
             Result.UNRATED_DRAW: 2,
             Result.PENALTY_DL: 2,
             Result.UNRATED_PENALTY_DL: 2,
+            Result.ADJOURNED: 2,
             Result.LOSS: 1,
             Result.UNRATED_LOSS: 1,
             Result.PENALTY_LL: 1,
