@@ -1657,26 +1657,28 @@ with_indicator: display a loading indicator, optional
     {% for value, label in label_by_value.items() %}
         {% set id = radio_id ~ '-' ~ value %}
         <div class="form-check">
-            <input
-                id="{{ id }}"
-                class="form-check-input"
-                type="radio"
-                name="{{ name }}"
-                value="{{ value }}"
-                {% if value == selected %}
-                    checked
-                {% endif %}
-            >
-            <label class="form-check-label" for="{{ id }}">
-                {{ label }}
-                {% if value in tooltip_by_value %}
-                    <i
-                        class="bi-info-circle-fill ps-1"
-                        style="font-size: 90%"
-                        {{ macros.tooltip_attributes('', tooltip_by_value[value]) }}
-                    ></i>
-                {% endif %}
-            </label>
+            <span>
+                <input
+                    id="{{ id }}"
+                    class="form-check-input"
+                    type="radio"
+                    name="{{ name }}"
+                    value="{{ value }}"
+                    {% if value == selected %}
+                        checked
+                    {% endif %}
+                >
+                <label class="form-check-label" for="{{ id }}">
+                    {{ label }}
+                    {% if value in tooltip_by_value %}
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            style="font-size: 90%"
+                            {{ macros.tooltip_attributes('', tooltip_by_value[value]) }}
+                        ></i>
+                    {% endif %}
+                </label>
+            </span>
         </div>
 
     {% endfor %}

@@ -1747,7 +1747,7 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] .form-check-input:checked,
-[data-bs-theme=dark] .form-check-input:indeterminate {
+[data-bs-theme=dark] .form-check-input[type=checkbox]:indeterminate {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
 }
