@@ -8042,6 +8042,12 @@ msgstr ""
 msgid "Reset order"
 msgstr ""
 
+msgid "Reset the absent/present status of all the players."
+msgstr ""
+
+msgid "Reset the absent/present status of all the teams."
+msgstr ""
+
 msgid "Reset zoom"
 msgstr ""
 
