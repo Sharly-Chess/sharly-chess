@@ -87,23 +87,27 @@
             {% for data_source in choosable_lists %}
                 {% set _source = data_source.national_source_id %}
                 {% set _online = _source in online_sources %}
-                <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="d-flex flex-wrap align-items-baseline gap-3 mb-2">
                     <span>{{ _('%(list)s read from:', list=data_source.national_source_name) }}</span>
-                    <div class="btn-group btn-group-sm" role="group">
-                        {% for value, label in [(false, _('the installed copy')), (true, _('the online source'))] %}
-                            <button
-                                type="button"
-                                class="btn {% if _online == value %}btn-primary{% else %}btn-outline-primary{% endif %}"
+                    {% for value, label in [(false, _('the installed copy')), (true, _('the online source'))] %}
+                        <div class="d-flex align-items-baseline gap-2">
+                            <input
+                                class="form-check-input flex-shrink-0"
+                                style="margin: 0; position: relative; top: 0.14em"
+                                type="radio"
+                                name="read-online-{{ _source }}"
+                                id="read-online-{{ _source }}-{{ value|lower }}"
+                                {% if _online == value %}checked{% endif %}
+                                {% if not client.can_manage_source_databases %}disabled{% endif %}
                                 hx-get="{{ url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab=tab) }}"
                                 hx-vals='{"source": "{{ _source }}", "online": "{{ value|lower }}"{% if admin_tournament %}, "tournament_id": "{{ admin_tournament.id }}"{% endif %}}'
+                                hx-trigger="change"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
-                                {% if _online == value or not client.can_manage_source_databases %}disabled{% endif %}
-                            >
-                                {{ label }}
-                            </button>
-                        {% endfor %}
-                    </div>
+                            />
+                            <label class="form-check-label" for="read-online-{{ _source }}-{{ value|lower }}">{{ label }}</label>
+                        </div>
+                    {% endfor %}
                 </div>
             {% endfor %}
             {% if rating_check.lists %}
