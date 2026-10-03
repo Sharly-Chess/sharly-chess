@@ -41,7 +41,7 @@ def the_player() -> TournamentPlayer:
     return next(
         player
         for player in EVENT.tournament().tournament_players
-        if player.last_name == 'DOE'
+        if player.last_name == 'Doe'
     )
 
 
