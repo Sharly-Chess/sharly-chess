@@ -1,6 +1,5 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-{% set _online_version = online_versions_by_database.get(database.id) %}
 <tbody id="database-{{ database.id }}-row">
     <tr>
         <button
@@ -9,9 +8,6 @@
             hx-vals='js:{
                 outdate_delay: $("#{{ database.id }}-outdate-delay").val(),
                 outdate_action: $("#{{ database.id }}-outdate-action").val(),
-                {% if _online_version %}
-                    read_online: $("input[name={{ database.id }}-read-online]:checked").val(),
-                {% endif %}
             }'
             hx-target="#database-{{ database.id }}-row"
             hx-swap="outerHTML"
@@ -58,53 +54,4 @@
             </div>
         </td>
     </tr>
-    {% if _online_version %}
-        <tr>
-            <td colspan="5" class="pt-0">
-                <div class="d-flex flex-wrap align-items-center column-gap-4 row-gap-2 ps-3">
-                    <span class="d-flex align-items-center gap-2">
-                        <i class="bi-cloud"></i>
-                        {{ _('Online database') }}
-                    </span>
-                    {% if _online_version.connection_status %}
-                        <span class="text-success">{{ _('Connection established') }}</span>
-                    {% elif _online_version.connection_status is false %}
-                        <span class="text-danger">{{ _('Connection failed') }}</span>
-                    {% else %}
-                        <span class="text-danger">{{ _('No internet connection') }}</span>
-                    {% endif %}
-                    {% if _online_version.connection_last_checked_at_str %}
-                        <span class="text-secondary small">{{ _('Last check: %(date)s', date=_online_version.connection_last_checked_at_str) }}</span>
-                    {% endif %}
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
-                        hx-post="{{ url_for('admin-online-data-source-check', data_source_id=_online_version.id) }}"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-arrow-clockwise lh-1"></i>
-                        {{ _('Check connection') }}
-                    </button>
-                    <span class="d-flex flex-wrap align-items-baseline column-gap-3">
-                        <span>{{ _('Try first:') }}</span>
-                        {% for value, label in [('', _('the installed copy')), ('on', _('the online database'))] %}
-                            <span class="d-flex align-items-baseline gap-2">
-                                <input
-                                    class="form-check-input flex-shrink-0"
-                                    style="margin: 0; position: relative; top: 0.14em"
-                                    type="radio"
-                                    name="{{ database.id }}-read-online"
-                                    id="{{ database.id }}-read-online-{{ value or 'off' }}"
-                                    value="{{ value }}"
-                                    {% if (value == 'on') == database.stored_source_database.read_online %}checked{% endif %}
-                                    onchange="$('#database-{{ database.id }}-submit').click()"
-                                />
-                                <label class="form-check-label" for="{{ database.id }}-read-online-{{ value or 'off' }}">{{ label }}</label>
-                            </span>
-                        {% endfor %}
-                    </span>
-                </div>
-            </td>
-        </tr>
-    {% endif %}
 </tbody>

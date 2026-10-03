@@ -927,6 +927,9 @@ msgstr ""
 msgid "Added automatically, on top of any manual points below."
 msgstr ""
 
+msgid "Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached."
+msgstr ""
+
 msgid "Additional information"
 msgstr ""
 
@@ -4994,10 +4997,6 @@ msgstr ""
 msgid "Last check"
 msgstr ""
 
-#, python-format
-msgid "Last check: %(date)s"
-msgstr ""
-
 msgid "Last match:"
 msgstr ""
 
@@ -6654,9 +6653,6 @@ msgid "One category can be marked as the main prize category for overall ranking
 msgstr ""
 
 msgid "Ongoing"
-msgstr ""
-
-msgid "Online database"
 msgstr ""
 
 msgid "Online sources"
@@ -11146,7 +11142,7 @@ msgstr ""
 msgid "Trophy, medal"
 msgstr ""
 
-msgid "Try first:"
+msgid "Try before the installed copy"
 msgstr ""
 
 msgctxt "tuesday"
@@ -12654,9 +12650,6 @@ msgstr ""
 msgid "the file does not code it, and describes the tournament as \"{type}\""
 msgstr ""
 
-msgid "the installed copy"
-msgstr ""
-
 msgid "the number of moves is required for a non-final period."
 msgstr ""
 
@@ -12664,9 +12657,6 @@ msgid "the number of moves must be a positive integer."
 msgstr ""
 
 msgid "the number of moves must not be specified for the final period."
-msgstr ""
-
-msgid "the online database"
 msgstr ""
 
 msgid "the server address on the networks to which it is connected:"

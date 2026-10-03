@@ -30,7 +30,7 @@ from data.access_levels.actions import AuthAction
 from utils.enum import RatingPreference
 from data.event import Event
 from data.input_output import DataSourceManager, OnlineDataSourceManager
-from data.input_output.data_source import OnlineDataSource
+from data.input_output.data_source import LocalDataSource, OnlineDataSource
 from data.event_metadata import EventMetadata
 from data.championship.championship import Championship
 from data.championship.championship_loader import (
@@ -93,17 +93,15 @@ from web.urls import admin_event_url
 logger: Logger = get_logger()
 
 
-def _online_versions_by_database() -> dict[str, OnlineDataSource]:
-    """The online versions of the installed lists that have one, by the id
-    of the installed copy: the user chooses which of the two is read
-    first."""
-    from data.input_output.data_source import LocalDataSource
-
+def _installed_by_online_version() -> dict[str, LocalDataSource]:
+    """The installed copies of the lists that have an online version, by the
+    online version's id: the user chooses which of the two the automatic
+    lookups try first."""
     return {
-        data_source.database.id: online_version
+        data_source.online_version_type.static_id(): data_source
         for data_source in DataSourceManager().listed_objects()
         if isinstance(data_source, LocalDataSource)
-        and (online_version := data_source.online_version) is not None
+        and data_source.online_version_type is not None
     }
 
 
@@ -1856,7 +1854,7 @@ class IndexAdminController(BaseAdminController):
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager().options(),
             'outdate_action_options': OutdatedActionManager().options(),
-            'online_versions_by_database': _online_versions_by_database(),
+            'installed_by_online_version': _installed_by_online_version(),
             'modal': 'database',
         }
 
@@ -1897,10 +1895,6 @@ class IndexAdminController(BaseAdminController):
             action = OutdatedActionManager().get_object(action_id)
         stored_database.outdate_delay = delay.id
         stored_database.outdate_action = action.id
-        if 'read_online' in data:
-            stored_database.read_online = WebContext.form_data_to_bool(
-                data, 'read_online'
-            )
         database.update_stored_source_database(stored_database)
         database.check()
         return HTMXTemplate(
@@ -2066,6 +2060,33 @@ class IndexAdminController(BaseAdminController):
         data_source.deactivate()
         return self._admin_render(
             web_context=web_context,
+            template_context=self._database_modal_context(),
+        )
+
+    @post(
+        path='/online-data-source/try-first/{data_source_id:str}',
+        name='admin-online-version-try-first',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def htmx_admin_online_version_try_first(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        data_source_id: FromPath[str],
+    ) -> Template:
+        """Set whether the automatic lookups read a list's online version
+        before its installed copy."""
+        installed = _installed_by_online_version().get(data_source_id)
+        if installed is None:
+            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+        stored_database = installed.database.stored_source_database
+        stored_database.read_online = WebContext.form_data_to_bool(data, 'try_first')
+        installed.database.update_stored_source_database(stored_database)
+        return self._admin_render(
+            web_context=AdminWebContext(request),
             template_context=self._database_modal_context(),
         )
 

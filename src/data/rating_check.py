@@ -319,10 +319,13 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
         for source in sorted(sources):
             known = manager.national_source(source)
             list_name = known.national_source_name if known else source
-            if known is None or not known.is_available:
-                message, warning = _('Not installed'), True
-            elif isinstance(known, LocalDataSource) and not known.is_installed:
+            online_version = (
+                known.online_version if isinstance(known, LocalDataSource) else None
+            )
+            if known is not None and not known.is_available and online_version:
                 message, warning = _('Read online'), False
+            elif known is None or not known.is_available:
+                message, warning = _('Not installed'), True
             else:
                 message, warning = known.info_or_warning_message
                 if isinstance(known, LocalDataSource) and known.tries_online_first:
@@ -352,6 +355,22 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
     return statuses
 
 
+async def _match_list(
+    data_source: 'DataSource', players: list[Player]
+) -> list[StoredPlayer] | None:
+    """The players of a national list matching *players*, read from the
+    installed copy or the online version as the user set the list to try
+    first."""
+    from data.input_output.data_source import LocalDataSource
+
+    if not isinstance(data_source, LocalDataSource) or not data_source.online_version:
+        return await data_source.get_match_stored_players(players)
+    return await data_source.first_answer(
+        lambda: data_source.get_match_stored_players(players),
+        lambda online_version: online_version.get_match_stored_players(players),
+    )
+
+
 async def check_ratings(
     event: 'Event', players: list[Player], installed_only: bool = False
 ) -> RatingCheck:
@@ -378,11 +397,9 @@ async def check_ratings(
             continue
         if installed_only:
             with installed_copies_only():
-                stored_players = await data_source.get_match_stored_players(
-                    source_players
-                )
+                stored_players = await _match_list(data_source, source_players)
         else:
-            stored_players = await data_source.get_match_stored_players(source_players)
+            stored_players = await _match_list(data_source, source_players)
         if stored_players is None:
             continue
         lists.append(data_source)

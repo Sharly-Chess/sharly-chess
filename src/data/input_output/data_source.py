@@ -504,8 +504,9 @@ def installed_copies_only() -> Iterator[None]:
 
 
 class LocalDataSource(DataSource, ABC):
-    #: The online version of the list, which the source reads first when
-    #: the user sets it to, and falls back on otherwise.
+    #: The online version of the list, which the lookups the application
+    #: makes on its own read first when the user sets it to, and fall back
+    #: on otherwise.
     online_version_type: ClassVar[type['OnlineDataSource'] | None] = None
 
     @property
@@ -538,9 +539,10 @@ class LocalDataSource(DataSource, ABC):
         installed: Callable[[], Awaitable[T | None]],
         online: Callable[['OnlineDataSource'], Awaitable[T | None]],
     ) -> T | None:
-        """What the installed copy or the online version gives, the one
-        the user set first being asked first, and the other when it is
-        unavailable, fails or gives nothing."""
+        """What the installed copy or the online version gives, for a
+        lookup the application makes on its own: the one the user set
+        first is asked first, and the other when it is unavailable, fails
+        or gives nothing."""
         online_version = self.online_version
         reads: list[Callable[[], Awaitable[T | None]]] = []
         if self.is_installed:
@@ -587,12 +589,7 @@ class LocalDataSource(DataSource, ABC):
 
     @property
     def is_available(self) -> bool:
-        online_version = self.online_version
-        return self.is_installed or (
-            online_version is not None
-            and online_version.is_available
-            and not _installed_copies_only.get()
-        )
+        return self.is_installed
 
     @property
     def is_active(self) -> bool:
@@ -628,28 +625,15 @@ class LocalDataSource(DataSource, ABC):
         limit: int | None = None,
         filters: dict | None = None,
     ) -> list[StoredPlayer]:
-        async def search_installed() -> list[StoredPlayer]:
-            with self.local_database_type() as database:
-                return database.search_player(string, federation, page, limit, filters)
-
-        if self.online_version is None:
-            if not self.is_installed:
-                raise SharlyChessException(
-                    _(
-                        'This database is not installed '
-                        '(to install it: Menu > Data sources).'
-                    )
+        if not self.is_installed:
+            raise SharlyChessException(
+                _(
+                    'This database is not installed '
+                    '(to install it: Menu > Data sources).'
                 )
-            return await search_installed()
-        return (
-            await self.first_answer(
-                search_installed,
-                lambda online_version: online_version.search_player(
-                    string, federation, page, limit, filters
-                ),
             )
-            or []
-        )
+        with self.local_database_type() as database:
+            return database.search_player(string, federation, page, limit, filters)
 
 
 class OnlineDataSource(DataSource, ABC):

@@ -29,8 +29,8 @@ class DataSourceManager(EntityManager[DataSource]):
 
     @staticmethod
     def online_version_ids() -> set[str]:
-        """The online versions of installed lists, which are read through
-        their list rather than listed on their own."""
+        """The online versions of installed lists, which a national list
+        is reached through rather than on their own."""
         from data.input_output.data_source import LocalDataSource
 
         return {
@@ -49,11 +49,7 @@ class DataSourceManager(EntityManager[DataSource]):
         ]
 
     def active_objects(self) -> list[DataSource]:
-        return [
-            data_source
-            for data_source in self.listed_objects()
-            if data_source.is_active
-        ]
+        return [data_source for data_source in self.objects() if data_source.is_active]
 
     def national_source(self, national_source_id: str) -> DataSource | None:
         """A data source providing the national identifiers of the given
@@ -89,12 +85,10 @@ class DataSourceManager(EntityManager[DataSource]):
 class OnlineDataSourceManager(EntityManager[OnlineDataSource]):
     @override
     def entity_types(self) -> list[type[OnlineDataSource]]:
-        online_version_ids = DataSourceManager.online_version_ids()
         return [
             data_source
             for data_source in DataSourceManager().entity_types()
             if issubclass(data_source, OnlineDataSource)
-            and data_source.static_id() not in online_version_ids
         ]
 
     def active_objects(self) -> list[OnlineDataSource]:

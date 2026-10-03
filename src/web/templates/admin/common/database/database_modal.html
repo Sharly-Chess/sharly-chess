@@ -107,7 +107,29 @@
                                     {{ data_source.connection_last_checked_at_str }}
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex gap-2 justify-content-end">
+                                    <div class="d-flex gap-3 justify-content-end align-items-center">
+                                        {% set _installed = installed_by_online_version.get(data_source.id) %}
+                                        {% if _installed %}
+                                            <span
+                                                class="form-check form-switch m-0"
+                                                {{ macros.tooltip_attributes('info', _('Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached.'), 'top') }}
+                                            >
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    id="{{ data_source.id }}-try-first"
+                                                    {% if _installed.tries_online_first %}checked{% endif %}
+                                                    hx-post="{{ url_for('admin-online-version-try-first', data_source_id=data_source.id) }}"
+                                                    hx-vals='js:{try_first: $("#{{ data_source.id }}-try-first").is(":checked")}'
+                                                    hx-trigger="change"
+                                                    hx-indicator="#please-wait"
+                                                />
+                                                <label class="form-check-label" for="{{ data_source.id }}-try-first">
+                                                    {{ _('Try before the installed copy') }}
+                                                </label>
+                                            </span>
+                                        {% endif %}
                                         {% if not data_source.is_forced_active %}
                                             <button
                                                 type="button"

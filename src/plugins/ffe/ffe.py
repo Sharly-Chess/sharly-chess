@@ -491,6 +491,8 @@ class FfePlugin(Plugin):
         )
 
         async def read_installed() -> StoredPlayer | None:
+            if not ffe_data_source.is_installed:
+                return None
             with FfeDatabase() as ffe_database:
                 return ffe_database.get_stored_player_by_fide_id(player_fide_id=fide_id)
 
@@ -500,12 +502,16 @@ class FfePlugin(Plugin):
                     player_fide_id=fide_id
                 )
 
-        ffe_stored_player = await ffe_data_source.first_answer(
-            read_installed, read_online
-        )
-        if with_arbiter_title and ffe_data_source.is_installed:
-            # Only the installed copy holds the arbiter titles
-            ffe_stored_player = await read_installed() or ffe_stored_player
+        if data_source.id == FfeOnlineDataSource.static_id():
+            # The installed copy completes what the online search gave
+            ffe_stored_player = await read_installed()
+        else:
+            ffe_stored_player = await ffe_data_source.first_answer(
+                read_installed, read_online
+            )
+            if with_arbiter_title:
+                # Only the installed copy holds the arbiter titles
+                ffe_stored_player = await read_installed() or ffe_stored_player
         if ffe_stored_player:
             for rating_type in Cadence:
                 stored_rating = stored_player.ratings.get(rating_type.value, None)

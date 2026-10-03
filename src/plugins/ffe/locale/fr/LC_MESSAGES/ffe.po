@@ -207,8 +207,14 @@ msgstr "FFE"
 msgid "FFE (France)"
 msgstr "FFE (France)"
 
+msgid "FFE (France) - local database"
+msgstr "FFE (France) - base de données locale"
+
 msgid "FFE (France) - online database"
 msgstr "FFE (France) - base de données en ligne"
+
+msgid "FFE (local)"
+msgstr "FFE (locale)"
 
 msgid "FFE (online)"
 msgstr "FFE (en ligne)"

@@ -927,6 +927,9 @@ msgstr "Ajouter des tournois"
 msgid "Added automatically, on top of any manual points below."
 msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
 
+msgid "Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached."
+msgstr "L'ajout d'un·e joueur·euse trouvé·e dans une autre liste et la vérification des classements lisent la base en ligne avant la copie installée, qui prend le relais lorsqu'elle est injoignable."
+
 msgid "Additional information"
 msgstr "Informations complémentaires"
 
@@ -4994,10 +4997,6 @@ msgstr "Dernier échiquier :"
 msgid "Last check"
 msgstr "Dernière vérification"
 
-#, python-format
-msgid "Last check: %(date)s"
-msgstr "Dernière vérification : %(date)s"
-
 msgid "Last match:"
 msgstr "Dernier match :"
 
@@ -6657,9 +6656,6 @@ msgstr "Une catégorie peut être désignée comme la catégorie principale pour
 
 msgid "Ongoing"
 msgstr "En cours"
-
-msgid "Online database"
-msgstr "Base en ligne"
 
 msgid "Online sources"
 msgstr "Sources en ligne"
@@ -11148,8 +11144,8 @@ msgstr "Trinité-et-Tobago"
 msgid "Trophy, medal"
 msgstr "Trophée, médaille"
 
-msgid "Try first:"
-msgstr "Essayer d'abord :"
+msgid "Try before the installed copy"
+msgstr "Essayer avant la copie installée"
 
 msgctxt "tuesday"
 msgid "Tu"
@@ -12656,9 +12652,6 @@ msgstr "le fichier ne le code pas"
 msgid "the file does not code it, and describes the tournament as \"{type}\""
 msgstr "le fichier ne le précise pas, et décrit le tournoi comme « {type} »"
 
-msgid "the installed copy"
-msgstr "la copie installée"
-
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
 
@@ -12667,9 +12660,6 @@ msgstr "le nombre de coups doit être un entier positif."
 
 msgid "the number of moves must not be specified for the final period."
 msgstr "le nombre de coups ne doit pas être spécifié pour la période finale."
-
-msgid "the online database"
-msgstr "la base en ligne"
 
 msgid "the server address on the networks to which it is connected:"
 msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
