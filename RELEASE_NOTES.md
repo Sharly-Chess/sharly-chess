@@ -22,6 +22,7 @@
 - The French School Championship is sent to the school competitions of the _FFE_ website, with the national finals division pre-selected for the national final (5.1.1)
 - Requested byes (half-point, full-point and zero-point) are now sent to _Sharly-Chess.com_, whose crosstables showed an empty cell and a wrong total for those rounds (5.1.2)
 - The "All absent" button of the team check-in window is no longer labelled "Toutes présentes" in French (5.1.2)
+- Direct encounter tie-breaks with games missing between the tied players now follow FIDE Art. 6.3, and AOB is shown to three decimals (5.1.3)
 
 ## Players
 
