@@ -496,6 +496,21 @@ class SessionPlayersActiveDataSource(SessionVariable[str]):
     def key(self) -> str:
         return 'players_active_data_source'
 
+    def get(self) -> str:
+        from data.input_output import DataSourceManager
+        from data.input_output.data_source import LocalDataSource
+
+        data_source_id = super().get()
+        for data_source_type in DataSourceManager().entity_types():
+            if (
+                issubclass(data_source_type, LocalDataSource)
+                and data_source_type.online_version_type is not None
+                and data_source_type.online_version_type.static_id() == data_source_id
+            ):
+                # The online version is searched through its list
+                return data_source_type.static_id()
+        return data_source_id
+
     @property
     def default_value(self) -> str:
         from data.input_output import DataSourceManager

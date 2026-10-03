@@ -2,13 +2,12 @@ import copy
 import re
 from collections import Counter, defaultdict
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING, Optional, cast
 from collections.abc import Hashable, Iterable
 
 from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
-from common.exception import SharlyChessException
 from common.i18n import _, ngettext, pgettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
@@ -484,31 +483,29 @@ class FfePlugin(Plugin):
         if not fide_id:
             return
         if data_source.id == FfeLocalDataSource.static_id():
-            # nothing more to get from the online database for local searches
+            # A search of the FFE database brings what it holds already
             return
-        ffe_stored_player: StoredPlayer | None = None
-        # The FFE list is read where the user chose to read it, online or
-        # from its installed copy, which the ratings checks read it from too
-        if data_source.id != FfeOnlineDataSource.static_id() and (
-            DataSourceManager().reads_online(NATIONAL_SOURCE_ID)
-        ):
-            try:
-                # Try to get more information by requesting the FFE database
-                async with FFESqlServer() as ffe_sql_server:
-                    ffe_stored_player = (
-                        await ffe_sql_server.get_stored_player_by_fide_id(
-                            player_fide_id=fide_id,
-                        )
-                    )
-            except SharlyChessException:
-                pass
-        if not ffe_stored_player or with_arbiter_title:  # noqa: SIM102
-            if (ffe_database := FfeDatabase()).exists():
-                # Try to get more information by requesting the FFE database
-                with ffe_database:
-                    ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
-                        player_fide_id=fide_id,
-                    )
+        ffe_data_source = cast(
+            FfeLocalDataSource,
+            DataSourceManager().get_object(FfeLocalDataSource.static_id()),
+        )
+
+        async def read_installed() -> StoredPlayer | None:
+            with FfeDatabase() as ffe_database:
+                return ffe_database.get_stored_player_by_fide_id(player_fide_id=fide_id)
+
+        async def read_online(__: DataSource) -> StoredPlayer | None:
+            async with FFESqlServer() as ffe_sql_server:
+                return await ffe_sql_server.get_stored_player_by_fide_id(
+                    player_fide_id=fide_id
+                )
+
+        ffe_stored_player = await ffe_data_source.first_answer(
+            read_installed, read_online
+        )
+        if with_arbiter_title and ffe_data_source.is_installed:
+            # Only the installed copy holds the arbiter titles
+            ffe_stored_player = await read_installed() or ffe_stored_player
         if ffe_stored_player:
             for rating_type in Cadence:
                 stored_rating = stored_player.ratings.get(rating_type.value, None)

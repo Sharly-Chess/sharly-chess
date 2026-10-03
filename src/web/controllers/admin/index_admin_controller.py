@@ -30,6 +30,7 @@ from data.access_levels.actions import AuthAction
 from utils.enum import RatingPreference
 from data.event import Event
 from data.input_output import DataSourceManager, OnlineDataSourceManager
+from data.input_output.data_source import OnlineDataSource
 from data.event_metadata import EventMetadata
 from data.championship.championship import Championship
 from data.championship.championship_loader import (
@@ -92,20 +93,18 @@ from web.urls import admin_event_url
 logger: Logger = get_logger()
 
 
-def _databases_with_online_source() -> set[str]:
-    """The installed copies of the lists that also have an online source,
-    which the user chooses between."""
-    manager = DataSourceManager()
-    database_ids: set[str] = set()
-    for data_source in manager.active_objects():
-        if not data_source.national_source_id:
-            continue
-        installed, online = manager.installed_and_online_sources(
-            data_source.national_source_id
-        )
-        if installed is not None and online is not None:
-            database_ids.add(installed.database.id)
-    return database_ids
+def _online_versions_by_database() -> dict[str, OnlineDataSource]:
+    """The online versions of the installed lists that have one, by the id
+    of the installed copy: the user chooses which of the two is read
+    first."""
+    from data.input_output.data_source import LocalDataSource
+
+    return {
+        data_source.database.id: online_version
+        for data_source in DataSourceManager().listed_objects()
+        if isinstance(data_source, LocalDataSource)
+        and (online_version := data_source.online_version) is not None
+    }
 
 
 class IndexAdminController(BaseAdminController):
@@ -1857,10 +1856,10 @@ class IndexAdminController(BaseAdminController):
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager().options(),
             'outdate_action_options': OutdatedActionManager().options(),
-            'databases_with_online_source': _databases_with_online_source(),
+            'online_versions_by_database': _online_versions_by_database(),
             'read_online_options': {
-                '': _('Players and ratings from the installed copy'),
-                'on': _('Players and ratings from the online source'),
+                '': _('Try the installed copy first'),
+                'on': _('Try the online database first'),
             },
             'modal': 'database',
         }

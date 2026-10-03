@@ -37,10 +37,6 @@ msgid "%(first)s - %(last)s"
 msgstr ""
 
 #, python-format
-msgid "%(list)s read from:"
-msgstr ""
-
-#, python-format
 msgid "%(minutes)d min after"
 msgstr ""
 
@@ -5923,10 +5919,6 @@ msgstr ""
 msgid "New tournament"
 msgstr ""
 
-#, python-format
-msgid "Newer versions of these lists are available: %(lists)s. Update them before relying on this check."
-msgstr ""
-
 msgid "Next round"
 msgstr ""
 
@@ -6069,9 +6061,6 @@ msgid "No internet connection"
 msgstr ""
 
 msgid "No item selected."
-msgstr ""
-
-msgid "No list rates the player"
 msgstr ""
 
 msgid "No marks"
@@ -6459,9 +6448,6 @@ msgstr ""
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
 msgstr ""
 
-msgid "Not found in the lists:"
-msgstr ""
-
 msgid "Not in FIDE mode"
 msgstr ""
 
@@ -6638,9 +6624,6 @@ msgstr ""
 msgid "October"
 msgstr ""
 
-msgid "Official FIDE rating"
-msgstr ""
-
 msgid "Official FIDE rating:"
 msgstr ""
 
@@ -6657,6 +6640,15 @@ msgid "One category can be marked as the main prize category for overall ranking
 msgstr ""
 
 msgid "Ongoing"
+msgstr ""
+
+msgid "Online database: connection established"
+msgstr ""
+
+msgid "Online database: connection failed"
+msgstr ""
+
+msgid "Online database: no internet connection"
 msgstr ""
 
 msgid "Online sources"
@@ -7377,12 +7369,6 @@ msgctxt "with shortcut indication"
 msgid "Players ({num})"
 msgstr "<u>P</u>layers ({num})"
 
-msgid "Players and ratings from the installed copy"
-msgstr ""
-
-msgid "Players and ratings from the online source"
-msgstr ""
-
 msgid "Players can't be overwritten once a tournament has started."
 msgstr ""
 
@@ -8024,9 +8010,6 @@ msgstr ""
 msgid "Rating lists"
 msgstr ""
 
-msgid "Rating lists used"
-msgstr ""
-
 msgid "Rating lists:"
 msgstr ""
 
@@ -8066,17 +8049,7 @@ msgstr ""
 msgid "Ratings of the earlier periods"
 msgstr ""
 
-msgid "Ratings set by the arbiter"
-msgstr ""
-
-msgid "Ratings the lists now give differently"
-msgstr ""
-
 msgid "Ratings update"
-msgstr ""
-
-#, python-format
-msgid "Ratings update for tournament [%(tournament)s]"
 msgstr ""
 
 msgid "Read online"
@@ -10255,9 +10228,6 @@ msgstr ""
 msgid "The ratings in descending order."
 msgstr ""
 
-msgid "The ratings of all the players are those of the lists."
-msgstr ""
-
 msgid "The related objects will also be deleted:"
 msgstr ""
 
@@ -10330,12 +10300,6 @@ msgstr ""
 
 msgid "The source has been removed."
 msgstr ""
-
-#, python-format
-msgid "The source of the rating of %(num)d player will be brought up to date, without changing their rating."
-msgid_plural "The sources of the ratings of %(num)d players will be brought up to date, without changing their ratings."
-msgstr[0] ""
-msgstr[1] ""
 
 #, python-brace-format
 msgid "The source of the rating of {count} player was brought up to date."
@@ -10490,9 +10454,6 @@ msgid "These lower-ranked players were released so the round could be paired."
 msgstr ""
 
 msgid "These lower-ranked teams were released so the round could be paired."
-msgstr ""
-
-msgid "These players keep the value the arbiter entered, unless they are selected to take the value of the lists."
 msgstr ""
 
 msgid "These plugins are installed together with this one."
@@ -11152,6 +11113,12 @@ msgstr ""
 msgid "Trophy, medal"
 msgstr ""
 
+msgid "Try the installed copy first"
+msgstr ""
+
+msgid "Try the online database first"
+msgstr ""
+
 msgctxt "tuesday"
 msgid "Tu"
 msgstr ""
@@ -11458,9 +11425,6 @@ msgid "Update search failed (no internet)"
 msgstr ""
 
 msgid "Update tag"
-msgstr ""
-
-msgid "Update the lists"
 msgstr ""
 
 msgid "Update the players' information from an external data source."
@@ -11876,9 +11840,6 @@ msgid "Winner"
 msgstr ""
 
 msgid "With less players than prizes, some prizes will not be attributed."
-msgstr ""
-
-msgid "With the lists"
 msgstr ""
 
 msgid "With the standard scoring system, a PAB is worth 1, ½ or 0."
@@ -12419,6 +12380,9 @@ msgstr ""
 msgid "online"
 msgstr ""
 
+msgid "online database tried first"
+msgstr ""
+
 #, python-brace-format
 msgid "pairings from #{first} to #{last}"
 msgstr ""
@@ -12654,9 +12618,6 @@ msgstr ""
 msgid "the file does not code it, and describes the tournament as \"{type}\""
 msgstr ""
 
-msgid "the installed copy"
-msgstr ""
-
 msgid "the number of moves is required for a non-final period."
 msgstr ""
 
@@ -12664,9 +12625,6 @@ msgid "the number of moves must be a positive integer."
 msgstr ""
 
 msgid "the number of moves must not be specified for the final period."
-msgstr ""
-
-msgid "the online source"
 msgstr ""
 
 msgid "the server address on the networks to which it is connected:"

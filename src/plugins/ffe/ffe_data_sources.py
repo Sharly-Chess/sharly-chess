@@ -327,6 +327,9 @@ class _FfeDataSource(ABC):
 
 
 class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
+    """The FFE database: its installed copy, and the online database the
+    user may set it to read first."""
+
     federation = 'FRA'
     national_source_id = NATIONAL_SOURCE_ID
 
@@ -336,11 +339,11 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE (France) - local database')
+        return _('FFE (France)')
 
     @property
     def short_name(self) -> str:
-        return _('FFE (local)')
+        return _('FFE')
 
     @property
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
@@ -359,7 +362,10 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
     async def get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
-        return await self._get_match_stored_players(players)
+        return await self.first_answer(
+            lambda: self._get_match_stored_players(players),
+            lambda online_version: online_version.get_match_stored_players(players),
+        )
 
     async def _get_ffe_match_stored_players(
         self,
@@ -400,8 +406,17 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
     ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
-        with FfeDatabase() as database:
-            return database.get_stored_player_by_ffe_id(int(player_source_id))
+
+        async def read_installed() -> StoredPlayer | None:
+            with FfeDatabase() as database:
+                return database.get_stored_player_by_ffe_id(int(player_source_id))
+
+        return await self.first_answer(
+            read_installed,
+            lambda online_version: online_version.get_stored_player_by_source_id(
+                player_source_id
+            ),
+        )
 
     @property
     def import_identifier_column(self) -> DatasheetColumn:
@@ -414,7 +429,19 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
     async def get_stored_players_by_import_identifier(
         self, identifier_values: list[str]
     ) -> dict[str, StoredPlayer]:
-        return await self._get_stored_players_by_import_identifier(identifier_values)
+        return (
+            await self.first_answer(
+                lambda: self._get_stored_players_by_import_identifier(
+                    identifier_values
+                ),
+                lambda online_version: (
+                    online_version.get_stored_players_by_import_identifier(
+                        identifier_values
+                    )
+                ),
+            )
+            or {}
+        )
 
 
 class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
@@ -538,3 +565,6 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
         self, identifier_values: list[str]
     ) -> dict[str, StoredPlayer]:
         return await self._get_stored_players_by_import_identifier(identifier_values)
+
+
+FfeLocalDataSource.online_version_type = FfeOnlineDataSource

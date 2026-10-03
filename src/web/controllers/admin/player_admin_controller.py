@@ -55,7 +55,6 @@ from utils.types import PlayerRating
 from data.loader import EventLoader
 from data.rating_check import (
     list_statuses,
-    lists_read_online_or_installed,
     automatic_check,
     check_ratings,
     forget_automatic_check,
@@ -3136,33 +3135,16 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tab: FromPath[str],
         tournament_id: FromQuery[int | None] = None,
-        source: FromQuery[str | None] = None,
-        online: FromQuery[bool] = False,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()
         players = self._ratings_check_players(web_context)
-        choosable_lists = lists_read_online_or_installed(event, players)
-        if source is not None and web_context.client.can_manage_source_databases:
-            for data_source in choosable_lists:
-                if data_source.national_source_id == source:
-                    stored_database = data_source.database.stored_source_database
-                    stored_database.read_online = online
-                    data_source.database.update_stored_source_database(stored_database)
-        manager = DataSourceManager()
         rating_check = await check_ratings(event, players)
         template_context = web_context.template_context | {
             'modal': 'ratings_check',
             'rating_check': rating_check,
             'stale_lists': await asyncio.to_thread(stale_lists, rating_check.lists),
-            'choosable_lists': choosable_lists,
             'list_statuses': list_statuses(event, players),
-            'online_sources': {
-                data_source.national_source_id
-                for data_source in choosable_lists
-                if data_source.national_source_id
-                and manager.reads_online(data_source.national_source_id)
-            },
             'tab': tab,
         }
         return self._admin_base_event_render(template_context)

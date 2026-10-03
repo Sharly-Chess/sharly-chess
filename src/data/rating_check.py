@@ -9,7 +9,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from common.i18n import _
-from data.input_output.data_source import reliable_k_factor
+from data.input_output.data_source import installed_copies_only, reliable_k_factor
 from data.player import Player
 from data.rating_sequences import (
     RatingSequence,
@@ -23,7 +23,6 @@ from utils.enum import PlayerRatingType, RatingPreference, Cadence
 from utils.types import PlayerRating, PlayerRatingAndType
 
 if TYPE_CHECKING:
-    from data.input_output.data_source import LocalDataSource
     from database.sqlite.local_source_database import LocalSourceDatabase
     from data.event import Event
     from data.input_output.data_source import DataSource
@@ -249,33 +248,6 @@ def _k_factors(
         )
 
 
-def lists_read_online_or_installed(
-    event: 'Event', players: list[Player]
-) -> list['LocalDataSource']:
-    """The national lists the sequences of the players' tournaments name
-    that can be read both from their installed copy and online, by the
-    installed one: the lists the user chooses the source of."""
-    from data.input_output import DataSourceManager
-    from data.rating_sequences import RatingListFamily
-
-    sources: set[str] = set()
-    for player in players:
-        tournament = player.optional_single_tournament
-        sequence = event.rating_resolution(tournament)[2]
-        if not any(
-            rating_list.family == RatingListFamily.NATIONAL for rating_list in sequence
-        ):
-            continue
-        if player.national_id and player.national_source:
-            sources.add(player.national_source)
-    lists: list[LocalDataSource] = []
-    for source in sorted(sources):
-        installed, online = DataSourceManager().installed_and_online_sources(source)
-        if installed is not None and online is not None:
-            lists.append(installed)
-    return lists
-
-
 @dataclass
 class ListStatus:
     """The state of a rating list the tournaments' sequences name, as the
@@ -291,7 +263,7 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
     name: installed (and how current), read online, or missing, and the
     cadences it does not publish."""
     from data.input_output import DataSourceManager
-    from data.input_output.data_source import FideDataSource, OnlineDataSource
+    from data.input_output.data_source import FideDataSource, LocalDataSource
     from data.rating_sequences import RatingListFamily
 
     manager = DataSourceManager()
@@ -345,15 +317,16 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
                 )
             )
         for source in sorted(sources):
-            data_source = manager.list_source(source)
-            known = data_source or manager.national_source(source)
+            known = manager.national_source(source)
             list_name = known.national_source_name if known else source
-            if data_source is None:
+            if known is None or not known.is_available:
                 message, warning = _('Not installed'), True
-            elif isinstance(data_source, OnlineDataSource):
+            elif isinstance(known, LocalDataSource) and not known.is_installed:
                 message, warning = _('Read online'), False
             else:
-                message, warning = data_source.info_or_warning_message
+                message, warning = known.info_or_warning_message
+                if isinstance(known, LocalDataSource) and known.tries_online_first:
+                    message += ' · ' + _('online database tried first')
             unpublished = [
                 cadence
                 for cadence in national_cadences
@@ -400,10 +373,16 @@ async def check_ratings(
             players_by_source[player.national_source].append(player)
     national_matches: dict[int, StoredPlayer] = {}
     for source, source_players in players_by_source.items():
-        data_source = DataSourceManager().list_source(source, installed_only)
+        data_source = DataSourceManager().national_source(source)
         if data_source is None:
             continue
-        stored_players = await data_source.get_match_stored_players(source_players)
+        if installed_only:
+            with installed_copies_only():
+                stored_players = await data_source.get_match_stored_players(
+                    source_players
+                )
+        else:
+            stored_players = await data_source.get_match_stored_players(source_players)
         if stored_players is None:
             continue
         lists.append(data_source)

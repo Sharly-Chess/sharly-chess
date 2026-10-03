@@ -7,7 +7,7 @@
         hx-vals='js:{
             outdate_delay: $("#{{ database.id }}-outdate-delay").val(),
             outdate_action: $("#{{ database.id }}-outdate-action").val(),
-            {% if database.id in databases_with_online_source %}
+            {% if database.id in online_versions_by_database %}
                 read_online: $("#{{ database.id }}-read-online").val(),
             {% endif %}
         }'
@@ -19,7 +19,17 @@
     <th>
         {{ database.name }}
         <div id="{{ database.id }}-content" class="small fw-normal text-secondary"></div>
-        {% if database.id in databases_with_online_source %}
+        {% if database.id in online_versions_by_database %}
+            {% set _online_version = online_versions_by_database[database.id] %}
+            <div class="small fw-normal {% if _online_version.connection_status %}text-success{% else %}text-danger{% endif %}">
+                {% if _online_version.connection_status %}
+                    {{ _('Online database: connection established') }}
+                {% elif _online_version.connection_status is false %}
+                    {{ _('Online database: connection failed') }}
+                {% else %}
+                    {{ _('Online database: no internet connection') }}
+                {% endif %}
+            </div>
             <div class="mt-1 fw-normal">
                 {{ admin_macros.select_content(
                     id=database.id ~ '-read-online',

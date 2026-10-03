@@ -1,11 +1,13 @@
 import asyncio
 import copy
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date, datetime
-from functools import cached_property
+from functools import cached_property, partial
 from logging import Logger
-from typing import override, ClassVar
-from collections.abc import Collection
+from typing import override, ClassVar, cast
+from collections.abc import Awaitable, Callable, Collection, Iterator
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -483,11 +485,85 @@ class DataSource(IdentifiableEntity, ABC):
         Return a dict with the ones that have been found."""
 
 
+#: Set while only the installed copies of the lists may be read, by a
+#: check that must not wait on a server.
+_installed_copies_only: ContextVar[bool] = ContextVar(
+    'installed_copies_only', default=False
+)
+
+
+@contextmanager
+def installed_copies_only() -> Iterator[None]:
+    """Read the lists from their installed copies alone, whatever source
+    the user set them to try first."""
+    token = _installed_copies_only.set(True)
+    try:
+        yield
+    finally:
+        _installed_copies_only.reset(token)
+
+
 class LocalDataSource(DataSource, ABC):
+    #: The online version of the list, which the source reads first when
+    #: the user sets it to, and falls back on otherwise.
+    online_version_type: ClassVar[type['OnlineDataSource'] | None] = None
+
     @property
     @abstractmethod
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         """The type of the local database used for this source."""
+
+    @property
+    def online_version(self) -> 'OnlineDataSource | None':
+        if self.online_version_type is None:
+            return None
+        from data.input_output import DataSourceManager
+
+        return cast(
+            OnlineDataSource,
+            DataSourceManager().get_object(self.online_version_type.static_id()),
+        )
+
+    @property
+    def tries_online_first(self) -> bool:
+        """Whether the online version is read before the installed copy,
+        as the user set it on the copy."""
+        return (
+            self.online_version is not None
+            and self.database.stored_source_database.read_online
+        )
+
+    async def first_answer[T](
+        self,
+        installed: Callable[[], Awaitable[T | None]],
+        online: Callable[['OnlineDataSource'], Awaitable[T | None]],
+    ) -> T | None:
+        """What the installed copy or the online version gives, the one
+        the user set first being asked first, and the other when it is
+        unavailable, fails or gives nothing."""
+        online_version = self.online_version
+        reads: list[Callable[[], Awaitable[T | None]]] = []
+        if self.is_installed:
+            reads.append(installed)
+        if (
+            online_version is not None
+            and online_version.is_available
+            and not _installed_copies_only.get()
+        ):
+            read_online = partial(online, online_version)
+            if self.tries_online_first:
+                reads.insert(0, read_online)
+            else:
+                reads.append(read_online)
+        for read in reads:
+            try:
+                answer = await read()
+            except SharlyChessException as e:
+                logger.warning('%s: %s', self.name, e)
+                continue
+            if answer:
+                return answer
+        return None
 
     @cached_property
     def database(self) -> LocalSourcePlayerDatabase:
@@ -506,8 +582,17 @@ class LocalDataSource(DataSource, ABC):
         )
 
     @property
-    def is_available(self) -> bool:
+    def is_installed(self) -> bool:
         return self.local_database_type.file_path().exists()
+
+    @property
+    def is_available(self) -> bool:
+        online_version = self.online_version
+        return self.is_installed or (
+            online_version is not None
+            and online_version.is_available
+            and not _installed_copies_only.get()
+        )
 
     @property
     def is_active(self) -> bool:
@@ -543,15 +628,28 @@ class LocalDataSource(DataSource, ABC):
         limit: int | None = None,
         filters: dict | None = None,
     ) -> list[StoredPlayer]:
-        if not self.is_available:
-            raise SharlyChessException(
-                _(
-                    'This database is not installed '
-                    '(to install it: Menu > Data sources).'
+        async def search_installed() -> list[StoredPlayer]:
+            with self.local_database_type() as database:
+                return database.search_player(string, federation, page, limit, filters)
+
+        if self.online_version is None:
+            if not self.is_installed:
+                raise SharlyChessException(
+                    _(
+                        'This database is not installed '
+                        '(to install it: Menu > Data sources).'
+                    )
                 )
+            return await search_installed()
+        return (
+            await self.first_answer(
+                search_installed,
+                lambda online_version: online_version.search_player(
+                    string, federation, page, limit, filters
+                ),
             )
-        with self.local_database_type() as database:
-            return database.search_player(string, federation, page, limit, filters)
+            or []
+        )
 
 
 class OnlineDataSource(DataSource, ABC):
