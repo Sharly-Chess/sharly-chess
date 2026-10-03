@@ -115,11 +115,17 @@
 
 {% macro average_rating(team, view, placement) %}
     {% if team.average_rating %}
+        {% set explanation = team.average_rating_explanation %}
         <span
             class="text-nowrap"
-            {{ macros.tooltip_attributes('info', _('Average rating of the roster.'), 'top') }}
+            {{ macros.tooltip_attributes(
+                'info',
+                _('Average rating of the roster.') ~ (' ' ~ explanation if explanation else ''),
+                'top'
+            ) }}
         >
             <i class="bi-star-fill pe-1"></i>{{ team.average_rating }}
+            {%- if explanation %}<i class="bi-info-circle ps-1"></i>{% endif %}
             {%- if view == 'card' and not team.tournament %}
                 <span class="text-muted small">
                     ({{ admin_event.default_tournament_rating.acronym }})
