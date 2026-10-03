@@ -13,7 +13,10 @@
         hx-indicator="#please-wait"
         style="display:none"
     ></button>
-    <th >{{ database.name }}</th>
+    <th>
+        {{ database.name }}
+        <div id="{{ database.id }}-content" class="small fw-normal text-secondary"></div>
+    </th>
     <td>
         {{ admin_macros.select_content(
             id=database.id ~ '-outdate-delay',

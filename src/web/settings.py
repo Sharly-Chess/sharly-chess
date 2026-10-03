@@ -43,6 +43,7 @@ from common.exception import DatabaseInaccessibleException
 from common.i18n import gettext, ngettext, npgettext, pgettext
 from common.i18n.utils import ordinal_suffixes
 from data.input_output import OnlineDataSourceManager
+from database.sqlite.local_source_database import LocalSourceDatabaseManager
 
 from plugins.manager import plugin_manager
 from web.controllers.admin.display_controller_admin_controller import (
@@ -155,7 +156,15 @@ async def load_first_online_data_sources_connection_status() -> None:
             await data_source.reload_connection_status()
 
 
-listeners = [load_first_online_data_sources_connection_status]
+@listener('connected')
+async def catch_up_on_local_source_databases() -> None:
+    LocalSourceDatabaseManager().check_soon()
+
+
+listeners = [
+    load_first_online_data_sources_connection_status,
+    catch_up_on_local_source_databases,
+]
 
 
 class FileSystemLoaderWithRelativePath(FileSystemLoader):

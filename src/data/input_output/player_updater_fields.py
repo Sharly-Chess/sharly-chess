@@ -80,6 +80,35 @@ class FideIDUpdaterField(PlayerUpdaterField):
         return 'text-start'
 
 
+class NationalIdUpdaterField(PlayerUpdaterField):
+    @staticmethod
+    def static_id() -> str:
+        return 'national_id'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('National ID')
+
+    def get_string_value(self, player: Player) -> str:
+        return player.national_id or '-'
+
+    def is_updated(self, player: Player, match_player: Player) -> bool:
+        return bool(match_player.national_id) and (
+            player.national_id != match_player.national_id
+            or player.national_source != match_player.national_source
+        )
+
+    def update_player(
+        self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
+    ) -> None:
+        stored_player.national_id = match_stored_player.national_id
+        stored_player.national_source = match_stored_player.national_source
+
+    @property
+    def cell_classes(self) -> str:
+        return 'text-start'
+
+
 class TitleUpdaterField(PlayerUpdaterField):
     @staticmethod
     def static_id() -> str:

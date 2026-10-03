@@ -13,6 +13,49 @@
             ></button>
         </div>
         <div class="modal-body">
+            {% if inactive_databases or inactive_online_data_sources %}
+                <div class="d-flex justify-content-end mb-3">
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-outline-primary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <i class="bi-plus-lg pe-1"></i>
+                            {{ _('Add a data source') }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for database in inactive_databases %}
+                                <li>
+                                    <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        hx-post="{{ url_for('admin-database-activate', database_id=database.id) }}"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <i class="bi-database pe-1"></i>
+                                        {{ database.name }}
+                                    </button>
+                                </li>
+                            {% endfor %}
+                            {% for data_source in inactive_online_data_sources %}
+                                <li>
+                                    <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        hx-post="{{ url_for('admin-online-data-source-activate', data_source_id=data_source.id) }}"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <i class="bi-cloud pe-1"></i>
+                                        {{ data_source.name }}
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
             {% if online_data_sources %}
                 <h4>{{ _('Online sources') }}</h4>
                 <table
@@ -53,27 +96,37 @@
                                     {{ data_source.connection_last_checked_at_str }}
                                 </td>
                                 <td class="text-end">
-                                    <form
-                                        hx-post="{{ url_for(
-                                            'admin-online-data-source-check',
-                                            data_source_id=data_source.id,
-                                        ) }}"
-                                        hx-indicator="#please-wait"
-                                    >
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        {% if not data_source.is_forced_active %}
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-danger btn-sm d-inline-flex gap-2 align-items-center"
+                                                hx-delete="{{ url_for('admin-online-data-source-deactivate', data_source_id=data_source.id) }}"
+                                                hx-indicator="#please-wait"
+                                            >
+                                                <i class="bi-trash-fill"></i>
+                                            </button>
+                                        {% endif %}
                                         <button
-                                            type="submit"
-                                            class="btn btn-outline-primary"
+                                            type="button"
+                                            class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
+                                            hx-post="{{ url_for(
+                                                'admin-online-data-source-check',
+                                                data_source_id=data_source.id,
+                                            ) }}"
+                                            hx-indicator="#please-wait"
                                         >
-                                            <i class="bi-arrow-clockwise pe-1"></i>
+                                            <i class="bi-arrow-clockwise lh-1"></i>
                                             {{ _('Check connection') }}
                                         </button>
-                                    </form>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% endif %}
+            {% if databases %}
             <h4>{{ _('Local databases') }}</h4>
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
@@ -101,6 +154,12 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
+            {% if not databases and not online_data_sources %}
+                <p class="text-center fst-italic">
+                    {{ _('No data source is active.') }}
+                </p>
+            {% endif %}
         </div>
     </div>
 </div>
