@@ -5146,6 +5146,9 @@ msgstr "Lituanie"
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
 
+msgid "Local databases"
+msgstr "Bases de données locales"
+
 msgid "Location"
 msgstr "Lieu"
 

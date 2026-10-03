@@ -89,7 +89,7 @@
                     <tbody>
                         {% for data_source in online_data_sources %}
                             <tr>
-                                <th>{{ data_source.name }}</th>
+                                <th>{{ data_source.list_name }}</th>
                                 {% if data_source.connection_status %}
                                     <td class="text-center text-success">
                                         {{ _('Connection established') }}
@@ -111,11 +111,11 @@
                                         {% set _installed = installed_by_online_version.get(data_source.id) %}
                                         {% if _installed %}
                                             <span
-                                                class="form-check form-switch m-0"
+                                                class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2"
                                                 {{ macros.tooltip_attributes('info', _('Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached.'), 'top') }}
                                             >
                                                 <input
-                                                    class="form-check-input"
+                                                    class="form-check-input m-0 float-none"
                                                     type="checkbox"
                                                     role="switch"
                                                     id="{{ data_source.id }}-try-first"
@@ -160,6 +160,7 @@
                 </table>
             {% endif %}
             {% if databases %}
+            <h4>{{ _('Local databases') }}</h4>
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >

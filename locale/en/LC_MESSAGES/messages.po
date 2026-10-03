@@ -5146,6 +5146,9 @@ msgstr ""
 msgid "Loading more results…"
 msgstr ""
 
+msgid "Local databases"
+msgstr ""
+
 msgid "Location"
 msgstr ""
 

@@ -434,6 +434,10 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
         return _('FFE (online)')
 
     @property
+    def list_name(self) -> str:
+        return _('FFE (France)')
+
+    @property
     def is_forced_active(self) -> bool:
         return True
 

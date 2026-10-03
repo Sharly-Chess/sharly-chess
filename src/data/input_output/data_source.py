@@ -197,6 +197,11 @@ class DataSource(IdentifiableEntity, ABC):
         """The name where room is short (the search bar)."""
         return self.name
 
+    @property
+    def list_name(self) -> str:
+        """The name under a heading that says what kind of source it is."""
+        return self.name
+
     # --------------------------------------------------------------------------
     # National identifiers
     # --------------------------------------------------------------------------
