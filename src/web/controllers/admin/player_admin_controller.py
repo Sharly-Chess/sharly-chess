@@ -54,6 +54,7 @@ from data.player import (
 from utils.types import PlayerRating
 from data.loader import EventLoader
 from data.rating_check import (
+    list_statuses,
     lists_read_online_or_installed,
     automatic_check,
     check_ratings,
@@ -3155,6 +3156,7 @@ class PlayerAdminController(BaseEventAdminController):
             'rating_check': rating_check,
             'stale_lists': await asyncio.to_thread(stale_lists, rating_check.lists),
             'choosable_lists': choosable_lists,
+            'list_statuses': list_statuses(event, players),
             'online_sources': {
                 data_source.national_source_id
                 for data_source in choosable_lists

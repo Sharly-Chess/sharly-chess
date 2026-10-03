@@ -6098,6 +6098,9 @@ msgstr ""
 msgid "No multi-screens to add."
 msgstr ""
 
+msgid "No national list installed"
+msgstr ""
+
 msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
@@ -6209,9 +6212,6 @@ msgid "No ranking rules configured"
 msgstr ""
 
 msgid "No rating"
-msgstr ""
-
-msgid "No rating list holding these players is installed."
 msgstr ""
 
 msgctxt "individual knock-out"
@@ -6467,6 +6467,9 @@ msgstr ""
 
 #, python-format
 msgid "Not in FIDE mode: %(tournaments)s"
+msgstr ""
+
+msgid "Not installed"
 msgstr ""
 
 msgid "Not logged in"
@@ -8021,6 +8024,9 @@ msgstr ""
 msgid "Rating lists"
 msgstr ""
 
+msgid "Rating lists used"
+msgstr ""
+
 msgid "Rating lists:"
 msgstr ""
 
@@ -8071,6 +8077,9 @@ msgstr ""
 
 #, python-format
 msgid "Ratings update for tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Read online"
 msgstr ""
 
 msgid "Read the documentation"
@@ -12485,6 +12494,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "points: {table}"
+msgstr ""
+
+#, python-brace-format
+msgid "publishes no {cadences} rating"
 msgstr ""
 
 #, python-format

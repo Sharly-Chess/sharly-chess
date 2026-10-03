@@ -110,19 +110,15 @@
                     {% endfor %}
                 </div>
             {% endfor %}
-            {% if rating_check.lists %}
-                <ul class="list-unstyled">
-                    {% for data_source in rating_check.lists %}
-                        {% with message, is_warning = data_source.info_or_warning_message %}
-                            <li class="{% if is_warning %}text-danger{% endif %}">
-                                <strong>{{ data_source.name }}</strong>{% if message %} · {{ message }}{% endif %}
-                            </li>
-                        {% endwith %}
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-warning">{{ _('No rating list holding these players is installed.') }}</p>
-            {% endif %}
+            <h6>{{ _('Rating lists used') }}</h6>
+            <ul class="list-unstyled ps-2">
+                {% for status in list_statuses %}
+                    <li class="{% if status.warning %}text-warning{% endif %}">
+                        {% if status.warning %}<i class="bi-exclamation-triangle-fill pe-1"></i>{% endif %}
+                        <strong>{{ status.name }}</strong>{% if status.message %} · {{ status.message }}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
             {% if stale_lists %}
                 <div class="alert alert-warning d-flex align-items-center gap-3">
                     <span class="flex-grow-1">

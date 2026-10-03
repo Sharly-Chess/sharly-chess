@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from common.i18n import _
 from data.input_output.data_source import reliable_k_factor
 from data.player import Player
 from data.rating_sequences import (
@@ -273,6 +274,109 @@ def lists_read_online_or_installed(
         if installed is not None and online is not None:
             lists.append(installed)
     return lists
+
+
+@dataclass
+class ListStatus:
+    """The state of a rating list the tournaments' sequences name, as the
+    ratings update shows it."""
+
+    name: str
+    message: str
+    warning: bool
+
+
+def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
+    """The state of each list the rating lists of the players' tournaments
+    name: installed (and how current), read online, or missing, and the
+    cadences it does not publish."""
+    from data.input_output import DataSourceManager
+    from data.input_output.data_source import FideDataSource, OnlineDataSource
+    from data.rating_sequences import RatingListFamily
+
+    manager = DataSourceManager()
+    sequences = {
+        event.rating_resolution(player.optional_single_tournament)[2]
+        for player in players
+    } or {event.rating_resolution(None)[2]}
+    named = {rating_list for sequence in sequences for rating_list in sequence}
+
+    def cadences(family: RatingListFamily) -> list[Cadence]:
+        return sorted(
+            {
+                rating_list.cadence
+                for rating_list in named
+                if rating_list.family == family
+            }
+        )
+
+    def name(list_name: str, list_cadences: list[Cadence]) -> str:
+        return '{list} ({cadences})'.format(
+            list=list_name,
+            cadences=', '.join(cadence.short_name.lower() for cadence in list_cadences),
+        )
+
+    statuses: list[ListStatus] = []
+    if fide_cadences := cadences(RatingListFamily.FIDE):
+        fide = manager.get_object(FideDataSource.static_id())
+        message, warning = (
+            fide.info_or_warning_message
+            if fide.is_available
+            else (_('Not installed'), True)
+        )
+        statuses.append(ListStatus(name(_('FIDE'), fide_cadences), message, warning))
+    if national_cadences := cadences(RatingListFamily.NATIONAL):
+        sources = {
+            player.national_source
+            for player in players
+            if player.national_id and player.national_source
+        }
+        if (
+            event.national_rating_source
+            and event.national_rating_source.national_source_id
+        ):
+            sources.add(event.national_rating_source.national_source_id)
+        if not sources:
+            statuses.append(
+                ListStatus(
+                    name(_('National'), national_cadences),
+                    _('No national list installed'),
+                    True,
+                )
+            )
+        for source in sorted(sources):
+            data_source = manager.list_source(source)
+            known = data_source or manager.national_source(source)
+            list_name = known.national_source_name if known else source
+            if data_source is None:
+                message, warning = _('Not installed'), True
+            elif isinstance(data_source, OnlineDataSource):
+                message, warning = _('Read online'), False
+            else:
+                message, warning = data_source.info_or_warning_message
+            unpublished = [
+                cadence
+                for cadence in national_cadences
+                if known is not None and cadence not in known.national_cadences
+            ]
+            if unpublished:
+                message = ' · '.join(
+                    part
+                    for part in (
+                        message,
+                        _('publishes no {cadences} rating').format(
+                            cadences=', '.join(
+                                c.short_name.lower() for c in unpublished
+                            )
+                        ),
+                    )
+                    if part
+                )
+                warning = True
+            statuses.append(
+                ListStatus(name(list_name, national_cadences), message, warning)
+            )
+    return statuses
 
 
 async def check_ratings(

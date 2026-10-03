@@ -232,6 +232,7 @@ def test_the_ratings_update_lists_what_the_lists_would_change(
     )
     assert response.status_code == 200
     assert 'ratings-check-modal' in response.text
+    assert 'Rating lists used' in response.text
 
     updated = http.patch(
         f'/event-ratings-update/{EVENT_ID}/players',

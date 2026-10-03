@@ -6098,6 +6098,9 @@ msgstr "Aucun écran multiple dans cet évènement pour le moment."
 msgid "No multi-screens to add."
 msgstr "Pas d'écran multiple à ajouter."
 
+msgid "No national list installed"
+msgstr "Aucune liste nationale installée"
+
 msgid "No network detected, use the Refresh button when connected."
 msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion."
 
@@ -6210,9 +6213,6 @@ msgstr "Aucune règle de classement configurée"
 
 msgid "No rating"
 msgstr "Aucun classement"
-
-msgid "No rating list holding these players is installed."
-msgstr "Aucune liste de classement contenant ces joueur·euses n'est installée."
 
 msgctxt "individual knock-out"
 msgid "No reset game is needed: the winners-bracket champion won the grand final."
@@ -6468,6 +6468,9 @@ msgstr "Hors mode FIDE"
 #, python-format
 msgid "Not in FIDE mode: %(tournaments)s"
 msgstr "Hors mode FIDE : %(tournaments)s"
+
+msgid "Not installed"
+msgstr "Non installée"
 
 msgid "Not logged in"
 msgstr "Non connecté"
@@ -8023,6 +8026,9 @@ msgstr "Classement retenu :"
 msgid "Rating lists"
 msgstr "Listes de classement"
 
+msgid "Rating lists used"
+msgstr "Listes de classement utilisées"
+
 msgid "Rating lists:"
 msgstr "Listes de classement :"
 
@@ -8074,6 +8080,9 @@ msgstr "Mise à jour des classements"
 #, python-format
 msgid "Ratings update for tournament [%(tournament)s]"
 msgstr "Mise à jour des classements du tournoi [%(tournament)s]"
+
+msgid "Read online"
+msgstr "Lue en ligne"
 
 msgid "Read the documentation"
 msgstr "Consulter la documentation"
@@ -12488,6 +12497,10 @@ msgstr "points"
 #, python-brace-format
 msgid "points: {table}"
 msgstr "points : {table}"
+
+#, python-brace-format
+msgid "publishes no {cadences} rating"
+msgstr "ne publie pas de classement {cadences}"
 
 #, python-format
 msgid "raised to %(r)s"
