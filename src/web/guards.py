@@ -265,6 +265,8 @@ class PrintGuard(BaseGuard):
         tournament_ids: list[int] = []
         for option in urllib.parse.unquote(options).split('|'):
             key, raw_value = option.split('=')
+            if not raw_value:
+                continue
             if key == 'tournament':
                 tournament_ids.append(int(raw_value))
             if key == 'tournaments':
