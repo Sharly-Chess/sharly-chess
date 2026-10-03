@@ -33,7 +33,11 @@
                 {% set opponent = pairing.opponent %}
                 {% if opponent %}
                     <td>{{ pairing.color.to_crosstable }}</td>
-                    <td class="text-center">{{ pairing.points_str }}</td>
+                    {% if pairing.result.is_adjourned %}
+                        <td class="text-center fw-bold">{{ pairing.result }}</td>
+                    {% else %}
+                        <td class="text-center">{{ pairing.points_str }}</td>
+                    {% endif %}
                     <td class="text-center">{{ opponent.rank }}</td>
                     <td class="text-nowrap">{{ opponent.display_title }} {{ opponent.full_name }}</td>
                     <td>{{ opponent.rating_str }}</td>

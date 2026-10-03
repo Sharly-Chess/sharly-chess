@@ -287,10 +287,6 @@ msgid "%(system)s (automatic)"
 msgstr "%(system)s (automatique)"
 
 #, python-format
-msgid "%(title)s (provisional)"
-msgstr "%(title)s (provisoire)"
-
-#, python-format
 msgid "%f to %l"
 msgstr "%f à %l"
 
@@ -933,6 +929,9 @@ msgstr "Partie ajournée"
 #, python-brace-format
 msgid "Adjourned game logged: {adjournment}"
 msgstr "Partie ajournée consignée : {adjournment}"
+
+msgid "Adjourned games count as draws until their result is entered."
+msgstr "Les parties ajournées comptent comme nulles jusqu'à la saisie de leur résultat."
 
 msgid "Administration"
 msgstr "Administration"
@@ -7663,6 +7662,9 @@ msgstr "Propriétés"
 
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
+
+msgid "Provisional"
+msgstr "Provisoire"
 
 msgid "Proxy (if any):"
 msgstr "Mandataire (le cas échéant) :"

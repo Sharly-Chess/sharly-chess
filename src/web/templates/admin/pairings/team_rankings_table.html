@@ -1,3 +1,4 @@
+{% import '/admin/common/macros.j2' as admin_macros with context %}
 {% set standings = admin_tournament.team_standings() %}
 {% set primary_is_mp = (
     admin_tournament.pairing_system.paired_by_team
@@ -7,10 +8,9 @@
 {% set team_tie_breaks = admin_tournament.team_tie_breaks %}
 <div class="d-flex">
     <h4>
+        {{ _('Team ranking') }}
         {% if admin_tournament.has_provisional_results %}
-            {{ _('%(title)s (provisional)', title=_('Team ranking')) }}
-        {% else %}
-            {{ _('Team ranking') }}
+            {{ admin_macros.provisional_badge() }}
         {% endif %}
     </h4>
 </div>

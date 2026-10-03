@@ -9,10 +9,11 @@
                 {{ screen_set.name_for_ranking }}
             {%- endif -%}
         {% endset %}
+        {{ _set_title }}
         {% if tournament.adjourned_boards(before_round=(data.ranking_round or tournament.rounds) + 1) %}
-            {{ _('%(title)s (provisional)', title=_set_title) }}
-        {% else %}
-            {{ _set_title }}
+            <span class="badge provisional-badge align-middle">
+                <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
+            </span>
         {% endif %}
     </h2>
     {% set player_columns = columns_by_tournament_id[tournament.id] %}

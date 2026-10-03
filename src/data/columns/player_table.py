@@ -281,6 +281,14 @@ class RoundColumn(TournamentPlayerTableColumn):
         pairing = object_.pairings_by_round.get(self.round)
         return pairing is not None and object_.game_is_annulled(pairing)
 
+    @override
+    def get_cell_classes(self, object_: TournamentPlayer) -> str:
+        classes = super().get_cell_classes(object_)
+        pairing = object_.pairings_by_round.get(self.round)
+        if pairing is not None and pairing.result.is_adjourned:
+            return f'{classes} fw-bold'
+        return classes
+
     @property
     def header_content(self) -> str:
         return pgettext('round column header', 'R {round}').format(round=self.round)

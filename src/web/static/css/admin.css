@@ -78,6 +78,11 @@
     border: 2px solid rgba(var(--bs-warning-rgb));
 }
 
+.provisional-badge {
+    background-color: var(--bs-orange);
+    color: var(--bs-white);
+}
+
 .w-15em {
     width: 15em;
 }
