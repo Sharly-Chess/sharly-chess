@@ -10,6 +10,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 from utils.enum import PlayerGender
 
 
@@ -25,6 +26,7 @@ class LokDatabase(NationalPlayerDatabase):
 
     federation = 'CZE'
     acronym = 'LOK'
+    national_cadences = frozenset({Cadence.STANDARD, Cadence.RAPID})
 
     _DOWNLOADS_URL = 'https://elo.miramal.com/download/'
 

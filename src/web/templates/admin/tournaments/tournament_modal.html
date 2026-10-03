@@ -111,47 +111,57 @@
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='rating',
-                            label=_('Rating:'),
+                            name='cadence',
+                            label=_('Rating used:'),
+                            tooltip_text=_('The time control whose ratings the tournament is played on.'),
                             select_options=rating_options,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='player_rating_type',
-                            label=_('Rating to use:'),
-                            tooltip_text=_('Affects the rating that will be chosen for each player.'),
-                            select_options=player_rating_type_options,
+                            name='rating_preference',
+                            label=_('Rating source:'),
+                            tooltip_text=_(
+                                'The rating used by the federation of the event.'
+                            ) if rating_preference_locked else _(
+                                'Which kind of rating the players are ranked on, and which is used when they have none.'
+                            ),
+                            select_options=rating_preference_options,
+                            disabled=rating_preference_locked,
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
-                <div id="estimated-ratings" class="row gy-2 gx-3">
+                <div class="row gy-2 gx-3">
                     <div class="col-12">
-                        {{ admin_macros.switch_input(
-                            name='override_unrated_rapid_blitz',
-                            placeholder=_('Use the standard FIDE rating for unrated players'),
+                        {% set _sequence_combination = (data['cadence'] or '1') ~ ':' ~ ('' if rating_preference_locked else data['rating_preference'] or '') %}
+                        {{ admin_macros.select_input(
+                            name='rating_sequence',
+                            label=_('Rating lists:'),
                             tooltip_text=_(
-                                'For players without a rapid or blitz FIDE rating, '
-                                'use instead their standard FIDE rating.'
+                                'The lists the ratings are looked up in, in this order.'
                             ),
+                            select_options=rating_sequence_options[_sequence_combination],
                             data=data, errors=errors
                         ) }}
                     </div>
                     <script>
-                        $('#rating,#player-rating-type').change(function() {
-                            const fideRatingValues = ['3'];
-                            {% if admin_event.player_rating_type == 3 %}
-                                fideRatingValues.push('');
-                            {% endif %}
-                            if ($('#rating').val() !== '1' && fideRatingValues.includes($('#player-rating-type').val())) {
-                                $('#estimated-ratings').show();
-                            } else {
-                                $('#estimated-ratings').hide();
-                            }
-                        });
-                        triggerModalInitEvent('#rating');
+                        (() => {
+                            const sequenceOptions = {{ rating_sequence_options|tojson }};
+                            const preferenceLocked = {{ rating_preference_locked|tojson }};
+                            $('#cadence,#rating-preference').change(function() {
+                                const preference = preferenceLocked ? '' : $('#rating-preference').val();
+                                const options = sequenceOptions[`${$('#cadence').val()}:${preference}`];
+                                const select = $('#rating-sequence');
+                                const selected = select.val();
+                                select.empty();
+                                for (const [value, label] of Object.entries(options)) {
+                                    select.append(new Option(label, value));
+                                }
+                                select.val(selected in options ? selected : '').trigger('change');
+                            });
+                        })();
                     </script>
                 </div>
 

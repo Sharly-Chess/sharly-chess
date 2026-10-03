@@ -35,7 +35,7 @@ from utils.enum import (
     ScoreType,
     TeamColourType,
     TeamSortMode,
-    TournamentRating,
+    Cadence,
 )
 
 if TYPE_CHECKING:
@@ -237,7 +237,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
             FfeLicenceTournamentCriterion().form_key,
             'rounds',
             'TEAM_ROUND_ROBIN_pairing_variation',
-            'rating',
+            'cadence',
             'team_player_count',
             'roster_max_size',
             'primary_score',
@@ -266,7 +266,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         stored_tournament.criteria[FfeLicenceTournamentCriterion.static_id()] = (
             PlayerFFELicence.A.value
         )
-        stored_tournament.rating = TournamentRating.STANDARD.value
+        stored_tournament.cadence = Cadence.STANDARD.value
         stored_tournament.team_player_count = 4
         stored_tournament.roster_max_size = self.roster_max_size
         stored_tournament.team_colour_type = TeamColourType.A.value
@@ -589,7 +589,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         defaults: dict[str, str] = {
             FfeLicenceTournamentCriterion().form_key: PlayerFFELicence.A.value,
             'TEAM_ROUND_ROBIN_pairing_variation': '',
-            'rating': str(TournamentRating.STANDARD.value),
+            'cadence': str(Cadence.STANDARD.value),
             'team_player_count': '4',
             'roster_max_size': str(self.roster_max_size)
             if self.roster_max_size

@@ -1,0 +1,29 @@
+<div id="ratings-check-banner" class="alert alert-warning d-flex align-items-center gap-3 py-2 mx-2">
+    <i class="bi-exclamation-triangle-fill"></i>
+    <span class="flex-grow-1">
+        {{ ngettext(
+            'The rating lists give %(num)d player a different rating.',
+            'The rating lists give %(num)d players a different rating.',
+            count,
+        ) }}
+    </span>
+    <button
+        type="button"
+        class="btn btn-sm btn-primary text-nowrap"
+        hx-get="{{ url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab='players') }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+        {{ _('Review') }}
+    </button>
+    <button
+        type="button"
+        class="btn-close"
+        aria-label="{{ _('Dismiss') }}"
+        hx-patch="{{ url_for('admin-event-ratings-check-dismiss', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="#ratings-check-banner"
+        hx-swap="outerHTML"
+    ></button>
+</div>

@@ -19,12 +19,17 @@ from litestar.status_codes import HTTP_200_OK
 
 from common import DEVEL_ENV
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.i18n import _, ngettext, pgettext
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.board import Board
-from utils.enum import PlayerRatingType
+from data.rating_sequences import (
+    sequence_from_keys,
+    sequence_keys,
+    sequence_name,
+)
+from utils.enum import RatingPreference
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
 from data.championship.championship_loader import ChampionshipLoader
@@ -104,7 +109,7 @@ from utils.enum import (
     Result,
     ScoreType,
     TeamColourType,
-    TournamentRating,
+    Cadence,
 )
 from data.screens.manager import ScreenTypeManager
 from utils.types import Club
@@ -325,14 +330,14 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes: int | None = None
             last_rounds_no_byes: int | None = None
             location: str | None = None
-            player_rating_type: int | None = None
+            rating_preference: int | None = None
+            rating_sequence: list[str] = []
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: next(
                     iter(system.variation_manager(admin_event).options())
                 )
                 for system in pairing_systems
             }
-            override_unrated_rapid_blitz: bool = True
             team_player_count: int | None = None
             roster_max_size: int | None = None
             color_pattern: str | None = None
@@ -353,7 +358,7 @@ class TournamentAdminController(BaseEventAdminController):
                 # Blank by default: the arbiter sets it (Swiss), or leaves it for
                 # a system that settles its own count. Stored as 0 = unset.
                 rounds = 0
-                rating = TournamentRating.STANDARD.value
+                cadence = Cadence.STANDARD.value
                 start_date = admin_event.start_date
                 stop_date = admin_event.stop_date
                 if admin_event.is_team_event:
@@ -370,18 +375,16 @@ class TournamentAdminController(BaseEventAdminController):
                 max_byes = stored_tournament.max_byes
                 last_rounds_no_byes = stored_tournament.last_rounds_no_byes
                 location = stored_tournament.location
-                player_rating_type = stored_tournament.player_rating_type
+                rating_preference = stored_tournament.rating_preference
+                rating_sequence = stored_tournament.rating_sequence
                 start_date = admin_tournament.start_date
                 stop_date = admin_tournament.stop_date
-                rating = admin_tournament.rating.value
+                cadence = admin_tournament.cadence.value
                 rounds = stored_tournament.rounds
                 pairing_system = admin_tournament.pairing_system
                 pairing_variations[
                     admin_tournament.pairing_system.variation_field_id
                 ] = admin_tournament.pairing_variation.id
-                override_unrated_rapid_blitz = (
-                    stored_tournament.override_unrated_rapid_blitz
-                )
                 team_player_count = stored_tournament.team_player_count
                 roster_max_size = stored_tournament.roster_max_size
                 color_pattern = stored_tournament.color_pattern
@@ -484,11 +487,11 @@ class TournamentAdminController(BaseEventAdminController):
                     'max_byes': max_byes,
                     'last_rounds_no_byes': last_rounds_no_byes,
                     'location': location,
-                    'player_rating_type': player_rating_type,
+                    'rating_preference': rating_preference,
+                    'rating_sequence': ','.join(rating_sequence),
                     'rounds': rounds,
-                    'rating': rating,
+                    'cadence': cadence,
                     'pairing_system': pairing_system.id,
-                    'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                     'team_player_count': team_player_count,
                     'roster_max_size': roster_max_size,
                     'color_pattern': color_pattern,
@@ -575,16 +578,9 @@ class TournamentAdminController(BaseEventAdminController):
             key: value for __, data in plugin_results for key, value in data.items()
         }
 
-        player_rating_type_options: dict[str, str] = {
-            '': '',
-            str(PlayerRatingType.FIDE.value): _('FIDE'),
-            str(PlayerRatingType.NATIONAL.value): pgettext(
-                'name for rating type national', 'National'
-            ),
-        }
-        player_rating_type_options[''] = _('Use default - {option}').format(
-            option=player_rating_type_options[str(admin_event.player_rating_type.value)]
-        )
+        rating_preference_options: dict[str, str] = {
+            '': _('Use default - {option}').format(option=admin_event.rating_preference)
+        } | {str(preference.value): str(preference) for preference in RatingPreference}
 
         # data and errors are always populated by the if/else block above
         assert data is not None
@@ -672,7 +668,12 @@ class TournamentAdminController(BaseEventAdminController):
                 'cloned_tournament': web_context.admin_tournament
                 if action == 'clone'
                 else None,
-                'player_rating_type_options': player_rating_type_options,
+                'rating_preference_options': rating_preference_options,
+                'rating_preference_locked': admin_event.forced_rating_preference
+                is not None,
+                'rating_sequence_options': cls._rating_sequence_options(
+                    admin_event, data.get('rating_sequence') or ''
+                ),
                 'is_team_event': admin_event.is_team_event,
                 'BoardColor': BoardColor,
                 'score_type_options': {t.value: str(t) for t in ScoreType},
@@ -759,14 +760,14 @@ class TournamentAdminController(BaseEventAdminController):
                 'Impossible to set a round number lower '
                 'than the last round with pairings #{round}.'
             ).format(round=tournament.current_round)
-        rating = (
-            WebContext.form_data_to_int(data, field := 'rating')
-            or TournamentRating.STANDARD.value
+        cadence = (
+            WebContext.form_data_to_int(data, field := 'cadence')
+            or Cadence.STANDARD.value
         )
         try:
-            TournamentRating(rating)
+            Cadence(cadence)
         except ValueError:
-            errors[field] = f'Unknown rating [{rating}]'
+            errors[field] = f'Unknown cadence [{cadence}]'
         try:
             date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
             if date_range:
@@ -804,7 +805,7 @@ class TournamentAdminController(BaseEventAdminController):
             tournament = web_context.get_admin_tournament()
             if tournament.started:
                 not_updatable_values: dict[str, str] = {
-                    'rating': str(tournament.rating.value),
+                    'cadence': str(tournament.cadence.value),
                     tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
                     'pairing_system': tournament.pairing_system.id,
                 }
@@ -848,10 +849,15 @@ class TournamentAdminController(BaseEventAdminController):
         max_byes = WebContext.form_data_to_int(data, 'max_byes')
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
-        player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
-        override_unrated_rapid_blitz = WebContext.form_data_to_bool(
-            data, 'override_unrated_rapid_blitz'
-        )
+        rating_preference = WebContext.form_data_to_int(data, 'rating_preference')
+        rating_sequence: list[str] = []
+        if sequence_value := WebContext.form_data_to_str(data, 'rating_sequence'):
+            try:
+                rating_sequence = sequence_keys(
+                    sequence_from_keys(sequence_value.split(','))
+                )
+            except ValueError:
+                errors['rating_sequence'] = _('Unknown rating lists.')
 
         game_points: dict[int, float] = {}
         for result, gp_field in (
@@ -1122,7 +1128,8 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
             location=location,
-            player_rating_type=player_rating_type,
+            rating_preference=rating_preference,
+            rating_sequence=rating_sequence,
             start_date=start_date,
             stop_date=stop_date,
             # 0 = unset; a system that settles its own count keeps it (worked
@@ -1130,9 +1137,8 @@ class TournamentAdminController(BaseEventAdminController):
             # to at least one round. Don't force 1 here, or clearing an
             # automatic field would store a spurious count.
             rounds=rounds,
-            rating=rating or TournamentRating.STANDARD.value,
+            cadence=cadence,
             pairing=pairing or '',
-            override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             game_points=game_points or None,
             team_player_count=team_player_count,
             roster_max_size=roster_max_size,
@@ -1563,6 +1569,42 @@ class TournamentAdminController(BaseEventAdminController):
             web_context=web_context,
             template_context=template_context,
         )
+
+    @staticmethod
+    def _rating_sequence_options(
+        event: Event, current_value: str
+    ) -> dict[str, dict[str, str]]:
+        """The sequences offered for each cadence and rating preference of
+        the tournament modal (keyed `<cadence>:<preference>`, the empty
+        preference being the event's), as select values and labels; the
+        empty value is the default of the combination."""
+        source = event.national_rating_source
+        national_list_name = source.national_source_name if source else None
+        current = (
+            sequence_from_keys(current_value.split(',')) if current_value else None
+        )
+        combinations: dict[str, dict[str, str]] = {}
+        for cadence in Cadence:
+            for preference_value in ('', *(str(p.value) for p in RatingPreference)):
+                preference = (
+                    RatingPreference(int(preference_value))
+                    if preference_value
+                    else event.rating_preference
+                )
+                options = event.rating_sequence_options(cadence, preference)
+                if current is not None and current not in options:
+                    options = [*options, current]
+                combinations[f'{cadence.value}:{preference_value}'] = {
+                    '': _('Default - {option}').format(
+                        option=sequence_name(options[0], national_list_name)
+                    )
+                } | {
+                    ','.join(sequence_keys(option)): sequence_name(
+                        option, national_list_name
+                    )
+                    for option in options
+                }
+        return combinations
 
     @staticmethod
     def _rounds_field_context(

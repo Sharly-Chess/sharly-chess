@@ -1,14 +1,17 @@
 import weakref
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import total_ordering
-from typing import NamedTuple, Optional, Self, SupportsFloat, TYPE_CHECKING
+from typing import Any, NamedTuple, Optional, Self, SupportsFloat, TYPE_CHECKING
+
+from markupsafe import Markup, escape
 
 from utils import Utils
 from utils.enum import (
     PlayerTitle,
     TitleNorm,
     PlayerRatingType,
+    Cadence,
 )
 
 if TYPE_CHECKING:
@@ -49,62 +52,144 @@ class Club:
         return self.name
 
 
+@dataclass(frozen=True)
+class RatingOrigin:
+    """Where a rating value came from (TEC Manual 3.9.5.11.c): the list
+    that supplied it, which snapshot of that list, whether it was read
+    online rather than from an installed copy, and — once the arbiter has
+    corrected it — what the list said."""
+
+    source: str
+    version: str | None = None
+    original: int | None = None
+    online: bool = False
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            source=stored_value.get('source', ''),
+            version=stored_value.get('version'),
+            original=stored_value.get('original'),
+            online=stored_value.get('online', False),
+        )
+
+    @property
+    def stored_value(self) -> dict[str, Any]:
+        stored_value: dict[str, Any] = {'source': self.source}
+        if self.version is not None:
+            stored_value['version'] = self.version
+        if self.original is not None:
+            stored_value['original'] = self.original
+        if self.online:
+            stored_value['online'] = True
+        return stored_value
+
+
 @dataclass
 class PlayerRating:
-    estimated: int | None = None
+    """A player's ratings at one cadence: the values the lists gave, by
+    kind, each with its origin, and the value typed for a player no list
+    answers for, which has neither kind nor source."""
+
+    manual: int | None = None
     national: int | None = None
     fide: int | None = None
     k_factor: int | None = None
+    origins: dict[PlayerRatingType, RatingOrigin] = field(default_factory=dict)
+    #: The list the arbiter chose to rank the player on at this cadence,
+    #: see `rating_sequences.rating_choice_key`.
+    pinned: str | None = None
 
     @classmethod
-    def from_stored_value(cls, dict_rating: dict[str, int | None]) -> Self:
+    def from_stored_value(cls, dict_rating: dict[str, Any]) -> Self:
         return cls(
-            estimated=dict_rating.get('estimated'),
+            manual=dict_rating.get('manual'),
             national=dict_rating.get('national'),
             fide=dict_rating.get('fide'),
             k_factor=dict_rating.get('k'),
+            pinned=dict_rating.get('pinned'),
+            origins={
+                PlayerRatingType.from_key(key): RatingOrigin.from_stored_value(origin)
+                for key, origin in dict_rating.get('origins', {}).items()
+            },
         )
 
     @classmethod
-    def from_type(cls, value: int | None, rating_type: PlayerRatingType) -> Self:
-        match rating_type:
-            case PlayerRatingType.FIDE:
-                return cls(fide=value)
-            case PlayerRatingType.NATIONAL:
-                return cls(national=value)
-            case PlayerRatingType.ESTIMATED:
-                return cls(estimated=value)
-            case _:
-                raise ValueError(f'{rating_type=}')
+    def from_type(
+        cls,
+        value: int | None,
+        rating_type: PlayerRatingType,
+        origin: RatingOrigin | None = None,
+    ) -> Self:
+        rating = cls()
+        rating.set_value_from_type(value, rating_type, origin)
+        return rating
 
     def get_type_value(self, rating_type: PlayerRatingType) -> int | None:
         if rating_type == PlayerRatingType.FIDE:
             return self.fide
         if rating_type == PlayerRatingType.NATIONAL:
             return self.national
-        return self.estimated
+        return self.manual
 
     def set_value_from_type(
-        self, value: int | None, rating_type: PlayerRatingType
+        self,
+        value: int | None,
+        rating_type: PlayerRatingType,
+        origin: RatingOrigin | None = None,
     ) -> None:
         if rating_type == PlayerRatingType.FIDE:
             self.fide = value
         elif rating_type == PlayerRatingType.NATIONAL:
             self.national = value
         else:
-            self.estimated = value
+            self.manual = value
+            return
+        if value is not None and origin is not None:
+            self.origins[rating_type] = origin
+        else:
+            self.origins.pop(rating_type, None)
+
+    def override(self, value: int, rating_type: PlayerRatingType) -> None:
+        """Correct a list value, keeping its source and what the list
+        said (TEC Manual 3.9.5.11.c)."""
+        current = self.get_type_value(rating_type)
+        if current == value:
+            return
+        origin = self.origins.get(rating_type, RatingOrigin(source=''))
+        listed = current if origin.original is None else origin.original
+        self.origins[rating_type] = replace(
+            origin, original=None if listed == value else listed
+        )
+        if rating_type == PlayerRatingType.FIDE:
+            self.fide = value
+        else:
+            self.national = value
+
+    def is_overridden(self, rating_type: PlayerRatingType) -> bool:
+        origin = self.origins.get(rating_type)
+        return origin is not None and origin.original is not None
 
     @property
-    def stored_value(self) -> dict[str, int | None]:
-        ratings: dict[str, int | None] = {}
-        if self.estimated is not None:
-            ratings['estimated'] = self.estimated
+    def stored_value(self) -> dict[str, Any]:
+        ratings: dict[str, Any] = {}
+        if self.manual is not None:
+            ratings['manual'] = self.manual
         if self.national is not None:
             ratings['national'] = self.national
         if self.fide is not None:
             ratings['fide'] = self.fide
         if self.k_factor is not None:
             ratings['k'] = self.k_factor
+        if self.pinned is not None:
+            ratings['pinned'] = self.pinned
+        origins = {
+            rating_type.key: origin.stored_value
+            for rating_type, origin in self.origins.items()
+            if self.get_type_value(rating_type) is not None
+        }
+        if origins:
+            ratings['origins'] = origins
         return ratings
 
     def __str__(self) -> str:
@@ -113,18 +198,69 @@ class PlayerRating:
             parts.append(f'{self.fide}{PlayerRatingType.FIDE.short_name}')
         if self.national is not None:
             parts.append(f'{self.national}{PlayerRatingType.NATIONAL.short_name}')
-        if self.estimated is not None:
-            parts.append(f'{self.estimated}{PlayerRatingType.ESTIMATED.short_name}')
+        if self.manual is not None:
+            parts.append(f'{self.manual}{PlayerRatingType.ESTIMATED.short_name}')
         return '/'.join(parts) if parts else '-'
 
 
 @dataclass
 class PlayerRatingAndType:
+    """A rating as a tournament uses it: the value, its kind
+    (`ESTIMATED` when no list supplied it), where it came from, and how
+    it is marked — the cadence it was borrowed from, if any, and whether
+    the arbiter corrected it."""
+
     value: int
     type: PlayerRatingType
+    origin: RatingOrigin | None = None
+    cadence: Cadence | None = None
+    cadence_marker: str = ''
+    overridden: bool = False
+    prescribed: bool = False
+    pinned: bool = False
+
+    @property
+    def suffix(self) -> str:
+        """The kind of the rating, starred when the arbiter corrected it."""
+        return self.type.short_name + ('*' if self.overridden else '')
+
+    @property
+    def suffix_html(self) -> Markup:
+        """The suffix, followed by the cadence the rating was borrowed
+        from in superscript."""
+        if not self.cadence_marker:
+            return escape(self.suffix)
+        return Markup('{}<sup>{}</sup>').format(self.suffix, self.cadence_marker)
+
+    @property
+    def text(self) -> 'RatingText':
+        if not self.value:
+            return RatingText('-')
+        text = f'{self.value}\xa0{self.suffix}'
+        if self.cadence_marker:
+            text += f'\xa0({self.cadence_marker})'
+        return RatingText(text, Markup('{}\xa0{}').format(self.value, self.suffix_html))
 
     def __str__(self) -> str:
-        return f'{self.value} {self.type.short_name}' if self.value else '-'
+        return str(self.text)
+
+    def __html__(self) -> Markup:
+        return self.text.__html__()
+
+
+class RatingText(str):
+    """A rating as text, which a template shows with the cadence it was
+    borrowed from in superscript."""
+
+    html: Markup
+
+    def __new__(cls, text: str, html: Markup | None = None) -> Self:
+        rating_text = super().__new__(cls, text)
+        rating_text.html = html if html is not None else escape(text)
+        return rating_text
+
+    def __html__(self) -> Markup:
+        return self.html
 
 
 # 1.4.3d thresholds (FIDE Handbook B.01, 1 Jan 2024). Module-level so the

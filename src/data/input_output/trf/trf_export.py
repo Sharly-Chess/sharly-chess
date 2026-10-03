@@ -89,9 +89,9 @@ class TrfExport:
             num_players=len(tournament.tournament_players_by_id),
             num_rated_players=sum(
                 bool(
-                    player.rating_and_type_in(window.period).value
+                    player.official_rating_in(window.period)
                     if window
-                    else player.fide_rating_value
+                    else player.official_rating
                 )
                 for player in tournament.players
             ),
@@ -111,7 +111,9 @@ class TrfExport:
             individuals_point_system=self._individuals_point_system(
                 after_round, for_engine
             ),
-            starting_rank_method=self._starting_rank_method(),
+            starting_rank_method=''
+            if for_engine
+            else self._starting_rank_method(rating_report),
             starting_rank_federation=tournament.event.federation or '',
             pairing_controller_id='Sharly Chess',
             encoded_type=tournament.pairing_variation.trf_encoded_type,
@@ -132,6 +134,7 @@ class TrfExport:
                     corrections,
                     for_engine,
                     window,
+                    rating_report,
                 )
                 for player in tournament.tournament_players_by_pairing_number.values()
             ],
@@ -166,6 +169,12 @@ class TrfExport:
             else self._prohibited_pairings()
         )
         trf.log_comments = self._log_comments(after_round, corrections)
+        if trf.starting_rank_method:
+            trf.other_starting_rank_federations = sorted(
+                federation
+                for federation in trf.national_players_by_federation
+                if federation != trf.starting_rank_federation
+            )
         return trf
 
     def _log_comments(
@@ -503,37 +512,22 @@ class TrfExport:
                 )
         return assignments
 
-    def _starting_rank_method(self) -> str:
-        """TRF26 172 — how the participants were ranked. Derived from the
-        ratings actually used rather than from the tournament setting:
-        the setting only states a preference, and which fallback fired
-        is what the receiver needs in order to reproduce the ranking.
+    def _starting_rank_method(self, rating_report: bool) -> str:
+        """TRF26 172 — how the participants were ranked: the method of
+        the tournament's rating preference.
 
-        Estimated ratings (and the floors a rule set may supply) have no
-        place in the format, so a tournament that used any of them is
-        ranked by a method the TRF cannot express — which is what
-        ``OTHER`` is for."""
+        A partial TRF carries a value no list supplied in an `MMM`
+        pseudo-NRS record, which the method then covers. The final report
+        has no place for it, so a tournament that ranked a player on one
+        is ranked there by a method the TRF cannot express — which is
+        what ``OTHER`` is for."""
         tournament = self.tournament
-        used = {player.rating_type for player in tournament.players}
-        if not used:
-            # Nothing to describe yet; state the preference.
-            return (
-                'FIDE'
-                if tournament.player_rating_type == PlayerRatingType.FIDE
-                else 'NRO'
-            )
-        if PlayerRatingType.ESTIMATED in used:
+        if rating_report and any(
+            player.rating and player.rating_type == PlayerRatingType.ESTIMATED
+            for player in tournament.players
+        ):
             return 'OTHER'
-        if used == {PlayerRatingType.FIDE}:
-            return 'FIDE'
-        if used == {PlayerRatingType.NATIONAL}:
-            return 'NRO'
-        # Both were used, so a fallback fired: say which way round.
-        return (
-            'FIDON'
-            if tournament.player_rating_type == PlayerRatingType.FIDE
-            else 'NIDOF'
-        )
+        return tournament.rating_preference.starting_rank_method
 
     def _individuals_point_system(
         self, after_round: int, for_engine: bool

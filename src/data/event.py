@@ -15,7 +15,7 @@ from common.i18n.utils import by, normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
-from utils.enum import PlayerRatingType
+from data.rating_sequences import RatingSequence, sequence_options
 from data.screens.display_controller import DisplayController
 from data.screens.family import Family
 from data.player import Player, TournamentPlayer
@@ -36,10 +36,12 @@ from plugins.manager import plugin_manager
 from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.date_time import format_date, format_date_range
+from utils.types import RatingOrigin
 from utils.enum import (
     EventType,
+    RatingPreference,
     RoleType,
-    TournamentRating,
+    Cadence,
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
@@ -55,6 +57,7 @@ from database.sqlite.event.event_store import (
 )
 
 if TYPE_CHECKING:
+    from data.input_output.data_source import DataSource
     from data.tag import Tag
     from data.teams.team_affiliation import TeamAffiliationSource
     from data.screens.screen_types import ScreenType
@@ -129,20 +132,110 @@ class Event:
     def is_team_event(self) -> bool:
         return self.event_type == EventType.TEAM
 
-    @property
-    def player_rating_type(self) -> PlayerRatingType:
-        return PlayerRatingType(self.stored_event.player_rating_type)
+    @cached_property
+    def forced_rating_preference(self) -> RatingPreference | None:
+        """The rating preference a plugin imposes on the event's
+        tournaments, if any."""
+        return cast(
+            RatingPreference | None,
+            plugin_manager.hook_for_event(self, 'get_forced_rating_preference')(
+                event=self
+            ),
+        )
+
+    @cached_property
+    def rating_preference(self) -> RatingPreference:
+        """The rating preference of the tournaments that set none, and
+        of the players outside any tournament."""
+        if (forced := self.forced_rating_preference) is not None:
+            return forced
+        if self.stored_event.rating_preference is not None:
+            return RatingPreference(self.stored_event.rating_preference)
+        return RatingPreference.FIDE
+
+    @cached_property
+    def national_rating_source(self) -> 'DataSource | None':
+        """The installed list the national ratings of the event's
+        federation come from."""
+        from data.input_output import DataSourceManager
+
+        return DataSourceManager().national_source_for_federation(self.federation)
 
     @property
-    def default_tournament_rating(self) -> TournamentRating:
+    def national_rating_cadences(self) -> frozenset[Cadence]:
+        if (data_source := self.national_rating_source) is None:
+            return frozenset(Cadence)
+        return data_source.national_cadences
+
+    def is_single_national_rating(self, origin: RatingOrigin | None) -> bool:
+        """Whether the national list a value came from publishes a
+        single rating, which then rates every cadence."""
+        from data.input_output import DataSourceManager
+
+        data_source = (
+            DataSourceManager().national_source(origin.source)
+            if origin is not None and origin.source
+            else None
+        ) or self.national_rating_source
+        return data_source is not None and data_source.national_cadences == {
+            Cadence.STANDARD
+        }
+
+    def rating_sequence_options(
+        self, cadence: Cadence, preference: RatingPreference
+    ) -> list[RatingSequence]:
+        """The prebuilt sequences a tournament can choose from, its
+        default first."""
+        options = sequence_options(cadence, preference, self.national_rating_cadences)
+        plugin_default = cast(
+            RatingSequence | None,
+            plugin_manager.hook_for_event(self, 'get_default_rating_sequence')(
+                event=self, cadence=cadence, preference=preference
+            ),
+        )
+        if plugin_default:
+            options = [plugin_default] + [
+                option for option in options if option != plugin_default
+            ]
+        return options
+
+    def rating_resolution(
+        self, tournament: 'Tournament | None'
+    ) -> tuple[Cadence, RatingPreference, RatingSequence]:
+        """How the rating of a player of *tournament* is chosen, or of a
+        player outside any tournament: the cadence, the rating preference
+        and the sequence of lists."""
+        if tournament is not None:
+            return (
+                tournament.cadence,
+                tournament.rating_preference,
+                tournament.rating_sequence,
+            )
+        cadence = self.default_cadence
+        preference = self.rating_preference
+        return cadence, preference, self.default_rating_sequence(cadence, preference)
+
+    def default_rating_sequence(
+        self, cadence: Cadence, preference: RatingPreference
+    ) -> RatingSequence:
+        return self.rating_sequence_options(cadence, preference)[0]
+
+    @property
+    def default_cadence(self) -> Cadence:
         """Time-control cadence used for ratings outside any tournament
         context (unassigned players / teams): the shared cadence when
         every tournament of the event uses the same one, Standard
         otherwise (multiple cadences or no tournament yet)."""
-        cadences = {tournament.rating for tournament in self.tournaments}
+        cadences = {tournament.cadence for tournament in self.tournaments}
         if len(cadences) == 1:
             return next(iter(cadences))
-        return TournamentRating.STANDARD
+        return Cadence.STANDARD
+
+    @property
+    def check_ratings(self) -> bool:
+        """Whether the ratings of the players are checked against the
+        rating lists unasked (VCL Q138–140)."""
+        return self.stored_event.check_ratings
 
     @property
     def allow_multi_tournament_players(self) -> bool:
@@ -444,7 +537,7 @@ class Event:
                 'Distributing the players is not allowed once one tournament is started.'
             )
         if any(
-            tournament.rating != self.sorted_tournaments[0].rating
+            tournament.cadence != self.sorted_tournaments[0].cadence
             for tournament in self.sorted_tournaments[1:]
         ):
             return _(

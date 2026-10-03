@@ -9,6 +9,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 from utils.enum import PlayerGender
 
 
@@ -22,6 +23,7 @@ class McfDatabase(NationalPlayerDatabase):
 
     federation = 'MAS'
     acronym = 'MCF'
+    national_cadences = frozenset({Cadence.STANDARD})
 
     _URL = 'https://rating.malaysiachess.my/api/mcfratinglist.ashx'
 

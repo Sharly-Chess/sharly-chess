@@ -10,6 +10,12 @@ from common.i18n import _, get_locale, pgettext
 from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
+from data.rating_sequences import (
+    RatingSequence,
+    describe_rating,
+    official_rating,
+    resolve_rating,
+)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
@@ -28,9 +34,10 @@ from utils.enum import (
     BoardColor,
     Result,
     TitleNorm,
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
     CheckInStatus,
+    RatingPreference,
 )
 from utils.types import (
     Federation,
@@ -49,7 +56,7 @@ if TYPE_CHECKING:
     from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.tournament_period import TournamentPeriod
-    from data.input_output.trf.trf_data import TrfPlayer
+    from data.input_output.trf.trf_data import TrfNationalPlayer, TrfPlayer
     from data.input_output.report_window import ReportWindow
     from data.pibes import RatingCorrection
 
@@ -328,22 +335,26 @@ class Player:
     def event_default_rating_and_type(self) -> 'PlayerRatingAndType':
         """Rating + its source type for display in team/event contexts.
 
-        Uses the team's tournament rating type (Standard/Rapid/Blitz) and
-        player-rating type (FIDE/National/Estimated) when the player is on a
-        team assigned to a tournament. Falls back to the event's default
-        cadence (the shared one when every tournament uses the same,
-        Standard otherwise) + event rating type for unassigned players."""
+        Uses the cadence, rating preference and sequence of the team's
+        tournament when the player is on a team assigned to one. Falls back
+        to the event's default cadence (the shared one when every
+        tournament uses the same, Standard otherwise), its preference and
+        that cadence's default sequence for unassigned players."""
         team = self.team
         if team is not None and team.tournament is not None:
             tournament = team.tournament
-            return self.get_rating_and_type(
-                tournament.rating,
-                tournament.player_rating_type,
+            return self.resolve_rating(
+                tournament.cadence,
+                tournament.rating_preference,
+                tournament.rating_sequence,
                 self.category,
             )
-        return self.get_rating_and_type(
-            self.event.default_tournament_rating,
-            self.event.player_rating_type,
+        cadence = self.event.default_cadence
+        preference = self.event.rating_preference
+        return self.resolve_rating(
+            cadence,
+            preference,
+            self.event.default_rating_sequence(cadence, preference),
             self.category,
         )
 
@@ -442,16 +453,16 @@ class Player:
             for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
         }
 
-    def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
+    def _get_ratings(self) -> dict[Cadence, PlayerRating]:
         return {
             tournament_rating: PlayerRating.from_stored_value(
                 self.stored_player.ratings.get(tournament_rating.value, {})
             )
-            for tournament_rating in TournamentRating
+            for tournament_rating in Cadence
         }
 
     @property
-    def ratings(self) -> dict[TournamentRating, PlayerRating]:
+    def ratings(self) -> dict[Cadence, PlayerRating]:
         """The player's own ratings — the first ones a tournament
         reported in slices was played on."""
         return self._base_ratings
@@ -482,7 +493,7 @@ class Player:
 
     def ratings_for(
         self, period: 'TournamentPeriod | None'
-    ) -> dict[TournamentRating, PlayerRating]:
+    ) -> dict[Cadence, PlayerRating]:
         """The player's ratings as they stood in a rating period."""
         stored_period = self.stored_period(period)
         if stored_period is None:
@@ -491,7 +502,7 @@ class Player:
             tournament_rating: PlayerRating.from_stored_value(
                 stored_period.ratings.get(tournament_rating.value, {})
             )
-            for tournament_rating in TournamentRating
+            for tournament_rating in Cadence
         }
 
     def titles_in(
@@ -515,41 +526,35 @@ class Player:
             title for title in self.titles_in(period) if title != PlayerTitle.NONE
         )
 
-    def get_rating_and_type(
+    def resolve_rating(
         self,
-        tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
+        cadence: Cadence,
+        preference: RatingPreference,
+        sequence: RatingSequence,
         category: PlayerCategory,
-        ratings: dict[TournamentRating, PlayerRating] | None = None,
+        ratings: dict[Cadence, PlayerRating] | None = None,
     ) -> PlayerRatingAndType:
-        """*ratings* answers the question for a slice other than the one
-        being played — the ratings a report or a tie-break asks for."""
-        player_ratings = (ratings or self.ratings)[tournament_rating]
-        rating: int | None = None
-        type_: PlayerRatingType = PlayerRatingType.ESTIMATED
-        if player_rating_type == PlayerRatingType.FIDE:
-            rating = player_ratings.fide
-            type_ = PlayerRatingType.FIDE
-        elif player_rating_type == PlayerRatingType.NATIONAL:
-            rating = player_ratings.national
-            type_ = PlayerRatingType.NATIONAL
-        if rating is None:
-            rating_and_type = plugin_manager.hook_for_event(
-                self.event, 'get_player_rating'
-            )(
-                tournament_rating=tournament_rating,
-                player_rating_type=player_rating_type,
-                player=self,
-                category=category,
-            )
-            if rating_and_type:
-                return cast(PlayerRatingAndType, rating_and_type)
-            if player_ratings.estimated:
-                return PlayerRatingAndType(
-                    player_ratings.estimated, PlayerRatingType.ESTIMATED
-                )
+        """The rating a tournament ranks the player on, see
+        `rating_sequences.resolve_rating`. *ratings* answers the question
+        for a slice other than the one being played — the ratings a report
+        or a tie-break asks for."""
 
-        return PlayerRatingAndType(rating or 0, type_)
+        def prescribed() -> int | None:
+            return cast(
+                int | None,
+                plugin_manager.hook_for_event(self.event, 'get_prescribed_rating')(
+                    tournament_rating=cadence, player=self, category=category
+                ),
+            )
+
+        return resolve_rating(
+            ratings or self.ratings,
+            cadence,
+            preference,
+            sequence,
+            self.event.is_single_national_rating,
+            prescribed,
+        )
 
     @property
     def has_real_rating(self) -> bool:
@@ -589,26 +594,36 @@ class Player:
         return period_start_date or tournament.start_date
 
     @property
-    def first_real_rating_str(self) -> str:
-        for tournament_rating in TournamentRating:
-            rating_and_type = self.get_rating_and_type(
-                tournament_rating, PlayerRatingType.FIDE, self.category
-            )
-            if not rating_and_type.value or (
-                rating_and_type.type == PlayerRatingType.ESTIMATED
-            ):
-                rating_and_type = self.get_rating_and_type(
-                    tournament_rating, PlayerRatingType.NATIONAL, self.category
+    def event_ratings(self) -> list[tuple[Cadence, PlayerRatingAndType]]:
+        """The rating the tournaments of the event would rank the player on,
+        one per cadence they are played at: what a search result shows of a
+        player not yet entered."""
+        tournaments_by_cadence: dict[Cadence, Tournament] = {}
+        for tournament in self.event.tournaments:
+            tournaments_by_cadence.setdefault(tournament.cadence, tournament)
+        if not tournaments_by_cadence:
+            return [
+                (
+                    self.event.default_cadence,
+                    self.event_default_rating_and_type,
                 )
-            if rating_and_type.value and (
-                rating_and_type.type != PlayerRatingType.ESTIMATED
-            ):
-                return f'{rating_and_type} ({tournament_rating.acronym})'
-        raise ValueError('Player expected to have a real rating')
+            ]
+        return [
+            (
+                cadence,
+                self.resolve_rating(
+                    cadence,
+                    tournament.rating_preference,
+                    tournament.rating_sequence,
+                    self.category,
+                ),
+            )
+            for cadence, tournament in sorted(tournaments_by_cadence.items())
+        ]
 
     def update_ratings(
         self,
-        ratings: dict[TournamentRating, PlayerRating],
+        ratings: dict[Cadence, PlayerRating],
         period: 'TournamentPeriod | None' = None,
     ) -> None:
         """Record ratings, for the player or for one rating period.
@@ -690,7 +705,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         self._compute_cache.clear()
 
     @property
-    def ratings(self) -> dict[TournamentRating, PlayerRating]:
+    def ratings(self) -> dict[Cadence, PlayerRating]:
         """The ratings the tournament is currently played on.
 
         A tournament reported in slices is rated slice by slice, so what
@@ -764,20 +779,13 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         """The rating the tournament would use for this player in a slice
         other than the one it has reached — what a report of that slice,
         or a tie-break asked to read it, needs."""
-        ratings = self.ratings_for(period)
-        tournament_rating = self.tournament.rating
-        if self.rating_is_overridden(
-            tournament_rating, self.tournament.player_rating_type, ratings
-        ):
-            tournament_rating = TournamentRating.STANDARD
-            rating = ratings[TournamentRating.STANDARD]
-            assert rating.fide is not None
-            return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
-        return self.get_rating_and_type(
-            tournament_rating,
-            self.tournament.player_rating_type,
+        tournament = self.tournament
+        return self.resolve_rating(
+            tournament.cadence,
+            tournament.rating_preference,
+            tournament.rating_sequence,
             self.category,
-            ratings,
+            self.ratings_for(period),
         )
 
     def rating_and_type_in_round(self, round_: int) -> PlayerRatingAndType:
@@ -805,7 +813,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         )
 
     def rating_str_in_round(self, round_: int) -> str:
-        return str(self.rating_and_type_in_round(round_))
+        return self.rating_and_type_in_round(round_).text
 
     def tie_break_rating(self, round_: int) -> int:
         """The rating a rating-based tie-break reads for a game of this
@@ -824,112 +832,77 @@ class TournamentPlayer(Player):  # noqa: PLW1641
 
     @cached_property
     def rating_str(self) -> str:
-        return str(self._tournament_rating)
-
-    def will_fide_override_with_standard_rating(
-        self,
-        tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
-        ratings: dict[TournamentRating, PlayerRating] | None = None,
-    ) -> bool:
-        if player_rating_type != PlayerRatingType.FIDE:
-            # We only override for tournament that are using the FIDE ratings
-            return False
-
-        resolved = ratings or self.ratings
-        rating = resolved.get(tournament_rating, None)
-        if rating and rating.fide is not None:
-            return False
-
-        if tournament_rating != TournamentRating.STANDARD:
-            rating = resolved.get(TournamentRating.STANDARD, None)
-            if rating and rating.fide is not None:
-                return True
-
-        return False
-
-    @cached_property
-    def tournament_rating_is_overridden(self) -> bool:
-        return self.rating_is_overridden(
-            self.tournament.rating, self.tournament.player_rating_type
-        )
-
-    def rating_is_overridden(
-        self,
-        tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
-        ratings: dict[TournamentRating, PlayerRating] | None = None,
-    ) -> bool:
-        return (
-            self.tournament.override_unrated_rapid_blitz
-            and self.will_fide_override_with_standard_rating(
-                tournament_rating, player_rating_type, ratings
-            )
-        )
+        return self._tournament_rating.text
 
     @property
     def manual_tiebreak(self) -> int | None:
         return self.stored_tournament_player.manual_tiebreak
 
+    @cached_property
+    def official_rating(self) -> PlayerRatingAndType | None:
+        """The rating reported to FIDE, see `rating_sequences.official_rating`."""
+        return official_rating(self.ratings, self.tournament.cadence)
+
+    def official_rating_in(
+        self, period: 'TournamentPeriod'
+    ) -> PlayerRatingAndType | None:
+        return official_rating(self.ratings_for(period), self.tournament.cadence)
+
     @property
     def rating_used_by_fide(self) -> PlayerRatingAndType:
-        if self.will_fide_override_with_standard_rating(
-            self.tournament.rating, self.tournament.player_rating_type
-        ):
-            rating = self.ratings.get(TournamentRating.STANDARD)
-            assert rating is not None
-            assert rating.fide is not None
-            return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
+        """The official rating, or an unrated 0."""
+        return self.official_rating or PlayerRatingAndType(
+            0, PlayerRatingType.ESTIMATED
+        )
 
-        return self.get_rating_and_type(
-            self.tournament.rating, self.tournament.player_rating_type, self.category
+    @property
+    def tournament_rating(self) -> PlayerRatingAndType:
+        return self._tournament_rating
+
+    @cached_property
+    def rating_description(self) -> str:
+        """Where the tournament rating came from."""
+        return describe_rating(self._tournament_rating)
+
+    @property
+    def fide_uses_standard_rating(self) -> bool:
+        """Whether FIDE rates the player's games on their standard rating
+        (the Effective lists) when the tournament ranks them on another."""
+        official = self.official_rating
+        return (
+            official is not None
+            and official.cadence != self.tournament.cadence
+            and (
+                self.rating_type != PlayerRatingType.FIDE
+                or self._tournament_rating.cadence != official.cadence
+            )
         )
 
     @cached_property
     def _tournament_rating(self) -> PlayerRatingAndType:
-        if self.tournament_rating_is_overridden:
-            rating = self.ratings.get(TournamentRating.STANDARD)
-            assert rating is not None
-            assert rating.fide is not None
-            return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
-
-        return self.get_rating_and_type(
-            self.tournament.rating, self.tournament.player_rating_type, self.category
+        tournament = self.tournament
+        return self.resolve_rating(
+            tournament.cadence,
+            tournament.rating_preference,
+            tournament.rating_sequence,
+            self.category,
         )
 
     @property
     def fide_rating_value(self) -> int | None:
-        rating = self.tournament.rating
-        if self.tournament_rating_is_overridden:
-            rating = TournamentRating.STANDARD
-        return self.ratings[rating].fide
+        official_rating = self.official_rating
+        return official_rating.value if official_rating else None
 
     @property
     def national_rating_value(self) -> int | None:
-        return self.ratings[self.tournament.rating].national
-
-    @property
-    def ratings_str(self) -> str:
-        return '/'.join(
-            [
-                str(
-                    self.get_rating_and_type(
-                        tournament_rating,
-                        self.tournament.player_rating_type,
-                        self.category,
-                    )
-                )
-                for tournament_rating in TournamentRating
-            ]
-        )
+        return self.ratings[self.tournament.cadence].national
 
     @property
     def fide_rating_coefficient(self) -> tuple[int, bool]:
         """Returns the player's coefficient (k), and whether it is a guess."""
-        rating = self.tournament.rating
-        if self.tournament_rating_is_overridden:
-            rating = TournamentRating.STANDARD
-        k_factor = self.ratings[rating].k_factor
+        official_rating = self.official_rating
+        cadence = official_rating.cadence if official_rating else None
+        k_factor = self.ratings[cadence or self.tournament.cadence].k_factor
         if k_factor is not None:
             return k_factor, False
         rating_used_by_fide = self.rating_used_by_fide
@@ -947,7 +920,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         `None` when it cannot be stated: the tournament is not played on
         FIDE ratings, the coefficient (k) of the player is only an estimate,
         or no game of theirs counts for the FIDE ratings."""
-        if self.tournament.player_rating_type != PlayerRatingType.FIDE:
+        if self.official_rating is None:
             return None
         k_factor, k_factor_is_estimated = self.fide_rating_coefficient
         if k_factor_is_estimated:
@@ -1173,22 +1146,24 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         rating_corrections: list['RatingCorrection'] | None = None,
         for_engine: bool = False,
         window: 'ReportWindow | None' = None,
+        rating_report: bool = False,
     ) -> 'TrfPlayer':
         """The player's 001 record, with the games of *rating_corrections*
-        as they were corrected.
+        as they were corrected, and their NRS records (see
+        `_trf_national_players`).
 
         *window* reports one slice of a tournament long enough to be
         reported in slices: the rounds it covers are renumbered from 1,
         the opponents renumbered with them, the ratings and titles are
         those the slice was played on (B.01 1.1.4), and the points are
         the slice's own."""
-        from data.input_output.trf.trf_data import TrfPlayer, TrfGame, TrfNationalPlayer
+        from data.input_output.trf.trf_data import TrfPlayer, TrfGame
 
         games: list[TrfGame] = []
         from data.input_output.trf.trf_mappers import TrfPlayerGender, TrfPlayerTitle
 
         if window is not None:
-            return self._to_trf_window(window)
+            return self._to_trf_window(window, for_engine, rating_report)
 
         correction_by_round = {
             correction.round_: correction
@@ -1243,20 +1218,97 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             rank=self.rank,
             games=games,
         )
-        np = TrfNationalPlayer(
-            player_id=trf_player.id,
-            rating=self.national_rating_value or 0,
-            national_id=self.national_id or '',
+        trf_player.national_player_by_federation = self._trf_national_players(
+            trf_player.id,
+            self.ratings,
+            self._tournament_rating,
+            for_engine,
+            rating_report,
         )
-        plugin_manager.hook_for_event(self.event, 'augment_trf_national_player')(
-            player=self, trf_national_player=np
-        )
-        if np.rating or np.classification or np.origin or np.national_id:
-            trf_player.national_player_by_federation[self.event.federation] = np
         return trf_player
 
-    def _to_trf_window(self, window: 'ReportWindow') -> 'TrfPlayer':
-        from data.input_output.trf.trf_data import TrfGame, TrfNationalPlayer, TrfPlayer
+    def _trf_national_players(
+        self,
+        player_id: int,
+        ratings: dict[Cadence, PlayerRating],
+        rating: PlayerRatingAndType,
+        for_engine: bool,
+        rating_report: bool,
+    ) -> dict[str, 'TrfNationalPlayer']:
+        """The player's NRS records, by federation (TEC Manual 3.9.6).
+
+        The pairing engine is given none, the starting ranks carrying the
+        ranking. A partial TRF exchanged during the tournament (ITDX) gives
+        the national rating, and a pseudo-NRS record for the source of the
+        tournament rating: `SSS`, `RRR` or `BBB` for a FIDE list, `MMM` for
+        a value no list supplied. The final report gives a national record
+        only where its rating ranked the player (TEC Manual 3.9.6.1.b)."""
+        from data.input_output import DataSourceManager
+        from data.input_output.trf.trf_data import (
+            FIDE_BLITZ_PSEUDO_FEDERATION,
+            FIDE_RAPID_PSEUDO_FEDERATION,
+            FIDE_STANDARD_PSEUDO_FEDERATION,
+            MANUAL_PSEUDO_FEDERATION,
+            TrfNationalPlayer,
+        )
+
+        if for_engine:
+            return {}
+        federation = self.event.federation
+        national_players: dict[str, TrfNationalPlayer] = {}
+        national = TrfNationalPlayer(
+            player_id=player_id,
+            rating=0
+            if rating_report
+            else ratings[self.tournament.cadence].national or 0,
+            national_id=self.national_id or '',
+        )
+        if rating.type == PlayerRatingType.NATIONAL:
+            data_source = (
+                DataSourceManager().national_source(rating.origin.source)
+                if rating.origin is not None and rating.origin.source
+                else None
+            )
+            list_federation = (
+                data_source.federation
+                if data_source and data_source.federation
+                else federation
+            )
+            if list_federation == federation:
+                national.rating = rating.value
+            else:
+                national_players[list_federation] = TrfNationalPlayer(
+                    player_id=player_id, rating=rating.value
+                )
+        plugin_manager.hook_for_event(self.event, 'augment_trf_national_player')(
+            player=self, trf_national_player=national
+        )
+        if national.rating or (
+            not rating_report
+            and (national.classification or national.origin or national.national_id)
+        ):
+            national_players[federation] = national
+        if rating_report or not rating.value:
+            return national_players
+        if rating.type == PlayerRatingType.ESTIMATED:
+            national_players[MANUAL_PSEUDO_FEDERATION] = TrfNationalPlayer(
+                player_id=player_id, rating=rating.value
+            )
+        elif rating.type == PlayerRatingType.FIDE and rating.cadence is not None:
+            pseudo_federation = {
+                Cadence.STANDARD: FIDE_STANDARD_PSEUDO_FEDERATION,
+                Cadence.RAPID: FIDE_RAPID_PSEUDO_FEDERATION,
+                Cadence.BLITZ: FIDE_BLITZ_PSEUDO_FEDERATION,
+            }[rating.cadence]
+            national_players[pseudo_federation] = TrfNationalPlayer(
+                player_id=player_id, rating=rating.value
+            )
+        return national_players
+
+    def _to_trf_window(
+        self, window: 'ReportWindow', for_engine: bool, rating_report: bool
+    ) -> 'TrfPlayer':
+        from data.input_output.trf.trf_data import TrfGame, TrfPlayer
         from data.input_output.trf.trf_mappers import TrfPlayerGender, TrfPlayerTitle
 
         period = window.period
@@ -1286,8 +1338,8 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 max(open_title, women_title, key=lambda title: title.sort_index)
             )
             or '',
-            rating=self.rating_and_type_in(period).value
-            if self.rating_and_type_in(period).type == PlayerRatingType.FIDE
+            rating=official.value
+            if (official := self.official_rating_in(period))
             else 0,
             federation=self.federation.name,
             fide_id=self.fide_id,
@@ -1300,22 +1352,13 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             rank=window.rank(self),
             games=games,
         )
-        national_player = TrfNationalPlayer(
-            player_id=trf_player.id,
-            rating=ratings[self.tournament.rating].national or 0,
+        trf_player.national_player_by_federation = self._trf_national_players(
+            trf_player.id,
+            ratings,
+            self.rating_and_type_in(period),
+            for_engine,
+            rating_report,
         )
-        plugin_manager.hook_for_event(self.event, 'augment_trf_national_player')(
-            player=self, trf_national_player=national_player
-        )
-        if (
-            national_player.rating
-            or national_player.classification
-            or national_player.origin
-            or national_player.national_id
-        ):
-            trf_player.national_player_by_federation[self.event.federation] = (
-                national_player
-            )
         return trf_player
 
     # FIXME(Amaras): this should not be in the Player class
@@ -1584,8 +1627,9 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return self.board_number_sort_key == other.board_number_sort_key
 
     def __str__(self) -> str:
+        ratings = '/'.join(str(rating) for rating in self.ratings.values())
         return (
-            f'(#{self.id} rank={self._rank} ratings={self.ratings_str} '
+            f'(#{self.id} rank={self._rank} ratings={ratings} '
             f'title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )

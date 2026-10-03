@@ -55,7 +55,7 @@ from utils.enum import (
     PlayerRatingType,
     PlayerTitle,
     Result,
-    TournamentRating,
+    Cadence,
 )
 import itertools
 
@@ -143,7 +143,7 @@ class PrizesTestCase(TestCase):
             title=PlayerTitle.NONE,
             ratings={
                 rating: PlayerRating.from_type(elo, rating_type).stored_value
-                for rating in TournamentRating
+                for rating in Cadence
             },
             club=club,
             plugin_data={'ffe': {'league': ffe_league}},

@@ -24,7 +24,13 @@ from data.pairings.variations import (
     StandardSwissVariation,
 )
 from data.player import TournamentPlayer
-from utils.types import PlayerRating
+from utils.types import PlayerRating, PlayerRatingAndType
+from data.rating_sequences import (
+    RatingList,
+    RatingListFamily,
+    RatingSequence,
+    sequence_keys,
+)
 from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
 from data.input_output.report_window import ReportWindow, build_window
@@ -43,7 +49,7 @@ from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
-    PapiTournamentRating,
+    PapiCadence,
     PapiTieBreak,
     PapiThreePointsForAWin,
     PapiPlayerGender,
@@ -65,7 +71,7 @@ from data.pairings.acceleration import (
 )
 from utils import Utils
 from utils.enum import (
-    TournamentRating,
+    Cadence,
     PlayerGender,
     PlayerTitle,
     PlayerRatingType,
@@ -147,7 +153,7 @@ class PapiRating:
     value: int
     type_field: str
     type: str | None
-    tournament_rating: TournamentRating
+    tournament_rating: Cadence
 
 
 class PapiConverter:
@@ -384,7 +390,6 @@ class PapiConverter:
                 ).date(),
                 stop_date=datetime.strptime(variables.endDate, PAPI_DATE_FORMAT).date(),
             )
-        stored_tournament.override_unrated_rapid_blitz = False
         rounds = 7
         if variables.rounds:
             if not variables.rounds.isdigit():
@@ -398,13 +403,18 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('pairing', variables.pairing)
         stored_tournament.pairing = pairing
-        rating = TournamentRating.STANDARD
+        rating = Cadence.STANDARD
         if variables.ratingClass:
             try:
-                rating = PapiTournamentRating.get_core_object(variables.ratingClass)
+                rating = PapiCadence.get_core_object(variables.ratingClass)
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
-        stored_tournament.rating = rating.value
+        stored_tournament.cadence = rating.value
+        # Papi does not rank an unrated rapid or blitz player on their
+        # standard rating
+        stored_tournament.rating_sequence = sequence_keys(
+            PapiConverter._papi_sequence(rating)
+        )
         tie_breaks: list[StoredTieBreak] = []
         for index, papi_tie_break in enumerate(
             (
@@ -510,28 +520,28 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('fideTitle', papi_player.fideTitle)
 
-        ratings: dict[int, dict[str, int | None]] = {}
+        ratings: dict[int, dict[str, Any]] = {}
         papi_ratings = [
             PapiRating(
                 'elo',
                 papi_player.elo,
                 'fideElo',
                 papi_player.fideElo,
-                TournamentRating.STANDARD,
+                Cadence.STANDARD,
             ),
             PapiRating(
                 'rapidElo',
                 papi_player.rapidElo,
                 'fideRapidElo',
                 papi_player.fideRapidElo,
-                TournamentRating.RAPID,
+                Cadence.RAPID,
             ),
             PapiRating(
                 'blitzElo',
                 papi_player.blitzElo,
                 'fideBlitzElo',
-                papi_player.fideRapidElo,
-                TournamentRating.BLITZ,
+                papi_player.fideBlitzElo,
+                Cadence.BLITZ,
             ),
         ]
         for papi_rating in papi_ratings:
@@ -927,7 +937,7 @@ class PapiConverter:
                 if tournament.event.is_team_event
                 else tournament.pairing_variation
             ),
-            ratingClass=PapiTournamentRating.get_outer_value(tournament.rating),
+            ratingClass=PapiCadence.get_outer_value(tournament.cadence),
             venue=tournament.location,
             startDate=tournament.start_date.strftime(PAPI_DATE_FORMAT),
             endDate=tournament.stop_date.strftime(PAPI_DATE_FORMAT),
@@ -1112,18 +1122,12 @@ class PapiConverter:
             club=tournament_player.club.name,
             fixedBoard=fixed_board,
             checkedIn=tournament_player.check_in,
-            elo=self._get_papi_elo(tournament_player, TournamentRating.STANDARD),
-            fideElo=self._get_papi_elo_type(
-                tournament_player, TournamentRating.STANDARD
-            ),
-            rapidElo=self._get_papi_elo(tournament_player, TournamentRating.RAPID),
-            fideRapidElo=self._get_papi_elo_type(
-                tournament_player, TournamentRating.RAPID
-            ),
-            blitzElo=self._get_papi_elo(tournament_player, TournamentRating.BLITZ),
-            fideBlitzElo=self._get_papi_elo_type(
-                tournament_player, TournamentRating.BLITZ
-            ),
+            elo=self._get_papi_elo(tournament_player, Cadence.STANDARD),
+            fideElo=self._get_papi_elo_type(tournament_player, Cadence.STANDARD),
+            rapidElo=self._get_papi_elo(tournament_player, Cadence.RAPID),
+            fideRapidElo=self._get_papi_elo_type(tournament_player, Cadence.RAPID),
+            blitzElo=self._get_papi_elo(tournament_player, Cadence.BLITZ),
+            fideBlitzElo=self._get_papi_elo_type(tournament_player, Cadence.BLITZ),
             licenceType=PapiPlayerFFELicence.get_outer_value(
                 plugin_data.ffe_licence, FFEUtils.licence_number(tournament_player)
             ),
@@ -1186,29 +1190,37 @@ class PapiConverter:
 
         return papi_player
 
+    @staticmethod
+    def _papi_sequence(tournament_rating: Cadence) -> RatingSequence:
+        """The FIDE then the FFE rating of a cadence, which is what each
+        rating column of Papi holds."""
+        return (
+            RatingList(RatingListFamily.FIDE, tournament_rating),
+            RatingList(RatingListFamily.NATIONAL, tournament_rating),
+        )
+
+    def _papi_rating(
+        self, tournament_player: TournamentPlayer, tournament_rating: Cadence
+    ) -> PlayerRatingAndType:
+        tournament = tournament_player.tournament
+        return tournament_player.resolve_rating(
+            tournament_rating,
+            tournament.rating_preference,
+            tournament.rating_sequence
+            if tournament_rating == tournament.cadence
+            else self._papi_sequence(tournament_rating),
+            tournament_player.category,
+        )
+
     def _get_papi_elo(
-        self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
+        self, tournament_player: TournamentPlayer, tournament_rating: Cadence
     ) -> int:
-        # Override unrated rapid/blitz rating in the export
-        # When exporting to Papi we can safely assume that the player type for the tournament rating is FIDE
-        if tournament_player.rating_is_overridden(
-            tournament_rating, PlayerRatingType.FIDE
-        ):
-            tournament_rating = TournamentRating.STANDARD
-        return tournament_player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
-        ).value
+        return self._papi_rating(tournament_player, tournament_rating).value
 
     def _get_papi_elo_type(
-        self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
+        self, tournament_player: TournamentPlayer, tournament_rating: Cadence
     ) -> str:
-        if tournament_player.rating_is_overridden(
-            tournament_rating, PlayerRatingType.FIDE
-        ):
-            tournament_rating = TournamentRating.STANDARD
-        rating_and_type = tournament_player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
-        )
+        rating_and_type = self._papi_rating(tournament_player, tournament_rating)
         rating_type = rating_and_type.type
         default_rating = PapiPlayerRatingType.get_outer_value(
             PlayerRatingType.ESTIMATED

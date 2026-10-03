@@ -39,7 +39,7 @@ from data.pairings.systems import (
     TeamRoundRobinPairingSystem,
 )
 from data.player import TournamentPlayer
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
@@ -2377,7 +2377,7 @@ class NormReportPrintDocument(PrintDocument):
         if not super().is_available(allowed_tournaments):
             return False
         return any(
-            tournament.rating == TournamentRating.STANDARD
+            tournament.cadence == Cadence.STANDARD
             and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
@@ -2385,7 +2385,7 @@ class NormReportPrintDocument(PrintDocument):
     def validate_options(self) -> None:
         super().validate_options()
         tournament = self.tournament
-        if tournament.rating != TournamentRating.STANDARD:
+        if tournament.cadence != Cadence.STANDARD:
             raise OptionError(
                 _(
                     'This document is only available for standard time control tournaments.'
@@ -2626,7 +2626,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         if not super().is_available(allowed_tournaments):
             return False
         return any(
-            tournament.rating == TournamentRating.STANDARD
+            tournament.cadence == Cadence.STANDARD
             and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
@@ -2634,7 +2634,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
     def validate_options(self) -> None:
         super().validate_options()
         tournament = self.tournament
-        if tournament.rating != TournamentRating.STANDARD:
+        if tournament.cadence != Cadence.STANDARD:
             raise OptionError(
                 _(
                     'This document is only available for standard time control tournaments.'

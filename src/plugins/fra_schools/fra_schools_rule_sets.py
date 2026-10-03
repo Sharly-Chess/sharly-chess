@@ -406,7 +406,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         own rating type says nothing about art. 5.1.4."""
         tournament = team.tournament
         if tournament is not None:
-            return bool(player.ratings[tournament.rating].fide)
+            return bool(player.ratings[tournament.cadence].fide)
         return any(bool(rating.fide) for rating in player.ratings.values())
 
     # -----------------------------------------------------------------

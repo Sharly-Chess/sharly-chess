@@ -27,6 +27,27 @@ class DataSourceManager(EntityManager[DataSource]):
         plugin_manager.hook.insert_data_sources(data_sources=data_sources)
         return data_sources
 
+    @staticmethod
+    def online_version_ids() -> set[str]:
+        """The online versions of installed lists, which a national list
+        is reached through rather than on their own."""
+        from data.input_output.data_source import LocalDataSource
+
+        return {
+            data_source_type.online_version_type.static_id()
+            for data_source_type in DataSourceManager().entity_types()
+            if issubclass(data_source_type, LocalDataSource)
+            and data_source_type.online_version_type is not None
+        }
+
+    def listed_objects(self) -> list[DataSource]:
+        online_version_ids = self.online_version_ids()
+        return [
+            data_source
+            for data_source in self.objects()
+            if data_source.id not in online_version_ids
+        ]
+
     def active_objects(self) -> list[DataSource]:
         return [data_source for data_source in self.objects() if data_source.is_active]
 
@@ -35,7 +56,7 @@ class DataSourceManager(EntityManager[DataSource]):
         source key, the active one when there is one."""
         data_sources = [
             data_source
-            for data_source in self.objects()
+            for data_source in self.listed_objects()
             if data_source.national_source_id == national_source_id
         ]
         return next(
@@ -48,7 +69,7 @@ class DataSourceManager(EntityManager[DataSource]):
         federation, the active one when there is one."""
         data_sources = [
             data_source
-            for data_source in self.objects()
+            for data_source in self.listed_objects()
             if data_source.federation == federation and data_source.national_source_id
         ]
         return next(

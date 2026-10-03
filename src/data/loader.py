@@ -115,7 +115,6 @@ class EventLoader:
                     uniq_id=uniq_id,
                     name=uniq_id,
                     federation='',
-                    player_rating_type=0,
                     start_date=modified,
                     stop_date=modified,
                     accessible=False,

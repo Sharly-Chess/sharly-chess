@@ -3,12 +3,15 @@ var changeMonthTooltip = null;
 var previousFfeEnabled = null;
 $('#{{ plugin.form_key }}').change(function () {
     if (this.checked) {
-        $('#player-rating-type,#player-rating-type-hidden').val('3').trigger('change');
-        const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
-        ratingTypeTooltip = new bootstrap.Tooltip(ratingTypeContainer, {
-            title: `{{ _('The FFE always uses the FIDE rating when available.') }}`,
-            placement: 'top',
-        });
+        // The FFE ranks on the FIDE rating, then on the national one
+        $('#rating-preference,#rating-preference-hidden').val('3').trigger('change');
+        const ratingTypeContainer = document.getElementById('rating-preference-input-container');
+        if (ratingTypeContainer) {
+            ratingTypeTooltip = new bootstrap.Tooltip(ratingTypeContainer, {
+                title: `{{ _('The FFE always uses the FIDE rating when available.') }}`,
+                placement: 'top',
+            });
+        }
 
         $('#age-category-change-month,#age-category-change-month-hidden').val('9').trigger('change');
         const changeMonthContainer = document.getElementById('age-category-change-month-input-container');
@@ -30,8 +33,8 @@ $('#{{ plugin.form_key }}').change(function () {
         }
     }
     previousFfeEnabled = this.checked;
-    $('#player-rating-type').prop('disabled', this.checked);
-    $('#player-rating-type-hidden').prop('disabled', !this.checked);
+    $('#rating-preference').prop('disabled', this.checked);
+    $('#rating-preference-hidden').prop('disabled', !this.checked);
     $('#age-category-change-month').prop('disabled', this.checked);
     $('#age-category-change-month-hidden').prop('disabled', !this.checked);
 

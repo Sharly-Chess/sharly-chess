@@ -19,7 +19,7 @@ from data.pairings.variations import (
 from database.sqlite.config.config_database import ConfigDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
-    ChessResultTournamentRating,
+    ChessResultCadence,
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
     ChessResultPairingSystem,
@@ -243,9 +243,7 @@ class ChessResultsSession(Session):
                 'ratedfide': '-',
                 'ratednational': '-',
                 'replay': replay,
-                'timetype': ChessResultTournamentRating.get_outer_value(
-                    tournament.rating
-                )
+                'timetype': ChessResultCadence.get_outer_value(tournament.cadence)
                 or '',
                 'timecontrol': trf25_to_human_readable(tournament.time_control_trf25)
                 if tournament.time_control_trf25
@@ -321,7 +319,7 @@ class ChessResultsSession(Session):
             )
             prev_tb_values = tb_values
 
-            ratings = p.ratings.get(tournament.rating)
+            ratings = p.ratings.get(tournament.cadence)
             k_factor, k_factor_is_estimated = p.fide_rating_coefficient
             rating_change = p.fide_rating_change
             ET.SubElement(
@@ -506,7 +504,7 @@ class ChessResultsSession(Session):
                 no_by_player_id[player.id] = no
                 member_tp = tournament_players_by_id.get(player.id)
                 ratings = (
-                    member_tp.ratings.get(tournament.rating) if member_tp else None
+                    member_tp.ratings.get(tournament.cadence) if member_tp else None
                 )
                 k_factor, k_factor_is_estimated = (
                     member_tp.fide_rating_coefficient if member_tp else (0, True)

@@ -12,7 +12,7 @@ The lists differ a lot in what they carry. This page records, for each of them, 
 
 | | |
 |---|---|
-| Source | `https://ratings.fide.com/download/players_list_xml_legacy.zip` (the monthly list, published on the 1st) |
+| Source | `https://ratings.fide.com/download/players_list_xml_legacy.zip` (refreshed by FIDE almost daily; its `Last-Modified` date is recorded as the version of the list) |
 | Format | ZIP → one XML file (about 800 MB, read straight out of the archive) |
 | Elements | `<player>`: `fideid`, `name`, `country`, `sex`, `title`, `w_title`, `o_title`, `rating`, `games`, `k`, `rapid_rating`, `rapid_games`, `rapid_k`, `blitz_rating`, `blitz_games`, `blitz_k`, `birthday`, `flag` |
 | Identifier | `fideid` |

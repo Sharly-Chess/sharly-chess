@@ -10,6 +10,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 
 
 class NzcfDatabase(NationalPlayerDatabase):
@@ -22,6 +23,7 @@ class NzcfDatabase(NationalPlayerDatabase):
 
     federation = 'NZL'
     acronym = 'NZCF'
+    national_cadences = frozenset({Cadence.STANDARD, Cadence.RAPID})
 
     _PAGE_URL = 'https://compete.newzealandchess.co.nz/new-zealand-ratings-list/'
     _FILE_PATTERN = re.compile(

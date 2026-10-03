@@ -18,7 +18,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 from utils.types import PlayerRating
 
 EVENT_ID = 'test-player-period-ratings'
@@ -60,9 +60,9 @@ class TestMonthRatings:
                     id=None,
                     last_name=PLAYER_NAME,
                     ratings={
-                        TournamentRating.STANDARD.value: {'fide': fide_rating},
-                        TournamentRating.RAPID.value: {'fide': 1400},
-                        TournamentRating.BLITZ.value: {'national': 1300},
+                        Cadence.STANDARD.value: {'fide': fide_rating},
+                        Cadence.RAPID.value: {'fide': 1400},
+                        Cadence.BLITZ.value: {'national': 1300},
                     },
                 )
             )
@@ -87,7 +87,7 @@ class TestMonthRatings:
         return self._tournament.periods[index]
 
     def _fide(self, player, period) -> int | None:
-        return player.ratings_for(period)[TournamentRating.STANDARD].fide
+        return player.ratings_for(period)[Cadence.STANDARD].fide
 
     def test_without_a_recorded_change_every_period_reads_the_same(self):
         player = self._player(fide_rating=1500)
@@ -98,7 +98,7 @@ class TestMonthRatings:
     def test_a_later_period_takes_the_rating_recorded_for_it(self):
         player = self._player(fide_rating=1500)
         player.update_ratings(
-            {TournamentRating.STANDARD: PlayerRating(fide=1560)},
+            {Cadence.STANDARD: PlayerRating(fide=1560)},
             period=self._period(1),
         )
         assert self._fide(player, self._period(0)) == 1500
@@ -107,7 +107,7 @@ class TestMonthRatings:
     def test_a_period_keeps_the_last_rating_recorded_before_it(self):
         player = self._player(fide_rating=1500)
         player.update_ratings(
-            {TournamentRating.STANDARD: PlayerRating(fide=1560)},
+            {Cadence.STANDARD: PlayerRating(fide=1560)},
             period=self._period(1),
         )
         assert self._fide(player, self._period(2)) == 1560
@@ -117,7 +117,7 @@ class TestMonthRatings:
         it belongs on the player, not on a slice of its own."""
         player = self._player(fide_rating=1500)
         player.update_ratings(
-            {TournamentRating.STANDARD: PlayerRating(fide=1520)},
+            {Cadence.STANDARD: PlayerRating(fide=1520)},
             period=self._period(0),
         )
         assert player.stored_player.periods == {}
@@ -128,14 +128,14 @@ class TestMonthRatings:
         not only the ones the update happened to carry."""
         player = self._player(fide_rating=1500)
         player.update_ratings(
-            {TournamentRating.STANDARD: PlayerRating(fide=1560, k_factor=20)},
+            {Cadence.STANDARD: PlayerRating(fide=1560, k_factor=20)},
             period=self._period(1),
         )
         ratings = player.ratings_for(self._period(1))
-        assert ratings[TournamentRating.STANDARD].fide == 1560
-        assert ratings[TournamentRating.STANDARD].k_factor == 20
-        assert ratings[TournamentRating.RAPID].fide == 1400
-        assert ratings[TournamentRating.BLITZ].national == 1300
+        assert ratings[Cadence.STANDARD].fide == 1560
+        assert ratings[Cadence.STANDARD].k_factor == 20
+        assert ratings[Cadence.RAPID].fide == 1400
+        assert ratings[Cadence.BLITZ].national == 1300
 
     def test_recorded_ratings_survive_a_boundary_moving(self):
         """Re-cutting a tournament re-bounds its slices; a slice must not
@@ -143,7 +143,7 @@ class TestMonthRatings:
         was built from — because the arbiter moved a round."""
         player = self._player(fide_rating=1500)
         player.update_ratings(
-            {TournamentRating.STANDARD: PlayerRating(fide=1560)},
+            {Cadence.STANDARD: PlayerRating(fide=1560)},
             period=self._period(1),
         )
         with EventDatabase(EVENT_ID, write=True) as database:
@@ -157,7 +157,7 @@ class TestMonthRatings:
     def test_recorded_periods_survive_a_save(self):
         player = self._player(fide_rating=1500)
         player.update_ratings(
-            {TournamentRating.STANDARD: PlayerRating(fide=1560)},
+            {Cadence.STANDARD: PlayerRating(fide=1560)},
             period=self._period(1),
         )
         with EventDatabase(EVENT_ID, write=True) as database:
