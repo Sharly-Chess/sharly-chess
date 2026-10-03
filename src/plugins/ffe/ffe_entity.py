@@ -24,7 +24,7 @@ from data.print_documents.options import TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
-from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
+from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR, NATIONAL_SOURCE_ID
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, FFE_LEAGUES
 from data.pairings.settings import (
@@ -566,11 +566,14 @@ class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
         return True
 
     def get_cell_content(self, player: Player) -> Any:
+        if player.national_source not in (None, NATIONAL_SOURCE_ID):
+            return None
         return player.national_id
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if value and not stored_player.national_id:
             stored_player.national_id = value.strip()
+            stored_player.national_source = NATIONAL_SOURCE_ID
 
 
 class FfeLicenceDatasheetColumn(DatasheetColumn):
