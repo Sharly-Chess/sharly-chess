@@ -711,6 +711,9 @@ msgstr ""
 msgid "APPLIED"
 msgstr ""
 
+msgid "About"
+msgstr ""
+
 msgid "About the plugins"
 msgstr ""
 

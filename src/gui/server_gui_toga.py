@@ -368,6 +368,7 @@ class SharlyChessServerToga(toga.App):
         self.menu_plugins_btn: toga.Button | None = None
         self.menu_logs_btn: toga.Button | None = None
         self.menu_settings_btn: toga.Button | None = None
+        self.menu_about_btn: toga.Button | None = None
         self.active_view_name: str | None = None
         self.requested_window_size: tuple[int, int] | None = None
         #: The buttons displayed as selected, and whether the window is the
@@ -404,14 +405,17 @@ class SharlyChessServerToga(toga.App):
         self.launch_browser_switch: toga.Switch | None = None
         self.data_path_input: TextInput | None = None
         self.data_path_move_button: toga.Button | None = None
-        self.check_beta_switch: toga.Switch | None = None
-        self.latest_version_label: toga.Label | None = None
-        self.latest_version_btn: toga.Button | None = None
         self.locale_select: toga.Selection | None = None
         self.date_formatter_select: toga.Selection | None = None
         self.name_formatter_select: toga.Selection | None = None
         self.capitalise_last_name_switch: toga.Switch | None = None
         self.experimental_switch: toga.Switch | None = None
+
+        # About view
+        self.about_view: toga.Box | None = None
+        self.check_beta_switch: toga.Switch | None = None
+        self.latest_version_label: toga.Label | None = None
+        self.latest_version_btn: toga.Button | None = None
 
         # Setup content, displayed while the settings have not been set
         self.federation_field: toga.Widget | None = None
@@ -427,6 +431,7 @@ class SharlyChessServerToga(toga.App):
             self.menu_plugins_btn,
             self.menu_logs_btn,
             self.menu_settings_btn,
+            self.menu_about_btn,
         ]
 
     @property
@@ -437,6 +442,7 @@ class SharlyChessServerToga(toga.App):
             self.plugins_view,
             self.logs_view,
             self.settings_view,
+            self.about_view,
         ]
 
     #: Margin around the content of a view.
@@ -519,6 +525,12 @@ class SharlyChessServerToga(toga.App):
             _('Settings'),
             style=self.menu_button_style,
             on_press=self._show_settings_view,
+            enabled=False,
+        )
+        self.menu_about_btn = toga.Button(
+            _('About'),
+            style=self.menu_button_style,
+            on_press=self._show_about_view,
             enabled=False,
         )
 
@@ -695,21 +707,6 @@ class SharlyChessServerToga(toga.App):
                 _('Move'), on_press=self._handle_data_path_selection
             )
             data_path_buttons.append(self.data_path_move_button)
-        current_version_message = _('Current version: Sharly Chess {version}').format(
-            version=SHARLY_CHESS_VERSION
-        )
-        self.check_beta_switch = toga.Switch(
-            text=_('Include beta versions in updates'),
-            value=config.check_beta_versions,
-            on_change=self._on_check_beta_switch_change,
-        )
-        self.latest_version_label = toga.Label(
-            '', text_align='center'
-        )  # initialized later
-        self.latest_version_btn = toga.Button(
-            _('Search for updates'), on_press=self._search_for_updates
-        )
-        changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
         title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         general_children: list[toga.Widget] = [
             self._settings_row(_('Language:'), self._build_locale_select()),
@@ -737,7 +734,26 @@ class SharlyChessServerToga(toga.App):
                 children=data_path_buttons,
                 gap=10,
             ),
-            toga.Divider(margin=(5, 0)),
+        )
+
+        # About view
+        self.about_view = toga.Box(style=self.compact_view_style, gap=7)
+        current_version_message = _('Current version: Sharly Chess {version}').format(
+            version=SHARLY_CHESS_VERSION
+        )
+        self.check_beta_switch = toga.Switch(
+            text=_('Include beta versions in updates'),
+            value=config.check_beta_versions,
+            on_change=self._on_check_beta_switch_change,
+        )
+        self.latest_version_label = toga.Label(
+            '', text_align='center'
+        )  # initialized later
+        self.latest_version_btn = toga.Button(
+            _('Search for updates'), on_press=self._search_for_updates
+        )
+        changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
+        self.about_view.add(
             toga.Label(_('Updates'), style=title_style),
             toga.Label(current_version_message, text_align='center'),
             self.latest_version_label,
@@ -1104,6 +1120,9 @@ class SharlyChessServerToga(toga.App):
         self._show_view('settings')
         # The labels can only be measured once the view they are in is laid out.
         self._align_settings_labels()
+
+    def _show_about_view(self, widget: Any) -> None:
+        self._show_view('about')
         self._update_latest_version_components()
 
     def _toggle_log_settings(self, widget: Any) -> None:
@@ -1260,7 +1279,7 @@ class SharlyChessServerToga(toga.App):
         assert self.update_available_box is not None
         assert self.home_view is not None
 
-        skip_settings = self.active_view_name != 'settings'
+        skip_about = self.active_view_name != 'about'
         latest = VersionUpdater.LATEST_VERSION
         search_ongoing = self.version_search_ongoing
         searched_at = VersionUpdater.LATEST_VERSION_SEARCHED_AT
@@ -1272,7 +1291,7 @@ class SharlyChessServerToga(toga.App):
             message = _('Updates are available!')
             if self.update_available_box not in self.home_view.children:
                 self.home_view.insert(0, self.update_available_box)
-            if not skip_settings:
+            if not skip_about:
                 self.latest_version_label.style.font_weight = 'bold'
                 self.latest_version_btn.text = _('Install')
                 self.latest_version_btn.on_press = self._show_update_dialog
@@ -1280,7 +1299,7 @@ class SharlyChessServerToga(toga.App):
             message = _('No available update')
             message += f' ({self._last_search_message(searched_at)})'
 
-        if not skip_settings:
+        if not skip_about:
             self.latest_version_label.text = message
             self.latest_version_label.enabled = not search_ongoing
             self.latest_version_btn.enabled = not search_ongoing
@@ -1436,11 +1455,12 @@ class SharlyChessServerToga(toga.App):
         self.server_state_container.clear()
         self.server_state_container.add(
             toga.Box(
-                style=Pack(direction=ROW, align_items='center'),
+                style=Pack(direction=ROW, align_items='center', margin=(15, 0)),
                 children=[
                     toga.Button(
                         _('Open application (browser)'),
                         on_press=self._open_browser,
+                        font_weight='bold',
                     ),
                 ],
             )
