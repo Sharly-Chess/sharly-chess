@@ -2669,6 +2669,26 @@ class QRCodePrintDocument(PrintDocument):
     def available_options() -> list[type[PrintOption]]:
         return [QRCodePrintOption, TournamentPrintOption, QRCodeNetworkPrintOption]
 
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        return True
+
+    @override
+    def validate_options(self) -> None:
+        qrcode_option = self._get_option(QRCodePrintOption)
+        qrcode_option.validate()
+        valid_option_types = qrcode_option.qrcode_type.get_valid_option_types()
+        for option in self.options:
+            if type(option) in valid_option_types:
+                option.validate()
+
+    @property
+    def tab_title(self) -> str:
+        qrcode_type = self._get_option(QRCodePrintOption).qrcode_type
+        if TournamentPrintOption in qrcode_type.get_valid_option_types():
+            return f'{self.name} - {self.tournament.name}'
+        return self.name
+
     @property
     def title(self) -> str:
         qrcode_type = self._get_option(QRCodePrintOption).qrcode_type

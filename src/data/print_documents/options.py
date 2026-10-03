@@ -817,7 +817,13 @@ class QRCodePrintOption(PrintOption[str]):
     def qrcode_type_options(self) -> dict[str, str]:
         from data.print_documents import PrintQRCodeTypeManager
 
-        return PrintQRCodeTypeManager(self.event).options()
+        has_tournaments = self.event is not None and bool(self.event.tournaments_by_id)
+        return {
+            qrcode_type.static_id(): qrcode_type.static_name()
+            for qrcode_type in PrintQRCodeTypeManager(self.event).entity_types()
+            if has_tournaments
+            or TournamentPrintOption not in qrcode_type.get_valid_option_types()
+        }
 
     @cached_property
     def qrcode_type(self) -> QRCodeType:
