@@ -588,6 +588,7 @@ with_indicator: display a loading indicator, optional
     autocomplete='',
     disabled=false,
     prevent_wrapping=false,
+    stacked=false,
     hx_get='',
     hx_post='',
     hx_target='',
@@ -609,7 +610,7 @@ with_indicator: display a loading indicator, optional
         {% else %}
             {% set value=data[name] %}
         {% endif %}
-        <div id="{{id}}-wrapper" class="input-block position-relative{% if prevent_wrapping %} flex-nowrap{% endif %}">
+        <div id="{{id}}-wrapper" class="input-block position-relative{% if prevent_wrapping %} flex-nowrap{% endif %}{% if stacked %} input-block-stacked{% endif %}">
             <div class="d-flex align-items-center">
                 {%- if label -%}
                     <span
@@ -990,6 +991,7 @@ with_indicator: display a loading indicator, optional
     with_indicator=false,
     autocomplete='',
     prevent_wrapping=false,
+    stacked=false,
     onkeyup='',
     hx_get='',
     hx_post='',
@@ -1280,11 +1282,13 @@ with_indicator: display a loading indicator, optional
     select_all=false,
     placeholder='',
     disabled=false,
-    input_tooltip=''
+    input_tooltip='',
+    stacked=false
 ) %}
     {{ _generic_input(
         name=name,
         input_type='select',
+        stacked=stacked,
         label=label,
         help_text=help_text,
         tooltip_text=tooltip_text,

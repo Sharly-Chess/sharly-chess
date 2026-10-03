@@ -1125,6 +1125,12 @@ class LowestOwnAverageRatingTieBreak(TeamTieBreak):
     def category(self) -> TieBreakCategory:
         return TeamScoreCategory()
 
+    @property
+    def reads_ratings(self) -> bool:
+        """It averages the players' own ratings, whatever it is grouped
+        with in the picker."""
+        return True
+
     def compute_team_value(
         self,
         team_record: TeamRecord,

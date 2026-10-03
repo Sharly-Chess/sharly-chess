@@ -78,7 +78,7 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
             'show_details': SessionAccountsShowDetails(self.request).get(),
             'admin_account': self.admin_account,
             'admin_permission': self.admin_permission,
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
             'selected_data_source': SessionPlayersActiveDataSource(self.request).get(),
         }
 

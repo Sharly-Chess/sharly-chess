@@ -29,6 +29,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(days)d days"
+msgstr ""
+
+#, python-format
 msgid "%(first)s - %(last)s"
 msgstr ""
 
@@ -642,6 +646,9 @@ msgstr ""
 msgid "A player gets their initial score as virtual points in every round of the tournament. A player with no initial score gets no virtual points."
 msgstr ""
 
+msgid "A player may hold a different rating in each slice of a tournament reported in slices, so FIDE C.07:10 leaves the choice to the arbiter and takes the first rating by default."
+msgstr ""
+
 msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
 msgstr ""
 
@@ -829,6 +836,9 @@ msgstr ""
 
 msgid "Add a criterion to the list."
 msgstr ""
+
+msgid "Add a data source"
+msgstr "Add a data source"
 
 msgid "Add a display controller to the event."
 msgstr ""
@@ -2285,9 +2295,6 @@ msgstr ""
 msgid "Contact (vCards)"
 msgstr ""
 
-msgid "Contact and registration"
-msgstr ""
-
 msgid "Contact email:"
 msgstr ""
 
@@ -2677,6 +2684,9 @@ msgstr ""
 
 msgid "December"
 msgstr ""
+
+msgid "Decrypting…"
+msgstr "Decrypting…"
 
 msgid "Default"
 msgstr ""
@@ -3092,6 +3102,14 @@ msgstr ""
 msgid "Download tournament fees"
 msgstr ""
 
+#, python-brace-format
+msgid "Downloading… {received} / {total} MB"
+msgstr "Downloading… {received} / {total} MB"
+
+#, python-brace-format
+msgid "Downloading… {received} MB"
+msgstr "Downloading… {received} MB"
+
 msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
 msgstr ""
 
@@ -3336,6 +3354,9 @@ msgid "Each competitor row carries a popover with the per-stage breakdown."
 msgstr ""
 
 msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the colour is the one on the first board."
+msgstr ""
+
+msgid "Each game's own period"
 msgstr ""
 
 #, python-format
@@ -3741,6 +3762,9 @@ msgstr ""
 msgid "Extended Sonneborn-Berger"
 msgstr ""
 
+msgid "Extracting…"
+msgstr "Extracting…"
+
 msgctxt "short name for rating type FIDE"
 msgid "F"
 msgstr ""
@@ -3794,6 +3818,9 @@ msgstr ""
 
 #, python-format
 msgid "FIDE mode was left at round %(round)d."
+msgstr ""
+
+msgid "FIDE rates a tournament of more than 30 days in slices of at most 30 days, each submitted as a tournament of its own. Mark the round that starts each slice in the schedule below."
 msgstr ""
 
 msgid "FIDE rating lost"
@@ -3931,6 +3958,9 @@ msgid "First pairing:"
 msgstr ""
 
 msgid "First player:"
+msgstr ""
+
+msgid "First rating"
 msgstr ""
 
 msgid "First round"
@@ -4580,6 +4610,9 @@ msgstr ""
 msgid "Increment (sec):"
 msgstr ""
 
+msgid "Indexing…"
+msgstr "Indexing…"
+
 msgid "India"
 msgstr ""
 
@@ -4632,10 +4665,16 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
+msgid "Install from a file…"
+msgstr "Install from a file…"
+
 msgid "Install it from the Plugins section to open the event."
 msgid_plural "Install them from the Plugins section to open the event."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Install the database from a source file you downloaded yourself."
+msgstr "Install the database from a source file you downloaded yourself."
 
 #, python-brace-format
 msgid "Installation of [{lib}] failed."
@@ -4647,6 +4686,9 @@ msgstr ""
 
 msgid "Installing a plugin makes its features available in the whole application. Every event then enables the plugins it needs, from the configuration screen of the event, so that each event only shows what it uses."
 msgstr ""
+
+msgid "Installing…"
+msgstr "Installing…"
 
 msgid "International Arbiter"
 msgstr ""
@@ -5560,6 +5602,12 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
+msgid "Move this round to the next period"
+msgstr ""
+
+msgid "Move this round to the previous period"
+msgstr ""
+
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -5695,12 +5743,23 @@ msgstr ""
 msgid "Naming:"
 msgstr ""
 
+msgctxt "national id column header"
+msgid "Nat. ID"
+msgstr "Nat. ID"
+
 msgctxt "name for rating type national"
 msgid "National"
 msgstr ""
 
 msgid "National Arbiter"
 msgstr ""
+
+msgid "National ID"
+msgstr "National ID"
+
+#, python-brace-format
+msgid "National ID [{national_id}] already present in tournament [{tournament}]."
+msgstr "National ID [{national_id}] already present in tournament [{tournament}]."
 
 msgid "National championship final (1.4.3a)"
 msgstr ""
@@ -5893,6 +5952,12 @@ msgstr ""
 
 msgid "No custom templates yet."
 msgstr ""
+
+msgid "No data source is active (to add one: Menu > Data sources)."
+msgstr "No data source is active (to add one: Menu > Data sources)."
+
+msgid "No data source is active."
+msgstr "No data source is active."
 
 msgid "No director"
 msgstr ""
@@ -7014,6 +7079,14 @@ msgstr ""
 msgid "Period"
 msgstr ""
 
+#, python-format
+msgid "Period %(index)d"
+msgstr ""
+
+#, python-format
+msgid "Period %(index)d (%(rounds)s)"
+msgstr ""
+
 msgid "Permissions"
 msgstr ""
 
@@ -7725,6 +7798,14 @@ msgctxt "round column header"
 msgid "R {round}"
 msgstr ""
 
+#, python-format
+msgid "R%(first)d–R%(last)d"
+msgstr ""
+
+#, python-format
+msgid "R%(round)d"
+msgstr ""
+
 msgid "RES"
 msgstr ""
 
@@ -7851,6 +7932,9 @@ msgstr ""
 msgid "Rating ranges"
 msgstr ""
 
+msgid "Rating read by rating-based tie-breaks"
+msgstr ""
+
 msgid "Rating report correction"
 msgstr ""
 
@@ -7870,6 +7954,9 @@ msgid "Rating:"
 msgstr ""
 
 msgid "Ratings"
+msgstr ""
+
+msgid "Ratings of the earlier periods"
 msgstr ""
 
 msgid "Ratings update"
@@ -7928,9 +8015,6 @@ msgstr ""
 msgid "Reload the page"
 msgstr ""
 
-msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
-msgstr ""
-
 msgid "Reminder: you might have to update the players' information before distributing them among the tournaments."
 msgstr ""
 
@@ -7956,6 +8040,9 @@ msgid "Remove the player from the event."
 msgstr ""
 
 msgid "Remove the screen from the display controller."
+msgstr ""
+
+msgid "Remove this period"
 msgstr ""
 
 msgid "Remove this tournament from the championship?"
@@ -8368,6 +8455,10 @@ msgid "Rounding of the Keizer points"
 msgstr ""
 
 msgid "Rounds"
+msgstr ""
+
+#, python-format
+msgid "Rounds %(first)d-%(last)d"
 msgstr ""
 
 msgid "Rounds before a rematch"
@@ -9096,6 +9187,9 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
+msgid "Split for FIDE (max 30 days)"
+msgstr ""
+
 msgid "Split method"
 msgstr ""
 
@@ -9157,6 +9251,9 @@ msgstr ""
 msgid "Start Sharly Chess"
 msgstr ""
 
+msgid "Start a new period at this round"
+msgstr ""
+
 msgid "Start date"
 msgstr ""
 
@@ -9194,6 +9291,9 @@ msgstr ""
 
 msgid "Still in"
 msgstr ""
+
+msgid "Storing…"
+msgstr "Storing…"
 
 msgid "Strikethrough"
 msgstr ""
@@ -10411,6 +10511,14 @@ msgstr ""
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
 msgstr ""
 
+#, python-format
+msgid "This period lasts %(days)d days: split it before round #%(round)d."
+msgstr ""
+
+#, python-format
+msgid "This period lasts %(days)d days; FIDE allows %(max)d at most."
+msgstr ""
+
 msgid "This player already exists in the event."
 msgstr ""
 
@@ -10462,6 +10570,9 @@ msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
 msgid "This round is paired; the prohibited pairings used are frozen."
+msgstr ""
+
+msgid "This round opens a new period of the tournament, which FIDE rates on the ratings in force when it starts: you might have to update them before pairing."
 msgstr ""
 
 #, python-format
@@ -12487,6 +12598,14 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
+msgid "{count} players"
+msgstr "{count} players"
+
+#, python-brace-format
+msgid "{count} players stored…"
+msgstr "{count} players stored…"
+
+#, python-brace-format
 msgid "{count} prize category successfully generated."
 msgid_plural "{count} prize categories successfully generated."
 msgstr[0] ""
@@ -12565,6 +12684,10 @@ msgstr ""
 #, python-brace-format
 msgid "{screen_type}-screen"
 msgstr ""
+
+#, python-brace-format
+msgid "{source} ID:"
+msgstr "{source} ID:"
 
 #, python-brace-format
 msgid "{stage} — game 1"

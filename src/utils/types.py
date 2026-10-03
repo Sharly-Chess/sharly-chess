@@ -14,7 +14,7 @@ from utils.enum import (
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.tie_breaks.tie_breaks import TieBreak
-    from data.player import TournamentPlayer
+    from data.norms.inputs import NormOpponent
 
 
 @dataclass(frozen=True)
@@ -188,7 +188,7 @@ class NormCheckResult:
     num_rated_players: int = 0
     score: float = 0
     average_rating: float = 0
-    adjusted_player: Optional['TournamentPlayer'] = None
+    adjusted_player: Optional['NormOpponent'] = None
     adjusted_player_rating: int | None = None
     performance: float = 0
     performance_diff: float | None = None

@@ -1,6 +1,17 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
+{% macro round_datetime_input(round_num) %}
+    {{ admin_macros.datetime_input(
+        name='round_' ~ round_num ~ '_datetime',
+        label=_('Round #%(round)d:', round=round_num),
+        min_date=schedule_min_date,
+        max_date=schedule_max_date,
+        position='top center',
+        data=data, errors=errors
+    ) }}
+{% endmacro %}
+
 <div
     id="schedule-section"
     hx-trigger="schedule-params-updated"
@@ -13,7 +24,9 @@
         if admin_tournament
         else ''
     ) }}"
-    hx-include='[name="rounds"],[name^="round_"][name$="_datetime"],[name="date_range"]'
+    {# The whole form: a period carries the fields plugins put in it, and
+       core does not know what those are called. #}
+    hx-include="closest form"
     hx-vals='js:{schedule_collapsed: document.getElementById("schedule-collapse") ? !document.getElementById("schedule-collapse").classList.contains("show") : true}',
     hx-indicator="#please-wait"
 >
@@ -34,38 +47,138 @@
             <div class="text-muted mx-3 my-2">
                 {{ _('Set the number of rounds to lay out a schedule.') }}
             </div>
+        {% elif dates_exceed_period and data.get('multi_period') == 'on' %}
+            {% for span in period_spans %}
+                {% set period_loop = loop %}
+                {% set period_error = errors.get('period_' ~ span.first_round) %}
+                {# A period of a single round has no edge to hand over: moving
+                   that round either way leaves the period empty, which is the
+                   boundary being dropped. #}
+                {% set alone = span.first_round == span.last_round %}
+                <div class="card period-card mx-3 my-2 {% if period_error %}border-danger{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center gap-2">
+                        <span>
+                            <b>{{ _('Period %(index)d', index=loop.index) }}</b>
+                            · {{ span.rounds_str }}
+                            {% if span.dates_str %}
+                                · {{ span.dates_str }}
+                                · {{ _('%(days)d days', days=span.days) }}
+                            {% endif %}
+                        </span>
+                        {% if span.first_round > 1 %}
+                            <button type="button"
+                                    class="btn btn-sm btn-link text-body p-0"
+                                    title="{{ _('Remove this period') }}"
+                                    onclick="setPeriodStart({{ span.first_round }}, false)">
+                                <i class="bi-x-lg"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% if period_error %}
+                        <div class="text-danger small px-3 pt-2">
+                            <i class="bi-exclamation-triangle-fill"></i>
+                            {{ period_error }}
+                        </div>
+                    {% endif %}
+                    <div class="card-body py-2">
+                        {% if not loop.first and period_field_templates %}
+                            {# What a slice is submitted under. The first
+                               slice uses the tournament's own registration,
+                               so it is not asked again here. #}
+                            {% with
+                                period=span,
+                                field_suffix='_period_' ~ span.period_id
+                            %}
+                                {% for period_field_template in period_field_templates %}
+                                    {% include period_field_template %}
+                                {% endfor %}
+                            {% endwith %}
+                        {% endif %}
+                        {% for round_num in range(span.first_round, span.last_round + 1) %}
+                            <div class="d-flex align-items-end gap-2 my-2 {% if round_num == span.overflow_round %}border-start border-danger border-3 ps-2{% endif %}">
+                                <div class="flex-grow-1">
+                                    {{ round_datetime_input(round_num) }}
+                                </div>
+                                {% if round_num == span.first_round %}
+                                    {% if span.first_round > 1 %}
+                                        <button type="button"
+                                                class="btn btn-outline-primary"
+                                                title="{{ _('Move this round to the previous period') }}"
+                                                onclick="{% if alone %}setPeriodStart({{ round_num }}, false){% else %}movePeriodStart({{ round_num }}, {{ round_num + 1 }}){% endif %}">
+                                            <i class="bi-arrow-up"></i>
+                                        </button>
+                                    {% endif %}
+                                {% else %}
+                                    <button type="button"
+                                            class="btn btn-outline-primary"
+                                            title="{{ _('Start a new period at this round') }}"
+                                            onclick="setPeriodStart({{ round_num }}, true)">
+                                        <i class="bi-scissors"></i>
+                                    </button>
+                                {% endif %}
+                                {% if round_num == span.last_round and not period_loop.last %}
+                                    <button type="button"
+                                            class="btn btn-outline-primary"
+                                            title="{{ _('Move this round to the next period') }}"
+                                            onclick="{% if alone %}setPeriodStart({{ span.last_round + 1 }}, false){% else %}movePeriodStart({{ span.last_round + 1 }}, {{ round_num }}){% endif %}">
+                                        <i class="bi-arrow-down"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% for round_num in range(2, schedule_rounds + 1) %}
+                <input type="checkbox"
+                       class="d-none"
+                       name="round_{{ round_num }}_period_start"
+                       {% if data.get('round_' ~ round_num ~ '_period_start') == 'on' %}checked{% endif %}>
+            {% endfor %}
+            <script>
+                function periodStartInput(roundNumber) {
+                    return document.querySelector(
+                        `[name="round_${roundNumber}_period_start"]`
+                    );
+                }
+
+                function refreshPeriods() {
+                    htmx.trigger(
+                        document.getElementById('schedule-section'),
+                        'schedule-params-updated',
+                    );
+                }
+
+                function setPeriodStart(roundNumber, starts) {
+                    periodStartInput(roundNumber).checked = starts;
+                    refreshPeriods();
+                }
+
+                function movePeriodStart(fromRound, toRound) {
+                    periodStartInput(fromRound).checked = false;
+                    periodStartInput(toRound).checked = true;
+                    refreshPeriods();
+                }
+            </script>
         {% else %}
-        <div class="row">
-            {% set split_col = (schedule_rounds / 2)|round(method='ceil')|int %}
-            <div class="col-12 col-md-6">
-                {% for round_num in range(1, split_col + 1) %}
-                    <div class="my-2 mx-3">
-                        {{ admin_macros.datetime_input(
-                            name='round_' ~ round_num ~ '_datetime',
-                            label=_('Round #%(round)d:', round=round_num),
-                            min_date=schedule_min_date,
-                            max_date=schedule_max_date,
-                            position='top center',
-                            data=data, errors=errors
-                        ) }}
+            <div class="row">
+                {% set split_col = (schedule_rounds / 2)|round(method='ceil')|int %}
+                {% for column in [
+                    range(1, split_col + 1),
+                    range(split_col + 1, schedule_rounds + 1),
+                ] %}
+                    <div class="col-12 col-md-6">
+                        {% for round_num in column %}
+                            <div class="my-2 mx-3">
+                                {{ round_datetime_input(round_num) }}
+                            </div>
+                        {% endfor %}
                     </div>
                 {% endfor %}
             </div>
-            <div class="col-12 col-md-6">
-                {% for round_num in range(split_col + 1, schedule_rounds + 1) %}
-                    <div class="my-2 mx-3">
-                        {{ admin_macros.datetime_input(
-                            name='round_' ~ round_num ~ '_datetime',
-                            label=_('Round #%(round)d:', round=round_num),
-                            min_date=schedule_min_date,
-                            max_date=schedule_max_date,
-                            position='top center',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
         {% endif %}
     </div>
 </div>
+{% with oob=true %}
+    {% include '/admin/tournaments/tournament_multi_period_field.html' %}
+{% endwith %}

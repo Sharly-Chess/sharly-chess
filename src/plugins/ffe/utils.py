@@ -13,10 +13,11 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_upload_status import (
     FFEUploadStatus,
     NeverUploadedFFEUploadStatus,
@@ -199,6 +200,32 @@ class FFEUtils:
         return plugin_data
 
     @staticmethod
+    def get_period_own_plugin_data(
+        period: 'TournamentPeriod',
+    ) -> 'FfeTournamentPluginData':
+        """What the period itself holds — its own registration and the
+        outcome of its own uploads, with nothing borrowed from the
+        tournament."""
+        plugin_data = period.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfeTournamentPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_period_plugin_data(period: 'TournamentPeriod') -> 'FfeTournamentPluginData':
+        """What a rating period is submitted under.
+
+        Each tranche has its own homologation number; the first tranche
+        is submitted under the tournament's own, which is also where the
+        whole tournament is published for the players. A later tranche
+        with no registration of its own falls back to it too, so that a
+        tournament nobody has cut up yet still uploads."""
+        if period.first_round > 1:
+            plugin_data = FFEUtils.get_period_own_plugin_data(period)
+            if plugin_data.ffe_id:
+                return plugin_data
+        return FFEUtils.get_tournament_plugin_data(period.tournament)
+
+    @staticmethod
     def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
@@ -292,6 +319,22 @@ class FFEUtils:
         )
 
     @classmethod
+    def licence_number(cls, player: Player) -> str | None:
+        """The FFE licence number of a player, carried as their national
+        id."""
+        if player.national_source != NATIONAL_SOURCE_ID:
+            return None
+        return player.national_id
+
+    @classmethod
+    def licence(cls, player: Player) -> 'PlayerFFELicence':
+        """The licence of a player: a licence type without a licence
+        number means none."""
+        if not cls.licence_number(player):
+            return PlayerFFELicence.NONE
+        return cls.get_player_plugin_data(player).ffe_licence
+
+    @classmethod
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[FFEUploadStatus]:
@@ -329,6 +372,40 @@ class FFEUtils:
         elif FfeBackgroundUploader.is_upload_queued(tournament) or (
             FfeBackgroundUploader.is_upload_scheduled(tournament) and is_modified
         ):
+            statuses.append(PendingFFEUploadStatus())
+        return statuses
+
+    @classmethod
+    def resolve_period_upload_statuses(
+        cls, period: 'TournamentPeriod'
+    ) -> list[FFEUploadStatus]:
+        """How the submission of one slice stands.
+
+        A slice is submitted under its own registration, so it answers
+        for its own upload: whether it has been sent, and how it went.
+        What is true of the tournament as a whole — whether its data has
+        moved since — belongs to the tournament's own row."""
+        from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+
+        # What the slice itself holds: borrowing the tournament's would
+        # report its upload as this slice's.
+        plugin_data = cls.get_period_own_plugin_data(period)
+        if not plugin_data.ffe_id or not plugin_data.password:
+            return [NotConfiguredFFEUploadStatus()]
+        statuses: list[FFEUploadStatus] = []
+        if plugin_data.upload_failure_id:
+            statuses.append(
+                FFEUploadFailureStatusManager().get_object(
+                    plugin_data.upload_failure_id
+                )
+            )
+        if not plugin_data.last_upload_at:
+            statuses.append(NeverUploadedFFEUploadStatus())
+        else:
+            statuses.append(UpToDateFFEUploadStatus())
+        if FfeBackgroundUploader.is_period_upload_ongoing(period):
+            statuses.append(OngoingFFEUploadStatus())
+        elif FfeBackgroundUploader.is_period_upload_pending(period):
             statuses.append(PendingFFEUploadStatus())
         return statuses
 
@@ -674,33 +751,34 @@ class FfeTournamentPluginData(PluginData):
 
 @dataclass
 class FfePlayerPluginData(PluginData):
-    ffe_id: int | None
+    """The licence number of the player is their national id; the FFE id
+    (the Ref of the FFE database) only keys the profile page."""
+
     ffe_licence: PlayerFFELicence
-    ffe_licence_number: str | None
     league: str | None
+    ffe_id: int | None = None
+
+    @property
+    def no_licence(self) -> PlayerFFELicence:
+        """The licence of a player without a licence number, which the
+        templates showing the licence fall back on."""
+        return PlayerFFELicence.NONE
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
-        ffe_licence_number = stored_value.get('ffe_licence_number')
         return cls(
-            ffe_id=stored_value.get('ffe_id'),
             ffe_licence=PlayerFFELicence(
                 stored_value.get('ffe_licence', PlayerFFELicence.NONE)
-                if ffe_licence_number
-                else PlayerFFELicence.NONE
             ),
-            ffe_licence_number=ffe_licence_number,
             league=stored_value.get('league'),
+            ffe_id=stored_value.get('ffe_id'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'ffe_id': self.ffe_id,
-            'ffe_licence': (
-                self.ffe_licence if self.ffe_licence_number else PlayerFFELicence.NONE
-            ).value,
-            'ffe_licence_number': self.ffe_licence_number,
+            'ffe_licence': self.ffe_licence.value,
             'league': self.league,
+            'ffe_id': self.ffe_id,
         }
 
     @classmethod
@@ -711,13 +789,12 @@ class FfePlayerPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             ffe_licence=PlayerFFELicence(
                 WebContext.form_data_to_str(data, 'ffe_licence')
                 or PlayerFFELicence.NONE
             ),
-            ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             league=WebContext.form_data_to_str(data, 'ffe_league'),
+            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -725,10 +802,9 @@ class FfePlayerPluginData(PluginData):
             return {}
         return WebContext.values_dict_to_form_data(
             {
-                'ffe_id': self.ffe_id,
                 'ffe_licence': self.ffe_licence.value,
-                'ffe_licence_number': self.ffe_licence_number,
                 'ffe_league': self.league,
+                'ffe_id': self.ffe_id,
             }
         )
 

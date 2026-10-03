@@ -62,6 +62,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
+    StoredPlayerPeriod,
     StoredTeam,
     StoredTournamentPlayer,
 )
@@ -450,7 +451,7 @@ class PlayerAdminController(BaseEventAdminController):
         ]
         template_context |= {
             'default_print_document': web_context.default_print_document,
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
             'search': SessionPlayersSearch(request, event).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
@@ -690,6 +691,28 @@ class PlayerAdminController(BaseEventAdminController):
         }
 
     @staticmethod
+    def _player_period_ratings_context(admin_player: Player | None) -> dict[str, Any]:
+        """What the player's earlier slices were played on.
+
+        The fields of the form hold the slice being played; a tournament
+        reported in slices keeps the ratings of the ones before it, which
+        the reports already made of them were built from."""
+        if admin_player is None:
+            return {}
+        tournament = admin_player.optional_single_tournament
+        if tournament is None or len(tournament.periods) < 2:
+            return {}
+        current_period = tournament.current_period
+        return {
+            'current_period': current_period,
+            'earlier_period_ratings': [
+                (period, admin_player.ratings_for(period))
+                for period in tournament.periods
+                if period.first_round < current_period.first_round
+            ],
+        }
+
+    @staticmethod
     def _get_k_factor_placeholders(
         data: dict[str, str],
     ) -> dict[TournamentRating, int]:
@@ -736,6 +759,16 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = web_context.admin_player.optional_single_tournament
         return tournament.start_date if tournament else event.start_date
 
+    @staticmethod
+    def _national_data_source(event: Event, data: dict[str, str]) -> DataSource | None:
+        """The data source whose national identifier the player form
+        shows: the one the player was fetched from, else the one of the
+        federation of the event; None when the form has no such field."""
+        manager = DataSourceManager()
+        if national_source := WebContext.form_data_to_str(data, 'national_source'):
+            return manager.national_source(national_source)
+        return manager.national_source_for_federation(event.federation)
+
     @classmethod
     def _render_players_form_modal(
         cls,
@@ -769,6 +802,8 @@ class PlayerAdminController(BaseEventAdminController):
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
+            national_id: str | None = None
+            national_source: str | None = None
             mail: str | None = None
             phone: str | None = None
             comment: str | None = None
@@ -791,15 +826,17 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     if stored_player.year_of_birth:
                         date_of_birth = str(stored_player.year_of_birth)
-                    for tr_value, rating in stored_player.ratings.items():
-                        ratings[TournamentRating(tr_value)] = (
-                            PlayerRating.from_stored_value(rating)
-                        )
+                    # The fields hold the slice being played, which is
+                    # what an edit records (see
+                    # ``_ratings_for_current_period``).
+                    ratings |= cls._current_period_ratings(admin_player, stored_player)
                     title = stored_player.title
                     women_title = stored_player.women_title
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
+                    national_id = stored_player.national_id or None
+                    national_source = stored_player.national_source or None
                 # Fields unused by the search, kept on replace
                 mail = stored_player.mail
                 phone = stored_player.phone
@@ -861,6 +898,8 @@ class PlayerAdminController(BaseEventAdminController):
                     'women_title': women_title,
                     'federation': federation,
                     'fide_id': fide_id,
+                    'national_id': national_id,
+                    'national_source': national_source,
                     'club': club,
                     'mail': mail,
                     'phone': phone,
@@ -938,6 +977,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         search_filter_manager = SearchFilterManager(web_context.get_admin_event())
         k_factor_placeholders = cls._get_k_factor_placeholders(data)
+        template_context |= cls._player_period_ratings_context(admin_player)
         template_context |= {
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
@@ -1001,7 +1041,8 @@ class PlayerAdminController(BaseEventAdminController):
                 if action == 'create' and old_player_id
                 else None
             ),
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
+            'national_data_source': cls._national_data_source(event, data),
             'warning_message': warning_message,
             'regeneration': regeneration,
             'add_other_active': SessionPlayersAddOtherActive(request).get(),
@@ -1358,6 +1399,50 @@ class PlayerAdminController(BaseEventAdminController):
             return True
         return WebContext.form_data_to_bool(data, 'byes_allowed')
 
+    @staticmethod
+    def _current_period_ratings(
+        admin_player: Player | None, stored_player: StoredPlayer
+    ) -> dict[TournamentRating, PlayerRating]:
+        """The ratings the rating fields show: those of the slice being
+        played, which are the player's own unless a later slice recorded
+        ratings of its own."""
+        tournament = admin_player.optional_single_tournament if admin_player else None
+        if admin_player is not None and tournament is not None:
+            return admin_player.ratings_for(tournament.current_period)
+        return {
+            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
+            for tr_value, rating in stored_player.ratings.items()
+        }
+
+    @staticmethod
+    def _ratings_for_current_period(
+        player: Player | None,
+        form_ratings: dict[int, dict[str, int | None]],
+        title: str,
+        women_title: str,
+    ) -> tuple[dict[int, dict[str, int | None]], dict[int, StoredPlayerPeriod]]:
+        """Where the ratings the form carries belong.
+
+        The form shows the slice being played, so in a tournament
+        reported in slices the ratings it comes back with are that
+        slice's, and the player's own — what the first slice was played
+        on — stay as they were. The slices already recorded are carried
+        through whatever happens: a player edited for their phone number
+        must not lose what their earlier slices were reported with."""
+        if player is None:
+            return form_ratings, {}
+        periods = dict(player.stored_player.periods)
+        tournament = player.optional_single_tournament
+        if tournament is None:
+            return form_ratings, periods
+        current_period = tournament.current_period
+        if current_period.first_round == 1 or current_period.id is None:
+            return form_ratings, periods
+        periods[current_period.id] = StoredPlayerPeriod(
+            ratings=form_ratings, title=title, women_title=women_title
+        )
+        return dict(player.stored_player.ratings), periods
+
     @classmethod
     def _stored_player_from_data(
         cls,
@@ -1385,6 +1470,30 @@ class PlayerAdminController(BaseEventAdminController):
                 data, previous_object=previous_object
             ).to_stored_value()
 
+        form_ratings = {
+            tr.value: PlayerRating(
+                estimated=WebContext.form_data_to_int(
+                    data, f'{tr.form_key}_rating_estimated'
+                )
+                or None,
+                national=WebContext.form_data_to_int(
+                    data, f'{tr.form_key}_rating_national'
+                )
+                or None,
+                fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
+                or None,
+                k_factor=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_k'),
+            ).stored_value
+            for tr in TournamentRating
+        }
+        title = WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value
+        women_title = (
+            WebContext.form_data_to_str(data, 'women_title') or PlayerTitle.NONE.value
+        )
+        ratings, periods = cls._ratings_for_current_period(
+            player, form_ratings, title, women_title
+        )
+
         return StoredPlayer(
             id=None,
             first_name=WebContext.form_data_to_str(data, 'first_name') or '',
@@ -1398,28 +1507,14 @@ class PlayerAdminController(BaseEventAdminController):
             comment=data.get('comment'),
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
-            title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
-            women_title=WebContext.form_data_to_str(data, 'women_title')
-            or PlayerTitle.NONE.value,
-            ratings={
-                tr.value: PlayerRating(
-                    estimated=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_estimated'
-                    )
-                    or None,
-                    national=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_national'
-                    )
-                    or None,
-                    fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
-                    or None,
-                    k_factor=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_k'
-                    ),
-                ).stored_value
-                for tr in TournamentRating
-            },
+            title=title,
+            women_title=women_title,
+            ratings=ratings,
+            periods=periods,
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
+            national_id=WebContext.form_data_to_str(data, 'national_id') or None,
+            national_source=WebContext.form_data_to_str(data, 'national_source')
+            or None,
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
@@ -2124,7 +2219,9 @@ class PlayerAdminController(BaseEventAdminController):
         tournaments = web_context.player_addable_tournaments
         tournament_options = {'': '-'} | web_context.get_tournament_options(tournaments)
         data_sources = [
-            source for source in DataSourceManager().objects() if source.is_available
+            source
+            for source in DataSourceManager().active_objects()
+            if source.is_available
         ]
         template_context = {
             'modal': 'players_import',
@@ -2145,7 +2242,7 @@ class PlayerAdminController(BaseEventAdminController):
             'data_sources': data_sources,
             'build_list_tooltip': cls._build_list_tooltip,
             'split_column_ids': cls._split_datasheet_columns_ids,
-            'columns': PlayerDatasheetColumnHandler(event).columns,
+            'columns': PlayerDatasheetColumnHandler(event).export_columns,
             'data': default_data | (data or {}),
             'errors': errors or {},
         }
@@ -2796,6 +2893,20 @@ class PlayerAdminController(BaseEventAdminController):
                     'Fide ID [{fide_id}] already present in tournament [{tournament}].'
                 ).format(
                     fide_id=player.fide_id,
+                    tournament=dst_tournament.name,
+                ),
+            )
+        if player.national_id and any(
+            tournament_player.national_id == player.national_id
+            and tournament_player.national_source == player.national_source
+            for tournament_player in dst_tournament.tournament_players_by_id.values()
+        ):
+            raise ValueError(
+                _(
+                    'National ID [{national_id}] already present '
+                    'in tournament [{tournament}].'
+                ).format(
+                    national_id=player.national_id,
                     tournament=dst_tournament.name,
                 ),
             )

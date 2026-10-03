@@ -41,6 +41,8 @@
 - Players' names are stored as entered; first names written all in capitals or all in lower case are displayed capitalised (5.2.0)
 - The players tab is sorted by the name displayed first (5.2.0)
 - Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
+- The rating lists of 15 national federations are available as data sources, activated per federation from the data sources window (5.1.0)
+- The _FIDE_ rating list is installed on the first start and updated daily, asking the _FIDE_ site what it holds and only rebuilding the local copy when a newer list has been published (5.1.1)
 
 ## Pairings
 

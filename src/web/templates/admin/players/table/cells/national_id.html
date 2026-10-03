@@ -1,0 +1,7 @@
+{% if player.national_id %}
+    <span class="cursor-pointer" {{ macros.click_to_copy_attributes(player.national_id, 'left') }}>
+        {{ player.national_id }}
+    </span>
+{% else %}
+    <span class="text-secondary" {{ macros.tooltip_attributes('warning', _('Undefined'), 'left') }}>-</span>
+{% endif %}
