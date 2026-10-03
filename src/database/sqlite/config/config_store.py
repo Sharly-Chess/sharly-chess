@@ -46,6 +46,13 @@ class StoredConfig:
     date_formatter: str
     name_formatter: str
     capitalise_last_name: bool
+    snapshot_enabled: bool
+    snapshot_keep_milestones: int
+    snapshot_keep_auto: int
+    snapshot_max_total_mb: int
+    snapshot_max_age_days: int
+    #: Where the snapshots are written, None for the default directory.
+    snapshot_dir: str | None = None
     federation: str | None = None
     locale: str | None = None
     stored_player_category_sets: list[StoredPlayerCategorySet] = field(

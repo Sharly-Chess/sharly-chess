@@ -8,6 +8,7 @@
 - A reminder to update player data is shown before distributing players across tournaments (5.1.0)
 - The administration interface adapts to phone screens (5.1.0)
 - A name format setting (Last First / Last, First / First Last / First, Last), with an option to display last names in capitals, sets how players' names are displayed, whatever the language (5.2.0)
+- Events are backed up as they change, and a backup can be restored over an event or beside it (5.2.0)
 
 ## Tournaments
 
