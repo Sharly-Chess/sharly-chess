@@ -46,7 +46,9 @@
                     </ul>
                 </div>
                 {% if not admin_event.is_team_event %}
-                    <div>
+                    <div
+                        {{ macros.tooltip_attributes('info', _('Reset the absent/present status of all the players.'), 'top') }}
+                    >
                         <button
                             class="btn btn-outline-primary text-nowrap"
                             hx-get="{{ url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id) }}"
