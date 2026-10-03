@@ -44,7 +44,7 @@
 {% if not errors %}
     <script>
         {# Tabs can set default values #}
-        if (default_print_document_id) {
+        if (default_print_document_id && $(`#document option[value="${default_print_document_id}"]`).length) {
             $('#document').val(default_print_document_id).trigger('change');
         }
         if (default_print_tournament_id) {
