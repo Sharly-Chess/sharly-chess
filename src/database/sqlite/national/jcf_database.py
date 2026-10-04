@@ -1,10 +1,12 @@
 import json
 import re
 from collections.abc import Iterator
+from contextlib import closing
 from pathlib import Path
 from typing import Any, override
 
 import openpyxl
+from openpyxl.workbook import Workbook
 from packaging.version import Version
 
 from database.sqlite.national.national_database import (
@@ -71,7 +73,14 @@ class JcfDatabase(NationalPlayerDatabase):
 
     @override
     def _read_players(self, source_file_path: Path) -> Iterator[NationalPlayerRow]:
-        workbook = openpyxl.load_workbook(source_file_path, read_only=True)
+        # A read-only workbook holds the file open until it is closed, which
+        # on Windows keeps the temporary directory from being removed.
+        with closing(
+            openpyxl.load_workbook(source_file_path, read_only=True)
+        ) as workbook:
+            yield from self._read_workbook(workbook)
+
+    def _read_workbook(self, workbook: Workbook) -> Iterator[NationalPlayerRow]:
         for sheet in workbook.worksheets:
             headers: list[str] | None = None
             for values in sheet.iter_rows(values_only=True):

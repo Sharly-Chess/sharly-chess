@@ -4,6 +4,7 @@ federation's file, and searching the shared player table."""
 import sqlite3
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -646,6 +647,41 @@ def test_jcf_reads_the_rating_sheet_after_the_legend(tmp_path: Path) -> None:
     )
     assert (andrei.standard_rating, andrei.rapid_rating) == (1224, None)
     assert (shengyu.standard_rating, shengyu.rapid_rating) == (None, 1500)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('acronym', ['jcf', 'nzcf'])
+def test_a_spreadsheet_is_closed_once_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, acronym: str
+) -> None:
+    """A read-only workbook holds its file until it is closed, and on
+    Windows the temporary directory of an update cannot be removed while
+    it does, which fails the update after the database has been built."""
+    import openpyxl
+
+    from database.sqlite.national.jcf_database import JcfDatabase
+    from database.sqlite.national.nzcf_database import NzcfDatabase
+
+    closed: list[bool] = []
+    load_workbook = openpyxl.load_workbook
+
+    def spy(*args: Any, **kwargs: Any) -> Any:
+        workbook = load_workbook(*args, **kwargs)
+        close = workbook.close
+
+        def closing_workbook() -> None:
+            closed.append(True)
+            close()
+
+        monkeypatch.setattr(workbook, 'close', closing_workbook)
+        return workbook
+
+    monkeypatch.setattr(openpyxl, 'load_workbook', spy)
+    file = tmp_path / 'list.xlsx'
+    openpyxl.Workbook().save(file)
+    database = JcfDatabase() if acronym == 'jcf' else NzcfDatabase()
+    list(database._read_players(file))
+    assert closed == [True]
 
 
 @pytest.mark.unit

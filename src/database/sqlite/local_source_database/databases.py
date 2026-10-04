@@ -530,6 +530,11 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 )
                 self.delete()
             return False
+        if not self.updated_at:
+            # An interrupted update can leave the file in place without its
+            # date, which would show no update ever and never expire.
+            self.stored_source_database.updated_at = self.file.stat().st_mtime
+            self.update_stored_source_database(self.stored_source_database)
         if self.is_outdated:
             self.outdate_action.on_outdated(self)
         return True
@@ -662,10 +667,20 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         cannot be reached would otherwise report itself at every check."""
         self.__class__.notify_update = notify
         update_thread = threading.Thread(
-            target=self._update, args=(source_file,), daemon=True
+            target=self._run_update, args=(source_file,), daemon=True
         )
         update_thread.start()
         atexit.register(self._stop_background_thread, update_thread)
+
+    def _run_update(self, source_file: Path | None = None) -> None:
+        """Runs the update, making sure that it ends however it goes: an
+        exception reaching the thread would otherwise leave the database
+        updating for good, with the window saying so."""
+        try:
+            self._update(source_file)
+        except Exception as e:
+            logger.exception(self.log_prefix + 'Update failed: %s.', e)
+            self.stop_update(False)
 
     def _stop_background_thread(self, thread: threading.Thread) -> None:
         self.stop_event.set()
