@@ -831,7 +831,7 @@ msgid "Add a criterion to the list."
 msgstr ""
 
 msgid "Add a data source"
-msgstr "Add a data source"
+msgstr ""
 
 msgid "Add a display controller to the event."
 msgstr ""
@@ -2679,7 +2679,7 @@ msgid "December"
 msgstr ""
 
 msgid "Decrypting…"
-msgstr "Decrypting…"
+msgstr ""
 
 msgid "Default"
 msgstr ""
@@ -3097,11 +3097,11 @@ msgstr ""
 
 #, python-brace-format
 msgid "Downloading… {received} / {total} MB"
-msgstr "Downloading… {received} / {total} MB"
+msgstr ""
 
 #, python-brace-format
 msgid "Downloading… {received} MB"
-msgstr "Downloading… {received} MB"
+msgstr ""
 
 msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
 msgstr ""
@@ -3753,7 +3753,7 @@ msgid "Extended Sonneborn-Berger"
 msgstr ""
 
 msgid "Extracting…"
-msgstr "Extracting…"
+msgstr ""
 
 msgctxt "short name for rating type FIDE"
 msgid "F"
@@ -4650,7 +4650,7 @@ msgid "Install"
 msgstr ""
 
 msgid "Install from a file…"
-msgstr "Install from a file…"
+msgstr ""
 
 msgid "Install it from the Plugins section to open the event."
 msgid_plural "Install them from the Plugins section to open the event."
@@ -4658,7 +4658,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Install the database from a source file you downloaded yourself."
-msgstr "Install the database from a source file you downloaded yourself."
+msgstr ""
 
 #, python-brace-format
 msgid "Installation of [{lib}] failed."
@@ -4672,7 +4672,7 @@ msgid "Installing a plugin makes its features available in the whole application
 msgstr ""
 
 msgid "Installing…"
-msgstr "Installing…"
+msgstr ""
 
 msgid "International Arbiter"
 msgstr ""
@@ -5723,7 +5723,7 @@ msgstr ""
 
 msgctxt "national id column header"
 msgid "Nat. ID"
-msgstr "Nat. ID"
+msgstr ""
 
 msgctxt "name for rating type national"
 msgid "National"
@@ -5733,11 +5733,11 @@ msgid "National Arbiter"
 msgstr ""
 
 msgid "National ID"
-msgstr "National ID"
+msgstr ""
 
 #, python-brace-format
 msgid "National ID [{national_id}] already present in tournament [{tournament}]."
-msgstr "National ID [{national_id}] already present in tournament [{tournament}]."
+msgstr ""
 
 msgid "National championship final (1.4.3a)"
 msgstr ""
@@ -5932,10 +5932,10 @@ msgid "No custom templates yet."
 msgstr ""
 
 msgid "No data source is active (to add one: Menu > Data sources)."
-msgstr "No data source is active (to add one: Menu > Data sources)."
+msgstr ""
 
 msgid "No data source is active."
-msgstr "No data source is active."
+msgstr ""
 
 msgid "No director"
 msgstr ""
@@ -9245,7 +9245,7 @@ msgid "Still in"
 msgstr ""
 
 msgid "Storing…"
-msgstr "Storing…"
+msgstr ""
 
 msgid "Strikethrough"
 msgstr ""
@@ -12540,11 +12540,11 @@ msgstr[1] ""
 
 #, python-brace-format
 msgid "{count} players"
-msgstr "{count} players"
+msgstr ""
 
 #, python-brace-format
 msgid "{count} players stored…"
-msgstr "{count} players stored…"
+msgstr ""
 
 #, python-brace-format
 msgid "{count} prize category successfully generated."
