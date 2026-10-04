@@ -1,3 +1,7 @@
+from types import UnionType
+from typing import override
+
+from common.exception import OptionError
 from common.i18n import _
 from data.player import TournamentPlayer
 from data.print_documents import IndividualTeamType, PrintOption
@@ -68,6 +72,51 @@ class FraSchoolsIndividualTeamType(IndividualTeamType[FRASchool]):
         return _('Missing boys')
 
 
+FRA_SCHOOLS_CATEGORY_PRIMARY_MIDDLE = 'primary-middle'
+FRA_SCHOOLS_CATEGORY_HIGH = 'high'
+
+
+class FRASchoolsCategoryPrintOption(PrintOption[str]):
+    """J03 art. 2.3.2: the per-school ranking counts the 8 best pupils of a
+    primary or middle school, including the first 2 girls and the first 2
+    boys, and the 4 best of a high school, including the first girl and the
+    first boy."""
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-category'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> str:
+        return FRA_SCHOOLS_CATEGORY_PRIMARY_MIDDLE
+
+    @property
+    def template_name(self) -> str:
+        return '/fra_schools_category.html'
+
+    @property
+    def category_options(self) -> dict[str, str]:
+        return {
+            FRA_SCHOOLS_CATEGORY_PRIMARY_MIDDLE: _('Primary and middle schools'),
+            FRA_SCHOOLS_CATEGORY_HIGH: _('High schools'),
+        }
+
+    @property
+    def is_high_school(self) -> bool:
+        return self.value == FRA_SCHOOLS_CATEGORY_HIGH
+
+    @override
+    def validate(self) -> None:
+        super().validate()
+        if self.value not in self.category_options:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown category: {self.value}', self)
+
+
 class FRASchoolsIndividualTeamMaxPerSchoolPrintOption(
     IndividualTeamMaxPerEntityPrintOption
 ):
@@ -106,6 +155,7 @@ class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
         return [
             TournamentPrintOption,
             RoundPrintOption,
+            FRASchoolsCategoryPrintOption,
             FRASchoolsIndividualTeamMaxPerSchoolPrintOption,
             FRASchoolsIndividualTeamDisplayIncompletePrintOption,
         ]
@@ -126,11 +176,15 @@ class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
 
     @property
     def team_size(self) -> int:
-        return 8
+        return (
+            4 if self._get_option(FRASchoolsCategoryPrintOption).is_high_school else 8
+        )
 
     @property
     def min_gender_count(self) -> int:
-        return 2
+        return (
+            1 if self._get_option(FRASchoolsCategoryPrintOption).is_high_school else 2
+        )
 
     @property
     def youngest_team_last_tie_break(self) -> bool:

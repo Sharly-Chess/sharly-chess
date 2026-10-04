@@ -1,31 +1,35 @@
-"""FFE *Championnat de France des écoles et collèges* (J03) — team phases.
+"""FFE *Championnat de France des écoles, collèges et lycées* (J03) — team
+phases.
 
 The J03 championship runs in three phases (art. 1.3): an individual
 departmental phase, an academic phase by teams, and the national final by
-teams. This rule set covers the two team phases; the individual one is a
-different event type and would be a rule set of its own.
+teams. Departmental committees may also hold departmental team finals
+qualifying for the academic phase (art. 2.1.4). This rule set covers the
+team competitions; the individual phase is a different event type and
+would be a rule set of its own.
 
 Which phase the tournament is gets picked in the tournament form: it sets
 the round count and locks it for the national final (art. 4.3), whose
-format the regulation fixes. The academic phase is left free, because its
-system and round count follow the number of entered teams (art. 3.3.1),
-which a rule set can't see.
+format the regulation fixes. The departmental and academic phases are left
+free, because the academic system and round count follow the number of
+entered teams (art. 3.3.1), which a rule set can't see, and the
+departmental finals are set by each committee's own rules (art. 2.1.5).
 
-The two categories — écoles and collèges (art. 1.2.1) — differ only in the
-Elo floor used for estimated ratings when numbering teams (art. 5.1.5,
-799 vs 999). Nothing in the tournament configuration carries that, so the
-rule set doesn't offer the choice rather than offering one that does
-nothing.
+The category — écoles, collèges or lycées (art. 1.2.1) — is picked in the
+tournament form too. Écoles and collèges field 8 boards from a roster of 8
+to 10 with at least 2 girls and 2 boys; lycées field 4 boards from a
+roster of 4 or 5 with at least 1 girl and 1 boy (art. 5.1.1, 5.1.2).
 
 Not encoded, for want of somewhere to put it:
 
 - art. 4.4's -1 for a missing team shirt, which is the arbiter's call and
   belongs in the manual per-round adjustment;
-- art. 5.2's match-sheet rules (no holes, fixed order, at least two boys
-  and two girls with -1 from the last board upwards), which are per-round
+- art. 5.2's match-sheet rules (no holes, fixed order, the minimum of
+  boys and girls with -1 from the last board upwards), which are per-round
   lineup validations rather than tournament defaults.
 """
 
+from dataclasses import dataclass
 from typing import Any, override, TYPE_CHECKING, cast
 
 from common.i18n import _, ngettext
@@ -35,10 +39,12 @@ from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.fra_schools import PLUGIN_NAME as FRA_SCHOOLS_PLUGIN_NAME
 from utils.enum import (
     PlayerGender,
+    PlayerRatingType,
     Result,
     ScoreType,
     TeamColourType,
     TeamSortMode,
+    TournamentRating,
 )
 
 if TYPE_CHECKING:
@@ -62,29 +68,50 @@ _J03_MATCH_POINTS: dict[int, float] = {
 
 # Art. 5.3.1: a won game scores 1, a lost one 0, and a draw is noted X and
 # "n'est pas comptabilisée dans le score final" — so it contributes 0 too.
-# Art. 5.3.2: an exempt team is treated as having won 5 game points to 0.
+# The exempt team's game points depend on the category.
 _J03_GAME_POINTS: dict[int, float] = {
     Result.WIN.value: 1.0,
     Result.DRAW.value: 0.0,
     Result.LOSS.value: 0.0,
     Result.ZERO_POINT_BYE.value: 0.0,
-    Result.PAIRING_ALLOCATED_BYE.value: 5.0,
 }
-
-# Art. 5.1.1: "Une équipe est constituée de 8 élèves".
-_J03_TEAM_PLAYER_COUNT = 8
-
-# Art. 5.1.2: "une liste de 8 à 10 élèves".
-_J03_ROSTER_MAX_SIZE = 10
 
 # Art. 4.3: the national final is a 9-round Swiss.
 _J03_NATIONAL_FINAL_ROUNDS = 9
 
-# Art. 5.1.1 / 5.2.4: at least two girls and two boys.
-_J03_MIN_PER_GENDER = 2
-
+_J03_PHASE_DEPARTMENTAL = 'departmental'
 _J03_PHASE_ACADEMIC = 'academic'
 _J03_PHASE_NATIONAL_FINAL = 'national-final'
+
+_J03_CATEGORY_ECOLES = 'ecoles'
+_J03_CATEGORY_COLLEGES = 'colleges'
+_J03_CATEGORY_LYCEES = 'lycees'
+
+
+@dataclass(frozen=True)
+class _J03CategoryFormat:
+    """What a category's teams look like (art. 5.1.1, 5.1.2), the game
+    points of an exempt team, and the rating an estimated one counts for
+    when numbering the teams (art. 5.1.5)."""
+
+    team_player_count: int
+    roster_max_size: int
+    min_per_gender: int
+    bye_game_points: float
+    estimated_rating: int
+
+
+# Art. 5.1.1: écoles and collèges field 8 pupils with at least 2 girls and
+# 2 boys, lycées 4 with at least 1 of each. Art. 5.1.2: a roster of 8 to
+# 10 pupils, or 4 or 5 for lycées. Art. 5.3.2 has an exempt team win 5 game
+# points to 0, written for 8 boards; on the 4 boards of the lycées it wins
+# 3 to 0. Art. 5.1.5: "tous les Elo estimés sont ramenés à 799 pour les
+# écoles, 999 pour les collèges, et 1199 pour les lycées".
+_J03_CATEGORY_FORMATS: dict[str, _J03CategoryFormat] = {
+    _J03_CATEGORY_ECOLES: _J03CategoryFormat(8, 10, 2, 5.0, 799),
+    _J03_CATEGORY_COLLEGES: _J03CategoryFormat(8, 10, 2, 5.0, 999),
+    _J03_CATEGORY_LYCEES: _J03CategoryFormat(4, 5, 1, 3.0, 1199),
+}
 
 
 def _j03_phase_choices() -> tuple[tuple[str, str], ...]:
@@ -92,8 +119,18 @@ def _j03_phase_choices() -> tuple[tuple[str, str], ...]:
     a module-level tuple would freeze the labels in whichever locale
     happened to be active when the module was first imported."""
     return (
+        (_J03_PHASE_DEPARTMENTAL, _('Departmental phase')),
         (_J03_PHASE_ACADEMIC, _('Academic phase')),
         (_J03_PHASE_NATIONAL_FINAL, _('National final')),
+    )
+
+
+def _j03_category_choices() -> tuple[tuple[str, str], ...]:
+    """Built on each call — see :func:`_j03_phase_choices`."""
+    return (
+        (_J03_CATEGORY_ECOLES, _('Primary schools')),
+        (_J03_CATEGORY_COLLEGES, _('Middle schools')),
+        (_J03_CATEGORY_LYCEES, _('High schools')),
     )
 
 
@@ -134,9 +171,9 @@ def _round_breakdown(team: 'Team', round_: int) -> list[tuple[int, bool, bool]]:
 
 
 class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
-    """FFE *Championnat de France des écoles et collèges* (J03), team
-    phases — 8-board teams of schoolchildren, 3/2/1 match points and a
-    game-point score that counts wins only."""
+    """FFE *Championnat de France des écoles, collèges et lycées* (J03),
+    team phases — 8-board teams (4 for lycées) of schoolchildren, 3/2/1
+    match points and a game-point score that counts wins only."""
 
     @staticmethod
     @override
@@ -152,9 +189,11 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     @override
     def description(self) -> str:
         return _(
-            'FFE 8-board school team championship. Roster of 8 to 10 pupils '
-            'with at least 2 girls and 2 boys, draws are not counted in the '
-            'score, 9-round Swiss for the national final.'
+            'FFE school team championship. 8 boards from a roster of 8 to 10 '
+            'pupils with at least 2 girls and 2 boys (4 boards from 4 or 5 '
+            'pupils with at least 1 girl and 1 boy for high schools), draws '
+            'are not counted in the score, 9-round Swiss for the national '
+            'final.'
         )
 
     @staticmethod
@@ -165,8 +204,8 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     @property
     @override
     def ffe_division_name(self) -> str | None:
-        # The academic phase has one division per académie, which the
-        # rule set doesn't know.
+        # The departmental and academic phases have one division per
+        # département or académie, which the rule set doesn't know.
         if self.is_national_final:
             return 'Finales Nationales'
         return None
@@ -188,11 +227,34 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
                 affects_defaults=True,
                 locked_once_paired=True,
             ),
+            RuleSetField(
+                id='category',
+                label=_('Category'),
+                kind='select',
+                default=_J03_CATEGORY_ECOLES,
+                choices=_j03_category_choices(),
+                affects_defaults=True,
+                locked_once_paired=True,
+            ),
         )
 
     @property
     def phase(self) -> str:
         return cast(str, self.config_value('phase'))
+
+    @property
+    def game_points(self) -> dict[int, float]:
+        return {
+            **_J03_GAME_POINTS,
+            Result.PAIRING_ALLOCATED_BYE.value: self.category_format.bye_game_points,
+        }
+
+    @property
+    def category_format(self) -> _J03CategoryFormat:
+        category = cast(str, self.config_value('category'))
+        return _J03_CATEGORY_FORMATS.get(
+            category, _J03_CATEGORY_FORMATS[_J03_CATEGORY_ECOLES]
+        )
 
     @property
     def is_national_final(self) -> bool:
@@ -206,10 +268,12 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     @override
     def managed_fields(self) -> set[str]:
         fields = {
+            'rating',
             'team_player_count',
             'roster_max_size',
             'primary_score',
             'team_colour_type',
+            'secondary_score_for_colours',
             'enforce_roster_order',
             'mp_win',
             'mp_draw',
@@ -234,11 +298,14 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         stored_tournament: 'StoredTournament',
         pairing_system_id: str | None = None,
     ) -> None:
-        stored_tournament.team_player_count = _J03_TEAM_PLAYER_COUNT
-        stored_tournament.roster_max_size = _J03_ROSTER_MAX_SIZE
+        # Art. 5.1.3: the players are rated on the national rapid list.
+        stored_tournament.rating = TournamentRating.RAPID.value
+        stored_tournament.team_player_count = self.category_format.team_player_count
+        stored_tournament.roster_max_size = self.category_format.roster_max_size
         # Art. 3.3.2 / 4.3: the team named first has white on the odd
         # boards and black on the even ones.
         stored_tournament.team_colour_type = TeamColourType.A.value
+        stored_tournament.secondary_score_for_colours = True
         # Art. 5.2.2: the players stay in the order given in the team
         # composition, swaps are forbidden.
         stored_tournament.enforce_roster_order = True
@@ -249,7 +316,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         # Overlay only the game-point results the rule set manages,
         # preserving any the arbiter set that it does not.
         game_points = dict(stored_tournament.game_points or {})
-        game_points.update(_J03_GAME_POINTS)
+        game_points.update(self.game_points)
         stored_tournament.game_points = game_points
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(
@@ -265,21 +332,23 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         pairing_variation_id: str | None = None,
     ) -> dict[str, str]:
         defaults: dict[str, str] = {
-            'team_player_count': str(_J03_TEAM_PLAYER_COUNT),
-            'roster_max_size': str(_J03_ROSTER_MAX_SIZE),
+            'rating': str(TournamentRating.RAPID.value),
+            'team_player_count': str(self.category_format.team_player_count),
+            'roster_max_size': str(self.category_format.roster_max_size),
             'primary_score': ScoreType.MATCH_POINTS.value,
             'team_colour_type': TeamColourType.A.value,
+            'secondary_score_for_colours': 'on',
             'enforce_roster_order': 'on',
             'mp_win': _fmt(_J03_MATCH_POINTS[Result.WIN.value]),
             'mp_draw': _fmt(_J03_MATCH_POINTS[Result.DRAW.value]),
             'mp_loss': _fmt(_J03_MATCH_POINTS[Result.LOSS.value]),
             'mp_zpb': _fmt(_J03_MATCH_POINTS[Result.ZERO_POINT_BYE.value]),
             'mp_pab': _fmt(_J03_MATCH_POINTS[Result.PAIRING_ALLOCATED_BYE.value]),
-            'gp_win': _fmt(_J03_GAME_POINTS[Result.WIN.value]),
-            'gp_draw': _fmt(_J03_GAME_POINTS[Result.DRAW.value]),
-            'gp_loss': _fmt(_J03_GAME_POINTS[Result.LOSS.value]),
-            'gp_zpb': _fmt(_J03_GAME_POINTS[Result.ZERO_POINT_BYE.value]),
-            'gp_pab': _fmt(_J03_GAME_POINTS[Result.PAIRING_ALLOCATED_BYE.value]),
+            'gp_win': _fmt(self.game_points[Result.WIN.value]),
+            'gp_draw': _fmt(self.game_points[Result.DRAW.value]),
+            'gp_loss': _fmt(self.game_points[Result.LOSS.value]),
+            'gp_zpb': _fmt(self.game_points[Result.ZERO_POINT_BYE.value]),
+            'gp_pab': _fmt(self.game_points[Result.PAIRING_ALLOCATED_BYE.value]),
         }
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id, pairing_variation_id)
@@ -325,7 +394,31 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     @property
     @override
     def roster_max_size(self) -> int | None:
-        return _J03_ROSTER_MAX_SIZE
+        return self.category_format.roster_max_size
+
+    @override
+    def player_rating_in_team_average(self, player: 'Player') -> int | None:
+        # Art. 5.1.5: the teams are numbered on their average rating, in
+        # which every estimated rating counts for the category's value.
+        rating = player.event_default_rating_and_type
+        if rating.type == PlayerRatingType.ESTIMATED:
+            return self.category_format.estimated_rating
+        return rating.value or None
+
+    @override
+    def team_average_rating_explanation(self, team: 'Team') -> str | None:
+        estimated = sum(
+            1
+            for player in team.players
+            if player.event_default_rating_and_type.type == PlayerRatingType.ESTIMATED
+        )
+        if not estimated:
+            return None
+        return ngettext(
+            '{n} estimated rating counted as {rating} (art. 5.1.5).',
+            '{n} estimated ratings counted as {rating} (art. 5.1.5).',
+            estimated,
+        ).format(n=estimated, rating=self.category_format.estimated_rating)
 
     # -----------------------------------------------------------------
     # Roster checks
@@ -354,25 +447,29 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         names = ', '.join(player.full_name for player in without_licence)
         return [_('Player without an A or B FFE licence: {names}.').format(names=names)]
 
-    @staticmethod
-    def _gender_balance_warnings(team: 'Team') -> list[str]:
-        # Art. 5.1.1: a team is 8 pupils, at least 2 girls and 2 boys — so
-        # a roster short of 2 of either can't field a legal match sheet
-        # (art. 5.2.4).
+    def _gender_balance_warnings(self, team: 'Team') -> list[str]:
+        # Art. 5.1.1: a team holds a minimum of girls and of boys — so a
+        # roster short of either can't field a legal match sheet (art.
+        # 5.2.4).
+        min_per_gender = self.category_format.min_per_gender
         boys = sum(1 for player in team.players if player.gender == PlayerGender.MAN)
         girls = sum(1 for player in team.players if player.gender == PlayerGender.WOMAN)
         msgs: list[str] = []
-        if boys < _J03_MIN_PER_GENDER:
+        if boys < min_per_gender:
             msgs.append(
-                _('Need at least {min} boys on the roster ({n} listed).').format(
-                    min=_J03_MIN_PER_GENDER, n=boys
-                )
+                ngettext(
+                    'Need at least {min} boy on the roster ({n} listed).',
+                    'Need at least {min} boys on the roster ({n} listed).',
+                    min_per_gender,
+                ).format(min=min_per_gender, n=boys)
             )
-        if girls < _J03_MIN_PER_GENDER:
+        if girls < min_per_gender:
             msgs.append(
-                _('Need at least {min} girls on the roster ({n} listed).').format(
-                    min=_J03_MIN_PER_GENDER, n=girls
-                )
+                ngettext(
+                    'Need at least {min} girl on the roster ({n} listed).',
+                    'Need at least {min} girls on the roster ({n} listed).',
+                    min_per_gender,
+                ).format(min=min_per_gender, n=girls)
             )
         return msgs
 

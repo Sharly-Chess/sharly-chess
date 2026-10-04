@@ -155,9 +155,10 @@ class RuleSetCompetitionTestCase(TestCase):
         )
 
     def test_only_the_national_final_names_its_division(self) -> None:
-        self.assertIsNone(
-            ChampionnatScolaireRuleSet({'phase': 'academic'}).ffe_division_name
-        )
+        for phase in ('departmental', 'academic'):
+            self.assertIsNone(
+                ChampionnatScolaireRuleSet({'phase': phase}).ffe_division_name
+            )
         self.assertEqual(
             ChampionnatScolaireRuleSet({'phase': 'national-final'}).ffe_division_name,
             'Finales Nationales',
