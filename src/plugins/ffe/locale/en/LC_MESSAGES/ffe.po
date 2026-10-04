@@ -197,13 +197,13 @@ msgid "FFE (France)"
 msgstr "FFE (France)"
 
 msgid "FFE (France) - local database"
-msgstr "FFE (France) - local database"
+msgstr ""
 
 msgid "FFE (France) - online database"
 msgstr "FFE (France) - online database"
 
 msgid "FFE (local)"
-msgstr "FFE (local)"
+msgstr ""
 
 msgid "FFE (online)"
 msgstr "FFE (online)"
@@ -237,6 +237,12 @@ msgid "FFE certification number not defined."
 msgstr ""
 
 msgid "FFE certification number:"
+msgstr ""
+
+msgid "FFE estimate"
+msgstr ""
+
+msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz"
 msgstr ""
 
 msgid "FFE forms"
@@ -703,9 +709,6 @@ msgstr ""
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
-msgid "The FFE always uses the FIDE rating when available."
-msgstr ""
-
 msgid "The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here."
 msgstr ""
 
@@ -818,10 +821,6 @@ msgstr ""
 #, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr ""
-
-msgctxt "singular for unrated player"
-msgid "Unrated"
-msgstr "Unrated"
 
 msgid "Up to date"
 msgstr ""

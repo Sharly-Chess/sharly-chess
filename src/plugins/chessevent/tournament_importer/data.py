@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 
 
 @dataclass
@@ -56,5 +56,5 @@ class ChessEventTournament:
     tie_break_2: int | None
     tie_break_3: int | None
     players: list[ChessEventPlayer]
-    rating: TournamentRating = TournamentRating.STANDARD
+    rating: Cadence = Cadence.STANDARD
     ffe_id: int | None = None

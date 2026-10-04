@@ -316,8 +316,8 @@ class StoredPlayerPeriod:
     empty title is a title held, or not held, exactly as the player's own
     columns say."""
 
-    ratings: dict[int, dict[str, int | None]] = field(
-        default_factory=dict[int, dict[str, int | None]]
+    ratings: dict[int, dict[str, Any]] = field(
+        default_factory=dict[int, dict[str, Any]]
     )
     title: str = ''
     women_title: str = ''
@@ -327,8 +327,8 @@ class StoredPlayerPeriod:
 class StoredPlayer:
     id: int | None
     last_name: str = ''
-    ratings: dict[int, dict[str, int | None]] = field(
-        default_factory=dict[int, dict[str, int | None]]
+    ratings: dict[int, dict[str, Any]] = field(
+        default_factory=dict[int, dict[str, Any]]
     )
     # The rating periods, by id, where what the player held differed from
     # the columns above, which are the first period's.
@@ -387,12 +387,13 @@ class StoredTournament:
     current_round: int | None = None
     check_in_open: bool = True
     rounds: int = 1
-    rating: int = 1
-    player_rating_type: int | None = None
+    cadence: int = 1
+    rating_preference: int | None = None
+    rating_sequence: list[str] = field(default_factory=list[str])
+    unrated_rating: int | None = None
     last_update: datetime = field(default_factory=datetime.now)
     last_player_update: datetime | None = None
     last_pairing_update: datetime | None = None
-    override_unrated_rapid_blitz: bool = True
     game_points: dict[int, float] | None = None
     criteria: dict[str, Any] = field(default_factory=dict)
     round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
@@ -641,7 +642,8 @@ class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
-    player_rating_type: int
+    rating_preference: int | None = None
+    unrated_rating: int | None = None
     public: bool = False
     location: str | None = None
     background_color: str | None = None
@@ -660,6 +662,10 @@ class BaseStoredEvent:
     organiser_director: str | None = None
     allow_multi_tournament_players: bool = True
     event_type: EventType = EventType.INDIVIDUAL
+    check_ratings: bool = True
+    #: The snapshots of the rating lists, by list, the arbiter last
+    #: dismissed the findings of the ratings check for.
+    ratings_check_dismissed: dict[str, float] = field(default_factory=dict)
 
     # The ids of the tags of the event, as defined in the config database.
     # Ids are local to an installation: they are stripped on export/import

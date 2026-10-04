@@ -24,7 +24,7 @@ from plugins.ffe.utils import PlayerFFELicence
 from data.pairings import acceleration as accelerations
 from utils import CoreMapper
 from utils.enum import (
-    TournamentRating,
+    Cadence,
     PlayerGender,
     PlayerTitle,
     PlayerRatingType,
@@ -109,13 +109,13 @@ class PapiTieBreak(CoreMapper[str, TieBreak]):
         return super().get_outer_value(core_object)
 
 
-class PapiTournamentRating(CoreMapper[str, TournamentRating]):
+class PapiCadence(CoreMapper[str, Cadence]):
     @staticmethod
-    def _core_object_by_outer_value() -> dict[str, TournamentRating]:
+    def _core_object_by_outer_value() -> dict[str, Cadence]:
         return {
-            'Elo': TournamentRating.STANDARD,
-            'Rapide': TournamentRating.RAPID,
-            'Blitz': TournamentRating.BLITZ,
+            'Elo': Cadence.STANDARD,
+            'Rapide': Cadence.RAPID,
+            'Blitz': Cadence.BLITZ,
         }
 
 

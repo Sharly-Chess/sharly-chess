@@ -13,8 +13,19 @@
             ></button>
         </div>
         <div class="modal-body">
-            {% if inactive_databases or inactive_online_data_sources %}
-                <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                {% if databases %}
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        hx-post="{{ url_for('admin-databases-update') }}"
+                        hx-disabled-elt="this"
+                    >
+                        <i class="bi-arrow-repeat pe-1"></i>
+                        {{ _('Update all') }}
+                    </button>
+                {% endif %}
+                {% if inactive_databases or inactive_online_data_sources %}
                     <div class="dropdown">
                         <button
                             class="btn btn-outline-primary dropdown-toggle"
@@ -59,8 +70,8 @@
                             {% endfor %}
                         </ul>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
             {% if online_data_sources %}
                 <h4>{{ _('Online sources') }}</h4>
                 <table
@@ -83,7 +94,7 @@
                     <tbody>
                         {% for data_source in online_data_sources %}
                             <tr>
-                                <th>{{ data_source.name }}</th>
+                                <th>{{ data_source.list_name }}</th>
                                 {% if data_source.connection_status %}
                                     <td class="text-center text-success">
                                         {{ _('Connection established') }}
@@ -101,7 +112,29 @@
                                     {{ data_source.connection_last_checked_at_str }}
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-flex gap-2 justify-content-end">
+                                    <div class="d-flex gap-3 justify-content-end align-items-center">
+                                        {% set _installed = installed_by_online_version.get(data_source.id) %}
+                                        {% if _installed %}
+                                            <span
+                                                class="form-check form-switch m-0 p-0 d-flex align-items-center gap-2"
+                                                {{ macros.tooltip_attributes('info', _('Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached.'), 'top') }}
+                                            >
+                                                <input
+                                                    class="form-check-input m-0 float-none"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    id="{{ data_source.id }}-try-first"
+                                                    {% if _installed.tries_online_first %}checked{% endif %}
+                                                    hx-post="{{ url_for('admin-online-version-try-first', data_source_id=data_source.id) }}"
+                                                    hx-vals='js:{try_first: $("#{{ data_source.id }}-try-first").is(":checked")}'
+                                                    hx-trigger="change"
+                                                    hx-indicator="#please-wait"
+                                                />
+                                                <label class="form-check-label" for="{{ data_source.id }}-try-first">
+                                                    {{ _('Try before the installed copy') }}
+                                                </label>
+                                            </span>
+                                        {% endif %}
                                         {% if not data_source.is_forced_active %}
                                             <button
                                                 type="button"
@@ -153,11 +186,9 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for database in databases %}
-                        {% include 'database_row.html' %}
-                    {% endfor %}
-                </tbody>
+                {% for database in databases %}
+                    {% include 'database_row.html' %}
+                {% endfor %}
             </table>
             {% endif %}
             {% if not databases and not online_data_sources %}

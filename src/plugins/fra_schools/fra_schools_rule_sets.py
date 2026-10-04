@@ -44,7 +44,7 @@ from utils.enum import (
     ScoreType,
     TeamColourType,
     TeamSortMode,
-    TournamentRating,
+    Cadence,
 )
 
 if TYPE_CHECKING:
@@ -268,7 +268,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     @override
     def managed_fields(self) -> set[str]:
         fields = {
-            'rating',
+            'cadence',
             'team_player_count',
             'roster_max_size',
             'primary_score',
@@ -299,7 +299,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         pairing_system_id: str | None = None,
     ) -> None:
         # Art. 5.1.3: the players are rated on the national rapid list.
-        stored_tournament.rating = TournamentRating.RAPID.value
+        stored_tournament.cadence = Cadence.RAPID.value
         stored_tournament.team_player_count = self.category_format.team_player_count
         stored_tournament.roster_max_size = self.category_format.roster_max_size
         # Art. 3.3.2 / 4.3: the team named first has white on the odd
@@ -332,7 +332,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         pairing_variation_id: str | None = None,
     ) -> dict[str, str]:
         defaults: dict[str, str] = {
-            'rating': str(TournamentRating.RAPID.value),
+            'cadence': str(Cadence.RAPID.value),
             'team_player_count': str(self.category_format.team_player_count),
             'roster_max_size': str(self.category_format.roster_max_size),
             'primary_score': ScoreType.MATCH_POINTS.value,
@@ -503,7 +503,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         own rating type says nothing about art. 5.1.4."""
         tournament = team.tournament
         if tournament is not None:
-            return bool(player.ratings[tournament.rating].fide)
+            return bool(player.ratings[tournament.cadence].fide)
         return any(bool(rating.fide) for rating in player.ratings.values())
 
     # -----------------------------------------------------------------

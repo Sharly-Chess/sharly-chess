@@ -20,7 +20,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 
 EVENT_ID = 'test-tie-break-rating'
 TOURNAMENT_NAME = 'tournament'
@@ -63,9 +63,7 @@ class TestTieBreakRating:
                     StoredPlayer(
                         id=None,
                         last_name=name,
-                        ratings={
-                            TournamentRating.STANDARD.value: {'fide': PERIOD_RATINGS[0]}
-                        },
+                        ratings={Cadence.STANDARD.value: {'fide': PERIOD_RATINGS[0]}},
                     )
                 )
                 database.add_stored_tournament_player(
@@ -84,7 +82,7 @@ class TestTieBreakRating:
                     player_ids[1],
                     stored_period.id,
                     StoredPlayerPeriod(
-                        ratings={TournamentRating.STANDARD.value: {'fide': rating}}
+                        ratings={Cadence.STANDARD.value: {'fide': rating}}
                     ),
                 )
         return self._load()

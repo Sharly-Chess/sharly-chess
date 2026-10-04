@@ -7,7 +7,7 @@ from litestar.plugins.htmx import HTMXRequest
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 from data.screens.manager import ScreenTypeManager
 from plugins.manager import plugin_manager
 from web.admin.collection import (
@@ -138,7 +138,7 @@ class BaseAdminController(BaseController):
     def _get_rating_options() -> dict[str, str]:
         return {
             WebContext.value_to_form_data(rating.value): rating.short_name
-            for rating in TournamentRating
+            for rating in Cadence
         }
 
     @staticmethod

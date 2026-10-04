@@ -10,6 +10,8 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, cast
 from _weakref import ReferenceType
 
+from markupsafe import Markup
+
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -26,6 +28,12 @@ from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
 from data.point_adjustments import PointAdjustments
 from data.point_system import PointSystem
+from data.rating_sequences import (
+    RatingSequence,
+    sequence_from_keys,
+    sequence_html,
+    sequence_preference,
+)
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -62,8 +70,9 @@ from utils.enum import (
     StartingRankTieOrder,
     TeamColourType,
     TeamSortMode,
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
+    RatingPreference,
     RoleType,
     PlayerTitle,
     CheckInStatus,
@@ -527,20 +536,65 @@ class Tournament:
         return self.pairing_variation.system()
 
     @cached_property
-    def rating(self) -> TournamentRating:
-        return TournamentRating(self.stored_tournament.rating)
+    def cadence(self) -> Cadence:
+        return Cadence(self.stored_tournament.cadence)
 
     @cached_property
-    def player_rating_type(self) -> PlayerRatingType:
-        return (
-            PlayerRatingType(self.stored_tournament.player_rating_type)
-            if self.stored_tournament.player_rating_type is not None
-            else self.event.player_rating_type
+    def rating_preference(self) -> RatingPreference:
+        """Which kind of rating the players are ranked on, and which is
+        fallen back on: the one a plugin imposes, else the one the
+        tournament's sequence amounts to, else the event's."""
+        if (forced := self.event.forced_rating_preference) is not None:
+            return forced
+        stored = (
+            None
+            if self.stored_tournament.rating_preference is None
+            else RatingPreference(self.stored_tournament.rating_preference)
+        )
+        if self.stored_tournament.rating_sequence:
+            return sequence_preference(
+                sequence_from_keys(self.stored_tournament.rating_sequence), stored
+            )
+        return stored or self.event.rating_preference
+
+    @cached_property
+    def chosen_rating_sequence(self) -> RatingSequence | None:
+        """The sequence chosen for the tournament, None for the default
+        or when a plugin imposes it."""
+        if not self.stored_tournament.rating_sequence or (
+            self.event.forced_rating_sequence(self.cadence) is not None
+        ):
+            return None
+        return sequence_from_keys(self.stored_tournament.rating_sequence)
+
+    @cached_property
+    def rating_sequence(self) -> RatingSequence:
+        """The ratings tried, in order (TEC Manual 3.9.5.7), the default
+        of the cadence when none was chosen."""
+        return self.chosen_rating_sequence or self.event.default_rating_sequence(
+            self.cadence, self.rating_preference
         )
 
     @property
-    def override_unrated_rapid_blitz(self) -> bool:
-        return self.stored_tournament.override_unrated_rapid_blitz
+    def rating_sequence_html(self) -> Markup:
+        source = self.event.national_rating_source
+        return sequence_html(
+            self.rating_sequence,
+            source.national_source_name if source else None,
+            self.rating_preference,
+        )
+
+    @property
+    def unrated_rating(self) -> int:
+        """The rating of the players no list rates, when no plugin
+        prescribes one."""
+        if self.stored_tournament.unrated_rating is not None:
+            return self.stored_tournament.unrated_rating
+        return self.event.unrated_rating
+
+    @property
+    def uses_fide_ratings(self) -> bool:
+        return PlayerRatingType.FIDE in self.rating_preference.kinds
 
     # -------------------------------------------------------------------------
     # Team tournament settings

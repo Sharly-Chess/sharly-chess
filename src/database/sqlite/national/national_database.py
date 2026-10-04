@@ -19,7 +19,7 @@ from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from database.sqlite.sqlite_database import SQLiteDatabase
-from utils.enum import TournamentRating
+from utils.enum import PlayerRatingType, Cadence
 
 logger: Logger = get_logger()
 
@@ -84,6 +84,11 @@ class NationalPlayerDatabase(LocalSourcePlayerDatabase, ABC):
 
     #: The acronym of the federation, what the database is called.
     acronym: ClassVar[str] = ''
+    #: The cadences the federation publishes a national rating for. A
+    #: list publishing the standard one alone rates every cadence on it.
+    national_cadences: ClassVar[frozenset[Cadence]] = frozenset(Cadence)
+    #: The cadences the list also gives the FIDE rating of its players for.
+    fide_cadences: ClassVar[frozenset[Cadence]] = frozenset()
 
     _INSERT_BATCH_SIZE = 5000
 
@@ -96,6 +101,11 @@ class NationalPlayerDatabase(LocalSourcePlayerDatabase, ABC):
     def national_source_id(cls) -> str:
         """The `national_source` of the players read from the database."""
         return cls.static_id()
+
+    @property
+    @override
+    def rating_source_id(self) -> str:
+        return self.national_source_id()
 
     @property
     def _schema(self) -> str:
@@ -218,17 +228,21 @@ class NationalPlayerDatabase(LocalSourcePlayerDatabase, ABC):
     # Searches
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _get_player_from_row(cls, row: dict[str, Any]) -> StoredPlayer:
+    def _get_player_from_row(self, row: dict[str, Any]) -> StoredPlayer:
         rating_keys = {
-            TournamentRating.STANDARD: ('standard_rating', 'fide_standard_rating'),
-            TournamentRating.RAPID: ('rapid_rating', 'fide_rapid_rating'),
-            TournamentRating.BLITZ: ('blitz_rating', 'fide_blitz_rating'),
+            Cadence.STANDARD: ('standard_rating', 'fide_standard_rating'),
+            Cadence.RAPID: ('rapid_rating', 'fide_rapid_rating'),
+            Cadence.BLITZ: ('blitz_rating', 'fide_blitz_rating'),
         }
+        origin = self.rating_origin()
         ratings = {
             tournament_rating.value: PlayerRating(
                 national=row[national_key] or None,
                 fide=row[fide_key] or None,
+                origins={
+                    PlayerRatingType.NATIONAL: origin,
+                    PlayerRatingType.FIDE: origin,
+                },
             ).stored_value
             for tournament_rating, (national_key, fide_key) in rating_keys.items()
         }
@@ -245,8 +259,8 @@ class NationalPlayerDatabase(LocalSourcePlayerDatabase, ABC):
             ratings=ratings,
             fide_id=row['fide_id'],
             national_id=row['national_id'],
-            national_source=cls.national_source_id(),
-            federation=row['federation'] or cls.federation or '',
+            national_source=self.national_source_id(),
+            federation=row['federation'] or self.federation or '',
             club=row['club'],
         )
 

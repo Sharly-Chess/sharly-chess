@@ -10,7 +10,6 @@ from packaging.version import Version
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
-from utils.types import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import GitHubLocalSourcePlayerDatabase
@@ -23,9 +22,10 @@ from plugins.ffe.utils import (
     FfePlayerPluginData,
     FfeNameKey,
     ffe_database_name_keys,
+    ffe_list_ratings,
 )
 from utils.enum import (
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
     PlayerGender,
     PlayerTitle,
@@ -84,8 +84,7 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
             outdate_action=NotifOutdatedAction.static_id(),
         )
 
-    @staticmethod
-    def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+    def get_stored_player_from_row(self, row: dict[str, Any]) -> StoredPlayer:
         fide_title = PlayerTitle(row['fide_title'])
         return StoredPlayer(
             id=0,
@@ -95,18 +94,23 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
             gender=PlayerGender(row['gender']),
             title=fide_title.open_value,
             women_title=fide_title.women_value,
-            ratings={
-                TournamentRating.STANDARD.value: PlayerRating.from_type(
-                    row['standard_rating'],
-                    PlayerRatingType(row['standard_rating_type']),
-                ).stored_value,
-                TournamentRating.RAPID.value: PlayerRating.from_type(
-                    row['rapid_rating'], PlayerRatingType(row['rapid_rating_type'])
-                ).stored_value,
-                TournamentRating.BLITZ.value: PlayerRating.from_type(
-                    row['blitz_rating'], PlayerRatingType(row['blitz_rating_type'])
-                ).stored_value,
-            },
+            ratings=ffe_list_ratings(
+                {
+                    Cadence.STANDARD: (
+                        row['standard_rating'],
+                        PlayerRatingType(row['standard_rating_type']),
+                    ),
+                    Cadence.RAPID: (
+                        row['rapid_rating'],
+                        PlayerRatingType(row['rapid_rating_type']),
+                    ),
+                    Cadence.BLITZ: (
+                        row['blitz_rating'],
+                        PlayerRatingType(row['blitz_rating_type']),
+                    ),
+                },
+                self.rating_origin(),
+            ),
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             national_id=row['ffe_licence_number'] or None,
             national_source=NATIONAL_SOURCE_ID,

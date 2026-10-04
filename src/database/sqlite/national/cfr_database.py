@@ -12,7 +12,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
-from utils.enum import PlayerGender
+from utils.enum import Cadence, PlayerGender
 
 
 class CfrDatabase(NationalPlayerDatabase):
@@ -26,6 +26,7 @@ class CfrDatabase(NationalPlayerDatabase):
 
     federation = 'RUS'
     acronym = 'CFR'
+    fide_cadences = frozenset({Cadence.STANDARD})
 
     _API_URL = 'https://ratings.ruchess.ru/api/'
     _LISTS: tuple[str, ...] = ('standard', 'rapid', 'blitz')

@@ -12,6 +12,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 from utils.enum import PlayerGender
 
 
@@ -31,6 +32,8 @@ class UcfDatabase(NationalPlayerDatabase):
 
     federation = 'UKR'
     acronym = 'UCF'
+    fide_cadences = frozenset({Cadence.STANDARD})
+    national_cadences = frozenset({Cadence.STANDARD})
 
     _HOME_URL = 'https://www.ukrchess.org.ua/'
     _PAGE_PATTERN = re.compile(r'kvalif/(\d{4})/(\d{2})/rating\.html')

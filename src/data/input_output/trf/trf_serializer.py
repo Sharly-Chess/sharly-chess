@@ -1,5 +1,6 @@
 from common.sharly_chess_config import SharlyChessConfig
 from .trf_data import TrfTournament
+from .trf_data import PSEUDO_FEDERATIONS
 from .trf_entry import ENTRIES, NationalPlayerEntry
 
 import io
@@ -95,7 +96,11 @@ class TrfSerializer:
                     break
 
             din = line[:3]
-            if din in federation_codes:
+            if din in federation_codes or (
+                # A record header may start like a pseudo-NRS record
+                din in PSEUDO_FEDERATIONS
+                and NationalPlayerEntry.LINE_PATTERN.fullmatch(data.ljust(80))
+            ):
                 NationalPlayerEntry(din).load(tournament, data)
 
             if line.startswith('XX'):

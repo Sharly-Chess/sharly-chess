@@ -213,6 +213,13 @@
         </div>
     </div>
 
+    {% if client.can_update_players and admin_event.check_ratings %}
+        <div
+            hx-get="{{ url_for('admin-event-ratings-check-banner', event_uniq_id=admin_event.uniq_id) }}"
+            hx-trigger="load"
+            hx-swap="outerHTML"
+        ></div>
+    {% endif %}
     <section class="pb-1">
         {% include '/admin/players/table/table.html' %}
     </section>

@@ -1,16 +1,3 @@
-<input id="player-rating-type-hidden" type="hidden" name="player_rating_type" value="3">
-<script>
-    $(document).ready(function() {
-        $('#player-rating-type').val('3').trigger('change');
-        $('#player-rating-type').prop('disabled', true);
-
-        const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
-        new bootstrap.Tooltip(ratingTypeContainer, {
-            title: '{{ _('The FFE always uses the FIDE rating when available.') }}',
-            placement: 'top',
-        });
-    });
-</script>
 <div id="ffe-connection-section" class="mt-4">
     <h4>
         {{ _('Connection French Chess Federation') }}

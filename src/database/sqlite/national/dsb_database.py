@@ -12,6 +12,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 from utils.enum import PlayerGender
 
 
@@ -29,6 +30,8 @@ class DsbDatabase(NationalPlayerDatabase):
 
     federation = 'GER'
     acronym = 'DSB'
+    fide_cadences = frozenset(Cadence)
+    national_cadences = frozenset({Cadence.STANDARD})
 
     _URL = (
         'https://www.schachbund.de/download-dwz-daten.html'

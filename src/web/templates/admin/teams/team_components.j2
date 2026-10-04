@@ -128,7 +128,7 @@
             {%- if explanation %}<i class="bi-info-circle ps-1"></i>{% endif %}
             {%- if view == 'card' and not team.tournament %}
                 <span class="text-muted small">
-                    ({{ admin_event.default_tournament_rating.acronym }})
+                    ({{ admin_event.default_cadence.acronym }})
                 </span>
             {% endif %}
         </span>
@@ -320,7 +320,7 @@
                                 <i class="bi-star-fill"></i>
                                 {{ _('Average rating: %(rating)d', rating=lineup_average) }}
                                 {%- if not team.tournament %}
-                                    ({{ admin_event.default_tournament_rating.acronym }})
+                                    ({{ admin_event.default_cadence.acronym }})
                                 {% endif %}
                             </div>
                         {% endif %}

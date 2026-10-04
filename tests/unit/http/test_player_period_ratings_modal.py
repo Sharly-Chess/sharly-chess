@@ -18,7 +18,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 
 EVENT_ID = 'test-period-ratings-modal'
 TOURNAMENT_NAME = 'tournament'
@@ -54,10 +54,10 @@ def _create(multi_period: bool) -> int:
                 id=None,
                 last_name=PLAYER_NAME,
                 ratings={
-                    TournamentRating.STANDARD.value: {
+                    Cadence.STANDARD.value: {
                         'fide': 1500,
                         'national': 1480,
-                        'estimated': 1450,
+                        'manual': 1450,
                         'k': 20,
                     }
                 },

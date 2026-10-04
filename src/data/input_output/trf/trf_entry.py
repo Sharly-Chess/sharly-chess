@@ -146,9 +146,10 @@ class RoundDatesEntry(SingleLineEntry):
 
 class StartingRankMethodEntry(TrfEntry):
     """Record 172. The federation whose National Rating Support records
-    the method refers to sits at 5-7, the method itself at 9-13. The
-    record only means anything alongside NRS records, so it is written
-    only when there are any."""
+    the method refers to sits at 5-7, the method itself at 9-13; a record
+    follows for each other federation of the NRS records, the pseudo ones
+    of a partial TRF included (TEC Manual 3.9.6.2.b). Written only when
+    a method is given."""
 
     FEDERATION_POSITION = 5
     METHOD_POSITION = 9
@@ -159,16 +160,21 @@ class StartingRankMethodEntry(TrfEntry):
     def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         if not tournament.starting_rank_method:
             return
-        fp.write(
-            f'{self.din} {tournament.starting_rank_federation[:3]:<3} '
-            f'{tournament.starting_rank_method}\n'
-        )
+        for federation in (
+            tournament.starting_rank_federation,
+            *tournament.other_starting_rank_federations,
+        ):
+            fp.write(
+                f'{self.din} {federation[:3]:<3} {tournament.starting_rank_method}\n'
+            )
 
     def load(self, tournament: TrfTournament, data: str) -> None:
         # Read as tokens rather than by column: files written before the
         # federation was added (ours included) carry the bare method.
         parts = data.split()
-        if len(parts) >= 2:
+        if len(parts) >= 2 and tournament.starting_rank_method:
+            tournament.other_starting_rank_federations.append(parts[0])
+        elif len(parts) >= 2:
             tournament.starting_rank_federation, tournament.starting_rank_method = (
                 parts[0],
                 parts[1],

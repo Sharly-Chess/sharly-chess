@@ -111,47 +111,60 @@
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='rating',
-                            label=_('Rating:'),
+                            name='cadence',
+                            label=_('Rating used:'),
+                            tooltip_text=_('The time control whose ratings the tournament is played on.'),
                             select_options=rating_options,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='player_rating_type',
-                            label=_('Rating to use:'),
-                            tooltip_text=_('Affects the rating that will be chosen for each player.'),
-                            select_options=player_rating_type_options,
+                        {{ admin_macros.number_input(
+                            name='unrated_rating',
+                            label=_('Unrated players:'),
+                            placeholder=prescribed_rating_rule.label if prescribed_rating_rule else admin_event.unrated_rating,
+                            tooltip_text=_(
+                                'The rating of the players no list rates and for whom no value is typed.'
+                            ),
+                            input_tooltip=prescribed_rating_rule.description if prescribed_rating_rule else '',
+                            disabled=prescribed_rating_rule is not none,
+                            min=0,
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
-                <div id="estimated-ratings" class="row gy-2 gx-3">
+                <div class="row gy-2 gx-3">
                     <div class="col-12">
-                        {{ admin_macros.switch_input(
-                            name='override_unrated_rapid_blitz',
-                            placeholder=_('Use the standard FIDE rating for unrated players'),
+                        {{ admin_macros.select_input(
+                            name='rating_sequence',
+                            label=_('Ratings tried:'),
                             tooltip_text=_(
-                                'For players without a rapid or blitz FIDE rating, '
-                                'use instead their standard FIDE rating.'
+                                'The ratings the federation of the event ranks the players on, tried in this order.'
+                            ) if rating_sequence_locked else _(
+                                'The ratings the players are ranked on, tried in this order: the first one a player holds is used.'
                             ),
+                            select_options=rating_sequence_options[(data['cadence'] or '1')|string],
+                            disabled=rating_sequence_locked,
+                            input_tooltip=_('Set by the federation of the event.') if rating_sequence_locked else '',
                             data=data, errors=errors
                         ) }}
                     </div>
                     <script>
-                        $('#rating,#player-rating-type').change(function() {
-                            const fideRatingValues = ['3'];
-                            {% if admin_event.player_rating_type == 3 %}
-                                fideRatingValues.push('');
-                            {% endif %}
-                            if ($('#rating').val() !== '1' && fideRatingValues.includes($('#player-rating-type').val())) {
-                                $('#estimated-ratings').show();
-                            } else {
-                                $('#estimated-ratings').hide();
-                            }
-                        });
-                        triggerModalInitEvent('#rating');
+                        (() => {
+                            const sequenceOptions = {{ rating_sequence_labels|tojson }};
+                            $('#cadence').change(function() {
+                                const options = sequenceOptions[$('#cadence').val()];
+                                const select = $('#rating-sequence');
+                                const selected = select.val();
+                                select.empty();
+                                for (const [value, label] of Object.entries(options)) {
+                                    const option = new Option(label.text, value);
+                                    option.dataset.html = label.html;
+                                    select.append(option);
+                                }
+                                select.val(selected in options ? selected : '').trigger('change');
+                            });
+                        })();
                     </script>
                 </div>
 

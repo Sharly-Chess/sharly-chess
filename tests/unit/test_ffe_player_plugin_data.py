@@ -4,7 +4,7 @@ from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredPlayer
 from plugins.ffe import NATIONAL_SOURCE_ID
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, PlayerFFELicence
-from utils.enum import PlayerRatingType
+from utils.enum import RatingPreference
 
 
 def _player(national_id: str | None, national_source: str | None) -> StoredPlayer:
@@ -45,7 +45,7 @@ def test_licence_requires_a_licence_number(
             uniq_id='ffe-licence-test',
             name='FFE licence test',
             federation='FRA',
-            player_rating_type=PlayerRatingType.FIDE.value,
+            rating_preference=RatingPreference.FIDE.value,
             enabled_plugins=['ffe'],
             stored_players=[_player(national_id, national_source)],
         )

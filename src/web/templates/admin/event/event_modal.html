@@ -185,15 +185,48 @@
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='player_rating_type',
-                            label=_('Player ratings to use by default:'),
+                            name='rating_preference',
+                            label=_('Ratings tried by default:'),
                             tooltip_text=_(
+                                'The rating used by the federation of the event.'
+                            ) if rating_preference_locked else _(
                                 'May be overridden on a per-tournament basis.',
                             ),
-                            select_options=player_rating_type_options,
+                            select_options=rating_preference_options,
+                            disabled=rating_preference_locked,
                             data=data, errors=errors
                         ) }}
-                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
+                        {{ admin_macros.hidden_disabled_input(data, 'rating_preference') }}
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-center">
+                        {{ admin_macros.switch_input(
+                            name='check_ratings',
+                            label='',
+                            placeholder=_('Check the ratings against the lists'),
+                            tooltip_text=_(
+                                'Warn on the players tab when the rating lists give some players a different rating.'
+                            ),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'check_ratings') }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='unrated_rating',
+                            label=_('Unrated players:'),
+                            placeholder=prescribed_rating_rule.label if prescribed_rating_rule else default_unrated_rating,
+                            tooltip_text=_(
+                                'The rating of the players no list rates and for whom no value is typed. May be overridden on a per-tournament basis.'
+                            ),
+                            input_tooltip=prescribed_rating_rule.description if prescribed_rating_rule else '',
+                            disabled=prescribed_rating_rule is not none,
+                            min=0,
+                            data=data, errors=errors
+                        ) }}
+                        <script>
+                            $('#unrated-rating').data('default-placeholder', '{{ default_unrated_rating }}');
+                        </script>
                     </div>
                 </div>
 

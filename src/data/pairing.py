@@ -352,20 +352,8 @@ class Pairing:
         )
 
         comment = ''
-        opponent_rating_overridden = not opponent.rating_is_overridden(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        ) and opponent.will_fide_override_with_standard_rating(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        )
-        player_rating_overridden = not tournament_player.rating_is_overridden(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        ) and tournament_player.will_fide_override_with_standard_rating(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        )
+        opponent_rating_overridden = opponent.fide_uses_standard_rating
+        player_rating_overridden = tournament_player.fide_uses_standard_rating
 
         if opponent_rating_overridden and player_rating_overridden:
             comment = _(

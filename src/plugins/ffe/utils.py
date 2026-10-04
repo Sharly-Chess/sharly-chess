@@ -46,7 +46,8 @@ from utils.entity import EntityManager
 if TYPE_CHECKING:
     from data.pairings.systems import PairingSystem
     from data.rule_sets.rule_sets import RuleSet
-from utils.enum import FideArbiterTitle, FormAction
+from utils.enum import Cadence, FideArbiterTitle, FormAction, PlayerRatingType
+from utils.types import PlayerRating, RatingOrigin
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -69,6 +70,23 @@ def ffe_database_name_keys(stored_player: StoredPlayer) -> set[FfeNameKey]:
     return {
         ffe_name_key(stored_player.last_name, first_name, date_of_birth),
         ffe_name_key(stored_player.last_name, first_name, date_of_birth.year),
+    }
+
+
+def ffe_list_ratings(
+    ratings: dict[Cadence, tuple[int | None, PlayerRatingType]],
+    origin: RatingOrigin,
+) -> dict[int, dict[str, Any]]:
+    """The ratings of a player of the FFE list, each typed F or N. The
+    estimates the list carries are left out, the plugin prescribing them
+    by age."""
+    return {
+        tournament_rating.value: (
+            PlayerRating()
+            if rating_type == PlayerRatingType.ESTIMATED
+            else PlayerRating.from_type(value, rating_type, origin)
+        ).stored_value
+        for tournament_rating, (value, rating_type) in ratings.items()
     }
 
 

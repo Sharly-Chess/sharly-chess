@@ -19,7 +19,7 @@ from plugins.sce.sce_mappers import SCEPlayerGender, SCETournamentCriteria
 from plugins.utils import PluginData
 from utils import Utils
 from utils.date_time import format_date, format_datetime
-from utils.enum import TournamentRating, PlayerTitle, PlayerRatingType, PlayerGender
+from utils.enum import Cadence, PlayerTitle, PlayerRatingType, PlayerGender
 from utils.time_control import trf25_to_human_readable
 from utils.types import PlayerRatingAndType, PlayerRating
 
@@ -56,7 +56,7 @@ class SCEDuplicatedPlayer:
 @dataclass
 class SCETournamentSyncData:
     name: str
-    type: TournamentRating
+    type: Cadence
     rounds: int
     start_date: date
     stop_date: date
@@ -97,7 +97,7 @@ class SCETournamentSyncData:
     def from_sce_data(cls, data: dict[str, Any]) -> Self:
         return cls(
             name=data['name'],
-            type=TournamentRating.from_key(data['type']),
+            type=Cadence.from_key(data['type']),
             rounds=data['number_of_rounds'],
             start_date=datetime.fromisoformat(data['start_date']).date(),
             stop_date=datetime.fromisoformat(data['end_date']).date(),
@@ -117,7 +117,7 @@ class SCETournamentSyncData:
     def from_tournament(cls, tournament: Tournament) -> Self:
         return cls(
             name=tournament.name,
-            type=tournament.rating,
+            type=tournament.cadence,
             rounds=tournament.rounds,
             start_date=tournament.start_date,
             stop_date=tournament.stop_date,
@@ -146,7 +146,7 @@ class SCETournamentSyncData:
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             name=stored_value['name'],
-            type=TournamentRating(stored_value['type']),
+            type=Cadence(stored_value['type']),
             start_date=SQLiteDatabase.load_date_from_database_field(
                 stored_value['start_date']
             ),
@@ -242,7 +242,7 @@ class SCETournamentSyncData:
         stored_tournament.name = Utils.get_unused_item_name(
             self.name, used_tournament_names
         )
-        stored_tournament.rating = self.type.value
+        stored_tournament.cadence = self.type.value
         stored_tournament.rounds = self.rounds
         stored_tournament.start_date = self.start_date
         stored_tournament.stop_date = self.stop_date
@@ -537,7 +537,7 @@ class SCEPlayerSyncData:
         stored_player.comment = self.comment
         stored_player.check_in = self.check_in
         if current_rating != self.rating or current_rating_type != self.rating_type:
-            stored_player.ratings[tournament.rating.value] = PlayerRating.from_type(
+            stored_player.ratings[tournament.cadence.value] = PlayerRating.from_type(
                 self.rating, self.rating_type or PlayerRatingType.ESTIMATED
             ).stored_value
         plugin_data = SCEPlayerPluginData.from_stored_value(
