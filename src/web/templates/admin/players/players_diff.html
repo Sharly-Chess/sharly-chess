@@ -1,3 +1,24 @@
+<li
+    class="dropdown-item text-start cursor-pointer"
+    hx-get="{{ url_for(
+        'admin-event-ratings-check-modal',
+        event_uniq_id=admin_event.uniq_id,
+        tab=tab,
+    ) }}"
+    {% if tournament %}
+        hx-vals='{"tournament_id": "{{ tournament.id }}"}'
+    {% endif %}
+    hx-target="body"
+    hx-indicator="#please-wait"
+    {% if not from_modal %}
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    {% endif %}
+>
+    {{ _('Player ratings') }}
+</li>
+<li><hr class="dropdown-divider"></li>
+<li><h6 class="dropdown-header">{{ _('Player data from:') }}</h6></li>
 {% for data_source in data_sources %}
     <li
         {% if data_source.is_available %}

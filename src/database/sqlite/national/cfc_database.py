@@ -9,6 +9,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 
 
 class CfcDatabase(NationalPlayerDatabase):
@@ -23,6 +24,7 @@ class CfcDatabase(NationalPlayerDatabase):
 
     federation = 'CAN'
     acronym = 'CFC'
+    fide_cadences = frozenset({Cadence.STANDARD})
 
     _URL = 'https://storage.googleapis.com/cfc-public/data/tdlist.txt'
 

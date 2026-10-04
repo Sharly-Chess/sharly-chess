@@ -244,6 +244,12 @@ msgstr "Numéro d'homologation FFE non défini."
 msgid "FFE certification number:"
 msgstr "Numéro d'homologation :"
 
+msgid "FFE estimate"
+msgstr "Estimation FFE"
+
+msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz"
+msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz"
+
 msgid "FFE forms"
 msgstr "Formulaires FFE"
 
@@ -708,9 +714,6 @@ msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il p
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
-msgid "The FFE always uses the FIDE rating when available."
-msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
-
 msgid "The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here."
 msgstr "La FFE ferme cette homologation une fois sa période envoyée à la FIDE : demandez à Erick Mouret de la rouvrir, afin de pouvoir continuer à y publier les résultats du tournoi entier."
 
@@ -823,10 +826,6 @@ msgstr "Valeur inconnue (attendu : {expected})."
 #, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
-
-msgctxt "singular for unrated player"
-msgid "Unrated"
-msgstr "Non-classé·e"
 
 msgid "Up to date"
 msgstr "À jour"

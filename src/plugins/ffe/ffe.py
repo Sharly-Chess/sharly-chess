@@ -2,13 +2,12 @@ import copy
 import re
 from collections import Counter, defaultdict
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING, Optional, cast
 from collections.abc import Hashable, Iterable
 
 from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
-from common.exception import SharlyChessException
 from common.i18n import _, ngettext, pgettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
@@ -26,13 +25,25 @@ from data.criteria.tournament_criteria import (
     TournamentCriterion,
     GenderTournamentCriterion,
 )
-from data.input_output import DataSource, TournamentExporter, TournamentImporter
+from data.input_output import (
+    DataSource,
+    DataSourceManager,
+    TournamentExporter,
+    TournamentImporter,
+)
 from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingSystemManager, PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, TournamentPlayer
-from utils.types import PlayerRating, PlayerRatingAndType
+from utils.types import PlayerRating
+from data.rating_sequences import (
+    PrescribedRatingRule,
+    RatingEntry,
+    RatingListFamily,
+    RatingSequence,
+    with_copies,
+)
 from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import (
     PlayerSplitter,
@@ -144,8 +155,9 @@ from plugins.utils import (
 from utils.enum import (
     PlayerRatingType,
     ProhibitedPairingConstraint,
+    RatingPreference,
     Result,
-    TournamentRating,
+    Cadence,
 )
 from web.admin.collection import ListColumn
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
@@ -478,34 +490,37 @@ class FfePlugin(Plugin):
         if not fide_id:
             return
         if data_source.id == FfeLocalDataSource.static_id():
-            # nothing more to get from the online database for local searches
+            # A search of the FFE database brings what it holds already
             return
-        ffe_stored_player: StoredPlayer | None = None
-        if data_source.id != FfeOnlineDataSource.static_id():
-            # Try to get more information by requesting the FFE SQL server
-            ffe_stored_player = None
-            try:
-                # Try to get more information by requesting the FFE database
-                async with FFESqlServer() as ffe_sql_server:
-                    ffe_stored_player = (
-                        await ffe_sql_server.get_stored_player_by_fide_id(
-                            player_fide_id=fide_id,
-                        )
-                    )
-            except SharlyChessException:
-                pass
-        if not ffe_stored_player or with_arbiter_title:  # noqa: SIM102
-            if (ffe_database := FfeDatabase()).exists():
-                # Try to get more information by requesting the FFE database
-                with ffe_database:
-                    ffe_stored_player = (
-                        ffe_database.get_stored_player_by_fide_id(
-                            player_fide_id=fide_id,
-                        )
-                        or ffe_stored_player
-                    )
+        ffe_data_source = cast(
+            FfeLocalDataSource,
+            DataSourceManager().get_object(FfeLocalDataSource.static_id()),
+        )
+
+        async def read_installed() -> StoredPlayer | None:
+            if not ffe_data_source.is_installed:
+                return None
+            with FfeDatabase() as ffe_database:
+                return ffe_database.get_stored_player_by_fide_id(player_fide_id=fide_id)
+
+        async def read_online(__: DataSource) -> StoredPlayer | None:
+            async with FFESqlServer() as ffe_sql_server:
+                return await ffe_sql_server.get_stored_player_by_fide_id(
+                    player_fide_id=fide_id
+                )
+
+        if data_source.id == FfeOnlineDataSource.static_id():
+            # The installed copy completes what the online search gave
+            ffe_stored_player = await read_installed()
+        else:
+            ffe_stored_player = await ffe_data_source.first_answer(
+                read_installed, read_online
+            )
+            if with_arbiter_title:
+                # Only the installed copy holds the arbiter titles
+                ffe_stored_player = await read_installed() or ffe_stored_player
         if ffe_stored_player:
-            for rating_type in TournamentRating:
+            for rating_type in Cadence:
                 stored_rating = stored_player.ratings.get(rating_type.value, None)
                 rating = (
                     PlayerRating.from_stored_value(stored_rating)
@@ -517,17 +532,14 @@ class FfePlugin(Plugin):
                 )
                 if ffe_stored_rating:
                     ffe_rating = PlayerRating.from_stored_value(ffe_stored_rating)
-                    augmented_rating = PlayerRating(
-                        fide=rating.fide
-                        if rating and rating.fide is not None
-                        else ffe_rating.fide,
-                        national=rating.national
-                        if rating and rating.national is not None
-                        else ffe_rating.national,
-                        estimated=rating.estimated
-                        if rating and rating.estimated is not None
-                        else ffe_rating.estimated,
-                    )
+                    augmented_rating = rating or PlayerRating()
+                    for kind in (PlayerRatingType.FIDE, PlayerRatingType.NATIONAL):
+                        if augmented_rating.get_type_value(kind) is None:
+                            augmented_rating.set_value_from_type(
+                                ffe_rating.get_type_value(kind),
+                                kind,
+                                ffe_rating.origins.get(kind),
+                            )
                     stored_player.ratings[rating_type.value] = (
                         augmented_rating.stored_value
                     )
@@ -585,32 +597,56 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
-    def get_player_rating(
+    def get_forced_rating_preference(self, event: 'Event') -> RatingPreference:
+        # In France the FIDE rating is used if available, falling back to
+        # the national rating
+        return RatingPreference.FIDE_THEN_NATIONAL
+
+    @hookimpl
+    def get_forced_rating_sequence(
+        self, event: 'Event', cadence: Cadence
+    ) -> RatingSequence:
+        cadences = (
+            (cadence,) if cadence == Cadence.STANDARD else (cadence, Cadence.STANDARD)
+        )
+        fide = tuple(
+            RatingEntry(RatingListFamily.FIDE, PlayerRatingType.FIDE, fide_cadence)
+            for fide_cadence in cadences
+        )
+        return (
+            *with_copies(fide, event.national_fide_cadences),
+            RatingEntry(RatingListFamily.NATIONAL, PlayerRatingType.NATIONAL, cadence),
+        )
+
+    @property
+    def prescribed_rating_rule(self) -> PrescribedRatingRule:
+        return PrescribedRatingRule(
+            label=_('FFE estimate'),
+            description=_(
+                'FFE estimate by age: 1399 (1299 for juniors) in standard; '
+                '1199, 999 up to U14 and 799 up to U10 in rapid and blitz'
+            ),
+        )
+
+    @hookimpl
+    def get_prescribed_rating_rule(self, event: 'Event') -> PrescribedRatingRule:
+        return self.prescribed_rating_rule
+
+    @hookimpl
+    def get_prescribed_rating(
         self,
-        tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
+        tournament_rating: Cadence,
         player: 'Player',
         category: 'PlayerCategory',
-    ) -> PlayerRatingAndType | None:
-        # In France, regardless of the player_rating_type of the tournament,
-        # the FIDE rating is used, if available, falling back to the national rating
-        ratings = player.ratings[tournament_rating]
-        if ratings.fide is not None:
-            return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
-        if ratings.national is not None:
-            return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
-        if ratings.estimated is not None:
-            return PlayerRatingAndType(ratings.estimated, PlayerRatingType.ESTIMATED)
-        if tournament_rating == TournamentRating.STANDARD:
-            value = 1299 if isinstance(category, JuniorCategory) else 1399
-        else:
-            value = 1199
-            if isinstance(category, JuniorCategory):
-                if category.age_limit <= 10:
-                    value = 799
-                elif category.age_limit <= 14:
-                    value = 999
-        return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
+    ) -> int:
+        if tournament_rating == Cadence.STANDARD:
+            return 1299 if isinstance(category, JuniorCategory) else 1399
+        if isinstance(category, JuniorCategory):
+            if category.age_limit <= 10:
+                return 799
+            if category.age_limit <= 14:
+                return 999
+        return 1199
 
     @hookimpl
     def augment_trf_national_player(

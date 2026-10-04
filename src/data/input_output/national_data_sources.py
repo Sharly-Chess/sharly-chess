@@ -15,9 +15,6 @@ from data.input_output.player_updater_fields import (
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
-    StandardRatingUpdaterField,
-    RapidRatingUpdaterField,
-    BlitzRatingUpdaterField,
     FederationUpdaterField,
     ClubUpdaterField,
 )
@@ -61,6 +58,8 @@ class NationalDataSource(LocalDataSource, ABC):
         if hasattr(cls, 'national_database_type'):
             cls.federation = cls.national_database_type.federation
             cls.national_source_id = cls.national_database_type.national_source_id()
+            cls.national_cadences = cls.national_database_type.national_cadences
+            cls.fide_cadences = cls.national_database_type.fide_cadences
 
     @classmethod
     def static_id(cls) -> str:
@@ -84,7 +83,6 @@ class NationalDataSource(LocalDataSource, ABC):
 
     @property
     def player_updater_fields(self) -> list[PlayerUpdaterField]:
-        rating_types = [PlayerRatingType.NATIONAL, PlayerRatingType.FIDE]
         return [
             NationalIdUpdaterField(),
             FideIDUpdaterField(),
@@ -93,9 +91,6 @@ class NationalDataSource(LocalDataSource, ABC):
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
-            StandardRatingUpdaterField(rating_types),
-            RapidRatingUpdaterField(rating_types),
-            BlitzRatingUpdaterField(rating_types),
             FederationUpdaterField(),
             ClubUpdaterField(),
         ]

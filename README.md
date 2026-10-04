@@ -25,6 +25,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
 - [Description of the databases](docs/technical-appendices/databases.md)
 - [National rating lists](docs/technical-appendices/national-rating-lists.md)
+- [Rating lists and tournament ratings](docs/technical-appendices/rating-lists.md)
 - [Network](docs/technical-appendices/network.md)
 - [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
 - [Tournaments lasting more than 30 days](docs/technical-appendices/multi-period-tournaments.md)

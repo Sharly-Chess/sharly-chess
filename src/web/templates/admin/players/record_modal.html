@@ -118,7 +118,7 @@
              <h4>
                 {{ _('Tournament record') }}
             </h4>
-            {% set display_rating_change = tournament.player_rating_type == 3 and tournament_player.tournament.started %}
+            {% set display_rating_change = tournament.uses_fide_ratings and tournament_player.tournament.started %}
             <table
                 id="record-table"
                 class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
@@ -400,7 +400,7 @@
                                     {% endif %}
                                 </td>
                                 <td  class="text-nowrap text-end {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
-                                    {{ tournament_player.rating + delta }} F
+                                    {{ tournament_player.rating_used_by_fide.value + delta }} F
                                 </td>
                                 <td class="text-nowrap text-center {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
                                     ({{ delta }})

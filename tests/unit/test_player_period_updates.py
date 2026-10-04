@@ -1,18 +1,21 @@
 """Refreshing ratings prepares the period being played.
 
-A tournament reported in periods is rated period by period, so an update
-taken from a player database records what the current period will be
-reported with — the earlier ones keep what they were reported with,
-whatever day the database is from.
+A tournament reported in periods is rated period by period, so the ratings
+check against the lists records what the current period will be reported
+with — the earlier ones keep what they were reported with, whatever day
+the lists are from.
 """
 
+import asyncio
+from collections.abc import Coroutine
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any
 import contextlib
 from datetime import datetime, timedelta
 
 import pytest
 
-from data.input_output.data_source import PlayerComparator
-from data.input_output.player_updater_fields import StandardRatingUpdaterField
+from data import rating_check
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -21,7 +24,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 
 EVENT_ID = 'test-player-period-updates'
 TOURNAMENT_NAME = 'tournament'
@@ -29,6 +32,14 @@ PLAYER_NAME = 'PLAYER'
 FIRST_RATING = 1500
 PERIOD_RATING = 1540
 DATABASE_RATING = 1585
+FIDE_ID = 12345678
+
+
+def _run[T](coroutine: Coroutine[Any, Any, T]) -> T:
+    """Drive a coroutine to completion on a loop of its own, out of the
+    way of the loops pytest-asyncio and playwright already own."""
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        return executor.submit(asyncio.run, coroutine).result()
 
 
 @pytest.mark.unit
@@ -63,7 +74,8 @@ class TestRatingUpdates:
                 StoredPlayer(
                     id=None,
                     last_name=PLAYER_NAME,
-                    ratings={TournamentRating.STANDARD.value: {'fide': FIRST_RATING}},
+                    fide_id=FIDE_ID,
+                    ratings={Cadence.STANDARD.value: {'fide': FIRST_RATING}},
                 )
             )
             database.add_stored_tournament_player(
@@ -79,9 +91,7 @@ class TestRatingUpdates:
                     player_id,
                     second_period.id,
                     StoredPlayerPeriod(
-                        ratings={
-                            TournamentRating.STANDARD.value: {'fide': PERIOD_RATING}
-                        }
+                        ratings={Cadence.STANDARD.value: {'fide': PERIOD_RATING}}
                     ),
                 )
         return self._load()
@@ -97,59 +107,70 @@ class TestRatingUpdates:
             if player.last_name == PLAYER_NAME
         )
 
-    def _update(self, player):
-        """What the players-update screen does once the arbiter accepts a
-        match from a player database."""
-        field = StandardRatingUpdaterField()
-        comparator = PlayerComparator(
-            [field],
-            player,
-            StoredPlayer(
-                id=None,
-                last_name=PLAYER_NAME,
-                ratings={TournamentRating.STANDARD.value: {'fide': DATABASE_RATING}},
-            ),
+    @staticmethod
+    def _fide_list(monkeypatch, rating: int) -> None:
+        """A FIDE list holding the player at *rating*."""
+        monkeypatch.setattr(
+            rating_check,
+            '_fide_list',
+            lambda players: {
+                FIDE_ID: StoredPlayer(
+                    id=None,
+                    last_name=PLAYER_NAME,
+                    fide_id=FIDE_ID,
+                    ratings={
+                        Cadence.STANDARD.value: {
+                            'fide': rating,
+                            'origins': {'f': {'source': 'fide'}},
+                        }
+                    },
+                )
+            },
         )
-        assert comparator.diff_field_ids == [field.id]
-        updated = comparator.updated_player_from_match([field])
+
+    def _check(self, player):
+        return _run(rating_check.check_ratings(self._event, [player]))
+
+    def _update(self, player, monkeypatch):
+        """What the ratings update does once the arbiter accepts the
+        change."""
+        self._fide_list(monkeypatch, DATABASE_RATING)
+        check = self._check(player)
+        assert [row.player.id for row in check.changes] == [player.id]
+        updated = check.apply({player.id})
         with EventDatabase(EVENT_ID, write=True) as database:
-            database.update_stored_player(updated.stored_player)
+            for updated_player in updated:
+                database.update_stored_player(updated_player.stored_player)
         return self._load()
 
     def _fide(self, player, period_index: int) -> int | None:
         period = self._tournament.periods[period_index]
-        return player.ratings_for(period)[TournamentRating.STANDARD].fide
+        return player.ratings_for(period)[Cadence.STANDARD].fide
 
-    def test_the_update_lands_on_the_period_being_played(self):
+    def test_the_update_lands_on_the_period_being_played(self, monkeypatch):
         player = self._setup(multi_period=True)
         assert self._tournament.current_period is self._tournament.periods[2]
-        player = self._update(player)
+        player = self._update(player, monkeypatch)
         assert self._fide(player, 2) == DATABASE_RATING
 
-    def test_the_earlier_periods_keep_what_they_were_reported_with(self):
+    def test_the_earlier_periods_keep_what_they_were_reported_with(self, monkeypatch):
         player = self._setup(multi_period=True)
-        player = self._update(player)
+        player = self._update(player, monkeypatch)
         assert self._fide(player, 0) == FIRST_RATING
         assert self._fide(player, 1) == PERIOD_RATING
 
-    def test_the_comparison_is_made_against_the_period_being_played(self):
+    def test_the_comparison_is_made_against_the_period_being_played(self, monkeypatch):
         """The period being played inherits the second period's rating, so
-        that — not the player's first rating — is what the database value
-        is compared with."""
+        that — not the player's first rating — is what the list value is
+        compared with."""
         player = self._setup(multi_period=True)
-        comparator = PlayerComparator(
-            [StandardRatingUpdaterField()],
-            player,
-            StoredPlayer(
-                id=None,
-                last_name=PLAYER_NAME,
-                ratings={TournamentRating.STANDARD.value: {'fide': PERIOD_RATING}},
-            ),
-        )
-        assert comparator.diff_field_ids == []
+        self._fide_list(monkeypatch, PERIOD_RATING)
+        check = self._check(player)
+        assert check.changes == []
+        assert check.arbiter_values == []
 
-    def test_a_tournament_rated_in_one_go_updates_the_player(self):
+    def test_a_tournament_rated_in_one_go_updates_the_player(self, monkeypatch):
         player = self._setup(multi_period=False)
-        player = self._update(player)
+        player = self._update(player, monkeypatch)
         assert player.stored_player.periods == {}
-        assert player.ratings[TournamentRating.STANDARD].fide == DATABASE_RATING
+        assert player.ratings[Cadence.STANDARD].fide == DATABASE_RATING

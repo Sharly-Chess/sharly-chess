@@ -21,15 +21,17 @@ from common import (
     is_valid_email,
 )
 from common.exception import FormError, SharlyChessException
-from common.i18n import _, locales, pgettext
+from common.i18n import _, locales
 from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from utils.enum import PlayerRatingType
+from data.rating_sequences import DEFAULT_UNRATED_RATING
+from utils.enum import PlayerRatingType, RatingPreference
 from data.event import Event
 from data.input_output import DataSourceManager, OnlineDataSourceManager
+from data.input_output.data_source import LocalDataSource, OnlineDataSource
 from data.event_metadata import EventMetadata
 from data.championship.championship import Championship
 from data.championship.championship_loader import (
@@ -90,6 +92,18 @@ from web.session import (
 from web.urls import admin_event_url
 
 logger: Logger = get_logger()
+
+
+def _installed_by_online_version() -> dict[str, LocalDataSource]:
+    """The installed copies of the lists that have an online version, by the
+    online version's id: the user chooses which of the two the automatic
+    lookups try first."""
+    return {
+        data_source.online_version_type.static_id(): data_source
+        for data_source in DataSourceManager().listed_objects()
+        if isinstance(data_source, LocalDataSource)
+        and data_source.online_version_type is not None
+    }
 
 
 class IndexAdminController(BaseAdminController):
@@ -535,8 +549,10 @@ class IndexAdminController(BaseAdminController):
             public = False
             config = SharlyChessConfig()
             allow_multi_tournament_players = True
+            check_ratings = True
             federation = config.federation.name if config.federation else ''
-            player_rating_type = PlayerRatingType.FIDE.value
+            rating_preference = RatingPreference.FIDE.value
+            unrated_rating: int | None = None
             event_type = EventType.INDIVIDUAL.value
             location: str | None = None
             age_category_base_date: date | None = None
@@ -565,6 +581,7 @@ class IndexAdminController(BaseAdminController):
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
             public = stored_event.public
             allow_multi_tournament_players = admin_event.allow_multi_tournament_players
+            check_ratings = admin_event.check_ratings
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
@@ -575,7 +592,8 @@ class IndexAdminController(BaseAdminController):
             organiser_email = stored_event.organiser_email
             organiser_director = stored_event.organiser_director
             tag_ids = stored_event.tag_ids
-            player_rating_type = stored_event.player_rating_type
+            rating_preference = admin_event.rating_preference.value
+            unrated_rating = stored_event.unrated_rating
             event_type = stored_event.event_type.value
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
@@ -602,9 +620,11 @@ class IndexAdminController(BaseAdminController):
                     'name': name,
                     'public': public,
                     'allow_multi_tournament_players': allow_multi_tournament_players,
+                    'check_ratings': check_ratings,
                     'federation': federation,
                     'event_type': event_type,
-                    'player_rating_type': player_rating_type,
+                    'rating_preference': rating_preference,
+                    'unrated_rating': unrated_rating,
                     'location': location,
                     'organiser_name': organiser_name,
                     'organiser_home_page': organiser_home_page,
@@ -686,10 +706,19 @@ class IndexAdminController(BaseAdminController):
         if organiser_email and not is_valid_email(organiser_email):
             errors[field] = _('Please supply a valid email address.')
 
-        player_rating_type: int = (
-            WebContext.form_data_to_int(data, 'player_rating_type')
-            or PlayerRatingType.FIDE.value
+        rating_preference = WebContext.form_data_to_int(data, 'rating_preference')
+        # A field the federation sets is not submitted, and keeps its value
+        unrated_rating = (
+            admin_event.stored_event.unrated_rating
+            if admin_event is not None and 'unrated_rating' not in data
+            else WebContext.form_data_to_int(data, field := 'unrated_rating')
         )
+        if unrated_rating is not None and not (
+            0 <= unrated_rating <= PlayerRatingType.ESTIMATED.max_value
+        ):
+            errors['unrated_rating'] = _(
+                'A rating from 0 to {max} is expected.'
+            ).format(max=PlayerRatingType.ESTIMATED.max_value)
 
         age_categories = WebContext.form_data_to_list_str(data, 'age_categories')
         age_category_base_date: date | None = None
@@ -702,6 +731,7 @@ class IndexAdminController(BaseAdminController):
         age_category_change_month = (
             WebContext.form_data_to_int(data, 'age_category_change_month') or 1
         )
+        check_ratings = WebContext.form_data_to_bool(data, 'check_ratings')
         allow_multi_tournament_players = WebContext.form_data_to_bool(
             data, 'allow_multi_tournament_players'
         )
@@ -755,6 +785,7 @@ class IndexAdminController(BaseAdminController):
             event_type=event_type,
             public=bool(public),
             allow_multi_tournament_players=allow_multi_tournament_players,
+            check_ratings=check_ratings,
             location=location,
             organiser_name=organiser_name,
             organiser_home_page=organiser_home_page,
@@ -764,7 +795,8 @@ class IndexAdminController(BaseAdminController):
             age_category_change_month=age_category_change_month,
             age_categories=age_categories,
             tag_ids=tag_ids,
-            player_rating_type=player_rating_type,
+            rating_preference=rating_preference,
+            unrated_rating=unrated_rating,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # Defaults edited in other tabs
@@ -816,12 +848,14 @@ class IndexAdminController(BaseAdminController):
                 event_type.value: str(event_type) for event_type in EventType
             },
             'event_type_locked': event_type_locked,
-            'player_rating_type_options': {
-                str(PlayerRatingType.FIDE.value): _('FIDE'),
-                str(PlayerRatingType.NATIONAL.value): pgettext(
-                    'name for rating type national', 'National'
-                ),
+            'rating_preference_options': {
+                str(preference.value): str(preference)
+                for preference in RatingPreference
             },
+            'rating_preference_locked': event is not None
+            and event.forced_rating_preference is not None,
+            'prescribed_rating_rule': event.prescribed_rating_rule if event else None,
+            'default_unrated_rating': DEFAULT_UNRATED_RATING,
             'has_multi_tournament_players': event
             and event.has_multi_tournament_players,
             'force_organiser_open': any(
@@ -1839,6 +1873,7 @@ class IndexAdminController(BaseAdminController):
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager().options(),
             'outdate_action_options': OutdatedActionManager().options(),
+            'installed_by_online_version': _installed_by_online_version(),
             'modal': 'database',
         }
 
@@ -1906,6 +1941,27 @@ class IndexAdminController(BaseAdminController):
     async def _database_update(self, database_id: FromPath[str]) -> Reswap:
         database = LocalSourceDatabaseManager().get_object(database_id)
         database.update()
+        return Reswap(content=None, method='none', status_code=HTTP_200_OK)
+
+    @post(
+        path='/databases-update',
+        name='admin-databases-update',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def _databases_update(
+        self, database_ids: FromQuery[list[str] | None] = None
+    ) -> Reswap:
+        """Update every active list in one go (VCL Q136), or the ones
+        named."""
+        for database in LocalSourceDatabaseManager().objects():
+            if database_ids is not None and database.id not in database_ids:
+                continue
+            if (
+                database.is_active
+                and not database.is_manual
+                and not database.is_updating
+            ):
+                database.update()
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
     @post(
@@ -2027,6 +2083,33 @@ class IndexAdminController(BaseAdminController):
         )
 
     @post(
+        path='/online-data-source/try-first/{data_source_id:str}',
+        name='admin-online-version-try-first',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def htmx_admin_online_version_try_first(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        data_source_id: FromPath[str],
+    ) -> Template:
+        """Set whether the automatic lookups read a list's online version
+        before its installed copy."""
+        installed = _installed_by_online_version().get(data_source_id)
+        if installed is None:
+            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+        stored_database = installed.database.stored_source_database
+        stored_database.read_online = WebContext.form_data_to_bool(data, 'try_first')
+        installed.database.update_stored_source_database(stored_database)
+        return self._admin_render(
+            web_context=AdminWebContext(request),
+            template_context=self._database_modal_context(),
+        )
+
+    @post(
         path='/online-data-source/check/{data_source_id:str}',
         name='admin-online-data-source-check',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
@@ -2038,12 +2121,12 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         web_context = AdminWebContext(request)
         try:
-            data_source = OnlineDataSourceManager().get_object(data_source_id)
-            await data_source.reload_connection_status()
+            data_source = DataSourceManager().get_object(data_source_id)
         except KeyError:
-            raise NotFoundException(
-                f'Unknown data source [{data_source_id}].'
-            ) from None
+            data_source = None
+        if not isinstance(data_source, OnlineDataSource):
+            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+        await data_source.reload_connection_status()
         template_context = self._database_modal_context()
         return self._admin_render(
             web_context=web_context,

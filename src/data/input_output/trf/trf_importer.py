@@ -2,7 +2,7 @@ import io
 from collections import defaultdict
 from datetime import datetime, date, time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 from common.exception import ImporterError
 from common.i18n import _
@@ -11,10 +11,15 @@ from data.event import Event
 from data.input_output.tournament_importer_options import (
     TournamentImporterOption,
     FileOption,
-    TournamentRatingOption,
+    CadenceOption,
 )
 from data.input_output.tournament_importers import FileTournamentImporter
 from data.input_output.trf.trf_data import (
+    FIDE_BLITZ_PSEUDO_FEDERATION,
+    FIDE_RAPID_PSEUDO_FEDERATION,
+    FIDE_STANDARD_PSEUDO_FEDERATION,
+    MANUAL_PSEUDO_FEDERATION,
+    PSEUDO_FEDERATIONS,
     TrfGame,
     TrfPlayer,
     TrfTournament,
@@ -49,32 +54,23 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.enum import (
+    Cadence,
+    PlayerRatingType,
     ProhibitedPairingConstraint,
-    TournamentRating,
     Result,
     BoardColor,
-    PlayerRatingType,
+    RatingPreference,
     TeamByeType,
 )
 from utils.time_control import parse_time_control_trf25
-from utils.types import PlayerRating
+from utils.types import PlayerRating, RatingOrigin
+from data.rating_sequences import FIDE_SOURCE
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
 class TrfTournamentImporter(FileTournamentImporter):
-    #: TRF26 172 starting-rank methods, mapped to the rating a
-    #: tournament here would be set to. ``HBFN`` / ``LBFN`` (highest /
-    #: lowest of the two) and ``OTHER`` have no equivalent and are
-    #: reported instead.
-    STARTING_RANK_RATING_TYPES: ClassVar[dict[str, PlayerRatingType]] = {
-        'FIDE': PlayerRatingType.FIDE,
-        'FIDON': PlayerRatingType.FIDE,
-        'NRO': PlayerRatingType.NATIONAL,
-        'NIDOF': PlayerRatingType.NATIONAL,
-    }
-
     @staticmethod
     def static_id() -> str:
         return 'TRF'
@@ -95,7 +91,7 @@ class TrfTournamentImporter(FileTournamentImporter):
     def available_options() -> list[type[TournamentImporterOption]]:
         return [
             FileOption,
-            TournamentRatingOption,
+            CadenceOption,
         ]
 
     @property
@@ -151,14 +147,14 @@ class TrfTournamentImporter(FileTournamentImporter):
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         file_path = self._get_option(FileOption).value
         assert file_path is not None
-        tournament_rating = self._get_option(TournamentRatingOption).value
+        tournament_rating = self._get_option(CadenceOption).value
         trf_tournament = self._load_trf_file(file_path)
         self._check_team_event_compatibility(event, trf_tournament)
         stored_tournament = self._read_trf_tournament(
             event, trf_tournament, stored_tournament
         )
         self._populate_acceleration(stored_tournament, trf_tournament)
-        stored_tournament.rating = tournament_rating
+        stored_tournament.cadence = tournament_rating
         # An imported tournament runs in FIDE mode, whatever the tournament
         # it was imported into was set to before it started.
         stored_tournament.fide_mode = True
@@ -246,7 +242,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
                 ) from exception
             stored_player = self._read_trf_player(
-                trf_player, TournamentRating(tournament_rating), event
+                trf_player, Cadence(tournament_rating), event
             )
             stored_tournament_player = StoredTournamentPlayer(
                 player_id=player_id,
@@ -416,7 +412,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
             )
         sr_method = tournament.starting_rank_method
-        if sr_method and sr_method not in self.STARTING_RANK_RATING_TYPES:
+        if sr_method and RatingPreference.from_starting_rank_method(sr_method) is None:
             features.append(
                 _('172 Starting rank method {method}').format(method=sr_method)
             )
@@ -456,7 +452,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         if tournament.abnormal_points_assignments and not tournament.teams:
             features.append(_('299 Abnormal assignment points'))
         if any(
-            federation != event.federation
+            federation not in (event.federation, *PSEUDO_FEDERATIONS)
             for federation in tournament.national_players_by_federation
         ):
             features.append(
@@ -1468,11 +1464,12 @@ class TrfTournamentImporter(FileTournamentImporter):
                     _('{string}: {value}').format(string='152', value=message)
                 ) from None
             stored_tournament.pairing_settings[ColorSeedSetting().id] = color.value
-        rating_type = cls.STARTING_RANK_RATING_TYPES.get(
-            trf_tournament.starting_rank_method
-        )
-        if rating_type is not None:
-            stored_tournament.player_rating_type = rating_type
+        if trf_tournament.starting_rank_method and (
+            preference := RatingPreference.from_starting_rank_method(
+                trf_tournament.starting_rank_method
+            )
+        ):
+            stored_tournament.rating_preference = preference.value
         encoded_type = trf_tournament.encoded_type
         # Refuse files whose tournament type can't be honoured exactly: an
         # unknown code (no matching pairing system) or a CUSTOM_* code (a
@@ -1518,15 +1515,36 @@ class TrfTournamentImporter(FileTournamentImporter):
     @staticmethod
     def _read_trf_player(
         trf_player: TrfPlayer,
-        tournament_rating: TournamentRating,
+        tournament_rating: Cadence,
         event: Event,
     ) -> StoredPlayer:
         national_player = trf_player.national_player_by_federation.get(event.federation)
-        ratings = {tr.value: PlayerRating().stored_value for tr in TournamentRating}
-        ratings[tournament_rating.value] = PlayerRating(
+        ratings = {tr: PlayerRating() for tr in Cadence}
+        ratings[tournament_rating] = PlayerRating(
             fide=trf_player.rating or None,
             national=getattr(national_player, 'rating', 0) or None,
-        ).stored_value
+        )
+        # The pseudo-NRS records of a partial TRF give the source of the
+        # rating the tournament ranked the player on (TEC Manual 3.9.6.2.b)
+        for pseudo_federation, cadence in (
+            (FIDE_STANDARD_PSEUDO_FEDERATION, Cadence.STANDARD),
+            (FIDE_RAPID_PSEUDO_FEDERATION, Cadence.RAPID),
+            (FIDE_BLITZ_PSEUDO_FEDERATION, Cadence.BLITZ),
+        ):
+            pseudo_player = trf_player.national_player_by_federation.get(
+                pseudo_federation
+            )
+            if pseudo_player is not None and pseudo_player.rating:
+                ratings[cadence].set_value_from_type(
+                    pseudo_player.rating,
+                    PlayerRatingType.FIDE,
+                    RatingOrigin(FIDE_SOURCE),
+                )
+        manual_player = trf_player.national_player_by_federation.get(
+            MANUAL_PSEUDO_FEDERATION
+        )
+        if manual_player is not None and manual_player.rating:
+            ratings[tournament_rating].manual = manual_player.rating
         date_of_birth: date | None = None
         year_of_birth: int | None = None
         if trf_player.birth_date:
@@ -1538,7 +1556,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_player = StoredPlayer(
             id=trf_player.id,
             last_name=trf_player.name.split(',')[0].strip(),
-            ratings=ratings,
+            ratings={tr.value: rating.stored_value for tr, rating in ratings.items()},
             first_name=(
                 trf_player.name.split(',')[1].strip()
                 if ',' in trf_player.name

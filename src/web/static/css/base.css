@@ -410,6 +410,14 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     left: var(--side-bar-width);
 }
 
+/* Content above a table wider than the window, kept within the window
+   while the table scrolls sideways */
+.window-width {
+    position: sticky;
+    left: var(--side-bar-width);
+    max-width: calc(var(--vw, 100vw) - var(--side-bar-width));
+}
+
 #copyright-wrapper {
     display: flex;
     flex-grow: 1;
