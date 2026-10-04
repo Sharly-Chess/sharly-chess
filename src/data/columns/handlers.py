@@ -32,7 +32,7 @@ from data.columns.players_tab import (
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import Cadence, PlayerRatingType
 
 if TYPE_CHECKING:
     from data.input_output import DataSource
@@ -370,7 +370,7 @@ class PlayerDatasheetColumnHandler:
         columns: list[DatasheetColumn] = [pds.RatingColumn(), pds.RatingTypeColumn()]
         columns.extend(
             pds.TypedRatingColumn(tournament_type, rating_type)
-            for tournament_type in TournamentRating
+            for tournament_type in Cadence
             for rating_type in rating_types
         )
         return columns

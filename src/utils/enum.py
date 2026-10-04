@@ -561,8 +561,9 @@ class Result(IntEnum):
         )
 
 
-class TournamentRating(IntEnum):
-    """A wrapper around the tournament rating type."""
+class Cadence(IntEnum):
+    """The time control a rating is published for and a tournament is
+    played at."""
 
     STANDARD = 1
     RAPID = 2
@@ -583,11 +584,11 @@ class TournamentRating(IntEnum):
     @property
     def form_key(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return 'standard'
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return 'rapid'
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return 'blitz'
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -595,11 +596,11 @@ class TournamentRating(IntEnum):
     @property
     def print_view_header(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return pgettext('std Elo column header', 'Elo')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return pgettext('rapid Elo column header', 'Rapid')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return pgettext('blitz Elo column header', 'Blitz')
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -607,11 +608,11 @@ class TournamentRating(IntEnum):
     @property
     def name(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return _('Standard rating')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return _('Rapid rating')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return _('Blitz rating')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
@@ -619,11 +620,11 @@ class TournamentRating(IntEnum):
     @property
     def short_name(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return _('Standard')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return _('Rapid')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return _('Blitz')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
@@ -631,12 +632,26 @@ class TournamentRating(IntEnum):
     @property
     def acronym(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return pgettext('standard rating acronym', 'Std')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return pgettext('rapid rating acronym', 'Rpd')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return pgettext('blitz rating acronym', 'Blz')
+            case _:
+                raise ValueError(f'Unknown rating: {self}')
+
+    @property
+    def marker(self) -> str:
+        """Marks a rating borrowed from this cadence, in superscript after
+        its kind."""
+        match self:
+            case Cadence.STANDARD:
+                return pgettext('standard rating marker', 'STD')
+            case Cadence.RAPID:
+                return pgettext('rapid rating marker', 'RPD')
+            case Cadence.BLITZ:
+                return pgettext('blitz rating marker', 'BTZ')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
 
@@ -783,6 +798,81 @@ class PlayerRatingType(IntEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+
+class RatingPreference(IntEnum):
+    """Which kind of rating a tournament ranks its players on, and which
+    it falls back on (TEC Manual 3.9.5.7). The values are those of the
+    TRF-26 starting rank methods (Record 172)."""
+
+    FIDE = 1
+    NATIONAL = 2
+    FIDE_THEN_NATIONAL = 3
+    NATIONAL_THEN_FIDE = 4
+    HIGHEST = 5
+    LOWEST = 6
+
+    @property
+    def kinds(self) -> tuple[PlayerRatingType, ...]:
+        match self:
+            case RatingPreference.FIDE:
+                return (PlayerRatingType.FIDE,)
+            case RatingPreference.NATIONAL:
+                return (PlayerRatingType.NATIONAL,)
+            case RatingPreference.NATIONAL_THEN_FIDE:
+                return PlayerRatingType.NATIONAL, PlayerRatingType.FIDE
+            case _:
+                return PlayerRatingType.FIDE, PlayerRatingType.NATIONAL
+
+    @property
+    def uses_national(self) -> bool:
+        return PlayerRatingType.NATIONAL in self.kinds
+
+    @property
+    def starting_rank_method(self) -> str:
+        match self:
+            case RatingPreference.FIDE:
+                return 'FIDE'
+            case RatingPreference.NATIONAL:
+                return 'NRO'
+            case RatingPreference.FIDE_THEN_NATIONAL:
+                return 'FIDON'
+            case RatingPreference.NATIONAL_THEN_FIDE:
+                return 'NIDOF'
+            case RatingPreference.HIGHEST:
+                return 'HBFN'
+            case RatingPreference.LOWEST:
+                return 'LBFN'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def from_starting_rank_method(cls, method: str) -> Self | None:
+        for preference in cls:
+            if preference.starting_rank_method == method.upper():
+                return preference
+        return None
+
+    @property
+    def name(self) -> str:
+        match self:
+            case RatingPreference.FIDE:
+                return pgettext('rating preference', 'FIDE')
+            case RatingPreference.NATIONAL:
+                return pgettext('rating preference', 'National')
+            case RatingPreference.FIDE_THEN_NATIONAL:
+                return pgettext('rating preference', 'FIDE, then national')
+            case RatingPreference.NATIONAL_THEN_FIDE:
+                return pgettext('rating preference', 'National, then FIDE')
+            case RatingPreference.HIGHEST:
+                return pgettext('rating preference', 'Highest of FIDE and national')
+            case RatingPreference.LOWEST:
+                return pgettext('rating preference', 'Lowest of FIDE and national')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class PlayerTitle(StrEnum):

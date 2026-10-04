@@ -28,11 +28,7 @@
         - {{ player.plugin_data.ffe.ffe_licence }}
     {% endif %}
     -
-    {% if player.has_real_rating %}
-        {{ player.first_real_rating_str }}
-    {% else %}
-        <i>{{ pgettext('singular for unrated player', 'Unrated') }}</i>
-    {% endif %}
+    {% include '/admin/players/search_result_ratings.html' %}
     {% if player.plugin_data.ffe.league %}
         - {{ player.plugin_data.ffe.league }}
     {% endif %}

@@ -277,8 +277,14 @@ def test_search_by_name_ranks_last_names_first(national_database: KnsbDatabase) 
     assert result[0].last_name == 'DUPONT'
     assert result[0].national_id == '1'
     assert result[0].national_source == 'knsb'
-    assert result[0].ratings[1] == {'national': 1800}
-    assert result[1].ratings[2] == {'national': 1700}
+    assert result[0].ratings[1] == {
+        'national': 1800,
+        'origins': {'n': {'source': 'knsb'}},
+    }
+    assert result[1].ratings[2] == {
+        'national': 1700,
+        'origins': {'n': {'source': 'knsb'}},
+    }
 
 
 @pytest.mark.unit

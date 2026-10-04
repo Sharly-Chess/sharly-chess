@@ -14,7 +14,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
 from utils.date_time import format_date
-from utils.enum import TournamentRating, PlayerRatingType, PlayerGender, PlayerTitle
+from utils.enum import Cadence, PlayerRatingType, PlayerGender, PlayerTitle
 from utils.types import PlayerRating
 
 
@@ -483,9 +483,9 @@ class RatingColumn(DatasheetColumn):
             raise SharlyChessException(_('A positive integer is expected.'))
         rating = PlayerRating(int_value, int_value, int_value)
         rating_bucket = (
-            tournament.rating.value
+            tournament.cadence.value
             if tournament is not None
-            else TournamentRating.STANDARD.value
+            else Cadence.STANDARD.value
         )
         stored_player.ratings[rating_bucket] = rating.stored_value
 
@@ -524,16 +524,16 @@ class RatingTypeColumn(DatasheetColumn):
         except ValueError:
             rating_type = PlayerRatingType.ESTIMATED
         rating_bucket = (
-            tournament.rating.value
+            tournament.cadence.value
             if tournament is not None
-            else TournamentRating.STANDARD.value
+            else Cadence.STANDARD.value
         )
         rating = PlayerRating.from_stored_value(
             stored_player.ratings.get(rating_bucket, {})
         )
         for type_ in PlayerRatingType:
             if type_ != rating_type:
-                rating.set_value_from_type(None, rating_type)
+                rating.set_value_from_type(None, type_)
         stored_player.ratings[rating_bucket] = rating.stored_value
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
@@ -544,9 +544,7 @@ class RatingTypeColumn(DatasheetColumn):
 
 
 class TypedRatingColumn(DatasheetColumn):
-    def __init__(
-        self, tournament_type: TournamentRating, rating_type: PlayerRatingType
-    ):
+    def __init__(self, tournament_type: Cadence, rating_type: PlayerRatingType):
         super().__init__()
         self.tournament_type = tournament_type
         self.rating_type = rating_type

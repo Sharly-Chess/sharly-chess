@@ -12,7 +12,7 @@ from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from utils.types import PlayerRating
+from utils.types import RatingOrigin
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from database.sqlite.event.event_store import StoredPlayer
 from plugins import PLUGINS_DIR
@@ -28,8 +28,9 @@ from plugins.ffe.utils import (
     PlayerFFELicence,
     FfeNameKey,
     ffe_database_name_keys,
+    ffe_list_ratings,
 )
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import Cadence, PlayerRatingType
 
 logger: Logger = get_logger()
 
@@ -129,17 +130,23 @@ class FFESqlServer(SqlServer):
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
             title=fide_title.open_value,
             women_title=fide_title.women_value,
-            ratings={
-                TournamentRating.STANDARD.value: PlayerRating.from_type(
-                    row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
-                ).stored_value,
-                TournamentRating.RAPID.value: PlayerRating.from_type(
-                    row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
-                ).stored_value,
-                TournamentRating.BLITZ.value: PlayerRating.from_type(
-                    row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
-                ).stored_value,
-            },
+            ratings=ffe_list_ratings(
+                {
+                    Cadence.STANDARD: (
+                        row['Elo'],
+                        PapiPlayerRatingType.get_core_object(row['Fide']),
+                    ),
+                    Cadence.RAPID: (
+                        row['Rapide'],
+                        PapiPlayerRatingType.get_core_object(row['Fide03']),
+                    ),
+                    Cadence.BLITZ: (
+                        row['Elo06'],
+                        PapiPlayerRatingType.get_core_object(row['Fide06']),
+                    ),
+                },
+                RatingOrigin(NATIONAL_SOURCE_ID, date.today().isoformat(), online=True),
+            ),
             fide_id=int((row['FideCode'] or '').strip("' ") or 0) or None,
             national_id=row['NrFFE'] or None,
             national_source=NATIONAL_SOURCE_ID,

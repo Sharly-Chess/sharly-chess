@@ -9,6 +9,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 
 
 class DsuDatabase(NationalPlayerDatabase):
@@ -23,6 +24,7 @@ class DsuDatabase(NationalPlayerDatabase):
 
     federation = 'DEN'
     acronym = 'DSU'
+    fide_cadences = frozenset({Cadence.STANDARD})
 
     _URL = (
         'https://turnering.skak.dk/ClubAndMembers/AllMemberReport'

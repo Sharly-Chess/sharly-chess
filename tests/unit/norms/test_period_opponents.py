@@ -21,7 +21,7 @@ from database.sqlite.event.event_store import (
 )
 from tests.test_config import TestUtils
 from utils import Utils
-from utils.enum import PlayerTitle, TitleNorm, TournamentRating
+from utils.enum import PlayerTitle, TitleNorm, Cadence
 
 EVENT_ID = 'test-norm-period-opponents'
 TOURNAMENT_NAME = 'tournament'
@@ -62,7 +62,7 @@ class TestOpponentInRound:
                     id=None,
                     last_name='OPPONENT',
                     title=PlayerTitle.INTERNATIONAL_MASTER.value,
-                    ratings={TournamentRating.STANDARD.value: {'fide': FIRST_RATING}},
+                    ratings={Cadence.STANDARD.value: {'fide': FIRST_RATING}},
                 )
             )
             database.add_stored_tournament_player(
@@ -75,7 +75,7 @@ class TestOpponentInRound:
                 player_id,
                 second_period.id,
                 StoredPlayerPeriod(
-                    ratings={TournamentRating.STANDARD.value: {'fide': LATER_RATING}},
+                    ratings={Cadence.STANDARD.value: {'fide': LATER_RATING}},
                     title=PlayerTitle.GRANDMASTER.value,
                 ),
             )

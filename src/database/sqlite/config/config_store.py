@@ -75,6 +75,11 @@ class StoredLocalSourceDatabase:
     outdate_delay: str
     outdate_action: str
     updated_at: float | None = None
+    #: When the source published the copy, None when it does not tell.
+    published_at: float | None = None
+    #: Whether the list is read from its online source rather than from
+    #: this copy, for a list that has one.
+    read_online: bool = False
     #: None until activated or deactivated once, see `LocalSourceDatabase.is_active`.
     is_active: bool | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])

@@ -34,6 +34,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
+from utils.types import RatingOrigin
 from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
@@ -571,11 +572,29 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             self.outdate_action.on_outdated(self)
         return True
 
+    def _source_published_at(self) -> datetime | None:
+        """When the source published what it offers now, None when there
+        is no way to tell."""
+        return None
+
     def _source_changed_since(self, updated_at: datetime) -> bool | None:
         """Whether the source published something newer than the copy taken
         at *updated_at*, None when there is no way to tell and the update
         has to go ahead."""
-        return None
+        published_at = self._source_published_at()
+        if published_at is None:
+            return None
+        return published_at.timestamp() > updated_at.timestamp()
+
+    def is_behind_source(self) -> bool:
+        """Whether the source offers a newer list than the installed copy,
+        which asks the source (TEC Manual 3.9.5.11.f)."""
+        updated_at = self.updated_at
+        return (
+            self.exists()
+            and updated_at is not None
+            and self._source_changed_since(updated_at) is True
+        )
 
     def _source_last_modified(self, url: str) -> datetime | None:
         """The date the server gives for *url*, None when it gives none or
@@ -737,14 +756,15 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         if source_file is None and not NetworkMonitor.connected():
             logger.warning(self.log_prefix + 'Not connected, impossible to update.')
             return self.stop_update(False)
+        published_at = self._source_published_at() if source_file is None else None
         if (
-            source_file is None
+            published_at is not None
             and self.exists()
             and (updated_at := self.updated_at)
-            and self._source_changed_since(updated_at) is False
+            and published_at.timestamp() <= updated_at.timestamp()
         ):
             logger.info(self.log_prefix + 'Source unchanged, kept as it is.')
-            self._mark_updated()
+            self._mark_updated(published_at)
             # Nothing was rebuilt, so the user is not told that it was.
             return self.stop_update(True, notify=False)
         self.publish_database_status_updated()
@@ -850,17 +870,21 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             logger.info(
                 self.log_prefix + 'Previous version [%s] removed.', previous_file.name
             )
-        self._mark_updated()
+        self._mark_updated(published_at)
         logger.info(
             self.log_prefix + 'Database successfully updated in %.1f s.',
             time() - start,
         )
         return self.stop_update(True)
 
-    def _mark_updated(self) -> None:
+    def _mark_updated(self, published_at: datetime | None) -> None:
         """Records that the copy is the source's current state, so that the
-        outdate delay runs again from now."""
+        outdate delay runs again from now, and when the source published
+        it."""
         self.stored_source_database.updated_at = time()
+        self.stored_source_database.published_at = (
+            published_at.timestamp() if published_at is not None else None
+        )
         self.update_stored_source_database(self.stored_source_database)
 
 
@@ -954,6 +978,28 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
 
 class LocalSourcePlayerDatabase(LocalSourceDatabase, ABC):
     """Represents a local database that provides player search functionality."""
+
+    @property
+    def rating_source_id(self) -> str:
+        """The source recorded against the ratings read from the list."""
+        return self.id
+
+    @property
+    def rating_list_version(self) -> str | None:
+        """The snapshot of the list the ratings are read from: the day the
+        source published it where it tells, the day it was fetched
+        otherwise."""
+        published_at = self.stored_source_database.published_at
+        if published_at is not None:
+            return datetime.fromtimestamp(published_at).date().isoformat()
+        if self.updated_at is None:
+            return None
+        return self.updated_at.date().isoformat()
+
+    def rating_origin(self) -> RatingOrigin:
+        return RatingOrigin(
+            source=self.rating_source_id, version=self.rating_list_version
+        )
 
     @property
     def content_description(self) -> str:

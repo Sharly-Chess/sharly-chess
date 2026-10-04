@@ -25,7 +25,8 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 from database.sqlite.local_source_database.actions import AutoUpdateOutdatedAction
 from database.sqlite.local_source_database.delays import DailyOutdatedDelay
 from utils.enum import (
-    TournamentRating,
+    PlayerRatingType,
+    Cadence,
 )
 
 logger: Logger = get_logger()
@@ -251,13 +252,10 @@ class FideDatabase(GitHubLocalSourcePlayerDatabase):
         )
 
     @override
-    def _source_changed_since(self, updated_at: datetime) -> bool | None:
+    def _source_published_at(self) -> datetime | None:
         if FIDE_SOURCE != FideSource.OFFICIAL_LIST:
             return None
-        last_modified = self._source_last_modified(self._URL)
-        if last_modified is None:
-            return None
-        return last_modified.timestamp() > updated_at.timestamp()
+        return self._source_last_modified(self._URL)
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(
@@ -266,17 +264,18 @@ class FideDatabase(GitHubLocalSourcePlayerDatabase):
         )
         yield from (row['federation'] for row in self.fetchall())
 
-    @staticmethod
-    def _get_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+    def _get_player_from_row(self, row: dict[str, Any]) -> StoredPlayer:
         rating_keys = {
-            TournamentRating.STANDARD: ('standard_rating', 'k_standard'),
-            TournamentRating.RAPID: ('rapid_rating', 'k_rapid'),
-            TournamentRating.BLITZ: ('blitz_rating', 'k_blitz'),
+            Cadence.STANDARD: ('standard_rating', 'k_standard'),
+            Cadence.RAPID: ('rapid_rating', 'k_rapid'),
+            Cadence.BLITZ: ('blitz_rating', 'k_blitz'),
         }
+        origin = self.rating_origin()
         ratings = {
             tournament_rating.value: PlayerRating(
                 fide=row[rating_key] or None,
                 k_factor=row.get(k_key) or None,
+                origins={PlayerRatingType.FIDE: origin},
             ).stored_value
             for tournament_rating, (rating_key, k_key) in rating_keys.items()
         }

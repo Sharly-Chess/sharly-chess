@@ -9,6 +9,7 @@ from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
+from utils.enum import Cadence
 
 
 class SslDatabase(NationalPlayerDatabase):
@@ -20,6 +21,7 @@ class SslDatabase(NationalPlayerDatabase):
 
     federation = 'FIN'
     acronym = 'SELO'
+    national_cadences = frozenset({Cadence.STANDARD})
 
     _URL = (
         'https://www.shakki.net/cgi-bin/selo?do=selo&haku=&maa=&ehto=ja&akt=&ar=&yr='

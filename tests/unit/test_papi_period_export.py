@@ -20,7 +20,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins.ffe.papi_converter import PapiConverter
 from tests.test_config import TestUtils
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 
 EVENT_ID = 'test-papi-period-export'
 TOURNAMENT_NAME = 'tournament'
@@ -66,7 +66,7 @@ class TestPeriodPapi:
                     StoredPlayer(
                         id=None,
                         last_name=name,
-                        ratings={TournamentRating.STANDARD.value: {'fide': rating}},
+                        ratings={Cadence.STANDARD.value: {'fide': rating}},
                     )
                 )
                 database.add_stored_tournament_player(
@@ -78,11 +78,7 @@ class TestPeriodPapi:
                     player_id,
                     second_period.id,
                     StoredPlayerPeriod(
-                        ratings={
-                            TournamentRating.STANDARD.value: {
-                                'fide': LATER_RATINGS[name]
-                            }
-                        }
+                        ratings={Cadence.STANDARD.value: {'fide': LATER_RATINGS[name]}}
                     ),
                 )
         with contextlib.suppress(KeyError):

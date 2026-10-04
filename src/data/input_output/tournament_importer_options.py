@@ -7,7 +7,7 @@ from typing import Any
 from common.exception import OptionError
 from common.i18n import _
 from data.tournament import Tournament
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 from utils.option import Option
 
 
@@ -55,7 +55,7 @@ class FileOption(TournamentImporterOption[Path | None]):
             raise OptionError(_('A file is expected.'), self)
 
 
-class TournamentRatingOption(TournamentImporterOption[int]):
+class CadenceOption(TournamentImporterOption[int]):
     @staticmethod
     def static_id() -> str:
         return 'tournament_rating'
@@ -66,13 +66,13 @@ class TournamentRatingOption(TournamentImporterOption[int]):
 
     def get_default_value(self, tournament: Tournament | None = None) -> int:
         if tournament:
-            return tournament.rating.value
-        return TournamentRating.STANDARD.value
+            return tournament.cadence.value
+        return Cadence.STANDARD.value
 
     def validate(self) -> None:
         super().validate()
         try:
-            TournamentRating(self.value)
+            Cadence(self.value)
         except ValueError:
             raise OptionError(f'Unknown tournament type {self.value}', self) from None
 
@@ -80,6 +80,6 @@ class TournamentRatingOption(TournamentImporterOption[int]):
     def template_context(self) -> dict[str, Any]:
         return {
             'rating_options': {
-                str(rating.value): rating.short_name for rating in TournamentRating
+                str(rating.value): rating.short_name for rating in Cadence
             }
         }

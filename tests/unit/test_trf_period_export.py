@@ -21,7 +21,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import Result, TournamentRating
+from utils.enum import Result, Cadence
 
 EVENT_ID = 'test-trf-period-export'
 TOURNAMENT_NAME = 'tournament'
@@ -68,7 +68,7 @@ class TestPeriodTrf:
                     StoredPlayer(
                         id=None,
                         last_name=name,
-                        ratings={TournamentRating.STANDARD.value: {'fide': rating}},
+                        ratings={Cadence.STANDARD.value: {'fide': rating}},
                     )
                 )
                 database.add_stored_tournament_player(
@@ -80,11 +80,7 @@ class TestPeriodTrf:
                     player_id,
                     second_period.id,
                     StoredPlayerPeriod(
-                        ratings={
-                            TournamentRating.STANDARD.value: {
-                                'fide': LATER_RATINGS[name]
-                            }
-                        }
+                        ratings={Cadence.STANDARD.value: {'fide': LATER_RATINGS[name]}}
                     ),
                 )
                 player_ids[name] = player_id

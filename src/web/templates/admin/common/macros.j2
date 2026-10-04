@@ -157,6 +157,9 @@
             {% if option.subtitle %}
                 data-subtitle="{{ option.subtitle }}"
             {% endif %}
+            {% if option.html %}
+                data-html="{{ option.html|forceescape }}"
+            {% endif %}
             {% if option.disabled %}disabled{% endif %}
             {% if selected %}selected{% endif %}
         >
@@ -249,7 +252,7 @@
                     const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
                     return $div;
                 }
-                const $result = $('<span>' + data.text + '</span>');
+                const $result = $('<span>' + ($(data.element).attr('data-html') || data.text) + '</span>');
                 const tooltip = $(data.element).attr('data-bs-title');
                 if (tooltip) $result.attr('data-bs-title', tooltip);
                 const subtitle = $(data.element).attr('data-subtitle');
@@ -265,7 +268,7 @@
                 return $result;
             },
             templateSelection: function (data) {
-                const $result = $('<span>' + data.text + '</span>');
+                const $result = $('<span>' + ($(data.element).attr('data-html') || data.text) + '</span>');
                 const optionClass = $(data.element).data('class');
                 if (optionClass) $result.addClass(optionClass);
                 return $result;

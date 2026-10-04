@@ -55,7 +55,7 @@ from plugins.chessevent.tournament_importer.mappers import (
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.ffe.utils import FfePlayerPluginData, FFE_LEAGUES
 from plugins.manager import plugin_manager
-from utils.enum import TournamentRating, Result
+from utils.enum import Cadence, Result
 
 paris_tz = zoneinfo.ZoneInfo('Europe/Paris')
 epoch = datetime(1970, 1, 1, tzinfo=zoneinfo.ZoneInfo('UTC'))
@@ -233,7 +233,7 @@ class ChessEventTournamentImporter(TournamentImporter):
                 f'Unknown value [{tournament.pairing}] for field [pairing].'
             ) from None
         stored_tournament.location = tournament.location
-        stored_tournament.rating = tournament.rating
+        stored_tournament.cadence = tournament.rating
         stored_tournament.stored_tie_breaks = []
         for ce_tie_break in (
             tournament.tie_break_1,
@@ -305,13 +305,13 @@ class ChessEventTournamentImporter(TournamentImporter):
             raise unknown_exception('blitz_rating_type') from None
 
         ratings = {
-            TournamentRating.STANDARD.value: PlayerRating.from_type(
+            Cadence.STANDARD.value: PlayerRating.from_type(
                 player.standard_rating, standard_rating_type
             ).stored_value,
-            TournamentRating.RAPID.value: PlayerRating.from_type(
+            Cadence.RAPID.value: PlayerRating.from_type(
                 player.rapid_rating, rapid_rating_type
             ).stored_value,
-            TournamentRating.BLITZ.value: PlayerRating.from_type(
+            Cadence.BLITZ.value: PlayerRating.from_type(
                 player.blitz_rating, blitz_rating_type
             ).stored_value,
         }

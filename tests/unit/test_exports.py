@@ -134,7 +134,7 @@ class TournamentExporterTestCase(TestCase):
         )
         with_k_factor = tournament_players[0]
         ratings = dict(with_k_factor.ratings)
-        ratings[self.tournament.rating].k_factor = 20
+        ratings[self.tournament.cadence].k_factor = 20
         with_k_factor.update_ratings(ratings)
 
         with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):
@@ -162,7 +162,7 @@ class TournamentExporterTestCase(TestCase):
         )
         with_k_factor = tournament_players[0]
         ratings = dict(with_k_factor.ratings)
-        ratings[self.tournament.rating].k_factor = 20
+        ratings[self.tournament.cadence].k_factor = 20
         with_k_factor.update_ratings(ratings)
 
         with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):

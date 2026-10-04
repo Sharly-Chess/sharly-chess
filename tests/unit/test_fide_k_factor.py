@@ -17,7 +17,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import PlayerRatingType, TournamentRating
+from utils.enum import RatingPreference, Cadence
 from utils.types import PlayerRating
 
 EVENT_ID = 'test-fide-k-factor'
@@ -73,15 +73,11 @@ class ReliableKFactorTestCase(TestCase):
             last_name='DOE',
             year_of_birth=1980,
             ratings={
-                TournamentRating.STANDARD.value: PlayerRating(
+                Cadence.STANDARD.value: PlayerRating(
                     fide=2450, k_factor=20
                 ).stored_value,
-                TournamentRating.RAPID.value: PlayerRating(
-                    fide=2000, k_factor=10
-                ).stored_value,
-                TournamentRating.BLITZ.value: PlayerRating(
-                    fide=2000, k_factor=40
-                ).stored_value,
+                Cadence.RAPID.value: PlayerRating(fide=2000, k_factor=10).stored_value,
+                Cadence.BLITZ.value: PlayerRating(fide=2000, k_factor=40).stored_value,
             },
         )
         keep_reliable_k_factors(stored_player)
@@ -89,7 +85,7 @@ class ReliableKFactorTestCase(TestCase):
             PlayerRating.from_stored_value(
                 stored_player.ratings[tournament_rating.value]
             ).k_factor
-            for tournament_rating in TournamentRating
+            for tournament_rating in Cadence
         ] == [10, 10, 20]
 
 
@@ -110,7 +106,7 @@ class TournamentPlayerKFactorTestCase(TestCase):
                 year_of_birth=1980,
                 ratings={
                     tournament_rating.value: rating.stored_value
-                    for tournament_rating in TournamentRating
+                    for tournament_rating in Cadence
                 },
             )
         )
@@ -119,8 +115,8 @@ class TournamentPlayerKFactorTestCase(TestCase):
             StoredTournament(
                 id=1,
                 name='k-factor',
-                rating=TournamentRating.STANDARD.value,
-                player_rating_type=PlayerRatingType.FIDE.value,
+                cadence=Cadence.STANDARD.value,
+                rating_preference=RatingPreference.FIDE.value,
                 stored_tournament_players=[
                     StoredTournamentPlayer(tournament_id=1, player_id=PLAYER_ID)
                 ],
