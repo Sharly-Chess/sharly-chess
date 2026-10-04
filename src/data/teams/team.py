@@ -276,12 +276,27 @@ class Team:
 
     @property
     def average_rating(self) -> int | None:
-        """Mean of the roster's event-default ratings, rounded. ``None``
-        if no player on the roster has a rating."""
-        ratings = [r for r in (p.event_default_rating for p in self.players) if r]
+        """Mean of the roster's event-default ratings, rounded, or of the
+        ratings the tournament's rule set counts instead. ``None`` if no
+        player on the roster has a rating."""
+        rule_set = self.tournament.rule_set if self.tournament else None
+        rating_of = (
+            rule_set.player_rating_in_team_average
+            if rule_set is not None
+            else (lambda player: player.event_default_rating)
+        )
+        ratings = [r for r in (rating_of(p) for p in self.players) if r]
         if not ratings:
             return None
         return round(sum(ratings) / len(ratings))
+
+    @property
+    def average_rating_explanation(self) -> str | None:
+        """Why the tournament's rule set changed the average rating."""
+        rule_set = self.tournament.rule_set if self.tournament else None
+        if rule_set is None:
+            return None
+        return rule_set.team_average_rating_explanation(self)
 
     def lineup_average_rating(self, round_: int) -> int | None:
         """Mean event-default rating of the players fielded in *round_*'s
