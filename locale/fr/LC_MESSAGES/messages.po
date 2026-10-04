@@ -634,7 +634,7 @@ msgstr "Un TRF partiel, pour l'échange de données en cours de tournoi, celui-c
 
 #, python-brace-format
 msgid "A partial TRF, for data exchange during the tournament: the games without a result are exported as unknown results ({games})."
-msgstr "Un TRF partiel, pour l'échange de données en cours de tournoi : les parties sans résultat sont exportées comme résultats inconnus ({games})."
+msgstr "Un TRF partiel, pour l'échange de données en cours de tournoi : les parties sans résultat sont exportées comme résultats inconnus ({games})."
 
 msgid "A player covered by no rule in a round gets no virtual points in that round."
 msgstr "Un·e joueur·euse couvert·e par aucune règle dans une ronde ne reçoit aucun point virtuel dans cette ronde."
@@ -934,7 +934,7 @@ msgstr "Partie ajournée"
 
 #, python-brace-format
 msgid "Adjourned game logged: {adjournment}"
-msgstr "Partie ajournée consignée : {adjournment}"
+msgstr "Partie ajournée consignée : {adjournment}"
 
 msgid "Adjourned games count as draws until their result is entered."
 msgstr "Les parties ajournées comptent comme nulles jusqu'à la saisie de leur résultat."
@@ -5932,7 +5932,7 @@ msgid "No custom templates yet."
 msgstr "Aucun modèle personnalisé pour le moment."
 
 msgid "No data source is active (to add one: Menu > Data sources)."
-msgstr "Aucune source de données n'est active (pour en ajouter une : Menu > Sources de données)."
+msgstr "Aucune source de données n'est active (pour en ajouter une : Menu > Sources de données)."
 
 msgid "No data source is active."
 msgstr "Aucune source de données n'est active."
@@ -8388,12 +8388,12 @@ msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}) : le
 #, python-brace-format
 msgid "Round {round} was paired with an adjourned game counting as a draw:"
 msgid_plural "Round {round} was paired with {count} adjourned games counting as draws:"
-msgstr[0] "La ronde {round} a été appariée avec une partie ajournée comptée comme nulle :"
-msgstr[1] "La ronde {round} a été appariée avec {count} parties ajournées comptées comme nulles :"
+msgstr[0] "La ronde {round} a été appariée avec une partie ajournée comptée comme nulle :"
+msgstr[1] "La ronde {round} a été appariée avec {count} parties ajournées comptées comme nulles :"
 
 #, python-brace-format
 msgid "Round {round}: {white} – {black}"
-msgstr "Ronde {round} : {white} – {black}"
+msgstr "Ronde {round} : {white} – {black}"
 
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
@@ -12630,7 +12630,7 @@ msgstr "ecran-{screen_type}"
 
 #, python-brace-format
 msgid "{source} ID:"
-msgstr "Identifiant {source} :"
+msgstr "Identifiant {source} :"
 
 #, python-brace-format
 msgid "{stage} — game 1"
