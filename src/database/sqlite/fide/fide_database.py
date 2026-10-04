@@ -233,6 +233,11 @@ class FideDatabase(GitHubLocalSourcePlayerDatabase):
 
     @override
     @property
+    def sorts_first(self) -> bool:
+        return True
+
+    @override
+    @property
     def default_is_active(self) -> bool:
         return True
 

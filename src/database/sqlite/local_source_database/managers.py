@@ -56,6 +56,12 @@ class LocalSourceDatabaseManager(EntityManager[LocalSourceDatabase]):
         plugin_manager.hook.insert_local_source_databases(databases=databases)
         return databases
 
+    @override
+    def objects(self) -> list[LocalSourceDatabase]:
+        """The databases as they are offered and listed: the FIDE list,
+        then the others by name."""
+        return sorted(super().objects(), key=lambda database: database.sort_key)
+
     def active_objects(self) -> list[LocalSourceDatabase]:
         return [database for database in self.objects() if database.is_active]
 

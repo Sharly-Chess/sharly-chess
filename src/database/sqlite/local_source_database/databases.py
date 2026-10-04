@@ -337,6 +337,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         )
 
     @property
+    def sorts_first(self) -> bool:
+        """Whether the database comes before the others whatever its name:
+        the FIDE list is the one every event uses."""
+        return False
+
+    @property
+    def sort_key(self) -> tuple[int, str]:
+        return 0 if self.sorts_first else 1, self.name
+
+    @property
     def log_prefix(self) -> str:
         return f'Database [{self.name}] - '
 

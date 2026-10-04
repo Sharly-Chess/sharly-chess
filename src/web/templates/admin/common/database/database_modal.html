@@ -20,6 +20,8 @@
                             class="btn btn-outline-primary dropdown-toggle"
                             type="button"
                             data-bs-toggle="dropdown"
+                            {# Lets the menu out of the scrolling modal body. #}
+                            data-bs-config='{"popperConfig":{"strategy":"fixed"}}'
                             aria-expanded="false"
                         >
                             <i class="bi-plus-lg pe-1"></i>
@@ -38,6 +40,9 @@
                                         {{ database.name }}
                                     </button>
                                 </li>
+                                {% if database.sorts_first and not loop.last %}
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
                             {% endfor %}
                             {% for data_source in inactive_online_data_sources %}
                                 <li>
