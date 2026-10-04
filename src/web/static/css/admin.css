@@ -901,3 +901,10 @@
 .toggle.rounded .toggle-handle{
     border-radius: 20rem !important;
 }
+
+/* Match labels can wrap, and trimming each check to its cap height would
+   stack their lines onto the next match. */
+.match-sheet-list .form-check,
+.match-sheet-list .form-check-label {
+    text-box-trim: none;
+}

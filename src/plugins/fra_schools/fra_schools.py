@@ -55,6 +55,7 @@ from plugins.fra_schools.fra_schools_entity import (
     FraSchoolsPlayersTabColumn,
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
+    FRASchoolsCategoryPrintOption,
     FRASchoolsIndividualTeamMaxPerSchoolPrintOption,
     FraSchoolsRankingPrintDocument,
     FRASchoolsIndividualTeamDisplayIncompletePrintOption,
@@ -326,6 +327,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]) -> None:
+        print_options.append(FRASchoolsCategoryPrintOption)
         print_options.append(FRASchoolsIndividualTeamMaxPerSchoolPrintOption)
         print_options.append(FRASchoolsIndividualTeamDisplayIncompletePrintOption)
 
@@ -391,7 +393,7 @@ class FRASchoolsPlugin(Plugin):
             for k, v in items:
                 school = FRASchoolsUtils.get_school_by_id(event, k)
                 if school is not None:
-                    rows[f'{school.name} ({school.postal_code})'] = v
+                    rows[school.short_label] = v
 
             return [
                 ExtraStatisticsSection(
@@ -626,10 +628,13 @@ class FRASchoolsPlugin(Plugin):
             else:
                 school = FRASchoolsUtils.get_school_by_code(event, sce_school.code)
                 if school:
-                    plugin_data.fra_school_id = school.id
+                    school_id = school.id
                 else:
-                    school = FRASchool.from_label(sce_school.label)
-                    school.code = sce_school.code
+                    with FRASchoolsDatabase() as schools_database:
+                        school = schools_database.get_school_by_code(sce_school.code)
+                    if not school:
+                        school = FRASchool.from_label(sce_school.label)
+                        school.code = sce_school.code
                     school_id = FRASchoolsUtils.add_event_school(
                         event, school, database=database
                     )
