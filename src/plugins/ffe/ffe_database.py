@@ -56,11 +56,11 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
 
     @staticmethod
     def version() -> Version:
-        return Version('1')
+        return Version('2')
 
     @property
     def _source_file_name(self) -> str:
-        return 'ffe_players_v1.db'
+        return 'ffe_players_v2.db'
 
     federation = 'FRA'
 
@@ -112,7 +112,10 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
             national_source=NATIONAL_SOURCE_ID,
             federation=row['federation'],
             club=row['club'],
-            transient_arbiter_titles={'ffe': row['ffe_arbiter_title']},
+            transient_arbiter_titles={
+                'ffe': row['ffe_arbiter_title'],
+                'fide': row['fide_arbiter_title'] or '',
+            },
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
@@ -313,9 +316,10 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
     # ---------------------------------------------------------------------------------
 
     @property
-    def legacy_min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
-        return Version('3.6.0')
+    def legacy_min_recovery_version(self) -> Version | None:
+        # Pre-version-5 databases use the version 1 schema, which lacks the
+        # columns of the current schema, so they cannot be recovered.
+        return None
 
     @staticmethod
     def _legacy_dir() -> Path:

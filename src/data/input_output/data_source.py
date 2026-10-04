@@ -457,9 +457,10 @@ class DataSource(IdentifiableEntity, ABC):
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
             src_stored_player.women_title = fide_stored_player.women_title
-            src_stored_player.transient_arbiter_titles['fide'] = (
-                fide_stored_player.transient_arbiter_titles.get('fide', '')
-            )
+            if fide_arbiter_title := fide_stored_player.transient_arbiter_titles.get(
+                'fide'
+            ):
+                src_stored_player.transient_arbiter_titles['fide'] = fide_arbiter_title
             for rating_type in TournamentRating:
                 stored_fide_rating = fide_stored_player.ratings.get(
                     rating_type.value, None

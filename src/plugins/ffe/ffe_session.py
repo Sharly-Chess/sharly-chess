@@ -26,7 +26,7 @@ from plugins.ffe.ffe_upload_status import (
     UnexpectedFailureFFEUploadStatus,
 )
 from plugins.ffe.papi_converter import PapiConverter
-from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFEArbiterTitle, FFE_LEAGUES
+from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
@@ -579,78 +579,3 @@ class FFESession(Session):
             logger.error(error)
             raise self._logged_exception()
         logger.info('Rules uploaded')
-
-
-class FFEArbitersLoader(FFESession):
-    def __init__(self) -> None:
-        super().__init__(tournament=None)
-
-    def load_ffe_arbiter_titles_by_ffe_licence_number(
-        self,
-    ) -> dict[str, FFEArbiterTitle]:
-        """Returns a dict with FFE licence numbers as keys and arbiter strings as values."""
-
-        data: dict[str, FFEArbiterTitle] = {}
-        if self._ffe_init(admin=False):
-            for league in FFE_LEAGUES:
-                load_next_page = self._read_league_page_data(league, data, page := 1)
-                while load_next_page:
-                    page += 1
-                    load_next_page = self._read_league_page_data(league, data, page)
-        return data
-
-    def _read_league_page_data(
-        self,
-        league: str,
-        data: dict[str, FFEArbiterTitle],
-        page_number: int = 1,
-    ) -> bool:
-        """Reads one page for a league, returns a dict with FFE licence numbers as keys and arbiter strings as values."""
-        load_next_page: bool = False
-        assert self.ffe_state
-        url = f'{FFE_PUBLIC_URL}/ListeArbitres.aspx?Action=DNALIGUE&Ligue={league}'
-        post_data: dict[str, str] = {}
-        if page_number > 1:
-            post_data = {
-                '__EVENTTARGET': 'ctl00$ContentPlaceHolderMain$PagerFooter',
-                '__EVENTARGUMENT': 'd',
-                VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
-                VIEW_STATE_GENERATOR_INPUT_ID: self.ffe_state[
-                    VIEW_STATE_GENERATOR_INPUT_ID
-                ],
-            }
-        if html := self._read_url(url=url, data=post_data, files=None):
-            parser, error = self._parse_html_content(html)
-            if not error:
-                assert parser is not None
-                if self.read_ffe_state(parser, url, False):
-                    """
-                        <tr class=liste_clair>
-                            <td align=center>A06885</td>
-                            <td align=left><a href=mailto:luco.alain22@gmail.com class=lien_texte>LUCO Alain</td>
-                            <td align=Left>Arbitre Club</td>
-                            <td align=Left>2027-28</td>
-                            <td align=left>Echiquier Guingampais</td>
-                        </tr>
-                    """
-                    for tr_tag in parser.getElementsByTagName('tr'):
-                        try:
-                            ffe_licence_number: str = tr_tag.children[0].innerHTML
-                            if PlayerFFELicence.validate(ffe_licence_number):  # noqa: SIM102
-                                if (
-                                    ffe_arbiter_title := FFEArbiterTitle.from_html(
-                                        tr_tag.children[2].innerHTML
-                                    )
-                                ) != FFEArbiterTitle.NONE:
-                                    data[ffe_licence_number] = ffe_arbiter_title
-                        except IndexError:
-                            pass
-                    """
-                        <a href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$PagerFooter','d')"><img src=Images/t_fleche_d.gif border=0/></a>
-                    """
-                    for img_tag in parser.getElementsByTagName('img'):
-                        if img_tag.attributes['src'].lower() == 'images/t_fleche_d.gif':
-                            load_next_page = True
-                            break
-
-        return load_next_page

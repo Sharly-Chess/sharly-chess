@@ -18,7 +18,7 @@
             <label for="writer-ffe-arbiter-title">Titre :</label>
         </div>
         <div class="item required">
-            <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
+            <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ arbiter_qualification(writer) }}{% endif %}"/>
         </div>
     </div>
 </section>

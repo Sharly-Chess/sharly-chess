@@ -20,7 +20,7 @@
                 </div>
                 <div class="item">
                     <label for="writer-ffe-arbiter-title">Niveau :</label>
-                    <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
+                    <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ arbiter_qualification(writer) }}{% endif %}"/>
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr 1fr;">
@@ -44,7 +44,7 @@
                     <label for="chief-arbiter">Nom, prénom et n° de licence de l’arbitre principal·e (si différent·e) :</label>
                 </div>
                 <div class="item">
-                    <input id="chief-arbiter" value="{% if chief_arbiter %}{{ chief_arbiter.last_name }} {{ chief_arbiter.first_name }} {{ chief_arbiter.plugin_data.ffe.ffe_arbiter_title.short_name }} {{ chief_arbiter.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" style="margin-left: 0;" />
+                    <input id="chief-arbiter" value="{% if chief_arbiter %}{{ chief_arbiter.last_name }} {{ chief_arbiter.first_name }} {{ arbiter_qualification(chief_arbiter) }} {{ chief_arbiter.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" style="margin-left: 0;" />
                 </div>
             </div>
         </section>

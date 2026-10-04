@@ -155,9 +155,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
                     arbiter.last_name,
                     arbiter.first_name,
                     FFEUtils.get_account_plugin_data(arbiter).ffe_licence_number,
-                    FFEUtils.get_account_plugin_data(
-                        arbiter
-                    ).ffe_arbiter_title.short_name,
+                    FFEUtils.arbiter_qualification(arbiter),
                 ]
                 if item
             )
@@ -225,6 +223,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             'event_days': self.event_days,
             'date': self.date,
             'writer': self.writer,
+            'arbiter_qualification': FFEUtils.arbiter_qualification,
             'rounds': self.tournaments_rounds,
             'time_control': self.tournaments_time_control,
             'ffe_ids': self.tournament_ffe_ids,
