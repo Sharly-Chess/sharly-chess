@@ -322,10 +322,9 @@ class ChessEventTournamentImporter(TournamentImporter):
         if player.ffe_league and player.ffe_league not in FFE_LEAGUES:
             raise unknown_exception('ffe_league')
         ffe_plugin_data = FfePlayerPluginData(
-            player.ffe_id,
             ffe_licence,
-            player.ffe_license_number or None,
             player.ffe_league or None,
+            ffe_id=player.ffe_id or None,
         )
 
         return StoredPlayer(
@@ -345,6 +344,10 @@ class ChessEventTournamentImporter(TournamentImporter):
             women_title=title.women_value,
             ratings=ratings,
             fide_id=player.fide_id or None,
+            national_id=player.ffe_license_number or None,
+            national_source=(
+                ffe.NATIONAL_SOURCE_ID if player.ffe_license_number else None
+            ),
             federation=player.federation,
             club=player.ffe_club,
             fixed=player.board or None,

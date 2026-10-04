@@ -1,10 +1,11 @@
+{% if data_sources %}
 <div class="row gy-2 gx-3" id="player-search-widget">
     <div class="col-12">
           <div class="input-group">
             {{ admin_macros.search_indicator('player-search-indicator') }}
             {% set data_source_options = {} %}
             {% for data_source in data_sources %}
-                {% do data_source_options.update({data_source.id: data_source.name}) %}
+                {% do data_source_options.update({data_source.id: data_source.short_name}) %}
             {% endfor %}
             <div
                 class="form-control p-0 border-0 select2-border-radius-0-left select2-border-radius-0-right"
@@ -80,3 +81,8 @@
         {% include 'js/searchPlayerNavigation.js' %}
     </script>
 </div>
+{% else %}
+    <div class="alert alert-secondary py-2">
+        {{ _('No data source is active (to add one: Menu > Data sources).') }}
+    </div>
+{% endif %}
