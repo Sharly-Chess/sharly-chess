@@ -1575,18 +1575,10 @@ class Tournament:
             if player.id not in unpaired_ids
         ]
 
-    @cached_property
+    @property
     def ex_aequo_rank_by_player_id(self) -> dict[int, int]:
-        rank_by_player_id: dict[int, int] = {}
-        previous_rank_key: tuple | None = None
-        previous_rank: int = 0
-        for player in self.tournament_players_by_rank.values():
-            rank_key = player.rank_sort_key_without_pairing_number
-            if rank_key != previous_rank_key:
-                previous_rank_key = rank_key
-                previous_rank = player.rank
-            rank_by_player_id[player.id] = previous_rank
-        return rank_by_player_id
+        self.ranking.ensure_computed()
+        return self.ranking.ex_aequo_rank_by_player_id
 
     @property
     def min_player_rating(self) -> int | None:
