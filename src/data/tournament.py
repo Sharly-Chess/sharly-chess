@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import hashlib
 import weakref
 from collections import Counter, defaultdict
 from collections.abc import Collection, Iterator
@@ -52,6 +53,7 @@ from utils.enum import (
     PlayerGender,
     Result,
     ScoreType,
+    StartingRankTieOrder,
     TeamColourType,
     TeamSortMode,
     TournamentRating,
@@ -650,6 +652,32 @@ class Tournament:
         tournaments created before the rule existed so their standings stay
         unchanged."""
         return bool(self.stored_tournament.round_robin_participation_rule)
+
+    @property
+    def starting_rank_tie_order(self) -> StartingRankTieOrder:
+        """How the players with the same rating and title are ordered in
+        the starting rank."""
+        if not self.pairing_system.supports_starting_rank_tie_order:
+            return StartingRankTieOrder.ALPHABETICAL
+        try:
+            return StartingRankTieOrder(self.stored_tournament.starting_rank_tie_order)
+        except ValueError:
+            return StartingRankTieOrder.ALPHABETICAL
+
+    def starting_rank_tie_key(self, player: Player) -> tuple:
+        """The key that orders a player among those with the same rating
+        and title. A drawn lot is derived from the tournament's seed and the
+        player, so the draw holds however often the field is renumbered,
+        and a player entering later draws their own lot."""
+        match self.starting_rank_tie_order:
+            case StartingRankTieOrder.LOTS:
+                lot = hashlib.blake2b(
+                    f'{self.stored_tournament.starting_rank_lot_seed}:{player.id}'.encode(),
+                    digest_size=8,
+                ).digest()
+                return lot, player.id
+            case _:
+                return *player.name_sort_key, player.id
 
     @property
     def fide_mode(self) -> bool:

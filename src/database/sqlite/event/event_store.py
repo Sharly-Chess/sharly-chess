@@ -367,6 +367,8 @@ class StoredTournament:
     prohibited_pairing_dimension: str | None = None
     prohibited_pairing_dimension_is_hard: bool = True
     round_robin_participation_rule: bool = True
+    starting_rank_tie_order: str = 'ALPHABETICAL'
+    starting_rank_lot_seed: int | None = None
     fide_mode: bool = True
     fide_mode_exit_round: int | None = None
     manual_pairing_round: int | None = None

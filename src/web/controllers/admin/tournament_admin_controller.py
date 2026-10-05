@@ -92,6 +92,7 @@ from utils.enum import (
     FormAction,
     Result,
     ScoreType,
+    StartingRankTieOrder,
     TeamColourType,
     TournamentRating,
 )
@@ -332,6 +333,7 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type: str | None = None
             enforce_roster_order: bool = False
             round_robin_participation_rule: bool = True
+            starting_rank_tie_order = StartingRankTieOrder.ALPHABETICAL.value
             fide_mode: bool = True
             rule_set: str | None = None
             rule_set_config: dict[str, Any] = {}
@@ -387,6 +389,7 @@ class TournamentAdminController(BaseEventAdminController):
                 round_robin_participation_rule = (
                     stored_tournament.round_robin_participation_rule
                 )
+                starting_rank_tie_order = admin_tournament.starting_rank_tie_order.value
                 fide_mode = stored_tournament.fide_mode
                 rule_set = stored_tournament.rule_set
                 rule_set_config = stored_tournament.rule_set_config
@@ -503,6 +506,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'round_robin_participation_rule': (
                         'on' if round_robin_participation_rule else ''
                     ),
+                    'starting_rank_tie_order': starting_rank_tie_order,
                     'fide_mode': 'on' if fide_mode else '',
                     'rule_set': rule_set,
                     'date_range': WebContext.value_to_date_range_form_data(
@@ -640,6 +644,9 @@ class TournamentAdminController(BaseEventAdminController):
                 'BoardColor': BoardColor,
                 'score_type_options': {t.value: str(t) for t in ScoreType},
                 'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
+                'starting_rank_tie_order_options': {
+                    order.value: str(order) for order in StartingRankTieOrder
+                },
                 'modal': 'tournament',
                 'action': action,
                 'data': data,
@@ -979,6 +986,9 @@ class TournamentAdminController(BaseEventAdminController):
         round_robin_participation_rule = WebContext.form_data_to_bool(
             data, 'round_robin_participation_rule'
         )
+        starting_rank_tie_order, starting_rank_lot_seed = (
+            cls._read_starting_rank_tie_order(data, pairing_system, tournament, errors)
+        )
         fide_mode, fide_mode_exit_round = cls._read_fide_mode(data, tournament, errors)
 
         rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
@@ -1092,6 +1102,8 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type=team_colour_type,
             enforce_roster_order=enforce_roster_order,
             round_robin_participation_rule=round_robin_participation_rule,
+            starting_rank_tie_order=starting_rank_tie_order,
+            starting_rank_lot_seed=starting_rank_lot_seed,
             fide_mode=fide_mode,
             fide_mode_exit_round=fide_mode_exit_round,
             rule_set=rule_set_id,
@@ -1246,6 +1258,38 @@ class TournamentAdminController(BaseEventAdminController):
             errors['fide_mode'] = _('Leaving FIDE mode must be confirmed.')
             return True, None
         return False, tournament.current_round
+
+    @staticmethod
+    def _read_starting_rank_tie_order(
+        data: dict[str, str],
+        pairing_system: PairingSystem,
+        tournament: Tournament | None,
+        errors: dict[str, str],
+    ) -> tuple[str, int | None]:
+        """The order of the players with the same rating and title as set in
+        the form, and the seed of the drawing of lots.
+
+        It is fixed once the tournament has started. The seed is drawn the
+        first time the lots are chosen and kept, so that switching away and
+        back gives the same draw."""
+        stored_tournament = tournament.stored_tournament if tournament else None
+        seed = stored_tournament.starting_rank_lot_seed if stored_tournament else None
+        if tournament is not None and tournament.started:
+            return tournament.starting_rank_tie_order.value, seed
+        if not pairing_system.supports_starting_rank_tie_order:
+            return StartingRankTieOrder.ALPHABETICAL.value, seed
+        raw_order = (
+            WebContext.form_data_to_str(data, field := 'starting_rank_tie_order')
+            or StartingRankTieOrder.ALPHABETICAL.value
+        )
+        try:
+            order = StartingRankTieOrder(raw_order)
+        except ValueError:
+            errors[field] = f'Invalid order [{raw_order}].'
+            order = StartingRankTieOrder.ALPHABETICAL
+        if order == StartingRankTieOrder.LOTS and seed is None:
+            seed = random.randrange(1 << 31)
+        return order.value, seed
 
     @staticmethod
     def _rule_set_config_form_value(config_field: RuleSetField, value: Any) -> str:

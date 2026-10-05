@@ -223,6 +223,13 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return False
 
     @property
+    def supports_starting_rank_tie_order(self) -> bool:
+        """Whether the arbiter chooses how the players with the same
+        rating and title are ordered in the starting rank. Elsewhere they
+        are ordered alphabetically."""
+        return False
+
+    @property
     def supports_fide_mode(self) -> bool:
         """Whether the tournament can run in FIDE mode, where the actions
         prohibited by the FIDE regulations are refused, the settings fixed
@@ -399,6 +406,11 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     @staticmethod
     def static_name() -> str:
         return _('Swiss')
+
+    @property
+    @override
+    def supports_starting_rank_tie_order(self) -> bool:
+        return True
 
     @property
     @override
