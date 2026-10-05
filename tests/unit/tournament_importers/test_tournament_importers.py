@@ -1,3 +1,4 @@
+import shutil
 import tempfile
 from datetime import date
 from pathlib import Path
@@ -19,14 +20,14 @@ from data.input_output.trf.trf_data import (
     TrfTeamPABs,
     TrfTournament,
 )
+from data.input_output.trf.trf_export import TrfExport
 from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.input_output.trf.trf_legacy import TrfVersion
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.loader import EventLoader
-from data.pairings.settings import ColorSeedSetting
-from data.input_output.trf.trf_export import TrfExport
-from data.pibes import PibeType
 from database.sqlite.event.event_database import EventDatabase
+from data.pairings.settings import ColorSeedSetting
+from data.pibes import PibeType
 from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     StandardSwissVariation,
@@ -234,6 +235,73 @@ class TournamentImporterTestCase(TestCase):
             tournament.tournament_players_by_pairing_number[1].pairings[2].result,
             Result.ZERO_POINT_BYE,
         )
+
+    def test_trf_blank_games_of_rounds_not_paired_are_not_imported(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 5)]
+        players[0].games = [TrfGame(2, 'w', '1', 1), TrfGame(None, ' ', ' ', 2)]
+        players[1].games = [TrfGame(1, 'b', '0', 1), TrfGame(None, ' ', ' ', 2)]
+        players[2].games = [TrfGame(4, 'w', '=', 1), TrfGame(0, '-', 'H', 2)]
+        players[3].games = [TrfGame(3, 'b', '=', 1), TrfGame(None, ' ', ' ', 2)]
+        players[0].points, players[2].points, players[3].points = 1.0, 0.5, 0.5
+        tournament = self._import_trf(
+            TrfTournament(name='Unpaired', num_rounds=3, players=players)
+        )
+        self.assertEqual(tournament.rounds, 3)
+        by_number = tournament.tournament_players_by_pairing_number
+        for number in (1, 2, 4):
+            self.assertFalse(by_number[number].pairings[2].exists)
+            self.assertFalse(by_number[number].has_withdrawn_for_round(2))
+        self.assertEqual(by_number[3].pairings[2].result, Result.HALF_POINT_BYE)
+
+    def test_trf_blank_game_of_a_paired_round_is_a_zero_point_bye(self):
+        players = [self._trf_player(number, gender='m') for number in range(1, 4)]
+        players[0].games = [TrfGame(2, 'w', '1', 1)]
+        players[1].games = [TrfGame(1, 'b', '0', 1)]
+        players[2].games = [TrfGame(None, ' ', ' ', 1)]
+        players[0].points = 1.0
+        tournament = self._import_trf(TrfTournament(name='Absent', players=players))
+        self.assertEqual(
+            tournament.tournament_players_by_pairing_number[3].pairings[1].result,
+            Result.ZERO_POINT_BYE,
+        )
+
+    def test_trf_round_trip_of_a_tournament_in_progress(self):
+        """Round 1 of the minimal example is paired and later rounds are
+        not: they come back unpaired, with the byes requested for them."""
+        source_id = f'{EVENT_ID}-minimal'
+        shutil.copy(
+            BASE_DIR / 'examples' / 'events' / 'minimal.sce',
+            EventDatabase.event_database_path(source_id),
+        )
+        try:
+            source = EventLoader().load_event(source_id)
+            source_tournament = next(iter(source.tournaments_by_id.values()))
+            trf_tournament = TrfExport(source_tournament).build()
+            tournament = self._import_trf(trf_tournament)
+        finally:
+            TestUtils.delete_event(source_id)
+        source_by_name = {
+            player.full_name: player
+            for player in source_tournament.tournament_players_by_id.values()
+        }
+        self.assertEqual(tournament.rounds, source_tournament.rounds)
+        requested_byes = 0
+        for tournament_player in tournament.tournament_players_by_id.values():
+            self.assertFalse(tournament_player.has_withdrawn_for_round(2))
+            source_player = source_by_name[tournament_player.full_name]
+            for round_ in range(2, tournament.rounds + 1):
+                self.assertEqual(
+                    tournament_player.pairings[round_].exists,
+                    source_player.pairings[round_].exists,
+                    (tournament_player.full_name, round_),
+                )
+                self.assertEqual(
+                    tournament_player.pairings[round_].result,
+                    source_player.pairings[round_].result,
+                    (tournament_player.full_name, round_),
+                )
+                requested_byes += source_player.pairings[round_].exists
+        self.assertTrue(requested_byes)
 
     def test_trf_file_without_players_is_refused(self):
         with self.assertRaisesRegex(ImporterError, '001'):
