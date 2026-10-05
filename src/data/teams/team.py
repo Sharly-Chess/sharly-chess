@@ -216,6 +216,14 @@ class Team:
         )
         return abandoned * 2 > len(scheduled)
 
+    @cached_property
+    def has_withdrawn(self) -> bool:
+        """True if the team has a Zero-Point Bye in the last round."""
+        tournament = self.tournament
+        if tournament is None:
+            return False
+        return self.round_bye_type(tournament.rounds) == TeamByeType.ZPB
+
     @property
     def has_been_paired(self) -> bool:
         """True if this team has been paired in at least one round.

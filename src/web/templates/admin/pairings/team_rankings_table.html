@@ -59,6 +59,12 @@
                 <td class="rank text-end">{{ '—' if is_excluded else row.rank }}</td>
                 <td class="name text-start">
                     <strong>{{ row.team.name }}</strong>
+                    {% if row.team.has_withdrawn %}
+                        <i
+                            class="bi-sign-stop text-danger ps-2"
+                            {{ macros.tooltip_attributes('warning', _('Withdrawn'), 'top') }}
+                        ></i>
+                    {% endif %}
                 </td>
                 <td class="text-center">{{ row.played }}</td>
                 {% if primary_is_mp %}
