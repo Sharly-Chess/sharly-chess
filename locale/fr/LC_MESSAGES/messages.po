@@ -9240,7 +9240,7 @@ msgid "Starting rank"
 msgstr "Classement initial"
 
 msgid "Starting rank ties:"
-msgstr "Ex æquo du classement initial :"
+msgstr "Ex æquo du classement initial :"
 
 msgid "Statistics"
 msgstr "Statistiques"
