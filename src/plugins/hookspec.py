@@ -330,6 +330,20 @@ class AppHookSpecs:
         """Provide a path to the template containing additional tournament form fields"""
 
     @hookspec
+    def get_tournament_period_form_fields_template_and_data(
+        self, event: 'Event', tournament: 'Tournament'
+    ) -> tuple[str, dict[str, Any]]:
+        """Provide a path to the template of the fields a rating period
+        carries, rendered inside each period of a tournament reported in
+        slices.
+
+        A slice is submitted as a tournament of its own, so a service
+        that wants one registration per slice asks for it here. The
+        template is rendered once per period with ``period`` and
+        ``field_suffix`` in its context: naming the fields with that
+        suffix is what keeps each period's values apart."""
+
+    @hookspec
     def validate_tournament_form_fields(
         self, data: dict[str, str], errors: dict[str, str]
     ) -> None:

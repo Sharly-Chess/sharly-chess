@@ -122,5 +122,45 @@
                 {% endif %}
             </td>
         </tr>
+        {# A tournament reported in slices is submitted once per slice,
+           each under its own registration — so each answers for its own
+           upload. #}
+        {% for period in tournament.periods %}
+            {% if period.first_round > 1 %}
+                {% set period_plugin_data = ffe_utils.get_period_own_plugin_data(period) %}
+                <tr class="small">
+                    <td></td>
+                    <td class="text-nowrap ps-4">
+                        <i class="bi-arrow-return-right pe-1"></i>
+                        {{ _('Period %(index)d', index=loop.index) }} · {{ period.rounds_str }}
+                    </td>
+                    <td class="text-center">
+                        {% for period_status in ffe_utils.resolve_period_upload_statuses(period) %}
+                            {% set tooltip_message = period_status.tooltip_message(tournament) %}
+                            <span
+                                class="badge rounded-pill {{ period_status.css_classes }}"
+                                style="height: 20px"
+                                {% if tooltip_message %}
+                                    {{ macros.tooltip_attributes('', tooltip_message) }}
+                                {% endif %}
+                            >{{ period_status.name }}</span>
+                        {% endfor %}
+                    </td>
+                    <td class="text-center text-nowrap">
+                        {{ period_plugin_data.last_upload_at_str }}
+                    </td>
+                    <td class="d-flex gap-2 align-items-center">
+                        <div class="flex-grow-1"></div>
+                        {% if period_plugin_data.ffe_id %}
+                            <a
+                                href="{{ ffe_utils.tournament_url(period_plugin_data.ffe_id) }}"
+                                target="_blank"
+                                {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
+                            ><i class="bi bi-box-arrow-up-right"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
     {% endfor %}
 </tbody>

@@ -101,12 +101,12 @@
                                     <div class="text-end pe-1">{{ board.index + 1 }}</div>
                                     <div class="text-start text-nowrap overflow-hidden text-ellipsis">
                                         <span class="board-color-chip {{ 'white' if team_a_is_white else 'black' }}"></span>
-                                        {%- if left_tp %} {{ left_tp.full_name }} <span class="text-muted">{{ left_tp.rating_str }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                        {%- if left_tp %} {{ left_tp.full_name }} <span class="text-muted">{{ left_tp.rating_str_in_round(board.round) }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                     </div>
                                     <div class="text-center px-2">{{ display_result }}</div>
                                     <div class="text-start text-nowrap overflow-hidden text-ellipsis">
                                         <span class="board-color-chip {{ 'black' if team_a_is_white else 'white' }}"></span>
-                                        {%- if right_tp %} {{ right_tp.full_name }} <span class="text-muted">{{ right_tp.rating_str }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                        {%- if right_tp %} {{ right_tp.full_name }} <span class="text-muted">{{ right_tp.rating_str_in_round(board.round) }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                     </div>
                                 </div>
                             {% endfor %}
