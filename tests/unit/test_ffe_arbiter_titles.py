@@ -111,7 +111,6 @@ def test_account_from_ffe_database_player(
         _ffe_database_row(arbiter_title, fide_arbiter_title)
     )
     assert stored_player.transient_arbiter_titles['fide'] == (fide_arbiter_title or '')
-    assert (
-        FfeAccountPluginData.from_stored_player(stored_player).ffe_arbiter_title
-        == expected_title
-    )
+    plugin_data = FfeAccountPluginData.from_stored_player(stored_player)
+    assert plugin_data.ffe_arbiter_title == expected_title
+    assert plugin_data.ffe_licence_number == 'V68338'

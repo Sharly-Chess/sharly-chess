@@ -753,9 +753,9 @@ class FfeAccountPluginData(AccountPluginData):
     @classmethod
     def from_stored_player(cls, stored_player: StoredPlayer) -> Self:
         return cls(
-            ffe_licence_number=stored_player.plugin_data.get(PLUGIN_NAME, {}).get(
-                'ffe_licence_number', None
-            ),
+            ffe_licence_number=stored_player.national_id
+            if stored_player.national_source == NATIONAL_SOURCE_ID
+            else None,
             ffe_arbiter_title=FFEArbiterTitle(
                 stored_player.transient_arbiter_titles.get('ffe')
                 or FFEArbiterTitle.NONE
