@@ -7,12 +7,15 @@ the answers to a bad form or a name already taken can be asserted
 without a browser.
 """
 
+import shutil
 from collections.abc import Iterator
 
 import pytest
 from litestar.testing import TestClient
 
+from common import BASE_DIR
 from data.loader import EventLoader
+from database.sqlite.event.event_database import EventDatabase
 from tests.test_config import TestUtils
 from utils.enum import Result
 
@@ -429,3 +432,76 @@ def test_the_rounds_field_is_rebuilt_for_the_chosen_system(
         params={'pairing_system': 'ROUND_ROBIN', 'rounds': '5'},
     )
     assert response.status_code == 200
+
+
+EXAMPLE_EVENT_ID = 'test-admin-http-round-robin'
+ROUND_ROBIN_NAME = 'Tournoi petits pions'
+
+
+@pytest.fixture
+def round_robin_event() -> Iterator[str]:
+    """An example event whose round-robin has been played through, its
+    stored round count one short of the count its entrants give."""
+    shutil.copyfile(
+        BASE_DIR / 'examples' / 'events' / '18e_open_rapide_de_domloup.sce',
+        EventDatabase(EXAMPLE_EVENT_ID).file,
+    )
+    yield EXAMPLE_EVENT_ID
+    EventLoader.unload_event(EXAMPLE_EVENT_ID)
+    TestUtils.delete_event(EXAMPLE_EVENT_ID)
+
+
+def round_robin_id(event: str) -> int:
+    EventLoader.unload_event(event)
+    tournament = EventLoader().load_event(event).tournaments_by_name[ROUND_ROBIN_NAME]
+    assert tournament.id is not None
+    return tournament.id
+
+
+def round_count_errors(text: str) -> list[str]:
+    text = text.replace('&#39;', "'")
+    return [
+        message
+        for message in (
+            'Impossible to set a round number lower',
+            "This field can't be updated once the tournament has started.",
+        )
+        if message in text
+    ]
+
+
+@pytest.mark.unit
+def test_a_paired_round_robin_opens_without_a_round_count_error(
+    http: TestClient, round_robin_event: str
+):
+    """The round count of a paired round-robin is the system's, whatever
+    was stored, so the form has nothing to object to."""
+    response = http.get(
+        f'/tournament-modal/update/{round_robin_event}'
+        f'/{round_robin_id(round_robin_event)}'
+    )
+    assert response.status_code == 200
+    assert not round_count_errors(response.text)
+
+
+@pytest.mark.unit
+def test_a_paired_round_robin_saves_without_its_greyed_round_count(
+    http: TestClient, round_robin_event: str
+):
+    """The greyed-out field is not submitted; the tournament saves all
+    the same."""
+    response = http.patch(
+        f'/tournament-update/{round_robin_event}/{round_robin_id(round_robin_event)}',
+        data={
+            'name': 'Renamed round-robin',
+            'rating': '2',
+            'pairing_system': 'ROUND_ROBIN',
+            'ROUND_ROBIN_pairing_variation': 'ROUND_ROBIN_BERGER',
+            'date_range': '',
+        },
+    )
+    assert response.status_code == 200
+    assert not round_count_errors(response.text)
+    EventLoader.unload_event(round_robin_event)
+    loaded = EventLoader().load_event(round_robin_event)
+    assert 'Renamed round-robin' in loaded.tournaments_by_name
