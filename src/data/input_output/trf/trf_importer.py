@@ -220,6 +220,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
         stored_boards_by_round: dict[int, list[StoredBoard]] = defaultdict(list)
         stored_players: list[StoredPlayer] = []
+        blank_pairings: list[tuple[StoredTournamentPlayer, StoredPairing]] = []
         for trf_player in trf_tournament.players:
             player_id = trf_player.id
             try:
@@ -272,6 +273,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stored_pairing, stored_board = self._read_trf_game(
                     trf_game, player_id, unknown_is_unplayed
                 )
+                if not trf_game.opponent_id and trf_game.result == ' ':
+                    blank_pairings.append((stored_tournament_player, stored_pairing))
                 if stored_board:
                     if player_id in board_id_by_player_id_by_round[round_nb]:
                         board_id = board_id_by_player_id_by_round[round_nb][player_id]
@@ -288,6 +291,12 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stored_tournament_player.stored_pairings.append(stored_pairing)
             stored_players.append(stored_player)
             stored_tournament.stored_tournament_players.append(stored_tournament_player)
+        # A blank game is an absence in a paired round, and nothing in a
+        # round not paired yet: one with no board, since byes requested
+        # ahead of the pairing (H, Z, F) do not make one.
+        for stored_tournament_player, stored_pairing in blank_pairings:
+            if stored_pairing.round_ not in stored_boards_by_round:
+                stored_tournament_player.stored_pairings.remove(stored_pairing)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
         if stored_boards_by_round:
             # Widen only — the 142 ``num_rounds`` value (set in
