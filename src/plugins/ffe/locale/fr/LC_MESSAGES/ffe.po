@@ -185,12 +185,6 @@ msgstr "Le score de chaque échiquier est multiplié par un coefficient : le pl
 msgid "Edit the properties of the tournament."
 msgstr "Modifier les propriétés du tournoi."
 
-msgid "Elite Arbiter (level 1)"
-msgstr "Arbitre Élite 1"
-
-msgid "Elite Arbiter (level 2)"
-msgstr "Arbitre Élite 2"
-
 msgid "Everything specific to the French Chess Federation, for the events it rates."
 msgstr "Tout ce qui est spécifique à la Fédération Française des Échecs, pour les évènements qu’elle homologue."
 
@@ -443,6 +437,9 @@ msgstr "Plus faible moyenne Elo"
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
 
+msgid "Match Arbiter"
+msgstr "Arbitre Fédéral Match"
+
 msgid "Max. teams per league:"
 msgstr "Max. d'équipes par ligue :"
 
@@ -527,11 +524,8 @@ msgstr "En cours"
 msgid "Online FFE tournament"
 msgstr "Tournoi FFE en ligne"
 
-msgid "Open Arbiter (level 1)"
-msgstr "Arbitre Fédéral Open 1"
-
-msgid "Open Arbiter (level 2)"
-msgstr "Arbitre Fédéral Open 2"
+msgid "Open Arbiter"
+msgstr "Arbitre Fédéral Open"
 
 msgid "PAPI"
 msgstr "PAPI"
@@ -786,9 +780,6 @@ msgstr "La visibilité du tournoi n'a pas pu être modifiée, consultez Menu > T
 
 msgid "Tournament visibility could not be set."
 msgstr "La visibilité du tournoi n'a pas pu être configurée."
-
-msgid "Trainee Arbiter"
-msgstr "Arbitre stagiaire"
 
 msgid "Trainee:"
 msgstr "Stagiaire :"

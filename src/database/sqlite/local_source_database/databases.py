@@ -155,6 +155,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     _progress_published_at: float = 0.0
     _content_count: tuple[float, int] | None = None
     _stored_source_database: StoredLocalSourceDatabase | None = None
+    previous_version_update_started: bool = False
 
     def __init__(self, write: bool = False):
         super().__init__(self.file_path(), write)
@@ -208,6 +209,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def file_path(cls) -> Path:
         id_ = cls.static_id()
         return DATA_SOURCES_DIR / id_ / f'{id_}-{cls.version()}.{Extension.SOURCE_DB}'
+
+    @classmethod
+    def previous_version_file_paths(cls) -> list[Path]:
+        """The files of the previous versions of the database still installed."""
+        id_ = cls.static_id()
+        return [
+            file
+            for file in cls.file_path().parent.glob(f'{id_}-*.{Extension.SOURCE_DB}')
+            if file != cls.file_path()
+        ]
 
     @staticmethod
     def _legacy_dir() -> Path:
@@ -532,6 +543,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         If it exists and is outdated, execute the 'on_outdated' process.
         Returns True if the database is available after the call."""
         if not self.exists():
+            if self.previous_version_file_paths():
+                # The previous version is replaced once the current one is installed,
+                # which is attempted once per run, then left to the user.
+                if not self.previous_version_update_started and not self.is_updating:
+                    self.__class__.previous_version_update_started = True
+                    logger.info(
+                        self.log_prefix + 'New version %s, updating…', self.version()
+                    )
+                    self.update()
+                return False
             if self.updated_at:
                 logger.error(
                     'Database [%s] unexpectedly not found at path [%s].',
@@ -823,6 +844,11 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 )
                 return self.stop_update(False)
 
+        for previous_file in self.previous_version_file_paths():
+            previous_file.unlink(missing_ok=True)
+            logger.info(
+                self.log_prefix + 'Previous version [%s] removed.', previous_file.name
+            )
         self._mark_updated()
         logger.info(
             self.log_prefix + 'Database successfully updated in %.1f s.',

@@ -1048,6 +1048,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source: DataSource,
         player_source_id: str,
         k_factor_reference_date: date,
+        with_arbiter_title: bool = False,
     ) -> tuple[StoredPlayer | None, dict[str, str]]:
         errors: dict[str, str] = {}
         stored_player: StoredPlayer | None = None
@@ -1056,7 +1057,7 @@ class PlayerAdminController(BaseEventAdminController):
         try:
             stored_player = await data_source.fetch_player(
                 player_source_id=player_source_id,
-                with_arbiter_title=False,
+                with_arbiter_title=with_arbiter_title,
                 k_factor_reference_date=k_factor_reference_date,
             )
             if not stored_player:

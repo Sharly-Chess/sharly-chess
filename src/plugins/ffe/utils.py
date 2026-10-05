@@ -43,7 +43,7 @@ from utils.entity import EntityManager
 if TYPE_CHECKING:
     from data.pairings.systems import PairingSystem
     from data.rule_sets.rule_sets import RuleSet
-from utils.enum import FormAction
+from utils.enum import FideArbiterTitle, FormAction
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -209,6 +209,21 @@ class FFEUtils:
         plugin_data = account.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfeAccountPluginData)
         return plugin_data
+
+    @classmethod
+    def arbiter_qualification(cls, account: Account) -> str:
+        """The national and international titles of an arbiter, as written on the
+        FFE documents."""
+        plugin_data = cls.get_account_plugin_data(account)
+        items: list[str] = []
+        if plugin_data.ffe_arbiter_title != FFEArbiterTitle.NONE:
+            items.append(plugin_data.ffe_arbiter_title.short_name)
+        if account.fide_arbiter_title in (
+            FideArbiterTitle.FIDE,
+            FideArbiterTitle.INTERNATIONAL,
+        ):
+            items.append(account.fide_arbiter_title.short_name)
+        return ', '.join(items)
 
     @classmethod
     def upload_unavailable_message(cls, tournament: Tournament) -> str | None:
@@ -423,51 +438,24 @@ _LICENCE_SORT_INDEX = {
 
 class FFEArbiterTitle(StrEnum):
     NONE = ''
-    AS = 'AS'
     AFJ = 'AFJ'
+    AFM = 'AFM'
     AFC = 'AFC'
-    AFO1 = 'AFO1'
-    AFO2 = 'AFO2'
-    AFE1 = 'AFE1'
-    AFE2 = 'AFE2'
-
-    @classmethod
-    def from_html(cls, html_arbiter_string: str) -> 'FFEArbiterTitle':
-        match html_arbiter_string:
-            case 'Arbitre Jeune':
-                return cls.AFJ
-            case 'Arbitre Club':
-                return cls.AFC
-            case 'Arbitre Open 1':
-                return cls.AFO1
-            case 'Arbitre Open 2':
-                return cls.AFO2
-            case 'Arbitre Elite 1':
-                return cls.AFE1
-            case 'Arbitre Elite 2':
-                return cls.AFE2
-            case _:
-                return cls.NONE
+    AFO = 'AFO'
 
     @property
     def name(self) -> str:
         match self:
             case FFEArbiterTitle.NONE:
                 return '-'
-            case FFEArbiterTitle.AS:
-                return _('Trainee Arbiter')
             case FFEArbiterTitle.AFJ:
                 return _('Young Arbiter')
+            case FFEArbiterTitle.AFM:
+                return _('Match Arbiter')
             case FFEArbiterTitle.AFC:
                 return _('Club Arbiter')
-            case FFEArbiterTitle.AFO1:
-                return _('Open Arbiter (level 1)')
-            case FFEArbiterTitle.AFO2:
-                return _('Open Arbiter (level 2)')
-            case FFEArbiterTitle.AFE1:
-                return _('Elite Arbiter (level 1)')
-            case FFEArbiterTitle.AFE2:
-                return _('Elite Arbiter (level 2)')
+            case FFEArbiterTitle.AFO:
+                return _('Open Arbiter')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -765,9 +753,9 @@ class FfeAccountPluginData(AccountPluginData):
     @classmethod
     def from_stored_player(cls, stored_player: StoredPlayer) -> Self:
         return cls(
-            ffe_licence_number=stored_player.plugin_data.get(PLUGIN_NAME, {}).get(
-                'ffe_licence_number', None
-            ),
+            ffe_licence_number=stored_player.national_id
+            if stored_player.national_source == NATIONAL_SOURCE_ID
+            else None,
             ffe_arbiter_title=FFEArbiterTitle(
                 stored_player.transient_arbiter_titles.get('ffe')
                 or FFEArbiterTitle.NONE

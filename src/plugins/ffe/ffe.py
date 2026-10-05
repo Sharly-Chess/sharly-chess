@@ -497,8 +497,11 @@ class FfePlugin(Plugin):
             if (ffe_database := FfeDatabase()).exists():
                 # Try to get more information by requesting the FFE database
                 with ffe_database:
-                    ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
-                        player_fide_id=fide_id,
+                    ffe_stored_player = (
+                        ffe_database.get_stored_player_by_fide_id(
+                            player_fide_id=fide_id,
+                        )
+                        or ffe_stored_player
                     )
         if ffe_stored_player:
             for rating_type in TournamentRating:
@@ -547,9 +550,15 @@ class FfePlugin(Plugin):
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
             )
-            stored_player.transient_arbiter_titles['ffe'] = (
-                ffe_stored_player.transient_arbiter_titles.get('ffe', '')
-            )
+            ffe_arbiter_titles = ffe_stored_player.transient_arbiter_titles
+            if 'ffe' in ffe_arbiter_titles:
+                stored_player.transient_arbiter_titles['ffe'] = ffe_arbiter_titles[
+                    'ffe'
+                ]
+            if not stored_player.transient_arbiter_titles.get('fide'):
+                stored_player.transient_arbiter_titles['fide'] = ffe_arbiter_titles.get(
+                    'fide', ''
+                )
 
     @hookimpl
     def augment_place_card_player(

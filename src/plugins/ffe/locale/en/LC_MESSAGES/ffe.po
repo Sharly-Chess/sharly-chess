@@ -180,12 +180,6 @@ msgstr ""
 msgid "Edit the properties of the tournament."
 msgstr ""
 
-msgid "Elite Arbiter (level 1)"
-msgstr ""
-
-msgid "Elite Arbiter (level 2)"
-msgstr ""
-
 msgid "Everything specific to the French Chess Federation, for the events it rates."
 msgstr ""
 
@@ -438,6 +432,9 @@ msgstr ""
 msgid "Make visible on FFE site"
 msgstr ""
 
+msgid "Match Arbiter"
+msgstr ""
+
 msgid "Max. teams per league:"
 msgstr ""
 
@@ -522,10 +519,7 @@ msgstr ""
 msgid "Online FFE tournament"
 msgstr ""
 
-msgid "Open Arbiter (level 1)"
-msgstr ""
-
-msgid "Open Arbiter (level 2)"
+msgid "Open Arbiter"
 msgstr ""
 
 msgid "PAPI"
@@ -780,9 +774,6 @@ msgid "Tournament visibility could not be set, consult Menu > Data Transfer > FF
 msgstr ""
 
 msgid "Tournament visibility could not be set."
-msgstr ""
-
-msgid "Trainee Arbiter"
 msgstr ""
 
 msgid "Trainee:"
