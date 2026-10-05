@@ -44,6 +44,7 @@ def test_migration_converts_titles_to_the_reform(
     stored_fide_title, stored_plugin_data = connection.execute(
         'SELECT `fide_arbiter_title`, `plugin_data` FROM `account`'
     ).fetchone()
+    connection.close()
     assert stored_fide_title == expected_fide_title
     plugin_data = json.loads(stored_plugin_data)['ffe']
     assert plugin_data['ffe_arbiter_title'] == title
