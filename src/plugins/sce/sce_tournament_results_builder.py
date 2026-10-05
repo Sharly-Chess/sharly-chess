@@ -55,6 +55,7 @@ _KNOWN_BASES: frozenset[str] = frozenset(
         'KA',
         'SOB',
         'MAN',
+        'PTS',
     }
 )
 
@@ -118,15 +119,20 @@ class SCEUploadColumn:
     id: str
     label: str | None = None
     is_custom: bool = False
+    bold: bool = False
 
     def __post_init__(self) -> None:
         if self.is_custom and self.label is None:
             raise ValueError('Custom columns require a label')
 
     def to_dict(self) -> dict[str, Any]:
-        data = {'key': f'custom:{self.id}' if self.is_custom else self.id}
+        data: dict[str, Any] = {
+            'key': f'custom:{self.id}' if self.is_custom else self.id
+        }
         if self.label is not None:
             data['label'] = self.label
+        if self.bold:
+            data['bold'] = True
         return data
 
 
@@ -152,10 +158,12 @@ def _build_display_config(tournament: Tournament) -> dict[str, Any]:
         SCEUploadColumn('ageCategory'),
         SCEUploadColumn('federation'),
         SCEUploadColumn('club'),
-        SCEUploadColumn('points'),
     ]
+    # The first criterion is the one the standings rank on: the points,
+    # unless another criterion was placed above them.
     ranking_columns.extend(
-        SCEUploadColumn(f'tb:{i}') for i in range(len(tournament.tie_breaks))
+        SCEUploadColumn(f'tb:{i}', bold=i == 0)
+        for i in range(len(tournament.tie_breaks))
     )
     plugin_manager.hook_for_event(event, 'alter_sce_upload_ranking_columns')(
         columns=ranking_columns
@@ -259,8 +267,14 @@ def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
 
 
 def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
+    keizer = tournament.pairing_system.id == 'KEIZER'
     pairings = []
     for round_ in range(1, tournament.current_round + 1):
+        # A Keizer score is not a sum of game points, so the platform cannot
+        # derive it from the results: each board carries it.
+        keizer_totals = (
+            tournament.keizer_scorer.totals_after(round_ - 1) if keizer else {}
+        )
         for board in tournament.get_round_boards(round_):
             black = board.black_tournament_player
             if board.white_tournament_player.is_excluded_from_standings or (
@@ -285,6 +299,12 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
                     else Result.NO_RESULT.value
                 ),
             }
+            if keizer:
+                entry['whitePoints'] = keizer_totals.get(
+                    board.white_tournament_player.id, 0.0
+                )
+                if black is not None:
+                    entry['blackPoints'] = keizer_totals.get(black.id, 0.0)
             # TODO (Molrn) Add pairing custom fields to support Handicap games
             pairings.append(entry)
 
@@ -312,12 +332,14 @@ def _build_rankings(tournament: Tournament) -> list[dict[str, Any]]:
     standings = []
     if ranking_round > 0:
         tournament.compute_tournament_player_ranks(after_round=ranking_round)
-        for rank, player in tournament.tournament_players_by_rank.items():
+        # Listed in ranking order; tied players share a rank.
+        ex_aequo_ranks = tournament.ex_aequo_rank_by_player_id
+        for player in tournament.tournament_players_by_rank.values():
             if player.is_excluded_from_standings:
                 continue
             standings.append(
                 {
-                    'rank': rank,
+                    'rank': ex_aequo_ranks[player.id],
                     'pairingNumber': player.pairing_number,
                     'points': player.points,
                     'tiebreaks': [tv.display_value for tv in player.tie_break_values],

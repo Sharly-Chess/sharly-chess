@@ -25,6 +25,8 @@
 - Direct encounter tie-breaks with games missing between the tied players now follow _FIDE_ Art. 6.3, and AOB is shown to three decimals (5.1.3)
 - The French School Championship now covers high schools: a category (primary schools, middle schools, high schools) is chosen in the tournament properties, high schools playing on 4 boards with a roster of up to 5 pupils including at least 1 girl and 1 boy; departmental team finals can be chosen as a phase (5.1.3)
 - Importing a TRF file of a tournament in progress no longer marks every player as withdrawn: the rounds not paired yet stay unpaired, with the byes already requested for them (5.1.4)
+- Keizer tournaments can be sent to _Sharly-Chess.com_, with each player's Keizer score shown on the pairings and in the standings (5.1.4)
+- The standings sent to _Sharly-Chess.com_ show the ranking criteria as in _Sharly Chess_: the points appear once, where they stand among the tie-breaks, the first criterion is in bold, and tied players share a rank (5.1.4)
 
 ## Players
 
