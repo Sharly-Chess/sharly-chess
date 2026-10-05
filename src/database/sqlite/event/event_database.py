@@ -689,6 +689,8 @@ class EventDatabase(MigrationDatabase):
             round_robin_participation_rule=cls.load_bool_from_database_field(
                 row['round_robin_participation_rule']
             ),
+            starting_rank_tie_order=row['starting_rank_tie_order'],
+            starting_rank_lot_seed=row['starting_rank_lot_seed'],
             fide_mode=cls.load_bool_from_database_field(row['fide_mode']),
             fide_mode_exit_round=row['fide_mode_exit_round'],
             manual_pairing_round=row['manual_pairing_round'],
@@ -792,6 +794,8 @@ class EventDatabase(MigrationDatabase):
                 'prohibited_pairing_dimension',
                 'prohibited_pairing_dimension_is_hard',
                 'round_robin_participation_rule',
+                'starting_rank_tie_order',
+                'starting_rank_lot_seed',
                 'fide_mode',
                 'fide_mode_exit_round',
             ],

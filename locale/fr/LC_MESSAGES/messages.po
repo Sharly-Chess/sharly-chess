@@ -1123,6 +1123,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "Alphabetical"
 msgstr "Alphabétique"
 
+msgid "Alphabetical order"
+msgstr "Ordre alphabétique"
+
 msgid "Alternate colours"
 msgstr "Alterner les couleurs"
 
@@ -4412,6 +4415,9 @@ msgstr "Comment les échiquiers affichés par cet ensemble sont choisis et ordon
 
 msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
 msgstr "La manière dont les joueur·euses de cette catégorie sont classé·es avant l'attribution des prix : selon leur classement final ou selon leur performance."
+
+msgid "How the players with the same rating and title are ordered in the starting rank."
+msgstr "L'ordre des joueur·euses de même classement Elo et de même titre dans le classement initial."
 
 msgid "Hungary"
 msgstr "Hongrie"
@@ -9232,6 +9238,9 @@ msgstr "Année de début"
 
 msgid "Starting rank"
 msgstr "Classement initial"
+
+msgid "Starting rank ties:"
+msgstr "Ex æquo du classement initial :"
 
 msgid "Statistics"
 msgstr "Statistiques"

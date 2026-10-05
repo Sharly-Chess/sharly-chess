@@ -1068,6 +1068,23 @@ class TeamSortMode(StrEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
+class StartingRankTieOrder(StrEnum):
+    """How the players with the same rating and title are ordered in the
+    starting rank."""
+
+    ALPHABETICAL = 'ALPHABETICAL'
+    LOTS = 'LOTS'
+
+    def __str__(self) -> str:
+        match self:
+            case StartingRankTieOrder.ALPHABETICAL:
+                return _('Alphabetical order')
+            case StartingRankTieOrder.LOTS:
+                return _('Drawing of lots')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'

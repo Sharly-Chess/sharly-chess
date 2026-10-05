@@ -1234,7 +1234,11 @@ class TournamentPlayer(Player):  # noqa: PLW1641
 
     @property
     def starting_rank_sort_key(self) -> tuple:
-        return (-self.rating, -self.title.sort_index, *self.name_sort_key)
+        return (
+            -self.rating,
+            -self.title.sort_index,
+            *self.tournament.starting_rank_tie_key(self),
+        )
 
     @property
     def board_number_sort_key(self) -> tuple:

@@ -1123,6 +1123,9 @@ msgstr ""
 msgid "Alphabetical"
 msgstr ""
 
+msgid "Alphabetical order"
+msgstr ""
+
 msgid "Alternate colours"
 msgstr ""
 
@@ -4411,6 +4414,9 @@ msgid "How the boards shown by this set are chosen and ordered."
 msgstr ""
 
 msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
+msgstr ""
+
+msgid "How the players with the same rating and title are ordered in the starting rank."
 msgstr ""
 
 msgid "Hungary"
@@ -9229,6 +9235,9 @@ msgid "Start year"
 msgstr ""
 
 msgid "Starting rank"
+msgstr ""
+
+msgid "Starting rank ties:"
 msgstr ""
 
 msgid "Statistics"
