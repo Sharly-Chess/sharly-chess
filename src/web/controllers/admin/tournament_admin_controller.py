@@ -683,11 +683,22 @@ class TournamentAdminController(BaseEventAdminController):
         rounds_are_automatic = rounds == 0
         tournament: Tournament | None = None
 
+        # Once paired, a system that settles its own count owns it: the field
+        # is greyed out, so whatever the form carries is not the arbiter's.
+        rounds_are_settled = False
         index = len(event.tournaments)
         if action == 'update':
             tournament = web_context.get_admin_tournament()
             index = tournament.index
-        if rounds < 0:
+            rounds_are_settled = (
+                tournament.pairing_variation.sets_its_own_round_count
+                and tournament.has_pairings
+            )
+            if rounds_are_settled:
+                rounds = tournament.stored_tournament.rounds
+        if rounds_are_settled:
+            pass
+        elif rounds < 0:
             errors[field] = _('A positive integer is expected.')
         elif rounds_are_automatic:
             pass
@@ -745,7 +756,10 @@ class TournamentAdminController(BaseEventAdminController):
                     tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
                     'pairing_system': tournament.pairing_system.id,
                 }
-                if not tournament.pairing_system.allow_rounds_update_once_started:
+                if not (
+                    rounds_are_settled
+                    or tournament.pairing_system.allow_rounds_update_once_started
+                ):
                     not_updatable_values |= {'rounds': str(tournament.rounds)}
                 for field, expected_value in not_updatable_values.items():
                     if data.get(field, '') != expected_value:
