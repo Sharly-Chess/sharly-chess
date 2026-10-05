@@ -99,6 +99,12 @@
             <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.display_title }}</td>
             <td class="name text-start {{ no_played_games_class }} fw-bold">
                 {%- include '/admin/player_link.html' -%}
+                {% if tournament_player.has_withdrawn_for_round(admin_tournament.rounds) %}
+                    <i
+                        class="bi-sign-stop text-danger ps-2"
+                        {{ macros.tooltip_attributes('warning', _('Withdrawn'), 'top') }}
+                    ></i>
+                {% endif %}
                 <button
                     type="button"
                     class="btn player-info p-1"
