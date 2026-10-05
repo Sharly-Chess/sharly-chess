@@ -8,6 +8,7 @@ from data.criteria.tournament_criteria import (
     ClubTournamentCriterion,
     FederationTournamentCriterion,
 )
+from data.pairings.keizer import KeizerPairingSystem
 from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
 from data.pairings import PairingSystem
 from plugins.ffe.ffe_entity import (
@@ -43,6 +44,7 @@ class SCEPairingSystem(CoreMapper[str, PairingSystem]):
         return {
             'swiss': SwissPairingSystem(),
             'roundrobin': RoundRobinPairingSystem(),
+            'keizer': KeizerPairingSystem(),
         }
 
 
