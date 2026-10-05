@@ -605,17 +605,19 @@ class TeamScoring:
         match_points_pair = team_board.match_points_pair()
         assert match_points_pair is not None
         a_mp, b_mp = match_points_pair
-        # A match is played when a game was played on any of its boards.
-        # Otherwise its result stands and it is a forfeit for the team that
-        # lost it, or for both teams when neither scored.
+        # A match is played when a game was played on any of its boards, or
+        # when a player of each team turned up and won their board by
+        # forfeit: both teams elected to play the round. Otherwise its
+        # result stands and it is a forfeit for the team that lost it, or
+        # for both teams when neither scored.
+        a_scores = self._board_scores_for(team_board, a_id)
+        b_scores = self._board_scores_for(team_board, b_id)
         a_type = b_type = TeamMatchType.PLAYED
-        if team_board.no_board_played():
+        if team_board.no_board_played() and not (any(a_scores) and any(b_scores)):
             if a_mp > b_mp:
                 a_type, b_type = TeamMatchType.FORFEIT_WIN, TeamMatchType.FORFEIT_LOSS
             elif a_mp < b_mp:
                 a_type, b_type = TeamMatchType.FORFEIT_LOSS, TeamMatchType.FORFEIT_WIN
-            elif a_gp > 0 or b_gp > 0:
-                a_type = b_type = TeamMatchType.UNPLAYED_DRAW
             else:
                 a_type = b_type = TeamMatchType.FORFEIT_LOSS
         return (
@@ -625,7 +627,7 @@ class TeamScoring:
                 own_mp=a_mp,
                 own_gp=a_gp,
                 match_type=a_type,
-                board_scores=self._board_scores_for(team_board, a_id),
+                board_scores=a_scores,
                 board_ratings=self._board_ratings_for(team_board, a_id),
             ),
             TeamMatchRecord(
@@ -634,7 +636,7 @@ class TeamScoring:
                 own_mp=b_mp,
                 own_gp=b_gp,
                 match_type=b_type,
-                board_scores=self._board_scores_for(team_board, b_id),
+                board_scores=b_scores,
                 board_ratings=self._board_ratings_for(team_board, b_id),
             ),
         )
