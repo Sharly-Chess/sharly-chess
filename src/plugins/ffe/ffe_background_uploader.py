@@ -221,7 +221,6 @@ class FfeBackgroundUploader:
             )
             if current_period is not None and current_period.first_round > 1:
                 cls.pending_period_result_ids.add(cls.period_result_id(current_period))
-                cls.publish_upload_event(start=True)
             else:
                 current_period = None
             logger.info(

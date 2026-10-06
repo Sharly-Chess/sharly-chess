@@ -6,6 +6,10 @@
     id="upload-results"
     hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
+    {# The swap replaces this table, so a second refresh started while one
+       is in flight loses the element it belongs to and is abandoned
+       mid-response. One at a time, the latest winning. #}
+    hx-sync="this:replace"
     hx-swap="outerHTML"
 >
     {% for tournament in allowed_tournaments %}
@@ -139,7 +143,6 @@
                             {% set tooltip_message = period_status.tooltip_message(tournament) %}
                             <span
                                 class="badge rounded-pill {{ period_status.css_classes }}"
-                                style="height: 20px"
                                 {% if tooltip_message %}
                                     {{ macros.tooltip_attributes('', tooltip_message) }}
                                 {% endif %}
