@@ -35,14 +35,17 @@
         class="collapse-button {% if not force_schedule_open %}collapsed{% endif %} mt-3"
         data-bs-toggle="collapse"
         data-bs-target="#schedule-collapse"
-        aria-expanded="false"
+        aria-expanded="{{ 'true' if force_schedule_open else 'false' }}"
     >
         <h4 class="form-check-label d-inline-flex align-items-center gap-2">
             <i class="bi-chevron-down text-body"></i>
             {{ _('Schedule') }}
         </h4>
     </button>
-    <div id="schedule-collapse" class="{% if not force_schedule_open %}collapse{% endif %}">
+    {# Shown as Bootstrap's own open collapse — the class the section is
+       re-rendered with is what says whether it was open, and an element
+       without `show` reads as closed. #}
+    <div id="schedule-collapse" class="collapse{% if force_schedule_open %} show{% endif %}">
         {% if schedule_rounds < 1 %}
             <div class="text-muted mx-3 my-2">
                 {{ _('Set the number of rounds to lay out a schedule.') }}
