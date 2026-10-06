@@ -293,6 +293,20 @@ class FfeBackgroundUploader:
             FFEUtils.update_tournament_plugin_data(tournament, plugin_data)
 
     @classmethod
+    def upload_period(cls, tournament: Tournament, period_id: int) -> None:
+        """Send one tranche in a thread of its own, so that the screen can
+        follow it: the slice's row says it is being sent, then how it
+        went, as the tournament's does."""
+
+        def _run() -> None:
+            set_locale(SharlyChessConfig().locale)
+            cls.upload_tournament(
+                tournament.event.uniq_id, tournament.id, period_id=period_id
+            )
+
+        Thread(target=_run, daemon=True).start()
+
+    @classmethod
     def upload_event_tournaments(cls, tournaments: list[Tournament]) -> None:
         """Upload all eligible SCE tournaments for an event in a background thread."""
         eligible = [

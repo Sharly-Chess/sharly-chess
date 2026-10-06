@@ -29,12 +29,6 @@ msgstr[0] "%(count)s groupe automatique"
 msgstr[1] "%(count)s groupes automatiques"
 
 #, python-format
-msgid "%(num)d day"
-msgid_plural "%(num)d days"
-msgstr[0] "%(num)d jour"
-msgstr[1] "%(num)d jours"
-
-#, python-format
 msgid "%(first)s - %(last)s"
 msgstr "%(first)s à %(last)s"
 
@@ -93,6 +87,12 @@ msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
 msgstr[0] "%(num)d critère"
 msgstr[1] "%(num)d critères"
+
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d jour"
+msgstr[1] "%(num)d jours"
 
 #, python-format
 msgid "%(num)d empty table to pair"

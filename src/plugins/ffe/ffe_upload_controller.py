@@ -191,6 +191,36 @@ class FfeUploadController(BaseEventAdminController):
         return self._render_upload_results(web_context)
 
     @post(
+        path=(
+            '/ffe/upload-modal/upload-period/{event_uniq_id:str}/'
+            '{tournament_id:int}/{period_id:int}'
+        ),
+        name='ffe-modal-upload-period',
+    )
+    async def htmx_ffe_modal_upload_period(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        period_id: FromPath[int],
+    ) -> Template:
+        """Send one tranche, under the registration it was declared with
+        — what a correction to a tranche already submitted needs."""
+        web_context = FfeWebContext(request, tournament_id)
+        tournament = web_context.get_tournament()
+        period = next(
+            (
+                candidate
+                for candidate in tournament.periods
+                if candidate.id == period_id
+            ),
+            None,
+        )
+        if period is None:
+            raise NotFoundException(f'Period [{period_id}] not found.')
+        FfeBackgroundUploader.upload_period(tournament, period_id)
+        return self._render_upload_results(web_context)
+
+    @post(
         path='/ffe/upload-modal/make-visible/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-modal-make-visible',
     )
