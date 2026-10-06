@@ -125,3 +125,20 @@ class TestPeriodUploadStatus:
         )
         statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
         assert 'PENDING' in [status.id for status in statuses]
+
+    def test_a_slice_whose_results_moved_says_so(self):
+        """A result entered after the tranche went out leaves the file
+        the FFE holds behind the tournament."""
+        tournament = self._setup(
+            {
+                'ffe_id': 49944,
+                'password': 'BBBBBBBBBB',
+                'last_upload': (datetime.now() - timedelta(days=1)).isoformat(),
+            }
+        )
+        statuses = [
+            status.id
+            for status in FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
+        ]
+        assert 'MODIFIED' in statuses
+        assert 'UP_TO_DATE' not in statuses

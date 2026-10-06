@@ -38,6 +38,7 @@ from plugins.ffe.ffe_upload_status import (
     RejectedFFEUploadStatus,
 )
 from plugins.utils import PluginUtils, PluginData, AccountPluginData
+from utils import Utils
 from utils.date_time import format_datetime
 from utils.entity import EntityManager
 
@@ -397,9 +398,14 @@ class FFEUtils:
         """How the submission of one slice stands.
 
         A slice is submitted under its own registration, so it answers
-        for its own upload: whether it has been sent, and how it went.
-        What is true of the tournament as a whole — whether its data has
-        moved since — belongs to the tournament's own row."""
+        for its own upload: whether it has been sent, how it went, and
+        whether the results have moved since.
+
+        What moved is read from the tournament's own timestamps, which
+        say when a result, a player or a pairing last changed but not in
+        which round — so a change anywhere marks every slice sent before
+        it. That errs towards sending a tranche again, which costs
+        nothing, rather than leaving a stale one looking current."""
         from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 
         # What the slice itself holds: borrowing the tournament's would
@@ -416,6 +422,10 @@ class FFEUtils:
             )
         if not plugin_data.last_upload_at:
             statuses.append(NeverUploadedFFEUploadStatus())
+        elif Utils.tournament_results_modified_since(
+            period.tournament, plugin_data.last_upload_at
+        ):
+            statuses.append(ModifiedFFEUploadStatus())
         else:
             statuses.append(UpToDateFFEUploadStatus())
         if FfeBackgroundUploader.is_period_upload_ongoing(period):
