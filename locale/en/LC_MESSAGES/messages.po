@@ -29,8 +29,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(days)d days"
-msgstr ""
+msgid "%(days)d day"
+msgid_plural "%(days)d days"
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
 msgid "%(first)s - %(last)s"
@@ -10527,12 +10529,16 @@ msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce
 msgstr ""
 
 #, python-format
-msgid "This period lasts %(days)d days: split it before round #%(round)d."
-msgstr ""
+msgid "This period lasts %(days)d day: split it before round #%(round)d."
+msgid_plural "This period lasts %(days)d days: split it before round #%(round)d."
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
-msgid "This period lasts %(days)d days; FIDE allows %(max)d at most."
-msgstr ""
+msgid "This period lasts %(days)d day; FIDE allows %(max)d at most."
+msgid_plural "This period lasts %(days)d days; FIDE allows %(max)d at most."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "This player already exists in the event."
 msgstr ""

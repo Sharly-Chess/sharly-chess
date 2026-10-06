@@ -62,7 +62,7 @@
                             · {{ span.rounds_str }}
                             {% if span.dates_str %}
                                 · {{ span.dates_str }}
-                                · {{ _('%(days)d days', days=span.days) }}
+                                · {{ ngettext('%(num)d day', '%(num)d days', span.days) }}
                             {% endif %}
                         </span>
                         {% if span.first_round > 1 %}

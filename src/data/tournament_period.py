@@ -4,7 +4,7 @@ from datetime import date, datetime
 from functools import cached_property
 from typing import TYPE_CHECKING
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from database.sqlite.event.event_store import StoredTournamentPeriod
 from plugins.utils import PluginData
 from utils import Utils
@@ -149,10 +149,16 @@ def period_too_long_message(span: PeriodSpan) -> str:
     """What to tell the arbiter about a period FIDE would not rate as one
     tournament: how long it runs, and the round to split before."""
     if span.overflow_round is not None:
-        return _(
-            'This period lasts %(days)d days: split it before round #%(round)d.'
+        return ngettext(
+            'This period lasts %(days)d day: split it before round #%(round)d.',
+            'This period lasts %(days)d days: split it before round #%(round)d.',
+            span.days or 0,
         ) % {'days': span.days, 'round': span.overflow_round}
-    return _('This period lasts %(days)d days; FIDE allows %(max)d at most.') % {
+    return ngettext(
+        'This period lasts %(days)d day; FIDE allows %(max)d at most.',
+        'This period lasts %(days)d days; FIDE allows %(max)d at most.',
+        span.days or 0,
+    ) % {
         'days': span.days,
         'max': MAX_PERIOD_DAYS,
     }

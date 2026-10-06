@@ -29,8 +29,10 @@ msgstr[0] "%(count)s groupe automatique"
 msgstr[1] "%(count)s groupes automatiques"
 
 #, python-format
-msgid "%(days)d days"
-msgstr "%(days)d jours"
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d jour"
+msgstr[1] "%(num)d jours"
 
 #, python-format
 msgid "%(first)s - %(last)s"
@@ -10529,12 +10531,16 @@ msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce
 msgstr "Cette table d'appariement couvre jusqu'à {max_rounds} rondes pour {t} équipes, réduisez le nombre de rondes."
 
 #, python-format
-msgid "This period lasts %(days)d days: split it before round #%(round)d."
-msgstr "Cette période dure %(days)d jours : découpez-la avant la ronde n°%(round)d."
+msgid "This period lasts %(days)d day: split it before round #%(round)d."
+msgid_plural "This period lasts %(days)d days: split it before round #%(round)d."
+msgstr[0] "Cette période dure %(days)d jour : découpez-la avant la ronde n°%(round)d."
+msgstr[1] "Cette période dure %(days)d jours : découpez-la avant la ronde n°%(round)d."
 
 #, python-format
-msgid "This period lasts %(days)d days; FIDE allows %(max)d at most."
-msgstr "Cette période dure %(days)d jours ; la FIDE en autorise %(max)d au maximum."
+msgid "This period lasts %(days)d day; FIDE allows %(max)d at most."
+msgid_plural "This period lasts %(days)d days; FIDE allows %(max)d at most."
+msgstr[0] "Cette période dure %(days)d jour : la FIDE en autorise %(max)d au maximum."
+msgstr[1] "Cette période dure %(days)d jours : la FIDE en autorise %(max)d au maximum."
 
 msgid "This player already exists in the event."
 msgstr "Ce·tte joueur·euse existe déjà dans l'évènement."
