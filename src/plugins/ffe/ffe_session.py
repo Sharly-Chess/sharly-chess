@@ -505,10 +505,7 @@ class FFESession(Session):
                 logger.error('Upload failed: %s', error)
                 return UnexpectedFailureFFEUploadStatus()
 
-        # A later tranche's registration carries a slice of the games for
-        # rating; what the players read is the tournament, published
-        # entire under its own registration.
-        if not set_visible or (self.period is not None and self.period.first_round > 1):
+        if not set_visible:
             return None
 
         logger.info('Making the tournament visible on the FFE website...')

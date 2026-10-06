@@ -248,9 +248,10 @@ class FfeBackgroundUploader:
                 cls._record_upload(tournament, None, None)
                 uploaded_period = current_period
                 cls._start_period_upload(current_period)
-                failure_status = FFESession(tournament, current_period).upload(
-                    set_visible
-                )
+                # The tranche follows the tournament for rating, not for
+                # publication: a registration is made visible when the
+                # arbiter asks for that one.
+                failure_status = FFESession(tournament, current_period).upload(False)
         except Exception as e:
             logger.exception('Error uploading tournament [%s]: [%s]', result_id, e)
             failure_status = UnexpectedFailureFFEUploadStatus()

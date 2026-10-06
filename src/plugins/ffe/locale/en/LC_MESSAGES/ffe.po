@@ -558,6 +558,12 @@ msgstr ""
 msgid "Period %(index)d"
 msgstr ""
 
+msgid "Period is now visible on the FFE website."
+msgstr ""
+
+msgid "Period visibility could not be set."
+msgstr ""
+
 msgid "Phase"
 msgstr ""
 

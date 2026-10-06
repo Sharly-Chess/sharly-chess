@@ -563,6 +563,12 @@ msgstr "En attente"
 msgid "Period %(index)d"
 msgstr "Période %(index)d"
 
+msgid "Period is now visible on the FFE website."
+msgstr "La période est désormais visible sur le site de la FFE."
+
+msgid "Period visibility could not be set."
+msgstr "L'affichage de la période n'a pas pu être activé."
+
 msgid "Phase"
 msgstr "Phase"
 

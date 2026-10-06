@@ -91,3 +91,22 @@ def test_sending_a_slice_answers_with_the_rows(http: TestClient, event: str):
     )
     assert response.status_code == 200
     assert 'id="upload-results"' in response.text
+
+
+@pytest.mark.unit
+def test_a_configured_slice_offers_to_be_shown(http: TestClient, event: str):
+    """Its registration carries the games sent for rating, and the
+    players — and the arbiter checking they went to the right one — have
+    to be able to see it."""
+    _create(configured=True)
+    response = http.get(f'/ffe/upload-results/{event}')
+    assert response.status_code == 200
+    assert '/ffe/upload-modal/make-period-visible/' in response.text
+
+
+@pytest.mark.unit
+def test_a_slice_with_no_registration_is_not_shown(http: TestClient, event: str):
+    _create(configured=False)
+    response = http.get(f'/ffe/upload-results/{event}')
+    assert response.status_code == 200
+    assert '/ffe/upload-modal/make-period-visible/' not in response.text

@@ -221,6 +221,48 @@ class FfeUploadController(BaseEventAdminController):
         return self._render_upload_results(web_context)
 
     @post(
+        path=(
+            '/ffe/upload-modal/make-period-visible/{event_uniq_id:str}/'
+            '{tournament_id:int}/{period_id:int}'
+        ),
+        name='ffe-modal-make-period-visible',
+    )
+    async def htmx_ffe_modal_make_period_visible(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        period_id: FromPath[int],
+    ) -> Template:
+        """Show one tranche's registration on the FFE site, so that the
+        players can see the games it carries and the arbiter that they
+        reached the registration they were meant for."""
+        web_context = FfeWebContext(request, tournament_id)
+        tournament = web_context.get_tournament()
+        period = next(
+            (
+                candidate
+                for candidate in tournament.periods
+                if candidate.id == period_id
+            ),
+            None,
+        )
+        if period is None:
+            raise NotFoundException(f'Period [{period_id}] not found.')
+        FfeBackgroundUploader.upload_tournament(
+            tournament.event.uniq_id,
+            tournament.id,
+            set_visible=True,
+            period_id=period_id,
+        )
+        message_type: str | None = None
+        if FFEUtils.get_period_own_plugin_data(period).upload_failure_id:
+            message = _('Period visibility could not be set.')
+            message_type = 'error'
+        else:
+            message = _('Period is now visible on the FFE website.')
+        return self._render_ffe_upload_modal(web_context, message, message_type)
+
+    @post(
         path='/ffe/upload-modal/make-visible/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-modal-make-visible',
     )

@@ -162,6 +162,27 @@
                             ><i class="bi bi-box-arrow-up-right"></i></a>
                         {% endif %}
                         {% if period_plugin_data.ffe_id and period_plugin_data.password %}
+                            <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                    hx-post="{{ url_for(
+                                        'ffe-modal-make-period-visible',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                        period_id=period.id,
+                                    ) }}"
+                                    hx-target="#upload-results"
+                                    hx-swap="outerHTML"
+                                    hx-indicator="#please-wait"
+                                    hx-disabled-elt="this"
+                                    {% if actions_unavailable_message %}
+                                        disabled
+                                    {% endif %}
+                                >
+                                    <i class="bi-eye lh-1"></i>
+                                </button>
+                            </span>
                             <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
                                 <button
                                     type="button"
