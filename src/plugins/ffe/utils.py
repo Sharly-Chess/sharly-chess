@@ -24,6 +24,7 @@ from plugins.ffe.ffe_upload_status import (
     FailureFFEUploadStatus,
     NetworkFailureFFEUploadStatus,
     UnexpectedFailureFFEUploadStatus,
+    FinishedFFEUploadStatus,
     ModifiedFFEUploadStatus,
     UpToDateFFEUploadStatus,
     OngoingFFEUploadStatus,
@@ -401,11 +402,16 @@ class FFEUtils:
         for its own upload: whether it has been sent, how it went, and
         whether the results have moved since.
 
+        Only the tranche being played is asked the last question. Once
+        the tournament has moved on, the tranche is submitted and the
+        federation closes its registration, so what the rounds after it
+        do cannot be sent there anyway — it reads as finished.
+
         What moved is read from the tournament's own timestamps, which
         say when a result, a player or a pairing last changed but not in
-        which round — so a change anywhere marks every slice sent before
-        it. That errs towards sending a tranche again, which costs
-        nothing, rather than leaving a stale one looking current."""
+        which round — so a change anywhere marks the tranche being
+        played. That errs towards sending it again, which costs nothing,
+        rather than leaving a stale one looking current."""
         from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 
         # What the slice itself holds: borrowing the tournament's would
@@ -421,7 +427,12 @@ class FFEUtils:
                 )
             )
         if not plugin_data.last_upload_at:
+            # Said of a tranche already behind as much as of the one being
+            # played: a tranche nobody submitted is the arbiter's problem
+            # whether or not its rounds are over.
             statuses.append(NeverUploadedFFEUploadStatus())
+        elif period.index < period.tournament.current_period.index:
+            statuses.append(FinishedFFEUploadStatus())
         elif Utils.tournament_results_modified_since(
             period.tournament, plugin_data.last_upload_at
         ):

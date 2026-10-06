@@ -306,6 +306,9 @@ msgstr ""
 msgid "Final"
 msgstr ""
 
+msgid "Finished"
+msgstr ""
+
 #, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -747,6 +750,9 @@ msgid "This filter applies only to players affiliated with the French federation
 msgstr ""
 
 msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
+msgstr ""
+
+msgid "This period has been submitted; later rounds do not change it."
 msgstr ""
 
 msgid "Tournament"

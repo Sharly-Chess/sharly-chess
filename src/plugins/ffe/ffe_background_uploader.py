@@ -219,7 +219,16 @@ class FfeBackgroundUploader:
                 if not team_transfer and len(tournament.periods) > 1
                 else None
             )
-            if current_period is not None and current_period.first_round > 1:
+            # Only a tranche with a registration of its own is submitted:
+            # without one there is nothing to submit it under, and the
+            # tournament's would take the slice's file in place of the
+            # complete results published there.
+            if (
+                current_period is not None
+                and current_period.first_round > 1
+                and FFEUtils.get_period_own_plugin_data(current_period).ffe_id
+                and FFEUtils.get_period_own_plugin_data(current_period).password
+            ):
                 cls.pending_period_result_ids.add(cls.period_result_id(current_period))
             else:
                 current_period = None

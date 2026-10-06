@@ -311,6 +311,9 @@ msgstr "Fichier"
 msgid "Final"
 msgstr "Finale"
 
+msgid "Finished"
+msgstr "Terminée"
+
 #, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -753,6 +756,9 @@ msgstr "Ce filtre ne s'applique qu'aux joueur·euses affilié·es à la fédéra
 
 msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
 msgstr "Il s'agit de la première période, et de l'homologation où le tournoi entier est publié ; les autres ont la leur, dans le calendrier ci-dessous."
+
+msgid "This period has been submitted; later rounds do not change it."
+msgstr "Cette période a été soumise ; les rondes suivantes ne la modifient pas."
 
 msgid "Tournament"
 msgstr "Tournoi"

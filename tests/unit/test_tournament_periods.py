@@ -239,3 +239,54 @@ class TestTournamentPeriods:
             assert tournament_id is not None
             stored_periods = database.load_tournament_stored_periods(tournament_id)
         assert [stored.first_round for stored in stored_periods] == [1]
+
+
+@pytest.mark.unit
+class TestCurrentPeriod:
+    """Which slice the tournament is playing."""
+
+    def teardown_method(self):
+        with contextlib.suppress(KeyError):
+            EventLoader.unload_event(EVENT_ID)
+        TestUtils.delete_event(EVENT_ID)
+
+    def _tournament(self, current_round: int):
+        """Six rounds a fortnight apart, all of them still to come, cut
+        into three slices — so the calendar says the first while the
+        rounds say otherwise."""
+        TestUtils.create_event(EVENT_ID)
+        TestUtils.create_tournament(
+            EVENT_ID,
+            TOURNAMENT_NAME,
+            overrides={
+                'rounds': 6,
+                'multi_period': True,
+                'round_datetimes': {
+                    round_nb: datetime.now() + timedelta(days=14 * round_nb)
+                    for round_nb in range(1, 7)
+                },
+            },
+        )
+        with EventDatabase(EVENT_ID, write=True) as database:
+            tournament_id = next(
+                stored.id
+                for stored in database.load_stored_tournaments()
+                if stored.name == TOURNAMENT_NAME
+            )
+            assert tournament_id is not None
+            database.set_tournament_periods(tournament_id, [3, 5])
+            database.set_tournament_current_round(tournament_id, current_round)
+        with contextlib.suppress(KeyError):
+            EventLoader.unload_event(EVENT_ID)
+        self._event = EventLoader().load_event(EVENT_ID)
+        return self._event.tournaments_by_name[TOURNAMENT_NAME]
+
+    def test_the_slice_of_the_round_reached_is_the_current_one(self):
+        """Pairing a round of the third slice starts it, whatever the
+        dates of the slices before say."""
+        tournament = self._tournament(current_round=5)
+        assert tournament.current_period.first_round == 5
+
+    def test_the_first_slice_is_current_while_it_is_played(self):
+        tournament = self._tournament(current_round=2)
+        assert tournament.current_period.first_round == 1

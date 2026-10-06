@@ -331,8 +331,17 @@ class Tournament:
 
     @property
     def current_period(self) -> TournamentPeriod:
-        """The period today falls in — the last one once the tournament is
-        over, the first while it has not started."""
+        """The slice being played: the one holding the round the
+        tournament has reached.
+
+        Where it has reached is what the arbiter has paired, not what the
+        calendar says — a slice can be played early or late, and pairing
+        its first round is the act that starts it. Before any round is
+        paired there is nothing to read, so the dates answer instead: the
+        period today falls in, the last one once they have all passed."""
+        period = self.period_by_round.get(self.current_round)
+        if period is not None:
+            return period
         today = date.today()
         for period in self.periods:
             stop_date = period.stop_date

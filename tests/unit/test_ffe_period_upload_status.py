@@ -28,7 +28,11 @@ class TestPeriodUploadStatus:
         FfeBackgroundUploader.group_upload_wait_queue.clear()
         TestUtils.delete_event(EVENT_ID)
 
-    def _setup(self, second_period_plugin_data: dict | None = None):
+    def _setup(
+        self,
+        second_period_plugin_data: dict | None = None,
+        periods: list[int] | None = None,
+    ):
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(
             EVENT_ID,
@@ -57,7 +61,7 @@ class TestPeriodUploadStatus:
                 if stored.name == TOURNAMENT_NAME
             )
             assert tournament_id is not None
-            database.set_tournament_periods(tournament_id, [3])
+            database.set_tournament_periods(tournament_id, periods or [3])
             if second_period_plugin_data is not None:
                 second = database.load_tournament_stored_periods(tournament_id)[1]
                 assert second.id is not None
@@ -142,3 +146,32 @@ class TestPeriodUploadStatus:
         ]
         assert 'MODIFIED' in statuses
         assert 'UP_TO_DATE' not in statuses
+
+    def test_a_slice_with_no_registration_is_not_sent_with_the_tournament(self):
+        """Uploading the tournament sends the tranche being played under
+        its own registration; without one there is nothing to send it
+        under, and the tournament's publishes the whole event."""
+        tournament = self._setup()
+        period = tournament.current_period
+        assert period.first_round > 1
+        assert not FFEUtils.get_period_own_plugin_data(period).ffe_id
+        assert not FfeBackgroundUploader.is_period_upload_pending(period)
+
+    def test_a_slice_the_tournament_has_left_behind_reads_as_finished(self):
+        """Its registration is closed once it has been submitted, so what
+        the rounds after it do cannot reach it."""
+        tournament = self._setup(
+            {
+                'ffe_id': 49944,
+                'password': 'BBBBBBBBBB',
+                'last_upload': (datetime.now() - timedelta(days=1)).isoformat(),
+            },
+            periods=[3, 4],
+        )
+        earlier = tournament.periods[1]
+        assert earlier.index < tournament.current_period.index
+        statuses = [
+            status.id for status in FFEUtils.resolve_period_upload_statuses(earlier)
+        ]
+        assert 'PERIOD_FINISHED' in statuses
+        assert 'MODIFIED' not in statuses
