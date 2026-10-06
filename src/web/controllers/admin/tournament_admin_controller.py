@@ -1815,6 +1815,7 @@ class TournamentAdminController(BaseEventAdminController):
             'data': schedule_form_data,
             'errors': {},
             'force_schedule_open': force_schedule_open,
+            'oob_multi_period': True,
             'schedule_min_date': format_date(min_date),
             'schedule_max_date': format_date(max_date),
             'dates_exceed_period': dates_exceed_period(min_date, max_date),

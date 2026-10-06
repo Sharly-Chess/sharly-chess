@@ -182,6 +182,11 @@
         {% endif %}
     </div>
 </div>
-{% with oob=true %}
-    {% include '/admin/tournaments/tournament_multi_period_field.html' %}
-{% endwith %}
+{# The field lives beside the dates, which the modal renders itself; the
+   section carries it out of band only when it is fetched on its own, so
+   that the form never holds two of it. #}
+{% if oob_multi_period %}
+    {% with oob=true %}
+        {% include '/admin/tournaments/tournament_multi_period_field.html' %}
+    {% endwith %}
+{% endif %}

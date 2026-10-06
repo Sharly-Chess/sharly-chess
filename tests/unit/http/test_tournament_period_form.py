@@ -391,3 +391,22 @@ def test_a_collapsed_schedule_stays_collapsed(http: TestClient, event: str):
     assert response.status_code == 200
     assert 'id="schedule-collapse" class="collapse"' in response.text
     assert 'aria-expanded="false"' in response.text
+
+
+@pytest.mark.unit
+def test_the_form_holds_one_multi_period_field(http: TestClient, event: str):
+    """Two fields of one name make the form post that name twice, which
+    the update endpoint refuses."""
+    response = http.get(f'/tournament-modal/update/{event}/{_tournament_id(event)}')
+    assert response.status_code == 200
+    assert response.text.count('id="multi-period-field"') == 1
+    assert response.text.count('name="multi_period"') <= 1
+
+
+@pytest.mark.unit
+def test_the_section_carries_the_field_when_fetched_alone(http: TestClient, event: str):
+    """Fetched on its own it has to bring the field with it, out of band:
+    nothing else is re-rendering it."""
+    section = _section(http, event, round_3_period_start='on')
+    assert section.count('id="multi-period-field"') == 1
+    assert 'hx-swap-oob="true"' in section
