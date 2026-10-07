@@ -682,7 +682,7 @@ msgid "A positive number of groups is expected."
 msgstr "Un nombre positif de groupes est attendu."
 
 msgid "A positive rating step is expected."
-msgstr "Un pas d'Elo positif est attendu."
+msgstr "Un pas de Elo positif est attendu."
 
 msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
@@ -1725,7 +1725,7 @@ msgid "By player"
 msgstr "Par ordre alpha."
 
 msgid "By rating step"
-msgstr "Par pas d'Elo"
+msgstr "Par pas de Elo"
 
 msgid "By specific board numbers"
 msgstr "Par numéros d'échiquier spécifiques"
@@ -2716,7 +2716,7 @@ msgstr "Chronomètres par défaut"
 
 #, python-format
 msgid "Define a rating range and how to split it. One category is created per rating band, with a single rating criterion and the default prizes below (amounts in %(currency)s). You can fine-tune them afterwards."
-msgstr "Définissez une plage d'Elo et la façon de la découper. Une catégorie est créée par tranche d'Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
+msgstr "Définissez une plage de Elo et la façon de la découper. Une catégorie est créée par tranche de Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -6105,7 +6105,7 @@ msgid "No player is in contention for a title norm in round {round}."
 msgstr "Aucun·e joueur·euse ne peut prétendre à une norme à la ronde {round}."
 
 msgid "No player is rated within this range; use the rating step method instead."
-msgstr "Aucun·e joueur·euse n'a d'Elo dans cette plage ; utilisez plutôt la méthode par pas d'Elo."
+msgstr "Aucun·e joueur·euse n'a de Elo dans cette plage ; utilisez plutôt la méthode par pas de Elo."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -7949,7 +7949,7 @@ msgid "Rating report correction"
 msgstr "Correction pour le rapport Elo"
 
 msgid "Rating step"
-msgstr "Pas d'Elo"
+msgstr "Pas de Elo"
 
 msgid "Rating to use:"
 msgstr "Classement à utiliser :"
