@@ -2,7 +2,7 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 {% import '/admin/common/warning_macros.j2' as warning_macros with context %}
 
-<div style="--bs-modal-width: min(92vw, 560px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
+<div style="--bs-modal-width: min(92vw, 800px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
     <div class="modal-content bg-secondary-subtle">
         <div class="modal-header d-flex flex-column position-relative">
             <button
@@ -30,8 +30,8 @@
                         {% for group in pp_snapshot_groups %}
                             <li class="list-group-item d-flex align-items-center">
                                 <i
-                                    class="bi-shield-fill-exclamation {{ 'text-warning' if group.is_hard else 'text-secondary' }} me-2 flex-shrink-0"
-                                    {{ macros.tooltip_attributes('info', _('Hard constraint') if group.is_hard else _('Soft constraint'), 'top') }}
+                                    class="bi-shield-fill-exclamation {{ 'text-warning' if group.constraint.is_hard else 'text-secondary' }} me-2 flex-shrink-0"
+                                    {{ macros.tooltip_attributes('info', group.constraint | string, 'top') }}
                                 ></i>
                                 <span class="text-muted small me-2 flex-shrink-0">({{ group.count }})</span>
                                 <span>{{ group.members | join(', ') }}</span>
@@ -132,48 +132,44 @@
                     {% set _pp_lock_tooltip = _(
                         'Set by the rule set [%(name)s].', name=pp_rule_set_name
                     ) if pp_forced_by_rule_set else '' %}
-                    <div class="row gy-2 gx-3 align-items-center">
-                        <div class="col-12 d-flex align-items-center gap-3">
-                            <div class="flex-grow-1">
-                                {{ admin_macros.select_input(
-                                    name='dimension',
-                                    label=_('%(string)s:', string=_('Avoid pairing by')),
-                                    tooltip_text=_(
-                                        'Automatically build groups of %(members)s '
-                                        'sharing the chosen attribute; members of '
-                                        'the same group are kept from being paired '
-                                        'together.',
-                                        members=_('teams') if pp_is_team else _('players'),
-                                    ),
-                                    select_options=pp_dimension_options,
-                                    disabled=pp_forced_by_rule_set,
-                                    input_tooltip=_pp_lock_tooltip,
-                                    data={'dimension': pp_dimension},
-                                ) }}
-                            </div>
-                            <div class="flex-shrink-0">
-                                {{ admin_macros.switch_input(
-                                    name='dimension_is_hard',
-                                    placeholder=_('Hard constraint'),
-                                    tooltip_text=_(
-                                        'A hard constraint is always enforced. '
-                                        'A soft constraint is relaxed only as much '
-                                        'as needed when pairing is otherwise '
-                                        'impossible, starting with the weakest '
-                                        'players.'
-                                    ),
-                                    disabled=pp_forced_by_rule_set,
-                                    input_tooltip=_pp_lock_tooltip,
-                                    data={'dimension_is_hard': 'on' if pp_dimension_is_hard else ''},
-                                ) }}
-                            </div>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-sm-4">
+                            {{ admin_macros.select_input(
+                                name='dimension',
+                                label=_('%(string)s:', string=_('Avoid pairing by')),
+                                tooltip_text=_(
+                                    'Automatically build groups of %(members)s '
+                                    'sharing the chosen attribute; members of '
+                                    'the same group are kept from being paired '
+                                    'together.',
+                                    members=_('teams') if pp_is_team else _('players'),
+                                ),
+                                select_options=pp_dimension_options,
+                                disabled=pp_forced_by_rule_set,
+                                input_tooltip=_pp_lock_tooltip,
+                                data={'dimension': pp_dimension},
+                                stacked=true,
+                            ) }}
+                        </div>
+                        <div class="col-12 col-sm-8">
+                            {{ admin_macros.select_input(
+                                name='constraint',
+                                label=_('%(string)s:', string=_('Constraint')),
+                                select_options=pp_constraint_options,
+                                tooltip_select=true,
+                                search_disabled=true,
+                                disabled=pp_forced_by_rule_set,
+                                input_tooltip=_pp_lock_tooltip,
+                                data={'constraint': pp_dimension_constraint},
+                                stacked=true,
+                            ) }}
                         </div>
                     </div>
                 </form>
                 <script>
                     // select2 fires a jQuery 'change' that htmx's native
                     // listener misses — relay it to the config form.
-                    $('#dimension').on('change', function () {
+                    $('#dimension, #constraint').on('change', function () {
                         htmx.trigger(
                             document.getElementById('pp-config-form'), 'change'
                         );
@@ -224,8 +220,11 @@
                         <ul class="list-group">
                             {% for group in pp_rule_groups %}
                                 <li class="list-group-item d-flex align-items-center">
-                                    <span class="badge {{ 'text-bg-danger' if group.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0">
-                                        {{ _('Hard') if group.is_hard else _('Soft') }}
+                                    <span
+                                        class="badge {{ 'text-bg-danger' if group.constraint.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0"
+                                        {{ macros.tooltip_attributes('info', group.constraint.description, 'top') }}
+                                    >
+                                        {{ group.constraint if group.constraint.is_hard else _('Soft') }}
                                     </span>
                                     <div>
                                         <span class="fw-bold">{{ group.label }}</span>
@@ -267,8 +266,8 @@
                         {% for group in pp_manual_groups %}
                             <li class="list-group-item d-flex align-items-center">
                                 <i
-                                    class="bi-shield-fill-exclamation {{ 'text-warning' if group.is_hard else 'text-secondary' }} me-2 flex-shrink-0"
-                                    {{ macros.tooltip_attributes('info', _('Hard constraint') if group.is_hard else _('Soft constraint'), 'top') }}
+                                    class="bi-shield-fill-exclamation {{ 'text-warning' if group.constraint.is_hard else 'text-secondary' }} me-2 flex-shrink-0"
+                                    {{ macros.tooltip_attributes('info', group.constraint | string, 'top') }}
                                 ></i>
                                 <span class="flex-grow-1">
                                     {{ group.members | join(', ') }}
@@ -343,11 +342,14 @@
                                 <div class="text-danger small">{{ errors['member_ids'] }}</div>
                             {% endif %}
                             <div class="mt-2">
-                                {{ admin_macros.switch_input(
-                                    name='is_hard',
-                                    label='',
-                                    placeholder=_('Hard constraint'),
-                                    data={'is_hard': data.get('is_hard', 'on')},
+                                {{ admin_macros.select_input(
+                                    name='group_constraint',
+                                    label=_('%(string)s:', string=_('Constraint')),
+                                    select_options=pp_manual_constraint_options,
+                                    tooltip_select=true,
+                                    search_disabled=true,
+                                    data={'group_constraint': data.get('group_constraint', 'HARD')},
+                                    stacked=true,
                                 ) }}
                             </div>
                             <div class="d-flex gap-2 mt-3">

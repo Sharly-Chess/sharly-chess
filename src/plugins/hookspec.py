@@ -424,7 +424,7 @@ class AppHookSpecs:
         """Prohibited-pairing groups a plugin contributes *dynamically* for a
         specific ``round_`` — typically computed from results so far (a static
         affiliation dimension can't express them). Each is a
-        :class:`RoundProhibitedPairingGroup` (``name`` / ``is_hard`` /
+        :class:`RoundProhibitedPairingGroup` (``name`` / ``constraint`` /
         ``member_ids`` — team ids in a team tournament, player ids otherwise);
         groups of fewer than two members are ignored. The named groups appear
         in the prohibited-pairings modal and are merged into the round's

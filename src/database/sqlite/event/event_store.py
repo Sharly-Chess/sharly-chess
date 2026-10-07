@@ -262,16 +262,18 @@ class StoredProhibitedPairingGroup:
     """A set of members (player ids, or team ids in team mode) that must
     not be paired together. ``round_`` is None for a reusable manual
     template group, or a round number for an immutable per-round
-    snapshot (manual + dimension-derived, flattened). ``is_hard``
-    distinguishes hard from soft constraints. ``protect_rank`` is the
-    soft-relaxation cutoff frozen for a round snapshot (members ranked
-    ``<= protect_rank`` kept their soft separations); ``None`` for
-    template groups, hard-only rounds, and imported snapshots."""
+    snapshot (manual + dimension-derived, flattened). ``constraint`` is
+    the :class:`~utils.enum.ProhibitedPairingConstraint` value of the
+    group. ``protect_rank`` is the soft-relaxation cutoff frozen for a
+    round snapshot (members ranked ``<= protect_rank`` kept the
+    separations of their groups relaxed from the bottom of the standings);
+    ``None`` for template groups, rounds without such groups, and imported
+    snapshots."""
 
     id: int | None
     tournament_id: int
     round_: int | None = None
-    is_hard: bool = True
+    constraint: str = 'HARD'
     member_ids: list[int] = field(default_factory=list[int])
     protect_rank: int | None = None
 
@@ -406,7 +408,7 @@ class StoredTournament:
     rule_set: str | None = None
     rule_set_config: dict[str, Any] = field(default_factory=dict[str, Any])
     prohibited_pairing_dimension: str | None = None
-    prohibited_pairing_dimension_is_hard: bool = True
+    prohibited_pairing_dimension_constraint: str = 'HARD'
     round_robin_participation_rule: bool = True
     starting_rank_tie_order: str = 'ALPHABETICAL'
     starting_rank_lot_seed: int | None = None

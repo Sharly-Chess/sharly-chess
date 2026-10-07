@@ -508,6 +508,26 @@ class TestTrfSerializer(TestCase):
             self.assertEqual(entry.parse(line[4:]), expected, line)
             self.assertEqual('299 ' + entry.format(expected), line, line)
 
+    def test_soft_prohibited_pairings_match_bbppairings(self):
+        """SCS records, read by the Sharly Chess build of bbpPairings, keep
+        the 260 layout and stay apart from the 260 records."""
+        line = 'SCS   1   1    2    5'
+        tournament = TrfSerializer.loads(f'260   1   3    1    4\n{line}')
+
+        self.assertEqual(
+            tournament.soft_prohibited_pairings,
+            [
+                TrfProhibitedPairing(
+                    first_round=1, last_round=1, pairing_numbers=[2, 5], soft=True
+                )
+            ],
+        )
+        self.assertEqual(
+            tournament.prohibited_pairings,
+            [TrfProhibitedPairing(first_round=1, last_round=3, pairing_numbers=[1, 4])],
+        )
+        self.assertEqual(self.dumped_line(tournament, 'SCS'), line)
+
     def test_load_example_trf06(self):
         filename = TRF_PATH / 'example_trf06.trf'
         with open(filename) as f:

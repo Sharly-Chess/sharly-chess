@@ -68,7 +68,13 @@ from data.pibes import (
 )
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from utils.enum import CheckInStatus, Result, ScoreType, TeamByeType
+from utils.enum import (
+    CheckInStatus,
+    Result,
+    ScoreType,
+    ProhibitedPairingConstraint,
+    TeamByeType,
+)
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -91,6 +97,7 @@ from web.session import (
     SessionPairingsSelectedRound,
     SessionPairingsBoardSort,
 )
+from web.utils import SelectOption
 
 logger = get_logger()
 
@@ -3528,14 +3535,16 @@ class PairingsAdminController(BaseEventAdminController):
                 member = tournament.tournament_players_by_id.get(member_id)
                 return member.full_name if member else f'#{member_id}'
 
-        def display(groups: list[tuple[bool, list[int]]]) -> list[dict]:
+        def display(
+            groups: list[tuple[ProhibitedPairingConstraint, list[int]]],
+        ) -> list[dict]:
             return [
                 {
-                    'is_hard': is_hard,
+                    'constraint': constraint,
                     'members': [member_name(mid) for mid in member_ids],
                     'count': len(member_ids),
                 }
-                for is_hard, member_ids in groups
+                for constraint, member_ids in groups
             ]
 
         dimension_options = {'': '-'}
@@ -3545,7 +3554,7 @@ class PairingsAdminController(BaseEventAdminController):
         manual_groups = [
             {
                 'index': index,
-                'is_hard': group.is_hard,
+                'constraint': ProhibitedPairingConstraint(group.constraint),
                 'members': [member_name(mid) for mid in group.member_ids],
             }
             for index, group in enumerate(
@@ -3559,7 +3568,10 @@ class PairingsAdminController(BaseEventAdminController):
         # us also regenerate the effective groups actually enforced.
         snapshot = tournament.prohibited_pairings.snapshot(round_)
         snapshot_groups = display(
-            [(group.is_hard, list(group.member_ids)) for group in snapshot]
+            [
+                (ProhibitedPairingConstraint(group.constraint), list(group.member_ids))
+                for group in snapshot
+            ]
         )
         # Only surface the relaxation detail when a soft separation was
         # actually released. A round that could protect everyone still
@@ -3590,7 +3602,22 @@ class PairingsAdminController(BaseEventAdminController):
             'pp_is_team': is_team,
             'pp_dimension_options': dimension_options,
             'pp_dimension': tournament.prohibited_pairings.dimension_id or '',
-            'pp_dimension_is_hard': tournament.prohibited_pairings.dimension_is_hard,
+            'pp_dimension_constraint': (
+                tournament.prohibited_pairings.dimension_constraint.value
+            ),
+            'pp_constraint_options': {
+                constraint.value: SelectOption(
+                    name=str(constraint), tooltip=constraint.description
+                )
+                for constraint in ProhibitedPairingConstraint
+            },
+            'pp_manual_constraint_options': {
+                constraint.value: SelectOption(
+                    name=str(constraint), tooltip=constraint.description
+                )
+                for constraint in ProhibitedPairingConstraint
+                if constraint != ProhibitedPairingConstraint.NONE
+            },
             'pp_forced_by_rule_set': (
                 tournament.prohibited_pairings.forced_by_rule_set is not None
             ),
@@ -3614,7 +3641,7 @@ class PairingsAdminController(BaseEventAdminController):
             else [
                 {
                     'label': group.name,
-                    'is_hard': group.is_hard,
+                    'constraint': group.constraint,
                     'members': [member_name(mid) for mid in group.member_ids],
                     'count': len(group.member_ids),
                 }
@@ -3634,9 +3661,9 @@ class PairingsAdminController(BaseEventAdminController):
     @staticmethod
     def _manual_groups_as_tuples(
         tournament: Tournament,
-    ) -> list[tuple[bool, list[int]]]:
+    ) -> list[tuple[ProhibitedPairingConstraint, list[int]]]:
         return [
-            (group.is_hard, list(group.member_ids))
+            (ProhibitedPairingConstraint(group.constraint), list(group.member_ids))
             for group in tournament.prohibited_pairings.manual_groups()
         ]
 
@@ -3671,15 +3698,22 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
-        if (
-            not tournament.round_has_pairings(round)
-            and not self._prohibited_pairings_fixed(tournament)
-            and tournament.prohibited_pairings.forced_by_rule_set is None
-        ):
-            dimension = WebContext.form_data_to_str(data, 'dimension') or None
-            is_hard = WebContext.form_data_to_bool(data, 'dimension_is_hard') or False
+        prohibited_pairings = tournament.prohibited_pairings
+        if not tournament.round_has_pairings(
+            round
+        ) and not self._prohibited_pairings_fixed(tournament):
+            stored_tournament = tournament.stored_tournament
+            dimension = stored_tournament.prohibited_pairing_dimension
+            constraint = ProhibitedPairingConstraint(
+                stored_tournament.prohibited_pairing_dimension_constraint
+            )
+            if prohibited_pairings.forced_by_rule_set is None:
+                dimension = WebContext.form_data_to_str(data, 'dimension') or None
+                raw_constraint = WebContext.form_data_to_str(data, 'constraint') or ''
+                if raw_constraint in ProhibitedPairingConstraint:
+                    constraint = ProhibitedPairingConstraint(raw_constraint)
             with EventDatabase(tournament.event.uniq_id, True) as database:
-                tournament.prohibited_pairings.set_config(dimension, is_hard, database)
+                prohibited_pairings.set_config(dimension, constraint, database)
         return self._render_prohibited_pairings_modal(web_context)
 
     @get(
@@ -3706,7 +3740,7 @@ class PairingsAdminController(BaseEventAdminController):
                 group = groups[index]
                 data = {
                     'member_ids': ','.join(str(mid) for mid in group.member_ids),
-                    'is_hard': 'on' if group.is_hard else '',
+                    'group_constraint': group.constraint,
                 }
         return self._render_prohibited_pairings_modal(
             web_context,
@@ -3738,7 +3772,13 @@ class PairingsAdminController(BaseEventAdminController):
             return self._render_prohibited_pairings_modal(web_context)
         raw_ids = WebContext.form_data_to_str(data, 'member_ids') or ''
         member_ids = [int(part) for part in raw_ids.split(',') if part.strip()]
-        is_hard = WebContext.form_data_to_bool(data, 'is_hard') or False
+        raw_constraint = WebContext.form_data_to_str(data, 'group_constraint') or ''
+        constraint = (
+            ProhibitedPairingConstraint(raw_constraint)
+            if raw_constraint in ProhibitedPairingConstraint
+            and raw_constraint != ProhibitedPairingConstraint.NONE
+            else ProhibitedPairingConstraint.HARD
+        )
         raw_index = WebContext.form_data_to_str(data, 'index') or ''
         errors: dict[str, str] = {}
         if len(member_ids) < 2:
@@ -3755,9 +3795,9 @@ class PairingsAdminController(BaseEventAdminController):
         if raw_index:
             index = int(raw_index)
             if 0 <= index < len(groups):
-                groups[index] = (is_hard, member_ids)
+                groups[index] = (constraint, member_ids)
         else:
-            groups.append((is_hard, member_ids))
+            groups.append((constraint, member_ids))
         with EventDatabase(tournament.event.uniq_id, True) as database:
             tournament.prohibited_pairings.set_manual_groups(groups, database)
         return self._render_prohibited_pairings_modal(web_context)

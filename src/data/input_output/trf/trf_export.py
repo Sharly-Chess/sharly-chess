@@ -36,6 +36,7 @@ from data.tournament_period import TournamentPeriod
 from utils.enum import (
     BoardColor,
     PlayerRatingType,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
     TeamByeType,
@@ -160,11 +161,13 @@ class TrfExport:
             trf.abnormal_points_assignments = (
                 self._individual_abnormal_points_assignments(after_round, window)
             )
-        trf.prohibited_pairings = (
+        prohibited_pairings = (
             prohibited_pairing_override
             if prohibited_pairing_override is not None
             else self._prohibited_pairings()
         )
+        trf.prohibited_pairings = [p for p in prohibited_pairings if not p.soft]
+        trf.soft_prohibited_pairings = [p for p in prohibited_pairings if p.soft]
         trf.log_comments = self._log_comments(after_round, corrections)
         return trf
 
@@ -212,7 +215,8 @@ class TrfExport:
         whole, soft groups relaxed at the stored cutoff) — so the export is
         the truth, not the configured-before-relaxation set. Snapshots with
         no cutoff (a hard-only round, or an imported 260 set) emit every
-        group whole."""
+        group whole. The groups avoided as the lowest-priority criterion
+        are SCS records."""
         tournament = self.tournament
         result: list[TrfProhibitedPairing] = []
         groups_by_round: dict[int, list] = {}
@@ -225,6 +229,18 @@ class TrfExport:
                 protect_by_round[group.round_] = group.protect_rank
         for round_ in sorted(groups_by_round):
             groups = groups_by_round[round_]
+            lowest_criterion = ProhibitedPairingConstraint.LOWEST_CRITERION
+            result.extend(
+                tournament.prohibited_pairings.lowest_criterion_lines(
+                    [
+                        list(g.member_ids)
+                        for g in groups
+                        if g.constraint == lowest_criterion
+                    ],
+                    round_,
+                )
+            )
+            groups = [g for g in groups if g.constraint != lowest_criterion]
             protect_rank = protect_by_round.get(round_)
             if protect_rank is None:
                 # No relaxation recorded — every stored group is enforced
@@ -236,8 +252,9 @@ class TrfExport:
                     )
                 )
                 continue
-            hard_groups = [list(g.member_ids) for g in groups if g.is_hard]
-            soft_groups = [list(g.member_ids) for g in groups if not g.is_hard]
+            hard = ProhibitedPairingConstraint.HARD
+            hard_groups = [list(g.member_ids) for g in groups if g.constraint == hard]
+            soft_groups = [list(g.member_ids) for g in groups if g.constraint != hard]
             rank_by_member = tournament.prohibited_pairings.member_weakness_ranks(
                 after_round=round_ - 1
             )

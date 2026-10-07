@@ -1085,6 +1085,58 @@ class StartingRankTieOrder(StrEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
+class ProhibitedPairingConstraint(StrEnum):
+    """How strongly a prohibited-pairing group keeps its members apart.
+    ``PROTECT_TOP`` enforces the group like a hard one and, when the round
+    cannot be paired, releases the members from the bottom of the
+    standings up. ``LOWEST_CRITERION`` makes it the pairing engine's
+    lowest-priority criterion, avoided only when no pairing rule suffers.
+    ``NONE`` only applies to the automatic grouping, which it turns off."""
+
+    NONE = 'NONE'
+    HARD = 'HARD'
+    PROTECT_TOP = 'PROTECT_TOP'
+    LOWEST_CRITERION = 'LOWEST_CRITERION'
+
+    def __str__(self) -> str:
+        match self:
+            case ProhibitedPairingConstraint.NONE:
+                return pgettext('constraint', 'None')
+            case ProhibitedPairingConstraint.HARD:
+                return _('Strict')
+            case ProhibitedPairingConstraint.PROTECT_TOP:
+                return _('Soft: relaxed from the bottom of the standings')
+            case ProhibitedPairingConstraint.LOWEST_CRITERION:
+                return _('Soft: avoided as much as the pairing rules allow')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def description(self) -> str:
+        match self:
+            case ProhibitedPairingConstraint.NONE:
+                return _('Nobody is kept apart.')
+            case ProhibitedPairingConstraint.HARD:
+                return _('The members are never paired together.')
+            case ProhibitedPairingConstraint.PROTECT_TOP:
+                return _(
+                    'The members are kept apart like a strict constraint. When '
+                    'the round cannot be paired otherwise, the lowest-ranked '
+                    'members are released first.'
+                )
+            case ProhibitedPairingConstraint.LOWEST_CRITERION:
+                return _(
+                    'The members are kept apart only when no pairing rule '
+                    '(colours, floaters…) suffers, whatever the standings.'
+                )
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def is_hard(self) -> bool:
+        return self == ProhibitedPairingConstraint.HARD
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'

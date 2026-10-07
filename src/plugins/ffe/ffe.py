@@ -143,6 +143,7 @@ from plugins.utils import (
 )
 from utils.enum import (
     PlayerRatingType,
+    ProhibitedPairingConstraint,
     Result,
     TournamentRating,
 )
@@ -399,7 +400,7 @@ class FfePlugin(Plugin):
         return [
             RoundProhibitedPairingGroup(
                 name=_('Won both of the first two matches'),
-                is_hard=True,
+                constraint=ProhibitedPairingConstraint.HARD,
                 member_ids=winners,
             )
         ]
