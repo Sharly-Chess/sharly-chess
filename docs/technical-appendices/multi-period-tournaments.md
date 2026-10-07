@@ -20,7 +20,7 @@ Sources:
   may hold more than one rating during the tournament; the first rating is the
   default.
 - `VCL4THP` `Q210`–`Q216`, the acceptance questions this feature answers.
-- [Comité de Bretagne, _Tournois FIDE en plusieurs tranches_](https://echecs-bretagne.fr/node/1928),
+- [Ligue de Bretagne, _Tournois FIDE en plusieurs tranches_](https://echecs-bretagne.fr/node/1928),
   the procedure French arbiters follow.
 
 ## Periods
