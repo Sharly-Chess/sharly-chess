@@ -2355,9 +2355,7 @@ class UnplayedMatchBoardTotalsTestCase(TestCase):
             TeamMatchRecord(1, None, 2.0, 3.0, TeamMatchType.PAB),
             TeamMatchRecord(2, None, 1.0, 1.5, TeamMatchType.HPB),
             TeamMatchRecord(3, 2, 2.0, 2.0, TeamMatchType.FORFEIT_WIN, (1.0, 0.0, 1.0)),
-            TeamMatchRecord(
-                4, 3, 1.0, 1.5, TeamMatchType.UNPLAYED_DRAW, (1.0, 0.5, 0.0)
-            ),
+            TeamMatchRecord(4, 3, 1.0, 1.5, TeamMatchType.PLAYED, (1.0, 0.5, 0.0)),
             TeamMatchRecord(
                 5, 4, 0.0, 1.0, TeamMatchType.FORFEIT_LOSS, (0.0, 1.0, 0.0)
             ),
@@ -2369,7 +2367,7 @@ class UnplayedMatchBoardTotalsTestCase(TestCase):
     def test_forfeited_boards_count_as_they_went_and_byes_not_at_all(self):
         totals = board_totals(self.RECORD, 3, after_round=7)
         # PAB 1, 1, 1; the half-point and zero-point byes nothing; the
-        # three forfeited matches and the played one board by board.
+        # forfeited matches and the played ones board by board.
         self.assertEqual(totals, [4.0, 3.5, 2.0])
 
 
