@@ -98,7 +98,7 @@ def _prohibited(
     prohibited_pairings = tournament.prohibited_pairings
     groups = [group.member_ids for group in prohibited_pairings.snapshot(round_)] or [
         member_ids
-        for _is_hard, member_ids in prohibited_pairings.computed_groups(round_)
+        for _constraint, member_ids in prohibited_pairings.computed_groups(round_)
     ]
     return any(first_id in group and second_id in group for group in groups)
 

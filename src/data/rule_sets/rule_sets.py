@@ -224,11 +224,12 @@ class RuleSet(IdentifiableEntity, ABC):
         return None
 
     @property
-    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
-        """When set, ``(dimension_id, is_hard)`` the rule set imposes
+    def forced_prohibited_pairing(self) -> tuple[str, str] | None:
+        """When set, ``(dimension_id, constraint)`` the rule set imposes
         for the tournament's prohibited pairings — the protection
         modal shows the configuration read-only. ``None`` (default)
-        leaves the configuration free."""
+        leaves the configuration free. ``constraint`` is a
+        :class:`~utils.enum.ProhibitedPairingConstraint` value."""
         return None
 
     def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
