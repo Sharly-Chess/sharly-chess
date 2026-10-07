@@ -395,6 +395,7 @@ class StoredScreen:
     menu_text: str | None
     timer_id: int | None
     input_exit_button: bool | None = None
+    boards_hide_players: bool | None = None
     players_show_unpaired: bool | None = None
     players_player_format: int | None = None
     players_board_format: int | None = None
@@ -434,6 +435,7 @@ class StoredFamily:
     menu_text: str
     timer_id: int | None
     input_exit_button: bool | None = None
+    boards_hide_players: bool | None = None
     players_show_unpaired: bool | None = None
     players_player_format: int | None = None
     players_board_format: int | None = None

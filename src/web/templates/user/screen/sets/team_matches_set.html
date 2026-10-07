@@ -1,8 +1,53 @@
 {# Team-tournament body of the boards/input screen set: one block per
    match — a header row showing the two teams left/right (mirroring the
-   white/black sides of an individual board row) with the match score,
-   followed by the match's board rows on the shared board-column grid.
+   white/black sides of an individual board row) with their points and the
+   match score, followed by the match's board rows on the shared
+   board-column grid, or one row per match when the players are hidden.
    The column split counts matches (a match spans several rows). #}
+{% set show_points = not tournament.hide_team_block_points %}
+{% if data.hide_players %}
+<div class="row gy-2 gx-3 screen-set-row mx-0">
+    {% for matches in screen_set.team_matches_lists %}
+        <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
+            <div
+                class="d-grid grid-striped"
+                style="grid-template-columns: max-content{% if show_points %} max-content{% endif %} 1fr max-content 1fr{% if show_points %} max-content{% endif %};"
+            >
+                <div class="grid-header text-end">{{ pgettext('table number column header', 'Tbl.') }}</div>
+                {% if show_points %}
+                    <div class="grid-header text-center">{{ tournament.primary_score.abbreviation }}</div>
+                {% endif %}
+                <div class="grid-header"></div>
+                <div class="grid-header text-center">{{ pgettext('result column header', 'Res.') }}</div>
+                <div class="grid-header"></div>
+                {% if show_points %}
+                    <div class="grid-header text-center">{{ tournament.primary_score.abbreviation }}</div>
+                {% endif %}
+                {% for team_board in matches %}
+                    <div class="board-row {% if team_board.team_b and not team_board.all_games_played %}result-not-set fw-bold{% else %}result-set{% endif %}">
+                        <div class="text-end">{{ team_board.display_number or '' }}</div>
+                        {% if show_points %}
+                            <div class="text-center">{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_a.id, team_board.round)) }}</div>
+                        {% endif %}
+                        <div class="text-start text-nowrap overflow-hidden text-ellipsis">{{ team_board.team_a.name }}</div>
+                        <div class="text-center text-nowrap px-2">{{ team_board.game_score_display }}</div>
+                        <div class="text-start text-nowrap overflow-hidden text-ellipsis">
+                            {% if team_board.team_b %}
+                                {{ team_board.team_b.name }}
+                            {% else %}
+                                <span class="fst-italic text-muted">{{ _('Bye') }}</span>
+                            {% endif %}
+                        </div>
+                        {% if show_points %}
+                            <div class="text-center">{% if team_board.team_b %}{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_b.id, team_board.round)) }}{% endif %}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
 <div class="row gy-2 gx-3 screen-set-row mx-0 px-3 py-2">
     {% for matches in screen_set.team_matches_lists %}
         <div class="col screen-set-col {% if not loop.first %}border-start border-2 border-dark{% endif %}">
@@ -13,11 +58,18 @@
                             {% if team_board.display_number %}
                                 <span class="opacity-75 pe-2">{{ team_board.display_number }}.</span>
                             {% endif %}
+                            {% if show_points %}
+                                <span class="opacity-75 fw-normal me-2">{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_a.id, team_board.round)) }}&nbsp;{{ tournament.primary_score.abbreviation }}</span>
+                            {% endif %}
                             {{ team_board.team_a.name }}
                         </span>
+                        <span class="text-center text-nowrap px-2">{{ team_board.game_score_display }}</span>
                         <span class="text-end" style="flex: 1 1 0;">
                             {% if team_board.team_b %}
                                 {{ team_board.team_b.name }}
+                                {% if show_points %}
+                                    <span class="opacity-75 fw-normal ms-2">{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_b.id, team_board.round)) }}&nbsp;{{ tournament.primary_score.abbreviation }}</span>
+                                {% endif %}
                             {% else %}
                                 <span class="fst-italic opacity-75">{{ _('Bye') }}</span>
                             {% endif %}
@@ -117,3 +169,4 @@
         </div>
     {% endfor %}
 </div>
+{% endif %}

@@ -708,13 +708,15 @@ class ScreenType(IdentifiableEntity, ABC):
         the type contributes no extra buttons."""
         return None
 
-    def card_context(self, screen: 'Screen') -> dict:
-        """The data injected into ``card_detail_template`` for a screen card."""
+    def card_context(self, screen: 'Screen') -> dict | None:
+        """The data injected into ``card_detail_template`` for a screen card,
+        ``None`` to leave the detail out."""
         return {}
 
-    def family_card_context(self, family: 'Family') -> dict:
+    def family_card_context(self, family: 'Family') -> dict | None:
         """The data injected into ``card_detail_template`` for a family card
-        (same fragment as ``card_context``, read from the family's record)."""
+        (same fragment as ``card_context``, read from the family's record),
+        ``None`` to leave the detail out."""
         return {}
 
     def family_type_str(self, family: 'Family') -> str:
@@ -1030,6 +1032,27 @@ class BoardsScreenType(ScreenType):
         return _('Boards screens show pairings by board number.')
 
     @override
+    def read_form_data(
+        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+    ) -> dict:
+        from web.controllers.base_controller import WebContext
+
+        return {
+            'boards_hide_players': WebContext.form_data_to_bool(
+                data, 'boards_hide_players'
+            )
+        }
+
+    @override
+    def default_form_data(self, screen: 'Screen') -> dict:
+        assert screen.stored_screen is not None
+        return {'boards_hide_players': screen.stored_screen.boards_hide_players}
+
+    @override
+    def default_family_form_data(self, family: 'Family') -> dict:
+        return {'boards_hide_players': family.stored_family.boards_hide_players}
+
+    @override
     def default_family_screen_name(self, screen: 'Screen') -> str:
         return screen.sorted_screen_sets[0].name_for_boards
 
@@ -1038,10 +1061,41 @@ class BoardsScreenType(ScreenType):
         # Shown so players appear before the first round is paired.
         return True
 
+    def hides_players(self, screen: 'Screen') -> bool:
+        """Whether the matches of team tournaments are shown without the
+        players of their boards."""
+        return bool(_config_record(screen).boards_hide_players)
+
     @property
     @override
     def set_template(self) -> str | None:
         return '/user/screen/sets/boards_set.html'
+
+    @property
+    @override
+    def form_template(self) -> str | None:
+        return '/admin/screens/forms/boards_form.html'
+
+    @override
+    def set_context(self, screen_set: 'ScreenSet') -> dict:
+        return {'hide_players': self.hides_players(screen_set.screen)}
+
+    @property
+    @override
+    def card_detail_template(self) -> str | None:
+        return '/admin/screens/cards/boards_card.html'
+
+    @override
+    def card_context(self, screen: 'Screen') -> dict | None:
+        if not screen.event.is_team_event:
+            return None
+        return {'hide_players': self.hides_players(screen)}
+
+    @override
+    def family_card_context(self, family: 'Family') -> dict | None:
+        if not family.event.is_team_event:
+            return None
+        return {'hide_players': bool(family.stored_family.boards_hide_players)}
 
     @property
     @override

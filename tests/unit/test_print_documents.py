@@ -261,6 +261,35 @@ def test_match_sheets_sheet_the_matches_of_a_team_paired_system(
 
 
 @pytest.mark.unit
+def test_team_pairings_list_the_matches_of_a_team_paired_system(
+    team_case: tuple[Event, dict[str, str]],
+):
+    """Teams paired against each other get the round's matches on one
+    list, each with its board score."""
+    event, option_values = team_case
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(event, documents.TeamPairingsPrintDocument, option_values)
+    assert documents.TeamPairingsPrintDocument.is_available([tournament])
+    team_boards = document.template_context['team_boards']
+    assert {tb.id for tb in team_boards} == {
+        tb.id for tb in tournament.get_round_team_boards(1)
+    }
+    assert all(
+        tb.game_score_display != '-' for tb in team_boards if tb.team_b is not None
+    )
+
+
+@pytest.mark.unit
+def test_team_pairings_are_not_offered_to_a_flat_team_system(
+    molter_case: tuple[Event, dict[str, str]],
+):
+    """Flat boards seated from a fixed table have no team matches to list."""
+    event, _option_values = molter_case
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    assert not documents.TeamPairingsPrintDocument.is_available([tournament])
+
+
+@pytest.mark.unit
 def test_match_sheets_print_the_pairings_of_a_flat_team_system(
     molter_case: tuple[Event, dict[str, str]],
 ):

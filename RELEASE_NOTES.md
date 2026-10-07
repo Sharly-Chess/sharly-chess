@@ -51,10 +51,12 @@
 - Place cards can now be edited with an embedded editor (5.1.0)
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
+- New "Team pairings" document listing the round's team matches on a single table, with each team's points and the match score, without the players (5.1.4)
 
 ## Screens
 
 - Long club names on ranking screens are cut short with an ellipsis instead of wrapping (5.1.1)
+- Pairings-by-board screens of team events can display the matches only, without the players, so team captains find their match at a glance; match headers now show each team's points and the match score (5.1.4)
 
 ## Championships
 
