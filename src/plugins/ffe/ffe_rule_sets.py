@@ -222,7 +222,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         # "Il convient d'éviter autant que possible les matchs opposant les
         # joueurs d'un même club": teams of the same affiliation give way to
         # every Swiss criterion, whatever their standing.
-        return ('team-group', ProhibitedPairingConstraint.LOWEST_CRITERION.value)
+        return 'team-group', ProhibitedPairingConstraint.LOWEST_CRITERION.value
 
     @property
     def round3_winner_protection(self) -> bool:
