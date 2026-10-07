@@ -1016,6 +1016,16 @@ class ScoreType(StrEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def abbreviation(self) -> str:
+        match self:
+            case ScoreType.MATCH_POINTS:
+                return pgettext('match points', 'MP')
+            case ScoreType.GAME_POINTS:
+                return pgettext('game points', 'GP')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
 
 class TeamColourType(StrEnum):
     """Team colour-preference rule used when pairing (FIDE C.04.6 §1.7).

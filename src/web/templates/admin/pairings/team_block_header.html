@@ -110,19 +110,10 @@
         </td>
         <td class="team-header-cell-score text-center align-middle">
             {% set _score_text %}
-                {% if team_board.team_b %}
-                    {% if team_board.no_games_played %}
-                        -
-                    {% else %}
-                        {% set _a_gp, _b_gp = team_board.game_points %}
-                        {{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}
-                        {%- if team_board.has_adjourned_game -%}
-                            <span {{ macros.tooltip_attributes('info', _('Includes adjourned games, counted as draws.'), 'bottom') }}>*</span>
-                        {%- endif %}
-                    {% endif %}
-                {% else %}
-                    {{ '%g'|format(admin_tournament.team_pab_game_points) }} – F
-                {% endif %}
+                {{ team_board.game_score_display }}
+                {%- if team_board.team_b and not team_board.no_games_played and team_board.has_adjourned_game -%}
+                    <span {{ macros.tooltip_attributes('info', _('Includes adjourned games, counted as draws.'), 'bottom') }}>*</span>
+                {%- endif %}
             {% endset %}
             {# The score the match result is read from, when this round's
                bonus/penalty points move it away from the board score. A

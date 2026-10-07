@@ -2536,6 +2536,9 @@ class EventDatabase(MigrationDatabase):
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
+            boards_hide_players=cls.load_bool_or_none_from_database_field(
+                row['boards_hide_players']
+            ),
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
@@ -2594,6 +2597,7 @@ class EventDatabase(MigrationDatabase):
             'menu_text',
             'timer_id',
             'input_exit_button',
+            'boards_hide_players',
             'players_show_unpaired',
             'players_player_format',
             'players_board_format',
@@ -2622,6 +2626,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.menu_text,
             stored_family.timer_id,
             stored_family.input_exit_button,
+            stored_family.boards_hide_players,
             stored_family.players_show_unpaired,
             stored_family.players_player_format,
             stored_family.players_board_format,
@@ -2696,6 +2701,9 @@ class EventDatabase(MigrationDatabase):
             timer_id=row['timer_id'],
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
+            ),
+            boards_hide_players=cls.load_bool_or_none_from_database_field(
+                row['boards_hide_players']
             ),
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
@@ -2777,6 +2785,7 @@ class EventDatabase(MigrationDatabase):
             'type',
             'public',
             'input_exit_button',
+            'boards_hide_players',
             'players_show_unpaired',
             'players_player_format',
             'players_board_format',
@@ -2806,6 +2815,9 @@ class EventDatabase(MigrationDatabase):
             stored_screen.public,
             stored_screen.input_exit_button
             if stored_screen.type in ('input', 'check-in')
+            else None,
+            stored_screen.boards_hide_players
+            if stored_screen.type == 'boards'
             else None,
             stored_screen.players_show_unpaired
             if stored_screen.type == 'players'
