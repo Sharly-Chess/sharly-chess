@@ -681,9 +681,9 @@ class EventDatabase(MigrationDatabase):
                 row['rule_set_config'], {}
             ),
             prohibited_pairing_dimension=row['prohibited_pairing_dimension'],
-            prohibited_pairing_dimension_is_hard=cls.load_bool_from_database_field(
-                row['prohibited_pairing_dimension_is_hard']
-            ),
+            prohibited_pairing_dimension_constraint=row[
+                'prohibited_pairing_dimension_constraint'
+            ],
             round_robin_participation_rule=cls.load_bool_from_database_field(
                 row['round_robin_participation_rule']
             ),
@@ -778,7 +778,7 @@ class EventDatabase(MigrationDatabase):
                 'team_sort_mode',
                 'rule_set',
                 'prohibited_pairing_dimension',
-                'prohibited_pairing_dimension_is_hard',
+                'prohibited_pairing_dimension_constraint',
                 'round_robin_participation_rule',
             ],
         ) | {
@@ -2101,7 +2101,7 @@ class EventDatabase(MigrationDatabase):
                 id=row['id'],
                 tournament_id=row['tournament_id'],
                 round_=row['round'],
-                is_hard=self.load_bool_from_database_field(row['is_hard']),
+                constraint=row['constraint_type'],
                 protect_rank=row['protect_rank'],
             )
             groups.append(group)
@@ -2122,15 +2122,15 @@ class EventDatabase(MigrationDatabase):
         self,
         tournament_id: int,
         round_: int | None,
-        is_hard: bool,
+        constraint: str,
         member_ids: list[int],
         protect_rank: int | None = None,
     ) -> int:
         self.execute(
             'INSERT INTO `prohibited_pairing_group` '
-            '(`tournament_id`, `round`, `is_hard`, `protect_rank`) '
+            '(`tournament_id`, `round`, `constraint_type`, `protect_rank`) '
             'VALUES (?, ?, ?, ?)',
-            (tournament_id, round_, 1 if is_hard else 0, protect_rank),
+            (tournament_id, round_, constraint, protect_rank),
         )
         group_id = self._last_inserted_id()
         if not group_id:
@@ -2146,34 +2146,34 @@ class EventDatabase(MigrationDatabase):
     def replace_manual_prohibited_pairing_groups(
         self,
         tournament_id: int,
-        groups: list[tuple[bool, list[int]]],
+        groups: list[tuple[str, list[int]]],
     ) -> None:
         """Replace the tournament's manual template groups (``round``
-        NULL). Each group is ``(is_hard, member_ids)``."""
+        NULL). Each group is ``(constraint, member_ids)``."""
         self.execute(
             'DELETE FROM `prohibited_pairing_group` '
             'WHERE `tournament_id` = ? AND `round` IS NULL',
             (tournament_id,),
         )
-        for is_hard, member_ids in groups:
+        for constraint, member_ids in groups:
             self._add_stored_prohibited_pairing_group(
-                tournament_id, None, is_hard, member_ids
+                tournament_id, None, constraint, member_ids
             )
 
     def replace_round_prohibited_pairing_snapshot(
         self,
         tournament_id: int,
         round_: int,
-        groups: list[tuple[bool, list[int]]],
+        groups: list[tuple[str, list[int]]],
         protect_rank: int | None = None,
     ) -> None:
         """Replace the immutable per-round snapshot for ``round_``.
         ``protect_rank`` is the soft-relaxation cutoff for the round,
         stored on every row so the export can regenerate the applied set."""
         self.delete_round_prohibited_pairing_snapshot(tournament_id, round_)
-        for is_hard, member_ids in groups:
+        for constraint, member_ids in groups:
             self._add_stored_prohibited_pairing_group(
-                tournament_id, round_, is_hard, member_ids, protect_rank
+                tournament_id, round_, constraint, member_ids, protect_rank
             )
 
     def delete_round_prohibited_pairing_snapshot(

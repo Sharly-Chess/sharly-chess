@@ -616,9 +616,6 @@ msgstr "Un fichier est attendu."
 msgid "A half point to one side only, or nothing to either."
 msgstr "Un demi-point à un seul des deux camps, ou rien à aucun."
 
-msgid "A hard constraint is always enforced. A soft constraint is relaxed only as much as needed when pairing is otherwise impossible, starting with the weakest players."
-msgstr "Une contrainte stricte est toujours respectée. Une contrainte souple n'est relâchée que le strict nécessaire lorsque l'appariement est impossible autrement, en commençant par les joueur·euses les plus faibles."
-
 msgid "A minimum and a maximum rating are expected."
 msgstr "Un Elo minimum et maximum sont attendus."
 
@@ -2195,6 +2192,9 @@ msgstr "Considérer toutes les parties appariées pour la dernière ronde comme 
 
 msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
 msgstr "Considérer les parties gagnées ou perdues par forfait comme des parties jouées contre l'adversaire prévu."
+
+msgid "Constraint"
+msgstr "Contrainte"
 
 msgid "Consult the logs for more details."
 msgstr "Consultez les logs pour plus d'informations."
@@ -4179,12 +4179,6 @@ msgstr "Bye à demi-point attribué à l’équipe [{team}]"
 msgid "Half-point byes"
 msgstr "Byes demi-point"
 
-msgid "Hard"
-msgstr "Stricte"
-
-msgid "Hard constraint"
-msgstr "Contrainte stricte"
-
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque qu'un prix ne soit pas attribué."
 
@@ -6018,6 +6012,9 @@ msgstr "N°"
 msgid "No. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
 
+msgid "Nobody is kept apart."
+msgstr "Personne n'est séparé·e."
+
 msgid "Non-monetary"
 msgstr "Non monétaire"
 
@@ -6032,6 +6029,10 @@ msgstr "Capitaine non joueur·euse."
 
 msgid "None"
 msgstr "Aucun"
+
+msgctxt "constraint"
+msgid "None"
+msgstr "Aucune"
 
 msgctxt "federation"
 msgid "None"
@@ -8627,8 +8628,11 @@ msgstr "Souple"
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
-msgid "Soft constraint"
-msgstr "Contrainte souple"
+msgid "Soft: avoided as much as the pairing rules allow"
+msgstr "Souple : évitée autant que les règles d'appariement le permettent"
+
+msgid "Soft: relaxed from the bottom of the standings"
+msgstr "Souple : relâchée depuis le bas du classement"
 
 msgid "Solomon Islands"
 msgstr "Îles Salomon"
@@ -8833,6 +8837,9 @@ msgstr "Std"
 
 msgid "Still in"
 msgstr "En lice"
+
+msgid "Strict"
+msgstr "Stricte"
 
 msgid "Strikethrough"
 msgstr "Barré"
@@ -9378,6 +9385,15 @@ msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si
 
 msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
+
+msgid "The members are kept apart like a strict constraint. When the round cannot be paired otherwise, the lowest-ranked members are released first."
+msgstr "Les membres sont séparé·es comme pour une contrainte stricte. Lorsque la ronde ne peut pas être appariée autrement, les membres les moins bien classé·es sont libéré·es en premier."
+
+msgid "The members are kept apart only when no pairing rule (colours, floaters…) suffers, whatever the standings."
+msgstr "Les membres ne sont séparé·es que si aucune règle d'appariement (couleurs, flotteurs…) n'en pâtit, quel que soit le classement."
+
+msgid "The members are never paired together."
+msgstr "Les membres ne sont jamais apparié·es entre eux·elles."
 
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."

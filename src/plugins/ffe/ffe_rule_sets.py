@@ -31,6 +31,7 @@ from utils.enum import (
     BoardColor,
     EventType,
     PlayerGender,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
     TeamColourType,
@@ -217,10 +218,11 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
 
     @property
     @override
-    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
-        # The cups keep teams of the same affiliation apart when the
-        # pairing allows it (soft constraint on the team group).
-        return ('team-group', False)
+    def forced_prohibited_pairing(self) -> tuple[str, str] | None:
+        # "Il convient d'éviter autant que possible les matchs opposant les
+        # joueurs d'un même club": teams of the same affiliation give way to
+        # every Swiss criterion, whatever their standing.
+        return ('team-group', ProhibitedPairingConstraint.LOWEST_CRITERION.value)
 
     @property
     def round3_winner_protection(self) -> bool:
@@ -827,7 +829,7 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
 
     @property
     @override
-    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
+    def forced_prohibited_pairing(self) -> tuple[str, str] | None:
         # Same-club avoidance is complementary rule 3, so it rides along
         # with the division rather than applying throughout.
         if self.division != _FEMININ_N2F_ZONE:

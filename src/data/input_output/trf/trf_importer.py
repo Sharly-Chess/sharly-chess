@@ -47,6 +47,7 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.enum import (
+    ProhibitedPairingConstraint,
     TournamentRating,
     Result,
     BoardColor,
@@ -132,10 +133,13 @@ class TrfTournamentImporter(FileTournamentImporter):
     # arbiter's manual team bonus / penalty points, applied once the
     # teams are persisted and TPNs resolve to team ids.
     _pending_point_adjustments: dict[tuple[int, int], tuple[float, float]]
-    # round → list of prohibited-pairing groups (each a list of pairing
-    # numbers) from 260 records, expanded per round. Resolved to member
-    # ids and written as per-round snapshots once the tournament is live.
-    _pending_prohibited_snapshots: dict[int, list[list[int]]]
+    # round → list of prohibited-pairing groups (each its constraint and
+    # its pairing numbers) from 260 (hard) and SCS (lowest-criterion)
+    # records, expanded per round. Resolved to member ids and written as
+    # per-round snapshots once the tournament is live.
+    _pending_prohibited_snapshots: dict[
+        int, list[tuple[ProhibitedPairingConstraint, list[int]]]
+    ]
 
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
@@ -185,10 +189,14 @@ class TrfTournamentImporter(FileTournamentImporter):
             for tpn in assignment.pairing_numbers:
                 if tpn:
                     self._pending_point_adjustments[(assignment.round, tpn)] = (mp, gp)
-        # 260 records: prohibited pairings, expanded to per-round groups
-        # of pairing numbers. Resolved + written as snapshots post-import.
+        # 260 and SCS records: prohibited pairings, expanded to per-round
+        # groups of pairing numbers. Resolved + written as snapshots
+        # post-import.
         self._pending_prohibited_snapshots = {}
-        for prohibited in trf_tournament.prohibited_pairings:
+        for prohibited in [
+            *trf_tournament.prohibited_pairings,
+            *trf_tournament.soft_prohibited_pairings,
+        ]:
             numbers = [number for number in prohibited.pairing_numbers if number]
             if len(numbers) < 2:
                 continue
@@ -199,7 +207,12 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
             for round_ in range(prohibited.first_round, last_round + 1):
                 self._pending_prohibited_snapshots.setdefault(round_, []).append(
-                    numbers
+                    (
+                        ProhibitedPairingConstraint.LOWEST_CRITERION
+                        if prohibited.soft
+                        else ProhibitedPairingConstraint.HARD,
+                        numbers,
+                    )
                 )
         if self._pending_prohibited_snapshots:
             self.post_import_task.append(self._apply_prohibited_pairings)
@@ -327,17 +340,17 @@ class TrfTournamentImporter(FileTournamentImporter):
         return self._adjustments
 
     def _apply_prohibited_pairings(self, tournament: 'Tournament') -> None:
-        """Resolve the parsed 260 pairing numbers to member ids (players
-        for an individual tournament, teams for a team one) and write
-        them as per-round prohibited-pairing snapshots. Imported groups
-        are hard (260 carries no hard/soft distinction)."""
+        """Resolve the parsed 260 and SCS pairing numbers to member ids
+        (players for an individual tournament, teams for a team one) and
+        write them as per-round prohibited-pairing snapshots. 260 groups
+        are hard; SCS groups are the lowest-priority criterion."""
         if not self._pending_prohibited_snapshots:
             return
         is_team = tournament.is_team_tournament
         with EventDatabase(tournament.event.uniq_id, True) as database:
             for round_, number_groups in self._pending_prohibited_snapshots.items():
-                groups: list[tuple[bool, list[int]]] = []
-                for numbers in number_groups:
+                groups: list[tuple[str, list[int]]] = []
+                for constraint, numbers in number_groups:
                     member_ids: list[int] = []
                     for number in numbers:
                         member: Any
@@ -352,7 +365,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                         if member is not None:
                             member_ids.append(member.id)
                     if len(member_ids) >= 2:
-                        groups.append((True, member_ids))
+                        groups.append((constraint.value, member_ids))
                 if groups:
                     database.replace_round_prohibited_pairing_snapshot(
                         tournament.id, round_, groups

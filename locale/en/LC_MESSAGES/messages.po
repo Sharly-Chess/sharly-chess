@@ -616,9 +616,6 @@ msgstr ""
 msgid "A half point to one side only, or nothing to either."
 msgstr ""
 
-msgid "A hard constraint is always enforced. A soft constraint is relaxed only as much as needed when pairing is otherwise impossible, starting with the weakest players."
-msgstr ""
-
 msgid "A minimum and a maximum rating are expected."
 msgstr ""
 
@@ -2194,6 +2191,9 @@ msgid "Consider all paired games for the final round as draws."
 msgstr ""
 
 msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
+msgstr ""
+
+msgid "Constraint"
 msgstr ""
 
 msgid "Consult the logs for more details."
@@ -4179,12 +4179,6 @@ msgstr ""
 msgid "Half-point byes"
 msgstr ""
 
-msgid "Hard"
-msgstr ""
-
-msgid "Hard constraint"
-msgstr ""
-
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
@@ -6018,6 +6012,9 @@ msgstr ""
 msgid "No. final rounds without byes:"
 msgstr ""
 
+msgid "Nobody is kept apart."
+msgstr ""
+
 msgid "Non-monetary"
 msgstr ""
 
@@ -6030,6 +6027,10 @@ msgstr ""
 msgid "Non-playing team captain."
 msgstr ""
 
+msgid "None"
+msgstr ""
+
+msgctxt "constraint"
 msgid "None"
 msgstr ""
 
@@ -8625,7 +8626,10 @@ msgstr ""
 msgid "Soft Haley system"
 msgstr ""
 
-msgid "Soft constraint"
+msgid "Soft: avoided as much as the pairing rules allow"
+msgstr ""
+
+msgid "Soft: relaxed from the bottom of the standings"
 msgstr ""
 
 msgid "Solomon Islands"
@@ -8830,6 +8834,9 @@ msgid "Std"
 msgstr ""
 
 msgid "Still in"
+msgstr ""
+
+msgid "Strict"
 msgstr ""
 
 msgid "Strikethrough"
@@ -9375,6 +9382,15 @@ msgid "The maximum number of results displayed on the screen, optional (if left 
 msgstr ""
 
 msgid "The maximum rating must be at most equal to the minimum rating."
+msgstr ""
+
+msgid "The members are kept apart like a strict constraint. When the round cannot be paired otherwise, the lowest-ranked members are released first."
+msgstr ""
+
+msgid "The members are kept apart only when no pairing rule (colours, floaters…) suffers, whatever the standings."
+msgstr ""
+
+msgid "The members are never paired together."
 msgstr ""
 
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
