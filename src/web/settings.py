@@ -5,7 +5,7 @@ import re
 import posixpath
 import sqlite3
 import typing as t
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from collections.abc import Sequence
 
 import aiosqlite
@@ -333,7 +333,7 @@ class SharlyChessEnvironment(Environment):
         self.filters['raise_ordinal_suffix_svg'] = raise_ordinal_suffix_svg
 
     def join_path(self, template: str, parent: str) -> str:
-        return str(Path(parent).parent / template)
+        return str(PurePosixPath(parent).parent / template)
 
 
 template_dirs: list[Path] = [
