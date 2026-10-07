@@ -109,18 +109,7 @@
             </div>
         </td>
         <td class="team-header-cell-score text-center align-middle">
-            {% set _score_text %}
-                {% if team_board.team_b %}
-                    {% if team_board.no_games_played %}
-                        -
-                    {% else %}
-                        {% set _a_gp, _b_gp = team_board.game_points %}
-                        {{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}
-                    {% endif %}
-                {% else %}
-                    {{ '%g'|format(admin_tournament.team_pab_game_points) }} – F
-                {% endif %}
-            {% endset %}
+            {% set _score_text = team_board.game_score_display %}
             {# The score the match result is read from, when this round's
                bonus/penalty points move it away from the board score. A
                team's points never go below zero. Shown as a second, smaller

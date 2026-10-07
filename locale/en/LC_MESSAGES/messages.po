@@ -2881,6 +2881,9 @@ msgstr ""
 msgid "Display the exit button"
 msgstr ""
 
+msgid "Display the matches only"
+msgstr ""
+
 msgid "Display the unpaired players"
 msgstr ""
 
@@ -7032,6 +7035,12 @@ msgstr ""
 msgid "Players:"
 msgstr ""
 
+msgid "Players: displayed"
+msgstr ""
+
+msgid "Players: hidden"
+msgstr ""
+
 msgid "Playing"
 msgstr ""
 
@@ -8946,6 +8955,10 @@ msgstr ""
 msgid "Tanzania"
 msgstr ""
 
+msgctxt "table number column header"
+msgid "Tbl."
+msgstr ""
+
 msgid "Team"
 msgstr ""
 
@@ -9013,6 +9026,13 @@ msgstr ""
 
 #, python-format
 msgid "Team pairing information for round %(round)d"
+msgstr ""
+
+msgid "Team pairings"
+msgstr ""
+
+#, python-brace-format
+msgid "Team pairings for round #{round}"
 msgstr ""
 
 msgid "Team ranking"
@@ -9664,6 +9684,9 @@ msgid "The team score that is not used as the primary score (match points if the
 msgstr ""
 
 msgid "The team sort order is fixed once the first round is paired."
+msgstr ""
+
+msgid "The teams of this tournament are not paired against each other."
 msgstr ""
 
 #, python-brace-format
@@ -11026,6 +11049,9 @@ msgid "When hovering a player's name with the mouse, display its history."
 msgstr ""
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr ""
+
+msgid "When only the matches are displayed, the players of each board are hidden, so team captains can find their match at a glance."
 msgstr ""
 
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."

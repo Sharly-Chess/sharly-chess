@@ -2881,6 +2881,9 @@ msgstr "Options d'affichage"
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
+msgid "Display the matches only"
+msgstr "Afficher uniquement les matchs"
+
 msgid "Display the unpaired players"
 msgstr "Afficher les joueur·euses non apparié·es"
 
@@ -7034,6 +7037,12 @@ msgstr "Les joueur·euses sans numéro de téléphone ni mél ne seront pas incl
 msgid "Players:"
 msgstr "Joueur·euses :"
 
+msgid "Players: displayed"
+msgstr "Joueur·euses : affiché·es"
+
+msgid "Players: hidden"
+msgstr "Joueur·euses : masqué·es"
+
 msgid "Playing"
 msgstr "En cours"
 
@@ -8948,6 +8957,10 @@ msgstr "Discutons-en sur Discord"
 msgid "Tanzania"
 msgstr "Tanzanie"
 
+msgctxt "table number column header"
+msgid "Tbl."
+msgstr "Tab."
+
 msgid "Team"
 msgstr "Équipe"
 
@@ -9016,6 +9029,13 @@ msgstr "Historique des équipes rencontrées"
 #, python-format
 msgid "Team pairing information for round %(round)d"
 msgstr "Informations d’appariement des équipes pour la ronde %(round)d"
+
+msgid "Team pairings"
+msgstr "Appariements des équipes"
+
+#, python-brace-format
+msgid "Team pairings for round #{round}"
+msgstr "Appariements des équipes de la ronde {round}"
 
 msgid "Team ranking"
 msgstr "Classement par équipes"
@@ -9667,6 +9687,9 @@ msgstr "Le score d'équipe qui n'est pas utilisé comme score primaire (les poin
 
 msgid "The team sort order is fixed once the first round is paired."
 msgstr "L'ordre de tri des équipes est fixé après l'appariement de la première ronde."
+
+msgid "The teams of this tournament are not paired against each other."
+msgstr "Les équipes de ce tournoi ne sont pas appariées les unes contre les autres."
 
 #, python-brace-format
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
@@ -11029,6 +11052,9 @@ msgstr "Au survol du nom d'un·une joueur·euse avec la souris, affiche son hist
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
+
+msgid "When only the matches are displayed, the players of each board are hidden, so team captains can find their match at a glance."
+msgstr "Lorsque seuls les matchs sont affichés, les joueur·euses de chaque échiquier sont masqué·es, pour que les capitaines trouvent leur match d'un coup d'œil."
 
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
