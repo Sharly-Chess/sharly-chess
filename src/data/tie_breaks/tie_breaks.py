@@ -111,6 +111,17 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return f'{self.name} ({", ".join(variation_names)})'
 
     @property
+    def reads_ratings(self) -> bool:
+        """Whether the value depends on a rating — what FIDE C.07:10
+        speaks to when a player may hold more than one during the
+        tournament.
+
+        Answered from the category, which a tie-break built on ratings
+        already declares; one that reads a rating while belonging
+        elsewhere says so itself."""
+        return isinstance(self.category, RatingCategory)
+
+    @property
     @abstractmethod
     def base_acronym(self) -> str:
         """Represents the tie-break in rankings documents, screens and tournament cards."""
@@ -287,6 +298,14 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         """Get a warning to display on the tie-break row."""
         if self.is_legacy:
             return _('This tie-break uses a legacy way to compute values.')
+        if self.reads_ratings and tournament.multiple_fide_periods:
+            # FIDE C.07:10: a player may hold more than one rating during
+            # such a tournament, and the rule would rather no tie-break
+            # rested on one.
+            return _(
+                'This tie-break is not recommended on tournaments '
+                'lasting over multiple FIDE periods.'
+            )
         return None
 
     @property
@@ -1984,12 +2003,7 @@ class OpponentRatingTieBreak(TieBreak, ABC):
                 'This tie-break is not recommended with '
                 'estimated players ({count} in the tournament).'
             ).format(count=tournament.estimated_count)
-        if tournament.multiple_fide_periods:
-            return _(
-                'This tie-break is not recommended on tournaments '
-                'lasting over multiple FIDE periods.'
-            )
-        return None
+        return super().get_warning_for_tournament(tournament)
 
 
 class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
@@ -2049,7 +2063,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            ratings.append(opponent.rating)
+            ratings.append(opponent.tie_break_rating(pairing.round))
         ratings = sorted(ratings)
         ratings = ratings[bottom_cut:-top_cut] if top_cut else ratings[bottom_cut:]
         if not ratings:
@@ -2099,7 +2113,7 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            ratings.append(opponent.rating)
+            ratings.append(opponent.tie_break_rating(pairing.round))
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
@@ -2218,12 +2232,16 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             tournament.point_values
         ):
             return -800 + min(
-                tournament.players_by_id[pairing.opponent_id].rating
+                tournament.players_by_id[pairing.opponent_id].tie_break_rating(
+                    pairing.round
+                )
                 for pairing in played_rounds
                 if pairing.opponent_id is not None
             )
         ratings: list[int] = [
-            tournament.players_by_id[pairing.opponent_id].rating
+            tournament.players_by_id[pairing.opponent_id].tie_break_rating(
+                pairing.round
+            )
             for pairing in played_rounds
             if pairing.opponent_id is not None
         ]

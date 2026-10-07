@@ -27,6 +27,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [National rating lists](docs/technical-appendices/national-rating-lists.md)
 - [Network](docs/technical-appendices/network.md)
 - [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
+- [Tournaments lasting more than 30 days](docs/technical-appendices/multi-period-tournaments.md)
 
 ### Sandbox
 

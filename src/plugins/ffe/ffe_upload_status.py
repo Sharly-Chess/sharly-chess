@@ -108,6 +108,27 @@ class UpToDateFFEUploadStatus(FFEUploadStatus):
         return 'message-success'
 
 
+class FinishedFFEUploadStatus(FFEUploadStatus):
+    """A period whose rounds are behind the one being played: it has been
+    submitted and the federation closes it, so what the tournament does
+    next is no business of its file."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'PERIOD_FINISHED'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Finished')
+
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        return _('This period has been submitted; later rounds do not change it.')
+
+    @property
+    def css_classes(self) -> str:
+        return 'bg-secondary'
+
+
 class ModifiedFFEUploadStatus(FFEUploadStatus):
     @staticmethod
     def static_id() -> str:

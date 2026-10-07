@@ -27,7 +27,9 @@ from data.player import TournamentPlayer
 from utils.types import PlayerRating
 from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
+from data.input_output.report_window import ReportWindow, build_window
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
@@ -818,12 +820,14 @@ class PapiConverter:
         target_file: Path,
         anonymize_player_data: bool = False,
         is_ffe_upload: bool = False,
+        period: TournamentPeriod | None = None,
     ) -> None:
-        """Write the tournament data to a papi file.
+        """Write the tournament data to a papi file, or the file of one
+        of its rating periods.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Raises a SharlyChessException if the conversion fails."""
         papi_data = self.tournament_to_papi_data(
-            tournament, anonymize_player_data, is_ffe_upload
+            tournament, anonymize_player_data, is_ffe_upload, period
         )
         papi_data_dict = {
             'variables': {
@@ -891,8 +895,15 @@ class PapiConverter:
         tournament: Tournament,
         anonymize_player_data: bool = False,
         is_ffe_upload: bool = False,
+        period: TournamentPeriod | None = None,
     ) -> PapiData:
-        """Convert a Tournament object to PapiData."""
+        """Convert a Tournament object to PapiData.
+
+        *period* builds the file of one period of a tournament reported in
+        periods: the rounds of that period numbered from 1, the players who
+        played them, the ratings they held then, and the homologation
+        number the period is submitted under."""
+        window = build_window(tournament, period) if period else None
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
         )
@@ -931,25 +942,28 @@ class PapiConverter:
             ratingThreshold1=str(rating_thresholds[0]),
             ratingThreshold2=str(rating_thresholds[1]),
             homologation=str(
-                FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
+                FFEUtils.get_period_plugin_data(window.period).ffe_id
+                if window
+                else FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
             ),
         )
 
-        # Create mapping from internal player ID to index in PapiPlayer list
+        players = list(tournament.tournament_players)
         player_id_to_index = {
             tournament_player.id: index
-            for index, tournament_player in enumerate(tournament.tournament_players)
+            for index, tournament_player in enumerate(players)
         }
 
         # Convert players
         papi_players: list[PapiPlayer] = []
-        for tournament_player in tournament.tournament_players:
+        for tournament_player in players:
             papi_player = self._player_to_papi_player(
                 tournament_player,
                 player_id_to_index,
                 tournament.pab_equivalent_result,
                 manual_tiebreak_by_player_id.get(tournament_player.id, None),
                 anonymize_player_data,
+                window,
             )
             plugin_manager.hook_for_event(tournament.event, 'update_papi_player')(
                 papi_player=papi_player,
@@ -1048,6 +1062,7 @@ class PapiConverter:
         pab_value: Result,
         manual_tie_break_value: int | None,
         anonymize_player_data: bool,
+        window: ReportWindow | None = None,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
@@ -1129,6 +1144,12 @@ class PapiConverter:
             if tournament_player.id in correction.player_ids
         }
         for round_, pairing in tournament_player.pairings_by_round.items():
+            # A period is submitted as the tournament's own Papi with
+            # the other rounds unpaired: they keep their place, empty, and
+            # the rating server takes the results of the rounds that are
+            # filled in.
+            if window and not window.covers(round_):
+                continue
             correction = correction_by_round.get(round_)
             if correction is not None and correction.player_ids == {
                 tournament_player.id,

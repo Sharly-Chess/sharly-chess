@@ -1,0 +1,177 @@
+"""A period answers for its own submission.
+
+Each period is submitted under its own registration, so what is known
+of one — whether it has been sent, and how it went — is the period's own
+and never the tournament's.
+"""
+
+import contextlib
+from datetime import datetime, timedelta
+
+import pytest
+
+from data.loader import EventLoader
+from database.sqlite.event.event_database import EventDatabase
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.utils import FFEUtils
+from tests.test_config import TestUtils
+
+EVENT_ID = 'test-ffe-period-status'
+TOURNAMENT_NAME = 'tournament'
+
+
+@pytest.mark.unit
+class TestPeriodUploadStatus:
+    def teardown_method(self):
+        FfeBackgroundUploader.ongoing_period_result_ids.clear()
+        FfeBackgroundUploader.pending_period_result_ids.clear()
+        FfeBackgroundUploader.group_upload_wait_queue.clear()
+        TestUtils.delete_event(EVENT_ID)
+
+    def _setup(
+        self,
+        second_period_plugin_data: dict | None = None,
+        periods: list[int] | None = None,
+    ):
+        TestUtils.create_event(EVENT_ID)
+        TestUtils.create_tournament(
+            EVENT_ID,
+            TOURNAMENT_NAME,
+            overrides={
+                'rounds': 4,
+                'multi_period': True,
+                'round_datetimes': {
+                    round_nb: datetime.now() + timedelta(days=14 * (round_nb - 4))
+                    for round_nb in range(1, 5)
+                },
+                # The tournament has been uploaded; its periods have not.
+                'plugin_data': {
+                    'ffe': {
+                        'ffe_id': 49943,
+                        'password': 'AAAAAAAAAA',
+                        'last_upload': datetime.now().isoformat(),
+                    }
+                },
+            },
+        )
+        with EventDatabase(EVENT_ID, write=True) as database:
+            tournament_id = next(
+                stored.id
+                for stored in database.load_stored_tournaments()
+                if stored.name == TOURNAMENT_NAME
+            )
+            assert tournament_id is not None
+            database.set_tournament_periods(tournament_id, periods or [3])
+            if second_period_plugin_data is not None:
+                second = database.load_tournament_stored_periods(tournament_id)[1]
+                assert second.id is not None
+                database.set_tournament_period_plugin_data(
+                    second.id, {'ffe': second_period_plugin_data}
+                )
+        with contextlib.suppress(KeyError):
+            EventLoader.unload_event(EVENT_ID)
+        self._event = EventLoader().load_event(EVENT_ID)
+        return self._event.tournaments_by_name[TOURNAMENT_NAME]
+
+    def test_a_period_with_no_registration_is_not_reported_as_uploaded(self):
+        """It borrows the tournament's registration to upload with, but
+        never its upload: the tournament's file is not this period's."""
+        tournament = self._setup()
+        statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
+        assert [status.id for status in statuses] == ['NOT_CONFIGURED']
+
+    def test_a_period_never_sent_says_so(self):
+        tournament = self._setup({'ffe_id': 49944, 'password': 'BBBBBBBBBB'})
+        statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
+        assert 'NEVER' in [status.id for status in statuses]
+
+    def test_a_period_that_was_sent_says_when(self):
+        tournament = self._setup(
+            {
+                'ffe_id': 49944,
+                'password': 'BBBBBBBBBB',
+                'last_upload': datetime.now().isoformat(),
+            }
+        )
+        statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
+        assert 'NEVER' not in [status.id for status in statuses]
+
+    def _registered(self):
+        return self._setup({'ffe_id': 49944, 'password': 'BBBBBBBBBB'})
+
+    def test_the_period_being_sent_says_so(self):
+        tournament = self._registered()
+        period = tournament.periods[1]
+        FfeBackgroundUploader.ongoing_period_result_ids.add(
+            FfeBackgroundUploader.period_result_id(period)
+        )
+        statuses = FFEUtils.resolve_period_upload_statuses(period)
+        assert 'ONGOING' in [status.id for status in statuses]
+
+    def test_a_period_waiting_for_its_turn_says_so(self):
+        """The whole tournament is published first, and the period being
+        played follows it in the same run."""
+        tournament = self._registered()
+        period = tournament.periods[1]
+        FfeBackgroundUploader.pending_period_result_ids.add(
+            FfeBackgroundUploader.period_result_id(period)
+        )
+        statuses = [
+            status.id for status in FFEUtils.resolve_period_upload_statuses(period)
+        ]
+        assert 'PENDING' in statuses
+        assert 'ONGOING' not in statuses
+
+    def test_the_period_being_played_waits_on_a_queued_upload(self):
+        tournament = self._registered()
+        FfeBackgroundUploader.group_upload_wait_queue.add(
+            FfeBackgroundUploader.tournament_result_id(tournament)
+        )
+        statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
+        assert 'PENDING' in [status.id for status in statuses]
+
+    def test_a_period_whose_results_moved_says_so(self):
+        """A result entered after the period went out leaves the file
+        the FFE holds behind the tournament."""
+        tournament = self._setup(
+            {
+                'ffe_id': 49944,
+                'password': 'BBBBBBBBBB',
+                'last_upload': (datetime.now() - timedelta(days=1)).isoformat(),
+            }
+        )
+        statuses = [
+            status.id
+            for status in FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
+        ]
+        assert 'MODIFIED' in statuses
+        assert 'UP_TO_DATE' not in statuses
+
+    def test_a_period_with_no_registration_is_not_sent_with_the_tournament(self):
+        """Uploading the tournament sends the period being played under
+        its own registration; without one there is nothing to send it
+        under, and the tournament's publishes the whole event."""
+        tournament = self._setup()
+        period = tournament.current_period
+        assert period.first_round > 1
+        assert not FFEUtils.get_period_own_plugin_data(period).ffe_id
+        assert not FfeBackgroundUploader.is_period_upload_pending(period)
+
+    def test_a_period_the_tournament_has_left_behind_reads_as_finished(self):
+        """Its registration is closed once it has been submitted, so what
+        the rounds after it do cannot reach it."""
+        tournament = self._setup(
+            {
+                'ffe_id': 49944,
+                'password': 'BBBBBBBBBB',
+                'last_upload': (datetime.now() - timedelta(days=1)).isoformat(),
+            },
+            periods=[3, 4],
+        )
+        earlier = tournament.periods[1]
+        assert earlier.index < tournament.current_period.index
+        statuses = [
+            status.id for status in FFEUtils.resolve_period_upload_statuses(earlier)
+        ]
+        assert 'PERIOD_FINISHED' in statuses
+        assert 'MODIFIED' not in statuses

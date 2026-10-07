@@ -16,6 +16,12 @@
         {{ _('Connection French Chess Federation') }}
     </h4>
     {% include 'ffe_tournament_ffe_auth_fields.html' %}
+    {% if admin_tournament and admin_tournament.periods|length > 1 %}
+        <div class="form-text text-muted">
+            {{ _('This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below.') }}
+            {{ _('The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here.') }}
+        </div>
+    {% endif %}
 </div>
 <div id="ffe-team-connection-section" class="mt-4">
     <h4>

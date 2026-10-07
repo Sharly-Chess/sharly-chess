@@ -89,6 +89,12 @@ msgstr[0] "%(num)d critère"
 msgstr[1] "%(num)d critères"
 
 #, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d jour"
+msgstr[1] "%(num)d jours"
+
+#, python-format
 msgid "%(num)d empty table to pair"
 msgid_plural "%(num)d empty tables to pair"
 msgstr[0] "%(num)d table vide à apparier"
@@ -642,6 +648,9 @@ msgstr "Un·e joueur·euse couvert·e par aucune règle dans une ronde ne reçoi
 msgid "A player gets their initial score as virtual points in every round of the tournament. A player with no initial score gets no virtual points."
 msgstr "Chaque joueur·euse reçoit son score initial en points virtuels à chaque ronde du tournoi. Un·e joueur·euse sans score initial ne reçoit aucun point virtuel."
 
+msgid "A player may hold a different rating in each period of a tournament reported in periods, so FIDE C.07:10 leaves the choice to the arbiter and takes the first rating by default."
+msgstr "Un·e joueur·euse peut avoir un classement différent dans chaque période d'un tournoi déclaré en périodes : la FIDE (C.07:10) laisse donc le choix à l'arbitre et retient le premier classement par défaut."
+
 msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
 msgstr "Un·e joueur·euse commence chaque ronde avec ces points ajoutés à ceux qu'il·elle a marqués. Ils ne sont utilisés que pour l'appariement, jamais pour le classement, et ne font pas partie des résultats transmis pour l'évolution du classement des joueur·euses."
 
@@ -673,7 +682,7 @@ msgid "A positive number of groups is expected."
 msgstr "Un nombre positif de groupes est attendu."
 
 msgid "A positive rating step is expected."
-msgstr "Un pas d'Elo positif est attendu."
+msgstr "Un pas de Elo positif est attendu."
 
 msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
@@ -1716,7 +1725,7 @@ msgid "By player"
 msgstr "Par ordre alpha."
 
 msgid "By rating step"
-msgstr "Par pas d'Elo"
+msgstr "Par pas de Elo"
 
 msgid "By specific board numbers"
 msgstr "Par numéros d'échiquier spécifiques"
@@ -2707,7 +2716,7 @@ msgstr "Chronomètres par défaut"
 
 #, python-format
 msgid "Define a rating range and how to split it. One category is created per rating band, with a single rating criterion and the default prizes below (amounts in %(currency)s). You can fine-tune them afterwards."
-msgstr "Définissez une plage d'Elo et la façon de la découper. Une catégorie est créée par tranche d'Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
+msgstr "Définissez une plage de Elo et la façon de la découper. Une catégorie est créée par tranche de Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -3352,6 +3361,9 @@ msgstr "Chaque ligne affiche une infobulle détaillant chaque étape."
 msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the colour is the one on the first board."
 msgstr "Chaque compétiteur prend la couleur opposée à sa ronde précédente ; en cas de conflit, la meilleure tête de série alterne et l'autre prend la couleur restante. Pour les équipes, la couleur est celle au premier échiquier."
 
+msgid "Each game's own period"
+msgstr "La période de chaque partie"
+
 #, python-format
 msgid "Each is a fixed number for the whole tournament (4), or the chance each player or board has in each round (5%% or 0.05). Left blank, a random rate between 0%% and 8%% is used."
 msgstr "Chacun est soit un nombre fixe pour tout le tournoi (4), soit la probabilité qu'a chaque joueur·euse ou échiquier à chaque ronde (5%% ou 0.05). Laissé vide, un taux aléatoire entre 0%% et 8%% est utilisé."
@@ -3813,6 +3825,9 @@ msgstr "Mode FIDE"
 msgid "FIDE mode was left at round %(round)d."
 msgstr "Le mode FIDE a été quitté à la ronde %(round)d."
 
+msgid "FIDE rates a tournament of more than 30 days in periods of at most 30 days, each submitted as a tournament of its own. Mark the round that starts each period in the schedule below."
+msgstr "La FIDE homologue un tournoi de plus de 30 jours en périodes d'au plus 30 jours, chacune soumise comme un tournoi à part entière. Cochez la ronde qui commence chaque période dans le calendrier ci-dessous."
+
 msgid "FIDE rating lost"
 msgstr "classement FIDE perdu"
 
@@ -3949,6 +3964,9 @@ msgstr "Premier appariement :"
 
 msgid "First player:"
 msgstr "Premier·e joueur·euse :"
+
+msgid "First rating"
+msgstr "Premier classement"
 
 msgid "First round"
 msgstr "Première ronde"
@@ -5592,6 +5610,12 @@ msgstr "Maroc"
 msgid "Move"
 msgstr "Déplacer"
 
+msgid "Move this round to the next period"
+msgstr "Déplacer cette ronde vers la période suivante"
+
+msgid "Move this round to the previous period"
+msgstr "Déplacer cette ronde vers la période précédente"
+
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -6081,7 +6105,7 @@ msgid "No player is in contention for a title norm in round {round}."
 msgstr "Aucun·e joueur·euse ne peut prétendre à une norme à la ronde {round}."
 
 msgid "No player is rated within this range; use the rating step method instead."
-msgstr "Aucun·e joueur·euse n'a d'Elo dans cette plage ; utilisez plutôt la méthode par pas d'Elo."
+msgstr "Aucun·e joueur·euse n'a de Elo dans cette plage ; utilisez plutôt la méthode par pas de Elo."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -7065,6 +7089,14 @@ msgstr "Performance (Rp) à ce score"
 msgid "Period"
 msgstr "Période"
 
+#, python-format
+msgid "Period %(index)d"
+msgstr "Période %(index)d"
+
+#, python-format
+msgid "Period %(index)d (%(rounds)s)"
+msgstr "Période %(index)d (%(rounds)s)"
+
 msgid "Permissions"
 msgstr "Permissions"
 
@@ -7776,6 +7808,14 @@ msgctxt "round column header"
 msgid "R {round}"
 msgstr "R {round}"
 
+#, python-format
+msgid "R%(first)d–R%(last)d"
+msgstr "R%(first)d–R%(last)d"
+
+#, python-format
+msgid "R%(round)d"
+msgstr "R%(round)d"
+
 msgid "RES"
 msgstr "RÉS"
 
@@ -7902,11 +7942,14 @@ msgstr "Variation Elo"
 msgid "Rating ranges"
 msgstr "Tranches de classement"
 
+msgid "Rating read by rating-based tie-breaks"
+msgstr "Classement utilisé par les départages"
+
 msgid "Rating report correction"
 msgstr "Correction pour le rapport Elo"
 
 msgid "Rating step"
-msgstr "Pas d'Elo"
+msgstr "Pas de Elo"
 
 msgid "Rating to use:"
 msgstr "Classement à utiliser :"
@@ -7922,6 +7965,9 @@ msgstr "Classement :"
 
 msgid "Ratings"
 msgstr "Classements"
+
+msgid "Ratings of the earlier periods"
+msgstr "Classements des périodes précédentes"
 
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
@@ -7979,9 +8025,6 @@ msgstr "Évènement régulier"
 msgid "Reload the page"
 msgstr "Recharger la page"
 
-msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
-msgstr "Rappel : le tournoi est joué sur plusieurs périodes FIDE, vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
-
 msgid "Reminder: you might have to update the players' information before distributing them among the tournaments."
 msgstr "Rappel : vous devez peut-être mettre à jour les informations des joueur·euses avant de les répartir dans les tournois."
 
@@ -8008,6 +8051,9 @@ msgstr "Supprimer le·la joueur·euse de l'évènement."
 
 msgid "Remove the screen from the display controller."
 msgstr "Supprimer la redirection du pilote d'afficheur vers cet écran."
+
+msgid "Remove this period"
+msgstr "Supprimer cette période"
 
 msgid "Remove this tournament from the championship?"
 msgstr "Retirer ce tournoi du Grand Prix ?"
@@ -8426,6 +8472,10 @@ msgstr "Arrondi des points Keizer"
 
 msgid "Rounds"
 msgstr "Rondes"
+
+#, python-format
+msgid "Rounds %(first)d-%(last)d"
+msgstr "Rondes %(first)d-%(last)d"
 
 msgid "Rounds before a rematch"
 msgstr "Rondes avant de rejouer un adversaire"
@@ -9153,6 +9203,9 @@ msgstr "Visualisation"
 msgid "Split by:"
 msgstr "Séparateur :"
 
+msgid "Split for FIDE (max 30 days)"
+msgstr "Découper pour la FIDE (30 jours maximum)"
+
 msgid "Split method"
 msgstr "Méthode de répartition"
 
@@ -9213,6 +9266,9 @@ msgstr "Standard :"
 
 msgid "Start Sharly Chess"
 msgstr "Démarrer Sharly Chess"
+
+msgid "Start a new period at this round"
+msgstr "Commencer une nouvelle période à cette ronde"
 
 msgid "Start date"
 msgstr "Date de début"
@@ -10474,6 +10530,18 @@ msgstr "Cette table d'appariement couvre au plus {max_rounds} rondes pour {t} é
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
 msgstr "Cette table d'appariement couvre jusqu'à {max_rounds} rondes pour {t} équipes, réduisez le nombre de rondes."
 
+#, python-format
+msgid "This period lasts %(days)d day: split it before round #%(round)d."
+msgid_plural "This period lasts %(days)d days: split it before round #%(round)d."
+msgstr[0] "Cette période dure %(days)d jour : découpez-la avant la ronde n°%(round)d."
+msgstr[1] "Cette période dure %(days)d jours : découpez-la avant la ronde n°%(round)d."
+
+#, python-format
+msgid "This period lasts %(days)d day; FIDE allows %(max)d at most."
+msgid_plural "This period lasts %(days)d days; FIDE allows %(max)d at most."
+msgstr[0] "Cette période dure %(days)d jour : la FIDE en autorise %(max)d au maximum."
+msgstr[1] "Cette période dure %(days)d jours : la FIDE en autorise %(max)d au maximum."
+
 msgid "This player already exists in the event."
 msgstr "Ce·tte joueur·euse existe déjà dans l'évènement."
 
@@ -10526,6 +10594,9 @@ msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} ronde
 
 msgid "This round is paired; the prohibited pairings used are frozen."
 msgstr "Cette ronde est appariée ; les protections d'appariement utilisées sont figées."
+
+msgid "This round opens a new period of the tournament, which FIDE rates on the ratings in force when it starts: you might have to update them before pairing."
+msgstr "Cette ronde ouvre une nouvelle période du tournoi, que la FIDE homologue avec les classements en vigueur à son début : vous devrez peut-être les mettre à jour avant d'apparier."
 
 #, python-format
 msgid "This round will use round #%(round)d's lineup when paired."

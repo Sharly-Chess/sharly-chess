@@ -306,6 +306,9 @@ msgstr ""
 msgid "Final"
 msgstr ""
 
+msgid "Finished"
+msgstr ""
+
 #, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -551,6 +554,16 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+#, python-format
+msgid "Period %(index)d"
+msgstr ""
+
+msgid "Period is now visible on the FFE website."
+msgstr ""
+
+msgid "Period visibility could not be set."
+msgstr ""
+
 msgid "Phase"
 msgstr ""
 
@@ -693,6 +706,9 @@ msgstr ""
 msgid "The FFE always uses the FIDE rating when available."
 msgstr ""
 
+msgid "The FFE closes this registration once its period has been sent to FIDE: ask Erick Mouret to reopen it, so that the results of the whole tournament can go on being published here."
+msgstr ""
+
 #, python-brace-format
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
@@ -737,6 +753,12 @@ msgid "The team's own players' average rating, weighted by their per-round board
 msgstr ""
 
 msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
+msgstr ""
+
+msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
+msgstr ""
+
+msgid "This period has been submitted; later rounds do not change it."
 msgstr ""
 
 msgid "Tournament"
@@ -816,6 +838,10 @@ msgstr ""
 
 #, python-format
 msgid "Upload automatically every %(delay)d minutes."
+msgstr ""
+
+#, python-format
+msgid "Upload period %(index)d"
 msgstr ""
 
 msgid "Upload rules"

@@ -13,6 +13,7 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -23,6 +24,7 @@ from plugins.ffe.ffe_upload_status import (
     FailureFFEUploadStatus,
     NetworkFailureFFEUploadStatus,
     UnexpectedFailureFFEUploadStatus,
+    FinishedFFEUploadStatus,
     ModifiedFFEUploadStatus,
     UpToDateFFEUploadStatus,
     OngoingFFEUploadStatus,
@@ -37,6 +39,7 @@ from plugins.ffe.ffe_upload_status import (
     RejectedFFEUploadStatus,
 )
 from plugins.utils import PluginUtils, PluginData, AccountPluginData
+from utils import Utils
 from utils.date_time import format_datetime
 from utils.entity import EntityManager
 
@@ -197,6 +200,32 @@ class FFEUtils:
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfeTournamentPluginData)
         return plugin_data
+
+    @staticmethod
+    def get_period_own_plugin_data(
+        period: 'TournamentPeriod',
+    ) -> 'FfeTournamentPluginData':
+        """What the period itself holds — its own registration and the
+        outcome of its own uploads, with nothing borrowed from the
+        tournament."""
+        plugin_data = period.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfeTournamentPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_period_plugin_data(period: 'TournamentPeriod') -> 'FfeTournamentPluginData':
+        """What a rating period is submitted under.
+
+        Each period has its own homologation number; the first period
+        is submitted under the tournament's own, which is also where the
+        whole tournament is published for the players. A later period
+        with no registration of its own falls back to it too, so that a
+        tournament nobody has cut up yet still uploads."""
+        if period.first_round > 1:
+            plugin_data = FFEUtils.get_period_own_plugin_data(period)
+            if plugin_data.ffe_id:
+                return plugin_data
+        return FFEUtils.get_tournament_plugin_data(period.tournament)
 
     @staticmethod
     def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
@@ -360,6 +389,59 @@ class FFEUtils:
         elif FfeBackgroundUploader.is_upload_queued(tournament) or (
             FfeBackgroundUploader.is_upload_scheduled(tournament) and is_modified
         ):
+            statuses.append(PendingFFEUploadStatus())
+        return statuses
+
+    @classmethod
+    def resolve_period_upload_statuses(
+        cls, period: 'TournamentPeriod'
+    ) -> list[FFEUploadStatus]:
+        """How the submission of one period stands.
+
+        A period is submitted under its own registration, so it answers
+        for its own upload: whether it has been sent, how it went, and
+        whether the results have moved since.
+
+        Only the period being played is asked the last question. Once
+        the tournament has moved on, the period is submitted and the
+        federation closes its registration, so what the rounds after it
+        do cannot be sent there anyway — it reads as finished.
+
+        What moved is read from the tournament's own timestamps, which
+        say when a result, a player or a pairing last changed but not in
+        which round — so a change anywhere marks the period being
+        played. That errs towards sending it again, which costs nothing,
+        rather than leaving a stale one looking current."""
+        from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+
+        # What the period itself holds: borrowing the tournament's would
+        # report its upload as this period's.
+        plugin_data = cls.get_period_own_plugin_data(period)
+        if not plugin_data.ffe_id or not plugin_data.password:
+            return [NotConfiguredFFEUploadStatus()]
+        statuses: list[FFEUploadStatus] = []
+        if plugin_data.upload_failure_id:
+            statuses.append(
+                FFEUploadFailureStatusManager().get_object(
+                    plugin_data.upload_failure_id
+                )
+            )
+        if not plugin_data.last_upload_at:
+            # Said of a period already behind as much as of the one being
+            # played: a period nobody submitted is the arbiter's problem
+            # whether or not its rounds are over.
+            statuses.append(NeverUploadedFFEUploadStatus())
+        elif period.index < period.tournament.current_period.index:
+            statuses.append(FinishedFFEUploadStatus())
+        elif Utils.tournament_results_modified_since(
+            period.tournament, plugin_data.last_upload_at
+        ):
+            statuses.append(ModifiedFFEUploadStatus())
+        else:
+            statuses.append(UpToDateFFEUploadStatus())
+        if FfeBackgroundUploader.is_period_upload_ongoing(period):
+            statuses.append(OngoingFFEUploadStatus())
+        elif FfeBackgroundUploader.is_period_upload_pending(period):
             statuses.append(PendingFFEUploadStatus())
         return statuses
 
