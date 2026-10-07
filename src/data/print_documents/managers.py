@@ -50,6 +50,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.ScheveningenTablePrintDocument,
             documents.AccelerationRulesPrintDocument,
             documents.MatchSheetsPrintDocument,
+            documents.TeamPairingsPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
             documents.TeamRankingPrintDocument,

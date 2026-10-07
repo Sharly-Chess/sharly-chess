@@ -1042,6 +1042,85 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
         }
 
 
+class TeamPairingsPrintDocument(PrintDocument):
+    """The team matches of a round on a single list, without the players of
+    their boards, for team captains. Offered for systems that pair whole
+    teams."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'team-pairings'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team pairings')
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(t.pairing_system.paired_by_team for t in allowed_tournaments)
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, RoundPrintOption]
+
+    @property
+    def at_round(self) -> int:
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @property
+    def title(self) -> str:
+        return _('Team pairings for round #{round}').format(round=self.at_round)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/team_pairings.html'
+
+    @property
+    def team_boards(self) -> list[TeamBoard]:
+        self.tournament.set_for_round(self.at_round)
+        return self.tournament.get_round_team_boards(self.at_round)
+
+    @override
+    def validate_options(self) -> None:
+        super().validate_options()
+        if not self.tournament.pairing_system.paired_by_team:
+            raise OptionError(
+                _('The teams of this tournament are not paired against each other.'),
+                self._get_option(TournamentPrintOption),
+            )
+        at_round = self._get_option(RoundPrintOption)
+        if at_round.value is None:
+            return
+        if at_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                at_round,
+            )
+        if at_round.value > self.tournament.current_round:
+            raise OptionError(
+                _(
+                    'There are no pairings for this round (last round '
+                    'with pairings: #{round}).'
+                ).format(round=self.tournament.current_round),
+                at_round,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'team_boards': self.team_boards,
+            'show_points': not self.tournament.hide_team_block_points,
+        }
+
+
 class TeamRankingPrintDocument(PrintDocument):
     """Team-tournament equivalent of :class:`PlayerRankingPrintDocument`.
     Renders the team standings table (rank, team, played, W/D/L, MP/GP,

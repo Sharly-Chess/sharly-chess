@@ -175,6 +175,21 @@ class TeamBoard:
         return a_gp + a_adj, b_gp + b_adj
 
     @property
+    def game_score_display(self) -> str:
+        """The board score of the match in game points, with ``F`` for a
+        team that forfeited all its games, or ``-`` while no game is
+        played."""
+        stb = self.stored_team_board
+        if stb.team_b_id is None:
+            return f'{self.tournament.team_pab_game_points:g} – F'
+        if self.no_games_played:
+            return '-'
+        a_gp, b_gp = self.game_points
+        a_str = 'F' if self.team_all_forfeit(stb.team_a_id) else f'{a_gp:g}'
+        b_str = 'F' if self.team_all_forfeit(stb.team_b_id) else f'{b_gp:g}'
+        return f'{a_str} – {b_str}'
+
+    @property
     def no_games_played(self) -> bool:
         """Returns True if no game of the team board is already played."""
         return all(board.no_result for board in self.boards)
