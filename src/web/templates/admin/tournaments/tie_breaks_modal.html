@@ -189,7 +189,7 @@
             {% if tie_break_rating_options %}
                 {# Which of a player's ratings a rating-based tie-break reads,
                    which C.07:10 leaves to the arbiter when a tournament is
-                   reported in slices. #}
+                   reported in periods. #}
                 <div class="mb-3 col-12 col-md-7">
                     {{ admin_macros.select_input(
                         name='tie_break_rating',
@@ -198,13 +198,14 @@
                         data={'tie_break_rating': admin_tournament.tie_break_rating},
                         stacked=true,
                         tooltip_text=_(
-                            'A player may hold a different rating in each slice '
-                            'of a tournament reported in slices, so FIDE C.07:10 '
+                            'A player may hold a different rating in each period '
+                            'of a tournament reported in periods, so FIDE C.07:10 '
                             'leaves the choice to the arbiter and takes the first '
                             'rating by default.'
                         )
                     ) }}
                     <form
+                        id="tie-break-rating-form"
                         hx-patch="{{ url_for(
                             'admin-tournament-tie-break-rating',
                             event_uniq_id=admin_event.uniq_id,
@@ -212,9 +213,17 @@
                         ) }}"
                         hx-include='[name="tie_break_rating"]'
                         hx-target="body"
-                        hx-trigger="change from:[name='tie_break_rating']"
+                        hx-trigger="tie-break-rating-chosen"
                         hx-indicator="#please-wait"
                     ></form>
+                    <script>
+                        // The select is a select2: picking an option fires a
+                        // jQuery event, which htmx does not listen for.
+                        $('#tie-break-rating').on('change', () => htmx.trigger(
+                            document.getElementById('tie-break-rating-form'),
+                            'tie-break-rating-chosen',
+                        ));
+                    </script>
                 </div>
             {% endif %}
             {% if config_tie_breaks %}

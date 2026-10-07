@@ -648,7 +648,7 @@ msgstr ""
 msgid "A player gets their initial score as virtual points in every round of the tournament. A player with no initial score gets no virtual points."
 msgstr ""
 
-msgid "A player may hold a different rating in each slice of a tournament reported in slices, so FIDE C.07:10 leaves the choice to the arbiter and takes the first rating by default."
+msgid "A player may hold a different rating in each period of a tournament reported in periods, so FIDE C.07:10 leaves the choice to the arbiter and takes the first rating by default."
 msgstr ""
 
 msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
@@ -3825,7 +3825,7 @@ msgstr ""
 msgid "FIDE mode was left at round %(round)d."
 msgstr ""
 
-msgid "FIDE rates a tournament of more than 30 days in slices of at most 30 days, each submitted as a tournament of its own. Mark the round that starts each slice in the schedule below."
+msgid "FIDE rates a tournament of more than 30 days in periods of at most 30 days, each submitted as a tournament of its own. Mark the round that starts each period in the schedule below."
 msgstr ""
 
 msgid "FIDE rating lost"

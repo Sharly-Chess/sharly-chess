@@ -106,3 +106,29 @@ def test_a_rating_tie_break_carries_the_warning_on_its_row(
 def test_tie_breaks_that_read_no_rating_are_left_alone(http: TestClient, event: str):
     modal = _modal(http, _create(multi_period=True))
     assert 'lasting over multiple FIDE periods' not in modal
+
+
+@pytest.mark.unit
+def test_choosing_a_rating_applies_it(http: TestClient, event: str):
+    """The field is a select2, whose change event htmx does not hear, so
+    the choice is handed to it explicitly."""
+    modal = _modal(http, _create(multi_period=True))
+    assert 'tie-break-rating-chosen' in modal
+    assert "$('#tie-break-rating').on('change'" in modal
+
+
+@pytest.mark.unit
+def test_the_chosen_rating_is_stored(http: TestClient, event: str):
+    tournament_id = _create(multi_period=True)
+    response = http.patch(
+        f'/tournament-tie-break-rating/{event}/{tournament_id}',
+        data={'tie_break_rating': 'round'},
+    )
+    assert response.status_code in (200, 302)
+    with EventDatabase(event) as database:
+        stored = next(
+            stored
+            for stored in database.load_stored_tournaments()
+            if stored.name == TOURNAMENT_NAME
+        )
+    assert stored.tie_break_rating == 'round'
