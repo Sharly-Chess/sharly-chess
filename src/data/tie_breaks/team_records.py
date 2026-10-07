@@ -29,9 +29,6 @@ class TeamMatchType(StrEnum):
     ZPB = 'ZPB'  # Zero-point bye (requested, no subsequent play)
     FORFEIT_WIN = 'FORFEIT_WIN'  # +F
     FORFEIT_LOSS = 'FORFEIT_LOSS'  # -F
-    # A drawn match on which no board was played: unplayed for both teams,
-    # and a voluntary unplayed round for both, neither having won it.
-    UNPLAYED_DRAW = 'UNPLAYED_DRAW'
 
 
 @dataclass(frozen=True)
@@ -80,7 +77,6 @@ class TeamMatchRecord:
             TeamMatchType.HPB,
             TeamMatchType.ZPB,
             TeamMatchType.FORFEIT_LOSS,
-            TeamMatchType.UNPLAYED_DRAW,
         )
 
     @property
