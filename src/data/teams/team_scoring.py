@@ -726,7 +726,7 @@ class TeamScoring:
 
     def totals_in(self, rounds: range) -> dict[int, tuple[float, float]]:
         """Per-team ``(match_points, game_points)`` over *rounds* alone —
-        the standings of a report that covers a slice of the tournament,
+        the standings of a report that covers a period of the tournament,
         which are the standings of that report and no other."""
         return self._totals(
             [

@@ -212,7 +212,7 @@ class TitleNormEvaluator:
 
             inputs.played_games += 1
             assert pairing.opponent is not None  # narrowed by include_as_played
-            # Read at the slice the game belongs to: in a tournament of more
+            # Read at the period the game belongs to: in a tournament of more
             # than 30 days the opponent's rating and titles are those of the
             # day they were played (B.01 1.1.4).
             opponent = NormOpponent.in_round(pairing.opponent, rnd)

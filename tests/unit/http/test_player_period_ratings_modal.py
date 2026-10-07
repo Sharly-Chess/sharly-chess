@@ -1,7 +1,7 @@
-"""The player modal shows what the earlier slices were played on.
+"""The player modal shows what the earlier periods were played on.
 
-A tournament reported in slices keeps one set of ratings per slice. The
-form edits the slice being played; the ones before it are listed below,
+A tournament reported in periods keeps one set of ratings per period. The
+form edits the period being played; the ones before it are listed below,
 since the reports already made of them were built from those values.
 """
 
@@ -33,7 +33,7 @@ def _create(multi_period: bool) -> int:
         overrides={
             'rounds': 6,
             'multi_period': multi_period,
-            # Under way: the last slice is the one being played, so the
+            # Under way: the last period is the one being played, so the
             # ones before it are what the modal has to show.
             'round_datetimes': {
                 round_nb: datetime.combine(date.today(), datetime.min.time())
@@ -89,7 +89,7 @@ def test_a_split_tournament_lists_the_earlier_periods(http: TestClient, event: s
     player_id = _create(multi_period=True)
     modal = _modal(http, player_id)
     assert 'Ratings of the earlier periods' in modal
-    # Every rating the player holds, as the slice was played on them.
+    # Every rating the player holds, as the period was played on them.
     assert '1500' in modal and '1480' in modal and '1450' in modal
     assert 'K20' in modal
 

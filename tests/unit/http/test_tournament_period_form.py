@@ -1,7 +1,7 @@
 """The tournament form's rating periods, driven over HTTP.
 
 The arbiter marks a tournament as lasting more than 30 days and then
-ticks the round that starts each slice, in the schedule section. The
+ticks the round that starts each period, in the schedule section. The
 section is re-rendered on its own as those boxes change, so both paths
 are exercised here.
 """
@@ -99,7 +99,7 @@ def _tie_break_rating(event: str) -> str:
 
 
 def _set_tie_break_rating(event: str, period_index: int) -> str:
-    """Point the tie-breaks at one of the tournament's slices."""
+    """Point the tie-breaks at one of the tournament's periods."""
     with EventDatabase(event, write=True) as database:
         period = database.load_tournament_stored_periods(_tournament_id(event))[
             period_index
@@ -114,7 +114,7 @@ def _set_tie_break_rating(event: str, period_index: int) -> str:
     return str(period.id)
 
 
-# Rounds ten days apart: the tournament runs past 30 days, and a slice can
+# Rounds ten days apart: the tournament runs past 30 days, and a period can
 # still be merged into its neighbour without the result running past 30
 # days itself.
 CLOSE_ROUND_DATETIMES = {
@@ -135,11 +135,11 @@ def _close_dates() -> dict[str, str]:
 
 
 @pytest.mark.unit
-def test_a_slice_the_tie_breaks_read_can_lose_its_boundary(
+def test_a_period_the_tie_breaks_read_can_lose_its_boundary(
     http: TestClient, event: str
 ):
-    """Merging a slice into its neighbour leaves the tournament with no
-    such slice, so the tie-breaks go back to the first rating instead of
+    """Merging a period into its neighbour leaves the tournament with no
+    such period, so the tie-breaks go back to the first rating instead of
     reading one the arbiter never chose."""
     _update(
         http,
@@ -158,7 +158,7 @@ def test_a_slice_the_tie_breaks_read_can_lose_its_boundary(
 
 
 @pytest.mark.unit
-def test_a_slice_the_tie_breaks_read_survives_its_boundary_moving(
+def test_a_period_the_tie_breaks_read_survives_its_boundary_moving(
     http: TestClient, event: str
 ):
     _update(
@@ -185,7 +185,7 @@ def test_a_slice_the_tie_breaks_read_survives_its_boundary_moving(
 
 @pytest.mark.unit
 def test_a_clone_is_cut_like_the_tournament_it_copies(http: TestClient, event: str):
-    """The schedule comes with the tournament, so the slices laid over it
+    """The schedule comes with the tournament, so the periods laid over it
     have to come too."""
     _update(http, event, multi_period='on', round_3_period_start='on')
     response = http.post(

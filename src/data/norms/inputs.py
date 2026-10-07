@@ -47,7 +47,7 @@ class NormOpponent:
 
     In a tournament of more than 30 days, B.01 1.1.4 has the opponents'
     ratings and titles being those applying when the games were played,
-    so a norm reads each of them at the slice their game belongs to.
+    so a norm reads each of them at the period their game belongs to.
     Everything a norm needs from the opponent besides those — federation,
     identity, the rest of their schedule — is the same whatever the
     round, and is read from the player."""

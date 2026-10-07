@@ -37,7 +37,7 @@
     {% set link_target = tournament_player if tournament_player else player %}
     {% set full_name = link_target.full_name %}
     {# A rating shown against a round is the one that round was played at,
-       which in a tournament reported in slices is not always the current
+       which in a tournament reported in periods is not always the current
        one. #}
     {% set rating_shown = (
         tournament_player.rating_str_in_round(rating_round)

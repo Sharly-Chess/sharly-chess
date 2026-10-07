@@ -1,9 +1,9 @@
 """Which rating a rating-based tie-break reads in a split tournament.
 
-A player may hold a different rating in each slice, so FIDE C.07:10
+A player may hold a different rating in each period, so FIDE C.07:10
 leaves the choice to the arbiter and takes the first rating by default.
-The others are the rating of each game's own slice, and the rating of a
-slice the arbiter names.
+The others are the rating of each game's own period, and the rating of a
+period the arbiter names.
 """
 
 import contextlib
@@ -24,8 +24,8 @@ from utils.enum import TournamentRating
 
 EVENT_ID = 'test-tie-break-rating'
 TOURNAMENT_NAME = 'tournament'
-# The opponent's rating in each of the three slices.
-SLICE_RATINGS = [1500, 1600, 1700]
+# The opponent's rating in each of the three periods.
+PERIOD_RATINGS = [1500, 1600, 1700]
 
 
 @pytest.mark.unit
@@ -35,7 +35,7 @@ class TestTieBreakRating:
 
     def _setup(self, multi_period: bool = True):
         """Four rounds a fortnight apart, cut at rounds 2 and 4, so each
-        slice holds one or two rounds and the opponent a rating of its
+        period holds one or two rounds and the opponent a rating of its
         own."""
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(
@@ -64,7 +64,7 @@ class TestTieBreakRating:
                         id=None,
                         last_name=name,
                         ratings={
-                            TournamentRating.STANDARD.value: {'fide': SLICE_RATINGS[0]}
+                            TournamentRating.STANDARD.value: {'fide': PERIOD_RATINGS[0]}
                         },
                     )
                 )
@@ -77,7 +77,7 @@ class TestTieBreakRating:
             database.set_tournament_periods(tournament_id, [2, 4])
             periods = database.load_tournament_stored_periods(tournament_id)
             for stored_period, rating in zip(
-                periods[1:], SLICE_RATINGS[1:], strict=True
+                periods[1:], PERIOD_RATINGS[1:], strict=True
             ):
                 assert stored_period.id is not None
                 database.set_player_period(
@@ -113,12 +113,12 @@ class TestTieBreakRating:
         assert self._tournament.tie_break_rating == ''
         assert self._ratings_read() == [1500, 1500, 1500, 1500]
 
-    def test_each_game_can_be_read_at_its_own_slice(self):
+    def test_each_game_can_be_read_at_its_own_period(self):
         tournament = self._setup()
         tournament.set_tie_break_rating(TIE_BREAK_RATING_BY_ROUND)
         assert self._ratings_read() == [1500, 1600, 1600, 1700]
 
-    def test_a_named_slice_is_read_for_every_game(self):
+    def test_a_named_period_is_read_for_every_game(self):
         tournament = self._setup()
         period = tournament.periods[2]
         tournament.set_tie_break_rating(str(period.id))
@@ -126,7 +126,7 @@ class TestTieBreakRating:
 
     def test_a_round_reads_the_rating_it_was_played_at(self):
         """What a pairing sheet and a result screen show for a round is
-        the rating that round was played at, whatever slice the
+        the rating that round was played at, whatever period the
         tournament has since reached."""
         self._setup()
         opponent = self._opponent()
@@ -150,7 +150,7 @@ class TestTieBreakRating:
         ]
 
     def test_a_tournament_rated_in_one_go_offers_no_choice(self):
-        """One slice, one rating: there is nothing for C.07:10 to leave to
+        """One period, one rating: there is nothing for C.07:10 to leave to
         the arbiter, whatever the setting says."""
         tournament = self._setup(multi_period=False)
         tournament.set_tie_break_rating(TIE_BREAK_RATING_BY_ROUND)

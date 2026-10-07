@@ -42,7 +42,7 @@ class PapiTournamentExporter(TournamentExporter):
 
     @property
     def exports_periods(self) -> bool:
-        # A tournament reported in slices is uploaded one slice at a time,
+        # A tournament reported in periods is uploaded one period at a time,
         # each under its own homologation number.
         return True
 

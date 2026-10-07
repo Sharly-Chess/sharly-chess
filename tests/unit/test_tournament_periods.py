@@ -1,7 +1,7 @@
-"""Rating periods cut a long tournament into the slices FIDE rates.
+"""Rating periods cut a long tournament into the periods FIDE rates.
 
-A tournament of more than 30 days is reported one slice at a time, each
-slice starting at a round the arbiter marks. A tournament that is not
+A tournament of more than 30 days is reported one period at a time, each
+period starting at a round the arbiter marks. A tournament that is not
 marked as long has the single period covering every round, so the read
 paths have one shape whatever the length of the tournament.
 """
@@ -160,7 +160,7 @@ class TestTournamentPeriods:
         assert tournament.period_by_round[5] is tournament.periods[1]
 
     def test_only_a_round_opening_a_period_calls_for_a_rating_update(self):
-        """The ratings of a slice are set when it opens, so that is the
+        """The ratings of a period are set when it opens, so that is the
         one round at which the arbiter is reminded of it — not every
         round of a long tournament."""
         tournament = self._tournament(multi_period=True, first_rounds=[3, 6])
@@ -178,7 +178,7 @@ class TestTournamentPeriods:
         )
 
     def test_a_period_knows_the_month_of_the_list_it_is_played_on(self):
-        """A slice is rated on the list in force when it starts, whatever
+        """A period is rated on the list in force when it starts, whatever
         month it ends in."""
         tournament = self._tournament(multi_period=True, first_rounds=[5])
         second = tournament.periods[1]
@@ -186,8 +186,8 @@ class TestTournamentPeriods:
         assert second.stop_date == datetime(2026, 12, 13).date()
         assert second.rating_month == datetime(2026, 11, 1).date()
 
-    def test_a_slice_keeps_its_ratings_when_its_boundary_moves(self):
-        """Moving a cut re-bounds the slice rather than replacing it, so
+    def test_a_period_keeps_its_ratings_when_its_boundary_moves(self):
+        """Moving a cut re-bounds the period rather than replacing it, so
         what its players were prepared with — and what a report of it was
         built from — survives the edit."""
         tournament = self._tournament(multi_period=True, first_rounds=[3, 6])
@@ -200,7 +200,7 @@ class TestTournamentPeriods:
         assert [stored.id for stored in kept] == period_ids
 
     def test_boundaries_that_cross_do_not_collide(self):
-        """A slice moved onto the round another is leaving passes it on
+        """A period moved onto the round another is leaving passes it on
         the way; the rows are rewritten so neither is lost."""
         tournament = self._tournament(multi_period=True, first_rounds=[3, 4])
         assert tournament.id is not None
@@ -210,7 +210,7 @@ class TestTournamentPeriods:
         assert [stored.first_round for stored in kept] == [1, 4, 5]
 
     def test_an_earlier_boundary_can_be_removed(self):
-        """Merging the second slice into the first leaves the later ones
+        """Merging the second period into the first leaves the later ones
         where they are."""
         tournament = self._tournament(multi_period=True, first_rounds=[3, 6])
         assert tournament.id is not None
@@ -219,7 +219,7 @@ class TestTournamentPeriods:
             kept = database.load_tournament_stored_periods(tournament.id)
         assert [stored.first_round for stored in kept] == [1, 6]
 
-    def test_a_merged_slice_loses_its_row(self):
+    def test_a_merged_period_loses_its_row(self):
         tournament = self._tournament(multi_period=True, first_rounds=[3, 6])
         assert tournament.id is not None
         with EventDatabase(EVENT_ID, write=True) as database:
@@ -243,7 +243,7 @@ class TestTournamentPeriods:
 
 @pytest.mark.unit
 class TestCurrentPeriod:
-    """Which slice the tournament is playing."""
+    """Which period the tournament is playing."""
 
     def teardown_method(self):
         with contextlib.suppress(KeyError):
@@ -252,7 +252,7 @@ class TestCurrentPeriod:
 
     def _tournament(self, current_round: int):
         """Six rounds a fortnight apart, all of them still to come, cut
-        into three slices — so the calendar says the first while the
+        into three periods — so the calendar says the first while the
         rounds say otherwise."""
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(
@@ -281,12 +281,12 @@ class TestCurrentPeriod:
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
-    def test_the_slice_of_the_round_reached_is_the_current_one(self):
-        """Pairing a round of the third slice starts it, whatever the
-        dates of the slices before say."""
+    def test_the_period_of_the_round_reached_is_the_current_one(self):
+        """Pairing a round of the third period starts it, whatever the
+        dates of the periods before say."""
         tournament = self._tournament(current_round=5)
         assert tournament.current_period.first_round == 5
 
-    def test_the_first_slice_is_current_while_it_is_played(self):
+    def test_the_first_period_is_current_while_it_is_played(self):
         tournament = self._tournament(current_round=2)
         assert tournament.current_period.first_round == 1

@@ -692,10 +692,10 @@ class PlayerAdminController(BaseEventAdminController):
 
     @staticmethod
     def _player_period_ratings_context(admin_player: Player | None) -> dict[str, Any]:
-        """What the player's earlier slices were played on.
+        """What the player's earlier periods were played on.
 
-        The fields of the form hold the slice being played; a tournament
-        reported in slices keeps the ratings of the ones before it, which
+        The fields of the form hold the period being played; a tournament
+        reported in periods keeps the ratings of the ones before it, which
         the reports already made of them were built from."""
         if admin_player is None:
             return {}
@@ -826,7 +826,7 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     if stored_player.year_of_birth:
                         date_of_birth = str(stored_player.year_of_birth)
-                    # The fields hold the slice being played, which is
+                    # The fields hold the period being played, which is
                     # what an edit records (see
                     # ``_ratings_for_current_period``).
                     ratings |= cls._current_period_ratings(admin_player, stored_player)
@@ -1404,8 +1404,8 @@ class PlayerAdminController(BaseEventAdminController):
     def _current_period_ratings(
         admin_player: Player | None, stored_player: StoredPlayer
     ) -> dict[TournamentRating, PlayerRating]:
-        """The ratings the rating fields show: those of the slice being
-        played, which are the player's own unless a later slice recorded
+        """The ratings the rating fields show: those of the period being
+        played, which are the player's own unless a later period recorded
         ratings of its own."""
         tournament = admin_player.optional_single_tournament if admin_player else None
         if admin_player is not None and tournament is not None:
@@ -1424,12 +1424,12 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> tuple[dict[int, dict[str, int | None]], dict[int, StoredPlayerPeriod]]:
         """Where the ratings the form carries belong.
 
-        The form shows the slice being played, so in a tournament
-        reported in slices the ratings it comes back with are that
-        slice's, and the player's own — what the first slice was played
-        on — stay as they were. The slices already recorded are carried
+        The form shows the period being played, so in a tournament
+        reported in periods the ratings it comes back with are that
+        period's, and the player's own — what the first period was played
+        on — stay as they were. The periods already recorded are carried
         through whatever happens: a player edited for their phone number
-        must not lose what their earlier slices were reported with."""
+        must not lose what their earlier periods were reported with."""
         if player is None:
             return form_ratings, {}
         periods = dict(player.stored_player.periods)

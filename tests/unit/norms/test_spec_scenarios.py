@@ -44,7 +44,7 @@ def _player_ns(**kwargs) -> SimpleNamespace:
     derived title attributes/methods the norm code reads (`held_titles`,
     `strongest_title`, `title_on_norm_ladder`), computed from `title` /
     `women_title`, and the per-round readings — which for a double with
-    no slices answer the same whatever the round."""
+    no periods answer the same whatever the round."""
     title = kwargs.get('title', PlayerTitle.NONE)
     women = kwargs.get('women_title', PlayerTitle.NONE)
     kwargs.setdefault('women_title', women)

@@ -51,7 +51,7 @@ class FakeOpponent:
     reads `id`, `rating`, `rating_type`, `federation`, `title`,
     `women_title`, `held_titles` and `strongest_title` on opponents, and
     reads the first three of those through the round the game was played
-    in (B.01 1.1.4) — which for a stand-in with no slices is the same
+    in (B.01 1.1.4) — which for a stand-in with no periods is the same
     answer whatever the round.
     """
 
@@ -99,7 +99,7 @@ def as_tournament_player(double: object) -> TournamentPlayer:
 
 def as_norm_opponent(double: FakeOpponent, round_: int = 1) -> NormOpponent:
     """The stand-in as a norm reads it: at the round the game was played
-    in, which for a stand-in with no slices is the same whatever the
+    in, which for a stand-in with no periods is the same whatever the
     round."""
     return NormOpponent.in_round(as_tournament_player(double), round_)
 

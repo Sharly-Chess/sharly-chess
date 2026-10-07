@@ -276,7 +276,7 @@ def test_the_screen_modal_opens_for_every_action(
 def test_the_sets_of_a_screen_are_added_and_removed(
     http: TestClient, api: ApiClient, tournament: StoredTournament
 ):
-    """A screen shows one or more sets — a slice of a tournament each —
+    """A screen shows one or more sets — a period of a tournament each —
     and the second one is what makes a screen worth splitting."""
     stored_screen = TestUtils.create_screen(
         api,

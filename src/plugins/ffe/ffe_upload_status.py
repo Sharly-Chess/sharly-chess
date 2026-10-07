@@ -109,7 +109,7 @@ class UpToDateFFEUploadStatus(FFEUploadStatus):
 
 
 class FinishedFFEUploadStatus(FFEUploadStatus):
-    """A tranche whose rounds are behind the one being played: it has been
+    """A period whose rounds are behind the one being played: it has been
     submitted and the federation closes it, so what the tournament does
     next is no business of its file."""
 

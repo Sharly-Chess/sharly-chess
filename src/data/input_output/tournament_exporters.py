@@ -54,7 +54,7 @@ class TournamentExporter(IdentifiableEntity, ABC):
 
     @property
     def exports_periods(self) -> bool:
-        """Whether one slice of a tournament reported in slices can be
+        """Whether one period of a tournament reported in periods can be
         exported on its own, as FIDE receives it."""
         return False
 
@@ -77,7 +77,7 @@ class TournamentExporter(IdentifiableEntity, ABC):
     def file_name(
         tournament: Tournament, period: TournamentPeriod | None = None
     ) -> str:
-        """Name of the file to download. A slice says which rounds it
+        """Name of the file to download. A period says which rounds it
         holds, as the registrations FIDE receives do."""
         if period is None:
             return tournament.sanitized_name

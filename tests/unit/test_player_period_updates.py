@@ -1,7 +1,7 @@
-"""Refreshing ratings prepares the slice being played.
+"""Refreshing ratings prepares the period being played.
 
-A tournament reported in slices is rated slice by slice, so an update
-taken from a player database records what the current slice will be
+A tournament reported in periods is rated period by period, so an update
+taken from a player database records what the current period will be
 reported with — the earlier ones keep what they were reported with,
 whatever day the database is from.
 """
@@ -38,7 +38,7 @@ class TestRatingUpdates:
 
     def _setup(self, multi_period: bool):
         """Six rounds a fortnight apart, the last one played today, cut
-        at rounds 3 and 5 — so the third slice is the current one."""
+        at rounds 3 and 5 — so the third period is the current one."""
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(
             EVENT_ID,
@@ -120,20 +120,20 @@ class TestRatingUpdates:
         period = self._tournament.periods[period_index]
         return player.ratings_for(period)[TournamentRating.STANDARD].fide
 
-    def test_the_update_lands_on_the_slice_being_played(self):
+    def test_the_update_lands_on_the_period_being_played(self):
         player = self._setup(multi_period=True)
         assert self._tournament.current_period is self._tournament.periods[2]
         player = self._update(player)
         assert self._fide(player, 2) == DATABASE_RATING
 
-    def test_the_earlier_slices_keep_what_they_were_reported_with(self):
+    def test_the_earlier_periods_keep_what_they_were_reported_with(self):
         player = self._setup(multi_period=True)
         player = self._update(player)
         assert self._fide(player, 0) == FIRST_RATING
         assert self._fide(player, 1) == PERIOD_RATING
 
-    def test_the_comparison_is_made_against_the_slice_being_played(self):
-        """The slice being played inherits the second slice's rating, so
+    def test_the_comparison_is_made_against_the_period_being_played(self):
+        """The period being played inherits the second period's rating, so
         that — not the player's first rating — is what the database value
         is compared with."""
         player = self._setup(multi_period=True)

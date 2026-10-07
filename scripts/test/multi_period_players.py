@@ -70,15 +70,15 @@ def round_datetime(round_nb: int, rounds: int, interval: int) -> datetime:
 def build_player(
     index: int, period_count: int, generator: random.Random
 ) -> tuple[StoredPlayer, list[dict[int, dict[str, int | None]]]]:
-    """A player and the ratings of each slice after the first.
+    """A player and the ratings of each period after the first.
 
-    Every rating a player can hold moves, by a few points from one slice
+    Every rating a player can hold moves, by a few points from one period
     to the next, and each stands still often enough that the fallback to
-    the previous slice is exercised too. A slice records the whole of the
+    the previous period is exercised too. A period records the whole of the
     player's ratings, so an unmoved one is repeated.
 
     One player in four is unrated and carries the arbiter's estimate
-    alone, which they may revise between slices; the rated ones keep an
+    alone, which they may revise between periods; the rated ones keep an
     estimate too, as a player entered before their rating was known
     does."""
     unrated = index % 4 == 3
@@ -139,7 +139,7 @@ def period_lines(
     rounds: int,
     round_datetimes: dict[int, datetime],
 ) -> list[str]:
-    """One line per slice, saying what it covers and whether FIDE would
+    """One line per period, saying what it covers and whether FIDE would
     take it."""
     boundaries = [*period_first_rounds, rounds + 1]
     lines: list[str] = []

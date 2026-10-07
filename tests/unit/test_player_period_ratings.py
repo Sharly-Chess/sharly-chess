@@ -1,8 +1,8 @@
 """A player's rating can change while a long tournament is being played.
 
-A tournament of more than 30 days is reported slice by slice, each rated
+A tournament of more than 30 days is reported period by period, each rated
 on the ratings in force while it was played (FIDE B.01 1.1.4). The
-player's stored ratings are the first of them; a slice where they
+player's stored ratings are the first of them; a period where they
 changed records them against itself.
 """
 
@@ -113,8 +113,8 @@ class TestMonthRatings:
         assert self._fide(player, self._period(2)) == 1560
 
     def test_the_first_period_holds_the_player_s_first_rating(self):
-        """Updating during the first slice is an ordinary rating update:
-        it belongs on the player, not on a slice of its own."""
+        """Updating during the first period is an ordinary rating update:
+        it belongs on the player, not on a period of its own."""
         player = self._player(fide_rating=1500)
         player.update_ratings(
             {TournamentRating.STANDARD: PlayerRating(fide=1520)},
@@ -124,7 +124,7 @@ class TestMonthRatings:
         assert self._fide(player, None) == 1520
 
     def test_a_period_records_the_whole_of_the_player_s_ratings(self):
-        """A slice has to answer for every rating type and its k-factors,
+        """A period has to answer for every rating type and its k-factors,
         not only the ones the update happened to carry."""
         player = self._player(fide_rating=1500)
         player.update_ratings(
@@ -138,7 +138,7 @@ class TestMonthRatings:
         assert ratings[TournamentRating.BLITZ].national == 1300
 
     def test_recorded_ratings_survive_a_boundary_moving(self):
-        """Re-cutting a tournament re-bounds its slices; a slice must not
+        """Re-cutting a tournament re-bounds its periods; a period must not
         lose what its players were prepared with — and what a report of it
         was built from — because the arbiter moved a round."""
         player = self._player(fide_rating=1500)

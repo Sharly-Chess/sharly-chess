@@ -2366,7 +2366,7 @@ class EventDatabase(MigrationDatabase):
     def set_tournament_period_plugin_data(
         self, period_id: int, plugin_data: dict[str, dict[str, Any]]
     ) -> None:
-        """Store what the plugins keep about one slice — the identifiers
+        """Store what the plugins keep about one period — the identifiers
         of the registration it is submitted under."""
         self.execute(
             'UPDATE `tournament_period` SET `plugin_data` = ? WHERE `id` = ?',
@@ -2381,17 +2381,17 @@ class EventDatabase(MigrationDatabase):
 
         A period keeps its row, and with it the ratings its players were
         prepared with, as long as the tournament still has a period in its
-        place: moving a boundary re-bounds the slice rather than replacing
-        it. Only a slice the tournament no longer has — one merged into
+        place: moving a boundary re-bounds the period rather than replacing
+        it. Only a period the tournament no longer has — one merged into
         its neighbour — loses its rows."""
         wanted = sorted({1} | set(first_rounds))
         current = [
             stored_period.id
             for stored_period in self.load_tournament_stored_periods(tournament_id)
         ]
-        # The rounds are rewritten in three steps: the slices that stay are
+        # The rounds are rewritten in three steps: the periods that stay are
         # parked out of the way, the surplus ones are dropped, and only then
-        # do the survivors take their new rounds — a slice moved onto a round
+        # do the survivors take their new rounds — a period moved onto a round
         # another is leaving would otherwise collide with it in passing.
         kept = current[: len(wanted)]
         for index, period_id in enumerate(kept):

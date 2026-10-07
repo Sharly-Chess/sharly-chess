@@ -133,7 +133,7 @@ def _round_counts_156a(
     """FIDE-rated present this round, plus the top-40 rating average. The
     average is 0.0 when fewer than 40 are present (insufficient data).
 
-    The check is made of one round, so the ratings are those of the slice
+    The check is made of one round, so the ratings are those of the period
     that round belongs to (B.01 1.1.4)."""
     present = [p for p in eligible if _is_present_at_round(p, round_)]
     top_rated = sorted((p.rating_in_round(round_) for p in present), reverse=True)[:40]

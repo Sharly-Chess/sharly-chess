@@ -1,14 +1,14 @@
-"""Build a team event whose tournament is reported to FIDE in slices.
+"""Build a team event whose tournament is reported to FIDE in periods.
 
 An interclubs season runs from autumn to spring, one round a month, and
-is registered with the federation one slice at a time — the case
+is registered with the federation one period at a time — the case
 <https://ratings.fide.com/tournament_src_report.phtml?code=441469> is a
 single round of one. A team file names its teams and their rosters as
-well as its players, so testing a slice of one needs teams, boards and a
-rating per slice.
+well as its players, so testing a period of one needs teams, boards and a
+rating per period.
 
 The rounds are laid out around today, so the season is always under way
-and the slices before the current one hold ratings of their own.
+and the periods before the current one hold ratings of their own.
 """
 
 import random
@@ -84,7 +84,7 @@ def generate(
                 location='Rennes',
                 public=True,
                 event_type=EventType.TEAM,
-                # The FFE is the federation that reports in slices, so the
+                # The FFE is the federation that reports in periods, so the
                 # event it is tested with has its plugin on.
                 enabled_plugins=['ffe'],
             )
@@ -92,7 +92,7 @@ def generate(
         tournament_id = event_database.add_stored_tournament(
             StoredTournament(
                 id=None,
-                name='Interclubs en tranches',
+                name='Multi-period team tournament',
                 rounds=rounds,
                 rating=TournamentRating.STANDARD.value,
                 pairing='TEAM_SWISS_STANDARD',
@@ -162,7 +162,7 @@ def generate(
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='Command creating a team event to test tournaments reported '
-        'in slices of at most 30 days.'
+        'in periods of at most 30 days.'
     )
     parser.add_argument(
         '-e',

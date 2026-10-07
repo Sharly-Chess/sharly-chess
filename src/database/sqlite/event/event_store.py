@@ -278,7 +278,7 @@ class StoredProhibitedPairingGroup:
 
 @dataclass
 class StoredTournamentPeriod:
-    """A rating period of a tournament: the slice of at most 30 days that
+    """A rating period of a tournament: the period of at most 30 days that
     is reported to FIDE as a tournament of its own. ``first_round`` is the
     round it starts at, and it runs to the round before the next period's
     — so the periods of a tournament are contiguous and cover every round.
@@ -288,8 +288,8 @@ class StoredTournamentPeriod:
     id: int | None
     tournament_id: int
     first_round: int = 1
-    # A slice is submitted as a tournament of its own, so a plugin whose
-    # service wants one registration per slice keeps that slice's
+    # A period is submitted as a tournament of its own, so a plugin whose
+    # service wants one registration per period keeps that period's
     # identifiers here rather than on the tournament.
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
@@ -307,10 +307,10 @@ class StoredTournamentPlayer:
 
 @dataclass
 class StoredPlayerPeriod:
-    """A player as one slice of a long tournament knew them.
+    """A player as one period of a long tournament knew them.
 
-    FIDE B.01 1.1.4 has both the ratings and the titles of a slice being
-    those in force while it was played, so a slice records the pair. An
+    FIDE B.01 1.1.4 has both the ratings and the titles of a period being
+    those in force while it was played, so a period records the pair. An
     empty title is a title held, or not held, exactly as the player's own
     columns say."""
 
@@ -329,7 +329,7 @@ class StoredPlayer:
         default_factory=dict[int, dict[str, int | None]]
     )
     # The rating periods, by id, where what the player held differed from
-    # the columns above, which are the first slice's.
+    # the columns above, which are the first period's.
     periods: dict[int, StoredPlayerPeriod] = field(
         default_factory=dict[int, StoredPlayerPeriod]
     )

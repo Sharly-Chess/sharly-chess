@@ -67,8 +67,8 @@ class TrfExport:
         pairings and the standings used instead; the pairing engine reads
         the games as they were used, and adjourned games as draws.
 
-        *period* reports one slice of a tournament reported in slices: a
-        tournament of its own, holding that slice's rounds numbered from
+        *period* reports one period of a tournament reported in periods: a
+        tournament of its own, holding that period's rounds numbered from
         1, the players who played them, and points from those games — see
         ``report_window``."""
         tournament = self.tournament
@@ -101,7 +101,7 @@ class TrfExport:
             ],
             round_dates=[
                 dt.strftime('%y/%m/%d') if dt else ''
-                # A slice's file describes the tournament, so it carries
+                # A period's file describes the tournament, so it carries
                 # the whole schedule however few rounds it fills in.
                 for idx in range(1, (tournament.rounds if window else after_round) + 1)
                 for dt in [tournament.round_datetimes.get(idx)]
@@ -141,7 +141,7 @@ class TrfExport:
         # The rank field allows ties, and players the criteria leave level
         # are level (C.07 Art. 4.2): they share the rank the standings
         # show, rather than take the pairing-number order the list is
-        # written in. A slice's file states its own standings, which the
+        # written in. A period's file states its own standings, which the
         # window has already ranked.
         if window is None:
             shared_rank = self._shared_ranks()
@@ -262,7 +262,7 @@ class TrfExport:
         produced by :meth:`build` — bbpPairings' ``--team`` mode
         aggregates the per-player games into team match data.
 
-        *window* reports one slice of the tournament: the teams that
+        *window* reports one period of the tournament: the teams that
         played in it, numbered from 1, holding the players who played
         for them and the match points those rounds were worth."""
         tournament = self.tournament
@@ -390,7 +390,7 @@ class TrfExport:
         the board order of a round first (capped at the board count),
         then the remaining roster members as substitutes, so a
         never-fielded player still round-trips through the team record on
-        re-import. A slice's file takes the board order of its last
+        re-import. A period's file takes the board order of its last
         round."""
         tournament = self.tournament
         team_player_count = tournament.team_player_count or 0
@@ -417,7 +417,7 @@ class TrfExport:
     def _window_team_ranks(
         self, teams: list['Team'], team_totals: dict[int, tuple[float, float]]
     ) -> dict[int, int]:
-        """The standings a slice's file states: the teams it holds ranked
+        """The standings a period's file states: the teams it holds ranked
         on the points of the matches it holds, ties sharing a place."""
         primary_is_match_points = (
             self.tournament.primary_score == ScoreType.MATCH_POINTS
@@ -570,7 +570,7 @@ class TrfExport:
         self, after_round: int, window: ReportWindow | None = None
     ) -> list[Pairing]:
         """The pairings a report covers: those of the rounds up to
-        *after_round*, or of the rounds a slice holds."""
+        *after_round*, or of the rounds a period holds."""
         return [
             pairing
             for player in self.tournament.tournament_players_by_pairing_number.values()
@@ -866,7 +866,7 @@ class TrfExport:
             header_802 = f'{tpn:>{tpn_width}} {nickname:<5} {mp:>6.1f} {gp:>6.1f}'
             blocks_801: list[str] = []
             blocks_802: list[str] = []
-            # Every round of the tournament has its block; a slice fills in
+            # Every round of the tournament has its block; a period fills in
             # the ones it covers and leaves the others blank.
             for round_ in range(1, after_round + 1):
                 entry = per_round.get(round_, {}).get(team.id)
@@ -1066,7 +1066,7 @@ class TrfExport:
             TeamByeType.ZPB: 'Z',
         }
         last_round = min(after_round + 1, tournament.rounds)
-        # A slice's file is never paired from, so the round after it has
+        # A period's file is never paired from, so the round after it has
         # nothing to say in it.
         next_round = -1 if window else after_round + 1
         records: list[TrfRoundBye] = []

@@ -65,10 +65,10 @@ class FFESession(Session):
     ):
         super().__init__()
         self.tournament: Tournament | None = tournament
-        # A tournament reported in slices is submitted one slice at a
-        # time, each under its own registration; without a slice the
+        # A tournament reported in periods is submitted one period at a
+        # time, each under its own registration; without a period the
         # session speaks for the tournament entire, which is what the
-        # first tranche's registration publishes.
+        # first period's registration publishes.
         self.period: TournamentPeriod | None = period
         self.ffe_state: dict[str, str] = {}
         self.auth_state: dict[str, str | None] = {}

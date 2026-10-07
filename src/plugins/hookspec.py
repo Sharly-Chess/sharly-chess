@@ -335,10 +335,10 @@ class AppHookSpecs:
     ) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template of the fields a rating period
         carries, rendered inside each period of a tournament reported in
-        slices.
+        periods.
 
-        A slice is submitted as a tournament of its own, so a service
-        that wants one registration per slice asks for it here. The
+        A period is submitted as a tournament of its own, so a service
+        that wants one registration per period asks for it here. The
         template is rendered once per period with ``period`` and
         ``field_suffix`` in its context: naming the fields with that
         suffix is what keeps each period's values apart."""

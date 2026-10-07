@@ -1,9 +1,9 @@
-"""A slice carries the identifiers of the registration it is submitted
+"""A period carries the identifiers of the registration it is submitted
 under.
 
-The FFE gives each "tranche" its own homologation number and password,
-so the tournament form asks for one set per slice — under the plugin's
-own field names, suffixed with the slice they belong to.
+The FFE gives each period its own homologation number and password,
+so the tournament form asks for one set per period — under the plugin's
+own field names, suffixed with the period they belong to.
 """
 
 from collections.abc import Iterator
@@ -71,7 +71,7 @@ def _update(http: TestClient, event: str, **fields: str):
 
 
 @pytest.mark.unit
-def test_the_form_asks_for_one_registration_per_slice(http: TestClient, event: str):
+def test_the_form_asks_for_one_registration_per_period(http: TestClient, event: str):
     _update(http, event, multi_period='on', round_3_period_start='on')
     second_period = _periods(event)[1]
     assert second_period.first_round == 3
@@ -82,7 +82,7 @@ def test_the_form_asks_for_one_registration_per_slice(http: TestClient, event: s
 
 
 @pytest.mark.unit
-def test_a_slice_keeps_its_own_registration(http: TestClient, event: str):
+def test_a_period_keeps_its_own_registration(http: TestClient, event: str):
     _update(http, event, multi_period='on', round_3_period_start='on')
     _update(
         http,
@@ -99,8 +99,8 @@ def test_a_slice_keeps_its_own_registration(http: TestClient, event: str):
 
 @pytest.mark.unit
 def test_the_tournament_keeps_its_own(http: TestClient, event: str):
-    """The fields without a slice belong to the tournament, which is the
-    first slice's registration — where the FFE publishes the whole
+    """The fields without a period belong to the tournament, which is the
+    first period's registration — where the FFE publishes the whole
     tournament for the players."""
     _update(
         http,

@@ -2,21 +2,21 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    """Tournaments lasting more than 30 days, which FIDE rates one slice
+    """Tournaments lasting more than 30 days, which FIDE rates one period
     at a time.
 
     ``multi_period`` is the arbiter's flag and ``tournament_period`` holds
-    the round each slice starts at; every tournament gets the single
+    the round each period starts at; every tournament gets the single
     period covering all its rounds, so the read paths have one shape
-    whatever its length. A slice is submitted as a tournament of its own,
+    whatever its length. A period is submitted as a tournament of its own,
     so it carries its own ``plugin_data``: a service that wants one
-    registration per slice keeps that slice's identifiers there.
+    registration per period keeps that period's identifiers there.
 
-    A slice is played on the ratings and titles in force while it runs
-    (FIDE B.01 1.1.4), so a player may hold different ones in each slice
+    A period is played on the ratings and titles in force while it runs
+    (FIDE B.01 1.1.4), so a player may hold different ones in each period
     of a long tournament. The player's own columns keep the first of them
     — the rating C.07:10 asks tie-breaks for by default — and
-    ``player_period`` records a slice where they differ.
+    ``player_period`` records a period where they differ.
 
     ``tie_break_rating`` is which of those a rating-based tie-break reads,
     which C.07:10 leaves to the arbiter when a player may hold more than

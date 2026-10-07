@@ -1,8 +1,8 @@
-"""The Papi file of one slice of a tournament reported in slices.
+"""The Papi file of one period of a tournament reported in periods.
 
-The FFE submits each tranche under its own homologation number, as a
+The FFE submits each period under its own homologation number, as a
 Papi "dans lequel on aura préalablement supprimé les rondes avant la
-tranche" — so the slice's file holds that slice's rounds, numbered from
+période" — so the period's file holds that period's rounds, numbered from
 1, and names the registration it is submitted under.
 """
 
@@ -90,9 +90,9 @@ class TestPeriodPapi:
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
-    def test_a_slice_leaves_the_other_rounds_unpaired(self):
-        """The Papi of a tranche is the tournament's own with the rounds
-        outside the tranche unpaired: they keep their place, empty, and
+    def test_a_period_leaves_the_other_rounds_unpaired(self):
+        """The Papi of a period is the tournament's own with the rounds
+        outside the period unpaired: they keep their place, empty, and
         the FFE rates the rounds that are filled in."""
         tournament = self._setup()
         papi = PapiConverter().tournament_to_papi_data(
@@ -103,16 +103,16 @@ class TestPeriodPapi:
             sorted(player.rounds) == [3, 4] for player in papi.players if player.rounds
         )
 
-    def test_a_slice_names_the_registration_it_is_submitted_under(self):
+    def test_a_period_names_the_registration_it_is_submitted_under(self):
         tournament = self._setup()
         papi = PapiConverter().tournament_to_papi_data(
             tournament, period=tournament.periods[1]
         )
         assert papi.variables.homologation == '49944'
 
-    def test_the_first_slice_is_submitted_under_the_tournament_s_own(self):
+    def test_the_first_period_is_submitted_under_the_tournament_s_own(self):
         """The FFE publishes the whole tournament there, so the first
-        tranche and the tournament share a registration."""
+        period and the tournament share a registration."""
         tournament = self._setup()
         papi = PapiConverter().tournament_to_papi_data(
             tournament, period=tournament.periods[0]

@@ -1,4 +1,4 @@
-"""The TRF of one slice of a team tournament reported in slices.
+"""The TRF of one period of a team tournament reported in periods.
 
 A team file names its teams, their rosters and their matches, so a
 report covering part of the tournament windows all three: the teams that
@@ -166,7 +166,7 @@ class TestTeamPeriodTrf:
     def test_the_file_holds_the_whole_field(self):
         """Charlie and Delta sat rounds 3 and 4 out, and are in the file
         all the same: it describes the tournament, and says of those two
-        only that they played nothing in the slice."""
+        only that they played nothing in the period."""
         tournament = self._setup()
         trf = tournament.to_trf(period=tournament.periods[1])
         assert trf.num_teams == 4
@@ -192,8 +192,8 @@ class TestTeamPeriodTrf:
         alpha = next(team for team in trf.teams if team.name == 'Alpha')
         assert sorted(self._roster_names(trf, alpha)) == ['A1', 'A2', 'A3']
 
-    def test_the_match_points_are_the_slice_s_own(self):
-        """Alpha won all four boards of the slice: two match wins, not
+    def test_the_match_points_are_the_period_s_own(self):
+        """Alpha won all four boards of the period: two match wins, not
         the four it holds over the tournament."""
         tournament = self._setup()
         trf = tournament.to_trf(period=tournament.periods[1])
@@ -209,9 +209,9 @@ class TestTeamPeriodTrf:
         assert trf.num_rounds == 4
         assert {record.round for record in trf.oodo_team_pairings} == {3, 4}
 
-    def test_every_team_answers_for_the_slice(self):
+    def test_every_team_answers_for_the_period(self):
         """801 and 802 carry one row per team of the tournament, the
-        rounds outside the slice left blank."""
+        rounds outside the period left blank."""
         tournament = self._setup()
         trf = tournament.to_trf(period=tournament.periods[1])
         assert len(trf.informative_team_pairings_records) == 4

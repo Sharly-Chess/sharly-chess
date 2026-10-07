@@ -453,7 +453,7 @@ class Player:
     @property
     def ratings(self) -> dict[TournamentRating, PlayerRating]:
         """The player's own ratings — the first ones a tournament
-        reported in slices was played on."""
+        reported in periods was played on."""
         return self._base_ratings
 
     def stored_period(
@@ -462,10 +462,10 @@ class Player:
         """What a rating period knew of the player, or None when it knew
         them as their own columns say.
 
-        A tournament of more than 30 days is reported slice by slice, each
+        A tournament of more than 30 days is reported period by period, each
         played on the ratings and titles in force while it ran (FIDE B.01
-        1.1.4), so a player may hold different ones in each. A slice with
-        nothing of its own keeps what the last earlier slice recorded, and
+        1.1.4), so a player may hold different ones in each. A period with
+        nothing of its own keeps what the last earlier period recorded, and
         the player's own when none did — which is every player of a
         tournament short enough to be rated in one go."""
         if period is None or not self.stored_player.periods:
@@ -522,7 +522,7 @@ class Player:
         category: PlayerCategory,
         ratings: dict[TournamentRating, PlayerRating] | None = None,
     ) -> PlayerRatingAndType:
-        """*ratings* answers the question for a slice other than the one
+        """*ratings* answers the question for a period other than the one
         being played — the ratings a report or a tie-break asks for."""
         player_ratings = (ratings or self.ratings)[tournament_rating]
         rating: int | None = None
@@ -579,8 +579,8 @@ class Player:
         """The day whose FIDE rating period the k-factors of the player
         are read from.
 
-        A tournament reported in slices is rated slice by slice, so the
-        day is the one its current slice starts on rather than the one
+        A tournament reported in periods is rated period by period, so the
+        day is the one its current period starts on rather than the one
         the whole tournament did."""
         tournament = self.optional_single_tournament
         if tournament is None:
@@ -615,12 +615,12 @@ class Player:
 
         A tournament's first period holds the player's first ratings and
         records them as such; a later one records them against itself,
-        leaving the earlier slices — and the reports already made of them
+        leaving the earlier periods — and the reports already made of them
         — as they were.
 
         What a period records is the whole of the player as it knew them,
         not the rating types the update happened to carry: it is what that
-        slice was played on, and a report of it has to answer for every
+        period was played on, and a report of it has to answer for every
         rating type, for the k-factors and for the titles."""
         if period is not None and period.first_round > 1 and period.id is not None:
             self.stored_player.periods[period.id] = StoredPlayerPeriod(
@@ -693,9 +693,9 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def ratings(self) -> dict[TournamentRating, PlayerRating]:
         """The ratings the tournament is currently played on.
 
-        A tournament reported in slices is rated slice by slice, so what
-        it plays on now is what its current slice was prepared with. A
-        tournament rated in one go has one slice and reads the player's
+        A tournament reported in periods is rated period by period, so what
+        it plays on now is what its current period was prepared with. A
+        tournament rated in one go has one period and reads the player's
         own ratings."""
         return self.ratings_for(self.tournament.current_period)
 
@@ -761,8 +761,8 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         )
 
     def rating_and_type_in(self, period: 'TournamentPeriod') -> PlayerRatingAndType:
-        """The rating the tournament would use for this player in a slice
-        other than the one it has reached — what a report of that slice,
+        """The rating the tournament would use for this player in a period
+        other than the one it has reached — what a report of that period,
         or a tie-break asked to read it, needs."""
         ratings = self.ratings_for(period)
         tournament_rating = self.tournament.rating
@@ -783,7 +783,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def rating_and_type_in_round(self, round_: int) -> PlayerRatingAndType:
         """The rating the player was playing at in a round — what the
         pairing sheet handed out that day carried, and what a report of
-        the slice carries."""
+        the period carries."""
         period = self.tournament.period_by_round.get(round_)
         return (
             self._tournament_rating
@@ -1177,11 +1177,11 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         """The player's 001 record, with the games of *rating_corrections*
         as they were corrected.
 
-        *window* reports one slice of a tournament long enough to be
-        reported in slices: the rounds it covers are renumbered from 1,
+        *window* reports one period of a tournament long enough to be
+        reported in periods: the rounds it covers are renumbered from 1,
         the opponents renumbered with them, the ratings and titles are
-        those the slice was played on (B.01 1.1.4), and the points are
-        the slice's own."""
+        those the period was played on (B.01 1.1.4), and the points are
+        the period's own."""
         from data.input_output.trf.trf_data import TrfPlayer, TrfGame, TrfNationalPlayer
 
         games: list[TrfGame] = []
@@ -1262,7 +1262,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         period = window.period
         ratings = self.ratings_for(period)
         open_title, women_title = self.titles_in(period)
-        # The rounds the slice does not cover are left out, so the 001
+        # The rounds the period does not cover are left out, so the 001
         # record keeps its place for them and says nothing of them.
         games: list[TrfGame] = [
             pairing.to_trf(round_nb)

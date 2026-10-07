@@ -203,8 +203,8 @@ class FfeUploadController(BaseEventAdminController):
         tournament_id: FromPath[int],
         period_id: FromPath[int],
     ) -> Template:
-        """Send one tranche, under the registration it was declared with
-        — what a correction to a tranche already submitted needs."""
+        """Send one period, under the registration it was declared with
+        — what a correction to a period already submitted needs."""
         web_context = FfeWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
         period = next(
@@ -233,7 +233,7 @@ class FfeUploadController(BaseEventAdminController):
         tournament_id: FromPath[int],
         period_id: FromPath[int],
     ) -> Template:
-        """Show one tranche's registration on the FFE site, so that the
+        """Show one period's registration on the FFE site, so that the
         players can see the games it carries and the arbiter that they
         reached the registration they were meant for."""
         web_context = FfeWebContext(request, tournament_id)

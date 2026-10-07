@@ -85,21 +85,21 @@ class TestOpponentInRound:
         tournament = self._event.tournaments_by_name[TOURNAMENT_NAME]
         return next(iter(tournament.tournament_players))
 
-    def test_a_game_in_the_first_slice_counts_the_earlier_rating_and_title(self):
+    def test_a_game_in_the_first_period_counts_the_earlier_rating_and_title(self):
         opponent = NormOpponent.in_round(self._opponent(), 1)
         assert opponent.rating == FIRST_RATING
         assert opponent.held_titles == frozenset({PlayerTitle.INTERNATIONAL_MASTER})
         assert opponent.display_title == 'IM'
 
-    def test_a_game_in_the_later_slice_counts_what_was_held_then(self):
+    def test_a_game_in_the_later_period_counts_what_was_held_then(self):
         opponent = NormOpponent.in_round(self._opponent(), 4)
         assert opponent.rating == LATER_RATING
         assert opponent.held_titles == frozenset({PlayerTitle.GRANDMASTER})
         assert opponent.display_title == 'GM'
 
-    def test_the_average_rating_counts_each_game_at_its_own_slice(self):
+    def test_the_average_rating_counts_each_game_at_its_own_period(self):
         """1.4.6 averages the opponents of the games counted, and 1.1.4
-        fixes each of those at the slice its game was played in — so
+        fixes each of those at the period its game was played in — so
         meeting one opponent on either side of a cut averages the two
         ratings they held."""
         tournament_player = self._opponent()
@@ -121,7 +121,7 @@ class TestOpponentInRound:
 
     def test_everything_else_is_read_from_the_player(self):
         """Federation, identity and the opponent's own schedule do not
-        belong to a slice: 1.1.4 names ratings and titles alone."""
+        belong to a period: 1.1.4 names ratings and titles alone."""
         tournament_player = self._opponent()
         opponent = NormOpponent.in_round(tournament_player, 1)
         assert opponent.id == tournament_player.id

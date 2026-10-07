@@ -899,10 +899,10 @@ class PapiConverter:
     ) -> PapiData:
         """Convert a Tournament object to PapiData.
 
-        *period* builds the file of one slice of a tournament reported in
-        slices: the rounds of that slice numbered from 1, the players who
+        *period* builds the file of one period of a tournament reported in
+        periods: the rounds of that period numbered from 1, the players who
         played them, the ratings they held then, and the homologation
-        number the slice is submitted under."""
+        number the period is submitted under."""
         window = build_window(tournament, period) if period else None
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
@@ -1144,7 +1144,7 @@ class PapiConverter:
             if tournament_player.id in correction.player_ids
         }
         for round_, pairing in tournament_player.pairings_by_round.items():
-            # A tranche is submitted as the tournament's own Papi with
+            # A period is submitted as the tournament's own Papi with
             # the other rounds unpaired: they keep their place, empty, and
             # the rating server takes the results of the rounds that are
             # filled in.

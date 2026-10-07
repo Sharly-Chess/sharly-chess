@@ -14,14 +14,14 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 # FIDE rates a tournament as a single event only when it lasts 30 days or
-# less; a longer one is reported slice by slice, each slice within that
+# less; a longer one is reported period by period, each period within that
 # span.
 MAX_PERIOD_DAYS: int = 30
 
 # The value of a tournament's tie-break rating setting that reads, for
-# each game, the ratings of the slice the game was played in (VCL Q214).
+# each game, the ratings of the period the game was played in (VCL Q214).
 # An empty setting is the first rating (C.07:10's default) and anything
-# else is the id of the slice the arbiter named (Q216).
+# else is the id of the period the arbiter named (Q216).
 TIE_BREAK_RATING_BY_ROUND: str = 'round'
 
 
@@ -210,11 +210,11 @@ class TournamentPeriod:
 
     @cached_property
     def plugin_data(self) -> dict[str, PluginData]:
-        """What each plugin keeps about this slice.
+        """What each plugin keeps about this period.
 
-        A slice is submitted as a tournament of its own, so a service
-        that wants one registration per slice — the FFE gives each
-        "tranche" its own homologation number — keeps that registration's
+        A period is submitted as a tournament of its own, so a service
+        that wants one registration per period — the FFE gives each
+        period its own homologation number — keeps that registration's
         identifiers here rather than on the tournament."""
         from data.tournament import Tournament
 
@@ -228,7 +228,7 @@ class TournamentPeriod:
         }
 
     def set_plugin_data(self, plugin_id: str, plugin_data: PluginData) -> None:
-        """Record what a plugin keeps about this slice."""
+        """Record what a plugin keeps about this period."""
         from database.sqlite.event.event_database import EventDatabase
 
         self.stored_period.plugin_data[plugin_id] = plugin_data.to_stored_value()
@@ -294,10 +294,10 @@ class TournamentPeriod:
 
     @property
     def report_name(self) -> str:
-        """What a report covering this slice calls itself: the
+        """What a report covering this period calls itself: the
         tournament's name and the rounds the file holds.
 
-        Federations name a slice's registration after its rounds — "OP
+        Federations name a period's registration after its rounds — "OP
         Settimanale Autunno 2022 Rounds 5-6", "Belgian Interclubs Round
         2025-2026 Ronde 11" — and a file that says the same is told from
         the tournament's own at a glance."""

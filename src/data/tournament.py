@@ -240,7 +240,7 @@ class Tournament:
     @property
     def multi_period(self) -> bool:
         """Whether the tournament lasts more than 30 days and is therefore
-        reported to FIDE one slice at a time (VCL Q210)."""
+        reported to FIDE one period at a time (VCL Q210)."""
         return bool(self.stored_tournament.multi_period)
 
     @cached_property
@@ -290,10 +290,10 @@ class Tournament:
     @property
     def tie_break_rating(self) -> str:
         """Which of a player's ratings a rating-based tie-break reads:
-        their first (C.07:10's default), the one of each game's own slice,
-        or the one of a slice the arbiter names.
+        their first (C.07:10's default), the one of each game's own period,
+        or the one of a period the arbiter names.
 
-        Stored as '' for the first rating, 'round' for each game's slice,
+        Stored as '' for the first rating, 'round' for each game's period,
         or the id of a period."""
         return self.stored_tournament.tie_break_rating or ''
 
@@ -303,11 +303,11 @@ class Tournament:
             database.update_stored_tournament(self.stored_tournament)
 
     def tie_break_period(self, round_: int) -> TournamentPeriod | None:
-        """The slice whose ratings a tie-break reads for a game of this
+        """The period whose ratings a tie-break reads for a game of this
         round.
 
         None when the tournament is rated in one go and the question does
-        not arise; otherwise the first slice unless the arbiter said
+        not arise; otherwise the first period unless the arbiter said
         otherwise, which is the first rating C.07:10 takes by default."""
         if len(self.periods) < 2:
             return None
@@ -322,8 +322,8 @@ class Tournament:
         )
 
     def round_starts_period(self, round_: int) -> bool:
-        """Whether a round opens a slice of a tournament reported in
-        slices — the moment its ratings are refreshed, and the only one
+        """Whether a round opens a period of a tournament reported in
+        periods — the moment its ratings are refreshed, and the only one
         at which the arbiter has to be reminded of it."""
         return len(self.periods) > 1 and any(
             period.first_round == round_ for period in self.periods
@@ -331,11 +331,11 @@ class Tournament:
 
     @property
     def current_period(self) -> TournamentPeriod:
-        """The slice being played: the one holding the round the
+        """The period being played: the one holding the round the
         tournament has reached.
 
         Where it has reached is what the arbiter has paired, not what the
-        calendar says — a slice can be played early or late, and pairing
+        calendar says — a period can be played early or late, and pairing
         its first round is the act that starts it. Before any round is
         paired there is nothing to read, so the dates answer instead: the
         period today falls in, the last one once they have all passed."""
@@ -391,7 +391,7 @@ class Tournament:
     @property
     def multiple_fide_periods(self) -> bool:
         """Whether the tournament runs longer than FIDE rates as a single
-        tournament, and is therefore reported in slices."""
+        tournament, and is therefore reported in periods."""
         return dates_exceed_period(self.start_date, self.stop_date)
 
     @property
@@ -2707,7 +2707,7 @@ class Tournament:
         period: TournamentPeriod | None = None,
     ) -> 'TrfTournament':
         """The tournament's TRF, or — given a *period* — the file for
-        that slice of it alone (see ``trf_window``)."""
+        that period of it alone (see ``trf_window``)."""
         from data.input_output.trf.trf_export import TrfExport
 
         return TrfExport(self).build(

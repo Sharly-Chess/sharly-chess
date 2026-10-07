@@ -2,7 +2,7 @@
 
 C.07:10 leaves the choice to the arbiter when a player may hold more
 than one rating during the tournament, so the question is put where the
-tie-breaks are configured — and only to a tournament that has slices.
+tie-breaks are configured — and only to a tournament that has periods.
 """
 
 from collections.abc import Iterator
@@ -77,7 +77,7 @@ def test_a_split_tournament_is_asked_which_rating_to_read(http: TestClient, even
     modal = _modal(http, _create(multi_period=True))
     assert 'tie_break_rating' in modal
     assert 'First rating' in modal
-    # Each slice on offer by name, plus the per-game choice.
+    # Each period on offer by name, plus the per-game choice.
     assert 'value="round"' in modal
     assert 'Rating read by rating-based tie-breaks' in modal
     # Its label keeps its own line, so picking a longer option does not

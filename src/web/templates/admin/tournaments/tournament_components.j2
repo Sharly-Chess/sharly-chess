@@ -694,8 +694,8 @@
                                     >
                                         {{ exporter.label(tournament) }}
                                     </li>
-                                    {# A tournament reported in slices is submitted
-                                       one slice at a time, each its own file. #}
+                                    {# A tournament reported in periods is submitted
+                                       one period at a time, each its own file. #}
                                     {% if exporter.exports_periods and tournament.periods|length > 1 %}
                                         {% for period in tournament.periods %}
                                             <li

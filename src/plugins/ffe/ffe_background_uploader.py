@@ -57,15 +57,15 @@ class FfeBackgroundUploader:
 
     @classmethod
     def is_period_upload_ongoing(cls, period: TournamentPeriod) -> bool:
-        """Whether this slice is the one being sent right now."""
+        """Whether this period is the one being sent right now."""
         return cls.period_result_id(period) in cls.ongoing_period_result_ids
 
     @classmethod
     def is_period_upload_pending(cls, period: TournamentPeriod) -> bool:
-        """Whether this slice is the one an upload still to come will send.
+        """Whether this period is the one an upload still to come will send.
 
-        A whole-tournament upload sends the slice being played once the
-        tournament itself is published, so that slice is waiting for its
+        A whole-tournament upload sends the period being played once the
+        tournament itself is published, so that period is waiting for its
         turn from the moment the run starts — and from the moment one is
         queued or scheduled."""
         if cls.is_period_upload_ongoing(period):
@@ -144,11 +144,11 @@ class FfeBackgroundUploader:
     ) -> None:
         """Upload a tournament to FFE.
 
-        *period_id* sends one slice of a tournament reported in slices,
-        under the registration that slice was declared with — which is
-        how a slice already submitted is sent again after a correction.
+        *period_id* sends one period of a tournament reported in periods,
+        under the registration that period was declared with — which is
+        how a period already submitted is sent again after a correction.
         Without it the whole tournament goes to its own registration, and
-        the slice being played to its, as the FFE procedure has it."""
+        the period being played to its, as the FFE procedure has it."""
 
         # Set the locale (called in a new thread)
         set_locale(SharlyChessConfig().locale)
@@ -163,7 +163,7 @@ class FfeBackgroundUploader:
         time.sleep(0.5)
 
         tournament: Tournament | None = None
-        # Where the outcome is recorded: a slice answers for its own
+        # Where the outcome is recorded: a period answers for its own
         # upload, the tournament for the whole-tournament one.
         uploaded_period: TournamentPeriod | None = None
         failure_status: FailureFFEUploadStatus | None = None
@@ -206,22 +206,22 @@ class FfeBackgroundUploader:
                 cls._start_period_upload(period)
                 failure_status = FFESession(tournament, period).upload(set_visible)
                 return
-            # A tournament reported in slices is published entire on the
-            # first tranche's registration — the upload below — and
-            # submitted for rating one tranche at a time, so the tranche
+            # A tournament reported in periods is published entire on the
+            # first period's registration — the upload below — and
+            # submitted for rating one period at a time, so the period
             # being played goes to its own registration as well.
             # A team competition is reported through the site's team module,
             # match report by match report, and has no Papi to submit a
-            # tranche of.
+            # period of.
             team_transfer = FFEUtils.supports_team_transfer(tournament)
             current_period = (
                 tournament.current_period
                 if not team_transfer and len(tournament.periods) > 1
                 else None
             )
-            # Only a tranche with a registration of its own is submitted:
+            # Only a period with a registration of its own is submitted:
             # without one there is nothing to submit it under, and the
-            # tournament's would take the slice's file in place of the
+            # tournament's would take the period's file in place of the
             # complete results published there.
             if (
                 current_period is not None
@@ -248,7 +248,7 @@ class FfeBackgroundUploader:
                 cls._record_upload(tournament, None, None)
                 uploaded_period = current_period
                 cls._start_period_upload(current_period)
-                # The tranche follows the tournament for rating, not for
+                # The period follows the tournament for rating, not for
                 # publication: a registration is made visible when the
                 # arbiter asks for that one.
                 failure_status = FFESession(tournament, current_period).upload(False)
@@ -266,8 +266,8 @@ class FfeBackgroundUploader:
 
     @classmethod
     def _start_period_upload(cls, period: TournamentPeriod) -> None:
-        """Hand the slice over from waiting to being sent, and say so:
-        the transfer screen is redrawn on the event, and a slice can be
+        """Hand the period over from waiting to being sent, and say so:
+        the transfer screen is redrawn on the event, and a period can be
         sent well into a run that started with the tournament itself."""
         cls.pending_period_result_ids.discard(cls.period_result_id(period))
         cls.ongoing_period_result_ids.add(cls.period_result_id(period))
@@ -279,7 +279,7 @@ class FfeBackgroundUploader:
         period: TournamentPeriod | None,
         failure_status: FailureFFEUploadStatus | None,
     ) -> None:
-        """Record how an upload went, against what was uploaded: a slice
+        """Record how an upload went, against what was uploaded: a period
         answers for its own submission, the tournament for the file
         published entire."""
         plugin_data = (
@@ -303,8 +303,8 @@ class FfeBackgroundUploader:
 
     @classmethod
     def upload_period(cls, tournament: Tournament, period_id: int) -> None:
-        """Send one tranche in a thread of its own, so that the screen can
-        follow it: the slice's row says it is being sent, then how it
+        """Send one period in a thread of its own, so that the screen can
+        follow it: the period's row says it is being sent, then how it
         went, as the tournament's does."""
 
         def _run() -> None:

@@ -319,7 +319,7 @@ class FfeTournamentController(BaseEventAdminController):
         period_id: FromQuery[int | None] = None,
     ) -> Template:
         """Send the tournament to the FFE site — or one of its periods,
-        which is how a tranche already submitted is sent again after a
+        which is how a period already submitted is sent again after a
         correction."""
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()

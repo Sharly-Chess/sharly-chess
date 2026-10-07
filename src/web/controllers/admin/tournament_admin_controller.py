@@ -427,9 +427,9 @@ class TournamentAdminController(BaseEventAdminController):
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action)
-            # A slice submitted under a registration of its own carries its
+            # A period submitted under a registration of its own carries its
             # own values, under the plugin's field names suffixed with the
-            # slice (``period_field_suffix``).
+            # period (``period_field_suffix``).
             if action == 'update':
                 for period in web_context.get_admin_tournament().periods:
                     suffix = period_field_suffix(period.first_round)
@@ -1352,7 +1352,7 @@ class TournamentAdminController(BaseEventAdminController):
         event: 'Event', tournament: Tournament | None
     ) -> list[str]:
         """The templates of the fields a rating period carries — what a
-        plugin asks for once per slice, such as the registration the slice
+        plugin asks for once per period, such as the registration the period
         is submitted under."""
         if tournament is None:
             return []
@@ -1367,13 +1367,13 @@ class TournamentAdminController(BaseEventAdminController):
         stored_tournament: StoredTournament,
         data: dict[str, str],
     ) -> None:
-        """Store what the plugins keep about each slice.
+        """Store what the plugins keep about each period.
 
-        A slice is submitted as a tournament of its own, so a plugin whose
-        service wants one registration per slice has its fields repeated
-        per slice (``period_field_suffix``). Each plugin reads its own
-        field names from the slice's share of the form and never learns
-        that slices exist."""
+        A period is submitted as a tournament of its own, so a plugin whose
+        service wants one registration per period has its fields repeated
+        per period (``period_field_suffix``). Each plugin reads its own
+        field names from the period's share of the form and never learns
+        that periods exist."""
         assert stored_tournament.id is not None
         for stored_period in database.load_tournament_stored_periods(
             stored_tournament.id
@@ -1926,9 +1926,9 @@ class TournamentAdminController(BaseEventAdminController):
                     ],
                 )
                 self._save_period_plugin_data(database, stored_tournament, data)
-                # A slice merged into its neighbour takes the tie-break
+                # A period merged into its neighbour takes the tie-break
                 # setting that named it with it, rather than leaving the
-                # tournament reading a slice it no longer has.
+                # tournament reading a period it no longer has.
                 if stored_tournament.tie_break_rating not in (
                     '',
                     TIE_BREAK_RATING_BY_ROUND,
@@ -2242,7 +2242,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         exporter = web_context.get_admin_exporter()
-        # A slice is exported as the tournament FIDE receives it; without
+        # A period is exported as the tournament FIDE receives it; without
         # one the file covers the tournament entire.
         period = next(
             (

@@ -1,6 +1,6 @@
-"""The TRF of one slice of a tournament reported in slices.
+"""The TRF of one period of a tournament reported in periods.
 
-A slice's file is a tournament of its own: its rounds numbered from 1,
+A period's file is a tournament of its own: its rounds numbered from 1,
 the players who played them, ranked and rated as they were then, and
 points counted from those games alone — as in the submissions FIDE has
 accepted (codes 286873 / 286875).
@@ -26,7 +26,7 @@ from utils.enum import Result, TournamentRating
 EVENT_ID = 'test-trf-period-export'
 TOURNAMENT_NAME = 'tournament'
 PLAYERS = {'ALPHA': 2000, 'BETA': 1900, 'GAMMA': 1800, 'DELTA': 1700}
-# BETA overtakes ALPHA between the slices.
+# BETA overtakes ALPHA between the periods.
 LATER_RATINGS = {'ALPHA': 1890, 'BETA': 1950, 'GAMMA': 1810, 'DELTA': 1690}
 
 
@@ -38,7 +38,7 @@ class TestPeriodTrf:
     def _setup(self):
         """Four players over four rounds, cut after round 2. Every round
         pairs 1-2 and 3-4, with the higher number winning in the second
-        slice so the standings differ from the first."""
+        period so the standings differ from the first."""
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(
             EVENT_ID,
@@ -119,9 +119,9 @@ class TestPeriodTrf:
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
-    def test_the_file_fills_in_the_slice_s_rounds_and_no_others(self):
+    def test_the_file_fills_in_the_period_s_rounds_and_no_others(self):
         """The file describes the tournament entire — its dates, its round
-        count, its field — and holds the games of the slice alone, under
+        count, its field — and holds the games of the period alone, under
         the round numbers they were played at."""
         tournament = self._setup()
         trf = tournament.to_trf(period=tournament.periods[1])
@@ -131,14 +131,14 @@ class TestPeriodTrf:
         for player in trf.players:
             assert [game.round for game in player.games] == [3, 4]
 
-    def test_the_points_are_the_slice_s_own(self):
+    def test_the_points_are_the_period_s_own(self):
         """Two rounds of two games: whoever won both has 2.0, not the 4.0
         they hold over the whole tournament."""
         tournament = self._setup()
         trf = tournament.to_trf(period=tournament.periods[1])
         assert sorted(player.points for player in trf.players) == [0.0, 0.0, 2.0, 2.0]
 
-    def test_the_ratings_are_those_the_slice_was_played_on(self):
+    def test_the_ratings_are_those_the_period_was_played_on(self):
         tournament = self._setup()
         trf = tournament.to_trf(period=tournament.periods[1])
         assert sorted(player.rating for player in trf.players) == sorted(
@@ -146,7 +146,7 @@ class TestPeriodTrf:
         )
 
     def test_the_players_keep_the_numbers_the_tournament_gave_them(self):
-        """Each slice is the same file with other games in it, so a player
+        """Each period is the same file with other games in it, so a player
         is the same number in all of them however their rating moved."""
         tournament = self._setup()
         first = tournament.to_trf(period=tournament.periods[0])

@@ -1,7 +1,7 @@
-"""A slice answers for its own submission.
+"""A period answers for its own submission.
 
-Each tranche is submitted under its own registration, so what is known
-of one — whether it has been sent, and how it went — is the slice's own
+Each period is submitted under its own registration, so what is known
+of one — whether it has been sent, and how it went — is the period's own
 and never the tournament's.
 """
 
@@ -44,7 +44,7 @@ class TestPeriodUploadStatus:
                     round_nb: datetime.now() + timedelta(days=14 * (round_nb - 4))
                     for round_nb in range(1, 5)
                 },
-                # The tournament has been uploaded; its slices have not.
+                # The tournament has been uploaded; its periods have not.
                 'plugin_data': {
                     'ffe': {
                         'ffe_id': 49943,
@@ -73,19 +73,19 @@ class TestPeriodUploadStatus:
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
-    def test_a_slice_with_no_registration_is_not_reported_as_uploaded(self):
+    def test_a_period_with_no_registration_is_not_reported_as_uploaded(self):
         """It borrows the tournament's registration to upload with, but
-        never its upload: the tournament's file is not this slice's."""
+        never its upload: the tournament's file is not this period's."""
         tournament = self._setup()
         statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
         assert [status.id for status in statuses] == ['NOT_CONFIGURED']
 
-    def test_a_slice_never_sent_says_so(self):
+    def test_a_period_never_sent_says_so(self):
         tournament = self._setup({'ffe_id': 49944, 'password': 'BBBBBBBBBB'})
         statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
         assert 'NEVER' in [status.id for status in statuses]
 
-    def test_a_slice_that_was_sent_says_when(self):
+    def test_a_period_that_was_sent_says_when(self):
         tournament = self._setup(
             {
                 'ffe_id': 49944,
@@ -99,7 +99,7 @@ class TestPeriodUploadStatus:
     def _registered(self):
         return self._setup({'ffe_id': 49944, 'password': 'BBBBBBBBBB'})
 
-    def test_the_slice_being_sent_says_so(self):
+    def test_the_period_being_sent_says_so(self):
         tournament = self._registered()
         period = tournament.periods[1]
         FfeBackgroundUploader.ongoing_period_result_ids.add(
@@ -108,8 +108,8 @@ class TestPeriodUploadStatus:
         statuses = FFEUtils.resolve_period_upload_statuses(period)
         assert 'ONGOING' in [status.id for status in statuses]
 
-    def test_a_slice_waiting_for_its_turn_says_so(self):
-        """The whole tournament is published first, and the slice being
+    def test_a_period_waiting_for_its_turn_says_so(self):
+        """The whole tournament is published first, and the period being
         played follows it in the same run."""
         tournament = self._registered()
         period = tournament.periods[1]
@@ -122,7 +122,7 @@ class TestPeriodUploadStatus:
         assert 'PENDING' in statuses
         assert 'ONGOING' not in statuses
 
-    def test_the_slice_being_played_waits_on_a_queued_upload(self):
+    def test_the_period_being_played_waits_on_a_queued_upload(self):
         tournament = self._registered()
         FfeBackgroundUploader.group_upload_wait_queue.add(
             FfeBackgroundUploader.tournament_result_id(tournament)
@@ -130,8 +130,8 @@ class TestPeriodUploadStatus:
         statuses = FFEUtils.resolve_period_upload_statuses(tournament.periods[1])
         assert 'PENDING' in [status.id for status in statuses]
 
-    def test_a_slice_whose_results_moved_says_so(self):
-        """A result entered after the tranche went out leaves the file
+    def test_a_period_whose_results_moved_says_so(self):
+        """A result entered after the period went out leaves the file
         the FFE holds behind the tournament."""
         tournament = self._setup(
             {
@@ -147,8 +147,8 @@ class TestPeriodUploadStatus:
         assert 'MODIFIED' in statuses
         assert 'UP_TO_DATE' not in statuses
 
-    def test_a_slice_with_no_registration_is_not_sent_with_the_tournament(self):
-        """Uploading the tournament sends the tranche being played under
+    def test_a_period_with_no_registration_is_not_sent_with_the_tournament(self):
+        """Uploading the tournament sends the period being played under
         its own registration; without one there is nothing to send it
         under, and the tournament's publishes the whole event."""
         tournament = self._setup()
@@ -157,7 +157,7 @@ class TestPeriodUploadStatus:
         assert not FFEUtils.get_period_own_plugin_data(period).ffe_id
         assert not FfeBackgroundUploader.is_period_upload_pending(period)
 
-    def test_a_slice_the_tournament_has_left_behind_reads_as_finished(self):
+    def test_a_period_the_tournament_has_left_behind_reads_as_finished(self):
         """Its registration is closed once it has been submitted, so what
         the rounds after it do cannot reach it."""
         tournament = self._setup(

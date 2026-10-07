@@ -1,15 +1,15 @@
-"""The slice of a tournament that one report covers.
+"""The period of a tournament that one report covers.
 
-A tournament of more than 30 days is reported to FIDE slice by slice. The
-file of a slice is the tournament's own file with the other rounds left
+A tournament of more than 30 days is reported to FIDE period by period. The
+file of a period is the tournament's own file with the other rounds left
 empty: the same dates, the same round count, the same players under the
-same numbers, and only the games of the slice filled in. What belongs to
-the slice alone is what the games are worth — points counted from those
-games, the standings they make, and the ratings and titles the slice was
+same numbers, and only the games of the period filled in. What belongs to
+the period alone is what the games are worth — points counted from those
+games, the standings they make, and the ratings and titles the period was
 played on (FIDE B.01 1.1.4).
 
 That is the shape Swiss Manager writes when asked for the rounds of one
-slice: the 001 records keep every round's column and fill in the slice's,
+period: the 001 records keep every round's column and fill in the period's,
 while the header records go on describing the tournament entire.
 """
 

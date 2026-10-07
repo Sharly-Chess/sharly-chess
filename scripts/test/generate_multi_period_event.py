@@ -1,12 +1,12 @@
-"""Build an event whose tournament is long enough to be reported in slices.
+"""Build an event whose tournament is long enough to be reported in periods.
 
-FIDE rates a tournament of more than 30 days one slice at a time, and a
-player may hold a different rating in each slice. Setting that up by hand
+FIDE rates a tournament of more than 30 days one period at a time, and a
+player may hold a different rating in each period. Setting that up by hand
 takes a schedule spread over months, period boundaries and a rating
 history per player, so this writes one.
 
 The rounds are laid out around today, so the tournament is always under
-way and the slices before the current one hold ratings of their own.
+way and the periods before the current one hold ratings of their own.
 """
 
 import random
@@ -66,7 +66,7 @@ def generate(
                 player_rating_type=PlayerRatingType.FIDE.value,
                 location='Paris',
                 public=True,
-                # The FFE is the federation that reports in slices, so the
+                # The FFE is the federation that reports in periods, so the
                 # event it is tested with has its plugin on.
                 enabled_plugins=['ffe'],
             )
@@ -74,7 +74,7 @@ def generate(
         tournament_id = event_database.add_stored_tournament(
             StoredTournament(
                 id=None,
-                name='Championnat en tranches',
+                name='Multi-period tournament',
                 rounds=rounds,
                 rating=TournamentRating.STANDARD.value,
                 pairing='SWISS_STANDARD',
@@ -120,7 +120,7 @@ def generate(
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='Command creating an event to test tournaments reported in '
-        'slices of at most 30 days.'
+        'periods of at most 30 days.'
     )
     parser.add_argument(
         '-e',

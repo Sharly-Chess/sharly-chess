@@ -859,8 +859,8 @@ class FfePlugin(Plugin):
     def get_tournament_period_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament'
     ) -> tuple[str, dict[str, Any]] | None:
-        # Each tranche of a tournament reported in slices is submitted
-        # under its own homologation number; the first tranche's is the
+        # Each period of a tournament reported in periods is submitted
+        # under its own homologation number; the first period's is the
         # tournament's own, which is also where the whole tournament is
         # published for the players.
         if not FFEUtils.supports_ffe_transfer(tournament):

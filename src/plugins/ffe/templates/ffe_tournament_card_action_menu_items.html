@@ -109,9 +109,9 @@
                         </button>
                     </span>
                 </li>
-                {# A tranche already submitted is sent again on its own, under
+                {# A period already submitted is sent again on its own, under
                    the registration it was declared with — what a correction
-                   to a rated tranche needs. #}
+                   to a rated period needs. #}
                 {% if tournament.periods|length > 1 and client.can_publish_results %}
                     {% for period in tournament.periods %}
                         <li>

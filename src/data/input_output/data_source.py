@@ -80,10 +80,10 @@ class PlayerComparator:
     """What a data source would change about a player, and the change
     itself once the arbiter accepts it.
 
-    In a tournament reported in slices, the ratings compared and updated
-    are those of the slice being played: refreshing them prepares that
-    slice, and what the earlier ones were reported with stays as it is.
-    ``player`` is therefore a view of the player in the current slice,
+    In a tournament reported in periods, the ratings compared and updated
+    are those of the period being played: refreshing them prepares that
+    period, and what the earlier ones were reported with stays as it is.
+    ``player`` is therefore a view of the player in the current period,
     and ``target_player`` the player themselves."""
 
     def __init__(
@@ -105,7 +105,7 @@ class PlayerComparator:
 
     @staticmethod
     def _recorded_period(player: Player) -> TournamentPeriod | None:
-        """The slice a rating update is recorded against, or None when the
+        """The period a rating update is recorded against, or None when the
         player's own ratings are what it changes."""
         tournament = player.optional_single_tournament
         if tournament is None:
@@ -143,8 +143,8 @@ class PlayerComparator:
             )
         if self.period is None:
             return self.player
-        # Everything but the ratings belongs to the player, whatever slice
-        # is being played; the ratings belong to the slice.
+        # Everything but the ratings belongs to the player, whatever period
+        # is being played; the ratings belong to the period.
         updated = self.player.stored_player
         stored_player = self.target_player.stored_player
         base_ratings = stored_player.ratings

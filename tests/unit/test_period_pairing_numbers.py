@@ -2,8 +2,8 @@
 
 FIDE C.04.2.B.3 lets the numbering follow the field until the fourth
 round is paired and holds it from there. In a tournament reported in
-slices, the ratings it follows are those of the slice being played — a
-refresh before a later slice reorders the field exactly as a correction
+periods, the ratings it follows are those of the period being played — a
+refresh before a later period reorders the field exactly as a correction
 would, and stops doing so once round 4 is paired.
 """
 
@@ -24,14 +24,14 @@ from utils.enum import TournamentRating
 
 EVENT_ID = 'test-period-pairing-numbers'
 TOURNAMENT_NAME = 'tournament'
-# Two players, the second the stronger of the two in the first slice and
+# Two players, the second the stronger of the two in the first period and
 # the weaker of the two in the second.
-FIRST_SLICE = {'ALPHA': 1500, 'BETA': 1700}
-SECOND_SLICE = {'ALPHA': 1750, 'BETA': 1650}
+FIRST_PERIOD = {'ALPHA': 1500, 'BETA': 1700}
+SECOND_PERIOD = {'ALPHA': 1750, 'BETA': 1650}
 
 
 @pytest.mark.unit
-class TestPairingNumbersAcrossSlices:
+class TestPairingNumbersAcrossPeriods:
     def teardown_method(self):
         TestUtils.delete_event(EVENT_ID)
 
@@ -59,7 +59,7 @@ class TestPairingNumbersAcrossSlices:
             database.set_tournament_periods(tournament_id, [4])
             second_period = database.load_tournament_stored_periods(tournament_id)[1]
             assert second_period.id is not None
-            for name, rating in FIRST_SLICE.items():
+            for name, rating in FIRST_PERIOD.items():
                 player_id = database.add_stored_player(
                     StoredPlayer(
                         id=None,
@@ -78,7 +78,7 @@ class TestPairingNumbersAcrossSlices:
                     StoredPlayerPeriod(
                         ratings={
                             TournamentRating.STANDARD.value: {
-                                'fide': SECOND_SLICE[name]
+                                'fide': SECOND_PERIOD[name]
                             }
                         }
                     ),
@@ -98,8 +98,8 @@ class TestPairingNumbersAcrossSlices:
             for player in tournament.tournament_players
         }
 
-    def test_the_numbering_follows_the_slice_being_played(self):
-        """The current slice makes ALPHA the higher rated of the two, so
+    def test_the_numbering_follows_the_period_being_played(self):
+        """The current period makes ALPHA the higher rated of the two, so
         the numbering puts them first — as it would after any rating
         correction before the fourth round."""
         tournament = self._setup()
@@ -108,7 +108,7 @@ class TestPairingNumbersAcrossSlices:
 
     def test_the_numbering_holds_once_the_fourth_round_is_paired(self):
         """C.04.2.B.3: no modification of a pairing number after the
-        fourth round is paired, whatever a later slice does to the
+        fourth round is paired, whatever a later period does to the
         ratings."""
         tournament = self._setup()
         numbers = self._numbers(tournament)
