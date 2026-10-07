@@ -88,6 +88,9 @@ class TrfProhibitedPairing:
     first_round: int
     last_round: int | None
     pairing_numbers: list[int]
+    #: Avoided as the pairing engine's lowest-priority criterion (SCS
+    #: record) rather than forbidden (260 record).
+    soft: bool = False
 
 
 @dataclass
@@ -156,6 +159,7 @@ class TrfTournament:
     players: list[TrfPlayer] = field(default_factory=list)
     accelerated_rounds: list[TrfAcceleratedRound] = field(default_factory=list)
     prohibited_pairings: list[TrfProhibitedPairing] = field(default_factory=list)
+    soft_prohibited_pairings: list[TrfProhibitedPairing] = field(default_factory=list)
     round_byes: list[TrfRoundBye] = field(default_factory=list)
     team_pabs: TrfTeamPABs | None = None
     team_forfeited_matches: list[TrfTeamForfeitedMatch] = field(default_factory=list)

@@ -477,13 +477,16 @@ class ProhibitedPairingEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self) -> None:
-        super().__init__('260', 'prohibited_pairings')
+    def __init__(
+        self, din: str = '260', field_name: str = 'prohibited_pairings'
+    ) -> None:
+        super().__init__(din, field_name)
 
     def get_header(self, tournament: TrfTournament) -> str | None:
         header = 'RRF RRL'
         num_columns = max(
-            len(pairing.pairing_numbers) for pairing in tournament.prohibited_pairings
+            len(pairing.pairing_numbers)
+            for pairing in tournament.__dict__[self.field_name]
         )
         for column in range(1, num_columns + 1):
             header += f' {str(column).rjust(4, "P")}'
@@ -504,7 +507,16 @@ class ProhibitedPairingEntry(MultipleLinesEntry):
             first_round=int(match.group('first_round')),
             last_round=int_or_default(match.group('last_round')),
             pairing_numbers=split_ints(match.group('pairing_numbers'), 5),
+            soft=self.field_name == 'soft_prohibited_pairings',
         )
+
+
+class SoftProhibitedPairingEntry(ProhibitedPairingEntry):
+    """Sharly Chess extension read by its bbpPairings build: pairs laid out
+    as in a 260 record, avoided as the lowest-priority pairing criterion."""
+
+    def __init__(self) -> None:
+        super().__init__('SCS', 'soft_prohibited_pairings')
 
 
 class RoundByeEntry(MultipleLinesEntry):
@@ -784,6 +796,7 @@ ENTRIES = [
     RoundByeEntry(),
     AcceleratedRoundEntry(),
     ProhibitedPairingEntry(),
+    SoftProhibitedPairingEntry(),
     TeamPABsEntry(),
     TeamForfeitedMatchEntry(),
     OOdOTeamPairingEntry(),

@@ -27,6 +27,7 @@
 - Importing a TRF file of a tournament in progress no longer marks every player as withdrawn: the rounds not paired yet stay unpaired, with the byes already requested for them (5.1.4)
 - Keizer tournaments can be sent to _Sharly-Chess.com_, with each player's Keizer score shown on the pairings and in the standings (5.1.4)
 - The standings sent to _Sharly-Chess.com_ show the ranking criteria as in _Sharly Chess_: the points appear once, where they stand among the tie-breaks, the first criterion is in bold, and tied players share a rank (5.1.4)
+- New soft constraint for prohibited pairings, avoided as much as the pairing rules allow, used by the _FFE_ team cups to keep teams of the same club apart (5.1.4)
 
 ## Players
 

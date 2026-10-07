@@ -191,7 +191,9 @@ class PairingEngine(ABC):
         """Freeze this round's prohibited-pairing groups as the snapshot
         (for display + 260 export), then resolve the *effective* 260 lines
         to feed bbpPairings: hard groups always, soft groups relaxed from
-        the bottom of the standings if the full set is infeasible.
+        the bottom of the standings if the full set is infeasible, and the
+        groups avoided as bbpPairings' lowest-priority criterion as SCS
+        lines.
 
         Returns ``(error, override_lines)``. ``error`` is non-empty when
         the hard constraints alone can't be paired (the round is left
@@ -199,13 +201,16 @@ class PairingEngine(ABC):
         real bbp run (``None`` when there's nothing prohibited)."""
         from data.prohibited_pairings import resolve_soft_protect_rank
 
-        hard_groups, soft_groups, rank_by_member = (
+        hard_groups, soft_groups, lowest_criterion_groups, rank_by_member = (
             tournament.prohibited_pairings.relaxation_inputs(after_round=round_ - 1)
         )
-        if not hard_groups and not soft_groups:
+        if not hard_groups and not soft_groups and not lowest_criterion_groups:
             with EventDatabase(tournament.event.uniq_id, True) as database:
                 tournament.prohibited_pairings.write_snapshot(round_, None, database)
             return '', None
+        lowest_criterion_lines = tournament.prohibited_pairings.lowest_criterion_lines(
+            lowest_criterion_groups, round_
+        )
 
         protect_rank: int | None = None
         if soft_groups:
@@ -222,7 +227,9 @@ class PairingEngine(ABC):
                 lines = tournament.prohibited_pairings.applied_lines(
                     hard_groups, soft_groups, cutoff, rank_by_member, round_
                 )
-                return self._prohibited_pairing_feasible(tournament, round_, lines)
+                return self._prohibited_pairing_feasible(
+                    tournament, round_, lines + lowest_criterion_lines
+                )
 
             protect_rank, hard_infeasible = resolve_soft_protect_rank(
                 thresholds, feasible
@@ -247,7 +254,7 @@ class PairingEngine(ABC):
             protect_rank if protect_rank is not None else 0,
             rank_by_member,
             round_,
-        )
+        ) + lowest_criterion_lines
 
     def pairings_generation_disabled_message(
         self, tournament: 'Tournament', at_round: int
