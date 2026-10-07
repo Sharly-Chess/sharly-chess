@@ -8629,10 +8629,10 @@ msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
 msgid "Soft: avoided as much as the pairing rules allow"
-msgstr "Souple : évitée autant que les règles d'appariement le permettent"
+msgstr "Souple : évitée autant que les règles d'appariement le permettent"
 
 msgid "Soft: relaxed from the bottom of the standings"
-msgstr "Souple : relâchée depuis le bas du classement"
+msgstr "Souple : relâchée depuis le bas du classement"
 
 msgid "Solomon Islands"
 msgstr "Îles Salomon"
@@ -9898,7 +9898,7 @@ msgstr "Ce champ est obligatoire."
 
 #, python-brace-format
 msgid "This file is in the {version} format. It will be completed as follows:"
-msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
+msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
