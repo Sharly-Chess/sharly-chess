@@ -74,28 +74,23 @@ def _update(http: TestClient, event: str, **fields: str):
 def test_the_form_asks_for_one_registration_per_slice(http: TestClient, event: str):
     _update(http, event, multi_period='on', round_3_period_start='on')
     second_period = _periods(event)[1]
-    assert second_period.id is not None
+    assert second_period.first_round == 3
     modal = http.get(f'/tournament-modal/update/{event}/{_tournament_id(event)}')
     assert modal.status_code == 200
-    assert f'ffe_id_period_{second_period.id}' in modal.text
-    assert f'ffe_password_period_{second_period.id}' in modal.text
+    assert 'ffe_id_period_3' in modal.text
+    assert 'ffe_password_period_3' in modal.text
 
 
 @pytest.mark.unit
 def test_a_slice_keeps_its_own_registration(http: TestClient, event: str):
     _update(http, event, multi_period='on', round_3_period_start='on')
-    second_period = _periods(event)[1]
-    assert second_period.id is not None
-
     _update(
         http,
         event,
         multi_period='on',
         round_3_period_start='on',
-        **{
-            f'ffe_id_period_{second_period.id}': '49944',
-            f'ffe_password_period_{second_period.id}': 'ABCDEFGHIJ',
-        },
+        ffe_id_period_3='49944',
+        ffe_password_period_3='ABCDEFGHIJ',
     )
     stored = _periods(event)[1]
     assert stored.plugin_data['ffe']['ffe_id'] == 49944
@@ -123,3 +118,54 @@ def test_the_tournament_keeps_its_own(http: TestClient, event: str):
         )
     assert stored_tournament.plugin_data['ffe']['ffe_id'] == 49943
     assert _periods(event)[1].plugin_data == {}
+
+
+@pytest.mark.unit
+def test_a_boundary_not_saved_yet_asks_for_its_own_registration(
+    http: TestClient, event: str
+):
+    """A period has no id until it is saved, so its fields are named
+    after the round it starts at — otherwise every new card would carry
+    the same names and the form would post each of them twice."""
+    section = http.get(
+        f'/tournament-schedule-section/{event}',
+        params={
+            'tournament_id': str(_tournament_id(event)),
+            'rounds': '4',
+            'multi_period': 'on',
+            'round_2_period_start': 'on',
+            'round_3_period_start': 'on',
+            'round_4_period_start': 'on',
+            'date_range': format_date_range(
+                datetime(2026, 11, 1).date(), datetime(2026, 12, 15).date()
+            ),
+        }
+        | {
+            f'round_{round_nb}_datetime': format_datetime(round_datetime)
+            for round_nb, round_datetime in ROUND_DATETIMES.items()
+        },
+    )
+    assert section.status_code == 200
+    assert '_period_None' not in section.text
+    for first_round in (2, 3, 4):
+        assert section.text.count(f'name="ffe_id_period_{first_round}"') == 1
+
+
+@pytest.mark.unit
+def test_a_registration_entered_with_a_new_boundary_is_kept(
+    http: TestClient, event: str
+):
+    """The period and its registration arrive in the same save: the
+    fields name the round the period starts at, which the period it
+    creates has."""
+    _update(
+        http,
+        event,
+        multi_period='on',
+        round_3_period_start='on',
+        ffe_id_period_3='49944',
+        ffe_password_period_3='ABCDEFGHIJ',
+    )
+    stored = _periods(event)[1]
+    assert stored.first_round == 3
+    assert stored.plugin_data['ffe']['ffe_id'] == 49944

@@ -432,9 +432,7 @@ class TournamentAdminController(BaseEventAdminController):
             # slice (``period_field_suffix``).
             if action == 'update':
                 for period in web_context.get_admin_tournament().periods:
-                    if period.id is None:
-                        continue
-                    suffix = period_field_suffix(period.id)
+                    suffix = period_field_suffix(period.first_round)
                     for plugin_data in period.plugin_data.values():
                         plugin_form_data |= {
                             f'{field}{suffix}': value
@@ -1381,7 +1379,7 @@ class TournamentAdminController(BaseEventAdminController):
             stored_tournament.id
         ):
             assert stored_period.id is not None
-            period_data = period_field_data(data, stored_period.id)
+            period_data = period_field_data(data, stored_period.first_round)
             if not period_data:
                 continue
             plugin_data: dict[str, dict[str, Any]] = {}

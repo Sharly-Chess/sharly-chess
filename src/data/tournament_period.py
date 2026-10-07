@@ -31,18 +31,23 @@ def dates_exceed_period(start_date: date, stop_date: date) -> bool:
     return (stop_date - start_date).days + 1 > MAX_PERIOD_DAYS
 
 
-def period_field_suffix(period_id: int) -> str:
-    """What a form field of one slice is called.
+def period_field_suffix(first_round: int) -> str:
+    """What a form field of one period is called.
 
-    A slice's fields carry the names the plugin already uses, suffixed
-    with the slice they belong to — so a plugin renders and reads its own
-    fields without knowing that slices exist."""
-    return f'_period_{period_id}'
+    A period's fields carry the names the plugin already uses, suffixed
+    with the period they belong to — so a plugin renders and reads its
+    own fields without knowing that periods exist.
+
+    The period is named by the round it starts at rather than by its id:
+    a boundary the arbiter has just marked has no period behind it yet,
+    and its fields still have to be told apart from every other
+    period's."""
+    return f'_period_{first_round}'
 
 
-def period_field_data(data: dict[str, str], period_id: int) -> dict[str, str]:
-    """The form as one slice's fields state it, under the plain names."""
-    suffix = period_field_suffix(period_id)
+def period_field_data(data: dict[str, str], first_round: int) -> dict[str, str]:
+    """The form as one period's fields state it, under the plain names."""
+    suffix = period_field_suffix(first_round)
     return {
         field.removesuffix(suffix): value
         for field, value in data.items()

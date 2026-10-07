@@ -85,12 +85,15 @@
                     {% endif %}
                     <div class="card-body py-2">
                         {% if not loop.first and period_field_templates %}
-                            {# What a slice is submitted under. The first
-                               slice uses the tournament's own registration,
-                               so it is not asked again here. #}
+                            {# What a period is submitted under. The first
+                               period uses the tournament's own registration,
+                               so it is not asked again here. The fields are
+                               named after the round the period starts at,
+                               which a boundary just marked has and an id it
+                               has not. #}
                             {% with
                                 period=span,
-                                field_suffix='_period_' ~ span.period_id
+                                field_suffix='_period_' ~ span.first_round
                             %}
                                 {% for period_field_template in period_field_templates %}
                                     {% include period_field_template %}
