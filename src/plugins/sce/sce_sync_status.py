@@ -79,12 +79,12 @@ class TournamentConflictsSCESyncStatus(WarningSCESyncStatus):
 
     def tooltip_message(self, last_attempt_at: datetime) -> str:
         return _(
-            'Synchronisation interrupted on {last_attempt_date} '
-            'at {last_attempt_time}, tournament conflicts detected.'
-        ).format(
-            last_attempt_date=format_date(last_attempt_at.date()),
-            last_attempt_time=format_time(last_attempt_at),
+            'Tournament conflicts detected during the last synchronisation attempt.'
         )
+
+    @property
+    def update_last_sync_at(self) -> bool:
+        return True
 
 
 class PlayerConflictsSCESyncStatus(WarningSCESyncStatus):
@@ -177,6 +177,19 @@ class UnexpectedFailureSCESyncStatus(FailureSCESyncStatus):
     @property
     def details(self) -> str:
         return _('consult the logs')
+
+
+class OperationFailuresSCESyncStatus(FailureSCESyncStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'OPERATION_FAILURES'
+
+    @property
+    def details(self) -> str:
+        return _(
+            'some changes could not be sent to Sharly-Chess.com, they will be sent '
+            'again at the next synchronisation; consult the logs'
+        )
 
 
 class AuthFailureSCESyncStatus(FailureSCESyncStatus):
