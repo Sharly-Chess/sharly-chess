@@ -338,6 +338,7 @@ class PairingCardType(PlaceCardType):
     ) -> PlaceCardPairing:
         place_card_pairing: PlaceCardPairing = PlaceCardPairing()
         place_card_pairing.number = random.randint(1, 99)
+        place_card_pairing.round = random.randint(1, 9)
         place_card_pairing.white_player = cls.get_random_player(
             last_name=_('WHITE PLAYER'),
             color=pgettext('white color for place cards', 'W'),
@@ -374,7 +375,7 @@ class PairingCardType(PlaceCardType):
                 ]
         elif board_numbers:
             boards = [board for board in boards if board.number in board_numbers]
-        return [PlaceCardPairing(board) for board in boards]
+        return [PlaceCardPairing(board, round_=round_) for board in boards]
 
     @classmethod
     def preview_pairings(
