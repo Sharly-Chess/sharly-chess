@@ -52,6 +52,7 @@
 - A reminder to update player data is shown before generating place cards (5.1.0)
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
 - New "Team pairings" document listing the round's team matches on a single table, with each team's points and the match score, without the players (5.1.4)
+- Pairing place cards can show the round number, and the tournament start date printed on place cards is no longer the end date (5.1.5)
 
 ## Screens
 
