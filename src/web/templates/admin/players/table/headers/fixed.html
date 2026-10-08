@@ -1,12 +1,4 @@
-<div
-    class="d-flex align-items-center"
+<i
+    class="bi-person-wheelchair"
     {{ macros.tooltip_attributes('', column.name, 'top') }}
->
-    {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}
-    <img
-        src="{{ url_for('static', file_path='/images/disabled-black.svg') }}?version={{ sharly_chess_config.version }}"
-        style="height: 1rem"
-        alt="{{ column.name }}"
-        class="p-0"
-    />
-</div>
+></i>
