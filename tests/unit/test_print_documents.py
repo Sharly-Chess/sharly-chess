@@ -2,6 +2,7 @@
 
 import inspect
 from collections.abc import Iterator
+from datetime import timedelta
 
 import pytest
 
@@ -18,7 +19,9 @@ from data.print_documents.managers import (
 )
 from data.print_documents import options
 from data.print_documents.options import PrintOption
+from data.print_documents.place_cards.data import PlaceCardTournament
 from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
+from data.print_documents.place_cards.types import PairingCardType
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -309,3 +312,29 @@ def test_match_sheets_print_the_pairings_of_a_flat_team_system(
     assert [board.id for board in document.template_context['boards']] == [
         board.id for board in pairings.template_context['boards']
     ]
+
+
+@pytest.mark.unit
+def test_pairing_cards_carry_their_round(event: Event):
+    """Pairing cards can print the round they were made for, next to the
+    tournament's name."""
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    pairings = PairingCardType.pairings(tournament, 2)
+    assert pairings
+    assert {pairing.round for pairing in pairings} == {2}
+
+
+@pytest.mark.unit
+def test_place_cards_date_the_tournament_from_its_start(
+    event: Event, monkeypatch: pytest.MonkeyPatch
+):
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    monkeypatch.setattr(
+        tournament.stored_tournament,
+        'start_date',
+        tournament.stop_date - timedelta(days=40),
+    )
+    place_card_tournament = PlaceCardTournament(tournament)
+    assert place_card_tournament.start.day == tournament.start_date.day
+    assert place_card_tournament.start.month == tournament.start_date.month
+    assert place_card_tournament.start.year == tournament.start_date.year

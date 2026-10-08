@@ -110,8 +110,10 @@ class PlaceCardPairing:
     def __init__(
         self,
         board: Board | None = None,
+        round_: int = 0,
     ):
         self.number: int
+        self.round: int = round_
         self.white_player: PlaceCardPlayer
         self.black_player: PlaceCardPlayer
         if board:
@@ -190,7 +192,7 @@ class PlaceCardTournament:
         self.stop: PlaceCardDate
         if tournament:
             self.name = tournament.name
-            self.start = PlaceCardDate(tournament.stop_date)
+            self.start = PlaceCardDate(tournament.start_date)
             self.stop = PlaceCardDate(tournament.stop_date)
         else:
             self.name = _('Tournament name')
