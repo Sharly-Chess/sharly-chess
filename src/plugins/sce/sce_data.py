@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, date
 from functools import cached_property
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from common.i18n import _
 from data.criteria.managers import TournamentCriterionManager
@@ -29,6 +29,7 @@ class SCETokens:
     access_token: str
     refresh_token: str
     expires_at: datetime
+    device_id: str | None = None
 
 
 @dataclass
@@ -294,6 +295,13 @@ class SCEFraSchoolSyncData:
 
 @dataclass
 class SCEPlayerSyncData:
+    # Sharly-Chess.com fields that only make sense together.
+    FIELD_GROUPS: ClassVar[tuple[frozenset[str], ...]] = (
+        frozenset({'rating', 'rating_type'}),
+        frozenset({'phone', 'phone_number'}),
+        frozenset({'fra_school_code', 'fra_school_label'}),
+    )
+
     tournament_id: str
     last_name: str
     first_name: str | None = None
@@ -497,6 +505,20 @@ class SCEPlayerSyncData:
             'fra_school_label': self.fra_school.label if self.fra_school else None,
         }
 
+    def changed_sce_data(self, reference: Self) -> dict[str, Any]:
+        """The Sharly-Chess.com fields whose value differs from `reference`.
+
+        Fields that only make sense together are sent together, so that two
+        computers changing one each cannot leave a mismatched pair.
+        """
+        data = self.to_sce_data()
+        reference_data = reference.to_sce_data()
+        changed = {key for key, value in data.items() if value != reference_data[key]}
+        for group in self.FIELD_GROUPS:
+            if changed & group:
+                changed |= group
+        return {key: value for key, value in data.items() if key in changed}
+
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
         from plugins.sce.utils import SCEUtils
 
@@ -610,6 +632,7 @@ class SCEEventPluginData(PluginData):
                 expires_at=SQLiteDatabase.load_datetime_from_database_field(
                     stored_tokens.get('expires_at'),
                 ),
+                device_id=stored_tokens.get('device_id'),
             )
         return cls(
             id=stored_value.get('id', ''),
@@ -657,6 +680,7 @@ class SCEEventPluginData(PluginData):
                         self.tokens.expires_at
                     )
                 ),
+                'device_id': self.tokens.device_id,
             }
         return stored_value
 
@@ -802,6 +826,7 @@ class SCETournamentPluginData(PluginData):
 class SCEPlayerPluginData(PluginData):
     id: str | None = None
     deleted_id: str | None = None
+    removal_pending: bool = False
     last_sync_data: SCEPlayerSyncData | None = None
     conflict_sync_data: SCEPlayerSyncData | None = None
     duplicated_registration_id: str | None = None
@@ -818,6 +843,7 @@ class SCEPlayerPluginData(PluginData):
         return cls(
             id=stored_value.get('id'),
             deleted_id=stored_value.get('deleted_id'),
+            removal_pending=stored_value.get('removal_pending', False),
             last_sync_data=(
                 SCEPlayerSyncData.from_stored_value(stored_last_sync_data)
                 if stored_last_sync_data
@@ -836,6 +862,7 @@ class SCEPlayerPluginData(PluginData):
         return {
             'id': self.id,
             'deleted_id': self.deleted_id,
+            'removal_pending': self.removal_pending,
             'last_sync_data': (
                 self.last_sync_data.to_stored_value() if self.last_sync_data else None
             ),
