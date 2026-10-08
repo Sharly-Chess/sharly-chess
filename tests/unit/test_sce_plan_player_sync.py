@@ -12,6 +12,7 @@ Coverage targets the four recent bugs:
   * failed deletes silently retired from `deleted_player_ids`
 """
 
+import dataclasses
 from unittest.mock import MagicMock
 
 import pytest
@@ -289,10 +290,10 @@ class TestMergeBranch:
         assert len(builder) == 1
         op = builder.pending[0]
         assert op.op_dict['op'] == 'update'
-        # Merged carries local tournament_id (T2) + sc club (New).
+        # Merged carries local tournament_id (T2) + sc club (New); only the
+        # move differs from SC.com, so no field is sent in the body.
         assert op.op_dict['tournament_id'] == 'T2'
-        assert op.op_dict['data']['club'] == 'New'
-        assert op.op_dict['data']['last_name'] == 'Doe'
+        assert op.op_dict['data'] == {}
 
     def test_both_unmergeable_sets_conflict_no_op_queued(
         self, session, builder, counters, monkeypatch
@@ -359,3 +360,115 @@ class TestTournamentForce:
         assert force_op.op_dict['op'] == 'update'
         assert force_op.op_dict['registration_id'] == 'SCE-1'
         assert force_op.op_dict['tournament_id'] == 'T1'
+
+
+# ── Partial updates ─────────────────────────────────────────────────────────
+
+
+@pytest.mark.unit
+class TestPartialUpdates:
+    """An update carries only the fields that differ from SC.com, so what
+    another computer changed in the meantime is left alone."""
+
+    def test_local_change_sends_only_that_field(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', last_name='Doe', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        local = make_sync_data(tid='T1', last_name='Doe', club='New')
+        sce = make_sync_data(tid='T1', last_name='Doe', club='Old')
+        _patch_from_player(monkeypatch, local)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        assert len(builder) == 1
+        assert builder.pending[0].op_dict['data'] == {'club': 'New'}
+
+    def test_local_check_in_sends_only_check_in(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        local = dataclasses.replace(make_sync_data(tid='T1'), check_in=True)
+        sce = make_sync_data(tid='T1')
+        _patch_from_player(monkeypatch, local)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        assert builder.pending[0].op_dict['data'] == {'checked_in': True}
+
+    def test_local_move_sends_no_field(self, session, builder, counters, monkeypatch):
+        last = make_sync_data(tid='T1')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        local = make_sync_data(tid='T2')
+        sce = make_sync_data(tid='T1')
+        _patch_from_player(monkeypatch, local)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        op = builder.pending[0].op_dict
+        assert op['tournament_id'] == 'T2'
+        assert op['data'] == {}
+
+    def test_merge_sends_only_the_local_side_of_the_merge(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', last_name='Doe', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        local = make_sync_data(tid='T1', last_name='Smith', club='Old')
+        sce = make_sync_data(tid='T1', last_name='Doe', club='New')
+        _patch_from_player(monkeypatch, local)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        assert builder.pending[0].op_dict['data'] == {'last_name': 'Smith'}
+
+    def test_forced_tournament_sends_no_field(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', club='Same')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd, has_real_pairings=True)
+        local = make_sync_data(tid='T1', club='Same')
+        sce = make_sync_data(tid='T2', club='Same')
+        _patch_from_player(monkeypatch, local)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        assert len(builder) == 1
+        op = builder.pending[0].op_dict
+        assert op['tournament_id'] == 'T1'
+        assert op['data'] == {}
+
+    def test_forced_tournament_and_local_change_send_two_partial_updates(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd, has_real_pairings=True)
+        local = make_sync_data(tid='T1', club='New')
+        sce = make_sync_data(tid='T2', club='Old')
+        _patch_from_player(monkeypatch, local)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        assert [op.op_dict['data'] for op in builder.pending] == [{}, {'club': 'New'}]
+        assert all(op.op_dict['tournament_id'] == 'T1' for op in builder.pending)
+
+    def test_create_still_sends_the_whole_record(
+        self, session, builder, counters, monkeypatch
+    ):
+        local = make_sync_data(tid='T1', last_name='Doe', club='Club')
+        _patch_from_player(monkeypatch, local)
+        player = make_player()
+
+        session._plan_player_sync(player, None, builder, counters)
+
+        expected = {
+            k: v for k, v in local.to_sce_data().items() if k != 'tournament_id'
+        }
+        assert builder.pending[0].op_dict['data'] == expected

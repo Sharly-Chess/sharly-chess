@@ -104,6 +104,8 @@ class ConfigDatabase(MigrationDatabase):
             capitalise_last_name=self.load_bool_from_database_field(
                 row['capitalise_last_name']
             ),
+            computer_private_key=row['computer_private_key'],
+            computer_public_key=row['computer_public_key'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -144,6 +146,13 @@ class ConfigDatabase(MigrationDatabase):
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
         return self._get_stored_config()
+
+    def update_computer_keys(self, private_key: str, public_key: str) -> None:
+        """Records the key pair this computer is recognised by."""
+        self.execute(
+            'UPDATE `info` SET `computer_private_key` = ?, `computer_public_key` = ?',
+            (private_key, public_key),
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredPlugin

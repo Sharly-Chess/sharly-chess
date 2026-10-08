@@ -125,6 +125,7 @@ class SCEWebContext(AdminWebContext):
             'sce_last_sync_status': SCEUtils.resolve_last_sync_status(event),
             'is_sync_ongoing': is_sync_ongoing(event.uniq_id),
             'player_duplicate_count': player_duplicate_count,
+            'removed_player_count': len(self.sce_players_removal_pending),
         }
 
     @property
@@ -171,6 +172,10 @@ class SCEWebContext(AdminWebContext):
             for tournament in self.sce_tournaments
             if SCEUtils.get_tournament_plugin_data(tournament).conflict_sync_data
         ]
+
+    @property
+    def sce_players_removal_pending(self) -> list[TournamentPlayer]:
+        return SCEUtils.get_players_removal_pending(self.get_admin_event())
 
     @property
     def sce_players_with_conflicts(self) -> list[TournamentPlayer]:
@@ -858,6 +863,78 @@ class SCEAdminController(BaseAdminController):
                 'consult the logs for more details.'
             ).format(tournament=tournament.name)
         return self._render_sync_modal(web_context, message, message_type)
+
+    @classmethod
+    def _render_removed_player_modal(
+        cls,
+        web_context: SCEWebContext,
+        message: str | None = None,
+    ) -> HTMXTemplate:
+        players = web_context.sce_players_removal_pending
+        if not players:
+            return cls._render_sync_modal(
+                web_context, message or _('All removed players handled.')
+            )
+        template_context = web_context.template_context
+        template_context |= {
+            'message': message,
+            'removed_players': players,
+        }
+        return cls._render_modal(
+            '/sce_removed_player_modal.html',
+            template_context=template_context,
+        )
+
+    @get(
+        path='/sce/removed-player-modal/{event_uniq_id:str}',
+        name='sce-removed-player-modal',
+        guards=publish_guards,
+    )
+    async def htmx_sce_removed_player_modal(self, request: HTMXRequest) -> HTMXTemplate:
+        return self._render_removed_player_modal(SCEWebContext(request))
+
+    @post(
+        path='/sce/withdraw-removed-player/{event_uniq_id:str}/{player_id:int}',
+        name='sce-withdraw-removed-player',
+        guards=publish_guards,
+    )
+    async def htmx_sce_withdraw_removed_player(
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request, player_id=player_id)
+        player = web_context.get_player()
+        SCESession.withdraw_removed_player(player)
+        web_context = SCEWebContext(request, reload_event=True)
+        return self._render_removed_player_modal(
+            web_context,
+            _('Player [{player}] withdrawn.').format(player=player.full_name),
+        )
+
+    @post(
+        path='/sce/register-removed-player-again/{event_uniq_id:str}/{player_id:int}',
+        name='sce-register-removed-player-again',
+        guards=publish_guards,
+    )
+    async def htmx_sce_register_removed_player_again(
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request, player_id=player_id)
+        event = web_context.get_admin_event()
+        player = web_context.get_player()
+        SCESession.register_removed_player_again(player)
+        schedule_sync(event, force=True)
+        web_context = SCEWebContext(request, reload_event=True)
+        return self._render_removed_player_modal(
+            web_context,
+            _(
+                'Player [{player}] kept, they will be registered again on '
+                'Sharly-Chess.com.'
+            ).format(player=player.full_name),
+        )
 
     @classmethod
     def _render_player_duplicate_modal(

@@ -18,6 +18,9 @@ msgstr ""
 msgid "All player duplicates resolved."
 msgstr ""
 
+msgid "All removed players handled."
+msgstr ""
+
 msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
 msgstr ""
 
@@ -158,6 +161,9 @@ msgstr ""
 msgid "Gender"
 msgstr ""
 
+msgid "Give the player a zero-point bye in every round they are not paired in yet."
+msgstr ""
+
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
 msgstr ""
 
@@ -168,6 +174,12 @@ msgid "Import from Sharly-Chess.com"
 msgstr ""
 
 msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
+msgstr ""
+
+msgid "Keep"
+msgstr ""
+
+msgid "Keep the player and register them again on Sharly-Chess.com."
 msgstr ""
 
 msgid "Last name"
@@ -252,6 +264,14 @@ msgstr ""
 msgid "Player [{player}] deleted."
 msgstr ""
 
+#, python-brace-format
+msgid "Player [{player}] kept, they will be registered again on Sharly-Chess.com."
+msgstr ""
+
+#, python-brace-format
+msgid "Player [{player}] withdrawn."
+msgstr ""
+
 msgid "Player conflicts detected during the last synchronisation attempt."
 msgstr ""
 
@@ -268,6 +288,13 @@ msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Che
 msgstr ""
 
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
+msgstr ""
+
+msgid "Players removed on Sharly-Chess.com"
+msgstr ""
+
+#, python-format
+msgid "Players removed on Sharly-Chess.com (%(count)d)"
 msgstr ""
 
 #, python-brace-format
@@ -356,13 +383,6 @@ msgstr ""
 msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
 msgstr ""
 
-#, python-brace-format
-msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
-msgstr ""
-
-msgid "Synchronisation is unavailable while there are conflicts."
-msgstr ""
-
 msgid "Synchronisation ongoing"
 msgstr ""
 
@@ -371,6 +391,9 @@ msgid "Synchronize automatically every %(delay)d minutes."
 msgstr ""
 
 msgid "Synchronize players"
+msgstr ""
+
+msgid "These players are no longer registered on Sharly-Chess.com, but they have already played. Withdraw them from the rest of the tournament, or keep them and register them again on Sharly-Chess.com."
 msgstr ""
 
 msgid "This field is controlled from Sharly-Chess.com."
@@ -391,6 +414,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Tournament [{tournament}] successfully uploaded."
+msgstr ""
+
+msgid "Tournament conflicts detected during the last synchronisation attempt."
 msgstr ""
 
 msgid "Tournament has been modified since the last upload."
@@ -442,6 +468,9 @@ msgstr ""
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr ""
 
+msgid "Withdraw"
+msgstr ""
+
 msgid "Year of birth"
 msgstr ""
 
@@ -455,6 +484,9 @@ msgid "no internet connection"
 msgstr ""
 
 msgid "re-authorisation required"
+msgstr ""
+
+msgid "some changes could not be sent to Sharly-Chess.com, they will be sent again at the next synchronisation; consult the logs"
 msgstr ""
 
 msgid "tournament not found, most likely deleted"

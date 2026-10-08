@@ -99,6 +99,18 @@ FFE_LEAGUES: dict[str, str] = {
 }
 
 
+def regional_league(league: str | None) -> str | None:
+    """The regional league code `league` stands for, or None.
+
+    FFE data holds values outside the regional leagues (e.g. "EXP"), which
+    Sharly-Chess.com does not know.
+    """
+    if not league:
+        return None
+    code = league.strip().upper()
+    return code if code in FFE_LEAGUES else None
+
+
 class FFEUtils:
     @staticmethod
     def system_supports_ffe_transfer(

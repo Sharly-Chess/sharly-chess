@@ -121,6 +121,7 @@ from plugins.ffe.utils import (
     FfeAccountPluginData,
     FFEArbiterTitle,
     FFE_LEAGUES,
+    regional_league,
 )
 from plugins.ffe.utils import (
     FfeEventPluginData,
@@ -1299,7 +1300,7 @@ class FfePlugin(Plugin):
     ) -> None:
         plugin_data = FFEUtils.get_player_plugin_data(player)
         sync_data.ffe_licence = plugin_data.ffe_licence
-        sync_data.ffe_league = plugin_data.league
+        sync_data.ffe_league = regional_league(plugin_data.league)
 
     @hookimpl
     def augment_sce_player_sync_data_from_sce_data(
@@ -1311,7 +1312,7 @@ class FfePlugin(Plugin):
         sync_data.ffe_licence = PlayerFFELicence(
             sce_data['ffe_licence_type'] or PlayerFFELicence.NONE
         )
-        sync_data.ffe_league = sce_data['ffe_league']
+        sync_data.ffe_league = regional_league(sce_data['ffe_league'])
 
     @hookimpl
     def augment_stored_player_from_sce_player_sync_data(
@@ -1325,7 +1326,9 @@ class FfePlugin(Plugin):
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
         plugin_data.ffe_licence = sync_data.ffe_licence
-        plugin_data.league = sync_data.ffe_league
+        # A league Sharly-Chess.com does not know is kept rather than cleared.
+        if sync_data.ffe_league or regional_league(plugin_data.league):
+            plugin_data.league = sync_data.ffe_league
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
     @hookimpl
