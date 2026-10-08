@@ -37,9 +37,9 @@ class InstallationChecker:
             'bootstrap-icons',
             'bootstrap-icons-{version}',
             {
-                'bootstrap-icons.min.css',
-                'fonts/bootstrap-icons.woff',
-                'fonts/bootstrap-icons.woff2',
+                'font/bootstrap-icons.min.css',
+                'font/fonts/bootstrap-icons.woff',
+                'font/fonts/bootstrap-icons.woff2',
             },
             'https://github.com/twbs/icons/releases/download/v{version}/bootstrap-icons-{version}.zip',
             'bootstrap-icons-{version}.zip',
