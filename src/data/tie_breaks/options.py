@@ -9,6 +9,7 @@ from data.tie_breaks.cutters import NoCutTieBreakCutter, TieBreakCutter
 from utils.option import Option
 
 if TYPE_CHECKING:
+    from data.event import Event
     from data.pairings import PairingSystem
     from data.tie_breaks.managers import TieBreakCutterManager
     from web.utils import SelectOption
@@ -67,6 +68,20 @@ class TieBreakOption[V](Option[V], ABC):
         """Defines if the option marks the tie-break as legacy.
         Tie-breaks with legacy options can no longer be modified."""
         return False
+
+    def tooltips_by_tie_break(self, event: 'Event | None') -> dict[str, str]:
+        """The option's tooltip for each tie-break of the event that has
+        one for it, keyed by tie-break id."""
+        from data.tie_breaks.managers import TieBreakManager
+
+        if event is None:
+            return {}
+        return {
+            tie_break.id: tooltip
+            for tie_break in TieBreakManager(event).objects()
+            if type(self) in tie_break.available_options()
+            and (tooltip := tie_break.option_tooltip(type(self)))
+        }
 
 
 class SilentTieBreakOption[V](TieBreakOption[V], ABC):
@@ -348,6 +363,53 @@ class EstimatedRatingsTieBreakOption(SilentTieBreakOption[bool]):
     @property
     def include_in_equals(self) -> bool:
         return False
+
+
+class UnratedRatingTieBreakOption(TieBreakOption[int | None]):
+    """The rating given to players without a real rating: their estimated
+    rating when None, a fixed value otherwise."""
+
+    DEFAULT_FIXED_VALUE = 1400
+    MAX_VALUE = 3500
+
+    @staticmethod
+    def static_id() -> str:
+        return 'UNRATED_RATING'
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'unrated_rating'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> int | None:
+        return None
+
+    def validate(self) -> None:
+        super().validate()
+        if self.value is not None and not 0 < self.value <= self.MAX_VALUE:
+            raise OptionError(
+                _('The fixed rating must be between 1 and {max}.').format(
+                    max=self.MAX_VALUE
+                ),
+                self,
+            )
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        return False
+
+    @property
+    def variation_name(self) -> str:
+        return _('Unrated = {value}').format(value=self.value)
+
+    @property
+    def variation_help_text(self) -> str:
+        return _('Players without a rating are counted at {value}.').format(
+            value=self.value
+        )
 
 
 class ReversedTieBreakOption(TieBreakOption[bool | None]):

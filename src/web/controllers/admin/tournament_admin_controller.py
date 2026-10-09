@@ -2529,9 +2529,17 @@ class TournamentAdminController(BaseEventAdminController):
                 'This tie-break cannot decide which team advances in a knock-out.'
             )
         elif not advancement and (
-            message := tournament.tie_break_configuration.invalid_message(tie_break)
+            message := tournament.tie_break_configuration.invalid_type_message(
+                tie_break
+            )
         ):
             errors[field] = message
+        elif not advancement and (
+            option_error := tournament.tie_break_configuration.invalid_option_error(
+                tie_break
+            )
+        ):
+            errors[option_error.option.id] = str(option_error)
         else:
             existing_tie_breaks = [
                 tie_break_

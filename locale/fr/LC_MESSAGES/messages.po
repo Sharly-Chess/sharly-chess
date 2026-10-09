@@ -1693,8 +1693,8 @@ msgid "By default, other devices can only interact with public screens. This tab
 msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
 
 #, python-brace-format
-msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
-msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
+msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must confirm that the player estimation is explained in the rules."
+msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez confirmer que l'estimation des joueur·euses est expliquée dans le règlement."
 
 #, python-format
 msgid "By default: %(minutes)d minutes"
@@ -3991,6 +3991,9 @@ msgstr "Échiquier fixe :"
 
 msgid "Fixed points per finishing position (e.g. 20 for first, 15 for second), summed. Positions beyond the table score nothing."
 msgstr "Points fixes par place à l'arrivée (p. ex. 20 pour le premier, 15 pour le deuxième), sommés. Les places au-delà du barème ne rapportent rien."
+
+msgid "Fixed rating"
+msgstr "Elo fixe"
 
 msgid "Fixed table"
 msgstr "Table fixe"
@@ -7400,6 +7403,10 @@ msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et toutes
 msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
 msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
 
+#, python-brace-format
+msgid "Players without a rating are counted at {value}."
+msgstr "Les joueur·euses sans Elo comptent pour {value}."
+
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni mél ne seront pas inclus·es."
 
@@ -7868,6 +7875,12 @@ msgstr "Tirer les numéros d'appariement aléatoirement."
 
 msgid "Rank"
 msgstr "Classement"
+
+msgid "Rank the higher pairing numbers first, instead of the lower ones."
+msgstr "Classer en premier les numéros d'appariement les plus élevés, au lieu des plus bas."
+
+msgid "Rank the lower ratings first, instead of the higher ones."
+msgstr "Classer en premier les Elo les plus bas, au lieu des plus hauts."
 
 msgid "Ranking"
 msgstr "Classement"
@@ -9832,6 +9845,10 @@ msgstr[1] "Les {rounds} premières rondes sont ignorées."
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
 
+#, python-brace-format
+msgid "The fixed rating must be between 1 and {max}."
+msgstr "L'Elo fixe doit être compris entre 1 et {max}."
+
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
@@ -10155,6 +10172,9 @@ msgstr "Le classement de la dernière équipe à sélectionner."
 
 msgid "The rating of each player, strongest first, comma-separated. Given, it overrides the top rating and the step below."
 msgstr "Les Elo de chaque joueur·euse, du plus fort au plus faible, séparés par des virgules. S'il est indiqué, il remplace le Elo le plus haut et l'écart ci-dessous."
+
+msgid "The rating used for players who have neither a FIDE nor a national rating, whether they are the player or an opponent."
+msgstr "L'Elo utilisé pour les joueur·euses qui n'ont ni Elo FIDE ni Elo national, pour leur propre départage comme en tant qu'adversaires."
 
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
@@ -10689,8 +10709,12 @@ msgid "This tie-break is already used."
 msgstr "Ce départage est déjà utilisé."
 
 #, python-brace-format
-msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
-msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es sans classement estimé ({count} dans le tournoi)."
+msgid "This tie-break is disabled when there are unrated players ({count} in the tournament). You must confirm that the rules give them a rating of {value}."
+msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez confirmer que le règlement leur attribue un Elo de {value}."
+
+#, python-brace-format
+msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament). Give them an estimated rating, or use a fixed rating and confirm that the rules give it to them."
+msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es sans classement estimé ({count} dans le tournoi). Attribuez-leur un Elo estimé, ou utilisez un Elo fixe et confirmez que le règlement le leur attribue."
 
 #, python-brace-format
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
@@ -11289,6 +11313,10 @@ msgctxt "unrated game"
 msgid "Unrated"
 msgstr "Non comptabilisés pour le classement Elo"
 
+#, python-brace-format
+msgid "Unrated = {value}"
+msgstr "Non-classé·es = {value}"
+
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisée pour le classement Elo"
 
@@ -11415,6 +11443,9 @@ msgstr "Utiliser le Fore Buchholz"
 msgid "Use a data source to import players from their identifier."
 msgstr "Utiliser une source de données pour importer des joueur·euses à partir de leur identifiant."
 
+msgid "Use a fixed rating"
+msgstr "Utiliser un Elo fixe"
+
 msgid "Use a tournament's criteria"
 msgstr "Utiliser les critères d'un tournoi"
 
@@ -11452,6 +11483,9 @@ msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 
 msgid "Use the alert message defined on each screen."
 msgstr "Utiliser le message d'alerte défini pour chaque écran."
+
+msgid "Use the estimated rating"
+msgstr "Utiliser l'Elo estimé"
 
 msgid "Use the previous round's lineup (untick to set this round)"
 msgstr "Utiliser la composition de la ronde précédente (décocher pour définir cette ronde)"

@@ -807,12 +807,19 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def rating_str_in_round(self, round_: int) -> str:
         return str(self.rating_and_type_in_round(round_))
 
-    def tie_break_rating(self, round_: int) -> int:
+    def tie_break_rating_and_type(self, round_: int) -> PlayerRatingAndType:
         """The rating a rating-based tie-break reads for a game of this
         round, which C.07:10 leaves to the arbiter when a player may hold
         more than one during the tournament (§ tie-break rating)."""
         period = self.tournament.tie_break_period(round_)
-        return self.rating if period is None else self.rating_and_type_in(period).value
+        return (
+            self._tournament_rating
+            if period is None
+            else self.rating_and_type_in(period)
+        )
+
+    def tie_break_rating(self, round_: int) -> int:
+        return self.tie_break_rating_and_type(round_).value
 
     @property
     def rating(self) -> int:
