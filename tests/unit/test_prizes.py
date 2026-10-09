@@ -103,16 +103,21 @@ class PrizesTestCase(TestCase):
             for stored_pairing in stored_tournament_player.stored_pairings:
                 stored_pairing.player_id = id_
             stored_tournament_players.append(stored_tournament_player)
-        with patch(
-            'data.tournament.Tournament.rounds', new_callable=PropertyMock
-        ) as mock_rounds:
+        with (
+            patch(
+                'data.tournament.Tournament.rounds', new_callable=PropertyMock
+            ) as mock_rounds,
+            patch(
+                'data.pairings.systems.SwissPairingSystem.current_round',
+                return_value=ROUNDS,
+            ),
+        ):
             mock_rounds.return_value = ROUNDS
             self.tournament = Tournament(
                 self.event,
                 StoredTournament(
                     name='empty',
                     id=1,
-                    current_round=ROUNDS,
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],
                     stored_tournament_players=stored_tournament_players,

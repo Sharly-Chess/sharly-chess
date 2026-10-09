@@ -3590,9 +3590,6 @@ msgstr ""
 msgid "End month"
 msgstr ""
 
-msgid "End round"
-msgstr ""
-
 msgid "End year"
 msgstr ""
 
@@ -4254,10 +4251,6 @@ msgstr ""
 msgid "Give/take away access level {access_level_short_name}"
 msgstr ""
 
-#, python-format
-msgid "Go to round #%(round)d"
-msgstr ""
-
 msgid "Go to the display controller."
 msgstr ""
 
@@ -4370,6 +4363,9 @@ msgid "Height"
 msgstr ""
 
 msgid "Hide"
+msgstr ""
+
+msgid "Hide the pairings of this round from the screens and the online services."
 msgstr ""
 
 msgid "Higher seed plays White"
@@ -5328,9 +5324,6 @@ msgstr ""
 
 msgctxt "team knock-out"
 msgid "Mark as winner"
-msgstr ""
-
-msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
 msgid "Marshall Islands"
@@ -7016,6 +7009,9 @@ msgstr ""
 msgid "Pairings successfully generated."
 msgstr ""
 
+msgid "Pairings with results cannot be unpublished."
+msgstr ""
+
 msgid "Pakistan"
 msgstr ""
 
@@ -7776,6 +7772,12 @@ msgstr ""
 msgid "Public screen"
 msgstr ""
 
+msgid "Publish"
+msgstr ""
+
+msgid "Publish and unpublish pairings"
+msgstr ""
+
 msgid "Publish tournament results"
 msgstr ""
 
@@ -8356,10 +8358,6 @@ msgid "Round #%(round)d is finished."
 msgstr ""
 
 #, python-format
-msgid "Round #%(round)d is finished. End it and make round #%(next)d the current round, or just take a look at the next round?"
-msgstr ""
-
-#, python-format
 msgid "Round #%(round)d is running."
 msgstr ""
 
@@ -8388,6 +8386,10 @@ msgstr ""
 
 #, python-format
 msgid "Round %(round)d - Board %(board_number)d"
+msgstr ""
+
+#, python-format
+msgid "Round %(unfinished)d is not finished: the pairings of round %(round)d cannot be published until it is."
 msgstr ""
 
 msgid "Round count"
@@ -8435,6 +8437,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr ""
+
+#, python-brace-format
+msgid "Round {round} is not finished."
 msgstr ""
 
 #, python-brace-format
@@ -8952,9 +8958,6 @@ msgstr ""
 msgid "Set the coefficient applied to this tournament’s scores."
 msgstr ""
 
-msgid "Set the current round"
-msgstr ""
-
 msgid "Set the number of rounds to lay out a schedule."
 msgstr ""
 
@@ -9016,6 +9019,9 @@ msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
 msgid "Show level"
+msgstr ""
+
+msgid "Show the pairings of this round on the screens and send them to the online services."
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
@@ -10062,6 +10068,18 @@ msgid "The pairings of round %(round)d are being edited by hand. Validate them t
 msgstr ""
 
 #, python-format
+msgid "The pairings of round %(round)d are not published: they are neither shown on the screens nor sent to the online services."
+msgstr ""
+
+#, python-format
+msgid "The pairings of round %(round)d are not published: they are not sent to the online services."
+msgstr ""
+
+#, python-format
+msgid "The pairings of round %(round)d are not published: they are not shown on the screens."
+msgstr ""
+
+#, python-format
 msgid "The pairings of round %(round)d differ from those of the pairing engine:"
 msgstr ""
 
@@ -10075,6 +10093,18 @@ msgstr ""
 
 #, python-brace-format
 msgid "The pairings of round {round} are being edited: validate or cancel them before changing the pairings of another round."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} cannot be published."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} have been published."
+msgstr ""
+
+#, python-brace-format
+msgid "The pairings of round {round} have been unpublished."
 msgstr ""
 
 #, python-brace-format
@@ -11275,6 +11305,9 @@ msgstr ""
 msgid "Unplayed (no result recorded)."
 msgstr ""
 
+msgid "Unpublish"
+msgstr ""
+
 msgctxt "plural for unrated players"
 msgid "Unrated"
 msgstr ""
@@ -11912,6 +11945,9 @@ msgstr ""
 msgid "You are not allowed to pair teams."
 msgstr ""
 
+msgid "You are not allowed to publish the pairings."
+msgstr ""
+
 msgid "You are not allowed to return players."
 msgstr ""
 
@@ -11924,10 +11960,10 @@ msgstr ""
 msgid "You are not allowed to set Zero-Point Byes."
 msgstr ""
 
-msgid "You are not allowed to set the current round."
+msgid "You are not allowed to unpair rounds."
 msgstr ""
 
-msgid "You are not allowed to unpair rounds."
+msgid "You are not allowed to unpublish the pairings."
 msgstr ""
 
 msgid "You are not allowed to update results."

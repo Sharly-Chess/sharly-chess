@@ -151,7 +151,7 @@ class CustomUploadUploader:
             if event_uniq_id not in loader.event_uniq_ids:
                 # The event has been deleted
                 return
-            event = loader.load_event(event_uniq_id)
+            event = loader.load_event(event_uniq_id, public_view=True)
 
             document = CustomUploadUtils.get_document(event, document_id)
             if not document:

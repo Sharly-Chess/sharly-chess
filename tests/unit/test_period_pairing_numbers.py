@@ -112,7 +112,6 @@ class TestPairingNumbersAcrossPeriods:
         ratings."""
         tournament = self._setup()
         numbers = self._numbers(tournament)
-        tournament.stored_tournament.current_round = 4
         reloaded = self._load()
         assert reloaded.pairing_system.pairing_numbers_are_frozen(reloaded) is (
             reloaded.current_round >= 4

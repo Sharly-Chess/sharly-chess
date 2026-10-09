@@ -38,7 +38,6 @@ class TeamLineupInheritanceTestCase(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': 3,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': 'TEAM_SWISS_STANDARD',
             },

@@ -92,7 +92,7 @@ def upload_tournament(
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
             return
-        event = loader.load_event(event_uniq_id)
+        event = loader.load_event(event_uniq_id, public_view=True)
         tournament = event.tournaments_by_id.get(tournament_id)
         if not tournament:
             return

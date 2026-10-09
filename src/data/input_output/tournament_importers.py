@@ -239,6 +239,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         event = EventLoader().load_event(event.uniq_id)
         tournament = event.tournaments_by_id[tournament_id]
         tournament.set_tournament_players_pairing_numbers()
+        tournament.set_published_round(tournament.imported_published_round)
         if not self.check_in_imported:
             with EventDatabase(event.uniq_id, True) as database:
                 database.set_players_check_in(

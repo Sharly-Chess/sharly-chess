@@ -370,6 +370,7 @@ class BoardOperations:
                 stb for stb in round_list if stb.id != stb_id
             ]
         tournament.clear_team_cache()
+        self._unpublish_emptied_rounds({round_})
 
     def unpair(self, boards: list[Board]) -> None:
         tournament = self.tournament
@@ -426,6 +427,20 @@ class BoardOperations:
                         )
         if tournament.event.is_team_event:
             tournament.clear_team_cache()
+        self._unpublish_emptied_rounds(rounds)
+
+    def _unpublish_emptied_rounds(self, rounds: set[int]) -> None:
+        """A published round left without any pairing is no longer
+        published, so that pairing it again does not publish it at once."""
+        tournament = self.tournament
+        emptied = [
+            round_
+            for round_ in rounds
+            if round_ <= tournament.stored_tournament.published_round
+            and not tournament.round_has_pairings(round_)
+        ]
+        if emptied:
+            tournament.set_published_round(min(emptied) - 1)
 
     def create(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result

@@ -139,8 +139,8 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         """Handler of permissions for the pairing system."""
 
     @abstractmethod
-    def default_current_round(self, tournament: 'Tournament') -> int:
-        """Get the current round to use as default when it is not defined in the DB."""
+    def current_round(self, tournament: 'Tournament') -> int:
+        """The round in play for the arbiter."""
 
     @property
     def supports_prohibited_pairings(self) -> bool:
@@ -448,7 +448,7 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return swiss_style_permission_handler()
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
 
@@ -541,16 +541,10 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         ]
         return PermissionHandler(permissions)
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
-        """Last round with played results."""
-        return next(
-            (
-                round_
-                for round_ in reversed(range(1, tournament.rounds + 1))
-                if tournament.round_has_played_result(round_)
-            ),
-            1 if tournament.has_pairings else 0,
-        )
+    def current_round(self, tournament: 'Tournament') -> int:
+        # Every round is paired at once: the round in play is the last one
+        # published.
+        return tournament.published_round or (1 if tournament.has_pairings else 0)
 
 
 # ---------------------------------------------------------------------------------
@@ -619,7 +613,7 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     def allow_bye_definition(self) -> bool:
         return False
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
 
@@ -711,7 +705,7 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
         # safe because the Berger table can regenerate the same pairings.
         return swiss_style_permission_handler(protect_unpairing=False)
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: 'Tournament') -> int:
         # Swiss semantics (last PAIRED round), matching the round-by-round
         # pairing flow and the Swiss permission set above: a freshly
         # paired round must be CURRENT for its results to be enterable.

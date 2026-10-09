@@ -29,7 +29,7 @@ class TestIndividualKnockout:
         TestUtils.create_tournament(
             EVENT_ID,
             TOURNAMENT_NAME,
-            overrides={'rounds': 3, 'current_round': 1, 'pairing': 'KNOCKOUT_STANDARD'},
+            overrides={'rounds': 3, 'pairing': 'KNOCKOUT_STANDARD'},
         )
         with EventDatabase(EVENT_ID, write=True) as database:
             tournament_id = next(
@@ -878,7 +878,6 @@ class TestGroupedKnockout:
             GROUP_TOURNAMENT_NAME,
             overrides={
                 'rounds': 3,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_STANDARD',
             },
         )
@@ -1062,7 +1061,6 @@ class TestGroupedDoubleElimination:
             GDE_TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_DOUBLE_ELIMINATION',
             },
         )
@@ -1144,7 +1142,6 @@ class TestDoubleElimination:
             DE_TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_DOUBLE_ELIMINATION',
             },
         )
@@ -1692,7 +1689,6 @@ class TestTeamKnockout:
             TEAM_TOURNAMENT_NAME,
             overrides={
                 'rounds': 2,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },
@@ -1935,7 +1931,6 @@ class TestGroupedTeamKnockout:
             GT_TOURNAMENT_NAME,
             overrides={
                 'rounds': 2,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },
@@ -2063,7 +2058,6 @@ class TestTeamDoubleElimination:
             TDE_TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_DOUBLE_ELIMINATION',
             },
@@ -2208,7 +2202,6 @@ class TestIndividualTwoGameKnockout:
             TWO_GAME_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_STANDARD_TWO_GAME',
             },
         )
@@ -2632,7 +2625,6 @@ class TestTeamTwoGameKnockout:
             TWO_GAME_TEAM_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD_TWO_GAME',
             },
@@ -2903,7 +2895,6 @@ class TestDoubleEliminationTwoGame:
             TWO_GAME_DE_NAME,
             overrides={
                 'rounds': 8,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_DOUBLE_ELIMINATION_TWO_GAME',
             },
         )
@@ -3043,7 +3034,6 @@ class TestTeamDoubleEliminationTwoGame:
             TWO_GAME_TDE_NAME,
             overrides={
                 'rounds': 8,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_DOUBLE_ELIMINATION_TWO_GAME',
             },
@@ -3152,7 +3142,6 @@ class TestTeamKnockoutEmptySeats:
             EMPTY_SEAT_TOURNAMENT_NAME,
             overrides={
                 'rounds': 1,
-                'current_round': 1,
                 'team_player_count': 2,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },

@@ -66,8 +66,11 @@ logger: Logger = get_logger()
 class Event:
     """A data wrapper around a StoredEvent."""
 
-    def __init__(self, stored_event: StoredEvent):
+    def __init__(self, stored_event: StoredEvent, public_view: bool = False):
         self.stored_event: StoredEvent = stored_event
+        # Seen as the public sees it, on the screens and the online services:
+        # a round paired but not published yet is not there.
+        self.public_view: bool = public_view
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:

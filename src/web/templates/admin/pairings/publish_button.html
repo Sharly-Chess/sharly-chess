@@ -1,0 +1,69 @@
+{% if admin_tournament.round_has_pairings(admin_round) %}
+    {% set can_publish_pairings = client.can_publish_pairings(admin_tournament.id) %}
+    {% set published_round = admin_tournament.published_round %}
+    {% if admin_round > published_round %}
+        {% set unfinished_round = admin_tournament.unfinished_round_before(admin_round) %}
+        {% set publish_disabled_message = (
+            _('You are not allowed to publish the pairings.')
+                if not can_publish_pairings else
+            manual_pairing_pending_message
+                if admin_tournament.manual_pairing_round is not none
+                and admin_tournament.manual_pairing_round <= admin_round else
+            _('Round {round} is not finished.').format(round=unfinished_round)
+                if unfinished_round else
+            _('The pairings of round {round} cannot be published.').format(round=admin_round)
+                if not admin_tournament.can_publish_round(admin_round)
+        ) %}
+        <div
+            {% if publish_disabled_message %}
+                {{ macros.tooltip_attributes('warning', publish_disabled_message, 'top') }}
+            {% else %}
+                {{ macros.tooltip_attributes('info', _('Show the pairings of this round on the screens and send them to the online services.'), 'top') }}
+            {% endif %}
+        >
+            <button
+                class="btn btn-primary text-nowrap"
+                {% if publish_disabled_message %}
+                    disabled
+                {% else %}
+                    hx-put="{{ url_for('admin-pairings-publish-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    hx-disabled-elt="this"
+                {% endif %}
+            >
+                <i class="bi-broadcast pe-1"></i>
+                {{ _('Publish') }}
+            </button>
+        </div>
+    {% elif admin_round == published_round %}
+        {% set unpublish_disabled_message = (
+            _('You are not allowed to unpublish the pairings.')
+                if not can_publish_pairings else
+            _('Pairings with results cannot be unpublished.')
+                if not admin_tournament.can_unpublish_round(admin_round)
+        ) %}
+        <div
+            {% if unpublish_disabled_message %}
+                {{ macros.tooltip_attributes('warning', unpublish_disabled_message, 'top') }}
+            {% else %}
+                {{ macros.tooltip_attributes('info', _('Hide the pairings of this round from the screens and the online services.'), 'top') }}
+            {% endif %}
+        >
+            <button
+                class="btn btn-outline-primary text-nowrap"
+                {% if unpublish_disabled_message %}
+                    disabled
+                {% else %}
+                    hx-put="{{ url_for('admin-pairings-unpublish-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    hx-disabled-elt="this"
+                {% endif %}
+            >
+                <i class="bi-eye-slash pe-1"></i>
+                {{ _('Unpublish') }}
+            </button>
+        </div>
+    {% endif %}
+{% endif %}

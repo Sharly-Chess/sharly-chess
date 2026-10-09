@@ -68,7 +68,6 @@ def _seed_team_event(event_id: str, pairing: str, rounds: int) -> Iterator[Event
             'pairing': pairing,
             'team_player_count': TEAM_SIZE,
             'rounds': rounds,
-            'current_round': 1,
         },
     )
     tournament_id = stored_tournament.id
@@ -104,8 +103,6 @@ def _seed_team_event(event_id: str, pairing: str, rounds: int) -> Iterator[Event
     tournament = event.tournaments_by_name[TOURNAMENT_NAME]
     assert tournament.generate_round_pairings(1) == ''
     _play_first_round(event_id, tournament)
-    with EventDatabase(event_id, write=True) as database:
-        database.set_tournament_current_round(tournament_id, 2)
     EventLoader.unload_event(event_id)
     yield EventLoader().load_event(event_id)
     EventLoader.unload_event(event_id)

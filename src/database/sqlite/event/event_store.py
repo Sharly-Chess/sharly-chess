@@ -384,7 +384,7 @@ class StoredTournament:
     stop_date: date = field(default_factory=date.today)
     pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] = field(default_factory=dict[str, Any])
-    current_round: int | None = None
+    published_round: int = 0
     check_in_open: bool = True
     rounds: int = 1
     rating: int = 1

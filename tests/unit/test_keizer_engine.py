@@ -34,7 +34,7 @@ class TestKeizerEngine:
         TestUtils.create_tournament(
             EVENT_ID,
             TOURNAMENT_NAME,
-            overrides={'rounds': 5, 'current_round': 1, 'pairing': 'KEIZER_STANDARD'},
+            overrides={'rounds': 5, 'pairing': 'KEIZER_STANDARD'},
         )
         with EventDatabase(EVENT_ID, write=True) as database:
             tournament_id = next(

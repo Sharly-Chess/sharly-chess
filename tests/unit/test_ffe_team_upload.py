@@ -254,7 +254,6 @@ class _MatchReportHarness(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': 1,
-                'current_round': 1,
                 'team_player_count': boards,
                 'pairing': pairing,
                 'primary_score': primary_score,

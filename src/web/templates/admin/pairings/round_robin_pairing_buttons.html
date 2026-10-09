@@ -67,26 +67,5 @@
         </div>
     {% endif %}
 
-    {% if round_status == 'CURRENT' and not admin_tournament.playing and not admin_tournament.finished %}
-        <div
-            {% if not client.can_set_current_round(admin_tournament.id) %}
-                {{ macros.tooltip_attributes('warning', _('You are not allowed to set the current round.'), 'top') }}
-            {% else %}
-                {{ macros.tooltip_attributes('info', _('Mark this round as over and define the next one as the current round.'), 'top') }}
-            {% endif %}
-        >
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                {% if not client.can_set_current_round(admin_tournament.id) %}
-                    disabled
-                {% else %}
-                    hx-put="{{ url_for('admin-tournament-set-current-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, current_round=admin_round + 1) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                {% endif %}
-            >
-                {{ _('End round') }}
-            </button>
-        </div>
-    {% endif %}
+    {% include 'publish_button.html' %}
 </span>

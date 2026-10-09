@@ -200,7 +200,6 @@ class TestAdvancementResolver:
             TB_TOURNAMENT,
             overrides={
                 'rounds': 1,
-                'current_round': 1,
                 'team_player_count': 2,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },

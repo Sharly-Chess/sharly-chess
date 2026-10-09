@@ -1412,7 +1412,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
 
     @cached_property
     def check_in_status(self) -> CheckInStatus:
-        return self.check_in_status_for_round(self.tournament.current_round + 1)
+        return self.check_in_status_for_round(self.tournament.arbiter_current_round + 1)
 
     @property
     def check_in_status_no_bye(self) -> CheckInStatus:

@@ -421,10 +421,11 @@ class Client:
             AuthAction.PERMUTE_BOARD, tournament_id
         )
 
-    def can_set_current_round(self, tournament_id: int) -> bool:
-        """Returns True if the client can set the current round of a tournament."""
+    def can_publish_pairings(self, tournament_id: int) -> bool:
+        """Returns True if the client can publish and unpublish the pairings
+        of a tournament."""
         return self.action_allowed_for_tournament(
-            AuthAction.SET_CURRENT_ROUND, tournament_id
+            AuthAction.PUBLISH_PAIRINGS, tournament_id
         )
 
     @cached_property

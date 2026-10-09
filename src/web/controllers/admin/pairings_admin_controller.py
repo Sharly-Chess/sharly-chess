@@ -2604,7 +2604,6 @@ class PairingsAdminController(BaseEventAdminController):
         if error:
             Message.error(request, error)
         else:
-            tournament.set_current_round(1)
             Message.success(
                 request,
                 _(
@@ -2674,7 +2673,6 @@ class PairingsAdminController(BaseEventAdminController):
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
         tournament.board_operations.unpair(list(tournament.boards_by_id.values()))
-        tournament.set_current_round(0)
         if (manual_pairing_round := tournament.manual_pairing_round) is not None:
             tournament.cancel_manual_pairing(manual_pairing_round)
 
@@ -3003,41 +3001,6 @@ class PairingsAdminController(BaseEventAdminController):
                 'unpaired_count': len(web_context.admin_unpaired),
                 'hole_count': len(web_context.admin_unpaired_holes),
                 'absent_count': len(web_context.admin_absent_players),
-                'no_result_board_count': len(
-                    [
-                        board
-                        for board in web_context.admin_boards
-                        if board.result == Result.NO_RESULT
-                        # A board with a hole on either side is a forfeit,
-                        # not a pending result.
-                        and board.stored_board.white_player_id is not None
-                        and board.stored_board.black_player_id is not None
-                    ]
-                ),
-            },
-        )
-
-    @get(
-        path='/pairings/set-current-round-modal/'
-        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
-        name='admin-pairings-set-current-round-modal',
-    )
-    async def admin_pairings_set_current_round_modal(
-        self,
-        request: HTMXRequest,
-        tournament_id: FromPath[int],
-        round: FromPath[int],
-    ) -> Template:
-        web_context = PairingsAdminWebContext(
-            request,
-            tournament_id=tournament_id,
-            round_=round,
-        )
-
-        return self._admin_event_pairings_render(
-            web_context,
-            {
-                'modal': 'set-current-round',
                 'no_result_board_count': len(
                     [
                         board
@@ -3472,24 +3435,59 @@ class PairingsAdminController(BaseEventAdminController):
         return self._generate_round_pairings(web_context)
 
     @put(
-        path='/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',
-        name='admin-tournament-set-current-round',
-        guards=[TournamentActionGuard(AuthAction.SET_CURRENT_ROUND)],
+        path='/pairings/publish/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-publish-round',
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_PAIRINGS)],
     )
-    async def htmx_admin_tournament_set_current_round(
+    async def htmx_admin_pairings_publish_round(
         self,
         request: HTMXRequest,
         tournament_id: FromPath[int],
-        current_round: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
-            request,
-            tournament_id=tournament_id,
-            round_=current_round,
+            request, tournament_id=tournament_id, round_=round
         )
         tournament = web_context.get_admin_tournament()
-        tournament.set_current_round(round_=current_round)
-        SessionPairingsSelectedRound(request, tournament).set(current_round)
+        if tournament.can_publish_round(round):
+            tournament.set_published_round(round)
+            Message.success(
+                request,
+                _('The pairings of round {round} have been published.').format(
+                    round=round
+                ),
+            )
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @put(
+        path='/pairings/unpublish/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-unpublish-round',
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_PAIRINGS)],
+    )
+    async def htmx_admin_pairings_unpublish_round(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        if tournament.can_unpublish_round(round):
+            tournament.set_published_round(round - 1)
+            Message.success(
+                request,
+                _('The pairings of round {round} have been unpublished.').format(
+                    round=round
+                ),
+            )
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round, reload_event=True
+        )
         return self._admin_event_pairings_render(web_context)
 
     # -------------------------------------------------------------------------

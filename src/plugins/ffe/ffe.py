@@ -775,6 +775,12 @@ class FfePlugin(Plugin):
         return self.id, FfeTournamentPluginData
 
     @hookimpl
+    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+        return tournament.event.federation == 'FRA' and FFEUtils.is_configured(
+            tournament
+        )
+
+    @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> None:

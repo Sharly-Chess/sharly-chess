@@ -43,7 +43,6 @@ class _TeamLineupHarness(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': ROUNDS,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': 'TEAM_SWISS_STANDARD',
             },

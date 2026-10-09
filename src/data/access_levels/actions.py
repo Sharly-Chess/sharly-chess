@@ -102,7 +102,7 @@ class AuthAction(StrEnum):
     UNPAIR_ROUND = auto()
     UNPAIR_BOARD = auto()
     PERMUTE_BOARD = auto()
-    SET_CURRENT_ROUND = auto()
+    PUBLISH_PAIRINGS = auto()
     SET_ZPB = auto()
     SET_HPB = auto()
     SET_FPB = auto()
@@ -179,7 +179,7 @@ class AuthAction(StrEnum):
                 | AuthAction.UNPAIR_ROUND
                 | AuthAction.UNPAIR_BOARD
                 | AuthAction.PERMUTE_BOARD
-                | AuthAction.SET_CURRENT_ROUND
+                | AuthAction.PUBLISH_PAIRINGS
                 | AuthAction.SET_ZPB
                 | AuthAction.SET_HPB
                 | AuthAction.SET_FPB
@@ -277,8 +277,8 @@ class AuthAction(StrEnum):
                 return _('Unpair one board', locale)
             case AuthAction.PERMUTE_BOARD:
                 return _('Permute boards', locale)
-            case AuthAction.SET_CURRENT_ROUND:
-                return _('Set the current round', locale)
+            case AuthAction.PUBLISH_PAIRINGS:
+                return _('Publish and unpublish pairings', locale)
             case AuthAction.SET_ZPB:
                 return _('Set Zero-Points Byes', locale)
             case AuthAction.SET_HPB:

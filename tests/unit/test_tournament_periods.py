@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from data.loader import EventLoader
+from data.pairings.systems import SwissPairingSystem
 from data.tournament_period import period_first_rounds, period_spans
 from database.sqlite.event.event_database import EventDatabase
 from tests.test_config import TestUtils
@@ -250,7 +251,7 @@ class TestCurrentPeriod:
             EventLoader.unload_event(EVENT_ID)
         TestUtils.delete_event(EVENT_ID)
 
-    def _tournament(self, current_round: int):
+    def _tournament(self, monkeypatch: pytest.MonkeyPatch, current_round: int):
         """Six rounds a fortnight apart, all of them still to come, cut
         into three periods — so the calendar says the first while the
         rounds say otherwise."""
@@ -275,18 +276,24 @@ class TestCurrentPeriod:
             )
             assert tournament_id is not None
             database.set_tournament_periods(tournament_id, [3, 5])
-            database.set_tournament_current_round(tournament_id, current_round)
         with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
         self._event = EventLoader().load_event(EVENT_ID)
+        monkeypatch.setattr(
+            SwissPairingSystem, 'current_round', lambda _, __: current_round
+        )
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
-    def test_the_period_of_the_round_reached_is_the_current_one(self):
+    def test_the_period_of_the_round_reached_is_the_current_one(
+        self, monkeypatch: pytest.MonkeyPatch
+    ):
         """Pairing a round of the third period starts it, whatever the
         dates of the periods before say."""
-        tournament = self._tournament(current_round=5)
+        tournament = self._tournament(monkeypatch, current_round=5)
         assert tournament.current_period.first_round == 5
 
-    def test_the_first_period_is_current_while_it_is_played(self):
-        tournament = self._tournament(current_round=2)
+    def test_the_first_period_is_current_while_it_is_played(
+        self, monkeypatch: pytest.MonkeyPatch
+    ):
+        tournament = self._tournament(monkeypatch, current_round=2)
         assert tournament.current_period.first_round == 1

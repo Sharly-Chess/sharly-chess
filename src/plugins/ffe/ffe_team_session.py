@@ -1144,7 +1144,7 @@ class FFETeamSession(FFESession):
     def _sync_reports(
         self, page: GroupPage, site_team_ids: dict[int, int]
     ) -> GroupPage:
-        """Fills in one match report per match of every paired round,
+        """Fills in one match report per match of every published round,
         reusing the site's reports for the same teams and round, then
         its blank ones, and creating the rest; the group's other reports
         are deleted. Returns the group page as last read."""
@@ -1154,7 +1154,7 @@ class FFETeamSession(FFESession):
         }
         blanks = [report.id for report in page.match_reports if report.is_blank]
         used: set[int] = set()
-        for round_ in range(1, self.tournament.last_paired_round + 1):
+        for round_ in range(1, self.tournament.published_round + 1):
             for number, match in enumerate(
                 self.round_matches(self.tournament, round_), start=1
             ):

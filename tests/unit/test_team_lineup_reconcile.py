@@ -50,7 +50,6 @@ class TeamLineupReconcileTestCase(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': 1,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': 'TEAM_SWISS_STANDARD',
                 # First team plays White on every board, so the fill side is

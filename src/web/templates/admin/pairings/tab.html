@@ -116,6 +116,46 @@
             </div>
         </div>
     {% endif %}
+    {% if
+        not display_rankings
+        and admin_round > admin_tournament.published_round
+        and admin_tournament.round_has_pairings(admin_round)
+        and (admin_tournament.shown_on_screens or admin_tournament.uploaded_online)
+    %}
+        {% set unfinished_round = admin_tournament.unfinished_round_before(admin_round) %}
+        <div class="alert alert-warning py-2 px-2 mx-3 my-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi-{{ 'hourglass-split' if unfinished_round else 'eye-slash' }}"></i>
+                <div class="flex-grow-1">
+                    {% if unfinished_round %}
+                        {{ _(
+                            'Round %(unfinished)d is not finished: the pairings of round '
+                            '%(round)d cannot be published until it is.',
+                            unfinished=unfinished_round, round=admin_round,
+                        ) }}
+                    {% elif admin_tournament.shown_on_screens and admin_tournament.uploaded_online %}
+                        {{ _(
+                            'The pairings of round %(round)d are not published: '
+                            'they are neither shown on the screens nor sent to the online services.',
+                            round=admin_round,
+                        ) }}
+                    {% elif admin_tournament.uploaded_online %}
+                        {{ _(
+                            'The pairings of round %(round)d are not published: '
+                            'they are not sent to the online services.',
+                            round=admin_round,
+                        ) }}
+                    {% else %}
+                        {{ _(
+                            'The pairings of round %(round)d are not published: '
+                            'they are not shown on the screens.',
+                            round=admin_round,
+                        ) }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
             {% if has_unpaired %}
