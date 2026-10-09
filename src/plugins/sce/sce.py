@@ -350,6 +350,8 @@ class SCEPlugin(Plugin):
             return True
         if SCEUtils.resolve_last_sync_status(event).notify_error_status:
             return True
+        if SCEUtils.get_players_removal_pending(event):
+            return True
         for tournament in event.tournaments:
             plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
             if plugin_data.id and plugin_data.upload_failure_id:

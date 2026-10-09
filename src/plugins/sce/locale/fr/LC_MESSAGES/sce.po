@@ -21,6 +21,9 @@ msgstr "Tous les conflits de joueur·euses sont résolus."
 msgid "All player duplicates resolved."
 msgstr "Tous les doublons de joueur·euses sont résolus."
 
+msgid "All removed players handled."
+msgstr "Tou·tes les joueur·euses retiré·es ont été traité·es."
+
 msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
 msgstr "Tous les tournois locaux sont connectés à un tournoi Sharly-Chess.com."
 
@@ -161,6 +164,9 @@ msgstr "Prénom"
 msgid "Gender"
 msgstr "Genre"
 
+msgid "Give the player a zero-point bye in every round they are not paired in yet."
+msgstr "Déclarer le·la joueur·euse forfait pour chaque ronde où rien n'est encore enregistré pour lui·elle."
+
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
 msgstr "Importer les tournois Sharly-Chess.com qui n'existent pas localement."
 
@@ -172,6 +178,12 @@ msgstr "Importer depuis Sharly-Chess.com"
 
 msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
 msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc.)."
+
+msgid "Keep"
+msgstr "Conserver"
+
+msgid "Keep the player and register them again on Sharly-Chess.com."
+msgstr "Conserver le·la joueur·euse et l'inscrire de nouveau sur Sharly-Chess.com."
 
 msgid "Last name"
 msgstr "Nom"
@@ -255,6 +267,14 @@ msgstr "Le·la joueur·euse [{player}] n'a pas pu être supprimé·e de Sharly-C
 msgid "Player [{player}] deleted."
 msgstr "Joueur·euse [{player}] supprimé·e."
 
+#, python-brace-format
+msgid "Player [{player}] kept, they will be registered again on Sharly-Chess.com."
+msgstr "Joueur·euse [{player}] conservé·e, il·elle sera inscrit·e de nouveau sur Sharly-Chess.com."
+
+#, python-brace-format
+msgid "Player [{player}] withdrawn."
+msgstr "Joueur·euse [{player}] déclaré·e forfait définitif."
+
 msgid "Player conflicts detected during the last synchronisation attempt."
 msgstr "Conflits de joueur·euses détectés lors de la dernière synchronisation."
 
@@ -272,6 +292,13 @@ msgstr "Les joueur·euses de Sharly-Chess.com qui ne peuvent être créé·es da
 
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
 msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créé·es dans Sharly-Chess.com car déjà existant·es."
+
+msgid "Players removed on Sharly-Chess.com"
+msgstr "Joueur·euses retiré·es sur Sharly-Chess.com"
+
+#, python-format
+msgid "Players removed on Sharly-Chess.com (%(count)d)"
+msgstr "Joueur·euses retiré·es sur Sharly-Chess.com (%(count)d)"
 
 #, python-brace-format
 msgid "Plugin [{plugin}] was enabled."
@@ -359,13 +386,6 @@ msgstr "Statuts"
 msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
 msgstr "Les conflits de synchronisation se produisent lorsque les mêmes données ont été modifiées à la fois dans l'application locale et dans Sharly-Chess.com. Pour les résoudre, vous devez soit mettre à jour les données manuellement, soit choisir une version des données à appliquer partout."
 
-#, python-brace-format
-msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
-msgstr "Synchronisation interrompue le {last_attempt_date} à {last_attempt_time}, conflits de tournois détectés."
-
-msgid "Synchronisation is unavailable while there are conflicts."
-msgstr "La synchronisation n'est pas disponible lorsqu'il y a des conflits."
-
 msgid "Synchronisation ongoing"
 msgstr "Synchronisation en cours"
 
@@ -375,6 +395,9 @@ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 
 msgid "Synchronize players"
 msgstr "Synchroniser les joueur·euses"
+
+msgid "These players are no longer registered on Sharly-Chess.com, but they have already played. Withdraw them from the rest of the tournament, or keep them and register them again on Sharly-Chess.com."
+msgstr "Ces joueur·euses ne sont plus inscrit·es sur Sharly-Chess.com, mais il·elles ont déjà joué. Déclarez-les forfait pour la suite du tournoi, ou conservez-les et inscrivez-les de nouveau sur Sharly-Chess.com."
 
 msgid "This field is controlled from Sharly-Chess.com."
 msgstr "Ce champ est controllé depuis Sharly-Chess.com."
@@ -395,6 +418,9 @@ msgstr "Le tournoi [{tournament}] n'est pas connecté à un tournoi Sharly-Chess
 #, python-brace-format
 msgid "Tournament [{tournament}] successfully uploaded."
 msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
+
+msgid "Tournament conflicts detected during the last synchronisation attempt."
+msgstr "Conflits de tournois détectés lors de la dernière tentative de synchronisation."
 
 msgid "Tournament has been modified since the last upload."
 msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
@@ -445,6 +471,9 @@ msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
 
+msgid "Withdraw"
+msgstr "Forfait définitif"
+
 msgid "Year of birth"
 msgstr "Année de naissance"
 
@@ -459,6 +488,9 @@ msgstr "aucune connection à internet"
 
 msgid "re-authorisation required"
 msgstr "ré-autorisation requise"
+
+msgid "some changes could not be sent to Sharly-Chess.com, they will be sent again at the next synchronisation; consult the logs"
+msgstr "certaines modifications n'ont pas pu être envoyées à Sharly-Chess.com, elles le seront de nouveau à la prochaine synchronisation ; consulter les logs"
 
 msgid "tournament not found, most likely deleted"
 msgstr "tournoi non trouvé, probablement supprimé"

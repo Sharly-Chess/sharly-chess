@@ -18,6 +18,7 @@ from litestar.status_codes import (
 )
 from requests import Session, HTTPError, Response
 
+from common.computer_identity import computer_identity
 from common.exception import SharlyChessException
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -45,6 +46,7 @@ from plugins.sce.sce_mappers import SCEAgeCategory
 from plugins.sce.sce_sync_status import (
     SCESyncStatus,
     TournamentConflictsSCESyncStatus,
+    OperationFailuresSCESyncStatus,
     PlayerConflictsSCESyncStatus,
     SuccessSCESyncStatus,
     PlayerDuplicatesAndConflictsSCESyncStatus,
@@ -107,6 +109,7 @@ class _BatchSyncCounters:
     def __init__(self) -> None:
         self.conflict_count: int = 0
         self.duplicate_count: int = 0
+        self.failure_count: int = 0
 
 
 class SCESession(Session):
@@ -234,6 +237,7 @@ class SCESession(Session):
             access_token=data['access_token'],
             refresh_token=data['refresh_token'],
             expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
+            device_id=computer_identity().device_id,
         )
 
     def refresh_tokens(self, force: bool = False) -> None:
@@ -283,6 +287,7 @@ class SCESession(Session):
                 access_token=data['access_token'],
                 refresh_token=data['refresh_token'],
                 expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
+                device_id=computer_identity().device_id,
             )
             self._update_event_tokens(tokens)
             logger.debug(
@@ -291,12 +296,38 @@ class SCESession(Session):
                 tokens.expires_at,
             )
 
+    def _discard_tokens_of_other_device(self) -> None:
+        """Drops the tokens when they were issued to another computer.
+
+        A copied event file carries the refresh token of the computer it
+        comes from. Refreshing it from here would have Sharly-Chess.com see
+        the same token used twice and revoke it on both computers, so this
+        one asks to be connected on its own instead. Tokens issued before
+        computers were told apart are adopted by the first one to use them.
+        """
+        tokens = SCEUtils.get_event_plugin_data(self.event).tokens
+        if not tokens:
+            return
+        device_id = computer_identity().device_id
+        if tokens.device_id == device_id:
+            return
+        if tokens.device_id is None:
+            tokens.device_id = device_id
+            self._update_event_tokens(tokens)
+            return
+        logger.warning(
+            'SCE tokens of [%s] were issued to another computer — re-auth required.',
+            self.event.uniq_id,
+        )
+        self._update_event_tokens(None)
+
     def _run_with_token_validation(
         self,
         request_function: Callable[[], Response],
         skip_validation: bool = False,
     ) -> Response:
         """Wrapper on a request function which regenerates the token if they are outdated."""
+        self._discard_tokens_of_other_device()
         if not SCEUtils.get_event_plugin_data(self.event).tokens:
             raise SharlyChessException(
                 f'Event [{self.event.uniq_id}] - Sharly-Chess.com tokens not set'
@@ -385,26 +416,57 @@ class SCESession(Session):
         )
 
     def _delete_local_player(self, player: TournamentPlayer) -> None:
-        tournament = player.tournament
+        """Removes locally a player whose registration left the tournaments
+        of this computer.
+
+        A player who has played stays in the tournament until the arbiter
+        decides to withdraw them or to register them again, because the
+        removal may have been made on a computer that does not hold the
+        pairings. Neither case is a deletion made here, so none is sent back
+        to Sharly-Chess.com.
+        """
         plugin_data = SCEUtils.get_player_plugin_data(player)
         sce_id = plugin_data.id
         plugin_data.id = None
         if player.has_real_pairings:
             plugin_data.deleted_id = sce_id
+            plugin_data.removal_pending = True
             SCEUtils.update_player_plugin_data(player, plugin_data)
-            new_byes = {
-                round_: Result.ZERO_POINT_BYE
-                for round_ in range(
-                    tournament.current_round or 1,
-                    tournament.rounds + 1,
-                )
-                if player.pairings[round_].unpaired
-            }
-            tournament.set_player_byes(player.single_tournament_player, new_byes)
             self._log_player_sync_operation(player, 'Soft-deletion (local)')
         else:
+            SCEUtils.update_player_plugin_data(player, plugin_data, write=False)
             self.event.delete_player(player)
             self._log_player_sync_operation(player, 'Deletion (local)')
+
+    @staticmethod
+    def withdraw_removed_player(player: TournamentPlayer) -> None:
+        """Withdraws a player removed on Sharly-Chess.com after they played,
+        with a zero-point bye in every round that holds nothing for them yet."""
+        plugin_data = SCEUtils.get_player_plugin_data(player)
+        if not plugin_data.removal_pending:
+            return
+        tournament = player.tournament
+        new_byes = {
+            round_: Result.ZERO_POINT_BYE
+            for round_ in range(tournament.current_round or 1, tournament.rounds + 1)
+            if player.pairings[round_].needs_pairing
+        }
+        tournament.set_player_byes(player.single_tournament_player, new_byes)
+        plugin_data.removal_pending = False
+        SCEUtils.update_player_plugin_data(player, plugin_data)
+
+    @staticmethod
+    def register_removed_player_again(player: TournamentPlayer) -> None:
+        """Keeps a player removed on Sharly-Chess.com after they played; the
+        next synchronisation registers them there again."""
+        plugin_data = SCEUtils.get_player_plugin_data(player)
+        if not plugin_data.removal_pending:
+            return
+        plugin_data.deleted_id = None
+        plugin_data.removal_pending = False
+        plugin_data.last_sync_data = None
+        plugin_data.conflict_sync_data = None
+        SCEUtils.update_player_plugin_data(player, plugin_data)
 
     # -------------------------------------------------------------------------
     # Batch
@@ -566,6 +628,7 @@ class SCESession(Session):
                     counters.duplicate_count += 1
                     log_operation('SC.com creation failed, already exists in SC.com')
                 else:
+                    counters.failure_count += 1
                     log_operation(
                         f'SC.com creation failed: {err.get("message", "unknown error")}'
                     )
@@ -601,6 +664,7 @@ class SCESession(Session):
 
             def on_force_error(result: dict[str, Any]) -> None:
                 err = result.get('error') or {}
+                counters.failure_count += 1
                 log_operation(
                     f'Tournament force failed: {err.get("message", "unknown error")}'
                 )
@@ -608,7 +672,7 @@ class SCESession(Session):
             builder.add_update(
                 registration_id=sce_id,
                 tournament_id=local_sync_data.tournament_id,
-                data=forced_sync_data.to_sce_data(),
+                data=forced_sync_data.changed_sce_data(sce_sync_data),
                 on_success=on_force_success,
                 on_error=on_force_error,
                 log_label=log_name,
@@ -644,6 +708,7 @@ class SCESession(Session):
 
             def on_local_push_error(result: dict[str, Any]) -> None:
                 err = result.get('error') or {}
+                counters.failure_count += 1
                 log_operation(
                     f'SC.com update failed: {err.get("message", "unknown error")}'
                 )
@@ -651,7 +716,7 @@ class SCESession(Session):
             builder.add_update(
                 registration_id=sce_id,
                 tournament_id=local_sync_data.tournament_id,
-                data=local_sync_data.to_sce_data(),
+                data=local_sync_data.changed_sce_data(sce_sync_data),
                 on_success=on_local_push_success,
                 on_error=on_local_push_error,
                 log_label=log_name,
@@ -679,6 +744,7 @@ class SCESession(Session):
 
             def on_merge_error(result: dict[str, Any]) -> None:
                 err = result.get('error') or {}
+                counters.failure_count += 1
                 log_operation(
                     f'Dual-change merge update failed: {err.get("message", "unknown error")}'
                 )
@@ -686,7 +752,7 @@ class SCESession(Session):
             builder.add_update(
                 registration_id=sce_id,
                 tournament_id=merged_sync_data.tournament_id,
-                data=merged_sync_data.to_sce_data(),
+                data=merged_sync_data.changed_sce_data(sce_sync_data),
                 on_success=on_merge_success,
                 on_error=on_merge_error,
                 log_label=log_name,
@@ -773,12 +839,24 @@ class SCESession(Session):
         builder = SCEBatchBuilder()
         counters = _BatchSyncCounters()
         for player in tournament.tournament_players:
+            # A registration the player may hold from an earlier connection of
+            # the tournament is gone with it: the player is registered anew.
+            p_plugin_data = SCEUtils.get_player_plugin_data(player)
+            if p_plugin_data.id or p_plugin_data.deleted_id:
+                p_plugin_data.id = None
+                p_plugin_data.deleted_id = None
+                p_plugin_data.removal_pending = False
+                p_plugin_data.last_sync_data = None
+                p_plugin_data.conflict_sync_data = None
+                SCEUtils.update_player_plugin_data(player, p_plugin_data)
             self._plan_player_sync(
                 player,
                 sce_sync_data=None,
                 builder=builder,
                 counters=counters,
             )
+        if not builder.is_empty():
+            self.send_batch(builder)
         return counters.duplicate_count
 
     def _update_tournament_request(
@@ -1108,28 +1186,27 @@ class SCESession(Session):
             tournament_data['id']: tournament_data
             for tournament_data in data['tournaments']
         }
-        conflict_count = 0
+        tournament_conflict_count = 0
         sce_tournaments = SCEUtils.get_event_sce_tournaments(self.event)
         for tournament in sce_tournaments:
             if not self._sync_tournament(tournament, tournament_data_by_id):
-                conflict_count += 1
-        if conflict_count:
+                tournament_conflict_count += 1
+        if tournament_conflict_count:
             self._log_sync_operation(
-                f'{conflict_count} tournament(s) have conflicts, player sync aborted',
+                f'{tournament_conflict_count} tournament(s) have conflicts',
                 is_info=True,
             )
-            return TournamentConflictsSCESyncStatus()
 
         sce_tournaments = SCEUtils.get_event_sce_tournaments(self.event)
-        sce_tournament_ids = [
+        sce_tournament_ids = {
             SCEUtils.get_tournament_plugin_data(tournament).id
             for tournament in sce_tournaments
-        ]
+        }
+        # Registrations of the whole event: a player moved to a tournament
+        # this computer does not hold is told apart from a deleted one.
         sce_player_sync_data_by_id: dict[str, SCEPlayerSyncData] = {}
         for tournament_data in data['tournaments']:
             sce_id = tournament_data['id']
-            if sce_id not in sce_tournament_ids:
-                continue
             for registration_data in tournament_data['registrations']:
                 sce_player_sync_data_by_id[registration_data['id']] = (
                     SCEPlayerSyncData.from_sce_data(
@@ -1141,12 +1218,22 @@ class SCESession(Session):
         soft_deleted_players_by_id: dict[str, TournamentPlayer] = {}
         duplicate_count = 0
 
-        # Deleted on SC.com --> delete locally
+        # Deleted on SC.com, or moved to a tournament not held here --> delete
+        # locally. A player who has played and was moved stays: planning forces
+        # them back into their tournament.
         # Execute first to avoid duplicates on SC.com creations
         for tournament in sce_tournaments:
             for player in list(tournament.tournament_players):
                 p_sce_id = SCEUtils.get_player_plugin_data(player).id
-                if p_sce_id and p_sce_id not in sce_player_sync_data_by_id:
+                if not p_sce_id:
+                    continue
+                p_sce_sync_data = sce_player_sync_data_by_id.get(p_sce_id)
+                moved_away = (
+                    p_sce_sync_data is not None
+                    and p_sce_sync_data.tournament_id not in sce_tournament_ids
+                    and not player.has_real_pairings
+                )
+                if p_sce_sync_data is None or moved_away:
                     self._delete_local_player(player)
 
         for tournament in sce_tournaments:
@@ -1166,6 +1253,29 @@ class SCESession(Session):
         succeeded_delete_ids: set[str] = set()
         for sce_player_id, sce_sync_data in sce_player_sync_data_by_id.items():
             if sce_player_id in local_sce_player_ids:
+                continue
+            if sce_player_id in soft_deleted_players_by_id:
+                player = soft_deleted_players_by_id[sce_player_id]
+                plugin_data = SCEUtils.get_player_plugin_data(player)
+                plugin_data.id = plugin_data.deleted_id
+                plugin_data.deleted_id = None
+                plugin_data.removal_pending = False
+                SCEUtils.update_player_plugin_data(
+                    player, plugin_data, write_stored_object=True
+                )
+                self._log_player_data_operation(
+                    sce_sync_data, 'Restored after soft-deletion (local)'
+                )
+                continue
+            if sce_sync_data.tournament_id not in sce_tournament_ids:
+                if sce_player_id in event_plugin_data.deleted_player_ids:
+                    # Moved since to a tournament not held here: the move
+                    # supersedes the deletion.
+                    succeeded_delete_ids.add(sce_player_id)
+                    self._log_player_data_operation(
+                        sce_sync_data,
+                        'Deletion dropped, moved to a tournament not held here',
+                    )
                 continue
             if sce_player_id in event_plugin_data.deleted_player_ids:
                 # Deleted locally --> delete on SC.com
@@ -1192,6 +1302,7 @@ class SCESession(Session):
                             f'Player [{lbl}] - Already deleted on SC.com (treated as success)'
                         )
                     else:
+                        batch_counters.failure_count += 1
                         self._log_sync_operation(
                             f'Player [{lbl}] - SC.com delete failed: '
                             f'{err.get("message", "unknown error")} (will retry next sync)'
@@ -1218,18 +1329,6 @@ class SCESession(Session):
                     ):
                         duplicate_count += 1
 
-            if sce_player_id in soft_deleted_players_by_id:
-                player = soft_deleted_players_by_id[sce_player_id]
-                plugin_data = SCEUtils.get_player_plugin_data(player)
-                plugin_data.id = plugin_data.deleted_id
-                plugin_data.deleted_id = None
-                SCEUtils.update_player_plugin_data(
-                    player, plugin_data, write_stored_object=True
-                )
-                self._log_player_data_operation(
-                    sce_sync_data, 'Restored after soft-deletion (local)'
-                )
-
         for sce_sync_data in sce_player_sync_data_by_id.values():
             # Reset to allow object comparison
             sce_sync_data.mail = None
@@ -1244,7 +1343,7 @@ class SCESession(Session):
                 self._plan_player_sync(player, sync_data, builder, batch_counters)
         if not builder.is_empty():
             self.send_batch(builder)
-        conflict_count += batch_counters.conflict_count
+        conflict_count = batch_counters.conflict_count
         duplicate_count += batch_counters.duplicate_count
         for sce_id in self.new_check_ins_tournament_sce_ids:
             tournament = SCEUtils.get_tournament_by_sce_id(self.event, sce_id)
@@ -1258,11 +1357,19 @@ class SCESession(Session):
         event_plugin_data.last_sync_at = datetime.now()
         SCEUtils.update_event_plugin_data(self.event, event_plugin_data)
         message = 'Sync completed'
+        if tournament_conflict_count:
+            message += f', {tournament_conflict_count} tournament conflicts'
         if conflict_count:
             message += f', {conflict_count} player conflicts'
         if duplicate_count:
             message += f', {duplicate_count} duplicated players'
+        if batch_counters.failure_count:
+            message += f', {batch_counters.failure_count} changes not sent'
         self._log_sync_operation(message, is_info=True)
+        if batch_counters.failure_count:
+            return OperationFailuresSCESyncStatus()
+        if tournament_conflict_count:
+            return TournamentConflictsSCESyncStatus()
         if conflict_count and duplicate_count:
             return PlayerDuplicatesAndConflictsSCESyncStatus()
         if conflict_count:
