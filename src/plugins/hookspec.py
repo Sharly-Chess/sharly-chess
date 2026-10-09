@@ -16,7 +16,7 @@ from plugins.utils import (
 )
 from utils.enum import (
     Result,
-    TournamentRating,
+    Cadence,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
@@ -38,8 +38,8 @@ if TYPE_CHECKING:
     from data.pairings.systems import PairingSystem
     from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import Player, PlayerProfileLink, TournamentPlayer
-    from utils.types import PlayerRatingAndType
-    from utils.enum import PlayerRatingType
+    from data.rating_sequences import PrescribedRatingRule, RatingSequence
+    from utils.enum import RatingPreference
     from data.player_categories import PlayerCategory
     from plugins.migration import PluginMigrationManager
     from data.print_documents import (
@@ -208,14 +208,36 @@ class AppHookSpecs:
         """Add federation identifiers to the identity line of a player's"""
 
     @hookspec(firstresult=True)
-    def get_player_rating(
+    def get_prescribed_rating(
         self,
-        tournament_rating: TournamentRating,
-        player_rating_type: 'PlayerRatingType',
+        tournament_rating: Cadence,
         player: 'Player',
         category: 'PlayerCategory',
-    ) -> Optional['PlayerRatingAndType']:
-        """Get the estimated rating of a player."""
+    ) -> int | None:
+        """The rating to rank a player on whom no list rates and for whom
+        the arbiter typed none, as a federation prescribes it."""
+
+    @hookspec(firstresult=True)
+    def get_prescribed_rating_rule(
+        self, event: 'Event'
+    ) -> Optional['PrescribedRatingRule']:
+        """How the federation of an event prescribes the rating of the
+        players no list rates (`get_prescribed_rating`), as the arbiter
+        is shown it in place of the value they would set."""
+
+    @hookspec(firstresult=True)
+    def get_forced_rating_preference(
+        self, event: 'Event'
+    ) -> Optional['RatingPreference']:
+        """The rating preference imposed on the tournaments of an event."""
+
+    @hookspec(firstresult=True)
+    def get_forced_rating_sequence(
+        self, event: 'Event', cadence: Cadence
+    ) -> Optional['RatingSequence']:
+        """The ratings the tournaments of an event played at a cadence
+        are ranked on, in the order they are tried, as a federation
+        imposes them."""
 
     @hookspec
     def validate_player_tournament_move(

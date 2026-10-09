@@ -6,6 +6,20 @@ from dataclasses import dataclass, field
 
 TRF_DATE_FORMAT = '%Y/%m/%d'
 
+#: The dummy federations of the pseudo-NRS records, which carry the source
+#: of a rating in a partial TRF (TEC Manual 3.9.6.2.b): the FIDE standard,
+#: rapid and blitz lists, and a value entered manually.
+FIDE_STANDARD_PSEUDO_FEDERATION = 'SSS'
+FIDE_RAPID_PSEUDO_FEDERATION = 'RRR'
+FIDE_BLITZ_PSEUDO_FEDERATION = 'BBB'
+MANUAL_PSEUDO_FEDERATION = 'MMM'
+PSEUDO_FEDERATIONS = (
+    FIDE_STANDARD_PSEUDO_FEDERATION,
+    FIDE_RAPID_PSEUDO_FEDERATION,
+    FIDE_BLITZ_PSEUDO_FEDERATION,
+    MANUAL_PSEUDO_FEDERATION,
+)
+
 
 @dataclass
 class TrfGame:
@@ -149,6 +163,9 @@ class TrfTournament:
     starting_rank_method: str = ''
     #: Federation the 172 method and the NRS records belong to.
     starting_rank_federation: str = ''
+    #: The other federations, real or pseudo (`PSEUDO_FEDERATIONS`), of
+    #: the NRS records, each given the method in a 172 record of its own.
+    other_starting_rank_federations: list[str] = field(default_factory=list)
     pairing_controller_id: str = ''
     tie_breaks: list[str] = field(default_factory=list)
     standings_tie_breaks: list[str] = field(default_factory=list)

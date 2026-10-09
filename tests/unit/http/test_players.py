@@ -10,7 +10,7 @@ from data.player import TournamentPlayer
 from utils.types import PlayerRating
 from data.tournament import Tournament
 from tests.unit.http.events import EventUnderTest
-from utils.enum import PlayerGender, PlayerTitle, TournamentRating
+from utils.enum import PlayerGender, PlayerTitle, Cadence
 
 EVENT_ID = 'test-players-http'
 TOURNAMENT_NAME = 'test-players-http-tournament'
@@ -147,10 +147,7 @@ FULL_PLAYER = {
     'club': 'SC Club',
     'federation': 'FRA',
     'fixed': '100',
-    'standard_rating_estimated': '1000',
-    'rapid_rating_national': '1500',
-    'blitz_rating_fide': '2000',
-    'blitz_rating_k': '20',
+    'tournament_rating': '1000',
     'title': str(PlayerTitle.GRANDMASTER.value),
     'mail': 'john.doe@sharly-chess.com',
     'owed': '10',
@@ -183,9 +180,9 @@ def test_a_player_is_stored_as_the_form_was_filled_in(
     assert entered.federation.name == 'FRA'
     assert entered.fixed == 100
     assert entered.ratings == {
-        TournamentRating.STANDARD: PlayerRating(estimated=1000),
-        TournamentRating.RAPID: PlayerRating(national=1500),
-        TournamentRating.BLITZ: PlayerRating(fide=2000, k_factor=20),
+        Cadence.STANDARD: PlayerRating(manual=1000),
+        Cadence.RAPID: PlayerRating(),
+        Cadence.BLITZ: PlayerRating(),
     }
     assert entered.title == PlayerTitle.GRANDMASTER
     assert entered.mail == 'john.doe@sharly-chess.com'
@@ -223,3 +220,89 @@ def test_a_player_is_renamed_and_then_removed(http: TestClient, tournament: Tour
     assert entered.id not in {
         player.id for player in EVENT.tournament().tournament_players
     }
+
+
+@pytest.mark.unit
+def test_the_ratings_update_lists_what_the_lists_would_change(
+    http: TestClient, tournament: Tournament
+):
+    response = http.get(
+        f'/event-ratings-check-modal/{EVENT_ID}/players',
+        params={'tournament_id': tournament.id},
+    )
+    assert response.status_code == 200
+    assert 'ratings-check-modal' in response.text
+    assert 'Rating lists used' in response.text
+
+    updated = http.patch(
+        f'/event-ratings-update/{EVENT_ID}/players',
+        data={'tournament_id': str(tournament.id)},
+        follow_redirects=False,
+    )
+    assert updated.status_code == 303
+
+
+@pytest.mark.unit
+def test_the_ratings_check_banner_can_be_dismissed(
+    http: TestClient, tournament: Tournament
+):
+    banner = http.get(f'/event-ratings-check-banner/{EVENT_ID}')
+    assert banner.status_code == 200
+    dismissed = http.patch(f'/event-ratings-check-dismiss/{EVENT_ID}')
+    assert dismissed.status_code == 200
+    assert (
+        'ratings-check-banner'
+        not in http.get(f'/event-ratings-check-banner/{EVENT_ID}').text
+    )
+
+
+@pytest.mark.unit
+def test_a_fide_rating_cannot_be_corrected_below_the_fide_floor(
+    http: TestClient, tournament: Tournament
+):
+    response = http.post(
+        f'/player-create/{EVENT_ID}',
+        data={
+            'last_name': 'floor',
+            'first_name': 'fide',
+            'gender': str(PlayerGender.MAN.value),
+            'tournament_id': str(tournament.id),
+            'ratings': '{"1": {"fide": 1800, "origins": {"f": {"source": "fide"}}}}',
+            'tournament_rating': '1000',
+        },
+    )
+    assert 'Invalid rating [1000]' in response.text
+
+
+@pytest.mark.unit
+def test_the_form_shows_the_prescribed_rating_of_a_player_no_list_rates(
+    http: TestClient, tournament: Tournament
+):
+    """The estimate the federation prescribes follows the date of birth the
+    form holds, before the player is saved."""
+    response = http.post(
+        f'/player-create/{EVENT_ID}',
+        data={
+            'first_name': 'young',
+            'gender': str(PlayerGender.MAN.value),
+            'date_of_birth': '2015-01-01',
+            'tournament_id': str(tournament.id),
+        },
+    )
+    assert 'placeholder="1299"' in response.text
+
+
+@pytest.mark.unit
+def test_the_prescribed_rating_follows_the_date_of_birth(
+    http: TestClient, tournament: Tournament
+):
+    def placeholder(date_of_birth: str) -> str:
+        response = http.get(
+            f'/player-prescribed-rating/{EVENT_ID}',
+            params={'tournament_id': tournament.id, 'date_of_birth': date_of_birth},
+        )
+        assert response.status_code == 200
+        return response.json()['placeholder']
+
+    assert placeholder('2015-01-01') == '1299'
+    assert placeholder('1990') == '1399'

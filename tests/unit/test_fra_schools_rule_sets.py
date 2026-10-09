@@ -8,7 +8,7 @@ from unittest import TestCase
 import pytest
 
 from plugins.fra_schools.fra_schools_rule_sets import ChampionnatScolaireRuleSet
-from utils.enum import PlayerGender, PlayerRatingType, TournamentRating
+from utils.enum import PlayerGender, PlayerRatingType, Cadence
 from utils.types import PlayerRatingAndType
 
 if TYPE_CHECKING:
@@ -58,10 +58,8 @@ class CategoryFormatTestCase(TestCase):
 
     def test_players_are_rated_on_the_rapid_list(self) -> None:
         rule_set = ChampionnatScolaireRuleSet({})
-        self.assertIn('rating', rule_set.managed_fields)
-        self.assertEqual(
-            rule_set.form_defaults()['rating'], str(TournamentRating.RAPID.value)
-        )
+        self.assertIn('cadence', rule_set.managed_fields)
+        self.assertEqual(rule_set.form_defaults()['cadence'], str(Cadence.RAPID.value))
 
     def test_game_points_decide_colours(self) -> None:
         rule_set = ChampionnatScolaireRuleSet({})

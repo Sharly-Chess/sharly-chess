@@ -41,12 +41,12 @@ from database.sqlite.event.event_store import (
 from utils.types import PlayerRating
 from utils.enum import (
     EventType,
-    PlayerRatingType,
+    RatingPreference,
     Result,
     ScoreType,
     TeamByeType,
     TeamColourType,
-    TournamentRating,
+    Cadence,
 )
 
 if TYPE_CHECKING:
@@ -417,8 +417,8 @@ class RandomTournamentGenerator:
                     # The standard rating of each player, which is the
                     # rating the file states and the one the results are
                     # drawn from.
-                    rating=TournamentRating.STANDARD.value,
-                    player_rating_type=PlayerRatingType.FIDE.value,
+                    cadence=Cadence.STANDARD.value,
+                    rating_preference=RatingPreference.FIDE.value,
                     team_player_count=settled.players_per_team,
                     team_colour_type=(
                         settled.team_colour_type.value
@@ -527,7 +527,7 @@ class RandomTournamentGenerator:
             last_name=last_name,
             first_name=first_name,
             ratings={
-                TournamentRating.STANDARD.value: PlayerRating(fide=rating).stored_value,
+                Cadence.STANDARD.value: PlayerRating(fide=rating).stored_value,
             },
             check_in=True,
             team_id=team_id,

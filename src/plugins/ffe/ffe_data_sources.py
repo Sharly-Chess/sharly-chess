@@ -19,9 +19,6 @@ from data.input_output.player_updater_fields import (
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
-    StandardRatingUpdaterField,
-    RapidRatingUpdaterField,
-    BlitzRatingUpdaterField,
     FederationUpdaterField,
     ClubUpdaterField,
 )
@@ -43,6 +40,7 @@ from plugins.ffe.utils import (
     ffe_name_key,
     get_data,
 )
+from utils.enum import Cadence
 
 
 logger = get_logger()
@@ -149,9 +147,6 @@ class _FfeDataSource(ABC):
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
-            StandardRatingUpdaterField(),
-            RapidRatingUpdaterField(),
-            BlitzRatingUpdaterField(),
             FederationUpdaterField(),
             FfeLeagueUpdaterField(),
             ClubUpdaterField(),
@@ -335,6 +330,7 @@ class _FfeDataSource(ABC):
 class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
     federation = 'FRA'
     national_source_id = NATIONAL_SOURCE_ID
+    fide_cadences = frozenset(Cadence)
 
     @staticmethod
     def static_id() -> str:
@@ -426,6 +422,7 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
 class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
     federation = 'FRA'
     national_source_id = NATIONAL_SOURCE_ID
+    fide_cadences = frozenset(Cadence)
 
     @staticmethod
     def static_id() -> str:
@@ -438,6 +435,10 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
     @property
     def short_name(self) -> str:
         return _('FFE (online)')
+
+    @property
+    def list_name(self) -> str:
+        return _('FFE (France)')
 
     @property
     def is_forced_active(self) -> bool:
@@ -544,3 +545,6 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
         self, identifier_values: list[str]
     ) -> dict[str, StoredPlayer]:
         return await self._get_stored_players_by_import_identifier(identifier_values)
+
+
+FfeLocalDataSource.online_version_type = FfeOnlineDataSource

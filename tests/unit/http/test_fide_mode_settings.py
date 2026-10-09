@@ -22,7 +22,7 @@ EVENT = EventUnderTest(EVENT_ID, TOURNAMENT_NAME)
 FIELDS = {
     'name': TOURNAMENT_NAME,
     'rounds': '5',
-    'rating': '1',
+    'cadence': '1',
     'pairing_system': 'SWISS',
     'SWISS_pairing_variation': 'SWISS_STANDARD',
     'fide_mode': 'on',

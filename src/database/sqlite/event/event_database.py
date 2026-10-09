@@ -315,7 +315,8 @@ class EventDatabase(MigrationDatabase):
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
-            player_rating_type=row.get('player_rating_type', 3),
+            rating_preference=row.get('rating_preference'),
+            unrated_rating=row.get('unrated_rating'),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
@@ -342,6 +343,12 @@ class EventDatabase(MigrationDatabase):
                 row['allow_multi_tournament_players']
             ),
             event_type=EventType(row['event_type']),
+            check_ratings=self.load_bool_from_database_field(
+                row.get('check_ratings', 1)
+            ),
+            ratings_check_dismissed=self.load_json_from_database_field(
+                row.get('ratings_check_dismissed') or None, {}
+            ),
             tag_ids=self.load_json_from_database_field(row['tag_ids'], []),
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
             enabled_plugins=self.load_json_from_database_field(
@@ -391,6 +398,12 @@ class EventDatabase(MigrationDatabase):
         metadata.rotator_count = self._get_table_count('rotator')
         return metadata
 
+    def set_ratings_check_dismissed(self, list_versions: dict[str, float]) -> None:
+        self.execute(
+            'UPDATE `info` SET `ratings_check_dismissed` = ?',
+            (self.dump_to_json_database_field(list_versions),),
+        )
+
     def update_stored_event(
         self,
         stored_event: StoredEvent,
@@ -403,7 +416,8 @@ class EventDatabase(MigrationDatabase):
                 'public',
                 'federation',
                 'location',
-                'player_rating_type',
+                'rating_preference',
+                'unrated_rating',
                 'background_color',
                 'message_text',
                 'message_color',
@@ -415,6 +429,7 @@ class EventDatabase(MigrationDatabase):
                 'organiser_email',
                 'organiser_director',
                 'allow_multi_tournament_players',
+                'check_ratings',
             ],
         ) | {
             'event_type': stored_event.event_type.value,
@@ -646,7 +661,7 @@ class EventDatabase(MigrationDatabase):
             current_round=row['current_round'],
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
-            rating=row['rating'],
+            cadence=row['cadence'],
             last_update=cls.load_datetime_from_database_field(row['last_update']),
             last_player_update=cls.load_optional_timestamp_from_database_field(
                 row['last_player_update']
@@ -657,10 +672,11 @@ class EventDatabase(MigrationDatabase):
             start_date=cls.load_date_from_database_field(row['start_date']),
             stop_date=cls.load_date_from_database_field(row['stop_date']),
             location=row['location'],
-            player_rating_type=row['player_rating_type'],
-            override_unrated_rapid_blitz=cls.load_bool_from_database_field(
-                row['override_unrated_rapid_blitz']
+            rating_preference=row['rating_preference'],
+            rating_sequence=cls.load_json_from_database_field(
+                row['rating_sequence'] or None, []
             ),
+            unrated_rating=row['unrated_rating'],
             game_points=cls._load_int_keyed_float_dict_from_db(row['game_points']),
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
             round_datetimes=cls._load_round_datetimes_from_database_field(
@@ -783,12 +799,12 @@ class EventDatabase(MigrationDatabase):
                 'paired_bye_result',
                 'max_byes',
                 'rounds',
-                'rating',
+                'cadence',
                 'pairing',
                 'location',
-                'player_rating_type',
+                'rating_preference',
+                'unrated_rating',
                 'last_rounds_no_byes',
-                'override_unrated_rapid_blitz',
                 'team_player_count',
                 'roster_max_size',
                 'color_pattern',
@@ -819,6 +835,10 @@ class EventDatabase(MigrationDatabase):
                 stored_tournament.round_datetimes
             ),
             'criteria': cls.dump_to_json_database_field(stored_tournament.criteria),
+            'rating_sequence': cls.dump_to_json_database_field(
+                stored_tournament.rating_sequence or None
+            )
+            or '',
             'rule_set_config': cls.dump_to_json_database_field(
                 stored_tournament.rule_set_config, {}
             ),

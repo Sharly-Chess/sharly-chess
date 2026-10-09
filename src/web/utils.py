@@ -401,6 +401,8 @@ class SelectOption:
     classes: str = ''
     search: str | None = None
     subtitle: str | None = None
+    #: Markup shown in place of the name in the list and the selection.
+    html: str | None = None
 
 
 class PKCEUtils:

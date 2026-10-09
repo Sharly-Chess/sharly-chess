@@ -108,7 +108,7 @@ def test_account_from_ffe_database_player(
     fide_arbiter_title: str | None,
     expected_title: FFEArbiterTitle,
 ) -> None:
-    stored_player: StoredPlayer = FfeDatabase.get_stored_player_from_row(
+    stored_player: StoredPlayer = FfeDatabase().get_stored_player_from_row(
         _ffe_database_row(arbiter_title, fide_arbiter_title)
     )
     assert stored_player.transient_arbiter_titles['fide'] == (fide_arbiter_title or '')
