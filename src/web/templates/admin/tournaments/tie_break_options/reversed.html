@@ -1,7 +1,28 @@
+{% set id = option.id|replace('_', '-') %}
+{% set tooltips = option.tooltips_by_tie_break(admin_event) %}
 <div class="col-12">
     {{ admin_macros.switch_input(
         name=option.id,
         placeholder=_('Reverse order'),
+        tooltip_text=tooltips.get(data.get('type') or data.get('tie_break_type'))
+            or (tooltips.values()|first if tooltips else ''),
         data=data, errors=errors
     ) }}
 </div>
+<script>
+    (() => {
+        const tooltips = {{ tooltips|tojson }};
+        const icon = $('#{{ id }}-wrapper .tooltip-icon i');
+        const type = icon.closest('form').find(
+            'select[name="type"], select[name="tie_break_type"]'
+        );
+        type.change(function() {
+            const tooltip = tooltips[$(this).val()];
+            if (tooltip) {
+                bootstrap.Tooltip.getInstance(icon[0])?.dispose();
+                icon.attr('data-bs-title', "<i class=''></i> " + tooltip);
+                activateTooltips(icon[0]);
+            }
+        });
+    })();
+</script>

@@ -1,0 +1,41 @@
+{% set mode_name = option.id ~ '_MODE' %}
+{% set id = option.id|replace('_', '-') %}
+{% set fixed = data.get(option.id) %}
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=mode_name,
+        label=_('%(string)s:', string=_('Unrated players')),
+        tooltip_text=_(
+            'The rating used for players who have neither a FIDE nor a '
+            'national rating, whether they are the player or an opponent.'
+        ),
+        select_options={
+            'ESTIMATED': _('Use the estimated rating'),
+            'FIXED': _('Use a fixed rating'),
+        },
+        data={mode_name: 'FIXED' if fixed else 'ESTIMATED'},
+        errors={} if fixed or option.id not in errors else {mode_name: errors[option.id]}
+    ) }}
+</div>
+<div class="col-12" id="{{ id }}-fixed" {% if not fixed %}style="display:none"{% endif %}>
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Fixed rating')),
+        min=1,
+        max=option.MAX_VALUE,
+        step=1,
+        data=data, errors=errors if fixed else {}
+    ) }}
+</div>
+<script>
+    $('#{{ mode_name|replace('_', '-') }}').change(function() {
+        const fixed = $(this).val() === 'FIXED';
+        const input = $('#{{ id }}');
+        if (!fixed) {
+            input.val('');
+        } else if (!input.val()) {
+            input.val({{ option.DEFAULT_FIXED_VALUE }});
+        }
+        $('#{{ id }}-fixed').toggle(fixed);
+    });
+</script>
