@@ -63,7 +63,6 @@ class TeamLineupRoundGroupsTestCase(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': rounds,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': pairing,
             },
