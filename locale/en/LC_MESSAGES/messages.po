@@ -1675,7 +1675,7 @@ msgid "By default, other devices can only interact with public screens. This tab
 msgstr ""
 
 #, python-brace-format
-msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
+msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must confirm that the player estimation is explained in the rules."
 msgstr ""
 
 #, python-format
@@ -3958,6 +3958,9 @@ msgid "Fixed board ordering:"
 msgstr ""
 
 msgid "Fixed points per finishing position (e.g. 20 for first, 15 for second), summed. Positions beyond the table score nothing."
+msgstr ""
+
+msgid "Fixed rating"
 msgstr ""
 
 msgid "Fixed table"
@@ -7380,6 +7383,10 @@ msgstr ""
 msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
 msgstr ""
 
+#, python-brace-format
+msgid "Players without a rating are counted at {value}."
+msgstr ""
+
 msgid "Players without phone or email won't be included."
 msgstr ""
 
@@ -7854,6 +7861,12 @@ msgid "Randomly select the pairing numbers."
 msgstr ""
 
 msgid "Rank"
+msgstr ""
+
+msgid "Rank the higher pairing numbers first, instead of the lower ones."
+msgstr ""
+
+msgid "Rank the lower ratings first, instead of the higher ones."
 msgstr ""
 
 msgid "Ranking"
@@ -9838,6 +9851,10 @@ msgstr[1] ""
 msgid "The first tournament of the screen."
 msgstr ""
 
+#, python-brace-format
+msgid "The fixed rating must be between 1 and {max}."
+msgstr ""
+
 msgid "The following categories will also be deleted:"
 msgstr ""
 
@@ -10202,6 +10219,9 @@ msgid "The rating retrieval, in order of priority (may be overridden on a per-to
 msgstr ""
 
 msgid "The rating retrieval, set by the federation of the event, in order of priority."
+msgstr ""
+
+msgid "The rating used for players who have neither a FIDE nor a national rating, whether they are the player or an opponent."
 msgstr ""
 
 msgid "The rating used when the time control is at least 60 minutes."
@@ -10758,7 +10778,11 @@ msgid "This tie-break is already used."
 msgstr ""
 
 #, python-brace-format
-msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
+msgid "This tie-break is disabled when there are unrated players ({count} in the tournament). You must confirm that the rules give them a rating of {value}."
+msgstr ""
+
+#, python-brace-format
+msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament). Give them an estimated rating, or use a fixed rating and confirm that the rules give it to them."
 msgstr ""
 
 #, python-brace-format
@@ -11358,6 +11382,10 @@ msgctxt "unrated game"
 msgid "Unrated"
 msgstr ""
 
+#, python-brace-format
+msgid "Unrated = {value}"
+msgstr ""
+
 msgid "Unrated Draw"
 msgstr ""
 
@@ -11371,6 +11399,9 @@ msgid "Unrated opponent."
 msgstr ""
 
 msgid "Unrated penalty"
+msgstr ""
+
+msgid "Unrated players"
 msgstr ""
 
 msgid "Unrated players:"
@@ -11494,6 +11525,9 @@ msgstr ""
 msgid "Use a data source to import players from their identifier."
 msgstr ""
 
+msgid "Use a fixed rating"
+msgstr ""
+
 msgid "Use a tournament's criteria"
 msgstr ""
 
@@ -11526,6 +11560,9 @@ msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
 msgid "Use the alert message defined on each screen."
+msgstr ""
+
+msgid "Use the estimated rating"
 msgstr ""
 
 msgid "Use the previous round's lineup (untick to set this round)"

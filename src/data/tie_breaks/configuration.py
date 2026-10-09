@@ -9,6 +9,7 @@ from collections.abc import Collection
 from functools import cached_property
 from typing import TYPE_CHECKING, cast
 
+from common.exception import OptionError
 from common.i18n import _, pgettext
 from common.logger import get_logger
 from data.tie_breaks import TieBreak, TieBreakManager, TieBreakOption
@@ -228,25 +229,26 @@ class TieBreakConfiguration:
     def invalid_message(self, tie_break: TieBreak) -> str | None:
         """Get a message explaining why a tie-break is invalid in the context of the tournament.
         Return or None if it is valid."""
+        if message := self.invalid_type_message(tie_break):
+            return message
+        option_error = self.invalid_option_error(tie_break)
+        return None if option_error is None else str(option_error)
+
+    def invalid_type_message(self, tie_break: TieBreak) -> str | None:
+        """The part of :meth:`invalid_message` no option of the tie-break
+        settles."""
         tournament = self.tournament
         if not tie_break.is_compatible_with(tournament.pairing_system):
             return _(
                 'This tie-break is not compatible with '
                 'the pairing system [{pairing_system}] (ignored).'
             ).format(pairing_system=tournament.pairing_system.name)
-        if not tie_break.allow_unrated_players and tournament.unrated_count:
-            return _(
-                'This tie-break is disabled when there are unrated players '
-                'without estimated ratings ({count} in the tournament).'
-            ).format(count=tournament.unrated_count)
-        if not tie_break.allow_estimated_players and tournament.estimated_count:
-            return _(
-                'By default, this tie-break is disabled when there '
-                'are unrated players ({count} in the tournament). '
-                'You must specify that the player estimation is explained '
-                'in the rules.'
-            ).format(count=tournament.estimated_count)
         return None
+
+    def invalid_option_error(self, tie_break: TieBreak) -> OptionError | None:
+        """The part of :meth:`invalid_message` an option of the tie-break
+        settles, on that option."""
+        return tie_break.unrated_players_error(self.tournament)
 
     @property
     def warning_message(self) -> str | None:
