@@ -35,6 +35,7 @@
 - Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
 - Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the FFE T2 minutes (5.2.0)
 - The pairings of a round are published to the screens and the online services (Sharly-Chess.com, Chess-Results, FFE, custom uploads) only once the arbiter publishes them, whatever the pairing system, so they can be checked first; a round is published once the rounds before it are finished, publishing with it those not published yet, and the last one published can be unpublished as long as it has no results, and print documents show them before they are published. Round robins no longer end a round to move on: publishing the next round does (5.2.0)
+- When the tournament is shown on screens or sent to online services, the pairings page warns that the round is not published yet, or that an earlier round is not finished (5.2.0)
 
 ## Documents
 
