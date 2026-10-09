@@ -134,6 +134,7 @@ class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
             options.ForeModifierTieBreakOption,
             options.KoyaLimitTieBreakOption,
             options.ReversedTieBreakOption,
+            options.UnratedRatingTieBreakOption,
             options.EstimatedRatingsTieBreakOption,
             options.LegacyMarch2026TieBreakOption,
             options.TeamScoreTieBreakOption,

@@ -10,6 +10,7 @@ from math import isclose
 from statistics import fmean
 from typing import TYPE_CHECKING, SupportsFloat, Any
 
+from common.exception import OptionError
 from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
@@ -38,6 +39,7 @@ from data.tie_breaks.options import (
     ReversedTieBreakOption,
     LegacyMarch2026TieBreakOption,
     TeamScoreTieBreakOption,
+    UnratedRatingTieBreakOption,
 )
 from data.tie_breaks.team_records import (
     TeamRecord,
@@ -50,7 +52,7 @@ from data.tie_breaks.direct_encounter import rank_by_encounters
 from data.tie_breaks.unplayed_rounds import RoundRecord, WeightedContribution
 from database.sqlite.event.event_store import StoredTieBreak
 from utils import Utils
-from utils.enum import BoardColor, Result, ScoreType
+from utils.enum import BoardColor, PlayerRatingType, Result, ScoreType
 from utils.option import OptionHandler
 
 if TYPE_CHECKING:
@@ -289,10 +291,15 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         """Defines if the tie-break can be used with players without any rating defined."""
         return True
 
-    @property
-    def allow_estimated_players(self) -> bool:
-        """Defines if the tie-break can be used with estimated players."""
-        return True
+    def unrated_players_error(self, tournament: 'Tournament') -> OptionError | None:
+        """Why the tournament's estimated or unrated players disable the
+        tie-break, on the option that would allow them, or None if they do
+        not."""
+        return None
+
+    def option_tooltip(self, option_type: type[TieBreakOption]) -> str:
+        """What an option does to this tie-break, for the option's tooltip."""
+        return ''
 
     def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
         """Get a warning to display on the tie-break row."""
@@ -1041,6 +1048,13 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
         if is_reversed:
             return _('The pairing numbers of the tournament in descending order.')
         return _('The pairing numbers of the tournament in ascending order.')
+
+    def option_tooltip(self, option_type: type[TieBreakOption]) -> str:
+        if option_type is ReversedTieBreakOption:
+            return _(
+                'Rank the higher pairing numbers first, instead of the lower ones.'
+            )
+        return super().option_tooltip(option_type)
 
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
@@ -1987,15 +2001,68 @@ class OpponentRatingTieBreak(TieBreak, ABC):
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        return [EstimatedRatingsTieBreakOption]
+        return [UnratedRatingTieBreakOption, EstimatedRatingsTieBreakOption]
+
+    @property
+    def fixed_unrated_rating(self) -> int | None:
+        return self._get_option(UnratedRatingTieBreakOption).value
 
     @property
     def allow_unrated_players(self) -> bool:
-        return False
+        return self.fixed_unrated_rating is not None
 
-    @property
-    def allow_estimated_players(self) -> bool:
-        return self._get_option(EstimatedRatingsTieBreakOption).value
+    def unrated_players_error(self, tournament: 'Tournament') -> OptionError | None:
+        if not self.allow_unrated_players and tournament.unrated_count:
+            return OptionError(
+                _(
+                    'This tie-break is disabled when there are unrated players '
+                    'without estimated ratings ({count} in the tournament). '
+                    'Give them an estimated rating, or use a fixed rating and '
+                    'confirm that the rules give it to them.'
+                ).format(count=tournament.unrated_count),
+                self._get_option(UnratedRatingTieBreakOption),
+            )
+        rules_option = self._get_option(EstimatedRatingsTieBreakOption)
+        if rules_option.value:
+            return None
+        count = sum(
+            self._is_unrated(player.rating, player.rating_type)
+            for player in tournament.tournament_players
+        )
+        if not count:
+            return None
+        if self.fixed_unrated_rating is None:
+            message = _(
+                'By default, this tie-break is disabled when there '
+                'are unrated players ({count} in the tournament). '
+                'You must confirm that the player estimation is explained '
+                'in the rules.'
+            ).format(count=count)
+        else:
+            message = _(
+                'This tie-break is disabled when there are unrated players '
+                '({count} in the tournament). You must confirm that the rules '
+                'give them a rating of {value}.'
+            ).format(count=count, value=self.fixed_unrated_rating)
+        return OptionError(message, rules_option)
+
+    @staticmethod
+    def _is_unrated(value: int, rating_type: PlayerRatingType) -> bool:
+        return rating_type == PlayerRatingType.ESTIMATED or not value
+
+    def _rating_value(self, value: int, rating_type: PlayerRatingType) -> int:
+        if self.fixed_unrated_rating is not None and self._is_unrated(
+            value, rating_type
+        ):
+            return self.fixed_unrated_rating
+        return value
+
+    def _tie_break_rating(self, player: TournamentPlayer, round_: int) -> int:
+        rating = player.tie_break_rating_and_type(round_)
+        return self._rating_value(rating.value, rating.type)
+
+    def _with_same_unrated_rating[T: TieBreak](self, tie_break_type: type[T]) -> T:
+        return tie_break_type([self._get_option(UnratedRatingTieBreakOption)])
 
     def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
         if tournament.estimated_count:
@@ -2027,6 +2094,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [
             CutterWithMedianTieBreakOption,
+            UnratedRatingTieBreakOption,
             EstimatedRatingsTieBreakOption,
         ]
 
@@ -2063,7 +2131,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            ratings.append(opponent.tie_break_rating(pairing.round))
+            ratings.append(self._tie_break_rating(opponent, pairing.round))
         ratings = sorted(ratings)
         ratings = ratings[bottom_cut:-top_cut] if top_cut else ratings[bottom_cut:]
         if not ratings:
@@ -2113,7 +2181,7 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            ratings.append(opponent.tie_break_rating(pairing.round))
+            ratings.append(self._tie_break_rating(opponent, pairing.round))
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
@@ -2170,7 +2238,9 @@ class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
             and player.game_counts_for_tie_breaks(pairing)
         ]
         performance_ratings = []
-        performance_tie_break = TournamentPerformanceRatingTieBreak()
+        performance_tie_break = self._with_same_unrated_rating(
+            TournamentPerformanceRatingTieBreak
+        )
         for pairing in played_games:
             assert pairing.opponent_id is not None
             opponent: TournamentPlayer = tournament.players_by_id[pairing.opponent_id]
@@ -2232,20 +2302,22 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             tournament.point_values
         ):
             return -800 + min(
-                tournament.players_by_id[pairing.opponent_id].tie_break_rating(
-                    pairing.round
+                self._tie_break_rating(
+                    tournament.players_by_id[pairing.opponent_id], pairing.round
                 )
                 for pairing in played_rounds
                 if pairing.opponent_id is not None
             )
         ratings: list[int] = [
-            tournament.players_by_id[pairing.opponent_id].tie_break_rating(
-                pairing.round
+            self._tie_break_rating(
+                tournament.players_by_id[pairing.opponent_id], pairing.round
             )
             for pairing in played_rounds
             if pairing.opponent_id is not None
         ]
-        performance_tie_break = TournamentPerformanceRatingTieBreak()
+        performance_tie_break = self._with_same_unrated_rating(
+            TournamentPerformanceRatingTieBreak
+        )
         first_estimation = performance_tie_break.compute_player_value(
             player, after_round=after_round
         )
@@ -2426,7 +2498,9 @@ class AveragePerfectPerformanceTieBreak(OpponentRatingTieBreak):
             and pairing.played
             and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
         ]
-        ptp_tie_break = PerfectTournamentPerformanceTieBreak()
+        ptp_tie_break = self._with_same_unrated_rating(
+            PerfectTournamentPerformanceTieBreak
+        )
         tournament: Tournament = player.tournament
         ptp = [
             ptp_tie_break.compute_player_value(
@@ -2469,6 +2543,7 @@ class PlayerRatingTieBreak(OpponentRatingTieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [
             ReversedTieBreakOption,
+            UnratedRatingTieBreakOption,
             EstimatedRatingsTieBreakOption,
         ]
 
@@ -2478,10 +2553,6 @@ class PlayerRatingTieBreak(OpponentRatingTieBreak):
 
     @property
     def base_help_text(self) -> str:
-        return ''
-
-    @property
-    def help_text(self) -> str:
         is_reversed = self._get_option(ReversedTieBreakOption).value
         if is_reversed is None:
             return _(
@@ -2491,13 +2562,18 @@ class PlayerRatingTieBreak(OpponentRatingTieBreak):
             return _('The ratings in ascending order.')
         return _('The ratings in descending order.')
 
+    def option_tooltip(self, option_type: type[TieBreakOption]) -> str:
+        if option_type is ReversedTieBreakOption:
+            return _('Rank the lower ratings first, instead of the higher ones.')
+        return super().option_tooltip(option_type)
+
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> int:
-        is_reversed = self._get_option(ReversedTieBreakOption).value
-        if is_reversed:
-            return -player.rating
-        return player.rating
+        rating = self._rating_value(player.rating, player.rating_type)
+        if self._get_option(ReversedTieBreakOption).value:
+            return -rating
+        return rating
 
 
 class DirectEncounterTieBreak(TieBreak):
