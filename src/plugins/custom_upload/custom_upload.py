@@ -113,6 +113,16 @@ class CustomUploadPlugin(Plugin):
         event_database.update_stored_event(stored_event)
 
     @hookimpl
+    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+        event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
+        if not (event_plugin_data.ftp_host and event_plugin_data.ftp_username):
+            return False
+        return any(
+            not document.tournament_ids() or tournament.id in document.tournament_ids()
+            for document in event_plugin_data.documents
+        )
+
+    @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> None:

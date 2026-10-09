@@ -108,7 +108,7 @@ class SCEKeizerResultsTestCase(TestCase):
         TestUtils.create_tournament(
             KEIZER_EVENT_ID,
             KEIZER_TOURNAMENT_NAME,
-            overrides={'rounds': 5, 'current_round': 1, 'pairing': 'KEIZER_STANDARD'},
+            overrides={'rounds': 5, 'pairing': 'KEIZER_STANDARD'},
         )
         with EventDatabase(KEIZER_EVENT_ID, write=True) as database:
             tournament_id = next(

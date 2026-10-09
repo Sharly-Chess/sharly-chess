@@ -314,7 +314,7 @@ class ScheveningenPairingSystem(
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return swiss_style_permission_handler(protect_unpairing=False)
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
     @override

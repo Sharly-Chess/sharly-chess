@@ -350,7 +350,7 @@ class PairingAccessLevel(AccessLevel):
             AuthAction.UNPAIR_ROUND,
             AuthAction.UNPAIR_BOARD,
             AuthAction.PERMUTE_BOARD,
-            AuthAction.SET_CURRENT_ROUND,
+            AuthAction.PUBLISH_PAIRINGS,
             AuthAction.SET_ZPB,
             AuthAction.SET_HPB,
             AuthAction.OPEN_CLOSE_CHECK_IN,
