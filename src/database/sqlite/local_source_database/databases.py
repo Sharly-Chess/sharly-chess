@@ -180,7 +180,8 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 self.id
             )
         if not cls._stored_source_database:
-            self.file.unlink(missing_ok=True)
+            # A copy installed without a record is kept: `check` dates it
+            # from the file
             self.update_stored_source_database(
                 self.default_stored_database, exists=False
             )
