@@ -1150,6 +1150,12 @@ class PapiConverter:
             # filled in.
             if window and not window.covers(round_):
                 continue
+            # A round paired but not published yet is sent as if unpaired.
+            unpublished = (
+                tournament.event.public_view and round_ > tournament.published_round
+            )
+            if unpublished and (pairing.opponent_id is not None or pairing.exempt):
+                continue
             correction = correction_by_round.get(round_)
             if correction is not None and correction.player_ids == {
                 tournament_player.id,
@@ -1178,6 +1184,7 @@ class PapiConverter:
             if (
                 (eliminates or tournament.event.is_team_event)
                 and papi_round.opponent is None
+                and not unpublished
                 and tournament.round_has_pairings(round_)
             ):
                 papi_round = PapiRound.zero_point_bye()

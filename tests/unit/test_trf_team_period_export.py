@@ -66,7 +66,6 @@ class TestTeamPeriodTrf:
             TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 4,
                 'team_player_count': 2,
                 'pairing': 'TEAM_SWISS_STANDARD',
                 'multi_period': True,

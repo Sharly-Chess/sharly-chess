@@ -216,18 +216,18 @@ class EventLoader:
             base_name, [event.name for event in self.get_events_metadata()]
         )
 
-    def load_event(self, uniq_id: str) -> Event:
+    def load_event(self, uniq_id: str, public_view: bool = False) -> Event:
         from web.performance import current_request_performance, record_event_load
 
         if current_request_performance() is None:
             self.load_event_ids(uniq_id)
             with EventDatabase(uniq_id) as event_database:
-                return Event(event_database.load_stored_event())
+                return Event(event_database.load_stored_event(), public_view)
         start = perf_counter()
         try:
             self.load_event_ids(uniq_id)
             with EventDatabase(uniq_id) as event_database:
-                return Event(event_database.load_stored_event())
+                return Event(event_database.load_stored_event(), public_view)
         finally:
             record_event_load(perf_counter() - start)
 

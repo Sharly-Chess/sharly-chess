@@ -43,7 +43,6 @@ class TeamRoundRobinBoardOrderTestCase(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': TEAMS - 1,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': 'TEAM_ROUND_ROBIN_BERGER',
             },

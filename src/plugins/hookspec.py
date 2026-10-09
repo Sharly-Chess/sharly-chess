@@ -324,6 +324,11 @@ class AppHookSpecs:
         """Called when the (publishable) data of a tournament is updated"""
 
     @hookspec
+    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+        """Whether the tournament is set up to be uploaded to an online
+        service."""
+
+    @hookspec
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:

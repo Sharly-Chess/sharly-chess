@@ -274,7 +274,6 @@ def test_checking_a_result_announces_nothing(
     'modal',
     [
         'unfinished-round-modal',
-        'set-current-round-modal',
         'ratings-warning-modal',
         'absents-modal',
         'settings-modal',

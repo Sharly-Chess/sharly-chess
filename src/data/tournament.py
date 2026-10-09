@@ -1644,7 +1644,9 @@ class Tournament:
 
     @cached_property
     def check_in_status_grouped_counts(self) -> Counter[CheckInStatus]:
-        return self.check_in_status_grouped_counts_for_round(self.current_round + 1)
+        return self.check_in_status_grouped_counts_for_round(
+            self.arbiter_current_round + 1
+        )
 
     def check_in_status_grouped_counts_for_round(
         self, round_: int
@@ -1828,15 +1830,86 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @cached_property
+    def arbiter_current_round(self) -> int:
+        """The round in play for the arbiter, published or not."""
+        return self.pairing_system.current_round(self)
+
+    @cached_property
     def current_round(self) -> int:
-        return (
-            self.stored_tournament.current_round
-            or self.pairing_system.default_current_round(self)
+        if self.event.public_view:
+            return min(self.arbiter_current_round, self.published_round)
+        return self.arbiter_current_round
+
+    @property
+    def published_round(self) -> int:
+        """The last round whose pairings are shown on the screens and sent to
+        the online services."""
+        return min(self.stored_tournament.published_round, self.last_paired_round)
+
+    def unfinished_round_before(self, round_: int) -> int | None:
+        """The first round before ``round_`` still waiting for results."""
+        return next(
+            (r for r in range(1, round_) if not self.is_round_finished(r)), None
         )
 
-    def set_current_round(self, round_: int) -> None:
+    def can_publish_round(self, round_: int) -> bool:
+        """Publishing a round publishes the rounds before it too, once every
+        round before it is finished."""
+        rounds = range(self.published_round + 1, round_ + 1)
+        return (
+            bool(rounds)
+            and all(self.round_has_pairings(r) for r in rounds)
+            and self.manual_pairing_round not in rounds
+            and self.unfinished_round_before(round_) is None
+        )
+
+    def can_unpublish_round(self, round_: int) -> bool:
+        return (
+            round_ > 0
+            and round_ == self.published_round
+            and not self.round_has_played_result(round_)
+        )
+
+    @property
+    def imported_published_round(self) -> int:
+        """The rounds of an imported tournament were public where they come
+        from: up to the last one paired, or, for a system pairing every
+        round at once, up to the last one with a result."""
+        if self.pairing_system.round_per_round_pairing_generation:
+            return self.last_paired_round
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, self.rounds + 1))
+                if self.round_has_played_result(round_)
+            ),
+            1 if self.has_pairings else 0,
+        )
+
+    @cached_property
+    def shown_on_screens(self) -> bool:
+        return any(
+            family.tournament_id == self.id for family in self.event.families
+        ) or any(
+            screen_set.tournament_id == self.id
+            for screen in self.event.basic_screens
+            for screen_set in screen.screen_sets
+        )
+
+    @cached_property
+    def uploaded_online(self) -> bool:
+        """Whether the tournament is set up to be uploaded to an online
+        service."""
+        return any(
+            plugin_manager.hook_for_event(self.event, 'is_tournament_uploaded')(
+                tournament=self
+            )
+        )
+
+    def set_published_round(self, round_: int) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
-            database.set_tournament_current_round(self.id, round_)
+            database.set_tournament_published_round(self.id, round_)
+        self.stored_tournament.published_round = round_
 
     @property
     def max_ranking_round(self) -> int:

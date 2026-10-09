@@ -140,6 +140,12 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         return self.id, ChessResultsTournamentPluginData
 
     @hookimpl
+    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+        return self.used_by_stored_tournament(
+            tournament.event.stored_event, tournament.stored_tournament
+        )
+
+    @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> None:

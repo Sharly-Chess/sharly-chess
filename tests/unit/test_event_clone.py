@@ -43,7 +43,6 @@ class EventCloneTestCase(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': 3,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': 'TEAM_SWISS_STANDARD',
             },
@@ -112,7 +111,7 @@ class EventCloneTestCase(TestCase):
                 tournament_id = stored_tournament.id
                 assert tournament_id is not None
                 database.set_tournament_pairing_settings(tournament_id, {})
-                database.set_tournament_current_round(tournament_id, None)
+                database.set_tournament_published_round(tournament_id, 0)
         return self._load(CLONE_ID)
 
     def _assert_no_round_is_paired(self, tournament: Tournament) -> None:

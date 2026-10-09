@@ -643,7 +643,7 @@ class EventDatabase(MigrationDatabase):
             pairing_settings=cls.load_json_from_database_field(
                 row['pairing_settings'], {}
             ),
-            current_round=row['current_round'],
+            published_round=row['published_round'] or 0,
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
@@ -977,18 +977,14 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def set_tournament_current_round(
-        self, tournament_id: int, current_round: int | None
+    def set_tournament_published_round(
+        self, tournament_id: int, published_round: int
     ) -> None:
+        now = self.now_as_database_timestamp()
         self.execute(
-            'UPDATE `tournament` SET '
-            '`current_round` = ?, `last_update` = ? '
-            'WHERE `id` = ?',
-            (
-                current_round,
-                self.now_as_database_timestamp(),
-                tournament_id,
-            ),
+            'UPDATE `tournament` SET `published_round` = ?, '
+            '`last_update` = ?, `last_pairing_update` = ? WHERE `id` = ?',
+            (published_round, now, now, tournament_id),
         )
 
     # ---------------------------------------------------------------------------------

@@ -47,7 +47,6 @@ class FixedTablePairingTestCase(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': 1,
-                'current_round': 1,
                 'team_player_count': N,
                 'pairing': 'MOLTER_STANDARD',
             },

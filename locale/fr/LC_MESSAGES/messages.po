@@ -3590,9 +3590,6 @@ msgstr "Jour de fin"
 msgid "End month"
 msgstr "Mois de fin"
 
-msgid "End round"
-msgstr "Terminer la ronde"
-
 msgid "End year"
 msgstr "Année de fin"
 
@@ -4254,10 +4251,6 @@ msgstr "Indiquez une graine pour obtenir à nouveau le même tournoi."
 msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 
-#, python-format
-msgid "Go to round #%(round)d"
-msgstr "Aller à la ronde n°%(round)d"
-
 msgid "Go to the display controller."
 msgstr "Aller au pilote d'afficheur."
 
@@ -4371,6 +4364,9 @@ msgstr "Hauteur"
 
 msgid "Hide"
 msgstr "Cacher"
+
+msgid "Hide the pairings of this round from the screens and the online services."
+msgstr "Retirer les appariements de cette ronde des écrans et des services en ligne."
 
 msgid "Higher seed plays White"
 msgstr "La meilleure tête de série joue les Blancs"
@@ -5329,9 +5325,6 @@ msgstr "Désigner comme vainqueur·e"
 msgctxt "team knock-out"
 msgid "Mark as winner"
 msgstr "Désigner comme vainqueure"
-
-msgid "Mark this round as over and define the next one as the current round."
-msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
 
 msgid "Marshall Islands"
 msgstr "Îles Marshall"
@@ -7018,6 +7011,9 @@ msgstr "Appariements commencés"
 msgid "Pairings successfully generated."
 msgstr "Appariements générés avec succès."
 
+msgid "Pairings with results cannot be unpublished."
+msgstr "Des appariements avec des résultats ne peuvent pas être dépubliés."
+
 msgid "Pakistan"
 msgstr "Pakistan"
 
@@ -7778,6 +7774,12 @@ msgstr "Écran multiple public"
 msgid "Public screen"
 msgstr "Écran public"
 
+msgid "Publish"
+msgstr "Publier"
+
+msgid "Publish and unpublish pairings"
+msgstr "Publier et dépublier les appariements"
+
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 
@@ -8358,10 +8360,6 @@ msgid "Round #%(round)d is finished."
 msgstr "La ronde %(round)d est terminée."
 
 #, python-format
-msgid "Round #%(round)d is finished. End it and make round #%(next)d the current round, or just take a look at the next round?"
-msgstr "La ronde n°%(round)d est terminée. La clôturer et définir la ronde n°%(next)d comme ronde courante, ou simplement consulter la ronde suivante ?"
-
-#, python-format
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
 
@@ -8391,6 +8389,10 @@ msgstr "Ronde %(round)d"
 #, python-format
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
+
+#, python-format
+msgid "Round %(unfinished)d is not finished: the pairings of round %(round)d cannot be published until it is."
+msgstr "La ronde %(unfinished)d n'est pas terminée : les appariements de la ronde %(round)d ne peuvent pas être publiés avant."
 
 msgid "Round count"
 msgstr "Nombre de rondes"
@@ -8438,6 +8440,10 @@ msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les dé
 #, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
 msgstr "La ronde {round} est déjà appariée. Supprimez ses appariements avant de l’apparier à nouveau."
+
+#, python-brace-format
+msgid "Round {round} is not finished."
+msgstr "La ronde {round} n'est pas terminée."
 
 #, python-brace-format
 msgid "Round {round} of pairing number {number} is already accelerated."
@@ -8954,9 +8960,6 @@ msgstr "Définir le coefficient"
 msgid "Set the coefficient applied to this tournament’s scores."
 msgstr "Définir le coefficient appliqué aux scores de ce tournoi."
 
-msgid "Set the current round"
-msgstr "Changer la ronde courante"
-
 msgid "Set the number of rounds to lay out a schedule."
 msgstr "Indiquez le nombre de rondes pour établir un calendrier."
 
@@ -9019,6 +9022,9 @@ msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été
 
 msgid "Show level"
 msgstr "Afficher le niveau"
+
+msgid "Show the pairings of this round on the screens and send them to the online services."
+msgstr "Afficher les appariements de cette ronde sur les écrans et les envoyer aux services en ligne."
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
@@ -10064,6 +10070,18 @@ msgid "The pairings of round %(round)d are being edited by hand. Validate them t
 msgstr "Les appariements de la ronde %(round)d sont en cours de modification manuelle. Validez-les pour les comparer à ceux du moteur d'appariement : d'ici là, la ronde suivante ne peut pas être appariée."
 
 #, python-format
+msgid "The pairings of round %(round)d are not published: they are neither shown on the screens nor sent to the online services."
+msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont ni affichés sur les écrans, ni envoyés aux services en ligne."
+
+#, python-format
+msgid "The pairings of round %(round)d are not published: they are not sent to the online services."
+msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont pas envoyés aux services en ligne."
+
+#, python-format
+msgid "The pairings of round %(round)d are not published: they are not shown on the screens."
+msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont pas affichés sur les écrans."
+
+#, python-format
 msgid "The pairings of round %(round)d differ from those of the pairing engine:"
 msgstr "Les appariements de la ronde %(round)d diffèrent de ceux du moteur d'appariement :"
 
@@ -10078,6 +10096,18 @@ msgstr "Les appariements de la ronde {round} ont été rétablis."
 #, python-brace-format
 msgid "The pairings of round {round} are being edited: validate or cancel them before changing the pairings of another round."
 msgstr "Les appariements de la ronde {round} sont en cours de modification : validez-les ou annulez la modification avant de modifier les appariements d'une autre ronde."
+
+#, python-brace-format
+msgid "The pairings of round {round} cannot be published."
+msgstr "Les appariements de la ronde {round} ne peuvent pas être publiés."
+
+#, python-brace-format
+msgid "The pairings of round {round} have been published."
+msgstr "Les appariements de la ronde {round} ont été publiés."
+
+#, python-brace-format
+msgid "The pairings of round {round} have been unpublished."
+msgstr "Les appariements de la ronde {round} ont été dépubliés."
 
 #, python-brace-format
 msgid "The pairings of round {round} have been validated."
@@ -11277,6 +11307,9 @@ msgstr "Désapparier une ronde publiée peut être très désagréable pour les 
 msgid "Unplayed (no result recorded)."
 msgstr "Non jouée (aucun résultat enregistré)."
 
+msgid "Unpublish"
+msgstr "Dépublier"
+
 msgctxt "plural for unrated players"
 msgid "Unrated"
 msgstr "Non-classé·es"
@@ -11914,6 +11947,9 @@ msgstr "Vous n'êtes pas autorisé·e à apparier les joueur·euses."
 msgid "You are not allowed to pair teams."
 msgstr "Vous n'êtes pas autorisé·e à apparier les équipes."
 
+msgid "You are not allowed to publish the pairings."
+msgstr "Vous n'êtes pas autorisé·e à publier les appariements."
+
 msgid "You are not allowed to return players."
 msgstr "Vous n'êtes pas autorisé·e à faire revenir des joueur·euses."
 
@@ -11926,11 +11962,11 @@ msgstr "Vous n'êtes pas autorisé·e à déclarer des byes."
 msgid "You are not allowed to set Zero-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à déclarer des forfaits."
 
-msgid "You are not allowed to set the current round."
-msgstr "Vous n'êtes pas autorisé·e à positionner la ronde courante."
-
 msgid "You are not allowed to unpair rounds."
 msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
+
+msgid "You are not allowed to unpublish the pairings."
+msgstr "Vous n'êtes pas autorisé·e à dépublier les appariements."
 
 msgid "You are not allowed to update results."
 msgstr "Vous n'êtes pas autorisé·e à modifier les résultats."

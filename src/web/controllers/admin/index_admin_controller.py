@@ -1001,7 +1001,7 @@ class IndexAdminController(BaseAdminController):
                 database.delete_all_stored_pairings()
                 for tournament in event.tournaments:
                     database.set_tournament_pairing_settings(tournament.id, {})
-                    database.set_tournament_current_round(tournament.id, None)
+                    database.set_tournament_published_round(tournament.id, 0)
             stored_event = database.load_stored_event()
             if start_date:
                 day_diff = start_date - event.start_date

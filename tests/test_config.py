@@ -424,7 +424,6 @@ class TestUtils:
             'last_rounds_no_byes': None,
             'location': None,
             'pairing': StandardSwissVariation.static_id(),
-            'current_round': None,
             'rounds': 7,
             'rating': 1,
             'stored_prize_groups': [],

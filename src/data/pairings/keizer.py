@@ -237,7 +237,7 @@ class KeizerPairingSystem(PairingSystem['KeizerVariation']):
         # fits.
         return SwissPairingSystem().permission_handler
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
 
