@@ -16,7 +16,6 @@ import logging
 import os
 import queue
 import re
-import shutil
 import subprocess
 import sys
 import threading
@@ -45,6 +44,7 @@ from common import (
     DATA_DIR_MIGRATION,
     DEVEL_ENV,
     MANUAL_PATH_USED,
+    SNAPSHOTS_DIR,
 )
 from common.i18n import _, locales, ngettext
 from common.i18n.utils import locale_localized_name
@@ -53,6 +53,8 @@ from common.updaters.sparkle_updater import SparkleUpdater
 from common.updaters.version_updater import VersionUpdater
 from common.updaters.windows_updater import WindowsUpdater
 from data.print_documents.pdf_rendering import PdfRenderers
+from data.snapshot import move_snapshots_root
+from data.snapshot_worker import SnapshotScheduler
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from gui.pdf_renderer import TogaPdfRenderer
@@ -62,11 +64,11 @@ from utils import Utils
 from utils.data_dir_migration import (
     DataDirMigration,
     DataDirMoveState,
-    forget_moved_data_dir,
-    is_left_by_a_move,
     sync_service,
 )
+from utils.file import overlap
 from utils.program_variables import ProgramVar
+from utils.relaunch import relaunch
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
 
@@ -416,7 +418,16 @@ class SharlyChessServerToga(toga.App):
         self.launch_browser_switch: toga.Switch | None = None
         self.data_path_input: TextInput | None = None
         self.data_path_move_button: toga.Button | None = None
-        self.moved_data_dir_box: toga.Box | None = None
+        self.snapshot_switch: toga.Switch | None = None
+        self.snapshot_custom_dir_switch: toga.Switch | None = None
+        self.snapshot_path_input: TextInput | None = None
+        self.snapshot_path_change_button: toga.Button | None = None
+        self.snapshot_switches_box: toga.Box | None = None
+        self.snapshot_path_box: toga.Box | None = None
+        self.snapshot_path_container: toga.Box | None = None
+        #: Guards the custom folder switch against its own handler while it is
+        #: being put back after a cancelled choice.
+        self._updating_snapshot_switch = False
         self.locale_select: toga.Selection | None = None
         self.date_formatter_select: toga.Selection | None = None
         self.name_formatter_select: toga.Selection | None = None
@@ -710,36 +721,45 @@ class SharlyChessServerToga(toga.App):
                         on_press=self._request_data_dir_move,
                     )
                 )
-        moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
-        if (
-            moved_data_dir
-            and moved_data_dir.is_dir()
-            and is_left_by_a_move(moved_data_dir)
-        ):
-            self.moved_data_dir_box = toga.Box(
-                direction=COLUMN,
-                align_items='center',
-                gap=7,
-                children=[
-                    toga.Label(_('Previous data folder, kept as a copy')),
-                    self._path_input(moved_data_dir),
-                    toga.Box(
-                        direction=ROW,
-                        gap=10,
-                        children=[
-                            toga.Button(
-                                _('Open'),
-                                on_press=lambda widget: self._open_dir_in_explorer(
-                                    moved_data_dir
-                                ),
-                            ),
-                            toga.Button(
-                                _('Delete'), on_press=self._delete_moved_data_dir
-                            ),
-                        ],
-                    ),
-                ],
-            )
+        self.snapshot_switch = toga.Switch(
+            text=_('Activate automatic backups'),
+            value=config.snapshot_enabled,
+            on_change=self._on_snapshot_switch_change,
+        )
+        self.snapshot_custom_dir_switch = toga.Switch(
+            text=_('Use my own folder'),
+            value=not config.snapshot_dir_is_default,
+            on_change=self._on_snapshot_custom_dir_switch_change,
+        )
+        self.snapshot_path_input = self._path_input(config.snapshot_dir.absolute())
+        self.snapshot_switches_box = toga.Box(
+            direction=COLUMN,
+            align_items='start',
+            gap=7,
+            children=[self.snapshot_switch, self.snapshot_custom_dir_switch],
+        )
+        self.snapshot_path_change_button = toga.Button(
+            _('Change'), on_press=self._handle_snapshot_path_selection
+        )
+        self.snapshot_path_box = toga.Box(
+            direction=COLUMN,
+            align_items='center',
+            gap=7,
+            children=[
+                self.snapshot_path_input,
+                toga.Box(
+                    direction=ROW,
+                    gap=10,
+                    children=[
+                        toga.Button(
+                            _('Open'), on_press=self._open_snapshot_path_explorer
+                        ),
+                        self.snapshot_path_change_button,
+                    ],
+                ),
+            ],
+        )
+        self.snapshot_path_container = toga.Box(direction=COLUMN)
         title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         general_children: list[toga.Widget] = [
             self._settings_row(_('Language:'), self._build_locale_select()),
@@ -770,9 +790,11 @@ class SharlyChessServerToga(toga.App):
                 children=data_path_buttons,
                 gap=10,
             ),
+            toga.Divider(margin=(5, 0)),
+            toga.Label(_('Backups'), style=title_style),
+            self.snapshot_switches_box,
+            self.snapshot_path_container,
         )
-        if self.moved_data_dir_box:
-            self.settings_view.add(self.moved_data_dir_box)
 
         # About view
         self.about_view = toga.Box(style=self.compact_view_style, gap=7)
@@ -851,6 +873,25 @@ class SharlyChessServerToga(toga.App):
             width=self.compact_size[0] - self.view_margin * 4,
             children=[label_widget, widget],
         )
+
+    def _center_snapshot_switches(self) -> None:
+        """Centres the backup switches as one block.
+
+        A switch asks for at least the width of its text and then takes all the
+        width it is given, so it fills its box and no alignment can centre it.
+        The block is given the width of the widest of the two instead, which is
+        only known once they have been laid out."""
+        assert isinstance(self.main_window, toga.Window)
+        if self.snapshot_switches_box is None or self.main_window.content is None:
+            return
+        self.main_window.content.refresh()
+        widths = []
+        for switch in (self.snapshot_switch, self.snapshot_custom_dir_switch):
+            assert switch is not None
+            intrinsic = switch.intrinsic.width
+            widths.append(getattr(intrinsic, 'value', intrinsic) or 0)
+        if width := max(widths):
+            self.snapshot_switches_box.style.width = width
 
     def _align_settings_labels(self) -> None:
         """Gives every label of the settings the width of the widest one. The
@@ -1181,6 +1222,8 @@ class SharlyChessServerToga(toga.App):
         self._show_view('settings')
         # The labels can only be measured once the view they are in is laid out.
         self._align_settings_labels()
+        self._center_snapshot_switches()
+        self._update_snapshot_path_widgets()
 
     def _show_about_view(self, widget: Any) -> None:
         self._show_view('about')
@@ -1222,6 +1265,11 @@ class SharlyChessServerToga(toga.App):
             error = _('You do not have write permission on this folder.')
         if DATA_DIR in new_data_dir.parents:
             error = _("The new folder can't be a sub folder of the current folder.")
+        if overlap(new_data_dir, SharlyChessConfig().snapshot_dir):
+            error = _(
+                'The data folder and the backups folder can not be one inside '
+                'the other.'
+            )
         if error:
             error_dialog = toga.ErrorDialog(_('Invalid folder'), error)
             await self.main_window.dialog(error_dialog)
@@ -1234,7 +1282,7 @@ class SharlyChessServerToga(toga.App):
                 'This folder is synchronised by {service}, which can block the '
                 'events while Sharly Chess writes to them.'
             ).format(service=service)
-        message += '\n' + _('Restarting will be required to complete the move.')
+        message += '\n' + _('Sharly Chess will restart to complete the move.')
         confirm_dialog = toga.ConfirmDialog(_('Data folder'), message)
         if not await self.main_window.dialog(confirm_dialog):
             return
@@ -1244,28 +1292,34 @@ class SharlyChessServerToga(toga.App):
                 ProgramVar.PREVIOUS_DATA_DIR: str(DATA_DIR),
             }
         )
-        self._show_restart_to_complete_move()
         if sys.platform == 'win32':
-            await self._ask_windows_defender_exception(new_data_dir)
+            await self._ask_windows_defender_exception(
+                new_data_dir, SharlyChessConfig().snapshot_dir
+            )
+        await self._restart_to_complete_move()
 
-    def _show_restart_to_complete_move(self) -> None:
-        assert self.settings_view is not None
-        assert self.data_path_input is not None
-        self.data_path_input.enabled = False
-        data_path_buttons = self.settings_view.children[
-            self.settings_view.index(self.data_path_input) + 1
-        ]
-        for button in data_path_buttons.children[1:]:
-            button.enabled = False
-        self.settings_view.insert(
-            self.settings_view.index(self.data_path_input) + 2,
-            toga.Label(
-                _('Restart to complete the move'),
-                color='red',
-                font_weight='bold',
-                text_align='center',
-            ),
+    async def _restart_to_complete_move(self) -> None:
+        """Leaves the user the one thing left to do. The move itself belongs to
+        the next start, the one running holding the data open, and working on
+        data that is about to leave its folder has nothing to offer: the
+        application restarts rather than hand the window back."""
+        assert isinstance(self.main_window, toga.Window)
+        await self.main_window.dialog(
+            toga.InfoDialog(
+                self._dialog_title(_('Data folder')),
+                _('Sharly Chess will restart to complete the move.'),
+            )
         )
+        self._restart_now()
+
+    def _restart_now(self) -> None:
+        """Starts Sharly Chess again, the new instance completing the move."""
+        loop = self.server_loop
+        if loop is None or loop.is_closed():
+            # The server never started, so there is nothing to stop first.
+            relaunch()
+            return
+        self.quit_app(post_exit_task=relaunch)
 
     async def _request_data_dir_move(self, widget: Any) -> None:
         assert isinstance(self.main_window, toga.Window)
@@ -1276,46 +1330,14 @@ class SharlyChessServerToga(toga.App):
                 folder=DATA_DIR_MIGRATION.target_dir
             )
             + '\n'
-            + _('The current folder will be kept as a copy.')
+            + _('The current folder will be deleted once the copy has been checked.')
             + '\n'
-            + _('Restarting will be required to complete the move.'),
+            + _('Sharly Chess will restart to complete the move.'),
         )
         if not await self.main_window.dialog(confirm_dialog):
             return
         DataDirMigration.request()
-        self._show_restart_to_complete_move()
-
-    async def _delete_moved_data_dir(self, widget: Any) -> None:
-        assert isinstance(self.main_window, toga.Window)
-        moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
-        if not moved_data_dir:
-            return
-        question_dialog = toga.QuestionDialog(
-            _('Data folder'),
-            _('Delete the previous data folder [{folder}]?').format(
-                folder=moved_data_dir
-            )
-            + '\n'
-            + _('Sharly Chess no longer uses it, your data is in the current folder.'),
-        )
-        if not await self.main_window.dialog(question_dialog):
-            return
-        await asyncio.to_thread(shutil.rmtree, moved_data_dir, ignore_errors=True)
-        if moved_data_dir.exists():
-            await self.main_window.dialog(
-                toga.ErrorDialog(
-                    _('Data folder'),
-                    _('The folder [{folder}] could not be deleted entirely.').format(
-                        folder=moved_data_dir
-                    ),
-                )
-            )
-            return
-        forget_moved_data_dir()
-        assert self.settings_view is not None
-        if self.moved_data_dir_box:
-            self.settings_view.remove(self.moved_data_dir_box)
-            self.moved_data_dir_box = None
+        await self._restart_to_complete_move()
 
     async def _show_data_dir_move_dialogs(self) -> None:
         """Tells the user their data has moved, or asks them whether to move
@@ -1330,35 +1352,50 @@ class SharlyChessServerToga(toga.App):
                 'Your data has been moved to [{folder}], a folder that cloud '
                 'services such as OneDrive do not synchronise.'
             ).format(folder=DATA_DIR)
-            moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
-            if moved_data_dir and moved_data_dir != migration.data_dir:
-                message += '\n\n' + _(
-                    'The previous folder is kept as a copy at [{folder}], and will '
-                    'be deleted two versions from now. You can delete it sooner '
-                    'from the settings.'
-                ).format(folder=moved_data_dir)
             await self.main_window.dialog(toga.InfoDialog(title, message))
             DataDirMigration.notice_shown()
         elif migration.should_ask():
+            service = sync_service(DATA_DIR)
             message = _(
                 'Your data folder [{folder}] is synchronised by {service}, which '
                 'can block the events while Sharly Chess writes to them.'
-            ).format(folder=DATA_DIR, service=sync_service(DATA_DIR))
+            ).format(folder=DATA_DIR, service=service)
             message += '\n\n' + _(
-                'Do you want to move the data to [{folder}]? The current folder '
-                'will be kept as a copy.'
-            ).format(folder=migration.target_dir)
+                'Do you want to move the data to [{folder}]? The current folder is '
+                'deleted once the copy has been checked, and {service} removes the '
+                'copy it keeps in turn.'
+            ).format(folder=migration.target_dir, service=service)
             if await self.main_window.dialog(toga.QuestionDialog(title, message)):
                 DataDirMigration.request()
-                await self.main_window.dialog(
-                    toga.InfoDialog(
-                        title, _('Restart Sharly Chess to complete the move.')
-                    )
-                )
+                await self._restart_to_complete_move()
             else:
                 DataDirMigration.decline()
 
-    async def _ask_windows_defender_exception(self, new_data_dir: Path) -> None:
+    @staticmethod
+    def _folders_to_exclude(*directories: Path) -> list[Path]:
+        """The folders worth naming to Defender, without those another already
+        covers: an exclusion follows the content of its folder, so a sub folder
+        of one already excluded adds nothing."""
+        unique: list[Path] = []
+        for directory in directories:
+            if directory not in unique:
+                unique.append(directory)
+        return [
+            directory
+            for directory in unique
+            if not any(other in directory.parents for other in unique)
+        ]
+
+    async def _ask_windows_defender_exception(self, *directories: Path) -> None:
+        """Offers to keep Defender out of the folders Sharly Chess writes to.
+
+        The data folder and the backups folder are each the user's to place, so
+        neither is inside the other and both are named: scanning a backup as it
+        is written costs the same as scanning an event.
+        """
+        folders = self._folders_to_exclude(*directories)
+        if not folders:
+            return
         assert isinstance(self.main_window, toga.Window)
         await asyncio.sleep(0.1)
         process = Utils.run_process(
@@ -1372,10 +1409,13 @@ class SharlyChessServerToga(toga.App):
         )
         if 'True' not in process.stdout:
             return
-        message = _(
-            'Do you want to add the new data folder '
-            'to the Microsoft Defender exception list?'
+        message = ngettext(
+            'Do you want to add this folder to the Microsoft Defender exception list?',
+            'Do you want to add these folders to the Microsoft Defender '
+            'exception list?',
+            len(folders),
         )
+        message += '\n' + '\n'.join(str(folder) for folder in folders)
         message += '\n' + _(
             'This will improve performances. You must have administrator rights.'
         )
@@ -1388,7 +1428,9 @@ class SharlyChessServerToga(toga.App):
         # Go through sharly-chess.exe instead of directly cmd.exe
         # For the name requesting the elevation to be "Sharly Chess"
         # instead of "Command Line Interface"
-        params = ['--win-defender-exception-path', f'"{new_data_dir}"']
+        params: list[str] = []
+        for folder in folders:
+            params += ['--win-defender-exception-path', f'"{folder}"']
         if DEVEL_ENV:
             params.insert(0, f'"{sys.argv[0]}"')
         # Type error when not running on windows
@@ -1398,18 +1440,24 @@ class SharlyChessServerToga(toga.App):
         if result > 32:
             info_dialog = toga.InfoDialog(
                 self._dialog_title('Microsoft Defender'),
-                _(
-                    'The data folder has been successfully added '
-                    'to the Microsoft Defender exception list.'
+                ngettext(
+                    'The folder has been successfully added '
+                    'to the Microsoft Defender exception list.',
+                    'The folders have been successfully added '
+                    'to the Microsoft Defender exception list.',
+                    len(folders),
                 ),
             )
             await self.main_window.dialog(info_dialog)
         else:
             error_dialog = toga.ErrorDialog(
                 self._dialog_title(_('Error')),
-                _(
-                    'The data folder could not be added to '
-                    'the Microsoft Defender exception list.'
+                ngettext(
+                    'The folder could not be added to '
+                    'the Microsoft Defender exception list.',
+                    'The folders could not be added to '
+                    'the Microsoft Defender exception list.',
+                    len(folders),
                 ),
             )
             await self.main_window.dialog(error_dialog)
@@ -1896,6 +1944,158 @@ class SharlyChessServerToga(toga.App):
 
     def _on_check_beta_switch_change(self, widget: toga.Switch, **kwargs: Any) -> None:
         self._update_config('check_beta_versions', widget.value)
+
+    def _on_snapshot_switch_change(self, widget: toga.Switch, **kwargs: Any) -> None:
+        self._update_config('snapshot_enabled', widget.value)
+        if not widget.value:
+            SnapshotScheduler.forget_statuses()
+
+    def _update_snapshot_path_widgets(self) -> None:
+        """The folder is only shown once the user has asked to choose one: the
+        default one is the application's business, not theirs."""
+        assert self.snapshot_custom_dir_switch is not None
+        assert self.snapshot_path_input is not None
+        assert self.snapshot_path_box is not None
+        assert self.snapshot_path_container is not None
+        self.snapshot_path_input.value = str(
+            SharlyChessConfig().snapshot_dir.absolute()
+        )
+        is_shown = self.snapshot_path_box in self.snapshot_path_container.children
+        if self.snapshot_custom_dir_switch.value and not is_shown:
+            self.snapshot_path_container.add(self.snapshot_path_box)
+        elif not self.snapshot_custom_dir_switch.value and is_shown:
+            self.snapshot_path_container.remove(self.snapshot_path_box)
+
+    async def _on_snapshot_custom_dir_switch_change(
+        self, widget: toga.Switch, **kwargs: Any
+    ) -> None:
+        """Turns the custom folder on or off.
+
+        Turning it on asks for the folder straight away: the setting holds the
+        folder itself, so there is no state where a custom folder is wanted but
+        none is known. Cancelling the choice puts the switch back.
+        """
+        if self._updating_snapshot_switch:
+            return
+        if widget.value:
+            if not await self._choose_snapshot_dir():
+                self._set_snapshot_custom_dir_switch(False)
+            return
+        await self._clear_snapshot_dir()
+
+    def _set_snapshot_custom_dir_switch(self, value: bool) -> None:
+        """Sets the switch without its handler acting on the change."""
+        assert self.snapshot_custom_dir_switch is not None
+        self._updating_snapshot_switch = True
+        try:
+            self.snapshot_custom_dir_switch.value = value
+        finally:
+            self._updating_snapshot_switch = False
+        self._update_snapshot_path_widgets()
+
+    async def _clear_snapshot_dir(self) -> None:
+        """Goes back to the default folder, taking the snapshots along."""
+        assert isinstance(self.main_window, toga.Window)
+        config = SharlyChessConfig()
+        current_dir = config.snapshot_dir
+        if config.snapshot_dir_is_default:
+            self._update_snapshot_path_widgets()
+            return
+        confirm_dialog = toga.ConfirmDialog(
+            _('Backups folder'),
+            _('Go back to the default backups folder?')
+            + '\n'
+            + _('The backups already taken will be moved there.'),
+        )
+        if not await self.main_window.dialog(confirm_dialog):
+            self._set_snapshot_custom_dir_switch(True)
+            return
+        moved = move_snapshots_root(current_dir, SNAPSHOTS_DIR.absolute())
+        self._update_config('snapshot_dir', None)
+        self._update_snapshot_path_widgets()
+        if not moved:
+            await self._warn_snapshots_not_moved()
+
+    async def _warn_snapshots_not_moved(self) -> None:
+        assert isinstance(self.main_window, toga.Window)
+        await self.main_window.dialog(
+            toga.InfoDialog(
+                _('Backups folder'),
+                _(
+                    'The new folder is in use, but the backups already '
+                    'taken could not be moved to it. They are still in the '
+                    'previous folder.'
+                ),
+            )
+        )
+
+    def _open_snapshot_path_explorer(self, widget: Any) -> None:
+        snapshot_dir = SharlyChessConfig().snapshot_dir
+        snapshot_dir.mkdir(parents=True, exist_ok=True)
+        self._open_dir_in_explorer(snapshot_dir)
+
+    async def _handle_snapshot_path_selection(self, widget: Any) -> None:
+        await self._choose_snapshot_dir()
+
+    async def _choose_snapshot_dir(self) -> bool:
+        """Chooses the folder the snapshots are written to, and moves the ones
+        already taken over to it. Returns whether a folder was chosen.
+
+        Unlike the data folder, this needs no restart: the worker reads the
+        setting as it goes.
+        """
+        config = SharlyChessConfig()
+        current_dir = config.snapshot_dir
+        folder_dialog = toga.SelectFolderDialog(
+            '', initial_directory=current_dir if current_dir.is_dir() else None
+        )
+        assert isinstance(self.main_window, toga.Window)
+        chosen_dir: Path | None = await self.main_window.dialog(folder_dialog)
+        if chosen_dir is None:
+            return False
+        new_dir = chosen_dir.absolute()  # noqa: ASYNC240
+        if new_dir == current_dir:
+            return not config.snapshot_dir_is_default
+
+        error: str | None = None
+        if not os.access(new_dir, os.W_OK):
+            error = _('You do not have write permission on this folder.')
+        elif current_dir in new_dir.parents:
+            error = _("The new folder can't be a sub folder of the current folder.")
+        elif overlap(new_dir, DATA_DIR.absolute()):
+            error = _(
+                'The data folder and the backups folder can not be one inside '
+                'the other.'
+            )
+        if error:
+            await self.main_window.dialog(toga.ErrorDialog(_('Invalid folder'), error))
+            return False
+
+        message = _('Confirm the new backups folder [{folder}]?').format(folder=new_dir)
+        if service := sync_service(new_dir):
+            message += '\n\n' + _(
+                'This folder is synchronised by {service}, which keeps a copy '
+                'of the backups off this computer.'
+            ).format(service=service)
+            message += ' ' + _(
+                'It also empties the files it thinks are cold, which is what '
+                'old backups look like: such a backup has to be downloaded '
+                'again before it can be restored, so it will not be there at a '
+                'venue with no network.'
+            )
+        message += '\n' + _('The backups already taken will be moved there.')
+        confirm_dialog = toga.ConfirmDialog(_('Backups folder'), message)
+        if not await self.main_window.dialog(confirm_dialog):
+            return False
+
+        moved = move_snapshots_root(current_dir, new_dir)
+        self._update_config('snapshot_dir', str(new_dir))
+        self._update_snapshot_path_widgets()
+        if not moved:
+            await self._warn_snapshots_not_moved()
+        if sys.platform == 'win32':
+            await self._ask_windows_defender_exception(new_dir)
+        return True
 
     # --- Interactive prompts ---
     def handle_interactive_yn(

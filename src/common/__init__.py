@@ -11,9 +11,12 @@ from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
-from utils.data_dir_migration import DataDirMigration
+from utils.data_dir_migration import (
+    DataDirInUse,
+    DataDirMigration,
+    complete_requested_move,
+)
 from utils.file import shutil_delete_onexc
-from utils.instance_lock import InstanceLock
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
 
 
@@ -123,7 +126,7 @@ def _default_data_dir() -> Path:
         return BASE_DIR / 'dev-data'
     match sys.platform:
         case 'win32':
-            return windows_local_app_data_dir() / 'Sharly Chess'
+            return windows_local_app_data_dir() / 'Sharly Chess' / 'data'
         case 'darwin':
             return MACOS_SUPPORT_DIR / 'data'
         case 'linux':
@@ -142,6 +145,35 @@ def _default_data_dir() -> Path:
 
 
 MANUAL_PATH_USED = os.getenv('SC_MANUAL_PATH_USED') == '1'
+
+
+def _default_snapshots_dir() -> Path:
+    """Where the snapshots go when the user has not named a folder of their own.
+
+    Beside the data directory, never inside it. The two folders are settings of
+    their own, so one has to be able to move without moving the other, and a
+    folder the backups sit inside takes them along when it is moved, renamed or
+    synchronised — the accidents the backups are there to answer for.
+
+    The environments that point the data directory somewhere deliberate keep
+    the snapshots inside it: the folder is theirs to place and does not move.
+    """
+    if TEST_ENV or DEVEL_ENV or MANUAL_PATH_USED or FLATPAK_ID:
+        return DATA_DIR / 'snapshots'
+    match sys.platform:
+        case 'win32':
+            return windows_local_app_data_dir() / 'Sharly Chess' / 'snapshots'
+        case 'darwin':
+            return MACOS_SUPPORT_DIR / 'snapshots'
+        case 'linux':
+            xdg_state_home = os.getenv('XDG_STATE_HOME')
+            base = (
+                Path(xdg_state_home)
+                if xdg_state_home
+                else Path.home() / '.local' / 'state'
+            )
+            return base / 'Sharly Chess' / 'snapshots'
+    return DATA_DIR / 'snapshots'
 
 
 def _app_data_dir() -> Path:
@@ -193,9 +225,14 @@ def _data_dir_migration(data_dir: Path) -> DataDirMigration | None:
 DATA_DIR = _app_data_dir()
 DATA_DIR_MIGRATION = _data_dir_migration(DATA_DIR)
 if DATA_DIR_MIGRATION:
-    DATA_DIR = DATA_DIR_MIGRATION.run(SHARLY_CHESS_VERSION)
+    DATA_DIR = DATA_DIR_MIGRATION.run()
 BACKUP_BASE_DIR = DATA_DIR / 'backup'  # Dev only
 ARCHIVES_DIR = DATA_DIR / 'archives'
+#: Default location of the event snapshots, which the configuration overrides
+#: with a folder of the user's own. The snapshots share that folder with
+#: whatever else is in it, so nothing here ever removes a file it did not
+#: write nor a directory it did not create.
+SNAPSHOTS_DIR = _default_snapshots_dir()
 CUSTOM_DIR = DATA_DIR / 'custom'
 CUSTOM_PLACE_CARDS_DIR = CUSTOM_DIR / 'place_cards'
 DATA_SOURCES_DIR = DATA_DIR / 'data_sources'
@@ -252,18 +289,8 @@ if (
     and not any(DATA_DIR.iterdir())
 ):
     # The data dir changed: move the previous content over
-    if InstanceLock.is_held_by_another_process(previous_dir):
-        # The move is kept pending: starting would otherwise run on the new,
-        # empty folder while the running instance keeps the data.
-        raise SharlyChessException(
-            f'The data directory can not be moved from "{previous_dir}" to '
-            f'"{DATA_DIR}" while Sharly Chess is running on it. Close it, then '
-            'start Sharly Chess again to complete the move.'
-        )
     try:
-        # Remove the dir so it's copied at the location instead of in a subfolder
-        DATA_DIR.rmdir()
-        shutil.move(previous_dir, DATA_DIR)
+        left_behind = complete_requested_move(previous_dir, DATA_DIR)
         # Only load the logger after the move (active logger fails the move)
         from common.logger import get_logger
 
@@ -273,7 +300,22 @@ if (
             previous_dir,
             DATA_DIR,
         )
+        if left_behind:
+            logger.warning(
+                'The data directory "%s" could not be deleted entirely, the '
+                'data is at "%s"',
+                left_behind,
+                DATA_DIR,
+            )
         ProgramVar.PREVIOUS_DATA_DIR.clear_value()
+    except DataDirInUse as e:
+        # The move is kept pending: starting would otherwise run on the new,
+        # empty folder while the running instance keeps the data.
+        raise SharlyChessException(
+            f'The data directory can not be moved from "{previous_dir}" to '
+            f'"{DATA_DIR}" while Sharly Chess is running on it. Close it, then '
+            'start Sharly Chess again to complete the move.'
+        ) from e
     except OSError as e:
         ProgramVar.DATA_DIR.write_value(str(previous_dir))
         ProgramVar.PREVIOUS_DATA_DIR.clear_value()

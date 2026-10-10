@@ -147,11 +147,12 @@ end;
 procedure InitializeWizard;
 begin
   if {#IsUpdate} = 0 then
-  begin
     InitIsDefenderActive();
-    InitDataDir();
-  end;
-  if not DataDirExists() then
+  InitDataDir();
+  { An update never asks where the data goes: the folder is Sharly Chess's own
+    setting, it writes nothing to the registry here, and a folder asked for and
+    then ignored is worse than no question at all. }
+  if ({#IsUpdate} = 0) and not DataDirExists() then
   begin
     DataDirPage := CreateInputDirPage(
       wpSelectDir,
@@ -162,7 +163,7 @@ begin
       ExpandConstant('{#AppName}')
     );
     DataDirPage.Add('');
-    DataDirPage.Values[0] := ExpandConstant('{localappdata}\{#AppName}');
+    DataDirPage.Values[0] := ExpandConstant('{localappdata}\{#AppName}\data');
   end;
 end;
 
@@ -170,8 +171,18 @@ function GetDataDir(Param: string) : string;
 begin
   if DataDirExists() then
     Result := DataDir
+  else if Assigned(DataDirPage) then
+    Result := DataDirPage.Values[0]
   else
-    Result := DataDirPage.Values[0];
+    Result := ExpandConstant('{localappdata}\{#AppName}\data');
+end;
+
+{ The backups are kept beside the data rather than inside it, so that either
+  folder can be moved without the other. Sharly Chess holds the folder the user
+  named for them, which setup can not read, so only the default is known here. }
+function GetDefaultSnapshotsDir(Param: string) : string;
+begin
+  Result := ExpandConstant('{localappdata}\{#AppName}\snapshots');
 end;
 
 function GetActiveLanguage(Param: string) : string;
@@ -231,7 +242,8 @@ end;
 
 { Sharly Chess moves the data out of the Documents and the cloud services to the local
   application data on its first start after the update: the exclusion of the
-  previous data folder, if any, is given to the new one. }
+  previous data folder, if any, is given to the new one and to the backups,
+  which did not exist when the previous folder was excluded. }
 procedure CarryDefenderDataException;
 var
   OldDataDir: String;
@@ -250,11 +262,14 @@ begin
     or IsPathWithin(OldDataDir, ExpandConstant('{%USERPROFILE}\iCloudDrive'))
   ) then
     Exit;
-  NewDataDir := ExpandConstant('{localappdata}\{#AppName}');
+  NewDataDir := ExpandConstant('{localappdata}\{#AppName}\data');
   if CompareText(RemoveBackslashUnlessRoot(OldDataDir), NewDataDir) = 0 then
     Exit;
   if IsDefenderPathExcluded(OldDataDir) then
+  begin
     AddDefenderPathException(NewDataDir);
+    AddDefenderPathException(GetDefaultSnapshotsDir(''));
+  end;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -270,7 +285,11 @@ begin
     if WizardIsTaskSelected('defenderprogram') then
       AddDefenderPathException(ExpandConstant('{app}'));
     if WizardIsTaskSelected('defenderdata') then
+    begin
       AddDefenderPathException(GetDataDir(''));
+      if not IsPathWithin(GetDefaultSnapshotsDir(''), GetDataDir('')) then
+        AddDefenderPathException(GetDefaultSnapshotsDir(''));
+    end;
   end;
 end;
 
@@ -337,8 +356,8 @@ fr.DefenderGroup=Liste d'exclusions Microsoft Defender :
 en.DefenderProgram=Add the program folder
 fr.DefenderProgram=Ajouter le dossier du programme
 
-en.DefenderData=Add the data folder
-fr.DefenderData=Ajouter le dossier des données
+en.DefenderData=Add the data and backups folders
+fr.DefenderData=Ajouter les dossiers des données et des sauvegardes
 
 en.DefenderError=Failed to add "%1" to the Microsoft Defender exception list.
 fr.DefenderError=Echec de l'ajout de "%1" à la liste d'exclusions Microsoft Defender.
