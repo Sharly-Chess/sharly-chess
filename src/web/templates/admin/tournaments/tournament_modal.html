@@ -392,25 +392,6 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <input type="hidden" name="max_byes_confirmed" id="max-byes-confirmed" value="{{ data.get('max_byes_confirmed', '') }}">
-                    {% if max_byes_change %}
-                        <div class="col-12">
-                            {% call(button) warning_macros.confirmation(
-                                'max-byes-change',
-                                _(
-                                    'The FIDE regulations allow a player one half-point bye per tournament. '
-                                    'Allow more only if the regulations of the tournament provide for it.'
-                                ),
-                                _('Allow more byes'),
-                            ) %}
-                                {% if button == 'cancel' %}
-                                    onclick="$('#max-byes').val('{{ admin_tournament.stored_tournament.max_byes if admin_tournament and admin_tournament.stored_tournament.max_byes is not none else '' }}'); $('#max-byes-change').addClass('d-none');"
-                                {% else %}
-                                    onclick="$('#max-byes-confirmed').val('on'); document.getElementById('modal-form').requestSubmit();"
-                                {% endif %}
-                            {% endcall %}
-                        </div>
-                    {% endif %}
                     <div class="col-12 col-md-6 bye-option">
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',

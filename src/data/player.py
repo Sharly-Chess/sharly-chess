@@ -1166,6 +1166,16 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 byes_count += 2
         return byes_count
 
+    def half_point_bye_needs_confirmation(self, round_: int) -> bool:
+        """Whether a half-point bye at the round would be a second one, in a
+        FIDE-mode tournament where a player may receive only one
+        (C.05:6.7.4)."""
+        return self.tournament.fide_mode and any(
+            pairing.half_point_bye
+            for pairing_round, pairing in self.pairings_by_round.items()
+            if pairing_round != round_
+        )
+
     def to_trf(
         self,
         after_round: int,
