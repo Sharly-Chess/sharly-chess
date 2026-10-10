@@ -8,7 +8,7 @@ from typing import Any
 
 
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import EventType, PrizeCategoryRankingBasis
+from utils.enum import EventOrigin, EventType, PrizeCategoryRankingBasis
 
 
 def set_stored_fields(obj: Any, **fields: Any) -> None:
@@ -660,6 +660,10 @@ class BaseStoredEvent:
     organiser_director: str | None = None
     allow_multi_tournament_players: bool = True
     event_type: EventType = EventType.INDIVIDUAL
+    #: Where the event came from, unknown for the events that predate this
+    #: being recorded.
+    origin: EventOrigin | None = None
+    origin_date: datetime | None = None
 
     # The ids of the tags of the event, as defined in the config database.
     # Ids are local to an installation: they are stripped on export/import

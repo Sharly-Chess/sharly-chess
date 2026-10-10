@@ -376,6 +376,12 @@ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 msgid "Synchronize players"
 msgstr "Synchroniser les joueur·euses"
 
+msgid "The new event is not linked to Sharly-Chess.com: it is a copy to look at, and nothing of it is uploaded or synchronised. The event it was taken from keeps the link."
+msgstr "Le nouvel évènement n'est pas lié à Sharly-Chess.com : c'est une copie à consulter, dont rien n'est envoyé ni synchronisé. L'évènement dont elle est issue conserve le lien."
+
+msgid "This event is linked to Sharly-Chess.com. Restoring rolls back the rounds and the results, and the next upload sends them to the site. It does not roll back the players: Sharly-Chess.com holds that list, and the next synchronisation brings back the registrations, check-ins and player details as they stand on the site — including any added, changed or deleted since this backup. Make those corrections again after restoring, or make them on the site."
+msgstr "Cet évènement est lié à Sharly-Chess.com. La restauration ramène les rondes et les résultats à cette sauvegarde, et le prochain envoi les transmet au site. Elle ne ramène pas les joueur·euses : c'est Sharly-Chess.com qui fait foi pour la liste, et la prochaine synchronisation en rapporte les inscriptions, les pointages et les données telles qu'elles y sont — y compris celles ajoutées, modifiées ou supprimées depuis cette sauvegarde. À corriger de nouveau après la restauration, ou directement sur le site."
+
 msgid "This field is controlled from Sharly-Chess.com."
 msgstr "Ce champ est controllé depuis Sharly-Chess.com."
 

@@ -8,6 +8,7 @@ from litestar.testing import TestClient
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 from tests.test_config import TestUtils
+from utils.enum import EventOrigin
 
 EVENT_ID = 'test-events-http'
 RENAMED_EVENT_ID = 'test-events-http-renamed'
@@ -113,3 +114,21 @@ def test_an_oauth_callback_without_a_state_goes_home(http: TestClient):
     )
     assert response.status_code == 302
     assert response.headers['location'] == '/'
+
+
+@pytest.mark.unit
+def test_an_event_records_that_it_was_created(http: TestClient, cleanup: None):
+    """Where an event came from is recorded when it happens: an event holds
+    the origin of whatever it was made from until it is told its own."""
+    created = http.post(
+        '/current_events/create-event',
+        data={'name': EVENT_ID, 'federation': 'FRA'},
+    )
+    assert created.status_code == 200
+
+    with EventDatabase(EVENT_ID) as database:
+        stored_event = database.load_stored_event_metadata()
+
+    assert stored_event.origin == EventOrigin.CREATED
+    assert stored_event.origin_message is not None
+    assert 'Created on' in stored_event.origin_message

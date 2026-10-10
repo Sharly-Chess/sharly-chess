@@ -18,6 +18,7 @@ class Extension(StrEnum):
     CHAMPIONSHIP_DB = 'scch'
     LEGACY_EVENT_DB = 'db'
     ARCHIVE = 'sca'
+    SNAPSHOT = 'scs'
     BACKUP = 'backup'
     SOURCE_DB = 'db'
     TEMPLATE = 'template'
@@ -983,6 +984,32 @@ class FideArbiterTitle(StrEnum):
     @property
     def fide_acronym(self) -> str:
         return self.value
+
+
+class EventOrigin(StrEnum):
+    """Where an event came from, which is what tells two events holding the
+    same thing apart — the one that was being worked on and the one restored
+    beside it."""
+
+    CREATED = 'CREATED'
+    IMPORTED_FILE = 'IMPORTED_FILE'
+    IMPORTED_ONLINE = 'IMPORTED_ONLINE'
+    RESTORED = 'RESTORED'
+
+    def message(self, date_time_str: str) -> str:
+        match self:
+            case EventOrigin.CREATED:
+                return _('Created on {date}').format(date=date_time_str)
+            case EventOrigin.IMPORTED_FILE:
+                return _('Imported from a file on {date}').format(date=date_time_str)
+            case EventOrigin.IMPORTED_ONLINE:
+                return _('Imported from Sharly-Chess.com on {date}').format(
+                    date=date_time_str
+                )
+            case EventOrigin.RESTORED:
+                return _('Restored from a backup on {date}').format(date=date_time_str)
+            case _:
+                raise ValueError(f'{self=}')
 
 
 class EventType(StrEnum):

@@ -1,5 +1,5 @@
-from collections.abc import Iterator
-from contextlib import contextmanager
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 import json
 import random
 from collections import defaultdict, Counter
@@ -27,6 +27,8 @@ from data.board import Board
 from utils.enum import PlayerRatingType
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
+from data.snapshot import SnapshotReason
+from data.snapshot_worker import SnapshotScheduler
 from data.championship.championship_loader import ChampionshipLoader
 from data.input_output import (
     DataSourceManager,
@@ -1845,7 +1847,7 @@ class TournamentAdminController(BaseEventAdminController):
             context=template_context,
         )
 
-    def _admin_tournament_update(
+    async def _admin_tournament_update(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -1898,6 +1900,15 @@ class TournamentAdminController(BaseEventAdminController):
                     | rounds_change_context,
                 )
 
+        if rounds_change_logs:
+            # Changing the number of rounds of a tournament already paired is
+            # a pairing integrity breaching event: the arbiter has to be able
+            # to put it back as it was.
+            await SnapshotScheduler.snapshot_before_async(
+                event.uniq_id,
+                SnapshotReason.BEFORE_ROUNDS_CHANGE,
+                tournament_id=web_context.get_admin_tournament().id,
+            )
         if message := plugin_manager.hook_for_event(event, 'signal_tournament_set')(
             event=event, stored_tournament=stored_tournament
         ):
@@ -2094,7 +2105,7 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | Redirect:
-        return self._admin_tournament_update(
+        return await self._admin_tournament_update(
             request,
             action=FormAction.CREATE,
             tournament_id=None,
@@ -2115,7 +2126,7 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         tournament_id: FromPath[int],
     ) -> Template | Redirect:
-        return self._admin_tournament_update(
+        return await self._admin_tournament_update(
             request,
             action=FormAction.CLONE,
             tournament_id=tournament_id,
@@ -2136,7 +2147,7 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         tournament_id: FromPath[int],
     ) -> Template | Redirect:
-        return self._admin_tournament_update(
+        return await self._admin_tournament_update(
             request,
             action=FormAction.UPDATE,
             tournament_id=tournament_id,
@@ -2374,6 +2385,15 @@ class TournamentAdminController(BaseEventAdminController):
             )
             importer_options.append(type(importer_option)(value))
         importer = importer_type(importer_options)
+        await SnapshotScheduler.snapshot_before_async(
+            event.uniq_id,
+            SnapshotReason.BEFORE_PLAYERS_IMPORT,
+            tournament_id=(
+                web_context.admin_tournament.id
+                if web_context.admin_tournament
+                else None
+            ),
+        )
         try:
             importer.validate_options(event)
             tournament_id = importer.load_tournament(
@@ -2752,7 +2772,7 @@ class TournamentAdminController(BaseEventAdminController):
         # rather than adding to it — a tournament always holds at least
         # the points, which would otherwise be listed twice.
         assert tournament.id is not None
-        with self._tie_break_change(web_context):
+        async with self._tie_break_change(web_context):
             with EventDatabase(tournament.event.uniq_id, write=True) as database:
                 database.delete_all_tournament_stored_tie_breaks(tournament.id)
             tournament.tie_breaks_by_id.clear()
@@ -2869,7 +2889,7 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
-        with self._tie_break_change(web_context):
+        async with self._tie_break_change(web_context):
             tournament.tie_break_configuration.add(tie_break)
         if add_other:
             template_context = self._tie_break_form_modal_context(
@@ -2904,7 +2924,7 @@ class TournamentAdminController(BaseEventAdminController):
             raise ValidationException(
                 f"Tie-breaks of type [{tie_break.id}] can't be duplicated."
             )
-        with self._tie_break_change(web_context):
+        async with self._tie_break_change(web_context):
             tournament.tie_break_configuration.add(tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
@@ -2945,7 +2965,7 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
-        with self._tie_break_change(web_context):
+        async with self._tie_break_change(web_context):
             tournament.tie_break_configuration.update(tie_break_id, tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
@@ -2972,7 +2992,7 @@ class TournamentAdminController(BaseEventAdminController):
             tie_break_id=tie_break_id,
         )
         tournament = web_context.get_admin_tournament()
-        with self._tie_break_change(web_context):
+        async with self._tie_break_change(web_context):
             tournament.tie_break_configuration.delete(tie_break_id)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
@@ -2994,7 +3014,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        with self._tie_break_change(web_context):
+        async with self._tie_break_change(web_context):
             tournament.tie_break_configuration.reorder(data.get('tie_break_ids', []))
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
@@ -3072,10 +3092,10 @@ class TournamentAdminController(BaseEventAdminController):
             and tournament.tie_break_config_purpose != TieBreakPurpose.ADVANCEMENT
         )
 
-    @contextmanager
-    def _tie_break_change(
+    @asynccontextmanager
+    async def _tie_break_change(
         self, web_context: TournamentAdminWebContext
-    ) -> Iterator[None]:
+    ) -> AsyncIterator[None]:
         """Wrap a change to the tie-breaks: refused while they are fixed and
         locked, logged in the TRF once the tournament has started."""
         tournament = web_context.get_admin_tournament()
@@ -3093,6 +3113,14 @@ class TournamentAdminController(BaseEventAdminController):
                 f'The tie-breaks of tournament [{tournament.name}] are fixed.'
             )
         before = self._tie_break_list(tournament)
+        # Changing the tie-breaks of a started tournament is a pairing
+        # integrity breaching event: the arbiter has to be able to put them
+        # back as they were.
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_TIE_BREAKS_CHANGE,
+            tournament_id=tournament.id,
+        )
         yield
         if (after := self._tie_break_list(tournament)) != before:
             tournament.log_pibe(
@@ -3866,6 +3894,10 @@ class TournamentAdminController(BaseEventAdminController):
         )
         SessionDistributePlayerCountByTournamentId(request, event).set(
             user_player_count_by_tournament_id
+        )
+
+        await SnapshotScheduler.snapshot_before_async(
+            event.uniq_id, SnapshotReason.BEFORE_PLAYERS_DISTRIBUTION
         )
 
         target_tournament_ids_by_player_id: dict[int, int]
