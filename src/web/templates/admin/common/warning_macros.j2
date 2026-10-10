@@ -57,8 +57,8 @@
 {# A level-3 warning: the action breaks the regulations but does no harm,
    and is confirmed once. The caller gives the attributes of the 'cancel'
    and 'confirm' buttons. #}
-{% macro confirmation(id, message, confirm_label) %}
-    <div id="{{ id }}" class="alert alert-warning d-flex align-items-center mb-2">
+{% macro confirmation(id, message, confirm_label, hidden=false) %}
+    <div id="{{ id }}" class="alert alert-warning d-flex align-items-center mb-2 {% if hidden %}d-none{% endif %}">
         {{ level_icon(3, 'align-self-start') }}
         <div class="flex-grow-1 align-self-start">{{ message }}</div>
         <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">

@@ -1194,37 +1194,6 @@ class TournamentAdminController(BaseEventAdminController):
             cls._check_fide_mode_scoring(tournament, stored_tournament, errors)
         return stored_tournament, errors
 
-    @classmethod
-    def _raises_max_byes_above_fide(
-        cls,
-        event: Event,
-        tournament: Tournament | None,
-        stored_tournament: StoredTournament,
-    ) -> bool:
-        """Whether the form lets a player of a FIDE-mode tournament have more
-        than the one half-point bye the FIDE rules allow, when it did not
-        before."""
-        max_byes = (
-            stored_tournament.max_byes
-            if stored_tournament.max_byes is not None
-            else SharlyChessConfig.default_max_byes
-        )
-        if max_byes <= 1 or not stored_tournament.fide_mode:
-            return False
-        from data.pairings import PairingVariationManager
-
-        try:
-            variation = PairingVariationManager(event).get_object(
-                stored_tournament.pairing
-            )
-        except KeyError:
-            return False
-        if not variation.system().supports_fide_mode:
-            return False
-        return (
-            tournament is None or not tournament.fide_mode or tournament.max_byes <= 1
-        )
-
     @staticmethod
     def _rounds_change(
         tournament: Tournament, stored_tournament: StoredTournament
@@ -1869,18 +1838,6 @@ class TournamentAdminController(BaseEventAdminController):
                 template_context=template_context,
             )
 
-        if self._raises_max_byes_above_fide(
-            event,
-            web_context.admin_tournament if action == FormAction.UPDATE else None,
-            stored_tournament,
-        ) and not WebContext.form_data_to_bool(data, 'max_byes_confirmed'):
-            return self._admin_event_tournaments_render(
-                web_context=web_context,
-                template_context=self._prepare_tournament_modal_data(
-                    action, web_context, data, errors={}
-                )
-                | {'max_byes_change': True},
-            )
         rounds_change_logs: list[Pibe] = []
         if action == FormAction.UPDATE:
             tournament = web_context.get_admin_tournament()

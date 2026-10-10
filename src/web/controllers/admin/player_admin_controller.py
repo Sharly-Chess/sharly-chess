@@ -1855,6 +1855,9 @@ class PlayerAdminController(BaseEventAdminController):
         }
         template_context = {
             'get_bye_options': cls._get_bye_options,
+            'half_point_bye_value': WebContext.value_to_form_data(
+                Result.HALF_POINT_BYE.value
+            ),
             'modal': 'record',
             'data': data,
         }
