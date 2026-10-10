@@ -20,12 +20,16 @@ from data.pairings.variations import (
     StandardSwissVariation,
     RoundRobinVariation,
     BergerRoundRobinVariation,
+    CustomRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
+    DoubleCustomRoundRobinVariation,
     TeamSwissVariation,
     StandardTeamSwissVariation,
     TeamRoundRobinVariation,
     BergerTeamRoundRobinVariation,
+    CustomTeamRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
+    DoubleCustomTeamRoundRobinVariation,
 )
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
@@ -73,6 +77,8 @@ class RoundRobinVariationManager(EventBoundEntityManager[RoundRobinVariation]):
         return [
             BergerRoundRobinVariation,
             DoubleBergerRoundRobinVariation,
+            CustomRoundRobinVariation,
+            DoubleCustomRoundRobinVariation,
         ]
 
 
@@ -88,6 +94,8 @@ class TeamRoundRobinVariationManager(EventBoundEntityManager[TeamRoundRobinVaria
         return [
             BergerTeamRoundRobinVariation,
             DoubleBergerTeamRoundRobinVariation,
+            CustomTeamRoundRobinVariation,
+            DoubleCustomTeamRoundRobinVariation,
         ]
 
 

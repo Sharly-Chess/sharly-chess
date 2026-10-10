@@ -5,8 +5,12 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {% include 'fide_log_button.html' %}
     {% include 'pairing_settings_button.html' %}
-    {% if not admin_tournament.has_pairings %}
+    {% if schedule_editor.can_start %}
+        {% include '/admin/pairings/round_robin_schedule_button.html' %}
+    {% endif %}
+    {% if not admin_tournament.has_pairings and schedule_editor.follows_berger_tables %}
         <div
             {% if not client.can_use_pairing_engine(admin_tournament.id) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to generate the pairings.'), 'top') }}
@@ -44,7 +48,7 @@
         </div>
     {% endif %}
 
-    {% if admin_tournament.has_pairings and not admin_tournament.has_results %}
+    {% if admin_tournament.has_pairings and not admin_tournament.has_results and schedule_editor.follows_berger_tables %}
         <div
             {% if not client.can_unpair_round(admin_tournament.id) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}

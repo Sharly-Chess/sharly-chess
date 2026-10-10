@@ -2,7 +2,7 @@ import io
 from collections import defaultdict
 from datetime import datetime, date, time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from common.exception import ImporterError
 from common.i18n import _
@@ -71,6 +71,13 @@ if TYPE_CHECKING:
 
 
 class TrfTournamentImporter(FileTournamentImporter):
+    #: The codes of round-robins paired from a schedule of their own,
+    #: imported as given in the file.
+    CUSTOM_ROUND_ROBIN_TYPES: ClassVar[tuple[str, ...]] = (
+        'CUSTOM_ROUNDROBIN',
+        'CUSTOM_TEAM_ROUNDROBIN',
+    )
+
     @staticmethod
     def static_id() -> str:
         return 'TRF'
@@ -596,6 +603,34 @@ class TrfTournamentImporter(FileTournamentImporter):
             TrfPointSystemResult.UNKNOWN
         )
         return points is not None and points == 0
+
+    @staticmethod
+    def _pairing_variation_id(trf_tournament: TrfTournament) -> str:
+        """The variation of the file's 192 code. The custom round-robin
+        codes cover single and double round-robins alike, told apart by
+        the number of rounds: twice the length of a single round-robin
+        makes a double one."""
+        from data.pairings.round_robin_schedule import single_cycle_round_count
+        from data.pairings.variations import (
+            DoubleCustomRoundRobinVariation,
+            DoubleCustomTeamRoundRobinVariation,
+        )
+
+        encoded_type = trf_tournament.encoded_type
+        variation_id = TrfEncodedType.get_pairing_variation(encoded_type).id
+        if encoded_type not in TrfTournamentImporter.CUSTOM_ROUND_ROBIN_TYPES:
+            return variation_id
+        team = encoded_type == 'CUSTOM_TEAM_ROUNDROBIN'
+        member_count = len(trf_tournament.teams if team else trf_tournament.players)
+        if trf_tournament.num_rounds_estimation == 2 * single_cycle_round_count(
+            member_count
+        ):
+            return (
+                DoubleCustomTeamRoundRobinVariation
+                if team
+                else DoubleCustomRoundRobinVariation
+            ).static_id()
+        return variation_id
 
     @staticmethod
     def _populate_game_points(
@@ -1503,7 +1538,10 @@ class TrfTournamentImporter(FileTournamentImporter):
         # third-party engine whose pairings we can't reproduce). Importing
         # either would silently substitute a different pairing system.
         if encoded_type and (
-            encoded_type.startswith('CUSTOM')
+            (
+                encoded_type.startswith('CUSTOM')
+                and encoded_type not in cls.CUSTOM_ROUND_ROBIN_TYPES
+            )
             or TrfEncodedType.get_supported_pairing_variation(encoded_type) is None
         ):
             raise ImporterError(
@@ -1513,9 +1551,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     'reproduced exactly.'
                 ).format(type=encoded_type)
             )
-        stored_tournament.pairing = TrfEncodedType.get_pairing_variation(
-            encoded_type
-        ).id
+        stored_tournament.pairing = cls._pairing_variation_id(trf_tournament)
         cls._populate_game_points(stored_tournament, trf_tournament)
         cls._populate_team_fields(stored_tournament, trf_tournament)
         trf_tie_breaks = trf_tournament.standings_tie_breaks or [

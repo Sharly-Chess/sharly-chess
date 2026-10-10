@@ -13,10 +13,6 @@ from data.event import Event
 from data.player import Player
 from data.pairings.engines import TeamRoundRobinPairingEngine
 from data.tournament import Tournament
-from data.pairings.variations import (
-    DoubleBergerRoundRobinVariation,
-    DoubleBergerTeamRoundRobinVariation,
-)
 from database.sqlite.config.config_database import ConfigDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
@@ -181,10 +177,7 @@ class ChessResultsSession(Session):
         # "Replayed" (each pairing met more than once) is a variation, not a
         # separate system: a double round-robin reports its round count as
         # the replay so Chess-Results encodes it as a multi-cycle event.
-        is_replayed_pairing = isinstance(
-            tournament.pairing_variation,
-            (DoubleBergerRoundRobinVariation, DoubleBergerTeamRoundRobinVariation),
-        )
+        is_replayed_pairing = tournament.pairing_variation.is_double_round_robin
         if is_replayed_pairing:
             replay = str(tournament.rounds)
         if is_team:
