@@ -34,6 +34,7 @@ from data.norms import (
     NormInputs,
     TitleNormEvaluator,
 )
+from data.pairings.variations import StandardSwissVariation
 from data.player import TournamentPlayer
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation, NormCheckResult
@@ -761,7 +762,7 @@ def _player_with_pairings(
         tournament=SimpleNamespace(
             rounds=rounds,
             pairing_system=pairing_system or SwissPairingSystem(),
-            pairing_variation=pairing_variation,
+            pairing_variation=pairing_variation or StandardSwissVariation(),
             tournament_players_by_id=tournament_players_by_id or {},
             # Tournament-wide check stubs — `evaluate_one` reads these
             # to stamp 1.4.3d / 1.5.6a onto every NormCheckResult.
@@ -1701,7 +1702,7 @@ def _forecaster_with_pairings(
         tournament=SimpleNamespace(
             rounds=rounds,
             pairing_system=pairing_system or SwissPairingSystem(),
-            pairing_variation=None,
+            pairing_variation=StandardSwissVariation(),
             tournament_players_by_id={},
             big_tournament_exemption=__import__(
                 'utils.types', fromlist=['BigTournamentExemption']
@@ -2332,7 +2333,7 @@ class TestCalculationDetailsHooks:
             tournament=SimpleNamespace(
                 rounds=9,
                 pairing_system=SwissPairingSystem(),
-                pairing_variation=None,
+                pairing_variation=StandardSwissVariation(),
                 tournament_players_by_id={},
                 # stubs for tournament-wide checks
                 big_tournament_exemption=__import__(
@@ -2578,7 +2579,7 @@ class TestRule_1_4_3abc_EndToEnd:
             tournament=SimpleNamespace(
                 rounds=9,
                 pairing_system=SwissPairingSystem(),
-                pairing_variation=None,
+                pairing_variation=StandardSwissVariation(),
                 tournament_players_by_id={},
                 big_tournament_exemption=_Btx(0, 0, 0),
                 high_level_tournament=False,
@@ -2679,7 +2680,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
             tournament=SimpleNamespace(
                 rounds=9,
                 pairing_system=SwissPairingSystem(),
-                pairing_variation=None,
+                pairing_variation=StandardSwissVariation(),
                 tournament_players_by_id={},
                 # Tournament-wide 1.4.3d NOT met (small event).
                 big_tournament_exemption=_Btx(0, 0, 0),

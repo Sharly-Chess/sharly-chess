@@ -10,7 +10,12 @@ from data.pairings.engines import (
     TeamRoundRobinPairingEngine,
     BbpPairings,
     BergerPairingEngine,
+    CustomRoundRobinPairingEngine,
+    CustomTeamRoundRobinEngine,
     DoubleBergerPairingEngine,
+    DoubleCustomRoundRobinPairingEngine,
+    DoubleCustomTeamRoundRobinEngine,
+    ScheduledRoundRobin,
     TeamSwissEngine,
     TeamBergerEngine,
     TeamDoubleBergerEngine,
@@ -102,6 +107,12 @@ class PairingVariation(IdentifiableEntity, ABC):
                 for message in setting_messages
             ]
         )
+
+    @property
+    def is_double_round_robin(self) -> bool:
+        """Whether every pair of members meets twice."""
+        engine = self.engine
+        return isinstance(engine, ScheduledRoundRobin) and engine.encounters == 2
 
     @property
     @abstractmethod
@@ -295,6 +306,50 @@ class DoubleBergerRoundRobinVariation(RoundRobinVariation):
         return 'FIDE_DOUBLEROUNDROBIN'
 
 
+class CustomRoundRobinVariation(RoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'CUSTOM'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Custom schedule')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []
+
+    @property
+    def engine(self) -> PairingEngine:
+        return CustomRoundRobinPairingEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'CUSTOM_ROUNDROBIN'
+
+
+class DoubleCustomRoundRobinVariation(RoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'DOUBLE_CUSTOM'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Double-round custom schedule')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []
+
+    @property
+    def engine(self) -> PairingEngine:
+        return DoubleCustomRoundRobinPairingEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'CUSTOM_ROUNDROBIN'
+
+
 # ---------------------------------------------------------------------------------
 # Team pairing variations. Engines are stubs for now.
 # ---------------------------------------------------------------------------------
@@ -396,3 +451,47 @@ class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
     @property
     def trf_encoded_type(self) -> str:
         return 'FIDE_TEAM_DOUBLEROUNDROBIN'
+
+
+class CustomTeamRoundRobinVariation(TeamRoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'CUSTOM'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Custom schedule')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []
+
+    @property
+    def engine(self) -> PairingEngine:
+        return CustomTeamRoundRobinEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'CUSTOM_TEAM_ROUNDROBIN'
+
+
+class DoubleCustomTeamRoundRobinVariation(TeamRoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'DOUBLE_CUSTOM'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Double-round custom schedule')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []
+
+    @property
+    def engine(self) -> PairingEngine:
+        return DoubleCustomTeamRoundRobinEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'CUSTOM_TEAM_ROUNDROBIN'

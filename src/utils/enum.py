@@ -1350,9 +1350,7 @@ class TitleNorm(Enum):
 
     @staticmethod
     def minimum_rounds(tournament: 'Tournament') -> int:
-        from data.pairings.variations import DoubleBergerRoundRobinVariation
-
-        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+        if tournament.pairing_variation.is_double_round_robin:
             return 10  # 1.4.5.f -> 6 players -> 10 rounds
         return 9
 
@@ -1372,9 +1370,7 @@ class TitleNorm(Enum):
         not the tournament's nominal round count — see 1.4.1c which says
         the mix requirements apply to the actually-played opponents.
         """
-        from data.pairings.variations import DoubleBergerRoundRobinVariation
-
-        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+        if tournament.pairing_variation.is_double_round_robin:
             return ceil(played_games / 2)  # 1.4.5.f
         return max(ceil(played_games / 3), 3)
 

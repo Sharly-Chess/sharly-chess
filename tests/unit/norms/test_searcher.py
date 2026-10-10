@@ -24,6 +24,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 from unittest.mock import MagicMock
 
+from data.pairings.variations import StandardSwissVariation
 from data.player import Player, TournamentPlayer
 from data.tournament import Tournament
 from utils.enum import PlayerGender
@@ -251,7 +252,7 @@ def _make_searcher(
     player = MagicMock()
     player.tournament.rounds = rounds
     player.tournament.pairing_system = pairing_system or SwissPairingSystem()
-    player.tournament.pairing_variation = pairing_variation
+    player.tournament.pairing_variation = pairing_variation or StandardSwissVariation()
     return TitleNormSubsetSearcher(player)
 
 
@@ -655,7 +656,7 @@ def _real_searcher(
         tournament=SimpleNamespace(
             rounds=rounds,
             pairing_system=pairing_system or SwissPairingSystem(),
-            pairing_variation=None,
+            pairing_variation=StandardSwissVariation(),
             # Stubs for the tournament-wide checks that `evaluate_one`
             # stamps onto every NormCheckResult. Default to "not met"
             # so tests don't inadvertently get the 1.4.3d exemption.

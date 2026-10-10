@@ -1,0 +1,115 @@
+{% macro confirm_button(id, action, icon, label, button_class='btn-outline-warning') %}
+    <button
+        id="{{ id }}"
+        class="btn btn-sm {{ button_class }} text-nowrap text-start"
+        hx-get="{{ url_for('admin-pairings-schedule-confirm-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, action=action) }}"
+        hx-trigger="click"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <i class="{{ icon }} pe-1"></i>
+        {{ label }}
+    </button>
+{% endmacro %}
+<div id="schedule-banner" class="alert alert-warning py-2 px-2 mx-3 my-2 d-flex gap-3">
+    <div class="flex-grow-1">
+        <div class="d-flex align-items-start gap-2">
+            <i class="bi-calendar3"></i>
+            <div>
+                {% if schedule_editor.is_team %}
+                    {{ _('The schedule of the tournament is being edited. Save it to pair the matches of each round from it.') }}
+                {% else %}
+                    {{ _('The schedule of the tournament is being edited. Save it to pair every round from it.') }}
+                {% endif %}
+            </div>
+        </div>
+        {% if schedule_editor.played_games_unlocked %}
+            <div class="small mt-2">
+                <i class="bi-unlock pe-1"></i>
+                {{ _('The games already played can be changed, to set them as they were really played. Their results are kept when they agree.') }}
+            </div>
+        {% endif %}
+        {% if schedule_violations %}
+            <ul id="schedule-violations" class="small mb-0 mt-2">
+                {% for violation in schedule_violations[:20] %}
+                    <li>
+                        {% if violation.round %}
+                            <a
+                                href="#"
+                                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=violation.round) }}"
+                                hx-target="body"
+                                hx-replace-url="true"
+                                hx-indicator="#please-wait"
+                            >{{ _('Round %(round)d', round=violation.round) }}</a> —
+                        {% endif %}
+                        {{ violation.message }}
+                    </li>
+                {% endfor %}
+                {% if schedule_violations|length > 20 %}
+                    <li>{{ _('And %(count)d more.', count=schedule_violations|length - 20) }}</li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="d-flex flex-column gap-2 flex-shrink-0">
+        <span
+            class="d-grid"
+            {% if schedule_violations %}
+                {{ macros.tooltip_attributes('warning', _('The schedule breaks the round-robin rules.'), 'left') }}
+            {% endif %}
+        >
+            <button
+                id="schedule-save"
+                class="btn btn-sm btn-warning text-nowrap text-start"
+                {% if schedule_violations %}
+                    disabled
+                {% else %}
+                    hx-post="{{ url_for('admin-pairings-schedule-save', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    hx-disabled-elt="this"
+                {% endif %}
+            >
+                <i class="bi-check2-square pe-1"></i>
+                {{ _('Save the schedule') }}
+            </button>
+        </span>
+        {% if schedule_can_force %}
+            {{ confirm_button('schedule-force-save', 'force', 'bi-exclamation-triangle', _('Save anyway'), 'btn-danger') }}
+        {% endif %}
+        {% if not schedule_editor.must_edit %}
+            <button
+                class="btn btn-sm btn-outline-warning text-nowrap text-start"
+                hx-post="{{ url_for('admin-pairings-schedule-cancel', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-disabled-elt="this"
+                {{ macros.tooltip_attributes('info', _('Leave the schedule as it was before editing.'), 'left') }}
+            >
+                <i class="bi-arrow-counterclockwise pe-1"></i>
+                {{ _('Cancel editing') }}
+            </button>
+        {% endif %}
+        {% if schedule_editor.draft_empty %}
+            <button
+                id="schedule-fill-berger"
+                class="btn btn-sm btn-outline-warning text-nowrap text-start"
+                hx-post="{{ url_for('admin-pairings-schedule-fill-berger', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-disabled-elt="this"
+                {{ macros.tooltip_attributes('info', _('Fill the schedule with the Berger tables, following the Berger numbers.'), 'left') }}
+            >
+                <i class="bi-grid-3x3 pe-1"></i>
+                {{ _('Fill from the Berger tables') }}
+            </button>
+        {% else %}
+            {{ confirm_button('schedule-clear', 'clear', 'bi-eraser', _('Clear')) }}
+        {% endif %}
+        {% if admin_tournament.has_results and not schedule_editor.is_team and not schedule_editor.played_games_unlocked %}
+            {{ confirm_button('schedule-unlock-played-games', 'unlock', 'bi-unlock', _('Unlock the games played')) }}
+        {% endif %}
+    </div>
+</div>
