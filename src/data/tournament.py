@@ -20,6 +20,7 @@ from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
+from data.pairings.round_robin_schedule import RoundRobinSchedule, ScheduleBreach
 from data.pibes import FullPointBye, Pibe, PibeType, RatingCorrection
 from data.player import Player, TournamentPlayer
 from data.player_ranking import PlayerRanking
@@ -933,6 +934,36 @@ class Tournament:
         self.stored_tournament.manual_pairing_round = round_
         self.stored_tournament.manual_pairing_boards = boards
 
+    @property
+    def round_robin_schedule(self) -> RoundRobinSchedule | None:
+        """The saved schedule of a round-robin, which its pairings are made
+        from."""
+        if (data := self.stored_tournament.round_robin_schedule) is None:
+            return None
+        return RoundRobinSchedule.from_json(data)
+
+    @property
+    def round_robin_schedule_draft(self) -> RoundRobinSchedule | None:
+        """The schedule being edited, until it is saved or the editing is
+        cancelled."""
+        if (data := self.stored_tournament.round_robin_schedule_draft) is None:
+            return None
+        return RoundRobinSchedule.from_json(data)
+
+    def set_round_robin_schedule(
+        self,
+        schedule: RoundRobinSchedule | None,
+        draft: RoundRobinSchedule | None,
+    ) -> None:
+        schedule_data = schedule.to_json() if schedule is not None else None
+        draft_data = draft.to_json() if draft is not None else None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_round_robin_schedule(
+                self.id, schedule_data, draft_data
+            )
+        self.stored_tournament.round_robin_schedule = schedule_data
+        self.stored_tournament.round_robin_schedule_draft = draft_data
+
     def _delete_pibes(self, type_: PibeType, round_: int) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_tournament_stored_pibes(self.id, type_, round_)
@@ -1056,10 +1087,36 @@ class Tournament:
         ]
 
     @property
-    def log_entries(self) -> list[Pibe | RatingCorrection | FullPointBye]:
+    def log_entries(
+        self,
+    ) -> list[Pibe | RatingCorrection | FullPointBye | ScheduleBreach]:
         """What the log lists: the pairing integrity breaching events, the
-        games corrected for the rating report, then the full-point byes."""
-        return [*self.pibes, *self.rating_corrections, *self.full_point_byes]
+        games corrected for the rating report, the full-point byes, then the
+        rules the saved round-robin schedule breaks."""
+        return [
+            *self.pibes,
+            *self.rating_corrections,
+            *self.full_point_byes,
+            *self.schedule_breaches,
+        ]
+
+    @property
+    def schedule_breaches(self) -> list[ScheduleBreach]:
+        """The rules the saved schedule of a custom round-robin breaks, for
+        the participants as they are."""
+        from data.pairings.engines import ScheduledRoundRobin
+
+        engine = self.pairing_variation.engine
+        if not isinstance(engine, ScheduledRoundRobin) or engine.follows_berger_tables:
+            return []
+        schedule = self.round_robin_schedule
+        if schedule is None or not engine.schedule_fits(self, schedule):
+            return []
+        return [
+            ScheduleBreach(violation, engine.encounters)
+            for violation in engine.schedule_violations(self, schedule)
+            if violation.forceable
+        ]
 
     @property
     def full_point_byes(self) -> list[FullPointBye]:
@@ -2020,6 +2077,12 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.update_stored_tournament(self.stored_tournament)
 
+    def set_pairing_variation(self, variation_id: str) -> None:
+        self.stored_tournament.pairing = variation_id
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
+        Utils.reset_cached_properties(self, 'pairing_variation', 'pairing_settings')
+
     def persist_automatic_rounds(self) -> None:
         """Write down the round count a system works out for itself.
 
@@ -2498,10 +2561,7 @@ class Tournament:
     @cached_property
     def can_add_players(self) -> bool:
         """Determines if players can be added to the tournament."""
-        return not self.finished and (
-            not self.has_pairings
-            or self.pairing_system.allow_player_addition_once_paired
-        )
+        return not self.finished and self.pairing_system.allows_player_addition(self)
 
     @cached_property
     def can_add_teams(self) -> bool:
@@ -2572,7 +2632,7 @@ class Tournament:
         self.tournament_players_by_id[player_id] = TournamentPlayer(
             self, stored_tournament_player
         )
-        self._reset_player_derived_cache()
+        self.reset_player_derived_cache()
 
     def unregister_rostered_player(self, player_id: int) -> None:
         """The reverse: a player has left a team of this tournament."""
@@ -2586,9 +2646,9 @@ class Tournament:
             )
             if stored_tournament_player.player_id != player_id
         ]
-        self._reset_player_derived_cache()
+        self.reset_player_derived_cache()
 
-    def _reset_player_derived_cache(self) -> None:
+    def reset_player_derived_cache(self) -> None:
         """Drop what is computed from the tournament's player list."""
         Utils.reset_cached_properties(
             self,

@@ -701,6 +701,12 @@ class EventDatabase(MigrationDatabase):
             ),
             multi_period=cls.load_bool_from_database_field(row['multi_period']),
             tie_break_rating=row['tie_break_rating'],
+            round_robin_schedule=cls.load_json_from_database_field(
+                row['round_robin_schedule']
+            ),
+            round_robin_schedule_draft=cls.load_json_from_database_field(
+                row['round_robin_schedule_draft']
+            ),
         )
 
     @staticmethod
@@ -827,6 +833,9 @@ class EventDatabase(MigrationDatabase):
             ),
             'match_points': cls.dump_to_json_database_field(
                 stored_tournament.match_points
+            ),
+            'round_robin_schedule': cls.dump_to_json_database_field(
+                stored_tournament.round_robin_schedule
             ),
         }
 
@@ -2323,6 +2332,23 @@ class EventDatabase(MigrationDatabase):
             (
                 round_,
                 self.dump_to_json_database_field(boards, []),
+                self.now_as_database_timestamp(),
+                tournament_id,
+            ),
+        )
+
+    def set_tournament_round_robin_schedule(
+        self,
+        tournament_id: int,
+        schedule: dict[str, Any] | None,
+        draft: dict[str, Any] | None,
+    ) -> None:
+        self.execute(
+            'UPDATE `tournament` SET `round_robin_schedule` = ?, '
+            '`round_robin_schedule_draft` = ?, `last_update` = ? WHERE `id` = ?',
+            (
+                self.dump_to_json_database_field(schedule),
+                self.dump_to_json_database_field(draft),
                 self.now_as_database_timestamp(),
                 tournament_id,
             ),

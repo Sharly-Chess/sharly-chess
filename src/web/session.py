@@ -601,6 +601,19 @@ class SessionPairingsSelectedRound(TournamentSessionVariable[int | None]):
         return None
 
 
+class SessionSchedulePlayedGamesUnlocked(TournamentSessionVariable[bool]):
+    """Whether the games already played can be changed in the round-robin
+    schedule being edited, to set them as they were really played."""
+
+    @property
+    def key(self) -> str:
+        return 'schedule_played_games_unlocked'
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class SessionPrizeCategoriesAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:

@@ -22,9 +22,12 @@ from data.input_output.trf.trf_serializer import TrfSerializer
 from data.pairings.variations import (
     PairingVariation,
     BergerTeamRoundRobinVariation,
+    CustomRoundRobinVariation,
+    CustomTeamRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
     StandardSwissVariation,
     StandardTeamSwissVariation,
+    TeamRoundRobinVariation,
 )
 from utils.enum import ScoreType, TeamColourType
 
@@ -88,7 +91,6 @@ class TestTrfSerializer(TestCase):
         for code in (
             'FIDE_TEAM_ROUNDROBIN',
             'BERGER_TEAM_ROUNDROBIN',
-            'CUSTOM_TEAM_ROUNDROBIN',
         ):
             self.assertIsInstance(
                 TrfEncodedType.get_supported_pairing_variation(code),
@@ -101,6 +103,19 @@ class TestTrfSerializer(TestCase):
                 'FIDE_TEAM_DOUBLEROUNDROBIN'
             ),
             DoubleBergerTeamRoundRobinVariation,
+        )
+
+        # Custom round-robins are paired from their own schedule.
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation('CUSTOM_ROUNDROBIN'),
+            CustomRoundRobinVariation,
+        )
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation('CUSTOM_TEAM_ROUNDROBIN'),
+            CustomTeamRoundRobinVariation,
+        )
+        self.assertIsNone(
+            TrfEncodedType.get_team_score_config('CUSTOM_TEAM_ROUNDROBIN')
         )
 
         # Individual Swiss FIDE table code.
@@ -217,11 +232,7 @@ class TestTrfSerializer(TestCase):
             self.assertEqual(
                 isinstance(
                     variation,
-                    (
-                        StandardTeamSwissVariation,
-                        BergerTeamRoundRobinVariation,
-                        DoubleBergerTeamRoundRobinVariation,
-                    ),
+                    (StandardTeamSwissVariation, TeamRoundRobinVariation),
                 ),
                 is_team_code,
                 f'{code} resolved to {type(variation).__name__}',

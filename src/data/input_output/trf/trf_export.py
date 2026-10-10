@@ -22,6 +22,7 @@ from data.input_output.trf.trf_data import (
 )
 from data.input_output.trf.trf_mappers import TrfPointSystemResult
 from data.pairings.engines import _team_ui_sort_key
+from data.pairings.round_robin_schedule import ScheduleBreach
 from data.pairings.settings import ColorSeedSetting
 from data.input_output.report_window import ReportWindow, build_window
 from data.pibes import (
@@ -175,10 +176,11 @@ class TrfExport:
         self, after_round: int, corrections: list[RatingCorrection]
     ) -> list[str]:
         tournament = self.tournament
-        entries: list[Pibe | RatingCorrection | FullPointBye] = [
+        entries: list[Pibe | RatingCorrection | FullPointBye | ScheduleBreach] = [
             *tournament.pibes,
             *corrections,
             *tournament.full_point_byes,
+            *tournament.schedule_breaches,
         ]
         comments = [
             entry.trf_comment_for(tournament)

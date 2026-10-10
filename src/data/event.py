@@ -486,6 +486,8 @@ class Event:
             self.clear_player_cache()
             for tournament in tournaments:
                 tournament.add_player_to_tournament(stored_player, database)
+        for tournament in tournaments:
+            tournament.pairing_system.players_joined(tournament)
         assert stored_player.id is not None
         return stored_player.id
 
@@ -719,6 +721,7 @@ class Event:
             del source_tournament.tournament_players_by_id[player.id]
         player.optional_single_tournament_id = destination_tournament.id
         self.clear_player_cache()
+        destination_tournament.pairing_system.players_joined(destination_tournament)
 
     def move_players_to_tournaments(
         self,
@@ -744,6 +747,9 @@ class Event:
                 del source_tournament.tournament_players_by_id[player.id]
                 player.optional_single_tournament_id = target_tournament.id
         self.clear_player_cache()
+        for target_tournament_id in set(target_tournament_ids_by_player_id.values()):
+            target_tournament = self.tournaments_by_id[target_tournament_id]
+            target_tournament.pairing_system.players_joined(target_tournament)
 
     # --------------------------------------------------------------------------
     # Teams

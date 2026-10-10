@@ -639,6 +639,9 @@ msgstr ""
 msgid "A partial TRF, for data exchange during the tournament: the games without a result are exported as unknown results ({games})."
 msgstr ""
 
+msgid "A participant who has left the tournament is seated."
+msgstr ""
+
 msgid "A player covered by no rule in a round gets no virtual points in that round."
 msgstr ""
 
@@ -1161,6 +1164,10 @@ msgid "An update of Sharly Chess is available, but the updater tool (Sparkle) fa
 msgstr ""
 
 msgid "Anchor position"
+msgstr ""
+
+#, python-format
+msgid "And %(count)d more."
 msgstr ""
 
 msgid "Andorra"
@@ -1933,6 +1940,9 @@ msgstr ""
 msgid "Championships"
 msgstr ""
 
+msgid "Change the games already played? Only do so to set them as they were really played, players having sat at the wrong boards."
+msgstr ""
+
 msgid "Change the number of rounds"
 msgstr ""
 
@@ -2033,6 +2043,9 @@ msgstr ""
 msgid "Choose the columns displayed."
 msgstr ""
 
+msgid "Clear"
+msgstr ""
+
 msgid "Clear all"
 msgstr ""
 
@@ -2049,6 +2062,9 @@ msgid "Clear logs"
 msgstr ""
 
 msgid "Clear result"
+msgstr ""
+
+msgid "Clear the schedule"
 msgstr ""
 
 msgid "Clear the tag filter."
@@ -2590,6 +2606,9 @@ msgstr ""
 msgid "Custom accelerated system"
 msgstr ""
 
+msgid "Custom schedule"
+msgstr ""
+
 msgid "Custom sets"
 msgstr ""
 
@@ -2740,6 +2759,12 @@ msgid "Define the screens and multi-screens to display."
 msgstr ""
 
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
+msgstr ""
+
+msgid "Define who meets whom in every round; each round is then paired from the schedule."
+msgstr ""
+
+msgid "Define who meets whom in every round; the rounds are paired from the schedule when it is saved."
 msgstr ""
 
 msgid "Defines how team colour preferences are calculated. Type A uses simple White/Black preferences, while Type B distinguishes between strong and mild preferences based on colour history and colour difference."
@@ -3101,6 +3126,9 @@ msgstr ""
 msgid "Double-round Scheveningen"
 msgstr ""
 
+msgid "Double-round custom schedule"
+msgstr ""
+
 msgid "Download"
 msgstr ""
 
@@ -3444,6 +3472,9 @@ msgstr ""
 msgid "Edit rule"
 msgstr ""
 
+msgid "Edit schedule"
+msgstr ""
+
 msgid "Edit screen"
 msgstr ""
 
@@ -3692,6 +3723,9 @@ msgstr ""
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
 msgstr ""
 
+msgid "Every seat whose game has not been played will be emptied."
+msgstr ""
+
 msgid "Example data"
 msgstr ""
 
@@ -3916,6 +3950,12 @@ msgstr ""
 msgid "Fill from another tournament"
 msgstr ""
 
+msgid "Fill from the Berger tables"
+msgstr ""
+
+msgid "Fill the schedule with the Berger tables, following the Berger numbers."
+msgstr ""
+
 msgid "Filter out players of higher categories."
 msgstr ""
 
@@ -3972,6 +4012,9 @@ msgid "First rating"
 msgstr ""
 
 msgid "First round"
+msgstr ""
+
+msgid "First team"
 msgstr ""
 
 msgid "First team:"
@@ -4162,6 +4205,9 @@ msgid "Game points awarded to the team for a Pairing Allocated Bye. Defaults to 
 msgstr ""
 
 msgid "Game points must satisfy loss ≤ draw ≤ win."
+msgstr ""
+
+msgid "Games have already been played: the schedule cannot be filled from the Berger tables."
 msgstr ""
 
 msgid "Games played with black"
@@ -5034,6 +5080,9 @@ msgid "Leave FIDE mode…"
 msgstr ""
 
 msgid "Leave all unchecked to print every match."
+msgstr ""
+
+msgid "Leave the schedule as it was before editing."
 msgstr ""
 
 msgid "Leaving FIDE mode is not compliant with the FIDE regulations."
@@ -6837,6 +6886,9 @@ msgstr ""
 msgid "Pair the rounds and enter the results"
 msgstr ""
 
+msgid "Pair the tournament before editing its schedule."
+msgstr ""
+
 msgid "Pair the unpaired players with each other."
 msgstr ""
 
@@ -6844,6 +6896,9 @@ msgid "Pair the unpaired teams with each other."
 msgstr ""
 
 msgid "Pair tournament"
+msgstr ""
+
+msgid "Paired"
 msgstr ""
 
 #, python-format
@@ -8160,6 +8215,9 @@ msgstr ""
 msgid "Resolve the tied match(es) of round {round} before pairing the next round."
 msgstr ""
 
+msgid "Rest"
+msgstr ""
+
 msgid "Restart to complete the move"
 msgstr ""
 
@@ -8390,6 +8448,10 @@ msgstr ""
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr ""
 
+#, python-format
+msgid "Round %(round)d is not in the schedule."
+msgstr ""
+
 msgid "Round count"
 msgstr ""
 
@@ -8435,6 +8497,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr ""
+
+#, python-brace-format
+msgid "Round {round} is not in the schedule."
 msgstr ""
 
 #, python-brace-format
@@ -8632,6 +8698,9 @@ msgstr ""
 msgid "Save again to confirm."
 msgstr ""
 
+msgid "Save anyway"
+msgstr ""
+
 msgid "Save current tie-breaks as custom set"
 msgstr ""
 
@@ -8639,6 +8708,9 @@ msgid "Save group"
 msgstr ""
 
 msgid "Save points"
+msgstr ""
+
+msgid "Save the schedule"
 msgstr ""
 
 msgid "Saving this player changes the order of the pairing numbers, from which rounds have already been paired. This breaches the integrity of the pairings, and will be logged in the TRF:"
@@ -8768,6 +8840,9 @@ msgid "Searching for updates..."
 msgstr ""
 
 msgid "Searching…"
+msgstr ""
+
+msgid "Second team"
 msgstr ""
 
 msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook Art. 13.4)."
@@ -9382,6 +9457,9 @@ msgstr ""
 msgid "Suriname"
 msgstr ""
 
+msgid "Swap the colours."
+msgstr ""
+
 msgid "Sweden"
 msgstr ""
 
@@ -9852,6 +9930,12 @@ msgstr ""
 msgid "The game points scored on every board but the bottom one; if that leaves the teams level, the bottom-most board left is excluded in turn until one team is ahead."
 msgstr ""
 
+msgid "The games already played can be changed, to set them as they were really played. Their results are kept when they agree."
+msgstr ""
+
+msgid "The games already played cannot be changed."
+msgstr ""
+
 msgid "The groups are very uneven, so most of the bracket is byes — consider a different grouping or none."
 msgstr ""
 
@@ -10091,6 +10175,9 @@ msgstr ""
 msgid "The pairings of this round are being edited. Validate or cancel the editing to exit this mode."
 msgstr ""
 
+msgid "The participants have changed since the schedule was saved: it has to be edited."
+msgstr ""
+
 msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
 msgstr ""
 
@@ -10183,6 +10270,10 @@ msgstr ""
 msgid "The result of this match is not taken into account for the final standings because at least one of the teams did not play 50%% of the matches (FIDE 6.6)."
 msgstr ""
 
+#, python-brace-format
+msgid "The results of games changed in round(s) {rounds} could not be kept: enter them again."
+msgstr ""
+
 msgid "The roster cap cannot be smaller than the team-match size."
 msgstr ""
 
@@ -10217,6 +10308,41 @@ msgid "The rule set fixes the team sort order."
 msgstr ""
 
 msgid "The rules do not overlap, so at most one of them applies to a player in a round."
+msgstr ""
+
+msgid "The schedule breaks the round-robin rules."
+msgstr ""
+
+msgid "The schedule breaks the round-robin rules. Save it anyway? The rules it breaks are listed in the log and in the TRF until they are kept."
+msgstr ""
+
+#, python-brace-format
+msgid "The schedule changes games already played in round {round}."
+msgstr ""
+
+#, python-brace-format
+msgid "The schedule does not fit the number of participants ({count})."
+msgstr ""
+
+msgid "The schedule has been saved."
+msgstr ""
+
+msgid "The schedule has been saved. It no longer follows the Berger tables: the tournament now uses a custom schedule."
+msgstr ""
+
+msgid "The schedule is not being edited."
+msgstr ""
+
+msgid "The schedule of the tournament breaks the round-robin rules."
+msgstr ""
+
+msgid "The schedule of the tournament has not been defined."
+msgstr ""
+
+msgid "The schedule of the tournament is being edited. Save it to pair every round from it."
+msgstr ""
+
+msgid "The schedule of the tournament is being edited. Save it to pair the matches of each round from it."
 msgstr ""
 
 #, python-format
@@ -10367,6 +10493,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "There already is an hour for round #{round}."
+msgstr ""
+
+msgid "There are no games played to change."
 msgstr ""
 
 msgid "There are no other compatible tournaments available."
@@ -10530,6 +10659,9 @@ msgstr ""
 msgid "This folder is not empty."
 msgstr ""
 
+msgid "This game has been played."
+msgstr ""
+
 msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
 msgstr ""
 
@@ -10565,6 +10697,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
+msgstr ""
+
+msgid "This participant is not in the tournament."
 msgstr ""
 
 #, python-format
@@ -10627,6 +10762,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+msgid "This round is paired."
 msgstr ""
 
 msgid "This round is paired; the prohibited pairings used are frozen."
@@ -11218,6 +11356,12 @@ msgid "Unknown value (expected: {expected})."
 msgstr ""
 
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
+msgstr ""
+
+msgid "Unlock"
+msgstr ""
+
+msgid "Unlock the games played"
 msgstr ""
 
 msgctxt "individual knock-out"
@@ -11882,6 +12026,9 @@ msgstr ""
 msgid "You are not allowed to duplicate this account."
 msgstr ""
 
+msgid "You are not allowed to edit the schedule."
+msgstr ""
+
 msgid "You are not allowed to enter results."
 msgstr ""
 
@@ -12040,11 +12187,51 @@ msgid "[{first}] and [{second}] have already played each other."
 msgstr ""
 
 #, python-brace-format
+msgid "[{first}] and [{second}] meet more than once (rounds {rounds})."
+msgstr ""
+
+#, python-brace-format
+msgid "[{first}] and [{second}] meet more than twice (rounds {rounds})."
+msgstr ""
+
+#, python-brace-format
+msgid "[{first}] and [{second}] meet only once."
+msgstr ""
+
+#, python-brace-format
 msgid "[{first}] and [{second}] must not be paired together."
 msgstr ""
 
 #, python-brace-format
+msgid "[{first}] and [{second}] never meet."
+msgstr ""
+
+#, python-brace-format
 msgid "[{id}] is a reserved item id."
+msgstr ""
+
+#, python-brace-format
+msgid "[{member}] has Black {count} rounds in a row (rounds {first} to {last})."
+msgstr ""
+
+#, python-brace-format
+msgid "[{member}] has White {count} rounds in a row (rounds {first} to {last})."
+msgstr ""
+
+#, python-brace-format
+msgid "[{member}] is not seated."
+msgstr ""
+
+#, python-brace-format
+msgid "[{member}] is seated more than once."
+msgstr ""
+
+#, python-brace-format
+msgid "[{member}] rests more than once (rounds {rounds})."
+msgstr ""
+
+#, python-brace-format
+msgid "[{member}] rests more than twice (rounds {rounds})."
 msgstr ""
 
 #, python-brace-format
@@ -12081,6 +12268,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "[{white}] and [{black}] must not be paired together."
+msgstr ""
+
+#, python-brace-format
+msgid "[{white}] has White in both games against [{black}]."
 msgstr ""
 
 msgctxt "adjourned game"
@@ -12673,6 +12864,10 @@ msgid "{count} prize category successfully generated."
 msgid_plural "{count} prize categories successfully generated."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} seat(s) are not filled."
+msgstr ""
 
 #, python-brace-format
 msgid "{date_format} HH:MM"

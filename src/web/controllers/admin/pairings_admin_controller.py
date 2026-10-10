@@ -6,12 +6,14 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
+from collections.abc import Callable
 from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
 from data.input_output import DataSourceManager
 from data.pairings.bbp_history import TeamTournamentHistory
-from data.pairings.engines import BbpPairings, TeamSwissEngine
+from data.pairings.engines import BbpPairings, ScheduledRoundRobin, TeamSwissEngine
+from data.pairings.round_robin_editor import RoundRobinScheduleEditor
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import ClientRefresh, HTMXRequest
@@ -96,6 +98,7 @@ from web.session import (
     SessionPairingsSelectedTournament,
     SessionPairingsSelectedRound,
     SessionPairingsBoardSort,
+    SessionSchedulePlayedGamesUnlocked,
 )
 from web.utils import SelectOption
 
@@ -623,6 +626,14 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             ):
                 default_print_document = PlayerRankingPrintDocument.static_id()
 
+        schedule_editor = self.schedule_editor
+        schedule_editing = schedule_editor is not None and schedule_editor.editing
+        schedule_violations = (
+            schedule_editor.violations()
+            if schedule_editor is not None and schedule_editing
+            else []
+        )
+
         tournament_ids = [tournament.id for tournament in self.allowed_tournaments]
         current_index = (
             tournament_ids.index(self.admin_tournament.id)
@@ -712,7 +723,32 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             else None,
             'experimental_features_enabled': experimental_features_enabled(),
             'default_print_document': default_print_document,
+            'schedule_editor': schedule_editor,
+            'schedule_editing': schedule_editing,
+            'schedule_violations': schedule_violations,
+            'schedule_can_force': (
+                schedule_editor is not None
+                and schedule_editor.can_force(schedule_violations)
+            ),
         }
+
+    @property
+    def schedule_editor(self) -> RoundRobinScheduleEditor | None:
+        """The editor of the schedule of a round-robin, not shown with the
+        final rankings."""
+        tournament = self.admin_tournament
+        if (
+            tournament is None
+            or self.display_rankings
+            or not isinstance(tournament.pairing_variation.engine, ScheduledRoundRobin)
+        ):
+            return None
+        return RoundRobinScheduleEditor(
+            tournament,
+            played_games_unlocked=SessionSchedulePlayedGamesUnlocked(
+                self.request, tournament
+            ).get(),
+        )
 
     def get_admin_tournament(self) -> Tournament:
         assert self.admin_tournament is not None
@@ -2682,6 +2718,249 @@ class PairingsAdminController(BaseEventAdminController):
             request, tournament_id=tournament_id, reload_event=True
         )
         return self._admin_event_pairings_render(web_context)
+
+    # -------------------------------------------------------------------------
+    # Round-robin schedule
+    # -------------------------------------------------------------------------
+
+    def _schedule_render(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round_: int,
+        change: Callable[[RoundRobinScheduleEditor], str | None],
+        while_editing: bool = True,
+        success_message: str | None = None,
+    ) -> Template:
+        """Apply *change* to the schedule of the tournament, then render
+        the round, telling the user what went wrong if anything did."""
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round_
+        )
+        editor = web_context.schedule_editor
+        if editor is None:
+            raise ClientException(
+                f'Tournament [{tournament_id}] is not paired from a schedule.'
+            )
+        if while_editing and not editor.editing:
+            Message.error(request, _('The schedule is not being edited.'))
+        elif error := change(editor):
+            Message.error(request, error)
+        elif success_message:
+            Message.success(request, success_message)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round_, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/pairings/schedule/edit/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-schedule-edit',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_edit(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        def start(editor: RoundRobinScheduleEditor) -> str | None:
+            if editor.editing:
+                return None
+            if not editor.can_start:
+                return _('Pair the tournament before editing its schedule.')
+            editor.start()
+            return None
+
+        return self._schedule_render(
+            request, tournament_id, round, start, while_editing=False
+        )
+
+    @post(
+        path='/pairings/schedule/place/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-schedule-place',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_place(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        try:
+            seat = int(data['table']), int(data['side'])
+            member = int(data['member']) if data.get('member') else None
+        except (KeyError, ValueError):
+            raise ClientException('Invalid seat or participant.') from None
+
+        return self._schedule_render(
+            request,
+            tournament_id,
+            round,
+            lambda editor: editor.place(round, seat, member),
+        )
+
+    @post(
+        path=(
+            '/pairings/schedule/swap-colours/{event_uniq_id:str}/{tournament_id:int}'
+            '/{round:int}/{table:int}'
+        ),
+        name='admin-pairings-schedule-swap-colours',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_swap_colours(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        table: FromPath[int],
+    ) -> Template:
+        return self._schedule_render(
+            request,
+            tournament_id,
+            round,
+            lambda editor: editor.swap_colours(round, table),
+        )
+
+    @post(
+        path='/pairings/schedule/fill-berger/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-schedule-fill-berger',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_fill_berger(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        return self._schedule_render(
+            request,
+            tournament_id,
+            round,
+            lambda editor: editor.fill_from_berger_tables(),
+        )
+
+    @post(
+        path='/pairings/schedule/clear/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-schedule-clear',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_clear(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        def clear(editor: RoundRobinScheduleEditor) -> None:
+            editor.clear()
+
+        return self._schedule_render(request, tournament_id, round, clear)
+
+    @post(
+        path='/pairings/schedule/cancel/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-schedule-cancel',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_cancel(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        def cancel(editor: RoundRobinScheduleEditor) -> None:
+            editor.cancel()
+            SessionSchedulePlayedGamesUnlocked(request, editor.tournament).set(False)
+
+        return self._schedule_render(request, tournament_id, round, cancel)
+
+    @get(
+        path=(
+            '/pairings/schedule/confirm-modal/{event_uniq_id:str}/{tournament_id:int}'
+            '/{round:int}/{action:str}'
+        ),
+        name='admin-pairings-schedule-confirm-modal',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_confirm_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        action: FromPath[str],
+    ) -> Template:
+        if action not in ('clear', 'unlock', 'force'):
+            raise NotFoundException(f'Unknown schedule action [{action}]')
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        return self._admin_event_pairings_render(
+            web_context, {'modal': 'schedule-confirm', 'schedule_action': action}
+        )
+
+    @post(
+        path=(
+            '/pairings/schedule/unlock-played-games/{event_uniq_id:str}'
+            '/{tournament_id:int}/{round:int}'
+        ),
+        name='admin-pairings-schedule-unlock-played-games',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_unlock_played_games(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        def unlock(editor: RoundRobinScheduleEditor) -> str | None:
+            if editor.is_team or not editor.tournament.has_results:
+                return _('There are no games played to change.')
+            SessionSchedulePlayedGamesUnlocked(request, editor.tournament).set(True)
+            return None
+
+        return self._schedule_render(request, tournament_id, round, unlock)
+
+    @post(
+        path='/pairings/schedule/save/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-schedule-save',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def admin_pairings_schedule_save(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        force: FromQuery[bool] = False,
+    ) -> Template:
+        def save(editor: RoundRobinScheduleEditor) -> str | None:
+            variation_id = editor.tournament.pairing_variation.id
+            if error := editor.save(force=force):
+                return error
+            SessionSchedulePlayedGamesUnlocked(request, editor.tournament).set(False)
+            if editor.tournament.pairing_variation.id != variation_id:
+                Message.success(
+                    request,
+                    _(
+                        'The schedule has been saved. It no longer follows the '
+                        'Berger tables: the tournament now uses a custom schedule.'
+                    ),
+                )
+            else:
+                Message.success(request, _('The schedule has been saved.'))
+            if editor.results_to_enter:
+                Message.warning(
+                    request,
+                    _(
+                        'The results of games changed in round(s) {rounds} could '
+                        'not be kept: enter them again.'
+                    ).format(rounds=', '.join(map(str, editor.results_to_enter))),
+                )
+            return None
+
+        return self._schedule_render(request, tournament_id, round, save)
 
     @get(
         path=(

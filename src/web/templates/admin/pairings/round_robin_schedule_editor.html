@@ -1,0 +1,139 @@
+{% set schedule_round = schedule_editor.draft.rounds.get(admin_round) %}
+{% if schedule_round is none %}
+    {% with type='warning',
+        message=_('Round %(round)d is not in the schedule.', round=admin_round),
+        hide_remove_button=true,
+        icon='bi-exclamation-triangle-fill',
+        alert_classes='mb-2' %}
+        {% include '/common/alert.html' %}
+    {% endwith %}
+{% else %}
+    {% set locked_tables = schedule_editor.locked_tables(admin_round) %}
+    {% set unseated_options, seated_options = schedule_editor.seat_options(admin_round) %}
+    {% set place_url = url_for(
+        'admin-pairings-schedule-place',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        round=admin_round,
+    ) %}
+    {% macro member_select(member, table_index, side) %}
+        <select
+            class="form-select form-select-sm sharly-chess-select2 schedule-seat"
+            style="display:none"
+            name="member"
+            data-table="{{ table_index }}"
+            data-side="{{ side }}"
+            hx-post="{{ place_url }}"
+            hx-vals='{"table": "{{ table_index }}", "side": "{{ side }}"}'
+            hx-trigger="change"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <option value="" {% if member is none %}selected{% endif %}>—</option>
+            {% for group_label, options in [(_('To pair'), unseated_options), (_('Paired'), seated_options)] %}
+                {% if options %}
+                    <optgroup label="{{ group_label }}">
+                        {% for option_member, label in options %}
+                            <option
+                                value="{{ option_member }}"
+                                {% if option_member == member %}selected{% endif %}
+                            >{{ label }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endif %}
+            {% endfor %}
+        </select>
+    {% endmacro %}
+    <table id="schedule-editor-table" class="table table-striped table-sm bg-light w-100" style="table-layout: fixed;">
+        <colgroup>
+            <col style="width: 5rem;">
+            <col>
+            <col style="width: 3rem;">
+            <col>
+        </colgroup>
+        <thead>
+            <tr>
+                <th>{{ _('Board') }}</th>
+                <th>{{ _('First team') if schedule_editor.is_team else _('White') }}</th>
+                <th></th>
+                <th>{{ _('Second team') if schedule_editor.is_team else _('Black') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for first, second in schedule_round.tables %}
+                {% set table_index = loop.index0 %}
+                <tr class="schedule-table-row">
+                    <td class="align-middle">{{ loop.index }}</td>
+                    {% if table_index in locked_tables %}
+                        <td class="align-middle">
+                            <i
+                                class="bi-lock-fill pe-1"
+                                {{ macros.tooltip_attributes('info', _('This game has been played.') if not schedule_editor.is_team else _('This round is paired.'), 'top') }}
+                            ></i>
+                            {{ schedule_editor.member_name(first) }}
+                        </td>
+                        <td></td>
+                        <td class="align-middle">{{ schedule_editor.member_name(second) }}</td>
+                    {% else %}
+                        <td>{{ member_select(first, table_index, 0) }}</td>
+                        <td class="text-center">
+                            <button
+                                class="btn btn-sm btn-outline-primary schedule-swap-colours"
+                                hx-post="{{ url_for(
+                                    'admin-pairings-schedule-swap-colours',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    table=table_index,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                hx-disabled-elt="this"
+                                {{ macros.tooltip_attributes('info', _('Swap the colours.'), 'top') }}
+                            >
+                                <i class="bi-arrow-left-right"></i>
+                            </button>
+                        </td>
+                        <td>{{ member_select(second, table_index, 1) }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            {% if schedule_editor.member_count is odd %}
+                <tr class="schedule-rest-row">
+                    <td class="align-middle">{{ _('Rest') }}</td>
+                    {% if schedule_editor.round_locked(admin_round) %}
+                        <td colspan="3" class="align-middle">
+                            {{ schedule_editor.member_name(schedule_round.rest) if schedule_round.rest is not none else '' }}
+                        </td>
+                    {% else %}
+                        <td colspan="3">{{ member_select(schedule_round.rest, -1, 0) }}</td>
+                    {% endif %}
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <script>
+        (function () {
+            $('#schedule-editor-table select.schedule-seat').each(function () {
+                const select = $(this);
+                if (select.hasClass('select2-hidden-accessible')) {
+                    select.select2('destroy');
+                }
+                select.select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    language: {
+                        noResults: function () {
+                            return `{{ _('No results.') }}`;
+                        },
+                    },
+                });
+                // select2 announces a pick with a jQuery event, which htmx,
+                // listening natively, never hears.
+                select.on('select2:select', function () {
+                    this.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            });
+        })();
+    </script>
+{% endif %}

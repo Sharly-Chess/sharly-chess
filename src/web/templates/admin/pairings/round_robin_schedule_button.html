@@ -1,0 +1,25 @@
+<div
+    {% if not client.can_use_pairing_engine(admin_tournament.id) %}
+        {{ macros.tooltip_attributes('warning', _('You are not allowed to edit the schedule.'), 'top') }}
+    {% elif schedule_editor.is_team %}
+        {{ macros.tooltip_attributes('info', _('Define who meets whom in every round; each round is then paired from the schedule.'), 'top') }}
+    {% else %}
+        {{ macros.tooltip_attributes('info', _('Define who meets whom in every round; the rounds are paired from the schedule when it is saved.'), 'top') }}
+    {% endif %}
+>
+    <button
+        id="schedule-edit"
+        class="btn btn-outline-primary text-nowrap"
+        {% if not client.can_use_pairing_engine(admin_tournament.id) %}
+            disabled
+        {% else %}
+            hx-post="{{ url_for('admin-pairings-schedule-edit', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            hx-disabled-elt="this"
+        {% endif %}
+    >
+        <i class="bi-calendar3 pe-1"></i>
+        {{ _('Edit schedule') }}
+    </button>
+</div>

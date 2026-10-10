@@ -67,6 +67,9 @@
         {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0
             or admin_absent_players|length > 0 or admin_waiting_groups|length > 0 %}
     {% endif %}
+    {% if schedule_editing %}
+        {% set has_unpaired = false %}
+    {% endif %}
 
     {% if admin_tournament.manual_pairing_round %}
         <div class="alert alert-warning py-2 px-2 mx-3 my-2">
@@ -116,6 +119,9 @@
             </div>
         </div>
     {% endif %}
+    {% if schedule_editing %}
+        {% include '/admin/pairings/round_robin_schedule_banner.html' %}
+    {% endif %}
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
             {% if has_unpaired %}
@@ -156,7 +162,7 @@
                         </div>
                     {% endif %}
                 </div>
-                {% if not display_rankings %}
+                {% if not display_rankings and not schedule_editing %}
                     <div class="pairings-action-buttons d-flex flex-wrap gap-2 justify-content-end mb-2 align-items-end w-100">
                         {% include admin_tournament.pairing_system.pairing_buttons_template %}
                         {% if admin_boards %}
@@ -287,7 +293,7 @@
                 and not admin_unpaired
                 and not admin_team_unpaired
             ) %}
-            {% if not display_rankings and pairings_generation_disabled_message and not round_fully_paired %}
+            {% if not display_rankings and not schedule_editing and pairings_generation_disabled_message and not round_fully_paired %}
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3 d-none d-lg-block"></div>
                 {% endif %}
@@ -371,7 +377,9 @@
                 {% endif %}
 
                 <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
-                    {% if admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+                    {% if schedule_editing %}
+                        {% include '/admin/pairings/round_robin_schedule_editor.html' %}
+                    {% elif admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
                         {% include '/admin/pairings/team_blocks_table.html' %}
                     {% else %}
                         <table

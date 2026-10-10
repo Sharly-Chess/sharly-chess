@@ -785,7 +785,7 @@ class TournamentImporterTestCase(TestCase):
         be refused, not silently coerced to another pairing system."""
         base = (BASE_PATH / 'trf-import-test.trf').read_text(encoding='utf-8')
         self.assertIn('FIDE_DUTCH_2026_BAKU', base)
-        for bad_type in ('CUSTOM_SCHILLER', 'CUSTOM_TEAM_ROUNDROBIN', 'WAT_IS_THIS'):
+        for bad_type in ('CUSTOM_SCHILLER', 'CUSTOM_SWISS', 'WAT_IS_THIS'):
             content = base.replace('FIDE_DUTCH_2026_BAKU', bad_type)
             with tempfile.NamedTemporaryFile(
                 'w', encoding='utf-8', suffix='.trfx', delete=False
