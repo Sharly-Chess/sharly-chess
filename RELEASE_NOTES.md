@@ -8,6 +8,7 @@
 - A reminder to update player data is shown before distributing players across tournaments (5.1.0)
 - The administration interface adapts to phone screens (5.1.0)
 - On Linux, the server starts again without a display (on a headless server), in console mode (5.1.3)
+- On Linux, the language, federation and date format settings are kept when _Sharly Chess_ is updated, and the application no longer adds lines to `~/.bashrc` each time it starts (5.1.5)
 
 ## Tournaments
 
