@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Any
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from packaging.version import Version
 
@@ -209,6 +209,129 @@ class SCEPlugin(Plugin):
         for stored_player in stored_event.stored_players:
             stored_player.plugin_data[PLUGIN_NAME] = {}
             event_database.update_stored_player(stored_player)
+
+    @hookimpl
+    def on_event_restored(
+        self,
+        event_database: EventDatabase,
+        previous_stored_event: 'StoredEvent | None',
+    ) -> None:
+        """Carries what Sharly-Chess.com knows of the event onto the backup
+        put in its place.
+
+        A backup holds what had been exchanged when it was taken. What the
+        site was told since is not in it: the identifier of a tournament
+        created there, the deletions it has not confirmed yet, the session
+        opened with it. Restoring the backup without them would have the event
+        open a second tournament on the site, forget what it still owes it,
+        and ask the user to sign in again.
+        """
+        if previous_stored_event is None:
+            return
+        previous_event_data = SCEEventPluginData.from_stored_value(
+            previous_stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        if not previous_event_data.id:
+            return
+        stored_event = event_database.load_stored_event()
+        event_data = SCEEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        event_data.id = previous_event_data.id
+        event_data.slug = previous_event_data.slug
+        event_data.organiser_slug = previous_event_data.organiser_slug
+        event_data.tokens = previous_event_data.tokens
+        event_data.tournament_names_by_id = (
+            previous_event_data.tournament_names_by_id
+            | event_data.tournament_names_by_id
+        )
+        # A deletion the site has not confirmed is still owed to it, whichever
+        # state the event is in.
+        event_data.deleted_player_ids = sorted(
+            set(previous_event_data.deleted_player_ids)
+            | set(event_data.deleted_player_ids)
+        )
+        stored_event.plugin_data[PLUGIN_NAME] = event_data.to_stored_value()
+        if PLUGIN_NAME not in stored_event.enabled_plugins:
+            stored_event.enabled_plugins = [*stored_event.enabled_plugins, PLUGIN_NAME]
+        event_database.update_stored_event(stored_event)
+        self._carry_over_ids(
+            event_database,
+            stored_event.stored_tournaments,
+            previous_stored_event.stored_tournaments,
+            SCETournamentPluginData,
+            event_database.update_stored_tournament,
+        )
+        self._carry_over_ids(
+            event_database,
+            stored_event.stored_players,
+            previous_stored_event.stored_players,
+            SCEPlayerPluginData,
+            event_database.update_stored_player,
+        )
+
+    @staticmethod
+    def _carry_over_ids(
+        event_database: EventDatabase,
+        stored_objects: Iterable[Any],
+        previous_stored_objects: Iterable[Any],
+        data_class: type[PluginData],
+        update: Callable[[Any], Any],
+    ) -> None:
+        """Gives back to the restored records the identifiers Sharly-Chess.com
+        gave them after the backup was taken.
+
+        Matched on the identifier the event gives them itself, which a backup
+        of that event holds as it was: a record the backup does not have is
+        brought back from the site at the next synchronisation instead.
+        """
+        previous_by_id = {previous.id: previous for previous in previous_stored_objects}
+        for stored_object in stored_objects:
+            previous = previous_by_id.get(stored_object.id)
+            if previous is None:
+                continue
+            data = data_class.from_stored_value(
+                stored_object.plugin_data.get(PLUGIN_NAME, {})
+            )
+            previous_data = data_class.from_stored_value(
+                previous.plugin_data.get(PLUGIN_NAME, {})
+            )
+            if data.id or not previous_data.id:  # type: ignore[attr-defined]
+                continue
+            data.id = previous_data.id  # type: ignore[attr-defined]
+            stored_object.plugin_data[PLUGIN_NAME] = data.to_stored_value()
+            update(stored_object)
+
+    @hookimpl
+    def get_event_restore_warning(self, stored_event: 'StoredEvent') -> str | None:
+        event_data = SCEEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        if not event_data.id:
+            return None
+        return _(
+            'This event is linked to Sharly-Chess.com. Restoring rolls back '
+            'the rounds and the results, and the next upload sends them to '
+            'the site. It does not roll back the players: Sharly-Chess.com '
+            'holds that list, and the next synchronisation brings back the '
+            'registrations, check-ins and player details as they stand on '
+            'the site — including any added, changed or deleted since this '
+            'backup. Make those corrections again after restoring, or make '
+            'them on the site.'
+        )
+
+    @hookimpl
+    def get_event_copy_warning(self, stored_event: 'StoredEvent') -> str | None:
+        event_data = SCEEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        if not event_data.id:
+            return None
+        return _(
+            'The new event is not linked to Sharly-Chess.com: it is a copy to '
+            'look at, and nothing of it is uploaded or synchronised. The event '
+            'it was taken from keeps the link.'
+        )
 
     # ---------------------------------------------------------------------------------
     # Tournaments

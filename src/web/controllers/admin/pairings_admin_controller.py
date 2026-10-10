@@ -29,6 +29,8 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.board import Board
 from data.player import TournamentPlayer
+from data.snapshot import SnapshotReason
+from data.snapshot_worker import SnapshotScheduler
 from data.event import Event
 from data.teams.team import Team
 from data.teams.team_board import TeamBoard
@@ -282,6 +284,24 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.correction_snapshot: dict[str, str] | None = None
         if action and not self.updates_adjourned_game(action):
             self._pass_warning(action)
+
+    async def snapshot_before_breach(self, reason: SnapshotReason) -> None:
+        """Backs the event up before a change to a round the rounds that
+        followed were paired from.
+
+        The change is logged as a pairing integrity breaching event, and the
+        arbiter has to be able to put the tournament back exactly as it was
+        without having thought of it beforehand. *reason* names the change
+        they are about to make, which is what they recognise the backup by.
+        """
+        if self.correction_snapshot is None or self.admin_tournament is None:
+            return
+        await SnapshotScheduler.snapshot_before_async(
+            self.admin_tournament.event.uniq_id,
+            reason,
+            self.admin_round,
+            self.admin_tournament.id,
+        )
 
     def updates_adjourned_game(self, action: PairingAction) -> bool:
         """Whether *action* enters the result of an adjourned game, which is
@@ -1089,6 +1109,7 @@ class PairingsAdminController(BaseEventAdminController):
         team_board = tournament.team_boards_by_id.get(team_board_id)
         if team_board is None:
             raise NotFoundException(f'Team board {team_board_id} not found.')
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_UNPAIRING)
         tournament.board_operations.unpair_team(team_board)
         web_context = PairingsAdminWebContext(
             request,
@@ -1140,7 +1161,7 @@ class PairingsAdminController(BaseEventAdminController):
             },
         )
 
-    def _admin_update_result(
+    async def _admin_update_result(
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
@@ -1215,6 +1236,9 @@ class PairingsAdminController(BaseEventAdminController):
                 )(tournament=tournament, result=r):
                     Message.warning(request, message)
 
+            await web_context.snapshot_before_breach(
+                SnapshotReason.BEFORE_RESULT_CHANGE
+            )
             tournament.add_result(board, r)
             web_context.log_correction()
             if breaches_adjournment:
@@ -1270,7 +1294,7 @@ class PairingsAdminController(BaseEventAdminController):
         board_id: FromPath[int],
         result: FromPath[int],
     ) -> Template:
-        return self._admin_update_result(
+        return await self._admin_update_result(
             request,
             channels,
             tournament_id=tournament_id,
@@ -1303,6 +1327,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         board = web_context.get_admin_board()
         tournament = web_context.get_admin_tournament()
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_UNPAIRING)
         tournament.board_operations.unpair([board])
 
         web_context = PairingsAdminWebContext(
@@ -1345,6 +1370,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
             if warning is not None:
                 return warning
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_COLOUR_SWAP)
         board.permute_colors()
         if (
             white is not None
@@ -1506,7 +1532,7 @@ class PairingsAdminController(BaseEventAdminController):
                     ),
                     {'overwrite_mode': True},
                 )
-        return self._admin_update_result(
+        return await self._admin_update_result(
             request,
             channels,
             tournament_id=tournament_id,
@@ -1892,6 +1918,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         player = web_context.get_admin_player()
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_BYE_CHANGE)
         tournament.set_player_byes(player, {round: Result.ZERO_POINT_BYE})
         message = _('Zero-Point Bye attributed to player [{player}].').format(
             player=player.full_name
@@ -1950,6 +1977,7 @@ class PairingsAdminController(BaseEventAdminController):
         message = _('Half-Point Bye attributed to player [{player}].').format(
             player=player.full_name
         )
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_BYE_CHANGE)
         tournament.set_player_byes(player, {round: Result.HALF_POINT_BYE})
         Message.success(request, message)
         web_context.reload_unpaired_player_lists()
@@ -1979,6 +2007,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         player = web_context.get_admin_player()
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_BYE_CHANGE)
         tournament.set_player_byes(player, {round: Result.NO_RESULT})
         message = _('Player [{player}] has returned for this round.').format(
             player=player.full_name
@@ -2032,7 +2061,7 @@ class PairingsAdminController(BaseEventAdminController):
             },
         )
 
-    def _set_team_bye(
+    async def _set_team_bye(
         self,
         request: HTMXRequest,
         tournament_id: int,
@@ -2055,6 +2084,7 @@ class PairingsAdminController(BaseEventAdminController):
         team = admin_tournament.event.teams_by_id.get(team_id)
         if team is None:
             raise NotFoundException(f'Team {team_id} not found.')
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_BYE_CHANGE)
         with EventDatabase(admin_tournament.event.uniq_id, write=True) as db:
             team.set_round_bye(round, bye_type, db)
         Message.success(request, success_message.format(team=team.name))
@@ -2076,7 +2106,7 @@ class PairingsAdminController(BaseEventAdminController):
         round: FromPath[int],
         team_id: FromPath[int],
     ) -> Template:
-        return self._set_team_bye(
+        return await self._set_team_bye(
             request,
             tournament_id,
             round,
@@ -2100,7 +2130,7 @@ class PairingsAdminController(BaseEventAdminController):
         round: FromPath[int],
         team_id: FromPath[int],
     ) -> Template:
-        return self._set_team_bye(
+        return await self._set_team_bye(
             request,
             tournament_id,
             round,
@@ -2124,7 +2154,7 @@ class PairingsAdminController(BaseEventAdminController):
         round: FromPath[int],
         team_id: FromPath[int],
     ) -> Template:
-        return self._set_team_bye(
+        return await self._set_team_bye(
             request,
             tournament_id,
             round,
@@ -2148,7 +2178,7 @@ class PairingsAdminController(BaseEventAdminController):
         round: FromPath[int],
         team_id: FromPath[int],
     ) -> Template:
-        return self._set_team_bye(
+        return await self._set_team_bye(
             request,
             tournament_id,
             round,
@@ -2180,6 +2210,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         pairing_round = web_context.admin_round or 1
         tournament = web_context.get_admin_tournament()
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_MANUAL_PAIRING)
         team = tournament.event.teams_by_id.get(team_id)
         if team is None:
             raise NotFoundException(f'Team {team_id} not found.')
@@ -2251,6 +2282,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         pairing_round = web_context.admin_round or 1
         tournament = web_context.get_admin_tournament()
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_MANUAL_PAIRING)
         tournament_player = web_context.get_admin_player()
         # The waiting opponent is the player on the awaiting bye board, not a
         # settled forfeit hole (also black-less) — matching create_round_pairing.
@@ -2352,6 +2384,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         pairing_round = web_context.admin_round or 1
         tournament = web_context.get_admin_tournament()
+        await web_context.snapshot_before_breach(SnapshotReason.BEFORE_MANUAL_PAIRING)
 
         def _parse(token: str) -> tuple[str, int]:
             return token[0], int(token[1:])
@@ -2439,7 +2472,7 @@ class PairingsAdminController(BaseEventAdminController):
             return None
         return calculated
 
-    def _generate_round_pairings(
+    async def _generate_round_pairings(
         self, web_context: PairingsAdminWebContext, confirmed: bool = False
     ) -> Template:
         tournament = web_context.get_admin_tournament()
@@ -2459,6 +2492,12 @@ class PairingsAdminController(BaseEventAdminController):
                         'calculated_rounds': calculated,
                     },
                 )
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_PAIRING,
+            round_,
+            tournament.id,
+        )
         adjourned_boards: list[Board] = []
         if error := tournament.generate_round_pairings(round_):
             Message.error(request, error)
@@ -2527,7 +2566,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
-        return self._generate_round_pairings(web_context, confirmed=confirmed)
+        return await self._generate_round_pairings(web_context, confirmed=confirmed)
 
     @post(
         path='/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
@@ -2631,6 +2670,11 @@ class PairingsAdminController(BaseEventAdminController):
                             'calculated_rounds': calculated,
                         },
                     )
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_PAIRING,
+            tournament_id=tournament.id,
+        )
         error: str = ''
         for round_ in range(1, tournament.rounds + 1):
             if error := tournament.pairing_variation.engine.generate_pairings(
@@ -2681,6 +2725,12 @@ class PairingsAdminController(BaseEventAdminController):
                 action=PairingAction.FULL_UNPAIRING,
             )
             tournament = web_context.get_admin_tournament()
+            await SnapshotScheduler.snapshot_before_async(
+                tournament.event.uniq_id,
+                SnapshotReason.BEFORE_UNPAIRING,
+                web_context.admin_round,
+                tournament.id,
+            )
             tournament.board_operations.unpair(web_context.admin_boards)
             # A fully-unpaired round loses its prohibited-pairing snapshot;
             # re-pairing writes a fresh one.
@@ -2708,6 +2758,11 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_UNPAIRING,
+            tournament_id=tournament.id,
+        )
         tournament.board_operations.unpair(list(tournament.boards_by_id.values()))
         if (manual_pairing_round := tournament.manual_pairing_round) is not None:
             tournament.cancel_manual_pairing(manual_pairing_round)
@@ -3425,7 +3480,7 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament.check_in_team(team, True)
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
-        return self._generate_round_pairings(web_context)
+        return await self._generate_round_pairings(web_context)
 
     @classmethod
     def _render_pairings_settings_modal(
@@ -3548,7 +3603,7 @@ class PairingsAdminController(BaseEventAdminController):
             return self._render_pairings_settings_modal(web_context, data, errors)
 
         self._save_pairing_settings_data(tournament, data)
-        return self._generate_round_pairings(web_context)
+        return await self._generate_round_pairings(web_context)
 
     @post(
         path='/pairings/settings-action/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
@@ -3726,7 +3781,7 @@ class PairingsAdminController(BaseEventAdminController):
                         tournament.check_in_player(player, check_in=True)
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
-        return self._generate_round_pairings(web_context)
+        return await self._generate_round_pairings(web_context)
 
     @put(
         path='/pairings/publish/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
