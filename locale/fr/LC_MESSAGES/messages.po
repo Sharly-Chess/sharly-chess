@@ -8905,7 +8905,7 @@ msgid "Set Full-Points Byes"
 msgstr "Allouer des byes point entier"
 
 msgid "Set Half-Point Bye"
-msgstr "Attribuer le bye"
+msgstr "Attribuer un bye"
 
 msgid "Set Half-Points Byes"
 msgstr "Allouer des byes"
