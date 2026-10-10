@@ -20,6 +20,7 @@ from data.loader import EventLoader
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from utils.enum import EventOrigin
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_SYNC_DELAY, SCE_UPLOAD_DELAY
 from plugins.sce.sce_background_synchronizer import (
@@ -367,6 +368,8 @@ class SCEAdminController(BaseAdminController):
                 case 'import-event':
                     try:
                         event = self._import_event(sce_event_id, tokens)
+                        with EventDatabase(event.uniq_id, write=True) as database:
+                            database.set_origin(EventOrigin.IMPORTED_ONLINE)
                         for plugin in plugin_manager.enable_missing_plugins(
                             event.stored_event.enabled_plugins
                         ):

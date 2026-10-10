@@ -443,6 +443,22 @@
                             <i class="bi-box-arrow-right pe-1"></i>
                             {{ _('Export') }}
                         </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary text-nowrap"
+                            hx-get="{{ url_for('event-snapshots-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-push-url="false"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('View the backups of the event.'),
+                                'top',
+                            ) }}
+                        >
+                            <i class="bi-clock-history pe-1"></i>
+                            {{ _('Backups') }}
+                        </button>
                     {% endif %}
                 </div>
             {% endif %}

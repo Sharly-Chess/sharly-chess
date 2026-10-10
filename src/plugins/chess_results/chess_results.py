@@ -128,6 +128,42 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
             event_database.update_stored_tournament(stored_tournament)
 
     @hookimpl
+    def on_event_restored(
+        self,
+        event_database: EventDatabase,
+        previous_stored_event: 'StoredEvent | None',
+    ) -> None:
+        """Gives the restored tournaments back the Chess-Results tournament
+        they were uploaded to.
+
+        A backup taken before the first upload holds no tournament number, and
+        uploading again would open a second tournament on Chess-Results while
+        the one whose address has been published stopped being updated.
+        """
+        if previous_stored_event is None:
+            return
+        previous_by_id = {
+            stored_tournament.id: stored_tournament
+            for stored_tournament in previous_stored_event.stored_tournaments
+        }
+        for stored_tournament in event_database.load_stored_tournaments():
+            previous = previous_by_id.get(stored_tournament.id)
+            if previous is None:
+                continue
+            previous_plugin_data = ChessResultsTournamentPluginData.from_stored_value(
+                previous.plugin_data.get(PLUGIN_NAME, {})
+            )
+            plugin_data = ChessResultsTournamentPluginData.from_stored_value(
+                stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+            )
+            if plugin_data.tnr or not previous_plugin_data.tnr:
+                continue
+            plugin_data.tnr = previous_plugin_data.tnr
+            plugin_data.creator_id = previous_plugin_data.creator_id
+            stored_tournament.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+            event_database.update_stored_tournament(stored_tournament)
+
+    @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, ChessResultsEventPluginData
 

@@ -196,6 +196,11 @@
             <div><i class="bi-fullscreen pe-1"></i>{{ _('Screens: %(num)d', num=item.screen_count) }}</div>
             <div><i class="bi-arrows-fullscreen pe-1"></i>{{ _('Multi-screens: %(num)d', num=item.family_count) }}</div>
             <div><i class="bi-repeat pe-1"></i>{{ _('Rotators: %(num)d', num=item.rotator_count) }}</div>
+            {% if item.origin_message %}
+                <div class="text-secondary mt-2">
+                    <i class="bi-clock-history pe-1"></i>{{ item.origin_message }}
+                </div>
+            {% endif %}
         </section>
         {% if show_plugin_details %}
             <section class="collection-detail-section">
@@ -216,9 +221,50 @@
     </div>
 {% endmacro %}
 
+{% macro snapshots_button(event, view, label) %}
+    {% call macros.action_tooltip(
+        'info', _('View the backups of the event.'), 'top'
+    ) %}
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-push-url="false"
+            hx-get="{{ url_for('event-snapshots-modal', event_uniq_id=event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-clock-history"></i>
+            {% if label %}<span class="ms-1">{{ label }}</span>{% endif %}
+        </button>
+    {% endcall %}
+{% endmacro %}
+
 {% macro actions(item, view, placement) %}
     {% set event = item %}
-    {% if event.accessible and event.are_all_plugins_enabled and (client.can_manage_events or client.can_create_events) %}
+    {% if not event.accessible and client.can_manage_events %}
+        {# An event that could not be opened is reachable nowhere else, so what
+           can be done with it is offered where it is listed: brought back from
+           a backup, or archived and set aside. #}
+        <div class="collection-actions d-flex align-items-center justify-content-end gap-2">
+            {{ snapshots_button(event, view, _('Restore')) }}
+            {% call macros.action_tooltip('info', _('Archive the event.'), 'top') %}
+                <button
+                    class="btn btn-sm btn-outline-danger"
+                    hx-push-url="false"
+                    hx-get="{{ url_for(
+                        'admin-event-damaged-delete-modal',
+                        admin_tab=admin_tab,
+                        event_uniq_id=event.uniq_id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                ><i class="bi-archive-fill"></i></button>
+            {% endcall %}
+        </div>
+    {% elif event.accessible and event.are_all_plugins_enabled and (client.can_manage_events or client.can_create_events) %}
         <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-1">
                 {% if client.can_manage_events %}
@@ -238,6 +284,9 @@
                             {% if view == 'card' %}<span class="ms-1">{{ _('Export') }}</span>{% endif %}
                         </button>
                     </span>
+                    {{ snapshots_button(
+                        event, view, _('Backups') if view == 'card' else ''
+                    ) }}
                 {% endif %}
             </div>
             <div class="d-flex align-items-center gap-1">

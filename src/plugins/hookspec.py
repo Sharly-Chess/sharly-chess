@@ -285,6 +285,42 @@ class AppHookSpecs:
         """Called after an event is duplicated"""
 
     @hookspec
+    def on_event_restored(
+        self,
+        event_database: 'EventDatabase',
+        previous_stored_event: Optional['StoredEvent'],
+    ) -> None:
+        """Called after an event has been replaced by one of its backups.
+
+        A backup holds what the plugin had recorded when it was taken, which
+        is behind what the plugin has since told the outside world: an
+        identifier given to the event by a site it was sent to, a deletion
+        still owed to it, a session opened with it. *previous_stored_event*
+        is the event as it stood before being replaced, for the plugin to
+        carry what it still needs onto the restored one, and None when that
+        event could not be read — which is one of the reasons to restore.
+        """
+
+    @hookspec
+    def get_event_restore_warning(self, stored_event: 'StoredEvent') -> str | None:
+        """What the user has to know before replacing an event by a backup.
+
+        Returned by the plugins that keep the event in step with somewhere
+        else: restoring moves what is held here, and whatever that other end
+        holds of its own comes back at the next exchange.
+        """
+
+    @hookspec
+    def get_event_copy_warning(self, stored_event: 'StoredEvent') -> str | None:
+        """What the user has to know about an event restored beside the one it
+        came from.
+
+        What an event is connected to belongs to it and not to its copies, so
+        the copy is connected to nothing: the plugins that connect an event
+        say what the copy will not do.
+        """
+
+    @hookspec
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         """Get the data class to use to store plugin event values.
         Also provide the ID of the plugin."""
