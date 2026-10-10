@@ -31,6 +31,7 @@ from common.logger import get_logger, set_logging_config
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
+from data.snapshot_worker import SnapshotScheduler
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from web.channels import channels_plugin
 from web.garbage_collection import RequestGarbageCollectionMiddleware
@@ -242,6 +243,8 @@ class ServerEngine:
 
         if sc_config.launch_browser:
             Thread(target=launch_browser, args=(sc_config.local_url,)).start()
+
+        SnapshotScheduler.start()
 
         logging_config = set_logging_config(
             console_log_level=sc_config.console_log_level,

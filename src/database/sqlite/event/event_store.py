@@ -8,7 +8,7 @@ from typing import Any
 
 
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import EventType, PrizeCategoryRankingBasis
+from utils.enum import EventOrigin, EventType, PrizeCategoryRankingBasis
 
 
 def set_stored_fields(obj: Any, **fields: Any) -> None:
@@ -666,6 +666,10 @@ class BaseStoredEvent:
     #: The snapshots of the rating lists, by list, the arbiter last
     #: dismissed the findings of the ratings check for.
     ratings_check_dismissed: dict[str, float] = field(default_factory=dict)
+    #: Where the event came from, unknown for the events that predate this
+    #: being recorded.
+    origin: EventOrigin | None = None
+    origin_date: datetime | None = None
 
     # The ids of the tags of the event, as defined in the config database.
     # Ids are local to an installation: they are stripped on export/import

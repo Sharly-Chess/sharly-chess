@@ -68,6 +68,8 @@ from data.rating_sequences import (
     resolve_rating,
 )
 from data.pibes import Pibe, PibeType
+from data.snapshot import SnapshotReason
+from data.snapshot_worker import SnapshotScheduler
 from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -1883,7 +1885,7 @@ class PlayerAdminController(BaseEventAdminController):
             PibeType.REGENERATION, preview_tournament.current_round, description
         ).trf_comment
 
-    def _update_player(
+    async def _update_player(
         self,
         web_context: PlayerAdminWebContext,
         data: dict[str, str],
@@ -1904,6 +1906,18 @@ class PlayerAdminController(BaseEventAdminController):
         ):
             return self._render_players_form_modal(
                 web_context, action, data=data, regeneration=regeneration
+            )
+        if WebContext.form_data_to_bool(data, 'regeneration_confirmed'):
+            # The renumbering is a pairing integrity breaching event: the
+            # arbiter has to be able to put the tournament back as it was.
+            renumbered = event.tournaments_by_id[
+                WebContext.form_data_to_int(data, 'tournament_id') or 0
+            ]
+            await SnapshotScheduler.snapshot_before_async(
+                event.uniq_id,
+                SnapshotReason.BEFORE_RENUMBERING,
+                renumbered.current_round,
+                renumbered.id,
             )
         event.update_player(player, stored_player)
         forget_automatic_check(event)
@@ -1962,7 +1976,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         player_id: FromPath[int],
     ) -> Template | Redirect:
-        return self._update_player(
+        return await self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
         )
 
@@ -1983,7 +1997,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         player_id: FromPath[int],
     ) -> Template | Redirect:
-        return self._update_player(
+        return await self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
         )
 
