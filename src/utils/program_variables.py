@@ -1,3 +1,4 @@
+import json
 import os
 import plistlib
 import sys
@@ -20,7 +21,12 @@ MACOS_DATA_PLIST = MACOS_SUPPORT_DIR.parent / 'com.sharlychess.plist'
 if sys.platform == 'darwin':
     MACOS_DATA_PLIST.parent.mkdir(parents=True, exist_ok=True)
 
-LINUX_ENV_FILE = Path.home() / '.bashrc'
+LINUX_CONFIG_HOME = (
+    Path(os.environ['XDG_CONFIG_HOME'])
+    if os.getenv('XDG_CONFIG_HOME')
+    else Path.home() / '.config'
+)
+LINUX_DATA_FILE = LINUX_CONFIG_HOME / 'sharly-chess' / 'program_vars.json'
 WIN_REG_PATH = r'Software\Sharly Chess\Sharly Chess'
 
 
@@ -48,7 +54,8 @@ class ProgramVar(StrEnum):
         elif DEVEL_ENV:
             name = f'dev_{name}'
         if sys.platform == 'linux':
-            # As linux uses env variables add an app specific prefix
+            # App specific prefix, also used to read the variables from the
+            # environment when the data file does not hold them
             name = f'SHARLY_CHESS_{name.upper()}'
         return name
 
@@ -65,7 +72,10 @@ class ProgramVar(StrEnum):
             case 'darwin':
                 return _read_macos_data_plist().get(name)
             case 'linux':
-                return os.getenv(name)
+                data = _read_linux_data_file()
+                if name in data:
+                    return data[name] or None
+                return os.getenv(name) or None
         return None
 
     def read_path_value(self) -> Path | None:
@@ -106,10 +116,11 @@ class ProgramVar(StrEnum):
                 for var, value in value_by_var.items():
                     data[var.stored_name] = value
                 _write_macos_data_plist(data)
-            case 'linux':  # Use env variables
-                with open(LINUX_ENV_FILE, 'a') as f:
-                    for var, value in value_by_var.items():
-                        f.write(f'\nexport {var.stored_name}="{value}"\n')
+            case 'linux':  # Use a JSON file
+                data = _read_linux_data_file()
+                for var, value in value_by_var.items():
+                    data[var.stored_name] = value
+                _write_linux_data_file(data)
 
 
 def _read_macos_data_plist() -> dict:
@@ -123,3 +134,18 @@ def _read_macos_data_plist() -> dict:
 def _write_macos_data_plist(data: dict) -> None:
     with open(MACOS_DATA_PLIST, 'wb') as plist_file:
         plistlib.dump(data, plist_file)
+
+
+def _read_linux_data_file() -> dict[str, str]:
+    try:
+        data = json.loads(LINUX_DATA_FILE.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _write_linux_data_file(data: dict[str, str]) -> None:
+    LINUX_DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp_file = LINUX_DATA_FILE.with_suffix('.tmp')
+    tmp_file.write_text(json.dumps(data, indent=2), encoding='utf-8')
+    tmp_file.replace(LINUX_DATA_FILE)

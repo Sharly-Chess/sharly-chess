@@ -86,9 +86,13 @@ class DataRecovery:
                     versions = cls._get_installed_versions()
                     if versions:
                         version = versions[0]
-                        cls._recover_legacy_version(
-                            version, cls._get_version_dir(version)
-                        )
+                        if version.major < 5:
+                            cls._recover_legacy_version(
+                                version, cls._get_version_dir(version)
+                            )
+                            recovered = True
+                        else:
+                            recovered = cls._recover_version(version)
 
             # Copy all the default data files
             for file in DEFAULT_DATA_DIR.glob('**/*'):
