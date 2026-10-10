@@ -24,7 +24,6 @@ from data.columns.column import ColumnUsage
 from data.event import Event
 from data.norms import ForecastRequirement
 from data.pairings.engines import (
-    BergerPairingEngine,
     RoundRobinPairingEngine,
     TeamRoundRobinPairingEngine,
 )
@@ -32,7 +31,7 @@ from data.pairings.acceleration import AcceleratedSwissVariation
 from data.pairings.fixed_table import PairingTableProvider
 from data.pairings.molter import MolterPairingSystem
 from data.pairings.scheveningen import ScheveningenPairingSystem
-from data.pairings.settings import AccelerationRule, BergerNumbersSetting
+from data.pairings.settings import AccelerationRule
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -2018,13 +2017,9 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
     def _individual_rounds_data(
         tournament: Tournament, engine: Any, rounds: int
     ) -> list[dict[str, Any]]:
-        assert isinstance(engine, BergerPairingEngine)
-        number_by_player = BergerNumbersSetting.get_value(tournament)
-        player_by_number = {
-            number: tournament.tournament_players_by_id[player_id]
-            for player_id, number in number_by_player.items()
-            if player_id in tournament.tournament_players_by_id
-        }
+        assert isinstance(engine, RoundRobinPairingEngine)
+        players = tournament.tournament_players_by_id
+        schedule = engine.schedule(tournament)
         board_by_round_pair: dict[tuple[int, frozenset], Any] = {}
         for round_ in range(1, rounds + 1):
             for board in tournament.get_round_boards(round_):
@@ -2037,12 +2032,18 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
         for round_ in range(1, rounds + 1):
             matches: list[dict[str, Any]] = []
             exempt: str | None = None
-            for left_num, right_num in engine.get_round_pairings(tournament, round_):
-                left_player = player_by_number.get(left_num)
-                right_player = player_by_number.get(right_num)
+            schedule_round = (
+                schedule.rounds.get(round_) if schedule is not None else None
+            )
+            if schedule_round is None:
+                rounds_data.append({'number': round_, 'matches': [], 'exempt': None})
+                continue
+            if (resting := players.get(schedule_round.rest or 0)) is not None:
+                exempt = resting.full_name
+            for left_id, right_id in schedule_round.tables:
+                left_player = players.get(left_id or 0)
+                right_player = players.get(right_id or 0)
                 if left_player is None or right_player is None:
-                    real = left_player or right_player
-                    exempt = real.full_name if real is not None else None
                     continue
                 left_score = right_score = None
                 played_board = board_by_round_pair.get(

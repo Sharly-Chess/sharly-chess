@@ -418,6 +418,8 @@ class StoredTournament:
     manual_pairing_boards: list[dict[str, Any]] = field(default_factory=list)
     multi_period: bool = False
     tie_break_rating: str = ''
+    round_robin_schedule: dict[str, Any] | None = None
+    round_robin_schedule_draft: dict[str, Any] | None = None
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )

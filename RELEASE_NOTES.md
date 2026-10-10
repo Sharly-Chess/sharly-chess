@@ -32,6 +32,7 @@
 - A game of an older round found wrong can be corrected for the rating report only: the TRF and Papi exports give it as corrected, the TRF with a comment saying what the pairings and the standings used (5.2.0)
 - A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
 - Double round robins can choose whether the last two rounds of the first cycle are reversed, as recommended by FIDE to avoid three games in a row with the same colour (5.2.0)
+- Round robins, individual and team, can be paired from a schedule set by hand (the new custom schedule variations) or edited after pairing from the Berger tables; the schedule is checked against the round-robin rules before it is saved (each pair meeting once, or twice, and no three games in a row with the same colour), and once results are entered, games played at the wrong boards can be corrected and a schedule breaking the rules saved anyway, the log and the TRF listing the rules it breaks for as long as it does (5.2.0)
 - Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
 - Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the FFE T2 minutes (5.2.0)
 

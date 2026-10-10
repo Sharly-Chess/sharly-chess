@@ -1,5 +1,6 @@
 import shutil
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import cache
 from operator import attrgetter
 from pathlib import Path
@@ -22,6 +23,14 @@ from common.logger import (
 )
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
+from data.pairings.round_robin_schedule import (
+    RoundRobinSchedule,
+    ScheduleRound,
+    ScheduleViolation,
+    Table,
+    schedule_violations,
+    single_cycle_round_count,
+)
 from data.pairings.settings import BergerNumbersSetting, ReverseLastRoundsSetting
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
@@ -583,7 +592,139 @@ class BbpPairings(PairingEngine):
         return len(boards) > 0
 
 
-class RoundRobinPairingEngine(PairingEngine, ABC):
+def berger_order(tournament: 'Tournament') -> list[int]:
+    """The players of *tournament* in the order of the Berger numbers set:
+    those of players who have left since are dropped, and players without
+    one follow, by starting rank."""
+    players = tournament.tournament_players_by_id
+    numbers: dict[int, int] = {}
+    if BergerNumbersSetting.is_set(tournament):
+        numbers = BergerNumbersSetting.from_stored_value(
+            tournament.stored_pairing_settings[BergerNumbersSetting.static_id()]
+        )
+    ordered = [
+        player_id
+        for _number, player_id in sorted(
+            (number, player_id)
+            for player_id, number in numbers.items()
+            if player_id in players
+        )
+    ]
+    numbered = set(ordered)
+    return ordered + [
+        player.id
+        for player in tournament.tournament_players_by_starting_rank.values()
+        if player.id not in numbered
+    ]
+
+
+class ScheduledRoundRobin(ABC):
+    """The schedule a round-robin, of players or of teams, is paired from:
+    the one saved for the tournament or, without one, the Berger tables
+    when the variation follows them."""
+
+    @property
+    @abstractmethod
+    def encounters(self) -> int:
+        """How many times two members meet in the tournament."""
+
+    @property
+    def follows_berger_tables(self) -> bool:
+        return True
+
+    @abstractmethod
+    def berger_numbered_members(self, tournament: 'Tournament') -> dict[int, int]:
+        """The ids of the members of *tournament* by Berger number."""
+
+    @abstractmethod
+    def member_namer(self, tournament: 'Tournament') -> Callable[[int], str]:
+        """The name of a member of *tournament* from their id."""
+
+    def berger_schedule(self, tournament: 'Tournament') -> RoundRobinSchedule:
+        return RoundRobinSchedule.berger(
+            self.berger_numbered_members(tournament),
+            self.encounters,
+            self.encounters == 2 and ReverseLastRoundsSetting.get_value(tournament),
+        )
+
+    @abstractmethod
+    def paired_tables(
+        self, tournament: 'Tournament', round_: int
+    ) -> tuple[list[Table], list[int]]:
+        """The pairs of *round_* as paired, and the members resting."""
+
+    def paired_round(
+        self, tournament: 'Tournament', round_: int
+    ) -> ScheduleRound | None:
+        """*round_* as paired, when it fits a round of the schedule."""
+        tables, rests = self.paired_tables(tournament, round_)
+        member_count = len(self.berger_numbered_members(tournament))
+        if len(tables) != member_count // 2 or len(rests) != member_count % 2:
+            return None
+        return ScheduleRound(tables, rests[0] if rests else None)
+
+    def paired_schedule(self, tournament: 'Tournament') -> RoundRobinSchedule | None:
+        """The schedule of a tournament whose every round is paired."""
+        member_count = len(self.berger_numbered_members(tournament))
+        rounds: dict[int, ScheduleRound] = {}
+        for round_ in range(
+            1, self.encounters * single_cycle_round_count(member_count) + 1
+        ):
+            if (paired_round := self.paired_round(tournament, round_)) is None:
+                return None
+            rounds[round_] = paired_round
+        return RoundRobinSchedule(rounds)
+
+    def schedule(self, tournament: 'Tournament') -> RoundRobinSchedule | None:
+        """The Berger tables when the variation follows them; otherwise the
+        saved schedule, or the pairings when every round is paired, as in a
+        tournament imported with its games."""
+        if self.follows_berger_tables:
+            return self.berger_schedule(tournament)
+        if (saved := tournament.round_robin_schedule) is not None:
+            return saved
+        return self.paired_schedule(tournament)
+
+    def schedule_fits(
+        self, tournament: 'Tournament', schedule: RoundRobinSchedule
+    ) -> bool:
+        """Whether *schedule* is one of the members of *tournament* as they
+        are, rather than as they were when it was made."""
+        members = self.berger_numbered_members(tournament).values()
+        return schedule.members == set(members) and schedule.fits(
+            len(members), self.encounters
+        )
+
+    def schedule_violations(
+        self, tournament: 'Tournament', schedule: RoundRobinSchedule
+    ) -> list[ScheduleViolation]:
+        """The rules *schedule* breaks. The colours of the Berger tables
+        are theirs to answer for, even when the last rounds of the first
+        cycle are not reversed."""
+        return schedule_violations(
+            schedule,
+            self.berger_numbered_members(tournament).values(),
+            self.encounters,
+            self.member_namer(tournament),
+            check_colours=schedule != self.berger_schedule(tournament),
+        )
+
+    def schedule_message(self, tournament: 'Tournament') -> str | None:
+        """Why *tournament* cannot be paired from its schedule."""
+        schedule = self.schedule(tournament)
+        if schedule is None:
+            return _('The schedule of the tournament has not been defined.')
+        if not self.schedule_fits(tournament, schedule):
+            return _(
+                'The participants have changed since the schedule was saved: '
+                'it has to be edited.'
+            )
+        if self.schedule_violations(tournament, schedule):
+            return _('The schedule of the tournament breaks the round-robin rules.')
+        return None
+
+
+class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
     MIN_PLAYERS = 3
 
     @override
@@ -595,6 +736,37 @@ class RoundRobinPairingEngine(PairingEngine, ABC):
     @abstractmethod
     def player_encounters(self) -> int:
         """Number of times 2 players play against each other in the tournament."""
+
+    @property
+    @override
+    def encounters(self) -> int:
+        return self.player_encounters
+
+    @override
+    def berger_numbered_members(self, tournament: 'Tournament') -> dict[int, int]:
+        return dict(enumerate(berger_order(tournament), 1))
+
+    @override
+    def member_namer(self, tournament: 'Tournament') -> Callable[[int], str]:
+        players = tournament.tournament_players_by_id
+        return lambda player_id: players[player_id].full_name
+
+    @override
+    def paired_tables(
+        self, tournament: 'Tournament', round_: int
+    ) -> tuple[list[Table], list[int]]:
+        tables: list[Table] = []
+        rests: list[int] = []
+        for board in tournament.get_round_boards(round_):
+            white = board.stored_board.white_player_id
+            black = board.stored_board.black_player_id
+            if white is None:
+                continue
+            if black is None:
+                rests.append(white)
+            else:
+                tables.append((white, black))
+        return tables, rests
 
     @staticmethod
     def get_single_encounter_round_count(player_count: int) -> int:
@@ -619,19 +791,45 @@ class RoundRobinPairingEngine(PairingEngine, ABC):
                 'The round count is incompatible with the '
                 'number of players (expected: {expected}).'
             ).format(expected=round_count)
-        return None
+        return self.schedule_message(tournament)
+
+    def _generate_stored_boards(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+        prohibited_pairing_override: 'list | None' = None,
+    ) -> list[StoredBoard]:
+        schedule = self.schedule(tournament)
+        assert schedule is not None
+        schedule_round = schedule.rounds[round_]
+        stored_boards = [
+            StoredBoard(
+                id=None,
+                white_player_id=white_player_id,
+                black_player_id=black_player_id,
+                index=index,
+            )
+            for index, (white_player_id, black_player_id) in enumerate(
+                schedule_round.tables
+            )
+        ]
+        if schedule_round.rest is not None:
+            stored_boards.append(
+                StoredBoard(
+                    id=None,
+                    white_player_id=schedule_round.rest,
+                    black_player_id=None,
+                    index=len(stored_boards),
+                )
+            )
+        return stored_boards
 
 
 class BergerPairingEngine(RoundRobinPairingEngine):
     @property
     def player_encounters(self) -> int:
         return 1
-
-    def get_round_pairings(
-        self, tournament: 'Tournament', round_: int
-    ) -> list[tuple[int, int]]:
-        """Pairings for the round *round_* of *tournament*, as Berger numbers."""
-        return self.get_berger_table(tournament.player_count)[round_]
 
     @classmethod
     @cache
@@ -658,49 +856,6 @@ class BergerPairingEngine(RoundRobinPairingEngine):
             berger_table[round_] = pairings
             previous_pairings = pairings
         return berger_table
-
-    def _generate_stored_boards(
-        self,
-        tournament: 'Tournament',
-        round_: int,
-        partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
-    ) -> list[StoredBoard]:
-        stored_boards: list[StoredBoard] = []
-        player_id_by_pairing_number = {
-            pairing_number: player_id
-            for player_id, pairing_number in BergerNumbersSetting.get_value(
-                tournament
-            ).items()
-        }
-        pairings = self.get_round_pairings(tournament, round_)
-        pab_player_id: int | None = None
-        index = 0
-        for pairing in pairings:
-            white_player_id = player_id_by_pairing_number.get(pairing[0])
-            black_player_id = player_id_by_pairing_number.get(pairing[1])
-            if not white_player_id or not black_player_id:
-                pab_player_id = white_player_id or black_player_id
-                continue
-            stored_boards.append(
-                StoredBoard(
-                    id=None,
-                    white_player_id=white_player_id,
-                    black_player_id=black_player_id,
-                    index=index,
-                )
-            )
-            index += 1
-        if pab_player_id:
-            stored_boards.append(
-                StoredBoard(
-                    id=None,
-                    white_player_id=pab_player_id,
-                    black_player_id=None,
-                    index=index,
-                )
-            )
-        return stored_boards
 
 
 class DoubleBergerPairingEngine(BergerPairingEngine):
@@ -730,19 +885,24 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
                 return round_ - 1, False
         return round_, False
 
-    def get_round_pairings(
-        self, tournament: 'Tournament', round_: int
-    ) -> list[tuple[int, int]]:
-        player_count = tournament.player_count
-        source_round, invert_colours = self.source_round(
-            round_,
-            self.get_single_encounter_round_count(player_count),
-            ReverseLastRoundsSetting.get_value(tournament),
-        )
-        pairings = self.get_berger_table(player_count)[source_round]
-        if invert_colours:
-            return [(black, white) for white, black in pairings]
-        return pairings
+
+class CustomRoundRobinPairingEngine(RoundRobinPairingEngine):
+    """A single round-robin paired from the schedule the arbiter defines."""
+
+    @property
+    def player_encounters(self) -> int:
+        return 1
+
+    @property
+    @override
+    def follows_berger_tables(self) -> bool:
+        return False
+
+
+class DoubleCustomRoundRobinPairingEngine(CustomRoundRobinPairingEngine):
+    @property
+    def player_encounters(self) -> int:
+        return 2
 
 
 def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
@@ -1335,11 +1495,10 @@ class TeamSwissEngine(TeamPairingEngine):
         return pairs
 
 
-class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
-    """Team round-robin shared logic. Subclasses implement
-    :meth:`_compute_team_pairs` for the round; this base validates
-    round count and persists the resulting matches via
-    :meth:`_persist_team_round`."""
+class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
+    """Team round-robin shared logic: the matches of a round come from the
+    schedule, and the team members are paired round by round, so lineups
+    can change between rounds."""
 
     MIN_TEAMS = 2
 
@@ -1352,6 +1511,38 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
     def team_encounters(self) -> int:
         """How many times each pair of teams meets (1 = Berger, 2 =
         Double Berger)."""
+
+    @property
+    @override
+    def encounters(self) -> int:
+        return self.team_encounters
+
+    @override
+    def berger_numbered_members(self, tournament: 'Tournament') -> dict[int, int]:
+        return self._berger_to_team_id_map(self._teams_for_tournament(tournament))
+
+    @override
+    def member_namer(self, tournament: 'Tournament') -> Callable[[int], str]:
+        teams = tournament.event.teams_by_id
+        return lambda team_id: teams[team_id].name
+
+    @override
+    def paired_tables(
+        self, tournament: 'Tournament', round_: int
+    ) -> tuple[list[Table], list[int]]:
+        tables: list[Table] = []
+        rests: list[int] = []
+        for team_board in tournament.get_round_team_boards(round_):
+            stored_team_board = team_board.stored_team_board
+            if stored_team_board.team_b_id is None:
+                if stored_team_board.bye_type in TeamByeType.manual_bye_types():
+                    continue
+                rests.append(stored_team_board.team_a_id)
+            else:
+                tables.append(
+                    (stored_team_board.team_a_id, stored_team_board.team_b_id)
+                )
+        return tables, rests
 
     @classmethod
     def get_single_encounter_round_count(cls, team_count: int) -> int:
@@ -1378,7 +1569,7 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
         # Incomplete rosters are allowed (as in team Swiss): a team with
         # fewer than ``n`` players just leaves a hole on the missing
         # boards, scored as a forfeit win for the present opponent.
-        return None
+        return self.schedule_message(tournament)
 
     def pairings_generation_disabled_message(
         self, tournament: 'Tournament', at_round: int
@@ -1396,34 +1587,39 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
             )
         return None
 
-    @abstractmethod
-    def _compute_team_pairs(
-        self, tournament: 'Tournament', teams: list['Team'], round_: int
+    @staticmethod
+    def _round_team_pairs(
+        schedule: RoundRobinSchedule, round_: int
     ) -> list[tuple[int, int | None]]:
-        """Return the list of (team_a_id, team_b_id) for the given
-        round. ``team_b_id`` is ``None`` for a team-level bye."""
+        """The (team_a_id, team_b_id) matches of *round_*, ``team_b_id``
+        ``None`` for the team resting."""
+        schedule_round = schedule.rounds[round_]
+        team_pairs: list[tuple[int, int | None]] = [
+            (team_a_id, team_b_id)
+            for team_a_id, team_b_id in schedule_round.tables
+            if team_a_id is not None
+        ]
+        if schedule_round.rest is not None:
+            team_pairs.append((schedule_round.rest, None))
+        return team_pairs
 
     def full_schedule(
         self, tournament: 'Tournament'
     ) -> dict[int, list[tuple[int, int | None]]]:
-        """The complete round-robin schedule, round → team-id pairs,
-        computed from the Berger tables. Deterministic — usable for
-        rounds that haven't been paired yet (pairing is performed
-        round by round so lineups can change between rounds).
-
-        Only the rounds the system actually defines: a round-robin's
-        length follows from the number of teams, and a tournament may be
-        configured with more (the pairing button reports that mismatch).
-        Asking the Berger table for a round beyond its end raises, so the
-        schedule stops where the table does.
-        """
+        """The matches of every round of the schedule, including those not
+        paired yet, round → team-id pairs. A tournament configured with
+        more rounds than the schedule has (the pairing button reports that
+        mismatch) gets the schedule's rounds only."""
         teams = self._teams_for_tournament(tournament)
-        if len(teams) < self.MIN_TEAMS:
+        if (
+            len(teams) < self.MIN_TEAMS
+            or (schedule := self.schedule(tournament)) is None
+        ):
             return {}
-        last_round = min(tournament.rounds, self.get_round_count(len(teams)))
         return {
-            round_: self._compute_team_pairs(tournament, teams, round_)
-            for round_ in range(1, last_round + 1)
+            round_: self._round_team_pairs(schedule, round_)
+            for round_ in sorted(schedule.rounds)
+            if round_ <= tournament.rounds
         }
 
     @override
@@ -1438,9 +1634,10 @@ class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
                 f'Pairings generation not allowed for round {round_} '
                 f'of tournament [{tournament.name}].'
             )
-        teams = self._teams_for_tournament(tournament)
+        schedule = self.schedule(tournament)
+        assert schedule is not None
         try:
-            team_pairs = self._compute_team_pairs(tournament, teams, round_)
+            team_pairs = self._round_team_pairs(schedule, round_)
         except Exception as e:
             logger.exception(e)
             return _('An error occurred. Consult the logs for more details.')
@@ -1463,33 +1660,6 @@ class TeamBergerEngine(TeamRoundRobinPairingEngine):
     def team_encounters(self) -> int:
         return 1
 
-    def _compute_team_pairs(
-        self, tournament: 'Tournament', teams: list['Team'], round_: int
-    ) -> list[tuple[int, int | None]]:
-        team_count = len(teams)
-        if team_count < self.MIN_TEAMS:
-            return []
-        berger_to_team = self._berger_to_team_id_map(teams)
-        # Reuse the individual Berger table: same pairing pattern,
-        # just over teams. ``get_berger_table`` accepts odd counts and
-        # internally pads with a phantom slot whose unmapped berger
-        # number signals a team-level bye.
-        round_pairings = BergerPairingEngine.get_berger_table(team_count)[round_]
-        team_pairs: list[tuple[int, int | None]] = []
-        for a_berger, b_berger in round_pairings:
-            a_id = berger_to_team.get(a_berger)
-            b_id = berger_to_team.get(b_berger)
-            if a_id is None and b_id is None:
-                continue
-            if a_id is None:
-                # The phantom slot was berger A; flip so the real team
-                # gets the bye record as team_a.
-                assert b_id is not None  # the both-None case continued above
-                team_pairs.append((b_id, None))
-                continue
-            team_pairs.append((a_id, b_id))
-        return team_pairs
-
 
 class TeamDoubleBergerEngine(TeamBergerEngine):
     """Double round-robin: each pair of teams meets twice, colours
@@ -1500,30 +1670,22 @@ class TeamDoubleBergerEngine(TeamBergerEngine):
     def team_encounters(self) -> int:
         return 2
 
-    def _compute_team_pairs(
-        self, tournament: 'Tournament', teams: list['Team'], round_: int
-    ) -> list[tuple[int, int | None]]:
-        team_count = len(teams)
-        if team_count < self.MIN_TEAMS:
-            return []
-        berger_to_team = self._berger_to_team_id_map(teams)
-        source_round, swap = DoubleBergerPairingEngine.source_round(
-            round_,
-            self.get_single_encounter_round_count(team_count),
-            ReverseLastRoundsSetting.get_value(tournament),
-        )
-        pairings = BergerPairingEngine.get_berger_table(team_count)[source_round]
-        team_pairs: list[tuple[int, int | None]] = []
-        for a_berger, b_berger in pairings:
-            if swap:
-                a_berger, b_berger = b_berger, a_berger
-            a_id = berger_to_team.get(a_berger)
-            b_id = berger_to_team.get(b_berger)
-            if a_id is None and b_id is None:
-                continue
-            if a_id is None:
-                assert b_id is not None  # the both-None case continued above
-                team_pairs.append((b_id, None))
-                continue
-            team_pairs.append((a_id, b_id))
-        return team_pairs
+
+class CustomTeamRoundRobinEngine(TeamRoundRobinPairingEngine):
+    """A single team round-robin paired from the schedule the arbiter
+    defines."""
+
+    @property
+    def team_encounters(self) -> int:
+        return 1
+
+    @property
+    @override
+    def follows_berger_tables(self) -> bool:
+        return False
+
+
+class DoubleCustomTeamRoundRobinEngine(CustomTeamRoundRobinEngine):
+    @property
+    def team_encounters(self) -> int:
+        return 2

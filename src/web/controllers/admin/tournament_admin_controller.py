@@ -1176,6 +1176,11 @@ class TournamentAdminController(BaseEventAdminController):
             tie_break_rating=(
                 tournament.stored_tournament.tie_break_rating if tournament else ''
             ),
+            round_robin_schedule=(
+                tournament.stored_tournament.round_robin_schedule
+                if tournament and action not in ['create', 'clone']
+                else None
+            ),
             rule_set=rule_set_id,
             rule_set_config=rule_set_config,
             plugin_data=plugin_data,
@@ -1959,6 +1964,12 @@ class TournamentAdminController(BaseEventAdminController):
                     tournament.stored_tournament.pairing,
                     stored_tournament.pairing,
                 )
+                # A round-robin schedule belongs to its variation: another
+                # one starts from its own.
+                if stored_tournament.pairing != tournament.stored_tournament.pairing:
+                    database.set_tournament_round_robin_schedule(
+                        stored_tournament.id, None, None
+                    )
                 self._apply_rule_set_tie_breaks(database, event, stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'

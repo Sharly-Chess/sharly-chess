@@ -1,0 +1,51 @@
+{% if schedule_action == 'clear' %}
+    {% set title = _('Clear the schedule') %}
+    {% set message = _('Every seat whose game has not been played will be emptied.') %}
+    {% set confirm_label = _('Clear') %}
+    {% set confirm_url = url_for('admin-pairings-schedule-clear', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) %}
+{% elif schedule_action == 'unlock' %}
+    {% set title = _('Unlock the games played') %}
+    {% set message = _('Change the games already played? Only do so to set them as they were really played, players having sat at the wrong boards.') %}
+    {% set confirm_label = _('Unlock') %}
+    {% set confirm_url = url_for('admin-pairings-schedule-unlock-played-games', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) %}
+{% else %}
+    {% set title = _('Save anyway') %}
+    {% set message = _('The schedule breaks the round-robin rules. Save it anyway? The rules it breaks are listed in the log and in the TRF until they are kept.') %}
+    {% set confirm_label = _('Save anyway') %}
+    {% set confirm_url = url_for('admin-pairings-schedule-save', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) ~ '?force=true' %}
+{% endif %}
+<div
+    class="modal-dialog pairing-modal"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fw-bold">
+                <h3>{{ title }}</h3>
+            </div>
+        </div>
+        <div class="modal-body">
+            {{ message }}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                id="schedule-confirm"
+                class="btn {{ 'btn-danger' if schedule_action == 'force' else 'btn-primary' }} text-nowrap"
+                hx-post="{{ confirm_url }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-disabled-elt="this"
+            >
+                {{ confirm_label }}
+            </button>
+        </div>
+    </div>
+</div>
