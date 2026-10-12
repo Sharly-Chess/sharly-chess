@@ -56,7 +56,7 @@
 - Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
 - New "Team pairings" document listing the round's team matches on a single table, with each team's points and the match score, without the players (5.1.4)
 - Pairing place cards can show the round number, and the tournament start date printed on place cards is no longer the end date (5.1.5)
-- The _FFE_ practical training certificates (attestations de stage pratique) follow the new arbiter titles: AFMatch, AFClub and AFOpen (5.1.5)
+- The _FFE_ practical training certificates (_attestations de stage pratique_) follow the new arbiter titles: AFMatch, AFClub and AFOpen (5.1.5)
 
 ## Screens
 
