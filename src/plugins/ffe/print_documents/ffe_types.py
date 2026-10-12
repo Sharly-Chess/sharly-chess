@@ -304,7 +304,7 @@ class FFETrainingCertificateAFCType(FFETrainingCertificateType):
     def training_skills(self) -> list[str]:
         return [
             'Maitrise des compétences organisationnelles (ponctualité, préparation du matériel, de la salle de jeu, pointage)',
-            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.8)',
+            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.3.8)',
             'Connaitre et faire appliquer les règles du jeu',
             'Anticiper et désamorcer les situations conflictuelles',
             'Maitrise du règlement de la compétition',
@@ -366,7 +366,7 @@ class FFETrainingCertificateAFOType(FFETrainingCertificateType):
     @property
     def training_skills(self) -> list[str]:
         return [
-            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.8)',
+            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.3.8)',
             'Connaissance et maitrise de sa mission administrative',
             'Maitrise du règlement de la compétition',
             'Représenter dignement l’équipe d’arbitrage',
