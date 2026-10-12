@@ -137,17 +137,35 @@ def test_the_tie_breaks_are_fixed_until_unlocked(
 
 
 @pytest.mark.unit
-def test_more_byes_than_fide_allows_are_confirmed(
+def test_more_byes_than_fide_allows_are_set_without_confirmation(
     http: TestClient, tournament: Tournament
 ):
-    text = update(http, tournament, max_byes='2')
-
-    assert 'Allow more byes' in text
-    assert EVENT.tournament().max_byes == 1
-
-    update(http, tournament, max_byes='2', max_byes_confirmed='on')
+    update(http, tournament, max_byes='2')
 
     assert EVENT.tournament().max_byes == 2
+
+
+@pytest.mark.unit
+def test_a_second_half_point_bye_is_confirmed(http: TestClient, tournament: Tournament):
+    with EventDatabase(EVENT_ID, write=True) as database:
+        tournament.stored_tournament.max_byes = 2
+        tournament.stored_tournament.rounds = 7
+        database.update_stored_tournament(tournament.stored_tournament)
+    tournament = EVENT.tournament()
+    player = next(iter(tournament.tournament_players))
+    round_ = tournament.current_round + 1
+    route = f'/event/{EVENT_ID}/unpaired-modal/{tournament.id}/{round_ + 1}/{player.id}'
+
+    assert not player.half_point_bye_needs_confirmation(round_ + 1)
+    assert 'already has one' not in http.get(route).text
+
+    tournament.set_player_byes(player, {round_: Result.HALF_POINT_BYE})
+    player = EVENT.tournament().tournament_players_by_id[player.id]
+
+    assert not player.half_point_bye_needs_confirmation(round_)
+    assert player.half_point_bye_needs_confirmation(round_ + 1)
+    assert 'already has one' in http.get(route).text
+    assert 'already has one' in http.get(f'/record-modal/{EVENT_ID}/{player.id}').text
 
 
 @pytest.mark.unit
