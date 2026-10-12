@@ -51,9 +51,13 @@ class TrfExport:
         prohibited_pairing_override: list[TrfProhibitedPairing] | None = None,
     ) -> TrfTournament:
         tournament = self.tournament
+        # Without a round, the file carries every round entered, a bye
+        # requested ahead included, and the standings the tournament shows.
+        ranking_round = after_round
         if after_round is None:
             after_round = tournament.rounds
-        tournament.compute_tournament_player_ranks(after_round=after_round)
+            ranking_round = tournament.max_ranking_round
+        tournament.compute_tournament_player_ranks(after_round=ranking_round)
         seed_setting = ColorSeedSetting()
         trf = TrfTournament(
             name=tournament.name,

@@ -296,6 +296,33 @@ class TrfTournamentImporter(FileTournamentImporter):
         for stored_tournament_player, stored_pairing in blank_pairings:
             if stored_pairing.round_ not in stored_boards_by_round:
                 stored_tournament_player.stored_pairings.remove(stored_pairing)
+        # A line that stops before a paired round leaves that round blank,
+        # as a line padded with spaces would, unless an opponent says the
+        # player was paired then.
+        if not event.is_team_event:
+            named_opponents = {
+                (trf_game.round, trf_game.opponent_id)
+                for trf_player in trf_tournament.players
+                for trf_game in trf_player.games
+                if trf_game.opponent_id
+            }
+            for stored_tournament_player in stored_tournament.stored_tournament_players:
+                rounds = {
+                    stored_pairing.round_
+                    for stored_pairing in stored_tournament_player.stored_pairings
+                } | {
+                    round_nb
+                    for round_nb, opponent_id in named_opponents
+                    if opponent_id == stored_tournament_player.player_id
+                }
+                for round_nb in sorted(set(stored_boards_by_round) - rounds):
+                    stored_pairing, __ = self._read_trf_game(
+                        TrfGame(
+                            opponent_id=None, color='-', result=' ', round=round_nb
+                        ),
+                        stored_tournament_player.player_id,
+                    )
+                    stored_tournament_player.stored_pairings.append(stored_pairing)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
         if stored_boards_by_round:
             # Widen only — the 142 ``num_rounds`` value (set in
