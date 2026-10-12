@@ -665,6 +665,23 @@ class TournamentImporterTestCase(TestCase):
             tournament.team_primary_score_before_round(team.id, 2), earned - 3.0
         )
 
+    def test_sb_counts_a_pairing_allocated_bye_at_its_value(self):
+        """A pairing-allocated bye worth half a point contributes half the
+        dummy opponent's score to Sonneborn-Berger (Art. 16), as a draw
+        would: player C, on 0.5, has 0.25."""
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-sb-half-point-pab.trf')]
+        )
+        tournament_id = importer.load_tournament(self.event)
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self.event.tournaments_by_id[tournament_id]
+        tournament.ranking.compute()
+        sonneborn_berger = {
+            player.pairing_number: float(player.tie_break_values[1].value)
+            for player in tournament.players
+        }
+        self.assertEqual(sonneborn_berger, {1: 0.0, 2: 0.0, 3: 0.25})
+
     def test_trf_baku_export_states_its_accelerated_rounds(self):
         """A Baku tournament is written with its 250 records as well as its
         192 encoded type, so a reader that takes the acceleration from 250

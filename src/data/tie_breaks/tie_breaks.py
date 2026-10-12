@@ -1813,12 +1813,9 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
                 after_round=after_round,
                 opponent=pairing.opponent,
             )
+        # A pairing-allocated bye scores what the tournament says it is worth.
         match pairing.result:
-            case (
-                Result.FORFEIT_WIN
-                | Result.PAIRING_ALLOCATED_BYE
-                | Result.FULL_POINT_BYE
-            ):
+            case Result.FORFEIT_WIN | Result.FULL_POINT_BYE:
                 return dummy, Result.WIN
             case Result.HALF_POINT_BYE:
                 return dummy, Result.DRAW
