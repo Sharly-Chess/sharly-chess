@@ -111,6 +111,7 @@ than given a fixed value (question 25):
 | ``--forfeit-wins`` | as above, counted in boards |
 | ``--forfeit-losses`` | as above, counted in boards |
 | ``--unusual-results`` | as above: a half point to one side only, or nothing to either |
+| ``--pab-points`` | what the pairing-allocated bye is worth: ``1``, ``0.5`` or ``0`` |
 | ``--acceleration``, ``--no-acceleration`` | use the Baku acceleration method, or not |
 | ``--tie-breaks`` | the criteria the standings are ranked on, as TRF26 acronyms; left out, the points and one to three of the mandatory tie-breaks |
 | ``--random-seed`` | repeat an earlier tournament exactly |

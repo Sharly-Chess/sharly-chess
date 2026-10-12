@@ -374,6 +374,33 @@ class TournamentImporterTestCase(TestCase):
         with self.assertRaisesRegex(ImporterError, 'Pairing not found'):
             self._import_trf(TrfTournament(name='Missing', players=players))
 
+    def test_trf_line_stopping_before_a_paired_round_is_an_absence(self):
+        """Player 3 played round 1 and the line stops there: in round 2,
+        which was paired, the player was absent, as a blank entry says, and
+        the round is finished."""
+        players = [self._trf_player(number, gender='m') for number in range(1, 5)]
+        players[0].games = [TrfGame(2, 'w', '1', 1), TrfGame(4, 'b', '1', 2)]
+        players[1].games = [TrfGame(1, 'b', '0', 1), TrfGame(None, '-', ' ', 2)]
+        players[2].games = [TrfGame(4, 'w', '1', 1)]
+        players[3].games = [TrfGame(3, 'b', '0', 1), TrfGame(1, 'w', '0', 2)]
+        tournament = self._import_trf(TrfTournament(name='Cut short', players=players))
+        by_number = tournament.tournament_players_by_pairing_number
+        self.assertEqual(by_number[3].pairings[2].result, Result.ZERO_POINT_BYE)
+        self.assertTrue(tournament.is_round_finished(2))
+
+    def test_trf_export_ranks_as_of_the_last_round_played(self):
+        """Player 43 of the JaVaFo sample has a half-point bye entered for
+        round 5, which is not paired yet: his points count it, as the
+        file's do, and his rank is that of the standings after round 4."""
+        tournament = self._import_tournament(self._trf_file_importer('javafo_sample2'))
+        trf_player = next(
+            player
+            for player in TrfExport(tournament).build().players
+            if player.id == 43
+        )
+        self.assertEqual(trf_player.points, 1.0)
+        self.assertEqual(trf_player.rank, 48)
+
     def test_trf06_round_robin_is_recognised_from_the_type(self):
         players = [self._trf_player(number, gender='m') for number in range(1, 5)]
         tournament = self._import_trf(
@@ -727,6 +754,23 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(
             tournament.team_primary_score_before_round(team.id, 2), earned - 3.0
         )
+
+    def test_sb_counts_a_pairing_allocated_bye_at_its_value(self):
+        """A pairing-allocated bye worth half a point contributes half the
+        dummy opponent's score to Sonneborn-Berger (Art. 16), as a draw
+        would: player C, on 0.5, has 0.25."""
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-sb-half-point-pab.trf')]
+        )
+        tournament_id = importer.load_tournament(self.event)
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self.event.tournaments_by_id[tournament_id]
+        tournament.ranking.compute()
+        sonneborn_berger = {
+            player.pairing_number: float(player.tie_break_values[1].value)
+            for player in tournament.players
+        }
+        self.assertEqual(sonneborn_berger, {1: 0.0, 2: 0.0, 3: 0.25})
 
     def test_trf_baku_export_states_its_accelerated_rounds(self):
         """A Baku tournament is written with its 250 records as well as its
