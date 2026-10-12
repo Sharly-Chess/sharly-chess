@@ -321,6 +321,7 @@ def test_a_tournament_that_cannot_be_finished_is_not_generated():
             forfeit_losses=none,
             unusual_results=none,
             acceleration=False,
+            pab_points=1.0,
             tie_breaks=['PTS'],
         )
         with pytest.raises(UnfinishedTournament):
@@ -462,3 +463,36 @@ def test_a_stated_tie_break_list_and_acceleration_are_kept():
         settled = settings.settled(random.Random(seed))
         assert settled.tie_breaks == ['PTS', 'SB']
         assert settled.acceleration is False
+
+
+@pytest.mark.unit
+def test_an_unstated_pab_value_is_drawn_and_a_stated_one_kept():
+    """The pairing-allocated bye may be worth a win, a draw or a loss, and
+    the engines treat the last differently (C.04.3 Art. 1.4.3)."""
+    drawn = {
+        TournamentSettings().settled(random.Random(seed)).pab_points
+        for seed in range(30)
+    }
+    assert drawn == {1.0, 0.5, 0.0}
+    stated = TournamentSettings(pab_points=0.0)
+    assert {stated.settled(random.Random(seed)).pab_points for seed in range(5)} == {
+        0.0
+    }
+    assert (
+        TournamentSettings().settled(random.Random(1), team_event=True).pab_points
+        == 1.0
+    )
+
+
+@pytest.mark.unit
+def test_a_pab_worth_nothing_is_written_to_record_162(tmp_path: Path):
+    trf_path = tmp_path / 'pab.trf'
+    generate_tournament_file(
+        TournamentSettings(players=9, rounds=3, pab_points=0.0), trf_path, seed=4
+    )
+    records = [
+        line
+        for line in trf_path.read_text(encoding='ascii').splitlines()
+        if line.startswith('162')
+    ]
+    assert any(' P ' in f'{record} ' and '0.0' in record for record in records), records

@@ -2764,6 +2764,7 @@ class TournamentAdminController(BaseEventAdminController):
                 forfeit_losses=frequency('forfeit_losses'),
                 unusual_results=frequency('unusual_results'),
                 acceleration=WebContext.form_data_to_bool(data, 'acceleration'),
+                pab_points=1.0,
                 tie_breaks=acronyms('tie_breaks') or ['PTS'],
                 name=name,
                 # The tournament is going to be looked at, so the players
