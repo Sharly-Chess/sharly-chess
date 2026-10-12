@@ -242,6 +242,12 @@ try:
         ),
     )
     generator.add_argument(
+        '--pab-points',
+        type=float,
+        choices=(1.0, 0.5, 0.0),
+        help='what the pairing-allocated bye is worth: 1, 0.5 or 0',
+    )
+    generator.add_argument(
         '--acceleration',
         action=argparse.BooleanOptionalAction,
         help='use the Baku acceleration method, or not',
@@ -352,6 +358,7 @@ try:
                 forfeit_losses=Frequency.parse(args.forfeit_losses),
                 unusual_results=Frequency.parse(args.unusual_results),
                 acceleration=args.acceleration,
+                pab_points=args.pab_points,
                 realistic_names=args.realistic_names,
                 pair_rounds=not args.no_pairings,
                 tie_breaks=[

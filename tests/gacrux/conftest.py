@@ -7,7 +7,6 @@ from common.exception import ImporterError
 from tests.gacrux.harness import (
     export_trf,
     gacrux_report_header,
-    gacrux_source_dir,
     trf_export_unavailable,
 )
 from tests.gacrux.sources import LoadedTournament, TournamentSource, all_sources
@@ -17,18 +16,11 @@ def pytest_report_collectionfinish(items: list[pytest.Item]) -> str:
     """Which Gacrux the run checked against, so that a failure can be told
     apart from a change in Gacrux.
 
-    Naming the version means fetching Gacrux, so this waits until
-    collection has settled, and says nothing when the run selected none of
-    these tests.
+    Says nothing when the run selected none of these tests.
     """
     if not any(item.get_closest_marker('gacrux') for item in items):
         return ''
     return gacrux_report_header()
-
-
-@pytest.fixture(scope='session', autouse=True)
-def gacrux() -> Path:
-    return gacrux_source_dir()
 
 
 @pytest.fixture(params=all_sources(), ids=str)

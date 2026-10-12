@@ -77,9 +77,13 @@ class TrfExport:
         window = build_window(tournament, period) if period else None
         if window is not None:
             after_round = window.last_round
+        # Without a round, the file carries every round entered, a bye
+        # requested ahead included, and the standings the tournament shows.
+        ranking_round = after_round
         if after_round is None:
             after_round = tournament.rounds
-        tournament.compute_tournament_player_ranks(after_round=after_round)
+            ranking_round = tournament.max_ranking_round
+        tournament.compute_tournament_player_ranks(after_round=ranking_round)
         seed_setting = ColorSeedSetting()
         trf = TrfTournament(
             name=window.period.report_name if window else tournament.name,

@@ -1,8 +1,8 @@
 """Gacrux, an independent pairing and tie-break checker, run as an oracle
 over the TRF26 export of a tournament.
 
-Gacrux is fetched at a pinned commit into ``tools/gacrux/<commit>`` and
-run as a subprocess (``python -m gacrux.pairingchecker`` and
+Gacrux is a development dependency pinned to a release on PyPI, run as a
+subprocess (``python -m gacrux.pairingchecker`` and
 ``python -m gacrux.tiebreakchecker``) on the interpreter running the
 tests; nothing of it is imported, so a change to its data model only
 shows up here as a parsing failure, never as an import error.
@@ -14,23 +14,18 @@ run reports: the exit status is the file-reading status and is 0 even
 on a mismatch.
 """
 
-import io
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
-import tarfile
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from decimal import ROUND_HALF_UP, Decimal
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any, SupportsFloat
 
-import requests
-
-from common import BASE_DIR, REQUEST_TIMEOUT
 from common.i18n.utils import unicode_normalize
 from data.board import Board
 from data.input_output.tournament_exporters import Trf26TournamentExporter
@@ -40,12 +35,9 @@ from data.tie_breaks.options import LegacyMarch2026TieBreakOption
 from data.tie_breaks.tie_breaks import TieBreak
 from data.tournament import Tournament
 
-GACRUX_REPOSITORY = 'https://github.com/OttoMilvang/TieBreakServer'
-GACRUX_COMMIT = '721b73b0d1c38be1dfe416e890bfe8bb66921566'
-GACRUX_DIR = BASE_DIR / 'tools' / 'gacrux'
 
-# The tie-break names Gacrux's ``tiebreak.tiebreaklist`` computes at the
-# pinned commit. A tie-break whose TRF acronym is not built on one of these
+# The tie-break names Gacrux's ``tiebreak.tiebreaklist`` computes in the
+# pinned release. A tie-break whose TRF acronym is not built on one of these
 # is left out of the comparison rather than sent, since an unknown name
 # crashes the checker.
 GACRUX_TIE_BREAKS = frozenset(
@@ -123,50 +115,28 @@ ORDER_ONLY_TIE_BREAKS = frozenset(
 # ---------------------------------------------------------------------------
 
 
-def gacrux_source_dir() -> Path:
-    """The directory holding the ``gacrux`` package at the pinned commit,
-    fetched from GitHub on first use."""
+def gacrux_source_dir() -> Path | None:
+    """Another copy of the ``gacrux`` package to run in place of the
+    installed release, such as a pull request's checkout."""
     if override := os.environ.get('GACRUX_SOURCE'):
         return Path(override)
-    source_dir = GACRUX_DIR / GACRUX_COMMIT
-    if (source_dir / 'gacrux' / '__init__.py').exists():
-        return source_dir
-    archive_url = f'{GACRUX_REPOSITORY}/archive/{GACRUX_COMMIT}.tar.gz'
-    response = requests.get(archive_url, timeout=REQUEST_TIMEOUT)
-    response.raise_for_status()
-    staging = GACRUX_DIR / f'{GACRUX_COMMIT}.{os.getpid()}.tmp'
-    shutil.rmtree(staging, ignore_errors=True)
-    staging.mkdir(parents=True)
-    with tarfile.open(fileobj=io.BytesIO(response.content), mode='r:gz') as archive:
-        prefix = f'TieBreakServer-{GACRUX_COMMIT}/gacrux/'
-        members = [
-            member
-            for member in archive.getmembers()
-            if member.name.startswith(prefix) and member.isfile()
-        ]
-        for member in members:
-            member.name = member.name.removeprefix(f'TieBreakServer-{GACRUX_COMMIT}/')
-        archive.extractall(staging, members=members, filter='data')
-    # Several workers may fetch at once: the first rename wins, the others
-    # find the package in place and drop their copy.
-    try:
-        staging.rename(source_dir)
-    except OSError:
-        shutil.rmtree(staging, ignore_errors=True)
-    return source_dir
+    return None
 
 
 def gacrux_version() -> str:
-    """The version string Gacrux declares at the pinned commit."""
-    version_file = gacrux_source_dir() / 'gacrux' / 'version.py'
+    """The version of the Gacrux that runs."""
+    source_dir = gacrux_source_dir()
+    if source_dir is None:
+        return version('gacrux')
+    version_file = source_dir / 'gacrux' / 'version.py'
     match = re.search(r'__version__\s*=\s*"([^"]+)"', version_file.read_text())
     return match.group(1) if match else 'unknown'
 
 
 def gacrux_report_header() -> str:
-    return (
-        f'Gacrux {gacrux_version()} at {GACRUX_REPOSITORY}/commit/{GACRUX_COMMIT[:12]}'
-    )
+    source_dir = gacrux_source_dir()
+    origin = 'PyPI' if source_dir is None else str(source_dir)
+    return f'Gacrux {gacrux_version()} from {origin}'
 
 
 # ---------------------------------------------------------------------------
@@ -318,10 +288,9 @@ def run_checker(checker: str, trf_path: Path, *args: str) -> CheckerRun:
     ]
     # Plain tracebacks, whatever the terminal asks for: the known issues are
     # recognised from their text.
-    env = os.environ | {
-        'PYTHONPATH': str(gacrux_source_dir()),
-        'PYTHON_COLORS': '0',
-    }
+    env = os.environ | {'PYTHON_COLORS': '0'}
+    if (source_dir := gacrux_source_dir()) is not None:
+        env['PYTHONPATH'] = str(source_dir)
     completed = subprocess.run(
         command,
         capture_output=True,

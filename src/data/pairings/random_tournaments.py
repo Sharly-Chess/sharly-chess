@@ -125,6 +125,9 @@ _UNSTATED_RATING_STEP_RANGE = (2.0, 25.0)
 _UNSTATED_TEAM_RANGE = (4, 24)
 _UNSTATED_TEAM_PLAYER_RANGE = (2, 6)
 _UNSTATED_TIE_BREAK_COUNT_RANGE = (1, 3)
+#: What a pairing-allocated bye can be worth: a win's point, a draw's or a
+#: loss's, all three allowed by the standard scoring system.
+_UNSTATED_PAB_POINTS = (1.0, 0.5, 0.0)
 
 #: Every tie-break of the individual column of *Mandatory Tie-Breaks*, the
 #: list an endorsed program must implement. `KS/Lx` takes "any reasonable
@@ -217,6 +220,8 @@ class TournamentSettings:
     #: The Baku acceleration method, which only an individual tournament
     #: can use.
     acceleration: bool | None = None
+    #: What the pairing-allocated bye of an individual tournament is worth.
+    pab_points: float | None = None
     #: The criteria the standings are ranked on, as TRF26 acronyms. Left
     #: out, the points and a few of the mandatory tie-breaks.
     tie_breaks: list[str] | None = None
@@ -268,6 +273,9 @@ class TournamentSettings:
         acceleration = self.acceleration
         if acceleration is None:
             acceleration = not team_event and chance.choice((True, False))
+        pab_points = self.pab_points
+        if pab_points is None:
+            pab_points = 1.0 if team_event else chance.choice(_UNSTATED_PAB_POINTS)
         tie_breaks = self.tie_breaks
         if tie_breaks is None:
             catalogue = (
@@ -302,6 +310,7 @@ class TournamentSettings:
             primary_score=primary_score,
             secondary_score_for_colours=secondary_for_colours,
             acceleration=acceleration,
+            pab_points=pab_points,
             tie_breaks=list(tie_breaks),
             name=self.name,
             realistic_names=self.realistic_names,
@@ -434,6 +443,11 @@ class RandomTournamentGenerator:
                         True
                         if settled.secondary_score_for_colours is None
                         else settled.secondary_score_for_colours
+                    ),
+                    game_points=(
+                        {Result.PAIRING_ALLOCATED_BYE.value: settled.pab_points}
+                        if settled.pab_points not in (None, 1.0)
+                        else None
                     ),
                 )
             )
