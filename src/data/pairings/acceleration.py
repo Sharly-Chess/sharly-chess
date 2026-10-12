@@ -131,6 +131,16 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
 
     @classmethod
     def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
+        variation = tournament.pairing_variation
+        if (
+            not tournament.has_pairings
+            and isinstance(variation, AccelerationSwissVariation)
+            and not variation.are_groups_editable
+        ):
+            # Groups the arbiter cannot edit are formed from the field as it
+            # stands at the first pairing; a value stored before then
+            # describes an earlier field.
+            return value == cls.default_value(tournament)
         return value[0] < value[1] <= tournament.player_count
 
 

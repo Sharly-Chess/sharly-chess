@@ -1,7 +1,7 @@
 """The pairing numbers of a tournament's players.
 
 A player's number is their place in the starting rank. Once the system
-has frozen the numbering — a Swiss after its first pairing — a player
+has frozen the numbering — a Swiss once its fourth round is paired — a player
 inserted later takes the place their rank gives them and the others
 shift, as do the settings that address numbers.
 """
