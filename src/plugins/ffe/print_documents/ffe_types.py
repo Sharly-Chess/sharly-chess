@@ -287,10 +287,10 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
         }
 
 
-class FFETrainingCertificate1Type(FFETrainingCertificateType):
+class FFETrainingCertificateAFCType(FFETrainingCertificateType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-training-certificate-1'
+        return 'ffe-training-certificate-afc'
 
     @staticmethod
     def static_name() -> str:
@@ -298,37 +298,62 @@ class FFETrainingCertificate1Type(FFETrainingCertificateType):
 
     @property
     def training_title(self) -> str:
-        return 'AFC'
+        return 'AFClub'
 
     @property
     def training_skills(self) -> list[str]:
         return [
-            'Connaitre les règles du jeu',
+            'Maitrise des compétences organisationnelles (ponctualité, préparation du matériel, de la salle de jeu, pointage)',
+            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.3.8)',
+            'Connaitre et faire appliquer les règles du jeu',
+            'Anticiper et désamorcer les situations conflictuelles',
             'Maitrise du règlement de la compétition',
+            'Connaissance et maitrise de sa mission administrative',
             'Représenter dignement l’équipe d’arbitrage',
-            'Régler une pendule',
-            'Vérifier la mise en place en début de ronde',
-            'Présence',
-            'Intervenir sur une partie',
             'Se questionner/se concerter avec les autres arbitres',
-            'Connaissance générale de la Fédération et de la D.N.A.',
-            'Compétences organisationnelles',
         ]
 
     @property
     def training_levels(self) -> list[str]:
-        return [
-            'Parfait',
-            'Satisfaisant',
-            'Fragile',
-            'Insuffisant',
-        ]
+        return ['Parfait', 'Satisfaisant', 'Fragile', 'Insuffisant', 'Non évalué']
 
 
-class FFETrainingCertificate2Type(FFETrainingCertificateType):
+class FFETrainingCertificateAFMType(FFETrainingCertificateType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-training-certificate-2'
+        return 'ffe-training-certificate-afm'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Attestation de stage pratique AFM'
+
+    @property
+    def training_title(self) -> str:
+        return 'AFMatch'
+
+    @property
+    def training_skills(self) -> list[str]:
+        return [
+            'Connaitre et faire appliquer les règles du jeu fondamentales',
+            'Maitrise du règlement de la compétition',
+            'Représenter dignement l’équipe d’arbitrage',
+            'Régler une pendule',
+            'Vérifier la mise en place en début de ronde',
+            'Présence auprès des joueurs et des échiquiers',
+            'Intervenir sur une partie',
+            'Se questionner/se concerter avec les autres arbitres',
+            'Maitrise des compétences organisationnelles (ponctualité, préparation du matériel, de la salle de jeu, pointage)',
+        ]
+
+    @property
+    def training_levels(self) -> list[str]:
+        return ['Excellent', 'Satisfaisant', 'Fragile', 'Insuffisant', 'Non évalué']
+
+
+class FFETrainingCertificateAFOType(FFETrainingCertificateType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-training-certificate-afo'
 
     @staticmethod
     def static_name() -> str:
@@ -336,18 +361,19 @@ class FFETrainingCertificate2Type(FFETrainingCertificateType):
 
     @property
     def training_title(self) -> str:
-        return 'AFO'
+        return 'AFOpen'
 
     @property
     def training_skills(self) -> list[str]:
         return [
-            'Maitrise du logiciel Papi',
+            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.3.8)',
             'Connaissance et maitrise de sa mission administrative',
             'Maitrise du règlement de la compétition',
             'Représenter dignement l’équipe d’arbitrage',
-            'Non évalué Relations avec l’organisateur',
+            'Relations avec l’organisateur',
             'Calcul des prix',
             'Système suisse et départages',
+            'Connaitre et faire appliquer les règles du jeu',
             'Se questionner/se concerter avec les autres arbitres',
         ]
 
