@@ -47,6 +47,7 @@
 - Unpairing a board no longer renumbers the other tables of the round in compact table numbering (5.1.2)
 - Updating the ratings from the reminder shown before pairing the first round no longer skips the window asking what to do with absent players, who were then paired (5.1.3)
 - With the Baku acceleration, group A is now always computed from the players entered at the time of the first pairing, even if the pairing settings were saved before more players were entered (5.1.5)
+- A pairing-allocated bye worth half a point or nothing now counts as a downfloat when pairing, and at its value in Sonneborn-Berger (5.1.5)
 
 ## Documents
 

@@ -373,6 +373,33 @@ class TournamentImporterTestCase(TestCase):
         with self.assertRaisesRegex(ImporterError, 'Pairing not found'):
             self._import_trf(TrfTournament(name='Missing', players=players))
 
+    def test_trf_line_stopping_before_a_paired_round_is_an_absence(self):
+        """Player 3 played round 1 and the line stops there: in round 2,
+        which was paired, the player was absent, as a blank entry says, and
+        the round is finished."""
+        players = [self._trf_player(number, gender='m') for number in range(1, 5)]
+        players[0].games = [TrfGame(2, 'w', '1', 1), TrfGame(4, 'b', '1', 2)]
+        players[1].games = [TrfGame(1, 'b', '0', 1), TrfGame(None, '-', ' ', 2)]
+        players[2].games = [TrfGame(4, 'w', '1', 1)]
+        players[3].games = [TrfGame(3, 'b', '0', 1), TrfGame(1, 'w', '0', 2)]
+        tournament = self._import_trf(TrfTournament(name='Cut short', players=players))
+        by_number = tournament.tournament_players_by_pairing_number
+        self.assertEqual(by_number[3].pairings[2].result, Result.ZERO_POINT_BYE)
+        self.assertTrue(tournament.is_round_finished(2))
+
+    def test_trf_export_ranks_as_of_the_last_round_played(self):
+        """Player 43 of the JaVaFo sample has a half-point bye entered for
+        round 5, which is not paired yet: his points count it, as the
+        file's do, and his rank is that of the standings after round 4."""
+        tournament = self._import_tournament(self._trf_file_importer('javafo_sample2'))
+        trf_player = next(
+            player
+            for player in TrfExport(tournament).build().players
+            if player.id == 43
+        )
+        self.assertEqual(trf_player.points, 1.0)
+        self.assertEqual(trf_player.rank, 48)
+
     def test_trf06_round_robin_is_recognised_from_the_type(self):
         players = [self._trf_player(number, gender='m') for number in range(1, 5)]
         tournament = self._import_trf(
