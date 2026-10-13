@@ -816,7 +816,9 @@ class PlayerAdminController(BaseEventAdminController):
                 'label': Markup('{} · {}{}').format(
                     rating,
                     describe_rating(rating),
-                    '' if in_sequence else f' ({_("not among the ratings tried")})',
+                    ''
+                    if in_sequence
+                    else f' ({_("not among the ratings looked for")})',
                 ),
             }
             for key, rating, in_sequence in other_ratings(

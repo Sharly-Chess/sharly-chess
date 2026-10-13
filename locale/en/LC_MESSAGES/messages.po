@@ -5504,9 +5504,6 @@ msgctxt "may acronym"
 msgid "May"
 msgstr ""
 
-msgid "May be overridden on a per-tournament basis."
-msgstr ""
-
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
@@ -8060,6 +8057,12 @@ msgstr ""
 msgid "Rating report correction"
 msgstr ""
 
+msgid "Rating retrieval"
+msgstr ""
+
+msgid "Rating retrieval by default:"
+msgstr ""
+
 msgid "Rating step"
 msgstr ""
 
@@ -8085,15 +8088,6 @@ msgid "Ratings set by the arbiter"
 msgstr ""
 
 msgid "Ratings the lists now give differently"
-msgstr ""
-
-msgid "Ratings tried"
-msgstr ""
-
-msgid "Ratings tried by default:"
-msgstr ""
-
-msgid "Ratings tried:"
 msgstr ""
 
 msgid "Ratings update"
@@ -10303,7 +10297,10 @@ msgstr ""
 msgid "The rating of the players no list rates and for whom no value is typed. May be overridden on a per-tournament basis."
 msgstr ""
 
-msgid "The rating used by the federation of the event."
+msgid "The rating retrieval, in order of priority (may be overridden on a per-tournament basis)."
+msgstr ""
+
+msgid "The rating retrieval, set by the federation of the event, in order of priority."
 msgstr ""
 
 msgid "The rating used when the time control is at least 60 minutes."
@@ -10324,13 +10321,13 @@ msgstr ""
 msgid "The ratings in descending order."
 msgstr ""
 
+msgid "The ratings looked for, in order of priority (the first rating found is used)."
+msgstr ""
+
+msgid "The ratings looked for, set by the federation of the event, in order of priority (the first rating found is used)."
+msgstr ""
+
 msgid "The ratings of all the players are those of the lists."
-msgstr ""
-
-msgid "The ratings the federation of the event ranks the players on, tried in this order."
-msgstr ""
-
-msgid "The ratings the players are ranked on, tried in this order: the first one a player holds is used."
 msgstr ""
 
 msgid "The related objects will also be deleted:"
@@ -12486,7 +12483,7 @@ msgstr ""
 msgid "norm already achieved"
 msgstr ""
 
-msgid "not among the ratings tried"
+msgid "not among the ratings looked for"
 msgstr ""
 
 msgid "not counted"

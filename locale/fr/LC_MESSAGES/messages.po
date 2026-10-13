@@ -5504,9 +5504,6 @@ msgctxt "may acronym"
 msgid "May"
 msgstr "Mai"
 
-msgid "May be overridden on a per-tournament basis."
-msgstr "Peut être remplacé au niveau de chaque tournoi."
-
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
@@ -8062,6 +8059,12 @@ msgstr "Classement utilisé par les départages"
 msgid "Rating report correction"
 msgstr "Correction pour le rapport Elo"
 
+msgid "Rating retrieval"
+msgstr "Récupération du classement"
+
+msgid "Rating retrieval by default:"
+msgstr "Récupération du classement par défaut :"
+
 msgid "Rating step"
 msgstr "Pas de Elo"
 
@@ -8088,15 +8091,6 @@ msgstr "Classements saisis par l'arbitre"
 
 msgid "Ratings the lists now give differently"
 msgstr "Classements que les listes donnent désormais différemment"
-
-msgid "Ratings tried"
-msgstr "Classements essayés"
-
-msgid "Ratings tried by default:"
-msgstr "Classements essayés par défaut :"
-
-msgid "Ratings tried:"
-msgstr "Classements essayés :"
 
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
@@ -10305,8 +10299,11 @@ msgstr "Le classement des joueur·euses qu’aucune liste ne classe et pour qui 
 msgid "The rating of the players no list rates and for whom no value is typed. May be overridden on a per-tournament basis."
 msgstr "Le classement des joueur·euses qu’aucune liste ne classe et pour qui aucune valeur n’est saisie. Peut être modifié tournoi par tournoi."
 
-msgid "The rating used by the federation of the event."
-msgstr "Le classement utilisé par la fédération de l'événement."
+msgid "The rating retrieval, in order of priority (may be overridden on a per-tournament basis)."
+msgstr "La récupération du classement, par ordre de priorité (peut être remplacée au niveau de chaque tournoi)."
+
+msgid "The rating retrieval, set by the federation of the event, in order of priority."
+msgstr "La récupération du classement, définie par la fédération de l'évènement, par ordre de priorité."
 
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
@@ -10326,14 +10323,14 @@ msgstr "Les classements par ordre croissant."
 msgid "The ratings in descending order."
 msgstr "Les classements par ordre décroissant."
 
+msgid "The ratings looked for, in order of priority (the first rating found is used)."
+msgstr "Les classements recherchés, par ordre de priorité (le premier classement trouvé est utilisé)."
+
+msgid "The ratings looked for, set by the federation of the event, in order of priority (the first rating found is used)."
+msgstr "Les classements recherchés, définis par la fédération de l'évènement, par ordre de priorité (le premier classement trouvé est utilisé)."
+
 msgid "The ratings of all the players are those of the lists."
 msgstr "Les classements de tou·tes les joueur·euses sont ceux des listes."
-
-msgid "The ratings the federation of the event ranks the players on, tried in this order."
-msgstr "Les classements selon lesquels la fédération de l’événement range les joueur·euses, essayés dans cet ordre."
-
-msgid "The ratings the players are ranked on, tried in this order: the first one a player holds is used."
-msgstr "Les classements selon lesquels les joueur·euses sont classé·es, essayés dans cet ordre : le premier que possède un·e joueur·euse est utilisé."
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
@@ -12488,8 +12485,8 @@ msgstr "aucun départage sélectionné"
 msgid "norm already achieved"
 msgstr "norme déjà acquise"
 
-msgid "not among the ratings tried"
-msgstr "hors des classements essayés"
+msgid "not among the ratings looked for"
+msgstr "hors des classements recherchés"
 
 msgid "not counted"
 msgstr "non comptée"
