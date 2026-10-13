@@ -12483,7 +12483,7 @@ msgstr ""
 msgid "norm already achieved"
 msgstr ""
 
-msgid "not among the ratings looked for"
+msgid "not among the ratings retrieved"
 msgstr ""
 
 msgid "not counted"

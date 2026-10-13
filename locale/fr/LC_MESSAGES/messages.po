@@ -12485,8 +12485,8 @@ msgstr "aucun départage sélectionné"
 msgid "norm already achieved"
 msgstr "norme déjà acquise"
 
-msgid "not among the ratings looked for"
-msgstr "hors des classements recherchés"
+msgid "not among the ratings retrieved"
+msgstr "hors des classements récupérés"
 
 msgid "not counted"
 msgstr "non comptée"
