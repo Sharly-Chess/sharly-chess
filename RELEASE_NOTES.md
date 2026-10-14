@@ -29,6 +29,7 @@
 - Keizer tournaments can be sent to _Sharly-Chess.com_, with each player's Keizer score shown on the pairings and in the standings (5.1.4)
 - The standings sent to _Sharly-Chess.com_ show the ranking criteria as in _Sharly Chess_: the points appear once, where they stand among the tie-breaks, the first criterion is in bold, and tied players share a rank (5.1.4)
 - New soft constraint for prohibited pairings, avoided as much as the pairing rules allow, used by the _FFE_ team cups to keep teams of the same club apart (5.1.4)
+- Saving the tournament properties no longer switches off the protection of players of the same club (or any other prohibited-pairings setting) or resets the order of the teams (5.1.6)
 
 ## Players
 
