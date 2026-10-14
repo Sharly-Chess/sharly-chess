@@ -89,6 +89,18 @@ def sequence_keys(sequence: RatingSequence) -> list[str]:
     return [entry.key for entry in sequence]
 
 
+def rating_name(entry: RatingEntry) -> str:
+    """The name of a rating within its list, e.g. "rapid" in the FIDE
+    list, "FIDE rapid" or "national rapid" in a national list."""
+    if entry.family == RatingListFamily.FIDE:
+        return entry.cadence.short_name.lower()
+    return (
+        pgettext('rating sequence', 'FIDE {cadences}')
+        if entry.kind == PlayerRatingType.FIDE
+        else pgettext('rating sequence', 'national {cadences}')
+    ).format(cadences=entry.cadence.short_name.lower())
+
+
 def _sequence_groups(
     sequence: RatingSequence, then: str
 ) -> list[tuple[RatingListFamily, str]]:
@@ -102,19 +114,7 @@ def _sequence_groups(
         else:
             groups.append((entry.family, [entry]))
     return [
-        (
-            family,
-            then.join(
-                entry.cadence.short_name.lower()
-                if family == RatingListFamily.FIDE
-                else (
-                    pgettext('rating sequence', 'FIDE {cadences}')
-                    if entry.kind == PlayerRatingType.FIDE
-                    else pgettext('rating sequence', 'national {cadences}')
-                ).format(cadences=entry.cadence.short_name.lower())
-                for entry in entries
-            ),
-        )
+        (family, then.join(rating_name(entry) for entry in entries))
         for family, entries in groups
     ]
 
@@ -152,6 +152,23 @@ def sequence_name(
     return name
 
 
+def list_html(
+    family: RatingListFamily, national_list_name: str | None, ratings: str
+) -> Markup:
+    """A list as a badge followed by the ratings read from it."""
+    return Markup('{list} {ratings}').format(
+        list=Markup('<span class="badge {classes}">{name}</span>').format(
+            classes='bg-primary text-dark'
+            if family == RatingListFamily.FIDE
+            else 'text-bg-secondary',
+            name=_('FIDE')
+            if family == RatingListFamily.FIDE
+            else national_list_name or _('National list'),
+        ),
+        ratings=ratings,
+    )
+
+
 def sequence_html(
     sequence: RatingSequence,
     national_list_name: str | None,
@@ -160,17 +177,7 @@ def sequence_html(
     """The name of a sequence with each list as a badge."""
     arrow = Markup(' <i class="bi-arrow-right text-secondary"></i> ')
     html = arrow.join(
-        Markup('{list} {ratings}').format(
-            list=Markup('<span class="badge {classes}">{name}</span>').format(
-                classes='bg-primary text-dark'
-                if family == RatingListFamily.FIDE
-                else 'text-bg-secondary',
-                name=_('FIDE')
-                if family == RatingListFamily.FIDE
-                else national_list_name or _('National list'),
-            ),
-            ratings=ratings,
-        )
+        list_html(family, national_list_name, ratings)
         for family, ratings in _sequence_groups(sequence, ' › ')
     )
     if (compared := _compared(preference)) is not None:

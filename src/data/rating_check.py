@@ -8,12 +8,17 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from markupsafe import Markup
+
 from common.i18n import _, pgettext
 from data.input_output.data_source import installed_copies_only, reliable_k_factor
 from data.player import Player
 from data.rating_sequences import (
+    RatingListFamily,
     RatingSequence,
     describe_rating,
+    list_html,
+    rating_name,
     official_rating,
     resolve_rating,
 )
@@ -257,7 +262,7 @@ class ListStatus:
     """The state of a rating list the tournaments' sequences name, as the
     ratings update shows it."""
 
-    name: str
+    name: Markup
     message: str
     warning: bool
 
@@ -268,7 +273,6 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
     cadences it does not publish."""
     from data.input_output import DataSourceManager
     from data.input_output.data_source import FideDataSource, LocalDataSource
-    from data.rating_sequences import RatingListFamily
 
     manager = DataSourceManager()
     sequences = {
@@ -289,8 +293,15 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
     def cadence_names(list_cadences: list[Cadence]) -> str:
         return ', '.join(cadence.short_name.lower() for cadence in list_cadences)
 
-    def name(list_name: str, list_cadences: list[Cadence]) -> str:
-        return f'{list_name} ({cadence_names(list_cadences)})'
+    def tried_in_order(family: RatingListFamily) -> str | None:
+        """The ratings read from a list in the order they are tried, when
+        all the players' tournaments share one sequence."""
+        if len(sequences) != 1:
+            return None
+        (sequence,) = sequences
+        return ' › '.join(
+            rating_name(entry) for entry in sequence if entry.family == family
+        )
 
     statuses: list[ListStatus] = []
     if fide_cadences := cadences(RatingListFamily.FIDE, PlayerRatingType.FIDE):
@@ -300,11 +311,22 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
             if fide.is_available
             else (_('Not installed'), True)
         )
-        statuses.append(ListStatus(name(_('FIDE'), fide_cadences), message, warning))
+        statuses.append(
+            ListStatus(
+                list_html(
+                    RatingListFamily.FIDE,
+                    None,
+                    tried_in_order(RatingListFamily.FIDE)
+                    or cadence_names(fide_cadences),
+                ),
+                message,
+                warning,
+            )
+        )
     copy_cadences = cadences(RatingListFamily.NATIONAL, PlayerRatingType.FIDE)
     national_cadences = cadences(RatingListFamily.NATIONAL, PlayerRatingType.NATIONAL)
     if copy_cadences or national_cadences:
-        named_ratings = '; '.join(
+        named_ratings = tried_in_order(RatingListFamily.NATIONAL) or '; '.join(
             part
             for part in (
                 pgettext('rating sequence', 'FIDE {cadences}').format(
@@ -333,7 +355,7 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
         if not sources:
             statuses.append(
                 ListStatus(
-                    f'{_("National")} ({named_ratings})',
+                    list_html(RatingListFamily.NATIONAL, None, named_ratings),
                     _('No national list installed'),
                     True,
                 )
@@ -391,7 +413,11 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
                 )
                 warning = True
             statuses.append(
-                ListStatus(f'{list_name} ({named_ratings})', message, warning)
+                ListStatus(
+                    list_html(RatingListFamily.NATIONAL, list_name, named_ratings),
+                    message,
+                    warning,
+                )
             )
     return statuses
 
