@@ -274,7 +274,7 @@ class _FfeDataSource(ABC):
 
     @property
     def national_id_form_label(self) -> str:
-        return _('FFE licence no.:')
+        return _('{string}:').format(string=_('FFE licence no.'))
 
     @property
     def national_id_form_placeholder(self) -> str:

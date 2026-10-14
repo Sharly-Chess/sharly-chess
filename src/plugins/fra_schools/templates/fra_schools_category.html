@@ -1,7 +1,7 @@
 <div class="col-12">
     {{ admin_macros.select_input(
         name=option.id,
-        label=_('Category:'),
+        label=_('%(string)s:', string=_('Category')),
         select_options=option.category_options,
         data=data, errors=errors
     ) }}

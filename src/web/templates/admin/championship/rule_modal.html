@@ -24,7 +24,7 @@
                     <div class="col-12">
                         {{ admin_macros.select_input(
                             name='type',
-                            label=_('Rule:'),
+                            label=_('%(string)s:', string=_('Rule')),
                             tooltip_text=_('The scoring criterion applied to rank the competitors.'),
                             select_options=rule_select_options,
                             tooltip_select=true,

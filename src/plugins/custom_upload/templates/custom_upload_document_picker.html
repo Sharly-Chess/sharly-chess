@@ -30,7 +30,7 @@
                         ) if default_server_path else _('Empty by default (login folder)') %}
                         {{ admin_macros.text_input(
                         name='server_path',
-                        label=_('Server path:'),
+                        label=_('%(string)s:', string=_('Server path')),
                         placeholder=server_path_placeholder,
                         hx_indicator="unset",
                         data=data, errors=errors
@@ -39,7 +39,7 @@
                     <div class="col-12">
                         {{ admin_macros.text_input(
                         name='target_filename',
-                        label=_('Filename on server:'),
+                        label=_('%(string)s:', string=_('Filename on server')),
                         placeholder=_('E.g.: pairings_myTournament_round_1 (optional)'),
                         data=data, errors=errors
                         ) }}

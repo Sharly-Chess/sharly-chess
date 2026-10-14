@@ -63,7 +63,7 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='name',
-                                label=_('Name:'),
+                                label=_('%(string)s:', string=_('Name')),
                                 placeholder=_('Automatic'),
                                 data=data, errors=errors
                             ) }}
@@ -72,7 +72,7 @@
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
-                                    label=_('Tournament:'),
+                                    label=_('%(string)s:', string=_('Tournament')),
                                     tooltip_text=_('The first tournament of the screen.'),
                                     select_options=tournament_options,
                                     data=data, errors=errors
@@ -101,7 +101,7 @@
                                 <div class="col-12 col-md-6">
                                     {{ admin_macros.select_input(
                                         name='timer_id',
-                                        label=_('Timer:'),
+                                        label=_('%(string)s:', string=_('Timer')),
                                         tooltip_text=_('The timer displayed on the screen.'),
                                         select_options=timer_options,
                                         data=data, errors=errors
@@ -112,7 +112,7 @@
                                 <div class="col-12 col-md-6">
                                     {{ admin_macros.number_input(
                                         name='columns',
-                                        label=_('Columns:'),
+                                        label=_('%(string)s:', string=_('Columns')),
                                         placeholder=_('E.g.: %(num)d', num=2),
                                         tooltip_text=_('The number of columns used to display data.'),
                                         data=data, errors=errors

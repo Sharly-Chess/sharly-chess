@@ -317,7 +317,7 @@ class MatchSheetArbiterPrintOption(PrintOption[int | None]):
 
     @property
     def label(self) -> str:
-        return _('Arbiter:')
+        return _('{string}:').format(string=_('Arbiter'))
 
     @property
     def default_text(self) -> str:
@@ -1106,7 +1106,7 @@ class AccountPrintOption(PrintOption[int | None]):
     @abstractmethod
     def label(self) -> str:
         """Returns the label for this option."""
-        return _('Account:')
+        return _('{string}:').format(string=_('Account'))
 
 
 class PlayerHistoryOption(PrintOption[bool]):

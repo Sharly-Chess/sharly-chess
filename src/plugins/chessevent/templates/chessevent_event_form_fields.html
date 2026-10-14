@@ -5,7 +5,7 @@
     <div class="col-12">
         {{ admin_macros.text_input(
             name='chessevent_event_id',
-            label=_('ChessEvent event:'),
+            label=_('%(string)s:', string=_('ChessEvent event')),
             placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
             disabled=not client.can_update_event,
             data=data, errors=errors
@@ -14,7 +14,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.text_input(
             name='chessevent_user',
-            label=_('ChessEvent user name:'),
+            label=_('%(string)s:', string=_('ChessEvent user name')),
             placeholder=_('E.g.: %(string)s', string='Z00000'),
             disabled=not client.can_update_event,
             data=data, errors=errors
@@ -24,7 +24,7 @@
         <input type="password" name="fake_chessevent_password" style="display:none" autocomplete="current-password">
         {{ admin_macros.password_input(
             name='chessevent_password',
-            label=_('ChessEvent password:'),
+            label=_('%(string)s:', string=_('ChessEvent password')),
             placeholder=_('E.g.: my_password'),
             disabled=not client.can_update_event,
             data=data, errors=errors

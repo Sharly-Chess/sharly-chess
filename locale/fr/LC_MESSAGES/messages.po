@@ -806,9 +806,6 @@ msgstr "Le compte [{account_name}] a été supprimé."
 msgid "Account [{account_name}] has been updated."
 msgstr "Le compte [{account_name}] a été mis à jour."
 
-msgid "Account:"
-msgstr "Compte :"
-
 msgid "Action"
 msgstr "Action"
 
@@ -1008,9 +1005,6 @@ msgstr "Albanie"
 msgid "Alert message"
 msgstr "Message d'alerte"
 
-msgid "Alert message:"
-msgstr "Message d'alerte :"
-
 msgid "Algeria"
 msgstr "Algérie"
 
@@ -1206,13 +1200,6 @@ msgstr "Avril"
 
 msgid "Arbiter"
 msgstr "Arbitre"
-
-msgid "Arbiter:"
-msgstr "Arbitre :"
-
-#, python-format
-msgid "Arbiter: %(name)s"
-msgstr "Arbitre : %(name)s"
 
 msgid "Arbiters"
 msgstr "Arbitres"
@@ -1423,12 +1410,11 @@ msgstr "PAR FORFAIT"
 msgid "Back"
 msgstr "Retour"
 
-msgid "Background colour:"
-msgstr "Couleur de fond :"
+msgid "Background color"
+msgstr "Couleur de fond"
 
-#, python-format
-msgid "Background colour: %(color)s"
-msgstr "Couleur de fond : %(color)s"
+msgid "Background colour"
+msgstr "Couleur de fond"
 
 msgid "Background image URL:"
 msgstr "URL de l'image de fond :"
@@ -1456,9 +1442,6 @@ msgstr "Date de référence"
 
 msgid "Base lineup"
 msgstr "Composition de base"
-
-msgid "Base lineup:"
-msgstr "Composition de base :"
 
 msgid "Based on each tournament's criteria"
 msgstr "Selon les critères de chaque tournoi"
@@ -1525,9 +1508,6 @@ msgstr "Blitz"
 
 msgid "Blitz rating"
 msgstr "Classement blitz"
-
-msgid "Blitz:"
-msgstr "Blitz :"
 
 msgctxt "blitz rating acronym"
 msgid "Blz"
@@ -1600,9 +1580,6 @@ msgstr "Ensembles d'échiquiers de l'écran %(screen_name)s"
 #, python-brace-format
 msgid "Board {number}"
 msgstr "Échiquier {number}"
-
-msgid "Board:"
-msgstr "Échiquier :"
 
 msgid "Boards"
 msgstr "Échiquiers"
@@ -2103,9 +2080,6 @@ msgstr "Club des joueur·euses"
 msgid "Club threshold"
 msgstr "Seuil pour les clubs"
 
-msgid "Club:"
-msgstr "Club :"
-
 msgid "Clubs"
 msgstr "Clubs"
 
@@ -2114,9 +2088,6 @@ msgstr "Coefficient"
 
 msgid "Coefficient applied to this tournament’s scores."
 msgstr "Coefficient appliqué aux scores de ce tournoi."
-
-msgid "Coefficient:"
-msgstr "Coefficient :"
 
 msgid "Colombia"
 msgstr "Colombie"
@@ -2157,8 +2128,8 @@ msgstr "Couleurs"
 msgid "Colour pattern:"
 msgstr "Motif des couleurs :"
 
-msgid "Colour rule:"
-msgstr "Règle des couleurs :"
+msgid "Colour rule"
+msgstr "Règle des couleurs"
 
 msgid "Colour thresholds"
 msgstr "Seuils des couleurs"
@@ -2180,17 +2151,11 @@ msgstr "Permutation de {pairs}."
 msgid "Columns"
 msgstr "Colonnes"
 
-msgid "Columns:"
-msgstr "Colonnes :"
-
 msgid "Comma-separated board numbers to show."
 msgstr "Numéros d'échiquier à afficher, séparés par des virgules."
 
 msgid "Comment"
 msgstr "Commentaire"
-
-msgid "Comment:"
-msgstr "Commentaire :"
 
 msgid "Comments"
 msgstr "Commentaires"
@@ -2210,9 +2175,6 @@ msgstr "Type de compétiteur incompatible"
 
 msgid "Competitors"
 msgstr "Compétiteurs"
-
-msgid "Competitors:"
-msgstr "Compétiteurs :"
 
 msgid "Complementary pairings"
 msgstr "Appariements complémentaires"
@@ -2682,9 +2644,6 @@ msgstr "Format de date :"
 msgid "Date of birth"
 msgstr "Date de naissance"
 
-msgid "Date of birth:"
-msgstr "Date de naissance :"
-
 msgid "Dates"
 msgstr "Dates"
 
@@ -3012,9 +2971,6 @@ msgstr "Afficher uniquement les matchs"
 msgid "Display the unpaired players"
 msgstr "Afficher les joueur·euses non apparié·es"
 
-msgid "Display:"
-msgstr "Affichage :"
-
 #, python-format
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
@@ -3162,9 +3118,6 @@ msgstr "Nulle"
 
 msgid "Draw — choose who advances."
 msgstr "Partie nulle — choisissez qui se qualifie."
-
-msgid "Draw:"
-msgstr "Nulle :"
 
 msgid "Drawing of lots"
 msgstr "Tirage au sort"
@@ -3691,9 +3644,6 @@ msgstr "Type d'événement :"
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
 
-msgid "Event:"
-msgstr "Événement :"
-
 msgid "Events"
 msgstr "Évènements"
 
@@ -3825,9 +3775,6 @@ msgctxt "FIDE ID column header"
 msgid "FIDE ID"
 msgstr "Identi. FIDE"
 
-msgid "FIDE ID:"
-msgstr "Identifiant FIDE :"
-
 msgid "FIDE Title:"
 msgstr "Titre FIDE :"
 
@@ -3843,7 +3790,7 @@ msgstr "Base de données FIDE"
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "FIDE list: {ratings}"
-msgstr "Liste FIDE : {ratings}"
+msgstr "Liste FIDE : {ratings}"
 
 msgid "FIDE mode"
 msgstr "Mode FIDE"
@@ -3906,9 +3853,6 @@ msgstr "Fédération"
 
 msgid "Federation distribution (counted opponents)"
 msgstr "Répartition par fédération (adversaires compté·es)"
-
-msgid "Federation:"
-msgstr "Fédération :"
 
 msgid "Federations"
 msgstr "Fédérations"
@@ -3989,9 +3933,6 @@ msgstr "Premier match :"
 msgid "First name"
 msgstr "Prénom"
 
-msgid "First name:"
-msgstr "Prénom :"
-
 msgid "First pairing:"
 msgstr "Premier appariement :"
 
@@ -4015,9 +3956,6 @@ msgstr "Échiquier fixe"
 
 msgid "Fixed board ordering:"
 msgstr "Ordre des échiquiers fixes :"
-
-msgid "Fixed board:"
-msgstr "Échiquier fixe :"
 
 msgid "Fixed points per finishing position (e.g. 20 for first, 15 for second), summed. Positions beyond the table score nothing."
 msgstr "Points fixes par place à l'arrivée (p. ex. 20 pour le premier, 15 pour le deuxième), sommés. Les places au-delà du barème ne rapportent rien."
@@ -4212,13 +4150,6 @@ msgstr "Genre"
 msgid "Gender ({gender})"
 msgstr "Genre ({gender})"
 
-msgid "Gender:"
-msgstr "Genre :"
-
-#, python-brace-format
-msgid "Gender: {gender}"
-msgstr "Genre : {gender}"
-
 msgid "Genders"
 msgstr "Genres"
 
@@ -4409,7 +4340,7 @@ msgstr "La plus haute de FIDE et nationale"
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "Highest of FIDE and national: {sequence}"
-msgstr "Le plus élevé du FIDE et du national : {sequence}"
+msgstr "Le plus élevé du FIDE et du national : {sequence}"
 
 msgid "Highlight"
 msgstr "Surbrillance"
@@ -5017,10 +4948,7 @@ msgid "Last match:"
 msgstr "Dernier match :"
 
 msgid "Last name"
-msgstr "Nom"
-
-msgid "Last name:"
-msgstr "Nom de famille :"
+msgstr "Nom de famille"
 
 msgid "Last pairing:"
 msgstr "Dernier appariement :"
@@ -5193,9 +5121,6 @@ msgstr "Logs"
 msgid "Loss"
 msgstr "Défaite"
 
-msgid "Loss:"
-msgstr "Défaite :"
-
 #, python-brace-format
 msgid "Lost byes read as zero-point byes ({rounds})."
 msgstr "Exemptions perdues lues comme des exemptions à zéro point ({rounds})."
@@ -5236,7 +5161,7 @@ msgstr "La plus basse de FIDE et nationale"
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "Lowest of FIDE and national: {sequence}"
-msgstr "Le plus bas du FIDE et du national : {sequence}"
+msgstr "Le plus bas du FIDE et du national : {sequence}"
 
 msgid "Luxembourg"
 msgstr "Luxembourg"
@@ -5567,15 +5492,15 @@ msgstr "Fusionner les équipes sélectionnées"
 msgid "Mexico"
 msgstr "Mexique"
 
+msgid "Min"
+msgstr "Min"
+
 msgctxt "minimum"
 msgid "Min"
 msgstr "Min"
 
 msgid "Min. age category"
 msgstr "Catégorie d'âge min."
-
-msgid "Min:"
-msgstr "Min :"
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
@@ -5775,9 +5700,6 @@ msgstr "Nom"
 msgid "Name format:"
 msgstr "Format des noms :"
 
-msgid "Name:"
-msgstr "Nom :"
-
 #, python-format
 msgid "Name: %(screen_set_name)s"
 msgstr "Nom : %(screen_set_name)s"
@@ -5790,9 +5712,6 @@ msgstr "Namibie"
 
 msgid "Naming"
 msgstr "Nom affiché"
-
-msgid "Naming:"
-msgstr "Nom affiché :"
 
 msgctxt "national id column header"
 msgid "Nat. ID"
@@ -5868,9 +5787,6 @@ msgstr "Antilles néerlandaises"
 msgid "Network"
 msgstr "Réseau"
 
-msgid "Network:"
-msgstr "Réseau :"
-
 msgid "Networks"
 msgstr "Réseaux"
 
@@ -5942,7 +5858,7 @@ msgstr "Nouveau tournoi"
 
 #, python-format
 msgid "Newer versions of these lists are available: %(lists)s. Update them before relying on this check."
-msgstr "Des versions plus récentes de ces listes sont disponibles : %(lists)s. Mettez-les à jour avant de vous fier à cette vérification."
+msgstr "Des versions plus récentes de ces listes sont disponibles : %(lists)s. Mettez-les à jour avant de vous fier à cette vérification."
 
 msgid "Next round"
 msgstr "Ronde suivante"
@@ -6484,7 +6400,7 @@ msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
 msgstr "Il n'y a pas de bye disponible (requis : 1)."
 
 msgid "Not found in the lists:"
-msgstr "Introuvables dans les listes :"
+msgstr "Introuvables dans les listes :"
 
 msgid "Not in FIDE mode"
 msgstr "Hors mode FIDE"
@@ -6620,9 +6536,6 @@ msgstr "Nombre de rondes non renseigné dans le fichier, fixé à {rounds} d'apr
 msgid "Number of screens"
 msgstr "Nombre d'écrans"
 
-msgid "Number of screens:"
-msgstr "Nombre d'écrans :"
-
 #, python-format
 msgid "Number of teams: %(num)d"
 msgstr "Nombre d'équipes : %(num)d"
@@ -6664,9 +6577,6 @@ msgstr "Octobre"
 
 msgid "Official FIDE rating"
 msgstr "Classement FIDE officiel"
-
-msgid "Official FIDE rating:"
-msgstr "Classement FIDE officiel :"
 
 # Error: translation [États-Unis d'Amérique] is much too long compared to
 # initial [Oman]
@@ -6785,9 +6695,6 @@ msgstr "Points de match de l'adversaire × points de match obtenus"
 msgid "Opponent ratings (1.4.6 + 1.4.7)"
 msgstr "Classements des adversaires (1.4.6 + 1.4.7)"
 
-msgid "Opponent:"
-msgstr "Adversaire :"
-
 msgid "Opponents"
 msgstr "Adversaires"
 
@@ -6811,9 +6718,6 @@ msgstr "Organisation"
 
 msgid "Organiser"
 msgstr "Organisateur·ice"
-
-msgid "Organiser:"
-msgstr "Organisateur·ice :"
 
 msgid "Organization"
 msgstr "Organisation"
@@ -6870,12 +6774,12 @@ msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts. In FIDE mode, each correction to the previous round is confirmed separately."
 msgstr "Remplacer le résultat de l'appariement lors de l'utilisation des raccourcis clavier. En mode FIDE, chaque correction de la ronde précédente est confirmée séparément."
 
+msgid "Owed"
+msgstr "Dû"
+
 msgctxt "owed column header"
 msgid "Owed"
-msgstr "Du"
-
-msgid "Owed:"
-msgstr "Dû :"
+msgstr "Dû"
 
 msgid "PAB (Team):"
 msgstr "Exempt (équipe) :"
@@ -6904,12 +6808,12 @@ msgstr "Marge"
 msgid "Page break between matches (one match per page)."
 msgstr "Saut de page entre les matchs (un match par page)."
 
-msgctxt "paid column header"
 msgid "Paid"
 msgstr "Payé"
 
-msgid "Paid:"
-msgstr "Payé :"
+msgctxt "paid column header"
+msgid "Paid"
+msgstr "Payé"
 
 msgid "Pair"
 msgstr "Apparier"
@@ -7216,9 +7120,6 @@ msgstr "Téléphone"
 msgid "Phone number"
 msgstr "Numéro de téléphone"
 
-msgid "Phone number:"
-msgstr "Numéro de téléphone :"
-
 msgid "Pick at least one player — two empty tables cannot pair."
 msgstr "Choisissez au moins un·e joueur·euse — deux tables vides ne peuvent pas être appariées."
 
@@ -7337,7 +7238,7 @@ msgid "Player [{player}] marked as \"{status}\"."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e « {status} »."
 
 msgid "Player data from:"
-msgstr "Données des joueur·euses depuis :"
+msgstr "Données des joueur·euses depuis :"
 
 #, python-brace-format
 msgid "Player does not match tournament criteria: {names}"
@@ -7384,9 +7285,6 @@ msgstr "Club du·de la joueur·euse"
 
 msgid "Player's record"
 msgstr "Historique du·de la joueur·euse"
-
-msgid "Player:"
-msgstr "Joueur·euse :"
 
 msgid "Players"
 msgstr "Joueur·euses"
@@ -7491,14 +7389,11 @@ msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et rester
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni mél ne seront pas inclus·es."
 
-msgid "Players:"
-msgstr "Joueur·euses :"
-
 msgid "Players: displayed"
-msgstr "Joueur·euses : affiché·es"
+msgstr "Joueur·euses : affiché·es"
 
 msgid "Players: hidden"
-msgstr "Joueur·euses : masqué·es"
+msgstr "Joueur·euses : masqué·es"
 
 msgid "Playing"
 msgstr "En cours"
@@ -8032,9 +7927,6 @@ msgstr "Rapide"
 msgid "Rapid rating"
 msgstr "Classement rapide"
 
-msgid "Rapid:"
-msgstr "Rapide :"
-
 msgid "Rating"
 msgstr "Elo"
 
@@ -8042,7 +7934,7 @@ msgid "Rating change"
 msgstr "Variation Elo"
 
 msgid "Rating chosen:"
-msgstr "Classement retenu :"
+msgstr "Classement retenu :"
 
 msgid "Rating lists used"
 msgstr "Listes de classement utilisées"
@@ -8075,10 +7967,7 @@ msgid "Rating types"
 msgstr "Types de classement"
 
 msgid "Rating used:"
-msgstr "Classement utilisé :"
-
-msgid "Rating:"
-msgstr "Classement :"
+msgstr "Classement utilisé :"
 
 msgid "Ratings"
 msgstr "Classements"
@@ -8590,9 +8479,6 @@ msgstr "Toutes-rondes"
 msgid "Round-robin schedule"
 msgstr "Calendrier toutes-rondes"
 
-msgid "Round:"
-msgstr "Ronde :"
-
 #, python-format
 msgid "Round: %(round)d"
 msgstr "Ronde : %(round)d"
@@ -8650,9 +8536,6 @@ msgstr "Jeu de règles"
 
 msgid "Rule set applied"
 msgstr "Jeu de règles appliqué"
-
-msgid "Rule:"
-msgstr "Règle :"
 
 msgid "Rules are applied in order: each rule only breaks the ties left by the earlier ones."
 msgstr "Les règles sont appliquées dans l'ordre : chaque règle ne départage que les égalités laissées par les précédentes."
@@ -9404,9 +9287,6 @@ msgstr "Système suisse standard"
 msgid "Standard team Swiss"
 msgstr "Suisse par équipes standard"
 
-msgid "Standard:"
-msgstr "Standard :"
-
 msgid "Start Sharly Chess"
 msgstr "Démarrer Sharly Chess"
 
@@ -9685,9 +9565,6 @@ msgstr "Fichier de tournoi par équipes dans un événement individuel — crée
 msgid "Team's score"
 msgstr "Score de l'équipe"
 
-msgid "Team:"
-msgstr "Équipe :"
-
 msgid "Teams"
 msgstr "Équipes"
 
@@ -9729,9 +9606,6 @@ msgstr "Les équipes avec moins de joueur·euses sont considérées « incompl�
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
 
-msgid "Teams:"
-msgstr "Équipes :"
-
 #, python-format
 msgid "Teams: %(num)d"
 msgstr "Équipes : %(num)d"
@@ -9769,9 +9643,6 @@ msgstr "Texte avant l'horaire :"
 
 msgid "Text colour"
 msgstr "Couleur du texte"
-
-msgid "Text colour:"
-msgstr "Couleur du texte :"
 
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
@@ -10329,8 +10200,8 @@ msgstr "Les classements recherchés, par ordre de priorité (le premier classeme
 msgid "The ratings looked for, set by the federation of the event, in order of priority (the first rating found is used)."
 msgstr "Les classements recherchés, définis par la fédération de l'évènement, par ordre de priorité (le premier classement trouvé est utilisé)."
 
-msgid "The ratings of all the players are those of the lists."
-msgstr "Les classements de tou·tes les joueur·euses sont ceux des listes."
+msgid "The ratings of all the players are up to date."
+msgstr "Les classements de tou·tes les joueur·euses sont à jour."
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
@@ -10940,9 +10811,6 @@ msgstr "Heure"
 msgid "Time control"
 msgstr "Cadence"
 
-msgid "Time control:"
-msgstr "Cadence :"
-
 #, python-brace-format
 msgid "Time outside of event time range ({range})."
 msgstr "Horaire en dehors des horaires de l'évènement ({range})."
@@ -10972,9 +10840,6 @@ msgstr "Le chronomètre [{timer}] a été modifié."
 
 msgid "Timer defaults"
 msgstr "Paramètres par défaut des chronomètres"
-
-msgid "Timer:"
-msgstr "Chronomètre :"
 
 #, python-format
 msgid "Timer: %(timer_uniq_id)s"
@@ -11188,9 +11053,6 @@ msgstr "Historique"
 msgid "Tournament {tournament} ({numbers_str})"
 msgstr "Tournoi {tournament} ({numbers_str})"
 
-msgid "Tournament:"
-msgstr "Tournoi :"
-
 #, python-format
 msgid "Tournament: %(tournament_name)s"
 msgstr "Tournoi : %(tournament_name)s"
@@ -11214,9 +11076,6 @@ msgstr "Tournois affichés :"
 
 msgid "Tournaments played"
 msgstr "Tournois joués"
-
-msgid "Tournaments:"
-msgstr "Tournois :"
 
 msgid "Transfer"
 msgstr "Virement"
@@ -11260,9 +11119,6 @@ msgstr "Type B (préférences fortes + faibles)"
 
 msgid "Type of teams:"
 msgstr "Type d'équipes :"
-
-msgid "Type:"
-msgstr "Type :"
 
 #, python-format
 msgid "Type: %(screen_type)s"
@@ -11487,7 +11343,7 @@ msgid "Unrated penalty"
 msgstr "Pénalité non comptabilisée pour le classement Elo"
 
 msgid "Unrated players:"
-msgstr "Non classé·es :"
+msgstr "Non classé·es :"
 
 #, python-brace-format
 msgid "Unsupported image type [{ext}]."
@@ -11561,7 +11417,7 @@ msgstr "Mise à jour"
 
 #, python-format
 msgid "Updating the lists: %(lists)s. The check is run again once they are up to date."
-msgstr "Mise à jour des listes : %(lists)s. La vérification est relancée une fois qu’elles sont à jour."
+msgstr "Mise à jour des listes : %(lists)s. La vérification est relancée une fois qu’elles sont à jour."
 
 msgid "Upload image"
 msgstr "Téléverser une image"
@@ -11945,9 +11801,6 @@ msgstr "Participera aux rondes à venir"
 msgid "Win"
 msgstr "Victoire"
 
-msgid "Win:"
-msgstr "Victoire :"
-
 msgctxt "individual knock-out"
 msgid "Winner"
 msgstr "Vainqueur·e"
@@ -11992,7 +11845,7 @@ msgid "Women"
 msgstr "Féminin"
 
 msgid "Women's Title:"
-msgstr "Titre féminin"
+msgstr "Titre féminin :"
 
 #, python-brace-format
 msgid "Won byes read as full-point byes, the round having more than one ({rounds})."
@@ -12910,7 +12763,7 @@ msgstr "{label} ({num} meilleures étapes)"
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "{list}: {ratings}"
-msgstr "{list} : {ratings}"
+msgstr "{list} : {ratings}"
 
 #, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
@@ -12985,6 +12838,10 @@ msgstr "{start} → {end}"
 #, python-brace-format
 msgid "{status_code} - Unknown error"
 msgstr "{status_code} - Erreur inconnue"
+
+#, python-brace-format
+msgid "{string}:"
+msgstr "{string} :"
 
 #, python-brace-format
 msgid "{string}: {value}"

@@ -1112,12 +1112,13 @@ class ChampionshipAdminController(BaseAdminController):
                 maximum=criterion.options.get('MAX_AGE_CATEGORY') or '…',
             )
         if criterion.type == 'GENDER':
-            return _('Gender: {gender}').format(
-                gender=(
+            return _('{string}: {value}').format(
+                string=_('Gender'),
+                value=(
                     _('Women')
                     if criterion.options.get('GENDER_VALUE') == PlayerGender.WOMAN.value
                     else _('Men')
-                )
+                ),
             )
         return criterion.type
 

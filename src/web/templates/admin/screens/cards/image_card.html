@@ -9,7 +9,7 @@
     {% endif %}
 </div>
 <div>
-    {{ _('Background colour: %(color)s', color=data.background_color) }}
+    {{ _('%(string)s: %(value)s', string=_('Background color'), value=data.background_color) }}
     {% if data.background_color_default %}
         <span class="fst-italic">
             {{ _('(by default)') }}

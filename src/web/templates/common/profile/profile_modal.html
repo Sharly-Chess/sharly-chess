@@ -76,7 +76,7 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='account_id',
-                                label=_('Account:'),
+                                label=_('%(string)s:', string=_('Account')),
                                 select_options=active_user_account_options,
                                 data=data, errors=errors
                             ) }}

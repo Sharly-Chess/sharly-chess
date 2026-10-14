@@ -30,7 +30,7 @@
                 </h2>
                 <div>{{ admin_player.club }}</div>
                 {% if admin_event.is_team_event and admin_player.team %}
-                    <div><strong>{{ _('Team:') }}</strong> {{ admin_player.team.name }}</div>
+                    <div><strong>{{ _('%(string)s:', string=_('Team')) }}</strong> {{ admin_player.team.name }}</div>
                 {% endif %}
                 {% set category = tournament_player.category.name %}
                 <div>

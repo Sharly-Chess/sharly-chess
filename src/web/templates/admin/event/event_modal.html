@@ -134,7 +134,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='federation',
-                            label=_('Federation:'),
+                            label=_('%(string)s:', string=_('Federation')),
                             tooltip_text=_(
                                 'Sharly Chess may provide functionality specific '
                                 'to the federation chosen for each event.'
@@ -154,7 +154,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
-                            label=_('Name:'),
+                            label=_('%(string)s:', string=_('Name')),
                             placeholder=_('E.g.: World championship'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
@@ -313,7 +313,7 @@
                         <div class="col-12">
                             {{ admin_macros.text_input(
                                 name='organiser_name',
-                                label=_('Organiser:'),
+                                label=_('%(string)s:', string=_('Organiser')),
                                 placeholder=_('E.g.: Sharly Chess Club'),
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors,

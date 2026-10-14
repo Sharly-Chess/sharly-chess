@@ -49,7 +49,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.text_input(
             name='ffe_team_login',
-            label=_('Account:'),
+            label=_('%(string)s:', string=_('Account')),
             tooltip_text=_(
                 'The account of the group director on the FFE website '
                 '(administration of team competitions).'
@@ -90,7 +90,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.select_input(
             name='ffe_team_division',
-            label=_('Division:'),
+            label=_('%(string)s:', string=_('Division')),
             select_options=division_options,
             onchange="htmx.trigger(this.closest('.team-auth-fields'), 'ffe-team-refresh')",
             data=data, errors=errors

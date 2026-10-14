@@ -2,7 +2,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.select_input(
             name='ffe_league',
-            label=_('League:'),
+            label=_('%(string)s:', string=_('League')),
             select_options=ffe_league_options,
             data=data, errors=errors
         ) }}

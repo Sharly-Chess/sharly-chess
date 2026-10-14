@@ -39,7 +39,7 @@
     <div class="col-12">
         {{ admin_macros.color_input(
             name='background_color',
-            label=_('Background colour:'),
+            label=_('%(string)s:', string=_('Background colour')),
             default_checkbox=true,
             default_color=admin_event.background_color,
             data=data, errors=errors
