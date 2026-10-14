@@ -82,9 +82,11 @@ from utils.enum import (
     BoardColor,
     EventType,
     FormAction,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
     TeamColourType,
+    TeamSortMode,
     TournamentRating,
 )
 from data.screens.manager import ScreenTypeManager
@@ -1088,6 +1090,24 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type=team_colour_type,
             enforce_roster_order=enforce_roster_order,
             round_robin_participation_rule=round_robin_participation_rule,
+            # Set from the teams tab and the prohibited-pairings modal, and
+            # carried through the rebuild so saving the tournament does not
+            # forget them.
+            team_sort_mode=(
+                tournament.stored_tournament.team_sort_mode
+                if tournament
+                else TeamSortMode.MANUAL.value
+            ),
+            prohibited_pairing_dimension=(
+                tournament.stored_tournament.prohibited_pairing_dimension
+                if tournament
+                else None
+            ),
+            prohibited_pairing_dimension_constraint=(
+                tournament.stored_tournament.prohibited_pairing_dimension_constraint
+                if tournament
+                else ProhibitedPairingConstraint.HARD.value
+            ),
             rule_set=rule_set_id,
             rule_set_config=rule_set_config,
             plugin_data=plugin_data,
