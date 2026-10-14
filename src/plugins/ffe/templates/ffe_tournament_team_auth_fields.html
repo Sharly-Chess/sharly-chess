@@ -90,7 +90,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.select_input(
             name='ffe_team_division',
-            label=_('Division:'),
+            label=_('%(string):', string=_('Division')),
             select_options=division_options,
             onchange="htmx.trigger(this.closest('.team-auth-fields'), 'ffe-team-refresh')",
             data=data, errors=errors

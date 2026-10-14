@@ -157,9 +157,6 @@ msgstr ""
 msgid "Division"
 msgstr ""
 
-msgid "Division:"
-msgstr ""
-
 msgid "Download fees"
 msgstr ""
 
@@ -430,9 +427,6 @@ msgid "Licence type:"
 msgstr "Licence type:"
 
 msgid "Licence types"
-msgstr ""
-
-msgid "Licence:"
 msgstr ""
 
 msgid "Lowest own average rating"

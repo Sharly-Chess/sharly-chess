@@ -162,9 +162,6 @@ msgstr "Phase départementale"
 msgid "Division"
 msgstr "Division"
 
-msgid "Division:"
-msgstr "Division :"
-
 msgid "Download fees"
 msgstr "Télécharger les droits d'homologation"
 
@@ -436,9 +433,6 @@ msgstr "Type de licence :"
 
 msgid "Licence types"
 msgstr "Types de licence"
-
-msgid "Licence:"
-msgstr "Licence :"
 
 msgid "Lowest own average rating"
 msgstr "Plus faible moyenne Elo"
