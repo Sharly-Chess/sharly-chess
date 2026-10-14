@@ -2,6 +2,10 @@
 msgid "%(default_server_path)s by default"
 msgstr "%(default_server_path)s par défaut"
 
+#, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
 msgid ""
 "- a server configured on the event (FTP, FTPS or SFTP);\n"
 "- a list of documents to upload, each one targeting the whole event or only some of its tournaments;\n"
@@ -115,11 +119,11 @@ msgstr "Échec"
 msgid "Filename on server"
 msgstr "Nom du fichier sur le serveur"
 
-msgid "Host and FTP username are required."
-msgstr "Hôte et identifiant FTP sont requis"
-
 msgid "Host"
 msgstr "Hôte"
+
+msgid "Host and FTP username are required."
+msgstr "Hôte et identifiant FTP sont requis"
 
 msgid "Invalid credentials."
 msgstr "Identifiants invalides."

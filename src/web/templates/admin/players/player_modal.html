@@ -81,7 +81,7 @@
                     <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='last_name',
-                            label=_('%(string)s:', string=_('Name:')),
+                            label=_('%(string)s:', string=_('Name')),
                             placeholder=_('E.g.: DOE'),
                             data=data, errors=errors
                         ) }}
@@ -97,7 +97,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.date_input(
                             name='date_of_birth',
-                            label=_('%(string)s:', string=_('Date of birth:')),
+                            label=_('%(string)s:', string=_('Date of birth')),
                             tooltip_text=_(
                                 'Only the year of birth is required for most tournaments. '
                                 'it is therefore recommanded to only ask for your players\' '
@@ -158,7 +158,7 @@
                     <div id="fide-id-col" class="{{ 'col-12' if is_woman else 'col-12 col-sm-6' }}">
                         {{ admin_macros.number_input(
                             name='fide_id',
-                            label=_('%(string)s:', string=_('FIDE ID:')),
+                            label=_('%(string)s:', string=_('FIDE ID')),
                             disabled=action == 'update' or data['fide_id'] != '',
                             input_tooltip=_(
                                 'Replace the player to update this field.'

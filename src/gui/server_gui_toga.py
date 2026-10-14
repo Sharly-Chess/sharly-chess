@@ -710,7 +710,10 @@ class SharlyChessServerToga(toga.App):
         title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         general_children: list[toga.Widget] = [
             self._settings_row(_('Language:'), self._build_locale_select()),
-            self._settings_row(_('Federation:'), self._build_federation_select()),
+            self._settings_row(
+                _('{string}:').format(string=_('Federation')),
+                self._build_federation_select(),
+            ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
             self._settings_row('', self._build_capitalise_last_name_switch()),

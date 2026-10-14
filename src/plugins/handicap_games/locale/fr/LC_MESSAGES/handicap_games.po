@@ -1,3 +1,7 @@
+#, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
 msgid ""
 "- a rating step, a time penalty per step and a minimum time, configured on the tournament;\n"
 "- the time of each player computed for every game of the round from the rating difference between the two players;\n"
@@ -50,3 +54,4 @@ msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en s
 
 msgid "Time control"
 msgstr "Cadence"
+

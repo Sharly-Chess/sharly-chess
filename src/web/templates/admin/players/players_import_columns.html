@@ -1,7 +1,7 @@
 {% set required_column_ids, optional_column_ids, informative_column_ids = split_column_ids(columns) %}
 <div class="row mt-2">
     <span>
-        {{ _('%(string)s:', string=_('Columns:')) }}
+        {{ _('%(string)s:', string=_('Columns')) }}
         {# i18n: counts columns; the noun is in the 'Columns:' label this follows #}
         {{ npgettext(
             'columns',

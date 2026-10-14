@@ -262,8 +262,8 @@ msgstr "Licence FFE A (compétition)"
 msgid "FFE licence B (leisure)"
 msgstr "Licence FFE B (loisir)"
 
-msgid "FFE licence no.:"
-msgstr "Numéro de licence FFE :"
+msgid "FFE licence no."
+msgstr "Numéro de licence FFE"
 
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr "Coupe de la parité FFE. Effectif de 6 joueur·euses (3F + 3H), 2 femmes et 2 hommes alignés à chaque ronde, Elo total de l'équipe plafonné à 8000."
@@ -405,9 +405,6 @@ msgstr "Ligue"
 
 msgid "League not specified"
 msgstr "Ligue non spécifiée"
-
-msgid "League:"
-msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
@@ -592,12 +589,12 @@ msgstr "Joueur·euses classé·e au dessus de {cap} : {names}."
 msgid "Player without an A (competition) FFE licence: {names}."
 msgstr "Joueur·euses sans licence A (compétition) : {names}."
 
+msgid "Players"
+msgstr "Joueur·euses"
+
 #, python-brace-format
 msgid "Players without FFE licence number: {names}."
 msgstr "Joueur·euses sans numéro de licence FFE : {names}."
-
-msgid "Players"
-msgstr "Joueur·euses"
 
 msgid "Please select a file."
 msgstr "Veuillez sélectionner un fichier."
@@ -753,9 +750,6 @@ msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en trois g
 
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr "La moyenne des classements des joueur·euses de l'équipe, pondérée par le nombre de matchs disputés. L'équipe avec la plus faible moyenne gagne au départage."
-
-msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
-msgstr "Ce filtre ne s'applique qu'aux joueur·euses affilié·es à la fédération française, les autres ne seront ni filtré·es ni grisé·es (pas besoin de licence française)."
 
 msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
 msgstr "Il s'agit de la première période, et de l'homologation où le tournoi entier est publié ; les autres ont la leur, dans le calendrier ci-dessous."
@@ -916,4 +910,8 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."
 msgstr[1] "{n} parties perdues par forfait, comptées -1."
+
+#, python-brace-format
+msgid "{string}:"
+msgstr "{string} :"
 

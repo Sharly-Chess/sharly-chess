@@ -1410,6 +1410,9 @@ msgstr "PAR FORFAIT"
 msgid "Back"
 msgstr "Retour"
 
+msgid "Background color"
+msgstr "Couleur de fond"
+
 msgid "Background colour"
 msgstr "Couleur de fond"
 
@@ -5489,15 +5492,15 @@ msgstr "Fusionner les équipes sélectionnées"
 msgid "Mexico"
 msgstr "Mexique"
 
+msgid "Min"
+msgstr "Min"
+
 msgctxt "minimum"
 msgid "Min"
 msgstr "Min"
 
 msgid "Min. age category"
 msgstr "Catégorie d'âge min."
-
-msgid "Min:"
-msgstr "Min :"
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
@@ -6771,6 +6774,9 @@ msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts. In FIDE mode, each correction to the previous round is confirmed separately."
 msgstr "Remplacer le résultat de l'appariement lors de l'utilisation des raccourcis clavier. En mode FIDE, chaque correction de la ronde précédente est confirmée séparément."
 
+msgid "Owed"
+msgstr "Dû"
+
 msgctxt "owed column header"
 msgid "Owed"
 msgstr "Dû"
@@ -6801,6 +6807,9 @@ msgstr "Marge"
 
 msgid "Page break between matches (one match per page)."
 msgstr "Saut de page entre les matchs (un match par page)."
+
+msgid "Paid"
+msgstr "Payé"
 
 msgctxt "paid column header"
 msgid "Paid"
@@ -12829,6 +12838,10 @@ msgstr "{start} → {end}"
 #, python-brace-format
 msgid "{status_code} - Unknown error"
 msgstr "{status_code} - Erreur inconnue"
+
+#, python-brace-format
+msgid "{string}:"
+msgstr "{string} :"
 
 #, python-brace-format
 msgid "{string}: {value}"

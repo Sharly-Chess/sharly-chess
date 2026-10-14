@@ -25,7 +25,7 @@ msgstr ""
 
 msgctxt "FFE licence"
 msgid "A - Competition"
-msgstr "A - Competition"
+msgstr ""
 
 msgid "A non-empty string is expected"
 msgstr ""
@@ -80,7 +80,7 @@ msgstr ""
 
 msgctxt "FFE licence"
 msgid "B - Leisure"
-msgstr "B - Leisure"
+msgstr ""
 
 msgid "Back"
 msgstr ""
@@ -146,7 +146,7 @@ msgstr ""
 
 msgctxt "tie break variation"
 msgid "Cut"
-msgstr "Cut"
+msgstr ""
 
 msgid "DD/MM/YYYY"
 msgstr ""
@@ -191,19 +191,19 @@ msgid "FFE"
 msgstr ""
 
 msgid "FFE (France)"
-msgstr "FFE (France)"
+msgstr ""
 
 msgid "FFE (France) - local database"
 msgstr ""
 
 msgid "FFE (France) - online database"
-msgstr "FFE (France) - online database"
+msgstr ""
 
 msgid "FFE (local)"
 msgstr ""
 
 msgid "FFE (online)"
-msgstr "FFE (online)"
+msgstr ""
 
 msgid "FFE 4-board team cup. 5-player roster cap, max Elo 1800 per player, mixed-system schedule (Swiss / Molter / round-robin)."
 msgstr ""
@@ -216,7 +216,7 @@ msgstr ""
 
 msgctxt "licence number"
 msgid "FFE Licence no."
-msgstr "FFE Licence no."
+msgstr ""
 
 msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
 msgstr ""
@@ -225,7 +225,7 @@ msgid "FFE Women championship (N1F / N2F)"
 msgstr ""
 
 msgid "FFE arbiter title"
-msgstr "Titre d'arbitre FFE"
+msgstr ""
 
 msgid "FFE certification number and password not defined."
 msgstr ""
@@ -257,8 +257,8 @@ msgstr ""
 msgid "FFE licence B (leisure)"
 msgstr ""
 
-msgid "FFE licence no.:"
-msgstr "FFE licence no.:"
+msgid "FFE licence no."
+msgstr ""
 
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr ""
@@ -396,12 +396,9 @@ msgstr ""
 
 msgctxt "league column header"
 msgid "League"
-msgstr "League"
+msgstr ""
 
 msgid "League not specified"
-msgstr "Ligue non spécifiée"
-
-msgid "League:"
 msgstr ""
 
 msgid "Leagues"
@@ -415,7 +412,7 @@ msgstr ""
 
 msgctxt "licence column header"
 msgid "Lic."
-msgstr "Lic."
+msgstr ""
 
 msgid "Licence"
 msgstr ""
@@ -424,7 +421,7 @@ msgid "Licence number"
 msgstr ""
 
 msgid "Licence type:"
-msgstr "Licence type:"
+msgstr ""
 
 msgid "Licence types"
 msgstr ""
@@ -458,7 +455,7 @@ msgstr ""
 
 msgctxt "FFE licence"
 msgid "N - Expired"
-msgstr "N - Expired"
+msgstr ""
 
 msgid "Name"
 msgstr ""
@@ -511,7 +508,7 @@ msgstr ""
 
 msgctxt "FFE licence"
 msgid "None"
-msgstr "None"
+msgstr ""
 
 msgid "Not configured"
 msgstr ""
@@ -535,7 +532,7 @@ msgid "Page of the tournament on the FFE website."
 msgstr ""
 
 msgid "Papi export does not support bonus / penalty points, which this tournament uses."
-msgstr "Papi export does not support bonus / penalty points, which this tournament uses."
+msgstr ""
 
 #, python-brace-format
 msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
@@ -587,11 +584,11 @@ msgstr ""
 msgid "Player without an A (competition) FFE licence: {names}."
 msgstr ""
 
-#, python-brace-format
-msgid "Players without FFE licence number: {names}."
+msgid "Players"
 msgstr ""
 
-msgid "Players"
+#, python-brace-format
+msgid "Players without FFE licence number: {names}."
 msgstr ""
 
 msgid "Please select a file."
@@ -747,9 +744,6 @@ msgid "The players are split by pairing number into three groups: group A, the f
 msgstr ""
 
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
-msgstr ""
-
-msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
 msgstr ""
 
 msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
@@ -911,4 +905,8 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "{string}:"
+msgstr ""
 

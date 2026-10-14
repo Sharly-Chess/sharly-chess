@@ -6,7 +6,7 @@
 {% endif %}
 {% if screen.screen_type.multi_column_allowed %}
     <div>
-        {{ _('%(string)s:', string=_('Columns:')) }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+        {{ _('%(string)s:', string=_('Columns')) }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
     </div>
 {% endif %}
 <div>

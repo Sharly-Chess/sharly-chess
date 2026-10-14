@@ -206,7 +206,7 @@ msgid "Name"
 msgstr ""
 
 msgid "National ID"
-msgstr "National ID"
+msgstr ""
 
 msgid "Never synchronized"
 msgstr ""

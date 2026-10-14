@@ -1410,6 +1410,9 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+msgid "Background color"
+msgstr ""
+
 msgid "Background colour"
 msgstr ""
 
@@ -5489,14 +5492,14 @@ msgstr ""
 msgid "Mexico"
 msgstr ""
 
+msgid "Min"
+msgstr ""
+
 msgctxt "minimum"
 msgid "Min"
 msgstr ""
 
 msgid "Min. age category"
-msgstr ""
-
-msgid "Min:"
 msgstr ""
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
@@ -6769,6 +6772,9 @@ msgstr ""
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts. In FIDE mode, each correction to the previous round is confirmed separately."
 msgstr ""
 
+msgid "Owed"
+msgstr ""
+
 msgctxt "owed column header"
 msgid "Owed"
 msgstr ""
@@ -6798,6 +6804,9 @@ msgid "Padding"
 msgstr ""
 
 msgid "Page break between matches (one match per page)."
+msgstr ""
+
+msgid "Paid"
 msgstr ""
 
 msgctxt "paid column header"
@@ -12826,6 +12835,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{status_code} - Unknown error"
+msgstr ""
+
+#, python-brace-format
+msgid "{string}:"
 msgstr ""
 
 #, python-brace-format
