@@ -1,7 +1,7 @@
 <div class="col-12">
     {{ admin_macros.text_input(
         name=option.id,
-        label=_('ChessEvent tournament:'),
+        label=_('%(string)s:', string=_('ChessEvent tournament')),
         placeholder=_('E.g.: Tournoi A'),
         data=data, errors=errors
     ) }}

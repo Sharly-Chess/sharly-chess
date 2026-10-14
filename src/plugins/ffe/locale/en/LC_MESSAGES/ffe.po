@@ -43,7 +43,7 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
-msgid "Account:"
+msgid "Account"
 msgstr ""
 
 msgid "All the players with no FFE licence A"
@@ -55,7 +55,7 @@ msgstr ""
 msgid "An unexpected error occurred, consult the logs for more details."
 msgstr ""
 
-msgid "Arbiter:"
+msgid "Arbiter"
 msgstr ""
 
 msgid "Arbitration compensation"
@@ -597,7 +597,7 @@ msgstr ""
 msgid "Players without FFE licence number: {names}."
 msgstr ""
 
-msgid "Players:"
+msgid "Players"
 msgstr ""
 
 msgid "Please select a file."

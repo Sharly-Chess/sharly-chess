@@ -20,7 +20,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.color_input(
                             name='background_color',
-                            label=_('Background colour:'),
+                            label=_('%(string)s:', string=_('Background colour')),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -42,7 +42,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.color_input(
                             name='message_background_color',
-                            label=_('Background colour:'),
+                            label=_('%(string)s:', string=_('Background colour')),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -50,7 +50,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.color_input(
                             name='message_color',
-                            label=_('Text colour:'),
+                            label=_('%(string)s:', string=_('Text colour')),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -58,7 +58,7 @@
                     <div class="col-12">
                         {{ admin_macros.text_input(
                             name='message_text',
-                            label=_('Alert message:'),
+                            label=_('%(string)s:', string=_('Alert message')),
                             placeholder=_('E.g.: Please keep quiet until the end of the round!'),
                             tooltip_text=_(
                                 'When defined, the alert message is displayed in a '

@@ -293,7 +293,7 @@
             {% set current_lineup = team.effective_round_slots(
                 1, board_count=team.players|length
             ) %}
-            {% set lineup_label = _('Base lineup:') %}
+            {% set lineup_label = _('%(string)s:', string=_('Base lineup:')) %}
         {% endif %}
         {% if show_lineup %}
             <div class="card-block">

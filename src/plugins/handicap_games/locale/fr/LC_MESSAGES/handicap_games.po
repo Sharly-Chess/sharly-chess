@@ -49,8 +49,4 @@ msgid "The time subtracted from the highest ranked player, in seconds (this time
 msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
 
 msgid "Time control"
-msgstr "Temps"
-
-msgid "Time control:"
-msgstr "Temps :"
-
+msgstr "Cadence"

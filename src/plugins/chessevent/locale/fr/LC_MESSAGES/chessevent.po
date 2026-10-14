@@ -37,8 +37,8 @@ msgstr "Les actions ChessEvent ne sont plus disponibles une fois le tournoi dém
 msgid "ChessEvent event not defined."
 msgstr "L'évènement ChessEvent n'est pas défini."
 
-msgid "ChessEvent event:"
-msgstr "Évènement ChessEvent :"
+msgid "ChessEvent event"
+msgstr "Évènement ChessEvent"
 
 msgid "ChessEvent handles the online registration of the players for tournaments organised in France."
 msgstr "ChessEvent gère les inscriptions en ligne des joueur·euses pour les tournois organisés en France."
@@ -46,17 +46,14 @@ msgstr "ChessEvent gère les inscriptions en ligne des joueur·euses pour les to
 msgid "ChessEvent password not defined."
 msgstr "Le mot de passe ChessEvent n'est pas défini."
 
-msgid "ChessEvent password:"
-msgstr "Mot de passe ChessEvent :"
+msgid "ChessEvent password"
+msgstr "Mot de passe ChessEvent"
 
 msgid "ChessEvent tournament"
 msgstr "Tournoi ChessEvent"
 
-msgid "ChessEvent tournament:"
-msgstr "Nom du tournoi ChessEvent :"
-
-msgid "ChessEvent user name:"
-msgstr "Identifiant ChessEvent :"
+msgid "ChessEvent user name"
+msgstr "Identifiant ChessEvent"
 
 msgid "ChessEvent user not defined."
 msgstr "L'identifiant ChessEvent n'est pas défini."

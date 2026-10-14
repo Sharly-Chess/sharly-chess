@@ -40,7 +40,7 @@
                 </h2>
                 <div>{{ tournament.name }}</div>
                 <div>
-                    <strong>{{ _('Players:') }}</strong>
+                    <strong>{{ _('%(string)s:', string=_('Players')) }}</strong>
                     {% for player in admin_team.players %}
                         {{ player.full_name }}{% if not loop.last %}, {% endif %}
                     {% endfor %}

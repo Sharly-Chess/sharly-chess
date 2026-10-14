@@ -1121,19 +1121,19 @@ class PlayerAdminController(BaseEventAdminController):
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
                 Cadence.STANDARD: {
-                    'label': _('Standard:'),
+                    'label': _('{string}:').format(string=_('Standard')),
                     'help': _(
                         'The rating used when the time control is at least 60 minutes.'
                     ),
                 },
                 Cadence.RAPID: {
-                    'label': _('Rapid:'),
+                    'label': _('{string}:').format(string=_('Rapid')),
                     'help': _(
                         'The rating used when the time control is more than 10 minutes and less than 60 minutes.'
                     ),
                 },
                 Cadence.BLITZ: {
-                    'label': _('Blitz:'),
+                    'label': _('{string}:').format(string=_('Blitz')),
                     'help': _(
                         'The rating used when the time control is at most 10 minutes.'
                     ),

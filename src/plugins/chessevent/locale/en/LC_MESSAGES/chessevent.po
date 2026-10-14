@@ -34,7 +34,7 @@ msgstr ""
 msgid "ChessEvent event not defined."
 msgstr ""
 
-msgid "ChessEvent event:"
+msgid "ChessEvent event"
 msgstr ""
 
 msgid "ChessEvent handles the online registration of the players for tournaments organised in France."
@@ -43,16 +43,13 @@ msgstr ""
 msgid "ChessEvent password not defined."
 msgstr ""
 
-msgid "ChessEvent password:"
+msgid "ChessEvent password"
 msgstr ""
 
 msgid "ChessEvent tournament"
 msgstr ""
 
-msgid "ChessEvent tournament:"
-msgstr ""
-
-msgid "ChessEvent user name:"
+msgid "ChessEvent user name"
 msgstr ""
 
 msgid "ChessEvent user not defined."

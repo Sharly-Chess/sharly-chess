@@ -46,7 +46,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
-                            label=_('Name:'),
+                            label=_('%(string)s:', string=_('Name:')),
                             placeholder=_('E.g.: Main tournament'),
                             data=data, errors=errors
                         ) }}
@@ -743,7 +743,7 @@
                         <div id="team-colour-type-cell" class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='team_colour_type',
-                                label=_('Colour rule:'),
+                                label=_('%(string)s:', string=_('Colour rule')),
                                 tooltip_text=_(
                                     'Defines how team colour preferences are calculated. '
                                     'Type A uses simple White/Black preferences, '
@@ -855,7 +855,7 @@
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
                                     name='gp_win',
-                                    label=_('Win:'),
+                                    label=_('%(string)s:', string=_('Win')),
                                     placeholder='1',
                                     step='any',
                                     data=data, errors=errors
@@ -864,7 +864,7 @@
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
                                     name='gp_draw',
-                                    label=_('Draw:'),
+                                    label=_('%(string)s:', string=_('Draw:')),
                                     placeholder='0.5',
                                     step='any',
                                     data=data, errors=errors
@@ -873,7 +873,7 @@
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
                                     name='gp_loss',
-                                    label=_('Loss:'),
+                                    label=_('%(string)s:', string=_('Loss')),
                                     placeholder='0',
                                     step='any',
                                     data=data, errors=errors
@@ -1000,7 +1000,7 @@
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
                                         name='mp_win',
-                                        label=_('Win:'),
+                                        label=_('%(string)s:', string=_('Win:')),
                                         placeholder='2',
                                         step='any',
                                         data=data, errors=errors
@@ -1009,7 +1009,7 @@
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
                                         name='mp_draw',
-                                        label=_('Draw:'),
+                                        label=_('%(string)s:', string=_('Draw:')),
                                         placeholder='1',
                                         step='any',
                                         data=data, errors=errors
@@ -1018,7 +1018,7 @@
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
                                         name='mp_loss',
-                                        label=_('Loss:'),
+                                        label=_('%(string)s:', string=_('Loss')),
                                         placeholder='0',
                                         step='any',
                                         data=data, errors=errors

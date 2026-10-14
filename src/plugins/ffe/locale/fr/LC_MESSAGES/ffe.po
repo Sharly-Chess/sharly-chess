@@ -48,8 +48,8 @@ msgstr "Un·e joueur·euse qui a marqué au moins la moitié des points pouvant 
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
-msgid "Account:"
-msgstr "Compte :"
+msgid "Account"
+msgstr "Compte"
 
 msgid "All the players with no FFE licence A"
 msgstr "Tou·tes les joueur·euses sans licence A"
@@ -60,8 +60,8 @@ msgstr "Tou·tes les joueur·euses sans licence A ou B"
 msgid "An unexpected error occurred, consult the logs for more details."
 msgstr "Une erreur inattendue s'est produite, consultez les logs pour plus de détails."
 
-msgid "Arbiter:"
-msgstr "Arbitre :"
+msgid "Arbiter"
+msgstr "Arbitre"
 
 msgid "Arbitration compensation"
 msgstr "Indemnités d'arbitrage"
@@ -602,8 +602,8 @@ msgstr "Joueur·euses sans licence A (compétition) : {names}."
 msgid "Players without FFE licence number: {names}."
 msgstr "Joueur·euses sans numéro de licence FFE : {names}."
 
-msgid "Players:"
-msgstr "Joueur·euses :"
+msgid "Players"
+msgstr "Joueur·euses"
 
 msgid "Please select a file."
 msgstr "Veuillez sélectionner un fichier."

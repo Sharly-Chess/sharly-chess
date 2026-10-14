@@ -22,7 +22,7 @@
                 </div>
             {% else %}
                 <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
-                    <label class="form-label mb-0">{{ _('Round:') }}</label>
+                    <label class="form-label mb-0">{{ _('%(string)s:', string=_('Round')) }}</label>
                     {# One button group per run of rounds sharing a lineup,
                        so which rounds follow which is read off the row
                        instead of being hidden in a tooltip. #}

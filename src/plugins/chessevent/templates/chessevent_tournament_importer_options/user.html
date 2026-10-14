@@ -3,7 +3,7 @@
 <div class="col-12">
     {{ admin_macros.text_input(
         name=option.id,
-        label=_('ChessEvent user name:'),
+        label=_('%(string)s:', string=_('ChessEvent user name')),
         placeholder=(
             chessevent_user_id
             if chessevent_user_id else

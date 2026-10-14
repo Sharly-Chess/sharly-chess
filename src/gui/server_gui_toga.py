@@ -928,7 +928,7 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Language:'), self._build_locale_select()),
             self._settings_row(
-                _('Federation:'),
+                _('{string}:').format(string=_('Federation')),
                 self._build_federation_select(
                     none_text=_('Please choose a federation')
                 ),

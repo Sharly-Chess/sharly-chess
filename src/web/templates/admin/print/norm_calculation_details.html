@@ -165,7 +165,7 @@
                 <div class="meta">
                     {{ tournament_player.federation }} —
                     {{ _('Current title:') }} {{ tournament_player.display_title or '—' }} —
-                    {{ _('FIDE ID:') }} {{ tournament_player.fide_id or '—' }}
+                    {{ _('%(string)s:', string=_('FIDE ID:')) }} {{ tournament_player.fide_id or '—' }}
                 </div>
                 <div class="meta">
                     {{ event.name }} / {{ tournament.name }}
@@ -623,7 +623,7 @@
                     </tbody>
                     <tfoot>
                         <tr style="background: #f0f0f0; font-weight: 700;">
-                            <th class="right">{{ _('Min:') }}</th>
+                            <th class="right">{{ _('%(string)s:', string=_('Min')) }}</th>
                             <th class="right">{{ min_for }} {% if min_for >= 20 %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}</th>
                             <th class="right">{{ min_fed }} {% if min_fed >= 3 %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}</th>
                             <th class="right">{{ min_tit }} {% if min_tit >= 10 %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}</th>

@@ -48,6 +48,3 @@ msgstr ""
 msgid "Time control"
 msgstr ""
 
-msgid "Time control:"
-msgstr ""
-

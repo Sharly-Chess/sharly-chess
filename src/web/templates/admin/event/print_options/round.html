@@ -1,7 +1,7 @@
 <div class="col-12">
     {{ admin_macros.number_input(
         name=option.id,
-        label=_('Round:'),
+        label=_('%(string)s:', string=_('Round')),
         placeholder=_('Last possible round'),
         min=1,
         data=data, errors=errors

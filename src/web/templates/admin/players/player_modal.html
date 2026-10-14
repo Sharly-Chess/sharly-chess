@@ -81,7 +81,7 @@
                     <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='last_name',
-                            label=_('Name:'),
+                            label=_('%(string)s:', string=_('Name:')),
                             placeholder=_('E.g.: DOE'),
                             data=data, errors=errors
                         ) }}
@@ -89,7 +89,7 @@
                     <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='first_name',
-                            label=_('First name:'),
+                            label=_('%(string)s:', string=_('First name')),
                             placeholder=_('E.g.: John'),
                             data=data, errors=errors
                         ) }}
@@ -97,7 +97,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.date_input(
                             name='date_of_birth',
-                            label=_('Date of birth:'),
+                            label=_('%(string)s:', string=_('Date of birth:')),
                             tooltip_text=_(
                                 'Only the year of birth is required for most tournaments. '
                                 'it is therefore recommanded to only ask for your players\' '
@@ -112,7 +112,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='gender',
-                            label=_('Gender:'),
+                            label=_('%(string)s:', string=_('Gender')),
                             select_options=gender_options,
                             data=data, errors=errors
                         ) }}
@@ -128,7 +128,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='phone',
-                            label=_('Phone number:'),
+                            label=_('%(string)s:', string=_('Phone number')),
                             data=data, errors=errors
                         ) }}
                         {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
@@ -136,7 +136,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='club',
-                            label=_('Club:'),
+                            label=_('%(string)s:', string=_('Club')),
                             placeholder=_('E.g.: My favourite club!'),
                             data=data, errors=errors
                         ) }}
@@ -144,7 +144,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='federation',
-                            label=_('Federation:'),
+                            label=_('%(string)s:', string=_('Federation')),
                             select_options=federation_options,
                             data=data, errors=errors
                         ) }}
@@ -158,7 +158,7 @@
                     <div id="fide-id-col" class="{{ 'col-12' if is_woman else 'col-12 col-sm-6' }}">
                         {{ admin_macros.number_input(
                             name='fide_id',
-                            label=_('FIDE ID:'),
+                            label=_('%(string)s:', string=_('FIDE ID:')),
                             disabled=action == 'update' or data['fide_id'] != '',
                             input_tooltip=_(
                                 'Replace the player to update this field.'
@@ -233,7 +233,7 @@
                         <div class="col-12">
                             {{ admin_macros.select_input(
                                 name='team_id',
-                                label=_('Team:'),
+                                label=_('%(string)s:', string=_('Team')),
                                 select_options=team_options,
                                 disabled=team_locked,
                                 input_tooltip=_(
@@ -252,7 +252,7 @@
                         <div class="col-12">
                             {{ admin_macros.select_input(
                                 name='tournament_id',
-                                label=_('Tournament:'),
+                                label=_('%(string)s:', string=_('Tournament')),
                                 select_options=tournament_options,
                                 disabled=admin_player.has_real_pairings,
                                 input_tooltip=(
@@ -269,7 +269,7 @@
                         <div class="col-12 col-sm-6">
                             {{ admin_macros.number_input(
                                 name='fixed',
-                                label=_('Fixed board:'),
+                                label=_('%(string)s:', string=_('Fixed board')),
                                 tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
                                 min=1,
                                 data=data, errors=errors
@@ -295,7 +295,7 @@
                     <div class="col-12 col-sm-6 col-lg-3">
                         {{ admin_macros.number_input(
                             name='owed',
-                            label=_('Owed:'),
+                            label=_('%(string)s:', string=_('Owed')),
                             step=0.01,
                             data=data, errors=errors
                         ) }}
@@ -303,7 +303,7 @@
                     <div class="col-12 col-sm-6 col-lg-3">
                         {{ admin_macros.number_input(
                             name='paid',
-                            label=_('Paid:'),
+                            label=_('%(string)s:', string=_('Paid')),
                             step=0.01,
                             data=data, errors=errors
                         ) }}
@@ -311,7 +311,7 @@
                     <div class="col-12 col-lg-6">
                         {{ admin_macros.text_input(
                             name='comment',
-                            label=_('Comment:'),
+                            label=_('%(string)s:', string=_('Comment')),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -380,7 +380,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label class="form-check-label d-block pb-1">{{ _('Official FIDE rating:') }}</label>
+                        <label class="form-check-label d-block pb-1">{{ _('%(string)s:', string=_('Official FIDE rating')) }}</label>
                         <div class="d-flex align-items-center gap-2">
                             <div id="official-rating" class="form-control-plaintext flex-grow-1">{{ _rating_context['official'] }}</div>
                             <div

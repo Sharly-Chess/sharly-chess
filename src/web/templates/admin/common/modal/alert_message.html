@@ -1,6 +1,6 @@
 {{ admin_macros.text_input(
     name='message_text',
-    label=_('Alert message:'),
+    label=_('%(string)s:', string=_('Alert message')),
     placeholder=(
         admin_event.message_text
         if admin_event.message_text else

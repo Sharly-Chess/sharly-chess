@@ -6,7 +6,7 @@
 >
     {{ admin_macros.select_input(
         name=option.id,
-        label=_('Tournament:'),
+        label=_('%(string)s:', string=_('Tournament')),
         select_options=tournament_options,
         data=data, errors=errors
     ) }}

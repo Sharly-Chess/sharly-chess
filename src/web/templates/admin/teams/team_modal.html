@@ -48,7 +48,7 @@
                     <div class="col-12">
                         {{ admin_macros.select_input(
                             name='tournament_id',
-                            label=_('Tournament:'),
+                            label=_('%(string)s:', string=_('Tournament')),
                             tooltip_text=_(
                                 'Assign this team to a tournament now '
                                 'or leave unassigned.'
@@ -65,7 +65,7 @@
                     <div class="col-12">
                         {{ admin_macros.select_input(
                             name='federation',
-                            label=_('Federation:'),
+                            label=_('%(string)s:', string=_('Federation')),
                             select_options=federation_options,
                             data=data, errors=errors
                         ) }}
