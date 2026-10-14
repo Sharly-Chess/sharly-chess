@@ -37,9 +37,6 @@ msgstr "Annuler"
 msgid "Category"
 msgstr "Catégorie"
 
-msgid "Category:"
-msgstr "Catégorie :"
-
 msgid "Choose at least one school."
 msgstr "Choisir au moins un établissement."
 
@@ -73,7 +70,7 @@ msgstr "Championnat scolaire FFE par équipes. 8 échiquiers sur une liste de 8 
 
 #, python-brace-format
 msgid "FIDE-rated player listed after an unrated one: {names}."
-msgstr "Joueur·euse au classement FIDE placé·e après un joueur ou une joueuse sans classement FIDE : {names}."
+msgstr "Joueur·euse au classement FIDE placé·e après un joueur ou une joueuse sans classement FIDE : {names}."
 
 msgid "French School Championship"
 msgstr "Championnat de France scolaire"
@@ -150,7 +147,7 @@ msgstr "Phase"
 
 #, python-brace-format
 msgid "Player without an A or B FFE licence: {names}."
-msgstr "Joueur·euse sans licence FFE A ou B : {names}."
+msgstr "Joueur·euse sans licence FFE A ou B : {names}."
 
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."

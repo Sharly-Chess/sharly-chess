@@ -33,9 +33,6 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-msgid "Category:"
-msgstr ""
-
 msgid "Choose at least one school."
 msgstr ""
 
