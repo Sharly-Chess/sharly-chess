@@ -111,10 +111,12 @@ from utils.enum import (
     BoardColor,
     EventType,
     FormAction,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
     StartingRankTieOrder,
     TeamColourType,
+    TeamSortMode,
     Cadence,
 )
 from data.screens.manager import ScreenTypeManager
@@ -1211,10 +1213,26 @@ class TournamentAdminController(BaseEventAdminController):
             fide_mode_exit_round=fide_mode_exit_round,
             multi_period=multi_period,
             stored_tournament_periods=stored_tournament_periods,
-            # Set from the tie-breaks modal, and carried through the
-            # rebuild so saving the tournament does not forget it.
+            # Set from the tie-breaks modal, the teams tab and the
+            # prohibited-pairings modal, and carried through the rebuild so
+            # saving the tournament does not forget them.
             tie_break_rating=(
                 tournament.stored_tournament.tie_break_rating if tournament else ''
+            ),
+            team_sort_mode=(
+                tournament.stored_tournament.team_sort_mode
+                if tournament
+                else TeamSortMode.MANUAL.value
+            ),
+            prohibited_pairing_dimension=(
+                tournament.stored_tournament.prohibited_pairing_dimension
+                if tournament
+                else None
+            ),
+            prohibited_pairing_dimension_constraint=(
+                tournament.stored_tournament.prohibited_pairing_dimension_constraint
+                if tournament
+                else ProhibitedPairingConstraint.HARD.value
             ),
             rule_set=rule_set_id,
             rule_set_config=rule_set_config,
