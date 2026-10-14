@@ -13,7 +13,7 @@
 {% macro identity(item, view, placement) %}
     {% if item.administrator %}
         <span class="d-inline-flex align-items-center gap-2 fw-bold">
-            <i class="bi-person-fill-gear"></i>{{ _('Administrator') }}
+            <i class="bi-person-fill-gear"></i>{{ item.full_name }}
         </span>
     {% elif item.anonymous %}
         <span class="d-inline-flex align-items-center gap-2 fst-italic">
@@ -32,7 +32,7 @@
                 'info', _('The account of the user accessing Sharly Chess directly from the server.'), 'top'
             ) }}
         ></i>
-        <b>{{ _('Administrator') }}</b>
+        <b>{{ item.full_name }}</b>
     {% elif item.anonymous %}
         <i
             class="bi-incognito pe-1"
