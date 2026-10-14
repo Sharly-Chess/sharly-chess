@@ -548,7 +548,7 @@ class BbpPairings(PairingEngine):
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
-    MIN_PLAYERS = 3
+    MIN_PLAYERS = 2
 
     @override
     @property
@@ -681,9 +681,13 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
 
         The only exception is for the 2 last rounds of the first half, which
         are supposed to be permuted to avoid players from tripling a color
-        (see FIDE Handbook section C.05.Annex 1)."""
+        (see FIDE Handbook section C.05.Annex 1). That permutation only
+        exists from three rounds per cycle up: with two players the single
+        round is played once with each colour."""
         berger_table = self.get_berger_table(player_count)
         berger_table_round_count = self.get_single_encounter_round_count(player_count)
+        if berger_table_round_count < 3 and round_ <= berger_table_round_count:
+            return berger_table[round_]
         if round_ <= berger_table_round_count - 2:
             return berger_table[round_]
         if round_ == berger_table_round_count - 1:
