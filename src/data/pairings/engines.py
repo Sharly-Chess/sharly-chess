@@ -584,7 +584,7 @@ class BbpPairings(PairingEngine):
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
-    MIN_PLAYERS = 3
+    MIN_PLAYERS = 2
 
     @override
     @property
