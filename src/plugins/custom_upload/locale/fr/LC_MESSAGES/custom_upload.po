@@ -77,7 +77,7 @@ msgid "E.g.: my_username (mandatory)"
 msgstr "Exemple : mon_nom (obligatoire)"
 
 msgid "E.g.: pairings_myTournament_round_1 (optional)"
-msgstr "Exemple : appariements_monTournoi_ronde_1 (facultatif)"
+msgstr "Exemple : appariements_monTournoi_ronde_1 (facultatif)"
 
 msgid "Edit connection"
 msgstr "Modifier la connexion"
