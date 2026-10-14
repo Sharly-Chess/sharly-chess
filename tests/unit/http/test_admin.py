@@ -17,7 +17,7 @@ from common import BASE_DIR
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 from tests.test_config import TestUtils
-from utils.enum import Result
+from utils.enum import ProhibitedPairingConstraint, Result, TeamSortMode
 
 EVENT_ID = 'test-admin-http'
 TOURNAMENT_NAME = 'test-admin-http-tournament'
@@ -380,6 +380,38 @@ def test_a_paired_tournament_leaves_fide_mode_for_good(http: TestClient, event: 
         data=update_fields(event) | {'name': TOURNAMENT_NAME},
     )
     assert tournament_fide_mode(event) == (False, exit_round)
+
+
+@pytest.mark.unit
+def test_saving_the_tournament_keeps_the_settings_set_outside_its_modal(
+    http: TestClient, event: str
+):
+    """The prohibited pairings and the team order are set from their own
+    screens, so the tournament modal's save leaves them as they were."""
+    stored_tournament = (
+        EventLoader().load_event(event).tournaments_by_name[TOURNAMENT_NAME]
+    ).stored_tournament
+    stored_tournament.prohibited_pairing_dimension = 'club'
+    stored_tournament.prohibited_pairing_dimension_constraint = (
+        ProhibitedPairingConstraint.PROTECT_TOP.value
+    )
+    stored_tournament.team_sort_mode = TeamSortMode.RANDOM.value
+    with EventDatabase(event, write=True) as database:
+        database.update_stored_tournament(stored_tournament)
+    response = http.patch(
+        f'/tournament-update/{event}/{tournament_id(event)}',
+        data=update_fields(event) | {'name': TOURNAMENT_NAME},
+    )
+    assert response.status_code == 200
+    EventLoader.unload_event(event)
+    saved = (
+        EventLoader().load_event(event).tournaments_by_name[TOURNAMENT_NAME]
+    ).stored_tournament
+    assert saved.prohibited_pairing_dimension == 'club'
+    assert saved.prohibited_pairing_dimension_constraint == (
+        ProhibitedPairingConstraint.PROTECT_TOP.value
+    )
+    assert saved.team_sort_mode == TeamSortMode.RANDOM.value
 
 
 @pytest.mark.unit
