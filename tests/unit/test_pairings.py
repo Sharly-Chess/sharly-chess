@@ -5,7 +5,7 @@ from data.event import Event
 from data.loader import EventLoader
 
 import pytest
-from data.pairings.engines import BergerPairingEngine
+from data.pairings.engines import BergerPairingEngine, DoubleBergerPairingEngine
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournamentPlayer
 from tests.test_config import TestUtils
@@ -143,9 +143,16 @@ class PairingTestCase(TestCase):
         self.assertEqual(BergerPairingEngine.get_berger_table(player_count), fide_table)
 
     def test_berger_2_players_table(self):
-        # A two-competitor round-robin is a single round (used by 2-team
-        # team round-robins).
+        # A two-competitor round-robin is a single round.
         self.assert_generated_berger_table_equals_fide_table(2, {1: [(1, 2)]})
+
+    def test_double_berger_2_players(self):
+        """A two-player double round-robin plays the single Berger round
+        once with each colour."""
+        engine = DoubleBergerPairingEngine()
+        self.assertEqual(engine.get_round_count(2), 2)
+        self.assertEqual(engine.get_round_pairings(2, 1), [(1, 2)])
+        self.assertEqual(engine.get_round_pairings(2, 2), [(2, 1)])
 
     def test_berger_4_players_table(self):
         self.assert_generated_berger_table_equals_fide_table(

@@ -48,6 +48,7 @@
 - Updating the ratings from the reminder shown before pairing the first round no longer skips the window asking what to do with absent players, who were then paired (5.1.3)
 - With the Baku acceleration, group A is now always computed from the players entered at the time of the first pairing, even if the pairing settings were saved before more players were entered (5.1.5)
 - A pairing-allocated bye worth half a point or nothing now counts as a downfloat when pairing, and at its value in Sonneborn-Berger (5.1.5)
+- Individual round robins (single and double) can be paired with only two players, as team round robins already could with two teams (5.1.6)
 
 ## Documents
 
