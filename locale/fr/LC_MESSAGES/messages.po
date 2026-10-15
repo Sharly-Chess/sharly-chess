@@ -4974,7 +4974,7 @@ msgstr "Dernière mise à jour : {updated_at}"
 
 #, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
-msgstr "Dernière mise à jour : {updated_at} (dépassée)"
+msgstr "Dernière mise à jour : {updated_at} (obsolète)"
 
 msgid "Last, First"
 msgstr "Nom, Prénom"
@@ -7979,7 +7979,7 @@ msgid "Ratings set by the arbiter"
 msgstr "Classements saisis par l'arbitre"
 
 msgid "Ratings the lists now give differently"
-msgstr "Classements que les listes donnent désormais différemment"
+msgstr "Classements différents selon les listes utilisées"
 
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
