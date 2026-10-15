@@ -946,6 +946,9 @@ msgstr "Partie ajournée consignée : {adjournment}"
 msgid "Adjourned games count as draws until their result is entered."
 msgstr "Les parties ajournées comptent comme nulles jusqu'à la saisie de leur résultat."
 
+msgid "Admin"
+msgstr "Admin"
+
 msgid "Administration"
 msgstr "Administration"
 

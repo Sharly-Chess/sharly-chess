@@ -172,6 +172,8 @@ class Account:
 
     @property
     def full_name(self) -> str:
+        if self.administrator:
+            return _('Admin')
         return Player.player_full_name(self.first_name, self.last_name)
 
     @property
