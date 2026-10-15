@@ -8,6 +8,7 @@ from common.i18n import _, ngettext
 from database.sqlite.event.event_store import BaseStoredEvent
 from plugins.manager import plugin_manager
 from plugins.utils import Plugin
+from utils.date_time import format_datetime
 from utils.enum import EventType
 
 if TYPE_CHECKING:
@@ -32,6 +33,14 @@ class EventMetadata(BaseStoredEvent):
     # could not be opened (locked, file sync, permissions…). Such an event is
     # listed but not accessible, similarly to an event with a disabled plugin.
     accessible: bool = True
+
+    @property
+    def origin_message(self) -> str | None:
+        """Where the event came from and when, for the events that carry it:
+        two events holding almost the same thing are told apart by it."""
+        if self.origin is None or self.origin_date is None:
+            return None
+        return self.origin.message(format_datetime(self.origin_date))
 
     @property
     def is_team_event(self) -> bool:

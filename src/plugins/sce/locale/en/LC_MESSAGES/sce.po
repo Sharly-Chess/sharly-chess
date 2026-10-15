@@ -373,6 +373,12 @@ msgstr ""
 msgid "Synchronize players"
 msgstr ""
 
+msgid "The new event is not linked to Sharly-Chess.com: it is a copy to look at, and nothing of it is uploaded or synchronised. The event it was taken from keeps the link."
+msgstr ""
+
+msgid "This event is linked to Sharly-Chess.com. Restoring rolls back the rounds and the results, and the next upload sends them to the site. It does not roll back the players: Sharly-Chess.com holds that list, and the next synchronisation brings back the registrations, check-ins and player details as they stand on the site — including any added, changed or deleted since this backup. Make those corrections again after restoring, or make them on the site."
+msgstr ""
+
 msgid "This field is controlled from Sharly-Chess.com."
 msgstr ""
 
