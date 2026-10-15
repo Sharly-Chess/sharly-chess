@@ -5,6 +5,9 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {% if schedule_editor and schedule_editor.can_start %}
+        {% include '/admin/pairings/round_robin_schedule_button.html' %}
+    {% endif %}
     {% set set_all_present_message = (
         _('Pairings generation disabled if there are no players to pair.')
         if not admin_boards and not admin_unpaired and admin_absent_players

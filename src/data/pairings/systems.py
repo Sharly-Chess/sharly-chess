@@ -159,6 +159,13 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         """Determines if players can be added on a tournament with pairings."""
         return True
 
+    def allows_player_addition(self, tournament: 'Tournament') -> bool:
+        """Whether players can be added to *tournament* as it stands."""
+        return not tournament.has_pairings or self.allow_player_addition_once_paired
+
+    def players_joined(self, tournament: 'Tournament') -> None:
+        """Players have just been added to *tournament*."""
+
     @property
     def allow_team_addition_once_paired(self) -> bool:
         """Determines if teams can be added on a tournament with
@@ -494,6 +501,28 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @property
     def allow_player_addition_once_paired(self) -> bool:
         return False
+
+    @override
+    def allows_player_addition(self, tournament: 'Tournament') -> bool:
+        """The Berger tables are paired whole, so players join before the
+        pairing; a custom schedule goes back to its editing until the first
+        result."""
+        from data.pairings.engines import ScheduledRoundRobin
+
+        if not tournament.has_pairings:
+            return True
+        engine = tournament.pairing_variation.engine
+        return (
+            isinstance(engine, ScheduledRoundRobin)
+            and not engine.follows_berger_tables
+            and not tournament.has_results
+        )
+
+    @override
+    def players_joined(self, tournament: 'Tournament') -> None:
+        from data.pairings.round_robin_editor import RoundRobinScheduleEditor
+
+        RoundRobinScheduleEditor(tournament).admit_newcomers()
 
     @property
     def allow_bye_definition(self) -> bool:
