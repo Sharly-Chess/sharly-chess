@@ -68,7 +68,6 @@ def tournament() -> Iterator[Tournament]:
         TOURNAMENT_NAME,
         overrides={
             'rounds': 3,
-            'current_round': 1,
             'team_player_count': BOARDS,
             'pairing': 'TEAM_SWISS_STANDARD',
         },
