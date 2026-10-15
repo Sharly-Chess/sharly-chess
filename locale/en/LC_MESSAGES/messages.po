@@ -947,7 +947,7 @@ msgid "Adjourned games count as draws until their result is entered."
 msgstr ""
 
 msgid "Admin"
-msgstr "Admin"
+msgstr ""
 
 msgid "Administration"
 msgstr ""
