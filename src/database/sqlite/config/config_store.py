@@ -56,6 +56,10 @@ class StoredConfig:
     )
     stored_tags: list[StoredTag] = field(default_factory=list[StoredTag])
     errors: dict[str, str] = field(default_factory=dict[str, str])
+    #: The key pair this computer is recognised by. The private half never
+    #: leaves the computer.
+    computer_private_key: str | None = None
+    computer_public_key: str | None = None
 
 
 @dataclass

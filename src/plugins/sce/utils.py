@@ -166,6 +166,17 @@ class SCEUtils:
         ]
 
     @classmethod
+    def get_players_removal_pending(cls, event: Event) -> list[TournamentPlayer]:
+        """Players removed on Sharly-Chess.com after they played, waiting
+        for the arbiter to withdraw them or register them again."""
+        return [
+            player
+            for tournament in cls.get_event_sce_tournaments(event)
+            for player in tournament.tournament_players
+            if cls.get_player_plugin_data(player).removal_pending
+        ]
+
+    @classmethod
     def get_tournament_by_sce_id(cls, event: Event, sce_id: str) -> Tournament:
         for tournament in event.tournaments:
             if cls.get_tournament_plugin_data(tournament).id == sce_id:

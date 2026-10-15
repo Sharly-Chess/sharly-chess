@@ -1,0 +1,90 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 600px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Players removed on Sharly-Chess.com') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if sce_event_status.alert_message %}
+                {% include '/sce_event_status_alert.html' %}
+            {% endif %}
+            {% if message %}
+                {% with type='success' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <p>
+                {{ _(
+                    'These players are no longer registered on Sharly-Chess.com, '
+                    'but they have already played. Withdraw them from the rest of '
+                    'the tournament, or keep them and register them again on '
+                    'Sharly-Chess.com.'
+                ) }}
+            </p>
+            <div class="d-flex flex-column gap-2">
+                {% for player in removed_players %}
+                    <div class="border border-secondary bg-body-tertiary">
+                        <div class="d-flex align-items-center gap-2 p-2">
+                            <div class="flex-grow-1">
+                                {{ player.full_name }}
+                                <span class="text-body-secondary">({{ player.tournament.name }})</span>
+                            </div>
+                            <button
+                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                hx-post="{{ url_for(
+                                    'sce-withdraw-removed-player',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    player_id=player.id,
+                                ) }}"
+                                hx-disabled-elt="this"
+                                {{ macros.tooltip_attributes('', _(
+                                    'Give the player a zero-point bye in every round '
+                                    'they are not paired in yet.'
+                                )) }}
+                            >
+                                <i class="bi-box-arrow-right pe-1"></i>
+                                {{ _('Withdraw') }}
+                            </button>
+                            <button
+                                class="btn btn-sm btn-outline-primary text-nowrap"
+                                hx-post="{{ url_for(
+                                    'sce-register-removed-player-again',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    player_id=player.id,
+                                ) }}"
+                                hx-disabled-elt="this"
+                                {{ macros.tooltip_attributes('', _(
+                                    'Keep the player and register them again '
+                                    'on Sharly-Chess.com.'
+                                )) }}
+                            >
+                                <i class="bi-person-check-fill pe-1"></i>
+                                {{ _('Keep') }}
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'sce-sync-modal', event_uniq_id=admin_event.uniq_id
+                ) }}"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>
