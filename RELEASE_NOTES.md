@@ -52,6 +52,7 @@
 - Individual round robins (single and double) can be paired with only two players, as team round robins already could with two teams (5.1.6)
 - Update acceleration pairing settings when adding/deleting/updating players to keep existing pairing groups unchanged (5.1.7)
 - Keep the seed colour undecided when editing the pairing settings without pairing (5.1.7)
+- When a penalty such as the forfeit penalty of the _FFE_ cups changes the winner of a team match, the next round is now paired on the corrected result, as the standings already showed (5.1.8)
 
 ## Documents
 
