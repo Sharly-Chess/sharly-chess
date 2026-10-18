@@ -6,6 +6,7 @@ from typing import Any
 
 import pytest
 
+from data.pairing_numbers import PairingNumbers
 from data.pairings.acceleration import (
     BakuSwissVariation,
     ProgressiveSwissVariation,
@@ -21,6 +22,7 @@ class StubStoredTournament:
 class StubTournament:
     player_count: int
     stored_tournament: StubStoredTournament
+    pairing_variation: Any = None
 
     @property
     def stored_pairing_settings(self) -> dict[str, Any]:
@@ -77,3 +79,65 @@ class TestDeletedPairingNumbers:
         assert not ProgressiveSwissVariation().update_settings_from_deleted_pairing_numbers(
             tournament, [10]
         )
+
+
+@dataclass
+class StubPlayer:
+    pairing_number: int
+
+
+def stub_player(pairing_number: int) -> Any:
+    return StubPlayer(pairing_number)
+
+
+def moved(
+    pairing_settings: dict[str, Any], former_numbers_in_new_order: list[int]
+) -> dict[str, Any]:
+    """The settings once the players, numbered 1 to n, have been re-sorted
+    so that the player formerly numbered ``former_numbers_in_new_order[i]``
+    now holds number ``i + 1``."""
+    tournament = stub_tournament(len(former_numbers_in_new_order), pairing_settings)
+    tournament.pairing_variation = ProgressiveSwissVariation()
+    PairingNumbers(tournament)._update_settings_from_moved_players(
+        [stub_player(number) for number in former_numbers_in_new_order]
+    )
+    return {
+        key: tuple(value) for key, value in tournament.stored_pairing_settings.items()
+    }
+
+
+GROUPS = {'GROUP_A_3': (1, 4), 'GROUP_B_3': (5, 8), 'GROUP_C_3': (9, 12)}
+
+
+@pytest.mark.unit
+class TestMovedPlayers:
+    def test_player_moved_into_a_higher_group_joins_it(self):
+        assert moved(GROUPS, [1, 2, 7, 3, 4, 5, 6, 8, 9, 10, 11, 12]) == {
+            'GROUP_A_3': (1, 5),
+            'GROUP_B_3': (6, 8),
+            'GROUP_C_3': (9, 12),
+        }
+
+    def test_player_moved_into_a_lower_group_joins_it(self):
+        assert moved(GROUPS, [1, 3, 4, 5, 6, 7, 8, 9, 10, 2, 11, 12]) == {
+            'GROUP_A_3': (1, 3),
+            'GROUP_B_3': (4, 7),
+            'GROUP_C_3': (8, 12),
+        }
+
+    def test_player_moved_within_a_group_changes_nothing(self):
+        settings = moved(GROUPS, [1, 2, 3, 4, 7, 5, 6, 8, 9, 10, 11, 12])
+        assert settings == GROUPS
+
+    def test_unchanged_order_changes_nothing(self):
+        assert moved(GROUPS, list(range(1, 13))) == GROUPS
+
+    @pytest.mark.parametrize(
+        ('values', 'expected_length'),
+        [([], 0), ([1, 2, 3], 3), ([3, 2, 1], 1), ([1, 5, 2, 3, 4], 4)],
+    )
+    def test_longest_increasing_run(self, values: list[int], expected_length: int):
+        indexes = sorted(PairingNumbers._longest_increasing_run(values))
+        assert len(indexes) == expected_length
+        run = [values[index] for index in indexes]
+        assert run == sorted(set(run))

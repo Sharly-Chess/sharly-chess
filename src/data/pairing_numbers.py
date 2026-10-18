@@ -6,6 +6,7 @@ inserted later takes the place their rank gives them and the others
 shift, as do the settings that address numbers.
 """
 
+from bisect import bisect_left
 from functools import cached_property
 from operator import attrgetter
 from typing import TYPE_CHECKING
@@ -39,6 +40,70 @@ class PairingNumbers:
     def assign(self) -> None:
         """Make sure every player has a pairing number."""
         __ = self.by_number
+
+    def _update_settings_from_moved_players(
+        self, sorted_tournament_players: list['TournamentPlayer']
+    ) -> bool:
+        """Shift the settings that address numbers so that they follow the
+        players whose starting rank has changed (a new rating, say): each
+        of them is taken out of their former place and inserted at their
+        new one. The players that keep their order relative to each other
+        — the longest such run — are the ones that have not moved."""
+        tournament = self.tournament
+        new_numbers = {
+            id(tournament_player): number
+            for number, tournament_player in enumerate(
+                sorted_tournament_players, start=1
+            )
+        }
+        new_numbers_in_former_order = [
+            new_numbers[id(tournament_player)]
+            for tournament_player in sorted(
+                sorted_tournament_players, key=attrgetter('pairing_number')
+            )
+        ]
+        unmoved_indexes = self._longest_increasing_run(new_numbers_in_former_order)
+        moved_indexes = [
+            index
+            for index in range(len(new_numbers_in_former_order))
+            if index not in unmoved_indexes
+        ]
+        if not moved_indexes:
+            return False
+        variation = tournament.pairing_variation
+        settings_updated = variation.update_settings_from_deleted_pairing_numbers(
+            tournament, [index + 1 for index in moved_indexes]
+        )
+        for number in sorted(
+            new_numbers_in_former_order[index] for index in moved_indexes
+        ):
+            settings_updated |= variation.update_settings_from_added_pairing_number(
+                tournament, number
+            )
+        return settings_updated
+
+    @staticmethod
+    def _longest_increasing_run(values: list[int]) -> set[int]:
+        """The indexes of a longest strictly increasing subsequence of
+        *values*."""
+        tail_indexes: list[int] = []
+        tail_values: list[int] = []
+        previous_indexes: list[int | None] = []
+        for index, value in enumerate(values):
+            length = bisect_left(tail_values, value)
+            previous_indexes.append(tail_indexes[length - 1] if length else None)
+            if length == len(tail_indexes):
+                tail_indexes.append(index)
+                tail_values.append(value)
+            else:
+                tail_indexes[length] = index
+                tail_values[length] = value
+        indexes: set[int] = set()
+        current = tail_indexes[-1] if tail_indexes else None
+        while current is not None:
+            indexes.add(current)
+            current = previous_indexes[current]
+        return indexes
 
     def _assign(self) -> None:
         """Number every player of the tournament."""
@@ -81,6 +146,9 @@ class PairingNumbers:
         else:
             sorted_tournament_players = sorted(
                 current_tournament_players, key=attrgetter('starting_rank_sort_key')
+            )
+            settings_updated |= self._update_settings_from_moved_players(
+                sorted_tournament_players
             )
         # Handing out the numbers for the first time is not an insertion:
         # nobody is being slotted into an existing order, so the pairing
