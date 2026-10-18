@@ -754,9 +754,10 @@ class TeamScoring:
                 continue
             b_entry = totals.setdefault(stb.team_b_id, [0.0, 0.0])
             a_gp, b_gp = team_board.game_points
-            # The played results alone here: the adjustments are folded in
-            # below and reported separately in the 299 records.
-            match_points_pair = team_board.match_points_pair((a_gp, b_gp))
+            # Match result follows the effective game points, as in the
+            # standings; the deltas are added to the totals below and
+            # reported separately in the 299 records.
+            match_points_pair = team_board.match_points_pair()
             assert match_points_pair is not None
             a_entry[0] += match_points_pair[0]
             a_entry[1] += a_gp
