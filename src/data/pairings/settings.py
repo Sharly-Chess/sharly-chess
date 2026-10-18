@@ -106,6 +106,12 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         """Create the value to store in the database from a T object."""
         return object_
 
+    def is_left_to_pairing(self, data: dict[str, str]) -> bool:
+        """Whether the form data leaves the value to be decided when the
+        round is paired, so that saving the settings on their own must
+        not decide it."""
+        return False
+
     @classmethod
     def is_valid(cls, tournament: 'Tournament') -> bool:
         if not cls.is_set(tournament):
@@ -171,6 +177,9 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
 
     def to_form_data(self, object_: BoardColor) -> dict[str, str]:
         return {self.id: object_.value}
+
+    def is_left_to_pairing(self, data: dict[str, str]) -> bool:
+        return data.get(self.id) in (self.RANDOM_ID, '')
 
     def get_data_errors(
         self, tournament: 'Tournament', data: dict[str, str]

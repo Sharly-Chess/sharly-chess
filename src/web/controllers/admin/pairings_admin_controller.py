@@ -3262,7 +3262,7 @@ class PairingsAdminController(BaseEventAdminController):
             return self._render_pairings_settings_modal(
                 web_context, data, errors, for_pairing=False
             )
-        self._save_pairing_settings_data(tournament, data)
+        self._save_pairing_settings_data(tournament, data, for_pairing=False)
         if tournament.has_pairings:
             # Once rounds are paired the settings feed the standings (a
             # Keizer re-derives every score from them), so a full refresh
@@ -3420,11 +3420,16 @@ class PairingsAdminController(BaseEventAdminController):
 
     @classmethod
     def _save_pairing_settings_data(
-        cls, tournament: Tournament, data: dict[str, str]
+        cls, tournament: Tournament, data: dict[str, str], for_pairing: bool = True
     ) -> None:
-        tournament.update_pairing_settings(
-            cls._pairing_settings_from_data(tournament, data)
-        )
+        stored_settings: dict[str, Any] = {}
+        for setting in tournament.pairing_variation.settings:
+            if not for_pairing and setting.is_left_to_pairing(data):
+                continue
+            stored_settings[setting.id] = setting.to_stored_value(
+                setting.from_form_data(data)
+            )
+        tournament.update_pairing_settings(stored_settings)
 
     @post(
         path='/pairings/validate-absents/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
