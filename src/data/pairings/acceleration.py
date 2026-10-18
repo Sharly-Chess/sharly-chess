@@ -130,6 +130,19 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
         return cls.default_values_by_group(tournament)[cls.group()]
 
     @classmethod
+    def stored_max(cls, tournament: 'Tournament') -> int | None:
+        """The stored last number of the group, read without the validity
+        fallback of ``get_value``: deleting players leaves the stored
+        ranges outside the field precisely when they need shifting."""
+        if not cls.is_set(tournament):
+            return None
+        return int(
+            cls.from_stored_value(tournament.stored_pairing_settings[cls.static_id()])[
+                1
+            ]
+        )
+
+    @classmethod
     def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
         variation = tournament.pairing_variation
         if (
@@ -852,9 +865,9 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
         tournament: 'Tournament',
         pairing_numbers: Iterable[int],
     ) -> bool:
-        if not self.validate_settings(tournament):
+        max_a = GroupA2GroupsSetting.stored_max(tournament)
+        if max_a is None:
             return False
-        max_a = GroupA2GroupsSetting.get_value(tournament)[1]
         new_max_a = max_a
         for pairing_number in pairing_numbers:
             if pairing_number <= max_a:
@@ -937,10 +950,10 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
         tournament: 'Tournament',
         pairing_numbers: Iterable[int],
     ) -> bool:
-        if not self.validate_settings(tournament):
+        max_a = GroupA3GroupsSetting.stored_max(tournament)
+        max_b = GroupB3GroupsSetting.stored_max(tournament)
+        if max_a is None or max_b is None:
             return False
-        max_a = GroupA3GroupsSetting.get_value(tournament)[1]
-        max_b = GroupB3GroupsSetting.get_value(tournament)[1]
         new_max_a = max_a
         new_max_b = max_b
         for pairing_number in pairing_numbers:

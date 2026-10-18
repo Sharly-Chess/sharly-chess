@@ -110,7 +110,7 @@ class PairingNumbers:
             for pairing_number, player in enumerate(sorted_tournament_players, start=1)
             if pairing_number != player.pairing_number
         }
-        if not tournament_players_by_updated_pairing_number:
+        if not tournament_players_by_updated_pairing_number and not settings_updated:
             return
         for (
             pairing_number,
