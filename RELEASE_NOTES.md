@@ -50,6 +50,8 @@
 - With the Baku acceleration, group A is now always computed from the players entered at the time of the first pairing, even if the pairing settings were saved before more players were entered (5.1.5)
 - A pairing-allocated bye worth half a point or nothing now counts as a downfloat when pairing, and at its value in Sonneborn-Berger (5.1.5)
 - Individual round robins (single and double) can be paired with only two players, as team round robins already could with two teams (5.1.6)
+- Update acceleration pairing settings when adding/deleting/updating players to keep existing pairing groups unchanged (5.1.7)
+- Keep the seed colour undecided when editing the pairing settings without pairing (5.1.7)
 
 ## Documents
 
