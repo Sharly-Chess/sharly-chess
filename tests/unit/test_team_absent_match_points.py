@@ -420,3 +420,40 @@ class LoubatiereForfeitedMatchTestCase(_AbsentMatchPointsHarness):
 
         self.assertEqual(self._mp(tournament, forfeit_id), 0.0)
         self.assertEqual(self._mp(tournament, opponent_id), 3.0)
+
+    def test_the_forfeit_penalty_decides_the_match_in_the_pairing_totals(
+        self,
+    ) -> None:
+        """2-2 over the boards, one of the team's two points a game lost by
+        forfeit: the -1 penalty makes the match 1-2, so the opponent wins
+        it. The totals the next round is paired on agree with the
+        standings."""
+        self._create(_CUP_MATCH_POINTS, rule_set=self.RULE_SET, boards=4)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        team_board = self._round_one_match(tournament, team_id)
+        losers = [opponent_id, opponent_id, team_id]
+        for index, board in enumerate(team_board.boards):
+            white_team_id, _ = team_board.board_team_ids(board)
+            if index < len(losers):
+                result = Result.LOSS if white_team_id == losers[index] else Result.WIN
+            else:
+                result = (
+                    Result.FORFEIT_LOSS
+                    if white_team_id == team_id
+                    else Result.FORFEIT_WIN
+                )
+            tournament.add_result(board, result)
+        tournament = self._load()
+
+        self.assertEqual(self._mp(tournament, team_id), 1.0)
+        self.assertEqual(self._mp(tournament, opponent_id), 3.0)
+        totals = tournament.team_totals_after(1)
+        self.assertEqual(totals[team_id][0], 1.0)
+        self.assertEqual(totals[opponent_id][0], 3.0)
+        self.assertEqual(
+            tournament.team_primary_score_before_round(opponent_id, 2), 3.0
+        )
