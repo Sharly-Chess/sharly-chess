@@ -8,7 +8,6 @@ TRF26 250 records.
 """
 
 from abc import ABC, abstractmethod
-from copy import copy
 from dataclasses import replace
 from datetime import date
 from functools import cache, partial
@@ -99,6 +98,34 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
 
     def tooltip_representation(self, value: tuple[int, int]) -> str | None:
         return f'{value[0]} - {value[1]}'
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> tuple[int, int]:
+        return int(value[0]), int(value[1])
+
+    @classmethod
+    def to_stored_value(cls, object_: tuple[int, int]) -> Any:
+        return [object_[0], object_[1]]
+
+    @staticmethod
+    def store_groups(
+        tournament: 'Tournament',
+        groups: dict[type['PairingGroupSetting'], tuple[int, int]],
+    ) -> bool:
+        """Store the bounds of the groups and return True if any of them
+        has changed."""
+        stored_groups = {
+            setting.static_id(): setting.to_stored_value(bounds)
+            for setting, bounds in groups.items()
+        }
+        stored_pairing_settings = tournament.stored_tournament.pairing_settings
+        if all(
+            stored_pairing_settings.get(setting_id) == stored_value
+            for setting_id, stored_value in stored_groups.items()
+        ):
+            return False
+        stored_pairing_settings |= stored_groups
+        return True
 
     def from_form_data(self, data: dict[str, str]) -> tuple[int, int]:
         return (
@@ -877,13 +904,12 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
         for pairing_number in pairing_numbers:
             if pairing_number <= max_a:
                 new_max_a -= 1
-        previous_pairing_settings = copy(tournament.stored_tournament.pairing_settings)
-        tournament.stored_tournament.pairing_settings |= {
-            GroupA2GroupsSetting().id: (1, new_max_a),
-            GroupB2GroupsSetting().id: (new_max_a + 1, tournament.player_count),
-        }
-        return (
-            previous_pairing_settings != tournament.stored_tournament.pairing_settings
+        return PairingGroupSetting.store_groups(
+            tournament,
+            {
+                GroupA2GroupsSetting: (1, new_max_a),
+                GroupB2GroupsSetting: (new_max_a + 1, tournament.player_count),
+            },
         )
 
     def update_settings_from_added_pairing_number(
@@ -894,11 +920,13 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
             return False
         if pairing_number <= max_a:
             max_a += 1
-        tournament.stored_tournament.pairing_settings |= {
-            GroupA2GroupsSetting().id: (1, max_a),
-            GroupB2GroupsSetting().id: (max_a + 1, tournament.player_count),
-        }
-        return True
+        return PairingGroupSetting.store_groups(
+            tournament,
+            {
+                GroupA2GroupsSetting: (1, max_a),
+                GroupB2GroupsSetting: (max_a + 1, tournament.player_count),
+            },
+        )
 
     @classmethod
     def get_acceleration_group_max_numbers(cls, tournament: 'Tournament') -> list[int]:
@@ -966,14 +994,13 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
                 new_max_a -= 1
             if pairing_number <= max_b:
                 new_max_b -= 1
-        previous_pairing_settings = copy(tournament.stored_tournament.pairing_settings)
-        tournament.stored_tournament.pairing_settings |= {
-            GroupA3GroupsSetting().id: (1, new_max_a),
-            GroupB3GroupsSetting().id: (new_max_a + 1, new_max_b),
-            GroupC3GroupsSetting().id: (new_max_b + 1, tournament.player_count),
-        }
-        return (
-            previous_pairing_settings != tournament.stored_tournament.pairing_settings
+        return PairingGroupSetting.store_groups(
+            tournament,
+            {
+                GroupA3GroupsSetting: (1, new_max_a),
+                GroupB3GroupsSetting: (new_max_a + 1, new_max_b),
+                GroupC3GroupsSetting: (new_max_b + 1, tournament.player_count),
+            },
         )
 
     def update_settings_from_added_pairing_number(
@@ -987,12 +1014,14 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
             max_a += 1
         if pairing_number <= max_b:
             max_b += 1
-        tournament.stored_tournament.pairing_settings |= {
-            GroupA3GroupsSetting().id: (1, max_a),
-            GroupB3GroupsSetting().id: (max_a + 1, max_b),
-            GroupC3GroupsSetting().id: (max_b + 1, tournament.player_count),
-        }
-        return True
+        return PairingGroupSetting.store_groups(
+            tournament,
+            {
+                GroupA3GroupsSetting: (1, max_a),
+                GroupB3GroupsSetting: (max_a + 1, max_b),
+                GroupC3GroupsSetting: (max_b + 1, tournament.player_count),
+            },
+        )
 
     @classmethod
     def get_acceleration_group_max_numbers(cls, tournament: 'Tournament') -> list[int]:
@@ -1707,11 +1736,15 @@ class AccelerationUtils:
         )
         if not max_a or not max_b:
             return
-        tournament.stored_tournament.pairing_settings |= {
-            GroupA3GroupsSetting().id: (1, max_a),
-            GroupB3GroupsSetting().id: (max_a + 1, max_b),
-            GroupC3GroupsSetting().id: (max_b + 1, tournament.player_count),
-        }
+        if not PairingGroupSetting.store_groups(
+            tournament,
+            {
+                GroupA3GroupsSetting: (1, max_a),
+                GroupB3GroupsSetting: (max_a + 1, max_b),
+                GroupC3GroupsSetting: (max_b + 1, tournament.player_count),
+            },
+        ):
+            return
         with EventDatabase(tournament.event.uniq_id, True) as database:
             database.set_tournament_pairing_settings(
                 tournament.id, tournament.stored_pairing_settings
