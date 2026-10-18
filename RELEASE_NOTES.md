@@ -53,6 +53,7 @@
 - Update acceleration pairing settings when adding/deleting/updating players to keep existing pairing groups unchanged (5.1.7)
 - Keep the seed colour undecided when editing the pairing settings without pairing (5.1.7)
 - Tournaments with accelerated pairings can be sent to the _FFE_ website again (5.1.8)
+- When a penalty such as the forfeit penalty of the _FFE_ cups changes the winner of a team match, the next round is now paired on the corrected result, as the standings already showed (5.1.8)
 
 ## Documents
 
