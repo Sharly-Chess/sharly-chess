@@ -43,9 +43,9 @@ class TestDeletedPairingNumbers:
             tournament, [5, 20, 40, 70]
         )
         assert tournament.stored_pairing_settings == {
-            'GROUP_A_3': (1, 30),
-            'GROUP_B_3': (31, 60),
-            'GROUP_C_3': (61, 85),
+            'GROUP_A_3': [1, 30],
+            'GROUP_B_3': [31, 60],
+            'GROUP_C_3': [61, 85],
         }
 
     def test_last_number_deleted_shrinks_the_last_group(self):
@@ -56,9 +56,9 @@ class TestDeletedPairingNumbers:
             tournament, []
         )
         assert tournament.stored_pairing_settings == {
-            'GROUP_A_3': (1, 29),
-            'GROUP_B_3': (30, 59),
-            'GROUP_C_3': (60, 87),
+            'GROUP_A_3': [1, 29],
+            'GROUP_B_3': [30, 59],
+            'GROUP_C_3': [60, 87],
         }
 
     def test_two_groups_follow_the_players_left_in_the_field(self):
@@ -67,9 +67,21 @@ class TestDeletedPairingNumbers:
             tournament, [10, 50]
         )
         assert tournament.stored_pairing_settings == {
-            'GROUP_A_2': (1, 39),
-            'GROUP_B_2': (40, 78),
+            'GROUP_A_2': [1, 39],
+            'GROUP_B_2': [40, 78],
         }
+
+    def test_groups_in_step_with_the_field_are_left_unchanged(self):
+        tournament = stub_tournament(
+            87, {'GROUP_A_3': [1, 29], 'GROUP_B_3': [30, 59], 'GROUP_C_3': [60, 87]}
+        )
+        assert not ProgressiveSwissVariation().update_settings_from_deleted_pairing_numbers(
+            tournament, []
+        )
+        tournament = stub_tournament(78, {'GROUP_A_2': [1, 40], 'GROUP_B_2': [41, 78]})
+        assert not BakuSwissVariation().update_settings_from_deleted_pairing_numbers(
+            tournament, []
+        )
 
     def test_nothing_to_shift_without_groups(self):
         tournament = stub_tournament(78, {})
