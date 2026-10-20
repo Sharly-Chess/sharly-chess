@@ -50,3 +50,23 @@ def test_a_read_only_file_reports_the_refused_write(tmp_path: Path):
 
     assert read_error == ''
     assert f'errno {errno.EACCES}' in write_error
+
+
+def test_a_copy_holds_the_committed_data(tmp_path: Path):
+    source = tmp_path / 'event.sce'
+    _create_database(source)
+    writer = sqlite3.connect(source)
+    writer.executemany('INSERT INTO t VALUES (?)', [(i,) for i in range(1000)])
+    writer.commit()
+    destination = tmp_path / 'copy.sce'
+    destination.write_bytes(b'previous content')
+
+    writer.execute('INSERT INTO t VALUES (-1)')
+    SQLiteDatabase(source).copy_to(destination)
+    writer.rollback()
+    writer.close()
+
+    copy = sqlite3.connect(destination)
+    assert copy.execute('PRAGMA integrity_check').fetchone() == ('ok',)
+    assert copy.execute('SELECT count(*), min(x) FROM t').fetchone() == (1000, 0)
+    copy.close()

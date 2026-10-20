@@ -45,6 +45,22 @@ class SQLiteDatabase:
         self.file.unlink(missing_ok=True)
         return None
 
+    def copy_to(self, destination: Path) -> None:
+        """Copies the database as one consistent snapshot, which a copy of the
+        file does not ensure: a write committed while the file is copied would
+        leave the copy half old and half new."""
+        source = connect(f'{self.file.resolve().as_uri()}?mode=ro', uri=True)
+        try:
+            source.execute('PRAGMA busy_timeout=5000')
+            destination.unlink(missing_ok=True)
+            target = connect(destination)
+            try:
+                source.backup(target)
+            finally:
+                target.close()
+        finally:
+            source.close()
+
     def _create(self, script: str | None = None) -> None:
         database: Connection | None = None
         try:
