@@ -37,6 +37,7 @@
 - Players removed by the deletion of unpaired players, or by an import replacing the existing players, are now also deleted on _Sharly-Chess.com_, instead of being brought back by the next synchronisation; re-imported players stay linked to their _Sharly-Chess.com_ registration (5.1.1)
 - The _FFE_ player update now finds players whose licence number is wrong or unknown, by their _FIDE_ ID or else by their name and date (or year) of birth, and proposes the correct licence number; names are compared regardless of case and accents; players still not found despite their licence number (or FIDE ID for the FIDE database) are highlighted in the update window (5.1.1)
 - Players without a _FIDE_ ID in the _FFE_ database, or with a _FIDE_ ID of 0 in an imported file, no longer prevent the synchronisation with _Sharly-Chess.com_ (5.1.1)
+- The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.1.9)
 
 ## Pairings
 
