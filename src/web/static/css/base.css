@@ -777,7 +777,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     align-items: center;
 }
 
-.collection-details-toggle {
+.top-nav-switch {
     flex: 0 0 auto;
     min-height: 1.5rem;
     margin-inline-end: .5rem;
@@ -785,7 +785,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     white-space: nowrap;
 }
 
-.collection-details-toggle .form-check-input {
+.top-nav-switch .form-check-input {
     margin-left: -2.75rem;
     margin-top: 0;
 }

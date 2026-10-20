@@ -10,8 +10,8 @@
     <h6>{{ _('Rating lists used') }}</h6>
     <ul class="list-unstyled ps-2 d-flex flex-column gap-1">
         {% for status in list_statuses %}
-            <li class="{% if status.warning %}text-warning{% endif %}">
-                {% if status.warning %}<i class="bi-exclamation-triangle-fill pe-1"></i>{% endif %}
+            <li class="d-flex align-items-center gap-1{% if status.warning %} text-warning{% endif %}">
+                {% if status.warning %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
                 {{ status.name }}{% if status.message %} · {{ status.message }}{% endif %}
             </li>
         {% endfor %}
