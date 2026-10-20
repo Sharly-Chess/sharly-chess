@@ -32,6 +32,8 @@ def make_sync_data(
     yob: int | None = 1990,
     fide_id: int | None = None,
     club: str = '',
+    owed: float | None = None,
+    paid: float | None = None,
 ) -> SCEPlayerSyncData:
     return SCEPlayerSyncData(
         tournament_id=tid,
@@ -40,6 +42,8 @@ def make_sync_data(
         year_of_birth=yob,
         fide_id=fide_id,
         club=club,
+        owed=owed,
+        paid=paid,
     )
 
 
@@ -359,3 +363,101 @@ class TestTournamentForce:
         assert force_op.op_dict['op'] == 'update'
         assert force_op.op_dict['registration_id'] == 'SCE-1'
         assert force_op.op_dict['tournament_id'] == 'T1'
+
+
+# ── Payment import ──────────────────────────────────────────────────────────
+
+
+@pytest.mark.unit
+class TestPaymentImport:
+    @staticmethod
+    def _player_with_local_payment(
+        last: SCEPlayerSyncData, owed: float, paid: float
+    ) -> MagicMock:
+        player = make_player(
+            plugin_data=SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        )
+        player.stored_player.owed = owed
+        player.stored_player.paid = paid
+        return player
+
+    def test_payment_changed_on_sce_is_imported_without_upload(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(owed=20.0, paid=0.0)
+        player = self._player_with_local_payment(last, owed=20.0, paid=0.0)
+        _patch_from_player(monkeypatch, make_sync_data())
+        sce = make_sync_data(owed=20.0, paid=20.0)
+
+        session._plan_player_sync(player, sce, builder, counters)
+
+        assert len(builder) == 0
+        assert player.stored_player.owed == 20.0
+        assert player.stored_player.paid == 20.0
+        assert player.plugin_data[PLUGIN_NAME].last_sync_data.payment == (20.0, 20.0)
+
+    def test_first_payment_from_sce_is_imported(
+        self, session, builder, counters, monkeypatch
+    ):
+        player = self._player_with_local_payment(make_sync_data(), owed=0.0, paid=0.0)
+        _patch_from_player(monkeypatch, make_sync_data())
+
+        session._plan_player_sync(
+            player, make_sync_data(owed=15.5, paid=0.0), builder, counters
+        )
+
+        assert player.stored_player.owed == 15.5
+        assert player.stored_player.paid == 0.0
+
+    def test_unchanged_sce_payment_keeps_local_payment(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(owed=20.0, paid=0.0)
+        player = self._player_with_local_payment(last, owed=20.0, paid=20.0)
+        _patch_from_player(monkeypatch, make_sync_data())
+
+        session._plan_player_sync(
+            player, make_sync_data(owed=20.0, paid=0.0), builder, counters
+        )
+
+        assert player.stored_player.paid == 20.0
+
+    def test_sce_without_payment_keeps_local_payment(
+        self, session, builder, counters, monkeypatch
+    ):
+        player = self._player_with_local_payment(make_sync_data(), owed=10.0, paid=5.0)
+        _patch_from_player(monkeypatch, make_sync_data())
+
+        session._plan_player_sync(player, make_sync_data(), builder, counters)
+
+        assert player.stored_player.owed == 10.0
+        assert player.stored_player.paid == 5.0
+
+    def test_local_upload_records_sce_payment_as_last_synced(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(club='Old', owed=20.0, paid=20.0)
+        player = self._player_with_local_payment(last, owed=20.0, paid=20.0)
+        _patch_from_player(monkeypatch, make_sync_data(club='New'))
+
+        session._plan_player_sync(
+            player, make_sync_data(club='Old', owed=20.0, paid=20.0), builder, counters
+        )
+        assert len(builder) == 1
+        assert 'owed' not in builder.pending[0].op_dict['data']
+        builder.pending[0].on_success({'index': 0, 'status': 'ok'})
+
+        new_last = player.plugin_data[PLUGIN_NAME].last_sync_data
+        assert new_last.club == 'New'
+        assert new_last.payment == (20.0, 20.0)
+
+    def test_merge_ignores_payment(self):
+        local = make_sync_data(club='Local', owed=0.0, paid=0.0)
+        sce = make_sync_data(last_name='Smith', owed=20.0, paid=20.0)
+        last = make_sync_data(owed=10.0, paid=0.0)
+
+        merged = local.merge_with_other_sync_data(sce, last)
+
+        assert merged.club == 'Local'
+        assert merged.last_name == 'Smith'
+        assert merged.payment == (None, None)
