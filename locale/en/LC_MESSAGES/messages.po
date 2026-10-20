@@ -2839,6 +2839,10 @@ msgstr ""
 msgid "Delete the multi-screen."
 msgstr ""
 
+#, python-brace-format
+msgid "Delete the previous data folder \"{folder}\"?"
+msgstr ""
+
 msgid "Delete the rotator."
 msgstr ""
 
@@ -3054,6 +3058,10 @@ msgid "Do you want to add the new data folder to the Microsoft Defender exceptio
 msgstr ""
 
 msgid "Do you want to install the update now?"
+msgstr ""
+
+#, python-brace-format
+msgid "Do you want to move the data to \"{folder}\"? The current folder will be kept as a copy."
 msgstr ""
 
 msgid "Do you want to try again?"
@@ -5641,10 +5649,17 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
+#, python-brace-format
+msgid "Move the data to \"{folder}\"?"
+msgstr ""
+
 msgid "Move this round to the next period"
 msgstr ""
 
 msgid "Move this round to the previous period"
+msgstr ""
+
+msgid "Move to the recommended folder"
 msgstr ""
 
 #, python-format
@@ -7704,6 +7719,10 @@ msgstr ""
 msgid "Preview the card with different sample data."
 msgstr ""
 
+#, python-brace-format
+msgid "Previous data folder, kept as a copy: {folder}"
+msgstr ""
+
 msgid "Previous round"
 msgstr ""
 
@@ -8255,6 +8274,9 @@ msgid "Resolve the tied match(es) of round {round} before pairing the next round
 msgstr ""
 
 msgid "Rest"
+msgstr ""
+
+msgid "Restart Sharly Chess to complete the move."
 msgstr ""
 
 msgid "Restart to complete the move"
@@ -9120,6 +9142,9 @@ msgstr ""
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
+msgid "Sharly Chess no longer uses it, your data is in the current folder."
+msgstr ""
+
 msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
 msgstr ""
 
@@ -9908,6 +9933,9 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
+msgid "The current folder will be kept as a copy."
+msgstr ""
+
 msgid "The current round was paired from this one: this correction breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr ""
 
@@ -9970,6 +9998,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "The fixed rating must be between 1 and {max}."
+msgstr ""
+
+#, python-brace-format
+msgid "The folder \"{folder}\" could not be deleted entirely."
 msgstr ""
 
 msgid "The following categories will also be deleted:"
@@ -10314,6 +10346,10 @@ msgid "The points the file gives player {players} do not match this scoring."
 msgid_plural "The points the file gives {count} players do not match this scoring (players {players})."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "The previous folder is kept as a copy at \"{folder}\", and will be deleted two versions from now. You can delete it sooner from the settings."
+msgstr ""
 
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr ""
@@ -10795,6 +10831,9 @@ msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import
 msgstr ""
 
 msgid "This folder is not empty."
+msgstr ""
+
+msgid "This folder is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
 msgstr ""
 
 msgid "This game has been played."
@@ -12308,6 +12347,14 @@ msgid "You must create a tournament before creating a prize bracket."
 msgstr ""
 
 msgid "You must create a tournament before creating these screens."
+msgstr ""
+
+#, python-brace-format
+msgid "Your data folder \"{folder}\" is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
+msgstr ""
+
+#, python-brace-format
+msgid "Your data has been moved to \"{folder}\", where OneDrive does not synchronise it and antivirus protections do not block it."
 msgstr ""
 
 msgid "Your pairings"

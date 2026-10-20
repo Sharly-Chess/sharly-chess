@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
+from utils.data_dir_migration import DataDirMigration
 from utils.file import shutil_delete_onexc
 from utils.instance_lock import InstanceLock
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
@@ -101,8 +102,11 @@ def windows_documents_dir() -> Path:
     doc_reg_key = (
         r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
     )
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, doc_reg_key) as key:
-        documents_path = winreg.QueryValueEx(key, 'Personal')[0]
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, doc_reg_key) as key:
+            documents_path = winreg.QueryValueEx(key, 'Personal')[0]
+    except OSError:
+        return Path.home() / 'Documents'
     # The value is usually stored unexpanded (%USERPROFILE%\Documents).
     return Path(os.path.expandvars(documents_path))
 
@@ -162,8 +166,34 @@ def _app_data_dir() -> Path:
 BASE_DIR = _app_base_dir()
 TEST_DATA_DIR = BASE_DIR / 'tests' / 'tmp'
 
+
+def _data_dir_migration(data_dir: Path) -> DataDirMigration | None:
+    """The move of the data out of the Documents or OneDrive, on Windows only:
+    elsewhere the default folders are neither synchronised nor guarded. A move
+    asked from the settings is completed first."""
+    match sys.platform:
+        case 'win32':
+            if (
+                DEVEL_ENV
+                or TEST_ENV
+                or MANUAL_PATH_USED
+                or ProgramVar.PREVIOUS_DATA_DIR.read_path_value()
+            ):
+                return None
+            return DataDirMigration(
+                data_dir=data_dir,
+                legacy_default_dir=windows_documents_dir() / 'Sharly Chess',
+                target_dir=_default_data_dir(),
+            )
+        case _:
+            return None
+
+
 # Architecture of the directory containing the app's data.
 DATA_DIR = _app_data_dir()
+DATA_DIR_MIGRATION = _data_dir_migration(DATA_DIR)
+if DATA_DIR_MIGRATION:
+    DATA_DIR = DATA_DIR_MIGRATION.run(SHARLY_CHESS_VERSION)
 BACKUP_BASE_DIR = DATA_DIR / 'backup'  # Dev only
 ARCHIVES_DIR = DATA_DIR / 'archives'
 CUSTOM_DIR = DATA_DIR / 'custom'
@@ -283,6 +313,12 @@ except OSError as error:
     raise SharlyChessException(
         f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}'
     ) from error
+
+if DATA_DIR_MIGRATION and DATA_DIR_MIGRATION.messages:
+    from common.logger import get_logger
+
+    for level, message in DATA_DIR_MIGRATION.messages:
+        get_logger().log(level, message)
 
 if DEVEL_ENV:
     import tomllib
