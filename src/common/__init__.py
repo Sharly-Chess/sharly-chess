@@ -12,6 +12,7 @@ from packaging.version import Version
 
 from common.exception import SharlyChessException
 from utils.file import shutil_delete_onexc
+from utils.instance_lock import InstanceLock
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
 
 
@@ -207,6 +208,14 @@ if (
     and not any(DATA_DIR.iterdir())
 ):
     # The data dir changed: move the previous content over
+    if InstanceLock.is_held_by_another_process(previous_dir):
+        # The move is kept pending: starting would otherwise run on the new,
+        # empty folder while the running instance keeps the data.
+        raise SharlyChessException(
+            f'The data directory can not be moved from "{previous_dir}" to '
+            f'"{DATA_DIR}" while Sharly Chess is running on it. Close it, then '
+            'start Sharly Chess again to complete the move.'
+        )
     try:
         # Remove the dir so it's copied at the location instead of in a subfolder
         DATA_DIR.rmdir()

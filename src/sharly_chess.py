@@ -39,6 +39,36 @@ def _filtered_warn(*args, **kwargs):
 
 warnings.warn = _filtered_warn
 
+
+def show_startup_dialog(title: str, message: str, error: bool = True) -> None:
+    """Shows a message box before the window of the application exists."""
+    if sys.platform == 'win32':
+        import tkinter
+        from tkinter import messagebox
+
+        root = tkinter.Tk()
+        root.withdraw()
+        if error:
+            messagebox.showerror(title, message)
+        else:
+            messagebox.showwarning(title, message)
+        root.destroy()
+
+    elif sys.platform == 'darwin':
+        import subprocess
+
+        message = message.replace('"', '\\"')
+        title = title.replace('"', '\\"')
+        kind = 'critical' if error else 'warning'
+        script = (
+            f'display alert "{title}" message "{message}" as {kind} buttons {{"OK"}}'
+        )
+        subprocess.run(['osascript', '-e', script], check=True)
+
+    elif sys.platform == 'linux':
+        print(f'{title}: {message}')
+
+
 try:
     if sys.platform == 'darwin':
         # Prevent MacOS from sleeping the windowed app when it's in the background
@@ -406,6 +436,36 @@ try:
 
         sys.exit(0)
 
+    from common import DATA_DIR
+    from utils.instance_lock import InstanceLock
+
+    # A second server on the same data folder would write the same events: the
+    # user is sent to the running one instead.
+    if not TEST_ENV:
+        instance_lock = InstanceLock(DATA_DIR)
+        if not instance_lock.acquire():
+            running_info = instance_lock.read_info()
+            logger.error(
+                'Sharly Chess is already running on [%s] (process %s), exiting.',
+                DATA_DIR,
+                running_info.get('pid'),
+            )
+            if not DEVEL_ENV:
+                import webbrowser
+
+                from common.sharly_chess_config import SharlyChessConfig
+
+                with suppress(Exception):
+                    SharlyChessConfig().load_and_set_env()
+                running_url = running_info.get('url')
+                show_startup_dialog(
+                    *InstanceLock.running_message(bool(running_url)), error=False
+                )
+                if running_url:
+                    webbrowser.open(running_url)
+            sys.exit(0)
+        InstanceLock.held = instance_lock
+
     port = args.port or None
     debug = args.debug if DEVEL_ENV else False
     if debug:
@@ -611,12 +671,7 @@ except Exception:
     if test_env:
         sys.exit(1)
 
-    title = 'Sharly Chess startup error'
-
     if sys.platform == 'win32':
-        import tkinter
-        from tkinter import messagebox
-
         base_dir = Path(sys.argv[0]).resolve().parent
         if not os.access(base_dir, os.W_OK):
             message = (
@@ -624,19 +679,4 @@ except Exception:
                 'Check the permissions of the directory then try again.'
             )
 
-        root = tkinter.Tk()
-        root.withdraw()
-        messagebox.showerror(title, message)
-        root.destroy()
-
-    elif sys.platform == 'darwin':
-        import subprocess
-
-        message = message.replace('"', '\\"')
-        script = (
-            f'display alert "{title}" message "{message}" as critical buttons {{"OK"}}'
-        )
-        subprocess.run(['osascript', '-e', script], check=True)
-
-    elif sys.platform == 'linux':
-        print(f'{title}: {message}')
+    show_startup_dialog('Sharly Chess startup error', message)

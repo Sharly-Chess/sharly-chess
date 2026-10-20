@@ -4490,6 +4490,12 @@ msgstr "Identité"
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
 msgstr "Si définie, toutes les dates des tournois et des chronomètres seront mises à jour relativement à cette date."
 
+msgid "If it no longer responds, end it in the Task Manager, then start Sharly Chess again."
+msgstr "S'il ne répond plus, arrêtez-le dans le Gestionnaire des tâches, puis relancez Sharly Chess."
+
+msgid "If it no longer responds, force it to quit, then start Sharly Chess again."
+msgstr "S'il ne répond plus, forcez-le à quitter, puis relancez Sharly Chess."
+
 msgid "If left empty, a name is derived from the menu content."
 msgstr "Si vide, un nom est dérivé du contenu du menu."
 
@@ -4880,6 +4886,9 @@ msgstr "Il est fortement recommandé de définir au moins un départage."
 
 msgid "It is not possible to return players on the last round."
 msgstr "Il n'est pas possible de faire revenir des joueur·euses lors de la dernière ronde."
+
+msgid "It will now open in your browser."
+msgstr "Il va s'ouvrir dans votre navigateur."
 
 msgid "Italic"
 msgstr "Italique"
@@ -9103,6 +9112,12 @@ msgstr "Prix partagés"
 
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
+
+msgid "Sharly Chess is already running"
+msgstr "Sharly Chess est déjà lancé"
+
+msgid "Sharly Chess is already running on this computer. Only one can run at a time, as they would write to the same events."
+msgstr "Sharly Chess est déjà lancé sur cet ordinateur. Un seul peut fonctionner à la fois, car ils écriraient dans les mêmes évènements."
 
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
