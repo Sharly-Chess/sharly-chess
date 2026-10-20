@@ -32,6 +32,7 @@ from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
+from utils.instance_lock import InstanceLock
 from web.channels import channels_plugin
 from web.garbage_collection import RequestGarbageCollectionMiddleware
 from web.performance import PerformanceMiddleware
@@ -239,6 +240,8 @@ class ServerEngine:
 
         logger.info(f'Port: {sc_config.web_port}')
         logger.info(f'Local URL: {sc_config.local_url}')
+        if InstanceLock.held:
+            InstanceLock.held.publish_url(sc_config.local_url)
 
         if sc_config.launch_browser:
             Thread(target=launch_browser, args=(sc_config.local_url,)).start()
