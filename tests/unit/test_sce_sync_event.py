@@ -101,11 +101,17 @@ def _add_local_player_with_sce_id(
         return player_id
 
 
-def _canned_registration(sce_player_id: str) -> dict:
+def _canned_registration(
+    sce_player_id: str,
+    amount_cents: int | None = None,
+    paid_cents: int | None = None,
+) -> dict:
     """Shape of one registration in the SC.com `data['tournaments']`
     payload. Includes all keys the FFE + FRA-schools augment hooks read
     so they don't KeyError on canned data."""
     return {
+        'amount_cents': amount_cents,
+        'paid_cents': paid_cents,
         'id': sce_player_id,
         'last_name': 'Local',
         'first_name': 'Player',
@@ -380,3 +386,117 @@ class TestSyncEventLocalMove(TestCase):
             'SCE-T2',
             'op-level tournament_id must be the move target',
         )
+
+
+PAYMENT_EVENT_UNIQ_ID = 'test-sce-sync-event-payment'
+
+
+@pytest.mark.unit
+class TestSyncEventPayment(TestCase):
+    """The fees of SC.com registrations reach the stored players, and the
+    payments recorded locally survive the synchronisations that do not
+    change them on SC.com."""
+
+    def setUp(self):
+        super().setUp()
+        TestUtils.create_event(PAYMENT_EVENT_UNIQ_ID)
+        TestUtils.create_tournament(PAYMENT_EVENT_UNIQ_ID, 'T1')
+        _install_tournament_plugin_data(PAYMENT_EVENT_UNIQ_ID, 'T1')
+        _install_event_plugin_data(PAYMENT_EVENT_UNIQ_ID)
+        self.uploaded_ops: list[dict] = []
+
+    def tearDown(self):
+        TestUtils.delete_event(PAYMENT_EVENT_UNIQ_ID)
+        super().tearDown()
+
+    @staticmethod
+    def _registration(
+        sce_player_id: str,
+        amount_cents: int | None = None,
+        paid_cents: int | None = None,
+    ) -> dict:
+        """A registration as SC.com returns it once the local player has
+        been uploaded, so that only the fees can differ between both ends."""
+        return {
+            **_canned_registration(sce_player_id, amount_cents, paid_cents),
+            'last_name': 'LOCAL',
+            'rating': 1399,
+            'rating_type': 'E',
+        }
+
+    def _sync(self, registration: dict) -> None:
+        event = EventLoader().load_event(PAYMENT_EVENT_UNIQ_ID)
+        session = SCESession(event)
+        session._sync_tournament = MagicMock(return_value=True)  # type: ignore[method-assign]
+        event_data = _canned_event_data()
+        event_data['tournaments'][0]['registrations'] = [registration]
+        session._get_event_data = MagicMock(return_value=event_data)  # type: ignore[method-assign]
+
+        def fake_runner(fn, skip_validation=False):
+            ops = fn.keywords['ops']
+            self.uploaded_ops.extend(ops)
+            resp = MagicMock()
+            resp.status_code = 200
+            resp.json.return_value = {
+                'results': [{'index': i, 'status': 'ok'} for i, _op in enumerate(ops)]
+            }
+            return resp
+
+        session._run_with_token_validation = MagicMock(side_effect=fake_runner)  # type: ignore[method-assign]
+        session.sync_event()
+
+    @staticmethod
+    def _stored_player(sce_player_id: str) -> StoredPlayer:
+        with EventDatabase(PAYMENT_EVENT_UNIQ_ID) as db:
+            return next(
+                stored_player
+                for stored_player in db.load_stored_players()
+                if stored_player.plugin_data.get(PLUGIN_NAME, {}).get('id')
+                == sce_player_id
+            )
+
+    @staticmethod
+    def _set_local_payment(sce_player_id: str, owed: float, paid: float) -> None:
+        stored_player = TestSyncEventPayment._stored_player(sce_player_id)
+        stored_player.owed = owed
+        stored_player.paid = paid
+        with EventDatabase(PAYMENT_EVENT_UNIQ_ID, write=True) as db:
+            db.update_stored_player(stored_player)
+
+    def test_registration_imported_with_its_fees(self):
+        self._sync(self._registration('SCE-NEW', amount_cents=2050, paid_cents=2050))
+
+        stored_player = self._stored_player('SCE-NEW')
+        self.assertEqual(stored_player.owed, 20.5)
+        self.assertEqual(stored_player.paid, 20.5)
+
+    def test_fees_of_synced_player_imported_without_upload(self):
+        self._sync(self._registration('SCE-1'))
+
+        self._sync(self._registration('SCE-1', amount_cents=2000, paid_cents=0))
+
+        stored_player = self._stored_player('SCE-1')
+        self.assertEqual((stored_player.owed, stored_player.paid), (20.0, 0.0))
+        self.assertEqual(self.uploaded_ops, [])
+
+    def test_local_payment_kept_until_fees_change_on_sce(self):
+        self._sync(self._registration('SCE-DESK', amount_cents=2000, paid_cents=0))
+        self._set_local_payment('SCE-DESK', owed=20.0, paid=20.0)
+
+        self._sync(self._registration('SCE-DESK', amount_cents=2000, paid_cents=0))
+        stored_player = self._stored_player('SCE-DESK')
+        self.assertEqual((stored_player.owed, stored_player.paid), (20.0, 20.0))
+        self.assertEqual(self.uploaded_ops, [])
+
+        self._sync(self._registration('SCE-DESK', amount_cents=2500, paid_cents=0))
+        stored_player = self._stored_player('SCE-DESK')
+        self.assertEqual((stored_player.owed, stored_player.paid), (25.0, 0.0))
+
+    def test_registration_without_price_keeps_local_fees(self):
+        self._sync(self._registration('SCE-FREE'))
+        self._set_local_payment('SCE-FREE', owed=10.0, paid=5.0)
+
+        self._sync(self._registration('SCE-FREE'))
+
+        stored_player = self._stored_player('SCE-FREE')
+        self.assertEqual((stored_player.owed, stored_player.paid), (10.0, 5.0))

@@ -598,6 +598,10 @@ class FideIdPlayersTabColumn(PlayersTabColumn):
 
 
 class PaymentPlayersTabColumn(PlayersTabColumn):
+    def __init__(self) -> None:
+        super().__init__()
+        self.is_default_visible = False
+
     @staticmethod
     def static_id() -> str:
         return 'payment'
@@ -626,9 +630,6 @@ class PaymentPlayersTabColumn(PlayersTabColumn):
         if player.paid:
             return self._format_float(player.paid)
         return ''
-
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
-        return any(player.owed or player.paid for player in players)
 
     def _get_sort_key(self, player: Player) -> tuple:
         return (

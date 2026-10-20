@@ -780,7 +780,9 @@ class SCEAdminController(BaseAdminController):
                 plugin_data.id,
             )
             session.update_local_player(player, resolve_sync_data)
-            plugin_data.last_sync_data = resolve_sync_data
+            plugin_data.last_sync_data = resolve_sync_data.with_payment_of(
+                plugin_data.last_sync_data
+            )
 
             plugin_data.conflict_sync_data = None
             SCEUtils.update_player_plugin_data(
