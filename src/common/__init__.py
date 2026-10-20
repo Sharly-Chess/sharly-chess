@@ -95,17 +95,31 @@ def _app_base_dir() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def windows_documents_dir() -> Path:
+    """The Documents folder of the user, wherever Windows has put it (in
+    OneDrive, for instance)."""
+    doc_reg_key = (
+        r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
+    )
+    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, doc_reg_key) as key:
+        documents_path = winreg.QueryValueEx(key, 'Personal')[0]
+    # The value is usually stored unexpanded (%USERPROFILE%\Documents).
+    return Path(os.path.expandvars(documents_path))
+
+
+def windows_local_app_data_dir() -> Path:
+    """The application data folder of the user that is neither synchronised
+    nor protected against ransomware, unlike the Documents."""
+    local_app_data = os.getenv('LOCALAPPDATA')
+    return Path(local_app_data) if local_app_data else Path.home() / 'AppData' / 'Local'
+
+
 def _default_data_dir() -> Path:
     if DEVEL_ENV:
         return BASE_DIR / 'dev-data'
     match sys.platform:
         case 'win32':
-            doc_reg_key = (
-                r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
-            )
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, doc_reg_key) as key:
-                documents_path = winreg.QueryValueEx(key, 'Personal')[0]
-            return Path(documents_path) / 'Sharly Chess'
+            return windows_local_app_data_dir() / 'Sharly Chess'
         case 'darwin':
             return MACOS_SUPPORT_DIR / 'data'
         case 'linux':

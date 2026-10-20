@@ -162,7 +162,7 @@ begin
       ExpandConstant('{#AppName}')
     );
     DataDirPage.Add('');
-    DataDirPage.Values[0] := ExpandConstant('{userdocs}\{#AppName}');
+    DataDirPage.Values[0] := ExpandConstant('{localappdata}\{#AppName}');
   end;
 end;
 
@@ -266,8 +266,8 @@ fr.SelectDataLocation=Sélectionner l'emplacement des données
 en.WhereData=Where should the data be stored?
 fr.WhereData=Où les données doivent-être sauvegardées ?
 
-en.PleaseSelectData=Please select a folder for the data.
-fr.PleaseSelectData=Merci de sélectionner un dossier pour les données.
+en.PleaseSelectData=Please select a folder for the data. Avoid a folder synchronised by OneDrive or another cloud service.
+fr.PleaseSelectData=Merci de sélectionner un dossier pour les données. Évitez un dossier synchronisé par OneDrive ou un autre service en ligne.
 
 en.UpdateSuccessfull=Sharly Chess was sucessfully updated. The application will restart.
 fr.UpdateSuccessfull=Sharly Chess a été mis à jour avec succès. L'application va redémarrer.
