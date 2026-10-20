@@ -203,8 +203,60 @@ begin
   end;
  end;
 
+function IsDefenderPathExcluded(Path: string): Boolean;
+var
+  ResultCode: Integer;
+  Output: TExecOutput;
+  QuotedPath: String;
+begin
+  Result := False;
+  QuotedPath := Path;
+  StringChangeEx(QuotedPath, '''', '''''', True);
+  if ExecAndCaptureOutput(
+    'cmd.exe',
+    '/C powershell -Command "(Get-MpPreference).ExclusionPath -contains ''' + QuotedPath + '''"',
+    '',
+    SW_HIDE,
+    ewWaitUntilTerminated,
+    ResultCode,
+    Output
+  ) and (GetArrayLength(Output.StdOut) > 0) then
+    Result := Pos('True', Output.StdOut[0]) > 0;
+end;
+
+function IsPathWithin(Path: String; Dir: String): Boolean;
+begin
+  Result := (Dir <> '') and (Pos(Lowercase(AddBackslash(Dir)), Lowercase(AddBackslash(Path))) = 1);
+end;
+
+{ Sharly Chess moves the data out of the Documents and OneDrive to the local
+  application data on its first start after the update: the exclusion of the
+  previous data folder, if any, is given to the new one. }
+procedure CarryDefenderDataException;
+var
+  OldDataDir: String;
+  NewDataDir: String;
+begin
+  if not RegQueryStringValue(HKEY_CURRENT_USER, ExpandConstant('{#RegKey}'), 'data_directory', OldDataDir) then
+    Exit;
+  if not (
+    IsPathWithin(OldDataDir, ExpandConstant('{userdocs}'))
+    or IsPathWithin(OldDataDir, GetEnv('OneDrive'))
+    or IsPathWithin(OldDataDir, GetEnv('OneDriveConsumer'))
+    or IsPathWithin(OldDataDir, GetEnv('OneDriveCommercial'))
+  ) then
+    Exit;
+  NewDataDir := ExpandConstant('{localappdata}\{#AppName}');
+  if CompareText(RemoveBackslashUnlessRoot(OldDataDir), NewDataDir) = 0 then
+    Exit;
+  if IsDefenderPathExcluded(OldDataDir) then
+    AddDefenderPathException(NewDataDir);
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
+  if (CurStep = ssInstall) and ({#IsUpdate} = 1) then
+    CarryDefenderDataException();
   if (CurStep = ssPostInstall) and WizardSilent() then
   begin
     MsgBox(ExpandConstant('{cm:UpdateSuccessfull}'), mbInformation, MB_OK);

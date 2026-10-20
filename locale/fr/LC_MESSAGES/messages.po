@@ -2839,6 +2839,10 @@ msgstr "Supprimer le menu."
 msgid "Delete the multi-screen."
 msgstr "Supprimer l'écran multiple."
 
+#, python-brace-format
+msgid "Delete the previous data folder \"{folder}\"?"
+msgstr "Supprimer l'ancien dossier des données « {folder} » ?"
+
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
 
@@ -3055,6 +3059,10 @@ msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclus
 
 msgid "Do you want to install the update now?"
 msgstr "Voulez-vous installer la mise à jour maintenant ?"
+
+#, python-brace-format
+msgid "Do you want to move the data to \"{folder}\"? The current folder will be kept as a copy."
+msgstr "Voulez-vous déplacer les données vers « {folder} » ? Le dossier actuel sera conservé en copie."
 
 msgid "Do you want to try again?"
 msgstr "Voulez-vous réessayer ?"
@@ -5638,11 +5646,18 @@ msgstr "Maroc"
 msgid "Move"
 msgstr "Déplacer"
 
+#, python-brace-format
+msgid "Move the data to \"{folder}\"?"
+msgstr "Déplacer les données vers « {folder} » ?"
+
 msgid "Move this round to the next period"
 msgstr "Déplacer cette ronde vers la période suivante"
 
 msgid "Move this round to the previous period"
 msgstr "Déplacer cette ronde vers la période précédente"
+
+msgid "Move to the recommended folder"
+msgstr "Déplacer vers le dossier recommandé"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -7700,6 +7715,10 @@ msgstr "Aperçu"
 msgid "Preview the card with different sample data."
 msgstr "Prévisualisez le chevalet avec différentes données d’exemple."
 
+#, python-brace-format
+msgid "Previous data folder, kept as a copy: {folder}"
+msgstr "Ancien dossier des données, conservé en copie : {folder}"
+
 msgid "Previous round"
 msgstr "Ronde précédente"
 
@@ -8252,6 +8271,9 @@ msgstr "Résolvez le(s) match(s) à égalité de la ronde {round} avant d'appari
 
 msgid "Rest"
 msgstr "Exempt"
+
+msgid "Restart Sharly Chess to complete the move."
+msgstr "Relancez Sharly Chess pour terminer le déplacement."
 
 msgid "Restart to complete the move"
 msgstr "Redémarrer pour appliquer le déplacement"
@@ -9116,6 +9138,9 @@ msgstr "Sharly Chess est déjà lancé sur cet ordinateur. Un seul peut fonction
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
+msgid "Sharly Chess no longer uses it, your data is in the current folder."
+msgstr "Sharly Chess ne l'utilise plus, vos données sont dans le dossier actuel."
+
 msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
 msgstr "Sharly Chess propose un système de gestion des prix puissant et flexible, capable de s’adapter à une grande variété de structures de récompenses en tournoi."
 
@@ -9904,6 +9929,9 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
+msgid "The current folder will be kept as a copy."
+msgstr "Le dossier actuel sera conservé en copie."
+
 msgid "The current round was paired from this one: this correction breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr "La ronde en cours a été appariée à partir de celle-ci : cette correction porte atteinte à l'intégrité des appariements. Elle sera enregistrée, et consignée dans le TRF du tournoi."
 
@@ -9967,6 +9995,10 @@ msgstr "Le premier tournoi de l'écran."
 #, python-brace-format
 msgid "The fixed rating must be between 1 and {max}."
 msgstr "Le Elo fixe doit être compris entre 1 et {max}."
+
+#, python-brace-format
+msgid "The folder \"{folder}\" could not be deleted entirely."
+msgstr "Le dossier « {folder} » n'a pas pu être entièrement supprimé."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
@@ -10310,6 +10342,10 @@ msgid "The points the file gives player {players} do not match this scoring."
 msgid_plural "The points the file gives {count} players do not match this scoring (players {players})."
 msgstr[0] "Les points que le fichier donne au·à la joueur·euse {players} ne correspondent pas à ce barème."
 msgstr[1] "Les points que le fichier donne à {count} joueur·euses ne correspondent pas à ce barème (joueur·euses {players})."
+
+#, python-brace-format
+msgid "The previous folder is kept as a copy at \"{folder}\", and will be deleted two versions from now. You can delete it sooner from the settings."
+msgstr "L'ancien dossier est conservé en copie dans « {folder} » et sera supprimé dans deux versions. Vous pouvez le supprimer plus tôt depuis les paramètres."
 
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr "Les protections d'appariement ne peuvent pas être satisfaites pour cette ronde."
@@ -10792,6 +10828,9 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
+
+msgid "This folder is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
+msgstr "Ce dossier est synchronisé par OneDrive, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
 
 msgid "This game has been played."
 msgstr "Cette partie a été jouée."
@@ -12305,6 +12344,14 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe non cumulable."
 
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
+
+#, python-brace-format
+msgid "Your data folder \"{folder}\" is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
+msgstr "Votre dossier des données « {folder} » est synchronisé par OneDrive, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
+
+#, python-brace-format
+msgid "Your data has been moved to \"{folder}\", where OneDrive does not synchronise it and antivirus protections do not block it."
+msgstr "Vos données ont été déplacées vers « {folder} », où OneDrive ne les synchronise pas et où les protections antivirus ne les bloquent pas."
 
 msgid "Your pairings"
 msgstr "Vos appariements"
