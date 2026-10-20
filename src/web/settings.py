@@ -5,6 +5,7 @@ import re
 import posixpath
 import sqlite3
 import typing as t
+from urllib.parse import urlencode
 from pathlib import Path
 from collections.abc import Sequence
 
@@ -15,6 +16,7 @@ from jinja2 import (
     FileSystemLoader,
     Template as JinjaTemplate,
     TemplateNotFound,
+    pass_context,
 )
 from markupsafe import Markup, escape
 from jinja2.runtime import Context as JinjaContext
@@ -77,6 +79,7 @@ from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.admin.account_admin_controller import AccountAdminController
 from web.controllers.index_controller import IndexController
+from web.utils import RequestUtils
 from web.controllers.qrcode_controller import QRCodeController
 from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.input_user_controller import InputUserController
@@ -290,6 +293,23 @@ def raise_ordinal_suffix_svg(value: str) -> Markup:
     return Markup(raised + '</tspan>' * count)
 
 
+@pass_context
+def event_url_for(
+    context: JinjaContext,
+    route_name: str,
+    query: dict[str, t.Any] | None = None,
+    **path_parameters: t.Any,
+) -> str:
+    """The URL of a route that is not bound to an event, carrying the event of
+    the current request so that its accounts stay authenticated."""
+    request = context['request']
+    params = dict(query or {})
+    if event := RequestUtils.get_optional_event(request):
+        params[RequestUtils.EVENT_UNIQ_ID_PARAM] = event.uniq_id
+    url: str = request.app.route_reverse(route_name, **path_parameters)
+    return f'{url}?{urlencode(params)}' if params else url
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -322,6 +342,7 @@ class SharlyChessEnvironment(Environment):
         self.add_extension('jinja2.ext.do')
         self.filters['raise_ordinal_suffix'] = raise_ordinal_suffix
         self.filters['raise_ordinal_suffix_svg'] = raise_ordinal_suffix_svg
+        self.globals['event_url_for'] = event_url_for
 
     def join_path(self, template: str, parent: str) -> str:
         return str(Path(parent).parent / template)

@@ -7,7 +7,7 @@
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
-                hx-post="{{ url_for('place-card-template-create') }}"
+                hx-post="{{ event_url_for('place-card-template-create') }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >

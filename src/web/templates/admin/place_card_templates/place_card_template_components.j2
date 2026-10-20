@@ -19,7 +19,7 @@
             {% call macros.action_tooltip('info', _('Export'), 'top') %}
                 <button
                     class="btn btn-sm btn-outline-primary"
-                    data-export-url="{{ url_for('place-card-template-export', template_id=item.id) }}"
+                    data-export-url="{{ event_url_for('place-card-template-export', template_id=item.id) }}"
                     onclick="downloadFile(this)"
                 >
                     <i class="bi-download"></i>
@@ -32,7 +32,7 @@
                 {% call macros.action_tooltip('info', _('Open editor'), 'top') %}
                     <button
                         class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for('place-card-visual-editor', template_id=item.id) }}"
+                        hx-get="{{ event_url_for('place-card-visual-editor', template_id=item.id) }}"
                         hx-target="body" hx-push-url="true" hx-indicator="#please-wait"
                     ><i class="bi-pencil-fill"></i></button>
                 {% endcall %}
@@ -40,7 +40,7 @@
             {% call macros.action_tooltip('info', _('Duplicate'), 'top') %}
                 <button
                     class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for('place-card-template-duplicate-modal', template_id=item.id) }}"
+                    hx-get="{{ event_url_for('place-card-template-duplicate-modal', template_id=item.id) }}"
                     hx-target="body" hx-indicator="#please-wait"
                     data-bs-toggle="modal" data-bs-target="#modal-wrapper"
                 ><i class="bi-copy"></i></button>
@@ -49,7 +49,7 @@
                 {% call macros.action_tooltip('info', _('Delete'), 'top') %}
                     <button
                         class="btn btn-sm btn-outline-danger"
-                        hx-get="{{ url_for('place-card-template-delete-modal', template_id=item.id) }}"
+                        hx-get="{{ event_url_for('place-card-template-delete-modal', template_id=item.id) }}"
                         hx-target="body" hx-indicator="#please-wait"
                         data-bs-toggle="modal" data-bs-target="#modal-wrapper"
                     ><i class="bi-trash-fill"></i></button>

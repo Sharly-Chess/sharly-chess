@@ -9,7 +9,7 @@
                 data=data, errors=errors
             ) }}
         </div>
-        {% if client.can_manage_application_settings %}
+        {% if client.can_manage_place_card_templates %}
             <div
                 {{ macros.tooltip_attributes(
                     'info', _('Manage the place card templates, which are available for all events.'), 'top'
@@ -19,7 +19,7 @@
                     id="place-card-templates-button"
                     type="button"
                     class="btn btn-sm btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('place-card-templates') }}"
+                    hx-get="{{ event_url_for('place-card-templates') }}"
                     hx-target="body"
                     hx-push-url="true"
                     hx-indicator="#please-wait"

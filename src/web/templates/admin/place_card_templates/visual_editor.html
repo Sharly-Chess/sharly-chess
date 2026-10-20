@@ -194,7 +194,7 @@
     <div class="d-flex align-items-center gap-2 border-bottom p-2">
         <button
             class="btn btn-sm btn-outline-secondary"
-            hx-get="{{ url_for('place-card-templates') }}"
+            hx-get="{{ event_url_for('place-card-templates') }}"
             hx-target="body" hx-push-url="true" hx-indicator="#please-wait"
         >
             <i class="bi-chevron-left pe-1"></i>{{ _('Templates') }}

@@ -5009,6 +5009,9 @@ msgstr ""
 msgid "Manage per-round lineups."
 msgstr ""
 
+msgid "Manage place card templates"
+msgstr ""
+
 msgid "Manage prizes"
 msgstr ""
 

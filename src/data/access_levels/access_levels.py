@@ -404,6 +404,7 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.VIEW_PRIZES_TAB,
             AuthAction.MANAGE_PRIZES,
             AuthAction.GENERATE_DOCUMENTS,
+            AuthAction.MANAGE_PLACE_CARD_TEMPLATES,
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:
@@ -523,6 +524,7 @@ class OrganizationAccessLevel(AccessLevel):
             AuthAction.UPDATE_EVENT,
             AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.DOWNLOAD_FEES,
+            AuthAction.MANAGE_PLACE_CARD_TEMPLATES,
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:

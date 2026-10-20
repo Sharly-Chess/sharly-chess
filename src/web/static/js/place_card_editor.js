@@ -355,10 +355,10 @@
     }
 
     function showItemPanel(canvas, section, mode) {
-        loadPanel(
-            canvas.dataset.propsUrl + '?section=' + encodeURIComponent(section)
-            + (mode ? '&mode=' + mode : '')
-        );
+        const url = new URL(canvas.dataset.propsUrl, window.location.href);
+        url.searchParams.set('section', section);
+        if (mode) url.searchParams.set('mode', mode);
+        loadPanel(url.toString());
     }
     function showCardPanel(canvas) {
         loadPanel(canvas.dataset.cardPropsUrl);

@@ -124,6 +124,7 @@ class AuthAction(StrEnum):
 
     # Documents
     GENERATE_DOCUMENTS = auto()
+    MANAGE_PLACE_CARD_TEMPLATES = auto()
 
     @classmethod
     def actions(cls) -> list[Self]:
@@ -200,7 +201,7 @@ class AuthAction(StrEnum):
                 return AuthActionCategory.SCREENS
             case AuthAction.VIEW_PRIZES_TAB | AuthAction.MANAGE_PRIZES:
                 return AuthActionCategory.PRIZES
-            case AuthAction.GENERATE_DOCUMENTS:
+            case AuthAction.GENERATE_DOCUMENTS | AuthAction.MANAGE_PLACE_CARD_TEMPLATES:
                 return AuthActionCategory.DOCUMENTS
             case _:
                 raise ValueError(f'auth={self}')
@@ -305,5 +306,7 @@ class AuthAction(StrEnum):
                 return _('Manage prizes', locale)
             case AuthAction.GENERATE_DOCUMENTS:
                 return _('Generate documents', locale)
+            case AuthAction.MANAGE_PLACE_CARD_TEMPLATES:
+                return _('Manage place card templates', locale)
             case _:
                 raise ValueError(f'auth={self}')

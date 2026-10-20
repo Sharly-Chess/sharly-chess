@@ -60,6 +60,7 @@ class Rights:
     forfeit_offered: bool
     forfeit_accepted: bool
     illegal_moves: bool
+    place_card_templates: bool
 
 
 EXPECTATIONS: dict[str, tuple[list[type[AccessLevel]], Rights]] = {
@@ -68,43 +69,43 @@ EXPECTATIONS: dict[str, tuple[list[type[AccessLevel]], Rights]] = {
     # public event leaves able to enter results and check players in.
     'anonymous': (
         [],
-        Rights(False, False, False, True, True, False, False, False, False),
+        Rights(False, False, False, True, True, False, False, False, False, False),
     ),
     'spectator': (
         [SpectatorAccessLevel],
-        Rights(False, False, False, False, False, False, False, False, False),
+        Rights(False, False, False, False, False, False, False, False, False, False),
     ),
     'check-in': (
         [CheckInAccessLevel],
-        Rights(False, False, False, True, False, False, False, False, False),
+        Rights(False, False, False, True, False, False, False, False, False, False),
     ),
     'results-entry': (
         [ResultsEntryAccessLevel],
-        Rights(False, False, False, False, True, False, False, False, False),
+        Rights(False, False, False, False, True, False, False, False, False, False),
     ),
     'screen-management': (
         [ScreenManagementAccessLevel],
-        Rights(False, False, True, False, False, False, False, False, False),
+        Rights(False, False, True, False, False, False, False, False, False, False),
     ),
     'organization': (
         [OrganizationAccessLevel],
-        Rights(False, False, True, False, False, False, False, False, False),
+        Rights(False, False, True, False, False, False, False, False, False, True),
     ),
     'sector-arbitration': (
         [SectorArbitrationAccessLevel],
-        Rights(True, True, False, True, True, True, False, False, True),
+        Rights(True, True, False, True, True, True, False, False, True, False),
     ),
     'pairing': (
         [PairingAccessLevel],
-        Rights(True, True, False, True, True, True, False, False, True),
+        Rights(True, True, False, True, True, True, False, False, True, False),
     ),
     'deputy-chief-arbitration': (
         [DeputyChiefArbitrationAccessLevel],
-        Rights(True, True, True, True, True, True, True, True, True),
+        Rights(True, True, True, True, True, True, True, True, True, True),
     ),
     'chief-arbitration': (
         [ChiefArbitrationAccessLevel],
-        Rights(True, True, True, True, True, True, True, True, True),
+        Rights(True, True, True, True, True, True, True, True, True, True),
     ),
 }
 
@@ -252,6 +253,17 @@ def level(
 def test_the_admin_tabs_it_may_open(lan: TestClient, level: Rights):
     assert_reaches(lan, f'/event/{PUBLIC_EVENT_ID}/players', level.players_tab)
     assert_reaches(lan, f'/event/{PUBLIC_EVENT_ID}/pairings', level.pairings_tab)
+
+
+@pytest.mark.unit
+def test_whether_it_may_manage_the_place_card_templates(lan: TestClient, level: Rights):
+    """The templates belong to the installation, so the event the account
+    signed in to is named in the request."""
+    assert_reaches(
+        lan,
+        f'/place-card-templates?event_uniq_id={PUBLIC_EVENT_ID}',
+        level.place_card_templates,
+    )
 
 
 @pytest.mark.unit

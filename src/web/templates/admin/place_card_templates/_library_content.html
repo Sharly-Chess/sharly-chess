@@ -3,7 +3,7 @@
 {% set collection = get_admin_collection_spec('place-card-templates') %}
 {% set collection_view_mode = get_admin_collection_view_mode('place-card-templates') %}
 {% set collection_show_details = get_admin_collection_show_details('place-card-templates') %}
-{% set collection_url = url_for('place-card-templates') %}
+{% set collection_url = event_url_for('place-card-templates') %}
 
 <style>
     .pc-template-preview { display: flex; justify-content: center; overflow: hidden; }
@@ -18,7 +18,7 @@
             <div class="btn-group dropdown">
                 <button
                     class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for('place-card-template-create-modal') }}"
+                    hx-get="{{ event_url_for('place-card-template-create-modal') }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                     data-bs-toggle="modal"
@@ -45,7 +45,7 @@
        picker; choosing a .zip (the format produced by Export) auto-submits. #}
     <form
         style="display: none"
-        hx-post="{{ url_for('place-card-template-import') }}"
+        hx-post="{{ event_url_for('place-card-template-import') }}"
         enctype="multipart/form-data"
         hx-target="body"
         hx-indicator="#please-wait"

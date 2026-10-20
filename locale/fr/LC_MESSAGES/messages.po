@@ -5009,6 +5009,9 @@ msgstr "Gestion des évènements"
 msgid "Manage per-round lineups."
 msgstr "Gérer les compositions par ronde."
 
+msgid "Manage place card templates"
+msgstr "Gestion des modèles de chevalets"
+
 msgid "Manage prizes"
 msgstr "Gestion des prix"
 

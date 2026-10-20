@@ -523,3 +523,8 @@ class Client:
     def can_generate_documents(self) -> bool:
         """Returns true if the client can generate documents."""
         return AuthAction.GENERATE_DOCUMENTS in self.allowed_actions
+
+    @property
+    def can_manage_place_card_templates(self) -> bool:
+        """Returns true if the client can manage the place card templates."""
+        return AuthAction.MANAGE_PLACE_CARD_TEMPLATES in self.allowed_actions

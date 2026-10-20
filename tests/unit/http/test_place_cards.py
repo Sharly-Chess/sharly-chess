@@ -101,7 +101,7 @@ def test_the_documents_modal_links_to_the_templates_page(http: TestClient, event
     response = http.get(f'/documents-modal/{event}')
     assert response.status_code == 200
     assert 'id="place-card-templates-button"' in response.text
-    assert 'hx-get="/place-card-templates"' in response.text
+    assert f'hx-get="/place-card-templates?event_uniq_id={event}"' in response.text
 
 
 @pytest.mark.unit
@@ -112,3 +112,15 @@ def test_the_sidebar_does_not_link_to_the_templates_page(
     response = http.get(path.format(event=event))
     assert response.status_code == 200
     assert '/place-card-templates"' not in response.text
+
+
+@pytest.mark.unit
+def test_the_editor_keeps_the_event_it_was_opened_from(
+    http: TestClient, created: str, event: str
+):
+    """An account belongs to an event, so every request the editor sends
+    names the event the templates were opened from."""
+    response = http.get(f'/place-card-visual-editor/{created}?event_uniq_id={event}')
+    assert response.status_code == 200
+    assert f'/place-card-item-move/{created}?event_uniq_id={event}"' in response.text
+    assert f'/place-card-templates?event_uniq_id={event}"' in response.text

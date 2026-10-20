@@ -8,4 +8,4 @@
     {{ template_name }}
 {% endblock %}
 
-{% block delete_url %}{{ url_for('place-card-template-delete', template_id=template_id) }}{% endblock %}
+{% block delete_url %}{{ event_url_for('place-card-template-delete', template_id=template_id) }}{% endblock %}

@@ -50,7 +50,7 @@ class PlaceCardTemplateAdminController(BaseAdminController):
 
     # Litestar declares `guards` on `Controller` as an instance variable, so
     # it cannot be narrowed to a class variable here.
-    guards = [ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)]  # noqa: RUF012
+    guards = [ActionGuard(AuthAction.MANAGE_PLACE_CARD_TEMPLATES)]  # noqa: RUF012
 
     @staticmethod
     def _type_options() -> dict[str, str]:

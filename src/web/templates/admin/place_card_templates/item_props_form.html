@@ -61,7 +61,7 @@
                         </button>
                         <button type="button" class="pc-image-del" title="{{ _('Delete image') }}"
                                 data-pc-image-delete="{{ img.name }}"
-                                data-pc-delete-url="{{ url_for('place-card-item-image-delete', template_id=template_id) }}?section={{ section }}"><i class="bi-x-lg"></i></button>
+                                data-pc-delete-url="{{ event_url_for('place-card-item-image-delete', template_id=template_id, query={'section': section}) }}"><i class="bi-x-lg"></i></button>
                     </div>
                 {% endfor %}
                 {% if not images %}
@@ -72,7 +72,7 @@
                 <i class="bi-upload pe-1"></i>{{ _('Upload image') }}
             </label>
             <input type="file" id="pc-image-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="d-none"
-                   data-pc-image-upload="{{ url_for('place-card-item-image-upload', template_id=template_id) }}?section={{ section }}">
+                   data-pc-image-upload="{{ event_url_for('place-card-item-image-upload', template_id=template_id, query={'section': section}) }}">
         </div>
         <div class="mb-2">
             <label class="form-label small mb-1" for="pc-width">{{ _('Width') }}</label>
