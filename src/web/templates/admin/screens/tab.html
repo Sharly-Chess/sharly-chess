@@ -19,7 +19,7 @@
     {% if client.can_manage_screens %}
         {% with id='show-family-screens', name='show_family_screens', show=show_family_screens %}
             <div
-                class="form-check form-switch d-inline-block pe-2"
+                class="d-inline-flex align-items-center gap-2 form-switch top-nav-switch mb-0"
                 {{ macros.tooltip_attributes('info', _('Show/hide the screens created from multi-screens.'), 'top') }}
             >
                 <input
@@ -32,7 +32,7 @@
                     id="{{ id }}"
                     {% if show %}checked{% endif %}
                 />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Multi-Screens') }}</label>
+                <label for="{{ id }}" class="form-check-label">{{ _('Multi-Screens') }}</label>
             </div>
         {% endwith %}
         {% include '/admin/common/collection_controls.html' %}
