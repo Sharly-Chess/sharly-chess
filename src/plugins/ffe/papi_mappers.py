@@ -318,7 +318,7 @@ class PapiRound:
 
     @classmethod
     def zero_point_bye(cls) -> Self:
-        """A zero-point bye: the entrant sits the round out with no opponent
+        """A Zero-Point Bye: the entrant sits the round out with no opponent
         and scores nothing. A knock-out gives one to a player in the rounds
         after they are eliminated, so Papi reads every entrant as paired or
         given a bye in each round it has played, without altering the score."""

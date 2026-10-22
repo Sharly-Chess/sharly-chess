@@ -20,7 +20,7 @@ class RoundRecord:
     #: The points the participant was given for the round.
     points: float
     played: bool
-    #: Art. 16.1.1: a half-point or zero-point bye.
+    #: Art. 16.1.1: a Half-Point or Zero-Point Bye.
     requested_bye: bool
     #: Art. 16.1.2: a requested bye or a forfeit loss.
     voluntary_unplayed: bool

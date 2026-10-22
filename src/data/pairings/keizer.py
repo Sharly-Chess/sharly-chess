@@ -179,7 +179,7 @@ class KeizerScorer:
             return (values.get(opponent_id, 0.0) if opponent_id else 0.0) / 2
         if result in _ABSENCE_RESULTS:
             return self._absence_fraction * values.get(player.id, 0.0)
-        # Losses, zero-point byes, forfeits and unplayed games earn nothing.
+        # Losses, Zero-Point Byes, forfeits and unplayed games earn nothing.
         return 0.0
 
     def _round(self, value: float) -> float:

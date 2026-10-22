@@ -5125,7 +5125,7 @@ msgid "Loss"
 msgstr "Défaite"
 
 #, python-brace-format
-msgid "Lost byes read as zero-point byes ({rounds})."
+msgid "Lost byes read as Zero-Point Byes ({rounds})."
 msgstr "Exemptions perdues lues comme des exemptions à zéro point ({rounds})."
 
 msgid "Lower Bracket Final"
@@ -5719,9 +5719,6 @@ msgstr "Nom affiché"
 msgctxt "national id column header"
 msgid "Nat. ID"
 msgstr "Id. nat."
-
-msgid "National"
-msgstr "National"
 
 msgctxt "name for rating type national"
 msgid "National"
@@ -6425,7 +6422,7 @@ msgid "Not paired for this round"
 msgstr "Non apparié·e pour cette ronde"
 
 #, python-brace-format
-msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as zero-point byes."
+msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as Zero-Point Byes."
 msgstr "Pas encore apparié ({rounds}) : les cases vides sont lues comme des joueur·euses restant à apparier, et non comme des exemptions à zéro point."
 
 msgid "Not specified"
@@ -11768,7 +11765,7 @@ msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligi
 msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
 msgstr "Lorsque deux équipes ont le même score, celle qui a le meilleur score secondaire voit sa préférence de couleur appliquée en premier."
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (Zero-Point Bye) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."
 
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."

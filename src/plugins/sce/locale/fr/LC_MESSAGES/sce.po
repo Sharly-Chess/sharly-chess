@@ -11,8 +11,8 @@ msgid ""
 "- the check-in of the players done online by the players themselves;\n"
 "- the pairings and the standings published live on the platform."
 msgstr ""
-"- un évènement de la plateforme lié à votre évènement, et ses joueur·euses synchronisé·es dans les deux sens ;\n"
-"- le pointage des joueur·euses réalisé en ligne par les joueur·euses en autonomie ;\n"
+"- un évènement de la plateforme lié à votre évènement, et ses joueur·euses synchronisé·es dans les deux sens ;\n"
+"- le pointage des joueur·euses réalisé en ligne par les joueur·euses en autonomie ;\n"
 "- les appariements et les classements publiés en direct sur la plateforme."
 
 msgid "All player conflicts resolved."
@@ -164,7 +164,7 @@ msgstr "Prénom"
 msgid "Gender"
 msgstr "Genre"
 
-msgid "Give the player a zero-point bye in every round they are not paired in yet."
+msgid "Give the player a Zero-Point Bye in every round they are not paired in yet."
 msgstr "Déclarer le·la joueur·euse forfait pour chaque ronde où rien n'est encore enregistré pour lui·elle."
 
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
@@ -268,7 +268,7 @@ msgid "Player [{player}] deleted."
 msgstr "Joueur·euse [{player}] supprimé·e."
 
 #, python-brace-format
-msgid "Player [{player}] kept, they will be registered again on Sharly-Chess.com."
+msgid "Player [{player}] kept, (s)he will be registered again on Sharly-Chess.com."
 msgstr "Joueur·euse [{player}] conservé·e, il·elle sera inscrit·e de nouveau sur Sharly-Chess.com."
 
 #, python-brace-format
@@ -490,7 +490,7 @@ msgid "re-authorisation required"
 msgstr "ré-autorisation requise"
 
 msgid "some changes could not be sent to Sharly-Chess.com, they will be sent again at the next synchronisation; consult the logs"
-msgstr "certaines modifications n'ont pas pu être envoyées à Sharly-Chess.com, elles le seront de nouveau à la prochaine synchronisation ; consulter les logs"
+msgstr "certaines modifications n'ont pas pu être envoyées à Sharly-Chess.com, elles le seront de nouveau à la prochaine synchronisation ; consulter les logs"
 
 msgid "tournament not found, most likely deleted"
 msgstr "tournoi non trouvé, probablement supprimé"

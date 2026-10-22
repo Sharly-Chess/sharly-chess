@@ -72,7 +72,7 @@ class TeamStanding:
 
 # What a bye counts as in the standings' tally of a team's rounds. A
 # pairing-allocated bye is awarded, so it is a win, as is a full-point
-# bye; a zero-point bye is the round the team was absent for.
+# bye; a Zero-Point Bye is the round the team was absent for.
 _BYE_OUTCOME: dict[str, Outcome] = {
     TeamByeType.ZPB: 'forfeits',
     TeamByeType.HPB: 'draws',
@@ -105,7 +105,7 @@ class TeamScoring:
 
         A pairing-allocated bye (``None`` or ``PAB``) is worth what the
         tournament says a PAB is; the manual byes mirror the individual
-        ones, scaled by the board count. A zero-point bye is a team-level
+        ones, scaled by the board count. A Zero-Point Bye is a team-level
         forfeit: every board counts as a forfeited game, scored at the
         absent-board game point value (the ``gp_zpb`` override, otherwise
         0)."""
@@ -447,7 +447,7 @@ class TeamScoring:
 
         A round carries the score the standings give it and the match
         type Art. 16 handling reads. A team marked absent is a
-        zero-point bye whose contribution is cut first, not a
+        Zero-Point Bye whose contribution is cut first, not a
         pairing-allocated bye scored as a win; a team that fielded
         nobody, or every one of whose players lost by forfeit, forfeited
         the match rather than playing it, and its opponent won by

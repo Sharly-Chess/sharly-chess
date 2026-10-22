@@ -5125,7 +5125,7 @@ msgid "Loss"
 msgstr ""
 
 #, python-brace-format
-msgid "Lost byes read as zero-point byes ({rounds})."
+msgid "Lost byes read as Zero-Point Byes ({rounds})."
 msgstr ""
 
 msgid "Lower Bracket Final"
@@ -5718,9 +5718,6 @@ msgstr ""
 
 msgctxt "national id column header"
 msgid "Nat. ID"
-msgstr ""
-
-msgid "National"
 msgstr ""
 
 msgctxt "name for rating type national"
@@ -6425,7 +6422,7 @@ msgid "Not paired for this round"
 msgstr ""
 
 #, python-brace-format
-msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as zero-point byes."
+msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as Zero-Point Byes."
 msgstr ""
 
 msgid "Not specified"
@@ -11766,7 +11763,7 @@ msgstr ""
 msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
 msgstr ""
 
-msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (Zero-Point Bye) players and the players with a Half-Point Bye)."
 msgstr ""
 
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."

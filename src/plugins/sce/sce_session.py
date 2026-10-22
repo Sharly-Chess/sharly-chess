@@ -441,7 +441,7 @@ class SCESession(Session):
     @staticmethod
     def withdraw_removed_player(player: TournamentPlayer) -> None:
         """Withdraws a player removed on Sharly-Chess.com after they played,
-        with a zero-point bye in every round that holds nothing for them yet."""
+        with a Zero-Point Bye in every round that holds nothing for them yet."""
         plugin_data = SCEUtils.get_player_plugin_data(player)
         if not plugin_data.removal_pending:
             return

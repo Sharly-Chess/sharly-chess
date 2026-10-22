@@ -1353,7 +1353,7 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
 
 @pytest.mark.unit
 class MedianBuchholzWithByesTestCase(TieBreakTestCase):
-    """Alpha (#1) has a half-point bye and a zero-point bye, both
+    """Alpha (#1) has a Half-Point Bye and a Zero-Point Bye, both
     voluntarily unplayed rounds whose dummy is worth 2.5 (own score 3.5
     capped at half the rounds, Art. 16.4.2), or 3.5 before March 2026.
     Cut 1 takes the lower of them (Art. 16.5); the median then takes the
@@ -1414,7 +1414,7 @@ class ForeBuchholzFinalRoundTestCase(TieBreakTestCase):
 
     Delta (#4) forfeits the final round to Echo (#5): the round contributes
     Echo's score and is not a voluntary unplayed round, so Cut 1 takes the
-    lowest contribution (Art. 16.5.1). Alpha (#1) has a zero-point bye in
+    lowest contribution (Art. 16.5.1). Alpha (#1) has a Zero-Point Bye in
     round 2 and forfeits the final round to Charlie (#3): the bye is no
     longer at the end of the tournament and keeps its zero (Art. 16.3.2),
     which Charlie's Fore Buchholz reads."""

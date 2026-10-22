@@ -221,7 +221,7 @@ try:
     generator.add_argument(
         '--zero-point-byes',
         type=str,
-        help='number of zero-point byes, or a percentage of the opportunities',
+        help='number of Zero-Point Byes, or a percentage of the opportunities',
     )
     generator.add_argument(
         '--forfeit-wins',

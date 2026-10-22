@@ -161,7 +161,7 @@ msgstr ""
 msgid "Gender"
 msgstr ""
 
-msgid "Give the player a zero-point bye in every round they are not paired in yet."
+msgid "Give the player a Zero-Point Bye in every round they are not paired in yet."
 msgstr ""
 
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
@@ -265,7 +265,7 @@ msgid "Player [{player}] deleted."
 msgstr ""
 
 #, python-brace-format
-msgid "Player [{player}] kept, they will be registered again on Sharly-Chess.com."
+msgid "Player [{player}] kept, (s)he will be registered again on Sharly-Chess.com."
 msgstr ""
 
 #, python-brace-format

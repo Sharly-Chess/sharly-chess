@@ -931,7 +931,7 @@ class SCEAdminController(BaseAdminController):
         return self._render_removed_player_modal(
             web_context,
             _(
-                'Player [{player}] kept, they will be registered again on '
+                'Player [{player}] kept, (s)he will be registered again on '
                 'Sharly-Chess.com.'
             ).format(player=player.full_name),
         )

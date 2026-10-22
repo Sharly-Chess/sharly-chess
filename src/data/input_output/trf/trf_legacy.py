@@ -197,7 +197,7 @@ class TrfLegacyAdapter:
             (hpb_rounds, _('Drawn byes read as half-point byes ({rounds}).')),
             (
                 zpb_rounds,
-                _('Lost byes read as zero-point byes ({rounds}).'),
+                _('Lost byes read as Zero-Point Byes ({rounds}).'),
             ),
         ):
             if rounds:
@@ -351,7 +351,7 @@ class TrfLegacyAdapter:
     def _drop_unpaired_round_blanks(self) -> None:
         """A round in which nobody has an opponent or the pairing-allocated
         bye has not been paired: its blank blocks are players still to be
-        paired, not zero-point byes. The byes already entered are kept."""
+        paired, not Zero-Point Byes. The byes already entered are kept."""
         dropped: set[int] = set()
         for round_, games in self._games_by_round().items():
             if any(
@@ -371,7 +371,7 @@ class TrfLegacyAdapter:
         self.adjustments.append(
             _(
                 'Not paired yet ({rounds}): blank entries are read as players '
-                'still to be paired, not as zero-point byes.'
+                'still to be paired, not as Zero-Point Byes.'
             ).format(rounds=self._format_rounds(dropped))
         )
 

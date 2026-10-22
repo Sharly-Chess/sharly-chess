@@ -2175,7 +2175,7 @@ class Tournament:
         """All entered results for the round's real boards (team events).
         Unlike :meth:`is_round_finished`, doesn't require every team to
         have an envelope — used to decide how far a late-joining team's
-        zero-point byes extend."""
+        Zero-Point Byes extend."""
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.tournament_players
