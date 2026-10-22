@@ -4492,13 +4492,10 @@ msgstr ""
 msgid "Identity"
 msgstr ""
 
+msgid "If Sharly Chess no longer responds, force it to close, then start the application again."
+msgstr ""
+
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
-msgstr ""
-
-msgid "If it no longer responds, end it in the Task Manager, then start Sharly Chess again."
-msgstr ""
-
-msgid "If it no longer responds, force it to quit, then start Sharly Chess again."
 msgstr ""
 
 msgid "If left empty, a name is derived from the menu content."
@@ -4890,9 +4887,6 @@ msgid "It is highly recommended to set at least one tie-break."
 msgstr ""
 
 msgid "It is not possible to return players on the last round."
-msgstr ""
-
-msgid "It will now open in your browser."
 msgstr ""
 
 msgid "Italic"
@@ -9127,10 +9121,10 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
-msgid "Sharly Chess is already running"
+msgid "Sharly Chess is already open"
 msgstr ""
 
-msgid "Sharly Chess is already running on this computer. Only one can run at a time, as they would write to the same events."
+msgid "Sharly Chess is already open on this computer."
 msgstr ""
 
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
@@ -10961,6 +10955,12 @@ msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
 msgid "This screen type already belongs to a menu."
+msgstr ""
+
+msgid "This second instance will close and Sharly Chess will be shown in your browser."
+msgstr ""
+
+msgid "This second instance will close."
 msgstr ""
 
 #, python-brace-format

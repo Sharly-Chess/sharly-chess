@@ -96,22 +96,22 @@ class InstanceLock:
         """The title and the message a second launch shows the user."""
         from common.i18n import _
 
-        title = _('Sharly Chess is already running')
-        message = _(
-            'Sharly Chess is already running on this computer. Only one can run '
-            'at a time, as they would write to the same events.'
-        )
-        if opens_in_browser:
-            message += '\n\n' + _('It will now open in your browser.')
-        message += '\n\n' + (
-            _(
-                'If it no longer responds, end it in the Task Manager, then start '
-                'Sharly Chess again.'
+        title = _('Sharly Chess is already open')
+        message = (
+            _('Sharly Chess is already open on this computer.')
+            + '\n\n'
+            + (
+                _(
+                    'This second instance will close and Sharly Chess will be '
+                    'shown in your browser.'
+                )
+                if opens_in_browser
+                else _('This second instance will close.')
             )
-            if sys.platform == 'win32'
-            else _(
-                'If it no longer responds, force it to quit, then start Sharly '
-                'Chess again.'
+            + '\n\n'
+            + _(
+                'If Sharly Chess no longer responds, force it to close, then '
+                'start the application again.'
             )
         )
         return title, message
