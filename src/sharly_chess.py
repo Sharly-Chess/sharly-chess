@@ -445,24 +445,23 @@ try:
         instance_lock = InstanceLock(DATA_DIR)
         if not instance_lock.acquire():
             running_info = instance_lock.read_info()
-            logger.error(
+            logger.warning(
                 'Sharly Chess is already running on [%s] (process %s), exiting.',
-                DATA_DIR,
+                DATA_DIR.resolve(),
                 running_info.get('pid'),
             )
-            if not DEVEL_ENV:
-                import webbrowser
+            import webbrowser
 
-                from common.sharly_chess_config import SharlyChessConfig
+            from common.sharly_chess_config import SharlyChessConfig
 
-                with suppress(Exception):
-                    SharlyChessConfig().load_and_set_env()
-                running_url = running_info.get('url')
-                show_startup_dialog(
-                    *InstanceLock.running_message(bool(running_url)), error=False
-                )
-                if running_url:
-                    webbrowser.open(running_url)
+            with suppress(Exception):
+                SharlyChessConfig().load_and_set_env()
+            running_url = running_info.get('url')
+            show_startup_dialog(
+                *InstanceLock.running_message(bool(running_url)), error=False
+            )
+            if running_url:
+                webbrowser.open(running_url)
             sys.exit(0)
         InstanceLock.held = instance_lock
 
