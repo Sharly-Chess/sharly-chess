@@ -640,6 +640,12 @@ class FfePlugin(Plugin):
         player: 'Player',
         category: 'PlayerCategory',
     ) -> int:
+        """The FFE estimate by age. It is computed whenever a rating is read,
+        never stored, so a change of these values would re-rank the players
+        of every past event once opened: a new rule must apply from the date
+        the FFE adopted it, keyed on the tournament's start date, the
+        current one staying in force before. The migration that clears the
+        stored estimates also relies on them ending in 99 below 1400."""
         if tournament_rating == Cadence.STANDARD:
             return 1299 if isinstance(category, JuniorCategory) else 1399
         if isinstance(category, JuniorCategory):
