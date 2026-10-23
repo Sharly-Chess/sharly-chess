@@ -7004,7 +7004,7 @@ msgid "Pairings successfully generated."
 msgstr "Appariements générés avec succès."
 
 msgid "Pairings with results cannot be unpublished."
-msgstr "Des appariements avec des résultats ne peuvent pas être dépubliés."
+msgstr "Les appariements avec des résultats ne peuvent pas être dépubliés."
 
 msgid "Pakistan"
 msgstr "Pakistan"
@@ -8404,7 +8404,7 @@ msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
 #, python-format
 msgid "Round %(unfinished)d is not finished: the pairings of round %(round)d cannot be published until it is."
-msgstr "La ronde %(unfinished)d n'est pas terminée : les appariements de la ronde %(round)d ne peuvent pas être publiés avant."
+msgstr "La ronde %(unfinished)d n'est pas terminée : les appariements de la ronde %(round)d ne peuvent pas être publiés avant."
 
 msgid "Round count"
 msgstr "Nombre de rondes"
@@ -10073,15 +10073,15 @@ msgstr "Les appariements de la ronde %(round)d sont en cours de modification man
 
 #, python-format
 msgid "The pairings of round %(round)d are not published: they are neither shown on the screens nor sent to the online services."
-msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont ni affichés sur les écrans, ni envoyés aux services en ligne."
+msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont ni affichés sur les écrans, ni envoyés aux services en ligne."
 
 #, python-format
 msgid "The pairings of round %(round)d are not published: they are not sent to the online services."
-msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont pas envoyés aux services en ligne."
+msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont pas envoyés aux services en ligne."
 
 #, python-format
 msgid "The pairings of round %(round)d are not published: they are not shown on the screens."
-msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont pas affichés sur les écrans."
+msgstr "Les appariements de la ronde %(round)d ne sont pas publiés : ils ne sont pas affichés sur les écrans."
 
 #, python-format
 msgid "The pairings of round %(round)d differ from those of the pairing engine:"
