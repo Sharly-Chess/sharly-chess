@@ -29,7 +29,6 @@ def _seed_team_stage(event_id: str, primary_score: ScoreType) -> int:
         'Stage',
         overrides={
             'rounds': 1,
-            'current_round': 1,
             'team_player_count': 1,
             'pairing': 'TEAM_SWISS_STANDARD',
             'primary_score': primary_score.value,
