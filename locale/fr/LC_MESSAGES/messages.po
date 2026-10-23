@@ -1675,8 +1675,8 @@ msgid "By default, other devices can only interact with public screens. This tab
 msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
 
 #, python-brace-format
-msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
-msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
+msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must confirm that the player estimation is explained in the rules."
+msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez confirmer que l'estimation des joueur·euses est expliquée dans le règlement."
 
 #, python-format
 msgid "By default: %(minutes)d minutes"
@@ -2687,7 +2687,7 @@ msgstr "Chronomètres par défaut"
 
 #, python-format
 msgid "Define a rating range and how to split it. One category is created per rating band, with a single rating criterion and the default prizes below (amounts in %(currency)s). You can fine-tune them afterwards."
-msgstr "Définissez une plage de Elo et la façon de la découper. Une catégorie est créée par tranche de Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
+msgstr "Définissez une plage de Elo et la façon de la découper. Une catégorie est créée par tranche de Elo, avec un unique critère de Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -3959,6 +3959,9 @@ msgstr "Ordre des échiquiers fixes :"
 
 msgid "Fixed points per finishing position (e.g. 20 for first, 15 for second), summed. Positions beyond the table score nothing."
 msgstr "Points fixes par place à l'arrivée (p. ex. 20 pour le premier, 15 pour le deuxième), sommés. Les places au-delà du barème ne rapportent rien."
+
+msgid "Fixed rating"
+msgstr "Elo fixe"
 
 msgid "Fixed table"
 msgstr "Table fixe"
@@ -7382,6 +7385,10 @@ msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et toutes
 msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
 msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
 
+#, python-brace-format
+msgid "Players without a rating are counted at {value}."
+msgstr "Les joueur·euses sans Elo comptent pour {value}."
+
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni mél ne seront pas inclus·es."
 
@@ -7857,6 +7864,12 @@ msgstr "Tirer les numéros d'appariement aléatoirement."
 
 msgid "Rank"
 msgstr "Classement"
+
+msgid "Rank the higher pairing numbers first, instead of the lower ones."
+msgstr "Classer en premier les numéros d'appariement les plus élevés, au lieu des plus bas."
+
+msgid "Rank the lower ratings first, instead of the higher ones."
+msgstr "Classer en premier les Elo les plus bas, au lieu des plus hauts."
 
 msgid "Ranking"
 msgstr "Classement"
@@ -9742,7 +9755,7 @@ msgid "The captain must belong to the team roster."
 msgstr "Le ou la capitaine doit faire partie de l'effectif de l'équipe."
 
 msgid "The category contains non-monetary prizes which can not be shared."
-msgstr "La catégorie contient des prix non-monétaires qui ne peuvent être partagés."
+msgstr "La catégorie contient des prix non monétaires qui ne peuvent être partagés."
 
 msgid "The category has been deleted."
 msgstr "La catégorie a été supprimée."
@@ -9839,6 +9852,10 @@ msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
+
+#, python-brace-format
+msgid "The fixed rating must be between 1 and {max}."
+msgstr "Le Elo fixe doit être compris entre 1 et {max}."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
@@ -10206,6 +10223,9 @@ msgstr "La récupération du classement, par ordre de priorité (peut être remp
 msgid "The rating retrieval, set by the federation of the event, in order of priority."
 msgstr "La récupération du classement, définie par la fédération de l'évènement, par ordre de priorité."
 
+msgid "The rating used for players who have neither a FIDE nor a national rating, whether they are the player or an opponent."
+msgstr "Le Elo utilisé pour les joueur·euses qui n'ont ni Elo FIDE ni Elo national, pour leur propre départage comme en tant qu'adversaires."
+
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
 
@@ -10537,7 +10557,7 @@ msgid "This display controller is public (visible by the spectators)."
 msgstr "Ce pilote d'afficheur est public (visible des spectateur·ices)."
 
 msgid "This document is not available for unpaired tournaments."
-msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
+msgstr "Ce document n'est pas disponible pour les tournois non appariés."
 
 msgid "This document is only available for Molter tournaments."
 msgstr "Ce document n'est disponible que pour les tournois au système Molter."
@@ -10760,8 +10780,12 @@ msgid "This tie-break is already used."
 msgstr "Ce départage est déjà utilisé."
 
 #, python-brace-format
-msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
-msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es sans classement estimé ({count} dans le tournoi)."
+msgid "This tie-break is disabled when there are unrated players ({count} in the tournament). You must confirm that the rules give them a rating of {value}."
+msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez confirmer que le règlement leur attribue un Elo de {value}."
+
+#, python-brace-format
+msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament). Give them an estimated rating, or use a fixed rating and confirm that the rules give it to them."
+msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es sans classement estimé ({count} dans le tournoi). Attribuez-leur un Elo estimé, ou utilisez un Elo fixe et confirmez que le règlement le leur attribue."
 
 #, python-brace-format
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
@@ -11350,15 +11374,19 @@ msgstr "Dépublier"
 
 msgctxt "plural for unrated players"
 msgid "Unrated"
-msgstr "Non-classé·es"
+msgstr "Non classé·es"
 
 msgctxt "singular for unrated player"
 msgid "Unrated"
-msgstr "Non-classé·e"
+msgstr "Non classé·e"
 
 msgctxt "unrated game"
 msgid "Unrated"
 msgstr "Non comptabilisés pour le classement Elo"
+
+#, python-brace-format
+msgid "Unrated = {value}"
+msgstr "Non classé·es = {value}"
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisée pour le classement Elo"
@@ -11374,6 +11402,9 @@ msgstr "Adversaire non classé·e."
 
 msgid "Unrated penalty"
 msgstr "Pénalité non comptabilisée pour le classement Elo"
+
+msgid "Unrated players"
+msgstr "Joueur·euses non classé·es"
 
 msgid "Unrated players:"
 msgstr "Non classé·es :"
@@ -11496,6 +11527,9 @@ msgstr "Utiliser le Fore Buchholz"
 msgid "Use a data source to import players from their identifier."
 msgstr "Utiliser une source de données pour importer des joueur·euses à partir de leur identifiant."
 
+msgid "Use a fixed rating"
+msgstr "Utiliser un Elo fixe"
+
 msgid "Use a tournament's criteria"
 msgstr "Utiliser les critères d'un tournoi"
 
@@ -11529,6 +11563,9 @@ msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 
 msgid "Use the alert message defined on each screen."
 msgstr "Utiliser le message d'alerte défini pour chaque écran."
+
+msgid "Use the estimated rating"
+msgstr "Utiliser le Elo estimé"
 
 msgid "Use the previous round's lineup (untick to set this round)"
 msgstr "Utiliser la composition de la ronde précédente (décocher pour définir cette ronde)"
@@ -11790,7 +11827,7 @@ msgid "When only the matches are displayed, the players of each board are hidden
 msgstr "Lorsque seuls les matchs sont affichés, les joueur·euses de chaque échiquier sont masqué·es, pour que les capitaines trouvent leur match d'un coup d'œil."
 
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
-msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
+msgstr "Lorsqu'il y a des joueur·euses non classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
 
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
@@ -11932,7 +11969,7 @@ msgid "You are connected on the Sharly Chess server and have full administration
 msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilèges complets d'administration."
 
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
-msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
+msgstr "Un mode d'édition non sécurisé est activé. Changez de ronde pour le désactiver."
 
 msgid "You are not allowed to add players to the event."
 msgstr "Vous n'êtes pas autorisé·e à ajouter des joueur·euses à l'évènement."
@@ -12061,7 +12098,7 @@ msgid "You may create different types of web pages, referred to as <i>Screens</i
 msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
 
 msgid "You must create a prize bracket before creating a prize category."
-msgstr "Vous devez créer un groupe non-cumulable avant de créer une catégorie de prix."
+msgstr "Vous devez créer un groupe non cumulable avant de créer une catégorie de prix."
 
 msgid "You must create a screen or a multi-screen before creating a rotator."
 msgstr "Vous devez créer un écran ou un écran multiple avant de créer un écran rotatif."
@@ -12070,7 +12107,7 @@ msgid "You must create a tournament before creating a multi-screen."
 msgstr "Vous devez créer un tournoi avant de créer un écran multiple."
 
 msgid "You must create a tournament before creating a prize bracket."
-msgstr "Vous devez créer un tournoi avant de créer un groupe non-cumulable."
+msgstr "Vous devez créer un tournoi avant de créer un groupe non cumulable."
 
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
@@ -12630,7 +12667,7 @@ msgid "the file does not code it, and describes the tournament as \"{type}\""
 msgstr "le fichier ne le précise pas, et décrit le tournoi comme « {type} »"
 
 msgid "the number of moves is required for a non-final period."
-msgstr "le nombre de coups est requis pour une période non-finale."
+msgstr "le nombre de coups est requis pour une période (hors la dernière)."
 
 msgid "the number of moves must be a positive integer."
 msgstr "le nombre de coups doit être un entier positif."
@@ -12836,8 +12873,8 @@ msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} 
 #, python-brace-format
 msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
-msgstr[0] "{players} joueur·euse reste non-apparié·e"
-msgstr[1] "{players} joueur·euses restent non-apparié·es"
+msgstr[0] "{players} joueur·euse reste non apparié·e"
+msgstr[1] "{players} joueur·euses restent non apparié·es"
 
 #, python-brace-format
 msgid "{plugin} (disabled)"
