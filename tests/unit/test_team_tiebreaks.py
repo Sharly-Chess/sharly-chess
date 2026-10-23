@@ -2099,7 +2099,7 @@ class MedianCutWithVoluntaryUnplayedRoundsTestCase(TestCase):
     has the low cut take a voluntary unplayed round first, and the high
     cut then takes the highest of what remains, played or not.
 
-    Team 1 draws team 2 (2 MP) in round 1, then takes a zero-point bye
+    Team 1 draws team 2 (2 MP) in round 1, then takes a Zero-Point Bye
     and two half-point byes: three dummies worth its own 3 MP. The low cut
     takes one dummy and the high cut another, leaving 2 + 3. Team 2 draws
     its final match, so Fore Buchholz reads the same values."""
@@ -2366,7 +2366,7 @@ class UnplayedMatchBoardTotalsTestCase(TestCase):
 
     def test_forfeited_boards_count_as_they_went_and_byes_not_at_all(self):
         totals = board_totals(self.RECORD, 3, after_round=7)
-        # PAB 1, 1, 1; the half-point and zero-point byes nothing; the
+        # PAB 1, 1, 1; the half-point and Zero-Point Byes nothing; the
         # forfeited matches and the played ones board by board.
         self.assertEqual(totals, [4.0, 3.5, 2.0])
 

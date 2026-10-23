@@ -748,7 +748,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 name=trf_team.name or trf_team.nickname or f'Team {trf_team.id}',
                 pairing_number=trf_team.id or None,
                 # A team listed in a 310 roster is taking part. Left
-                # checked out it would be given a zero-point bye when
+                # checked out it would be given a Zero-Point Bye when
                 # the next round is paired, and a file where every team
                 # is absent has no pairing at all.
                 check_in=True,

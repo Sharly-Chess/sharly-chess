@@ -226,8 +226,8 @@ class TestIndividualKnockout:
     ):
         # Papi requires every entrant to be paired or given a bye in each played
         # round. A knocked-out player has no board once out, so the export must
-        # seat them with a zero-point bye rather than leaving them unpaired —
-        # and a zero-point bye so their score is not altered.
+        # seat them with a Zero-Point Bye rather than leaving them unpaired —
+        # and a Zero-Point Bye so their score is not altered.
         from plugins.ffe.papi_converter import PapiConverter
         from plugins.ffe.papi_mappers import PapiColor, PapiResult
 
@@ -241,7 +241,7 @@ class TestIndividualKnockout:
         papi_data = PapiConverter().tournament_to_papi_data(tournament)
         by_name = {player.lastName: player for player in papi_data.players}
         # PLAYER05 (seed 6) is knocked out in round 1, so has no board in
-        # rounds 2 and 3 — both must be zero-point byes, not unpaired.
+        # rounds 2 and 3 — both must be Zero-Point Byes, not unpaired.
         eliminated = by_name['PLAYER05']
         for round_ in (2, 3):
             assert eliminated.rounds[round_].color == PapiColor.BYE
@@ -252,7 +252,7 @@ class TestIndividualKnockout:
         champion = by_name['PLAYER00']
         assert champion.rounds[3].color != PapiColor.UNPAIRED
 
-        # A round-one bye (top seeds sit out) is a zero-point bye too, not a
+        # A round-one bye (top seeds sit out) is a Zero-Point Bye too, not a
         # scoring bye with no adversary — else the Papi binary assigns a
         # default adversary and the two round-one byes collide on its Rd01Adv
         # index.
