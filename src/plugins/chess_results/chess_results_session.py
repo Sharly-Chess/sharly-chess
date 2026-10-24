@@ -11,6 +11,7 @@ from requests import Session
 from common.logger import get_logger
 from data.event import Event
 from data.player import Player
+from data.pairings.engines import TeamRoundRobinPairingEngine
 from data.tournament import Tournament
 from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
@@ -228,7 +229,11 @@ class ChessResultsSession(Session):
                     arbiter.fide_arbiter_str for arbiter in tournament.arbiters
                 ),
                 'rounds': str(tournament.rounds),
-                'currentround': str(tournament.current_round or 0),
+                # Chess-Results shows no pairings for a tournament at round 0,
+                # even those sent before the first round is published.
+                'currentround': str(
+                    max(tournament.current_round, min(tournament.last_shown_round, 1))
+                ),
                 'rankinground': str(
                     max(
                         0,
@@ -364,7 +369,7 @@ class ChessResultsSession(Session):
         point_values: dict[Result, float] = {
             Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.last_shown_round + 1):
             tournament.set_for_round(round_)
             tournament.compute_tournament_player_ranks(after_round=round_)
             last_board_id = 0
@@ -586,7 +591,7 @@ class ChessResultsSession(Session):
         point_values: dict[Result, float] = {
             Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.last_shown_round + 1):
             tournament.set_for_round(round_)
             visible_matches = sorted(
                 (
@@ -680,6 +685,47 @@ class ChessResultsSession(Session):
                             'forfeit': _forfeit_code(board.result),
                         },
                     )
+        self._append_scheduled_team_pairings(tpair, tournament, team_no)
+
+    @staticmethod
+    def _append_scheduled_team_pairings(
+        tpair: ET.Element, tournament: Tournament, team_no: dict[int, int]
+    ) -> None:
+        """The team pairings of the round-robin rounds not paired yet, from
+        the Berger tables: the line-ups are only known once a round is
+        paired, so these rounds have no player pairings."""
+        engine = tournament.pairing_variation.engine
+        if not isinstance(engine, TeamRoundRobinPairingEngine):
+            return
+        pattern = (tournament.color_pattern or 'W').upper()
+        for round_, team_pairs in engine.full_schedule(tournament).items():
+            if round_ <= tournament.last_shown_round:
+                continue
+            # Numbered as when the round is paired: the bye last.
+            ordered_pairs = sorted(team_pairs, key=lambda pair: pair[1] is None)
+            for pairing_no, (team_a_id, team_b_id) in enumerate(ordered_pairs, start=1):
+                if team_a_id not in team_no or (
+                    team_b_id is not None and team_b_id not in team_no
+                ):
+                    continue
+                if team_b_id is None:
+                    no1, no2 = team_no[team_a_id], -1
+                elif pattern[:1] == 'W':
+                    no1, no2 = team_no[team_a_id], team_no[team_b_id]
+                else:
+                    no1, no2 = team_no[team_b_id], team_no[team_a_id]
+                ET.SubElement(
+                    tpair,
+                    'teampairing',
+                    {
+                        'round': str(round_),
+                        'pairing': str(pairing_no),
+                        'no1': str(no1),
+                        'no2': str(no2),
+                        'res1': '',
+                        'res2': '',
+                    },
+                )
 
     def upload(self) -> FailureCRUploadStatus | None:
         """Upload the tournament to Chess-Results.com."""

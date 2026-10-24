@@ -8411,6 +8411,18 @@ msgid "Round %(round)d - Board %(board_number)d"
 msgstr ""
 
 #, python-format
+msgid "Round %(round)d is not published: its results are not sent to the online services."
+msgstr ""
+
+#, python-format
+msgid "Round %(round)d is not published: the screens do not show it yet and its results are not sent to the online services."
+msgstr ""
+
+#, python-format
+msgid "Round %(round)d is not published: the screens do not show it yet."
+msgstr ""
+
+#, python-format
 msgid "Round %(unfinished)d is not finished: the pairings of round %(round)d cannot be published until it is."
 msgstr ""
 
@@ -9060,6 +9072,9 @@ msgstr ""
 msgid "Show the stages of %(competitor)s"
 msgstr ""
 
+msgid "Show this round on the screens and send its results to the online services."
+msgstr ""
+
 msgid "Show unmodified players"
 msgstr ""
 
@@ -9459,6 +9474,9 @@ msgid "Tags"
 msgstr ""
 
 msgid "Tajikistan"
+msgstr ""
+
+msgid "Take the screens back to the previous round."
 msgstr ""
 
 msgid "Talk to us on Discord"

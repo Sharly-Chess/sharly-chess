@@ -453,9 +453,9 @@ class FFESession(Session):
                 logger.debug("Deleting personal players' data...")
                 tmp_event_database.delete_players_personal_data()
 
-                # Delete all ZPBs if no pairings are published (at any round).
+                # Delete all ZPBs if no pairings are shown (at any round).
                 # This fixes a display issue on the FFE website."""
-                if not tmp_tournament.published_round:
+                if not tmp_tournament.last_shown_round:
                     logger.info('Deleting ZPBs...')
                     for player in tmp_tournament.tournament_players:
                         for pairing in player.pairings.values():

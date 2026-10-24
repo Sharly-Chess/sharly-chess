@@ -1,4 +1,5 @@
 import weakref
+from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 from collections import namedtuple
 
@@ -67,7 +68,14 @@ class Pairing:
         if self._result_value != self.stored_pairing.result:
             self._result_value = self.stored_pairing.result
             self._result = Result(self._result_value)
+        # A bye is part of the pairings, not a result.
+        if not self._result.is_bye and self.results_hidden:
+            return Result.NO_RESULT
         return self._result
+
+    @cached_property
+    def results_hidden(self) -> bool:
+        return self.tournament_player.tournament.hides_round_results(self.round)
 
     @property
     def points(self) -> float:
@@ -79,6 +87,8 @@ class Pairing:
 
     @property
     def illegal_moves(self) -> int:
+        if self.results_hidden:
+            return 0
         return self.stored_pairing.illegal_moves
 
     def update_result(self, event_database: EventDatabase, result: Result) -> None:

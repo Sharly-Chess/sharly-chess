@@ -8413,6 +8413,18 @@ msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
 #, python-format
+msgid "Round %(round)d is not published: its results are not sent to the online services."
+msgstr "La ronde %(round)d n'est pas publiée : ses résultats ne sont pas envoyés aux services en ligne."
+
+#, python-format
+msgid "Round %(round)d is not published: the screens do not show it yet and its results are not sent to the online services."
+msgstr "La ronde %(round)d n'est pas publiée : les écrans ne l'affichent pas encore et ses résultats ne sont pas envoyés aux services en ligne."
+
+#, python-format
+msgid "Round %(round)d is not published: the screens do not show it yet."
+msgstr "La ronde %(round)d n'est pas publiée : les écrans ne l'affichent pas encore."
+
+#, python-format
 msgid "Round %(unfinished)d is not finished: the pairings of round %(round)d cannot be published until it is."
 msgstr "La ronde %(unfinished)d n'est pas terminée : les appariements de la ronde %(round)d ne peuvent pas être publiés avant."
 
@@ -9062,6 +9074,9 @@ msgstr "Afficher le détail des étapes au survol"
 msgid "Show the stages of %(competitor)s"
 msgstr "Afficher les étapes de %(competitor)s"
 
+msgid "Show this round on the screens and send its results to the online services."
+msgstr "Afficher cette ronde sur les écrans et envoyer ses résultats aux services en ligne."
+
 msgid "Show unmodified players"
 msgstr "Afficher les joueur·euses non modifié·es"
 
@@ -9462,6 +9477,9 @@ msgstr "Étiquettes"
 
 msgid "Tajikistan"
 msgstr "Tadjikistan"
+
+msgid "Take the screens back to the previous round."
+msgstr "Ramener les écrans à la ronde précédente."
 
 msgid "Talk to us on Discord"
 msgstr "Discutons-en sur Discord"

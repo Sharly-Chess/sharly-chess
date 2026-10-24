@@ -730,12 +730,12 @@ class BoardPrintDocument(PrintDocument, ABC):
                 ).format(rounds=self.tournament.rounds),
                 at_round,
             )
-        if at_round.value > self.tournament.current_round:
+        if at_round.value > self.tournament.last_shown_round:
             if self.tournament.pairing_system == SwissPairingSystem():
                 raise OptionError(
                     _(
                         'There are no pairings for this round (last round with pairings: #{round}).'
-                    ).format(round=self.tournament.current_round),
+                    ).format(round=self.tournament.last_shown_round),
                     at_round,
                 )
             raise OptionError(
@@ -998,12 +998,12 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
                 ).format(rounds=self.tournament.rounds),
                 at_round,
             )
-        if at_round.value > self.tournament.current_round:
+        if at_round.value > self.tournament.last_shown_round:
             raise OptionError(
                 _(
                     'There are no pairings for this round (last round '
                     'with pairings: #{round}).'
-                ).format(round=self.tournament.current_round),
+                ).format(round=self.tournament.last_shown_round),
                 at_round,
             )
 
@@ -1102,12 +1102,12 @@ class TeamPairingsPrintDocument(PrintDocument):
                 ).format(rounds=self.tournament.rounds),
                 at_round,
             )
-        if at_round.value > self.tournament.current_round:
+        if at_round.value > self.tournament.last_shown_round:
             raise OptionError(
                 _(
                     'There are no pairings for this round (last round '
                     'with pairings: #{round}).'
-                ).format(round=self.tournament.current_round),
+                ).format(round=self.tournament.last_shown_round),
                 at_round,
             )
 
