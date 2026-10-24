@@ -1896,9 +1896,24 @@ class Tournament:
 
     @property
     def published_round(self) -> int:
-        """The last round whose pairings are shown on the screens and sent to
+        """The last round shown on the screens and whose results are sent to
         the online services."""
         return min(self.stored_tournament.published_round, self.last_paired_round)
+
+    @property
+    def last_shown_round(self) -> int:
+        """The last round whose pairings are shown. Predetermined pairings
+        are known in advance, so every paired round is, published or not."""
+        if self.pairing_system.predetermined_pairings:
+            return self.last_paired_round
+        return self.current_round
+
+    def hides_round_results(self, round_: int) -> bool:
+        """Whether the results of ``round_`` are kept from the public: those
+        of the rounds after the last published one."""
+        return (
+            self.event.public_view and round_ > self.stored_tournament.published_round
+        )
 
     def unfinished_round_before(self, round_: int) -> int | None:
         """The first round before ``round_`` still waiting for results."""

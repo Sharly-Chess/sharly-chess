@@ -228,7 +228,11 @@ class ChessResultsSession(Session):
                     arbiter.fide_arbiter_str for arbiter in tournament.arbiters
                 ),
                 'rounds': str(tournament.rounds),
-                'currentround': str(tournament.current_round or 0),
+                # Chess-Results shows no pairings for a tournament at round 0,
+                # even those sent before the first round is published.
+                'currentround': str(
+                    max(tournament.current_round, min(tournament.last_shown_round, 1))
+                ),
                 'rankinground': str(
                     max(
                         0,
@@ -364,7 +368,7 @@ class ChessResultsSession(Session):
         point_values: dict[Result, float] = {
             Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.last_shown_round + 1):
             tournament.set_for_round(round_)
             tournament.compute_tournament_player_ranks(after_round=round_)
             last_board_id = 0
@@ -586,7 +590,7 @@ class ChessResultsSession(Session):
         point_values: dict[Result, float] = {
             Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.last_shown_round + 1):
             tournament.set_for_round(round_)
             visible_matches = sorted(
                 (

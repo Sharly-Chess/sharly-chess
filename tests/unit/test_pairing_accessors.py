@@ -7,6 +7,9 @@ class TournamentStub:
     def __init__(self):
         self.boards_by_id = {}
 
+    def hides_round_results(self, round_: int) -> bool:
+        return False
+
 
 class TournamentPlayerStub:
     def __init__(self, id_: int, tournament: TournamentStub):

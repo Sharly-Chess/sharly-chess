@@ -121,13 +121,34 @@
         and admin_round > admin_tournament.published_round
         and admin_tournament.round_has_pairings(admin_round)
         and (admin_tournament.shown_on_screens or admin_tournament.uploaded_online)
+        and (
+            not admin_tournament.pairing_system.predetermined_pairings
+            or admin_tournament.can_publish_round(admin_round)
+        )
     %}
         {% set unfinished_round = admin_tournament.unfinished_round_before(admin_round) %}
+        {% set predetermined_pairings = admin_tournament.pairing_system.predetermined_pairings %}
         <div class="alert alert-warning py-2 px-2 mx-3 my-2">
             <div class="d-flex align-items-center gap-2">
                 <i class="bi-{{ 'hourglass-split' if unfinished_round else 'eye-slash' }}"></i>
                 <div class="flex-grow-1">
-                    {% if unfinished_round %}
+                    {% if predetermined_pairings and admin_tournament.shown_on_screens and admin_tournament.uploaded_online %}
+                        {{ _(
+                            'Round %(round)d is not published: the screens do not show it yet '
+                            'and its results are not sent to the online services.',
+                            round=admin_round,
+                        ) }}
+                    {% elif predetermined_pairings and admin_tournament.uploaded_online %}
+                        {{ _(
+                            'Round %(round)d is not published: its results are not sent to the online services.',
+                            round=admin_round,
+                        ) }}
+                    {% elif predetermined_pairings %}
+                        {{ _(
+                            'Round %(round)d is not published: the screens do not show it yet.',
+                            round=admin_round,
+                        ) }}
+                    {% elif unfinished_round %}
                         {{ _(
                             'Round %(unfinished)d is not finished: the pairings of round '
                             '%(round)d cannot be published until it is.',

@@ -269,7 +269,7 @@ def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
 def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
     keizer = tournament.pairing_system.id == 'KEIZER'
     pairings = []
-    for round_ in range(1, tournament.current_round + 1):
+    for round_ in range(1, tournament.last_shown_round + 1):
         # A Keizer score is not a sum of game points, so the platform cannot
         # derive it from the results: each board carries it.
         keizer_totals = (

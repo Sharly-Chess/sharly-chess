@@ -18,7 +18,7 @@
             {% if publish_disabled_message %}
                 {{ macros.tooltip_attributes('warning', publish_disabled_message, 'top') }}
             {% else %}
-                {{ macros.tooltip_attributes('info', _('Show the pairings of this round on the screens and send them to the online services.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Show this round on the screens and send its results to the online services.') if admin_tournament.pairing_system.predetermined_pairings else _('Show the pairings of this round on the screens and send them to the online services.'), 'top') }}
             {% endif %}
         >
             <button
@@ -47,7 +47,7 @@
             {% if unpublish_disabled_message %}
                 {{ macros.tooltip_attributes('warning', unpublish_disabled_message, 'top') }}
             {% else %}
-                {{ macros.tooltip_attributes('info', _('Hide the pairings of this round from the screens and the online services.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Take the screens back to the previous round.') if admin_tournament.pairing_system.predetermined_pairings else _('Hide the pairings of this round from the screens and the online services.'), 'top') }}
             {% endif %}
         >
             <button
