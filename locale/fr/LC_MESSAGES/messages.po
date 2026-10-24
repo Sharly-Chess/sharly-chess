@@ -3574,6 +3574,9 @@ msgstr "Saisir le résultat"
 msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr "Saisir %(result)s porte atteinte à l'intégrité des appariements. Ce sera consigné, et enregistré dans le TRF du tournoi."
 
+msgid "Entry"
+msgstr "Saisie"
+
 msgid "Equatorial Guinea"
 msgstr "Guinée équatoriale"
 
