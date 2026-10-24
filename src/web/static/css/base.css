@@ -1479,6 +1479,9 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .modal * + h4, .modal * + .collapse-button, .modal * + form > h4:first-child {
     margin-top: 1.5rem;
 }
+.modal #alert-message + h4 {
+    margin-top: 0;
+}
 .modal h4, .modal * + .collapse-button {
     font-size: 1.3rem;
 }
