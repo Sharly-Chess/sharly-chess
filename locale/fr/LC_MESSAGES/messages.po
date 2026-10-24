@@ -3749,10 +3749,10 @@ msgid "Export ALL the data of the tournament's %(player_count)d players (but ONL
 msgstr "Exporter TOUTES les données des %(player_count)d joueur·euses du tournoi (mais UNIQUEMENT les données des joueur·euses)."
 
 msgid "Export all the games of all the paired rounds of the tournament to the PGN format, with their results (usage: pairings transfer, game entry for publication)."
-msgstr "Exporter toutes les parties de toutes les rondes appariées du tournoi au format PGN, avec leurs résultats (usage : transfert d'appariements, saisie des parties pour publication)."
+msgstr "Exporter toutes les parties de toutes les rondes appariées du tournoi au format PGN, avec leurs résultats (usage : transfert d'appariements, saisie des parties pour publication)."
 
-msgid "Export all the games of the last round of the tournament to the PGN format, with their results (usage: pairings transfer)."
-msgstr "Exporter toutes les parties de la dernière ronde du tournoi au format PGN, avec leurs résultats (usage : transfert d'appariements)."
+msgid "Export all the games of the last round of the tournament to the PGN format, with their results (usage: pairings transfer, game entry for publication)."
+msgstr "Exporter toutes les parties de la dernière ronde du tournoi au format PGN, avec leurs résultats (usage : transfert d'appariements, saisie des parties pour publication)."
 
 msgid "Export event"
 msgstr "Exporter l'évènement"

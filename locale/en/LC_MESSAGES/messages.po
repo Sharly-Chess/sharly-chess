@@ -3751,7 +3751,7 @@ msgstr ""
 msgid "Export all the games of all the paired rounds of the tournament to the PGN format, with their results (usage: pairings transfer, game entry for publication)."
 msgstr ""
 
-msgid "Export all the games of the last round of the tournament to the PGN format, with their results (usage: pairings transfer)."
+msgid "Export all the games of the last round of the tournament to the PGN format, with their results (usage: pairings transfer, game entry for publication)."
 msgstr ""
 
 msgid "Export event"

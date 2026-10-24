@@ -189,7 +189,8 @@ class PgnTournamentExporter(TournamentExporter):
     def tooltip(self) -> str:
         return _(
             'Export all the games of the last round of the tournament '
-            'to the PGN format, with their results (usage: pairings transfer).'
+            'to the PGN format, with their results (usage: pairings transfer, '
+            'game entry for publication).'
         )
 
     @property
