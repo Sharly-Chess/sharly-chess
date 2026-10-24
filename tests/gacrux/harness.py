@@ -155,8 +155,6 @@ class KnownIssue:
     signature: str
     #: An edit of the TRF text that sidesteps the issue.
     workaround: Callable[[str], str] | None = None
-    #: Or an export stopped at the last finished round.
-    finished_rounds_only: bool = False
 
     def applies_to(self, run: 'CheckerRun') -> bool:
         return run.failed and re.search(self.signature, run.traceback) is not None
@@ -167,13 +165,6 @@ class KnownIssue:
         """The TRF made around the issue and the round it stops at, or
         None when there is no way around it here."""
         patched = trf_path.with_name(f'{trf_path.stem}.{self.id}{trf_path.suffix}')
-        if self.finished_rounds_only:
-            finished = last_finished_round(tournament)
-            if finished == tournament.rounds:
-                return None
-            return export_trf(
-                tournament, patched.parent, patched.stem, finished
-            ), finished
         if self.workaround is None:
             return None
         text = trf_path.read_text(encoding='latin-1')
@@ -194,12 +185,6 @@ KNOWN_ISSUES = (
         summary='crashes on a 172 record whose method is OTHER',
         signature=r"in prepare_competitors[\s\S]*'int' object is not subscriptable",
         workaround=_read_other_as_fidon,
-    ),
-    KnownIssue(
-        id='G4',
-        summary='crashes on a team file whose next round is paired but unplayed',
-        signature=r'in post_parse_line[\s\S]*IndexError: list index out of range',
-        finished_rounds_only=True,
     ),
 )
 
