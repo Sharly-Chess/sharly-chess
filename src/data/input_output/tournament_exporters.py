@@ -183,13 +183,14 @@ class PgnTournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return _('PGN')
+        return _('PGN (last round)')
 
     @property
     def tooltip(self) -> str:
         return _(
             'Export all the games of the last round of the tournament '
-            'to the PGN format (usage: pairings transfer).'
+            'to the PGN format, with their results (usage: pairings transfer, '
+            'game entry for publication).'
         )
 
     @property
@@ -222,4 +223,39 @@ class PgnTournamentExporter(TournamentExporter):
         period: TournamentPeriod | None = None,
     ) -> None:
         for board in tournament.boards:
-            file.write(board.to_pgn(tournament, tournament.current_round))
+            file.write(board.to_pgn())
+
+
+class PgnAllRoundsTournamentExporter(PgnTournamentExporter):
+    @staticmethod
+    def static_id() -> str:
+        return 'pgn-all-rounds'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('PGN (all rounds)')
+
+    @property
+    def tooltip(self) -> str:
+        return _(
+            'Export all the games of all the paired rounds of the tournament '
+            'to the PGN format, with their results (usage: pairings transfer, '
+            'game entry for publication).'
+        )
+
+    @staticmethod
+    @override
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
+        return tournament.sanitized_name
+
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
+        for round_ in range(1, tournament.last_paired_round + 1):
+            for board in tournament.get_round_boards(round_):
+                file.write(board.to_pgn())

@@ -15,6 +15,7 @@
 - Allowing more than one half-point bye per player asks for confirmation in FIDE mode (5.2.0)
 - After a TRF import, each imported round is checked against the pairing engine, and the rounds that differ are listed and logged (5.2.0)
 - The TRF export is named after its use: _TRF26 (ITDX)_ for a partial file while the tournament is not finished or games have no result, where those games are unknown results; _TRF26 (final)_ for the final report, which alone carries the corrections made for the rating report (5.2.0)
+- A new _PGN (all rounds)_ export gives the games of every paired round in a single file, and both PGN exports now carry the results of the games, forfeits included, with the round dates, the players' FIDE IDs and teams, and the time control (5.2.0)
 - Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
 
