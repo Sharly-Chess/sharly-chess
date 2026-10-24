@@ -3,6 +3,8 @@ from data.pairings import PairingVariation
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     BergerTeamRoundRobinVariation,
+    CustomRoundRobinVariation,
+    CustomTeamRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
     StandardSwissVariation,
@@ -203,11 +205,16 @@ class TrfEncodedType:
                 return BergerRoundRobinVariation()
             case 'FIDE_DOUBLEROUNDROBIN':
                 return DoubleBergerRoundRobinVariation()
+            # One code for single and double custom round-robins: the
+            # importer tells them apart by the number of rounds.
+            case 'CUSTOM_ROUNDROBIN':
+                return CustomRoundRobinVariation()
+            case 'CUSTOM_TEAM_ROUNDROBIN':
+                return CustomTeamRoundRobinVariation()
             case (
                 'FIDE_TEAM_ROUNDROBIN'
                 | 'BERGER_TEAM_ROUNDROBIN'
                 | 'BERGER_TEAM_ROUNDROBIN_G1'
-                | 'CUSTOM_TEAM_ROUNDROBIN'
                 | 'OTHER_TEAM_ROUNDROBIN'
             ):
                 return BergerTeamRoundRobinVariation()
@@ -305,8 +312,7 @@ class TrfEncodedType:
             ):
                 return 'FIDE_DOUBLEROUNDROBIN'
             case (
-                'CUSTOM_ROUNDROBIN'
-                | 'FIDE_SCHILLER'
+                'FIDE_SCHILLER'
                 | 'CUSTOM_SCHILLER'
                 | 'CUSTOM_SCHEVENINGEN'
                 | 'FIDE_SCHEVENINGEN_G1'
