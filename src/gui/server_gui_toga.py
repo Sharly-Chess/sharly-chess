@@ -339,7 +339,7 @@ class SharlyChessServerToga(toga.App):
         self.profile = profile
         self.port = port
 
-        self.gui_loop = asyncio.get_event_loop()
+        self.gui_loop = self.loop
         self.server_loop = asyncio.SelectorEventLoop()
 
         # reset the locale after having called toga.App.__init__(), needed by Togo 0.5.3+
