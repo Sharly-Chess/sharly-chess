@@ -90,6 +90,12 @@ def ffe_list_ratings(
     }
 
 
+def is_ffe_estimate(value: int) -> bool:
+    """Whether *value* is an FFE estimate by age, all of which end in 99
+    below the FIDE floor of 1400."""
+    return value < 1400 and value % 100 == 99
+
+
 FFE_UPLOAD_DELAY = 3
 FFE_EPOCH = datetime(2000, 1, 1)
 
