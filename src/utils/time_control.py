@@ -124,3 +124,28 @@ def format_time_control(tc: TimeControl) -> str:
 def trf25_to_human_readable(s: str) -> str:
     """Convenience function."""
     return format_time_control(parse_time_control_trf25(s))
+
+
+def trf25_to_pgn(s: str) -> str | None:
+    """The PGN TimeControl tag value of a TRF25 time control, or None when
+    it cannot be expressed: PGN has one time control for both colours.
+
+    >>> trf25_to_pgn('5400+30')
+    '5400+30'
+    >>> trf25_to_pgn('40/6000+30:900+30')
+    '40/6000+30:900+30'
+    >>> trf25_to_pgn('W300-B240') is None
+    True
+    """
+    try:
+        time_control = parse_time_control_trf25(s)
+    except ValueError:
+        return None
+    if time_control.black is not None or not time_control.white:
+        return None
+    return ':'.join(
+        (f'{period.moves}/' if period.moves is not None else '')
+        + str(period.seconds)
+        + (f'+{period.increment}' if period.increment else '')
+        for period in time_control.white
+    )

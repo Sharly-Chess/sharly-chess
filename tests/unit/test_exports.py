@@ -1,3 +1,5 @@
+import io
+import re
 import xml.etree.ElementTree as ET
 from datetime import date
 from sqlite3 import IntegrityError
@@ -7,6 +9,10 @@ from unittest.mock import PropertyMock, patch
 import pytest
 
 from data.event import Event
+from data.input_output.tournament_exporters import (
+    PgnAllRoundsTournamentExporter,
+    PgnTournamentExporter,
+)
 from data.loader import EventLoader
 from data.tie_breaks import TieBreakManager, TieBreak
 from data.tie_breaks.tie_breaks import (
@@ -23,7 +29,8 @@ from plugins.chess_results.utils import CRUtils
 from plugins.ffe.ffe_tie_breaks import PapiPerformanceTieBreak
 from plugins.ffe.papi_converter import PapiConverter
 from tests.test_config import TestUtils
-from utils.enum import RoleType
+from utils.enum import Result, RoleType
+from utils.time_control import trf25_to_pgn
 
 
 EVENT_ID = 'test-tournament-exporters-event'
@@ -354,3 +361,88 @@ class TournamentExporterTestCase(TestCase):
             [WinsTieBreak(), PointsTieBreak()]
         )
         self.assertIsNotNone(warning)
+
+    # -------------------------------------------------------------------------
+    # PGN
+    # -------------------------------------------------------------------------
+
+    def _pgn_games(self, exporter: PgnTournamentExporter) -> list[str]:
+        file = io.StringIO()
+        exporter.dump_to_file(file, self.tournament)
+        return [
+            game.strip()
+            for game in re.split(r'^(?=\[Event )', file.getvalue(), flags=re.MULTILINE)
+            if game.strip()
+        ]
+
+    def test_pgn_all_rounds_exports_every_game_with_its_result(self):
+        games = self._pgn_games(PgnAllRoundsTournamentExporter())
+        expected_games = sum(
+            1
+            for round_ in range(1, self.tournament.last_paired_round + 1)
+            for board in self.tournament.get_round_boards(round_)
+            if board.optional_white_tournament_player and board.black_tournament_player
+        )
+        self.assertEqual(len(games), expected_games)
+        rounds = set()
+        for game in games:
+            headers, movetext = game.split('\n\n')
+            tags = re.findall(r'^\[(\w+) "(.*)"\]$', headers, re.MULTILINE)
+            self.assertEqual(
+                [name for name, _value in tags[:7]],
+                ['Event', 'Site', 'Date', 'Round', 'White', 'Black', 'Result'],
+            )
+            result = dict(tags)['Result']
+            self.assertNotEqual(result, '*')
+            self.assertTrue(movetext.strip().endswith(result))
+            rounds.add(dict(tags)['Round'].split('.')[0])
+        self.assertEqual(len(rounds), self.tournament.last_paired_round)
+
+    def test_pgn_last_round_exports_the_current_round_only(self):
+        current_round = str(self.tournament.current_round)
+        for game in self._pgn_games(PgnTournamentExporter()):
+            round_ = re.search(r'^\[Round "(\d+)\.\d+"\]$', game, re.MULTILINE)
+            assert round_ is not None
+            self.assertEqual(round_.group(1), current_round)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('result', list(Result))
+def test_pgn_result_has_a_tag_value(result: Result):
+    assert result.to_pgn in ('1-0', '0-1', '1/2-1/2', '*')
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'result, pgn, termination',
+    [
+        (Result.FORFEIT_WIN, '1-0', 'abandoned'),
+        (Result.FORFEIT_LOSS, '0-1', 'abandoned'),
+        (Result.DOUBLE_FORFEIT, '*', 'abandoned'),
+        (Result.PENALTY_DL, '*', 'rules infraction'),
+        (Result.ADJOURNED, '*', 'unterminated'),
+        (Result.NO_RESULT, '*', None),
+    ],
+)
+def test_pgn_result_without_a_played_outcome_is_explained(
+    result: Result, pgn: str, termination: str | None
+):
+    assert result.to_pgn == pgn
+    assert result.pgn_termination == termination
+    assert (result.pgn_comment is None) == (termination is None)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'trf25, pgn',
+    [
+        ('5400+30', '5400+30'),
+        ('40/6000+30:900+30', '40/6000+30:900+30'),
+        ('300', '300'),
+        ('W300-B240', None),
+        ('', None),
+        ('abc', None),
+    ],
+)
+def test_pgn_time_control(trf25: str, pgn: str | None):
+    assert trf25_to_pgn(trf25) == pgn

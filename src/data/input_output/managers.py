@@ -106,6 +106,7 @@ class TournamentExporterManager(EventBoundEntityManager[TournamentExporter]):
         exporters: list[type[TournamentExporter]] = [
             tournament_exporters.Trf26TournamentExporter,
             tournament_exporters.PgnTournamentExporter,
+            tournament_exporters.PgnAllRoundsTournamentExporter,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tournament_exporters')(
             exporters=exporters
