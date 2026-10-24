@@ -1,5 +1,4 @@
 import re
-import shutil
 import tempfile
 from contextlib import ExitStack
 from functools import partial
@@ -440,7 +439,7 @@ class FFESession(Session):
             # Copy the event database to the tmp file
             database = EventDatabase(event_uniq_id)
             logger.debug('Copying [%s] to [%s]...', database.file, tmp_sce_file)
-            shutil.copy(database.file, tmp_sce_file)
+            database.copy_to(tmp_sce_file)
 
             # Prepare for upload
             with EventDatabase(

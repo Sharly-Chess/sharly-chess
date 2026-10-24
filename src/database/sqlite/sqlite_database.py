@@ -45,6 +45,22 @@ class SQLiteDatabase:
         self.file.unlink(missing_ok=True)
         return None
 
+    def copy_to(self, destination: Path) -> None:
+        """Copies the database as one consistent snapshot, which a copy of the
+        file does not ensure: a write committed while the file is copied would
+        leave the copy half old and half new."""
+        source = connect(f'{self.file.resolve().as_uri()}?mode=ro', uri=True)
+        try:
+            source.execute('PRAGMA busy_timeout=5000')
+            destination.unlink(missing_ok=True)
+            target = connect(destination)
+            try:
+                source.backup(target)
+            finally:
+                target.close()
+        finally:
+            source.close()
+
     def _create(self, script: str | None = None) -> None:
         database: Connection | None = None
         try:
@@ -88,10 +104,12 @@ class SQLiteDatabase:
             # expected, handled case surfaced by the callers, so it is kept at
             # debug level to avoid flooding the logs.
             logger.debug(
-                'Failed to open database %s (write=%s): %s',
+                'Failed to open database %s (write=%s): %s [%s]%s',
                 self.file,
                 self.write,
                 e,
+                getattr(e, 'sqlite_errorname', None),
+                self._system_access_error(),
             )
             raise
         except Exception as e:
@@ -102,6 +120,22 @@ class SQLiteDatabase:
                 e,
             )
             raise
+
+    def _system_access_error(self) -> str:
+        """Why the system refuses the file, which SQLite does not tell: on
+        Windows, the error code tells a file used by another program (32) from
+        an access denied (5) or a file blocked by an antivirus (225)."""
+        try:
+            with open(self.file, 'r+b' if self.write else 'rb') as file:
+                file.read(1)
+        except OSError as error:
+            winerror = getattr(error, 'winerror', None)
+            return (
+                f', system error: {error.strerror} (errno {error.errno}'
+                + (f', winerror {winerror}' if winerror else '')
+                + ')'
+            )
+        return ''
 
     def __exit__(self, exc_type: Any, exc_value: Any, tb: Any) -> None:
         try:

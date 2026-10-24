@@ -16,6 +16,7 @@ import logging
 import os
 import queue
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -41,6 +42,7 @@ from common import (
     LOG_DIR,
     FLATPAK_ID,
     DATA_DIR,
+    DATA_DIR_MIGRATION,
     DEVEL_ENV,
     MANUAL_PATH_USED,
 )
@@ -55,6 +57,13 @@ from gui.gui_logger import GUILogHandler
 from gui.selection_popup import limit_popup_height
 from gui.web_view_background import show_window_through
 from utils import Utils
+from utils.data_dir_migration import (
+    DataDirMigration,
+    DataDirMoveState,
+    forget_moved_data_dir,
+    is_in_onedrive,
+    is_left_by_a_move,
+)
 from utils.program_variables import ProgramVar
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
@@ -405,6 +414,7 @@ class SharlyChessServerToga(toga.App):
         self.launch_browser_switch: toga.Switch | None = None
         self.data_path_input: TextInput | None = None
         self.data_path_move_button: toga.Button | None = None
+        self.moved_data_dir_box: toga.Box | None = None
         self.locale_select: toga.Selection | None = None
         self.date_formatter_select: toga.Selection | None = None
         self.name_formatter_select: toga.Selection | None = None
@@ -707,6 +717,38 @@ class SharlyChessServerToga(toga.App):
                 _('Move'), on_press=self._handle_data_path_selection
             )
             data_path_buttons.append(self.data_path_move_button)
+            if DATA_DIR_MIGRATION and DATA_DIR_MIGRATION.can_be_requested():
+                data_path_buttons.append(
+                    toga.Button(
+                        _('Move to the recommended folder'),
+                        on_press=self._request_data_dir_move,
+                    )
+                )
+        moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
+        if (
+            moved_data_dir
+            and moved_data_dir.is_dir()
+            and is_left_by_a_move(moved_data_dir)
+        ):
+            self.moved_data_dir_box = toga.Box(
+                direction=COLUMN,
+                gap=5,
+                children=[
+                    toga.Label(
+                        _('Previous data folder, kept as a copy: {folder}').format(
+                            folder=moved_data_dir
+                        )
+                    ),
+                    toga.Box(
+                        direction=ROW,
+                        children=[
+                            toga.Button(
+                                _('Delete'), on_press=self._delete_moved_data_dir
+                            )
+                        ],
+                    ),
+                ],
+            )
         title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         general_children: list[toga.Widget] = [
             self._settings_row(_('Language:'), self._build_locale_select()),
@@ -738,6 +780,8 @@ class SharlyChessServerToga(toga.App):
                 gap=10,
             ),
         )
+        if self.moved_data_dir_box:
+            self.settings_view.add(self.moved_data_dir_box)
 
         # About view
         self.about_view = toga.Box(style=self.compact_view_style, gap=7)
@@ -1170,12 +1214,16 @@ class SharlyChessServerToga(toga.App):
             error_dialog = toga.ErrorDialog(_('Invalid folder'), error)
             await self.main_window.dialog(error_dialog)
             return
-        confirm_dialog = toga.ConfirmDialog(
-            _('Data folder'),
-            _('Confirm the new data folder "{folder}"?').format(folder=new_data_dir)
-            + '\n'
-            + _('Restarting will be required to complete the move.'),
+        message = _('Confirm the new data folder "{folder}"?').format(
+            folder=new_data_dir
         )
+        if is_in_onedrive(new_data_dir):
+            message += '\n\n' + _(
+                'This folder is synchronised by OneDrive, which can block the '
+                'events while Sharly Chess writes to them.'
+            )
+        message += '\n' + _('Restarting will be required to complete the move.')
+        confirm_dialog = toga.ConfirmDialog(_('Data folder'), message)
         if not await self.main_window.dialog(confirm_dialog):
             return
         ProgramVar.write_variables(
@@ -1184,13 +1232,19 @@ class SharlyChessServerToga(toga.App):
                 ProgramVar.PREVIOUS_DATA_DIR: str(DATA_DIR),
             }
         )
+        self._show_restart_to_complete_move()
+        if sys.platform == 'win32':
+            await self._ask_windows_defender_exception(new_data_dir)
 
+    def _show_restart_to_complete_move(self) -> None:
         assert self.settings_view is not None
         assert self.data_path_input is not None
-        assert self.data_path_move_button is not None
         self.data_path_input.enabled = False
-        self.data_path_move_button.enabled = False
-        self.settings_view.index(self.data_path_input)
+        data_path_buttons = self.settings_view.children[
+            self.settings_view.index(self.data_path_input) + 1
+        ]
+        for button in data_path_buttons.children[1:]:
+            button.enabled = False
         self.settings_view.insert(
             self.settings_view.index(self.data_path_input) + 2,
             toga.Label(
@@ -1200,8 +1254,97 @@ class SharlyChessServerToga(toga.App):
                 text_align='center',
             ),
         )
-        if sys.platform == 'win32':
-            await self._ask_windows_defender_exception(new_data_dir)
+
+    async def _request_data_dir_move(self, widget: Any) -> None:
+        assert isinstance(self.main_window, toga.Window)
+        assert DATA_DIR_MIGRATION is not None
+        confirm_dialog = toga.ConfirmDialog(
+            _('Data folder'),
+            _('Move the data to "{folder}"?').format(
+                folder=DATA_DIR_MIGRATION.target_dir
+            )
+            + '\n'
+            + _('The current folder will be kept as a copy.')
+            + '\n'
+            + _('Restarting will be required to complete the move.'),
+        )
+        if not await self.main_window.dialog(confirm_dialog):
+            return
+        DataDirMigration.request()
+        self._show_restart_to_complete_move()
+
+    async def _delete_moved_data_dir(self, widget: Any) -> None:
+        assert isinstance(self.main_window, toga.Window)
+        moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
+        if not moved_data_dir:
+            return
+        question_dialog = toga.QuestionDialog(
+            _('Data folder'),
+            _('Delete the previous data folder "{folder}"?').format(
+                folder=moved_data_dir
+            )
+            + '\n'
+            + _('Sharly Chess no longer uses it, your data is in the current folder.'),
+        )
+        if not await self.main_window.dialog(question_dialog):
+            return
+        await asyncio.to_thread(shutil.rmtree, moved_data_dir, ignore_errors=True)
+        if moved_data_dir.exists():
+            await self.main_window.dialog(
+                toga.ErrorDialog(
+                    _('Data folder'),
+                    _('The folder "{folder}" could not be deleted entirely.').format(
+                        folder=moved_data_dir
+                    ),
+                )
+            )
+            return
+        forget_moved_data_dir()
+        assert self.settings_view is not None
+        if self.moved_data_dir_box:
+            self.settings_view.remove(self.moved_data_dir_box)
+            self.moved_data_dir_box = None
+
+    async def _show_data_dir_move_dialogs(self) -> None:
+        """Tells the user their data has moved, or asks them whether to move
+        a folder they chose in OneDrive."""
+        migration = DATA_DIR_MIGRATION
+        if migration is None:
+            return
+        assert isinstance(self.main_window, toga.Window)
+        title = self._dialog_title(_('Data folder'))
+        if migration.state() == DataDirMoveState.MOVED:
+            message = _(
+                'Your data has been moved to "{folder}", where OneDrive does not '
+                'synchronise it and antivirus protections do not block it.'
+            ).format(folder=DATA_DIR)
+            moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
+            if moved_data_dir and moved_data_dir != migration.data_dir:
+                message += '\n\n' + _(
+                    'The previous folder is kept as a copy at "{folder}", and will '
+                    'be deleted two versions from now. You can delete it sooner '
+                    'from the settings.'
+                ).format(folder=moved_data_dir)
+            await self.main_window.dialog(toga.InfoDialog(title, message))
+            DataDirMigration.notice_shown()
+        elif migration.should_ask():
+            message = _(
+                'Your data folder "{folder}" is synchronised by OneDrive, which can '
+                'block the events while Sharly Chess writes to them.'
+            ).format(folder=DATA_DIR)
+            message += '\n\n' + _(
+                'Do you want to move the data to "{folder}"? The current folder '
+                'will be kept as a copy.'
+            ).format(folder=migration.target_dir)
+            if await self.main_window.dialog(toga.QuestionDialog(title, message)):
+                DataDirMigration.request()
+                await self.main_window.dialog(
+                    toga.InfoDialog(
+                        title, _('Restart Sharly Chess to complete the move.')
+                    )
+                )
+            else:
+                DataDirMigration.decline()
 
     async def _ask_windows_defender_exception(self, new_data_dir: Path) -> None:
         assert isinstance(self.main_window, toga.Window)
@@ -1443,6 +1586,7 @@ class SharlyChessServerToga(toga.App):
         )
         if not self.server_running:
             self._on_start_server(None)
+        self._spawn_task(self._show_data_dir_move_dialogs())
 
     def make_link_button(self, url: str) -> toga.Label:
         button = toga.Button(url, style=Pack(align_items='center', margin_top=5))

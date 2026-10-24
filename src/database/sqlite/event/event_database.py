@@ -1,4 +1,3 @@
-import shutil
 from collections import defaultdict
 from datetime import datetime
 from collections.abc import Iterator
@@ -227,7 +226,7 @@ class EventDatabase(MigrationDatabase):
         """Create a copy of the event database file corresponding to an event
         with name `new_uniq_id`."""
 
-        shutil.copy(self.file, EventDatabase(new_uniq_id).file)
+        self.copy_to(EventDatabase(new_uniq_id).file)
 
     def create_backup(self) -> 'EventBackup':
         """Creates a backup of the event database.
@@ -236,7 +235,7 @@ class EventDatabase(MigrationDatabase):
 
         backup = EventBackup(self.uniq_id, self.get_version())
         backup.file.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(self.file, backup.file)
+        self.copy_to(backup.file)
         return backup
 
     # ---------------------------------------------------------------------------------
