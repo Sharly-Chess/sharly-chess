@@ -36,6 +36,8 @@ dependencies = [
   "jinja2 ~= 3.1.6",
   "litestar ~= 2.24.0",
   "markdown-it-py ~= 4.2.0",
+  # Pulled in by litestar, whose Headers class fails on every request with 7.2.
+  "multidict ~= 7.1.0",
   "packaging ~= 26.2",
   "paramiko >= 5.0.0",
   "pathvalidate ~= 3.3.1",

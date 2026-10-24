@@ -3574,6 +3574,9 @@ msgstr "Saisir le résultat"
 msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr "Saisir %(result)s porte atteinte à l'intégrité des appariements. Ce sera consigné, et enregistré dans le TRF du tournoi."
 
+msgid "Entry"
+msgstr "Saisie"
+
 msgid "Equatorial Guinea"
 msgstr "Guinée équatoriale"
 
@@ -4343,9 +4346,6 @@ msgstr "La plus haute de FIDE et nationale"
 msgctxt "rating sequence"
 msgid "Highest of FIDE and national: {sequence}"
 msgstr "Le plus élevé du FIDE et du national : {sequence}"
-
-msgid "Highlight"
-msgstr "Surbrillance"
 
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
@@ -7981,9 +7981,6 @@ msgstr "Type de classement"
 msgid "Rating types"
 msgstr "Types de classement"
 
-msgid "Rating used:"
-msgstr "Classement utilisé :"
-
 msgid "Ratings"
 msgstr "Classements"
 
@@ -10865,6 +10862,9 @@ msgstr "Heure"
 msgid "Time control"
 msgstr "Cadence"
 
+msgid "Time control:"
+msgstr "Cadence :"
+
 #, python-brace-format
 msgid "Time outside of event time range ({range})."
 msgstr "Horaire en dehors des horaires de l'évènement ({range})."
@@ -11641,6 +11641,9 @@ msgstr "Verdict"
 
 msgid "Verdict:"
 msgstr "Verdict :"
+
+msgid "Verify"
+msgstr "Contrôle"
 
 msgid "Vietnam"
 msgstr "Vietnam"

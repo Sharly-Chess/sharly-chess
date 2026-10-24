@@ -3574,6 +3574,9 @@ msgstr ""
 msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr ""
 
+msgid "Entry"
+msgstr ""
+
 msgid "Equatorial Guinea"
 msgstr ""
 
@@ -4342,9 +4345,6 @@ msgstr ""
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "Highest of FIDE and national: {sequence}"
-msgstr ""
-
-msgid "Highlight"
 msgstr ""
 
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
@@ -7979,9 +7979,6 @@ msgstr ""
 msgid "Rating types"
 msgstr ""
 
-msgid "Rating used:"
-msgstr ""
-
 msgid "Ratings"
 msgstr ""
 
@@ -10863,6 +10860,9 @@ msgstr ""
 msgid "Time control"
 msgstr ""
 
+msgid "Time control:"
+msgstr ""
+
 #, python-brace-format
 msgid "Time outside of event time range ({range})."
 msgstr ""
@@ -11638,6 +11638,9 @@ msgid "Verdict"
 msgstr ""
 
 msgid "Verdict:"
+msgstr ""
+
+msgid "Verify"
 msgstr ""
 
 msgid "Vietnam"

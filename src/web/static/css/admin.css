@@ -910,9 +910,14 @@
     border-radius: 20rem !important;
 }
 
-/* Match labels can wrap, and trimming each check to its cap height would
-   stack their lines onto the next match. */
+/* These labels can wrap, and trimming each check to its cap height would
+   stack their lines onto the next element. */
 .match-sheet-list .form-check,
-.match-sheet-list .form-check-label {
+.match-sheet-list .form-check-label,
+.wrapping-form-check .form-check {
     text-box-trim: none;
+}
+
+.wrapping-form-check .switch-placeholder {
+    line-height: 1.25;
 }
