@@ -42,6 +42,11 @@ class DisplayController:
         return self.stored_display_controller.public
 
     @property
+    def remote(self) -> bool:
+        """Whether this may be reached from outside the venue."""
+        return self.stored_display_controller.remote
+
+    @property
     def name(self) -> str:
         return self.stored_display_controller.name
 
