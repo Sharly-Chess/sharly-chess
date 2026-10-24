@@ -107,7 +107,7 @@ tests = [
   "pytest-xdist",
   # Gacrux, an independent pairing and tie-break checker, runs over
   # the TRF exports in `tests/gacrux` and in the FIDE cross-check.
-  "gacrux == 1.10.64",
+  "gacrux == 1.11.65",
   # Names for the tournaments the generator invents, which is a
   # development tool: a build has no Faker and falls back to numbering the
   # players.
