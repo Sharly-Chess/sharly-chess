@@ -1923,7 +1923,7 @@ msgid "Championships"
 msgstr "Grands Prix"
 
 msgid "Change the games already played? Only do so to set them as they were really played, players having sat at the wrong boards."
-msgstr "Modifier les parties déjà jouées ? À ne faire que pour les rétablir telles qu'elles ont réellement été jouées, des joueur·euses s'étant trompé·es d'échiquier."
+msgstr "Modifier les parties déjà jouées ? À ne faire que pour les rétablir telles qu'elles ont réellement été jouées, des joueur·euses s'étant trompé·es d'échiquier."
 
 msgid "Change the number of rounds"
 msgstr "Modifier le nombre de rondes"
@@ -2733,10 +2733,10 @@ msgid "Define tournament groups among which players are distributed one at a tim
 msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
 msgid "Define who meets whom in every round; each round is then paired from the schedule."
-msgstr "Définir qui rencontre qui à chaque ronde ; chaque ronde est ensuite appariée d'après le calendrier."
+msgstr "Définir qui rencontre qui à chaque ronde ; chaque ronde est ensuite appariée d'après le calendrier."
 
 msgid "Define who meets whom in every round; the rounds are paired from the schedule when it is saved."
-msgstr "Définir qui rencontre qui à chaque ronde ; les rondes sont appariées d'après le calendrier lors de son enregistrement."
+msgstr "Définir qui rencontre qui à chaque ronde ; les rondes sont appariées d'après le calendrier lors de son enregistrement."
 
 msgid "Defines how team colour preferences are calculated. Type A uses simple White/Black preferences, while Type B distinguishes between strong and mild preferences based on colour history and colour difference."
 msgstr "Définit comment les préférences de couleur des équipes sont calculées. Le type A utilise des préférences Blancs/Noirs simples ; le type B distingue les préférences fortes et faibles en fonction de l'historique des couleurs et de la différence de couleur."
@@ -3689,7 +3689,7 @@ msgid "Every player of the event will be deleted before importing the ones from 
 msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi. Les équipes que le fichier laisse vides sont également supprimées."
 
 msgid "Every round is paired: unpair a round to change its matches."
-msgstr "Toutes les rondes sont appariées : désappariez une ronde pour changer ses matchs."
+msgstr "Toutes les rondes sont appariées : désappariez une ronde pour changer ses matchs."
 
 msgid "Every seat whose game has not been played will be emptied."
 msgstr "Toutes les places dont la partie n'a pas été jouée seront libérées."
@@ -4182,7 +4182,7 @@ msgid "Game points must satisfy loss ≤ draw ≤ win."
 msgstr "Les points de parties doivent satisfaire défaite ≤ nulle ≤ victoire."
 
 msgid "Games have already been played: the schedule cannot be filled from the Berger tables."
-msgstr "Des parties ont déjà été jouées : le calendrier ne peut pas être rempli avec les tables de Berger."
+msgstr "Des parties ont déjà été jouées : le calendrier ne peut pas être rempli avec les tables de Berger."
 
 msgid "Games played with black"
 msgstr "Nombre de parties jouées avec les Noirs"
@@ -10031,7 +10031,7 @@ msgstr "Le départage manuel a été réinitialisé."
 
 #, python-format
 msgid "The matches of the rounds already paired (%(rounds)s) cannot change: unpair a round to change its matches."
-msgstr "Les matchs des rondes déjà appariées (%(rounds)s) ne peuvent pas changer : désappariez une ronde pour changer ses matchs."
+msgstr "Les matchs des rondes déjà appariées (%(rounds)s) ne peuvent pas changer : désappariez une ronde pour changer ses matchs."
 
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
@@ -10249,7 +10249,7 @@ msgid "The pairings of this round are being edited. Validate or cancel the editi
 msgstr "Les appariements de cette ronde sont en cours de modification. Validez ou annulez la modification pour sortir de ce mode."
 
 msgid "The participants have changed since the schedule was saved: it has to be edited."
-msgstr "Les participant·es ont changé depuis l'enregistrement du calendrier : il doit être modifié."
+msgstr "Les participant·es ont changé depuis l'enregistrement du calendrier : il doit être modifié."
 
 msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
 msgstr "Le pourcentage de la valeur Keizer actuelle d'un·e joueur·euse attribué pour une absence excusée ou un bye demandé (0 = rien, 100 = la valeur entière)."
@@ -10374,8 +10374,12 @@ msgid "The result of this match is not taken into account for the final standing
 msgstr "Le résultat de ce match n'est pas pris en compte pour le classement final car au moins une des équipes n'a pas disputé 50%% des matchs (FIDE 6.6)."
 
 #, python-brace-format
-msgid "The results of games changed in round(s) {rounds} could not be kept: enter them again."
-msgstr "Les résultats des parties modifiées à la ou aux rondes {rounds} n'ont pas pu être conservés : saisissez-les à nouveau."
+msgid "The results of games changed in round {round} could not be kept: enter them again."
+msgstr "Les résultats des parties modifiées à la ronde {round} n'ont pas pu être conservés : saisissez-les à nouveau."
+
+#, python-brace-format
+msgid "The results of games changed in rounds {rounds} could not be kept: enter them again."
+msgstr "Les résultats des parties modifiées à la ou aux rondes {rounds} n'ont pas pu être conservés : saisissez-les à nouveau."
 
 msgid "The roster cap cannot be smaller than the team-match size."
 msgstr "Le plafond de l'effectif ne peut être plus petit que la taille de l'équipe en match."
@@ -10417,7 +10421,7 @@ msgid "The schedule breaks the round-robin rules."
 msgstr "Le calendrier enfreint les règles du toutes-rondes."
 
 msgid "The schedule breaks the round-robin rules. Save it anyway? The rules it breaks are listed in the log and in the TRF until they are kept."
-msgstr "Le calendrier enfreint les règles du toutes-rondes. L'enregistrer malgré tout ? Les règles enfreintes sont listées dans le journal et dans le TRF tant qu'elles ne sont pas respectées."
+msgstr "Le calendrier enfreint les règles du toutes-rondes. L'enregistrer malgré tout ? Les règles enfreintes sont listées dans le journal et dans le TRF tant qu'elles ne sont pas respectées."
 
 #, python-brace-format
 msgid "The schedule changes games already played in round {round}."
@@ -10431,7 +10435,7 @@ msgid "The schedule has been saved."
 msgstr "Le calendrier a été enregistré."
 
 msgid "The schedule has been saved. It no longer follows the Berger tables: the tournament now uses a custom schedule."
-msgstr "Le calendrier a été enregistré. Il ne suit plus les tables de Berger : le tournoi utilise désormais un calendrier personnalisé."
+msgstr "Le calendrier a été enregistré. Il ne suit plus les tables de Berger : le tournoi utilise désormais un calendrier personnalisé."
 
 msgid "The schedule is not being edited."
 msgstr "Le calendrier n'est pas en cours de modification."
@@ -10443,10 +10447,10 @@ msgid "The schedule of the tournament has not been defined."
 msgstr "Le calendrier du tournoi n'a pas été défini."
 
 msgid "The schedule of the tournament is being edited. Save it to pair every round from it."
-msgstr "Le calendrier du tournoi est en cours de modification. Enregistrez-le pour apparier toutes les rondes d'après lui."
+msgstr "Le calendrier du tournoi est en cours de modification. Enregistrez pour apparier toutes les rondes d'après ce nouveau calendrier."
 
 msgid "The schedule of the tournament is being edited. Save it to pair the matches of each round from it."
-msgstr "Le calendrier du tournoi est en cours de modification. Enregistrez-le pour apparier les matchs de chaque ronde d'après lui."
+msgstr "Le calendrier du tournoi est en cours de modification. Enregistrez pour apparier les matchs de chaque ronde d'après ce nouveau calendrier."
 
 #, python-format
 msgid "The schedule was configured with %(scheduled)d round(s), but this pairing system will play %(calculated)d."
@@ -11026,7 +11030,7 @@ msgid "Time control"
 msgstr "Cadence"
 
 msgid "Time control:"
-msgstr "Cadence :"
+msgstr "Cadence :"
 
 #, python-brace-format
 msgid "Time outside of event time range ({range})."
@@ -13029,10 +13033,6 @@ msgstr[0] "{count} catégorie de prix générée."
 msgstr[1] "{count} catégories de prix générées."
 
 #, python-brace-format
-msgid "{count} seat(s) are not filled."
-msgstr "{count} place(s) non attribuée(s)."
-
-#, python-brace-format
 msgid "{date_format} HH:MM"
 msgstr "{date_format} HH:MM"
 
@@ -13080,6 +13080,12 @@ msgstr "{name} (copie)"
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
 msgstr "{n} joueur·euses par équipe non pris en charge (les tables FFE couvrent {sizes} ; les effectifs plus grands que le maximum peuvent être réparties en blocs)."
+
+#, python-brace-format
+msgid "{n} seat is not filled."
+msgid_plural "{n} seat(s) are not filled."
+msgstr[0] "{n} place(s) n'est pas attribuée."
+msgstr[1] "{n} place(s) ne sont pas attribuée(s)."
 
 #, python-brace-format
 msgid "{opponent}, with Black"

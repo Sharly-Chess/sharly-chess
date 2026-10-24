@@ -10372,7 +10372,11 @@ msgid "The result of this match is not taken into account for the final standing
 msgstr ""
 
 #, python-brace-format
-msgid "The results of games changed in round(s) {rounds} could not be kept: enter them again."
+msgid "The results of games changed in round {round} could not be kept: enter them again."
+msgstr ""
+
+#, python-brace-format
+msgid "The results of games changed in rounds {rounds} could not be kept: enter them again."
 msgstr ""
 
 msgid "The roster cap cannot be smaller than the team-match size."
@@ -13027,10 +13031,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
-msgid "{count} seat(s) are not filled."
-msgstr ""
-
-#, python-brace-format
 msgid "{date_format} HH:MM"
 msgstr ""
 
@@ -13078,6 +13078,12 @@ msgstr ""
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
 msgstr ""
+
+#, python-brace-format
+msgid "{n} seat is not filled."
+msgid_plural "{n} seat(s) are not filled."
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-brace-format
 msgid "{opponent}, with Black"

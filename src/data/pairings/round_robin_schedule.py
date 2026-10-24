@@ -9,7 +9,7 @@ from enum import StrEnum
 from itertools import combinations
 from typing import TYPE_CHECKING, Any, Self
 
-from common.i18n import _
+from common.i18n import _, ngettext
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -443,7 +443,11 @@ def _seating_violations(
             violations.append(
                 ScheduleViolation(
                     round_,
-                    _('{count} seat(s) are not filled.').format(count=empty_seats),
+                    ngettext(
+                        '{n} seat is not filled.',
+                        '{n} seat(s) are not filled.',
+                        empty_seats,
+                    ).format(n=empty_seats),
                 )
             )
         counts = Counter(member for member in seated if member is not None)

@@ -2950,11 +2950,19 @@ class PairingsAdminController(BaseEventAdminController):
                 )
             else:
                 Message.success(request, _('The schedule has been saved.'))
-            if editor.results_to_enter:
+            if len(editor.results_to_enter) == 1:
                 Message.warning(
                     request,
                     _(
-                        'The results of games changed in round(s) {rounds} could '
+                        'The results of games changed in round {round} could '
+                        'not be kept: enter them again.'
+                    ).format(round=str(editor.results_to_enter[0])),
+                )
+            elif len(editor.results_to_enter) > 1:
+                Message.warning(
+                    request,
+                    _(
+                        'The results of games changed in rounds {rounds} could '
                         'not be kept: enter them again.'
                     ).format(rounds=', '.join(map(str, editor.results_to_enter))),
                 )
