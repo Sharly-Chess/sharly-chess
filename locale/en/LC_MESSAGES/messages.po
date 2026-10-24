@@ -3748,7 +3748,10 @@ msgstr ""
 msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
 msgstr ""
 
-msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgid "Export all the games of all the paired rounds of the tournament to the PGN format, with their results (usage: pairings transfer, game entry for publication)."
+msgstr ""
+
+msgid "Export all the games of the last round of the tournament to the PGN format, with their results (usage: pairings transfer)."
 msgstr ""
 
 msgid "Export event"
@@ -6842,7 +6845,10 @@ msgstr ""
 msgid "PASS"
 msgstr ""
 
-msgid "PGN"
+msgid "PGN (all rounds)"
+msgstr ""
+
+msgid "PGN (last round)"
 msgstr ""
 
 msgid "PLAYER'S NAME"

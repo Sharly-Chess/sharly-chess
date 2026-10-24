@@ -359,16 +359,15 @@ class Result(IntEnum):
     @property
     def to_pgn(self) -> str:
         match self:
-            case Result.WIN | Result.UNRATED_WIN:
+            case Result.WIN | Result.UNRATED_WIN | Result.FORFEIT_WIN:
                 return '1-0'
-            case Result.LOSS | Result.UNRATED_LOSS:
+            case Result.LOSS | Result.UNRATED_LOSS | Result.FORFEIT_LOSS:
                 return '0-1'
             case Result.DRAW | Result.UNRATED_DRAW:
                 return '1/2-1/2'
             case (
                 Result.NO_RESULT
-                | Result.FORFEIT_WIN
-                | Result.FORFEIT_LOSS
+                | Result.DOUBLE_FORFEIT
                 | Result.FULL_POINT_BYE
                 | Result.HALF_POINT_BYE
                 | Result.ZERO_POINT_BYE
@@ -376,6 +375,8 @@ class Result(IntEnum):
                 | Result.REST_GAME
                 | Result.PENALTY_LL
                 | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
                 | Result.PENALTY_LD
                 | Result.UNRATED_PENALTY_LD
                 | Result.ADJOURNED
@@ -383,6 +384,58 @@ class Result(IntEnum):
                 return '*'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def pgn_termination(self) -> str | None:
+        """The PGN Termination tag value of a game with this result, or None
+        when the game has no result yet."""
+        match self:
+            case (
+                Result.WIN
+                | Result.UNRATED_WIN
+                | Result.LOSS
+                | Result.UNRATED_LOSS
+                | Result.DRAW
+                | Result.UNRATED_DRAW
+            ):
+                return 'normal'
+            case Result.FORFEIT_WIN | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+                return 'abandoned'
+            case (
+                Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
+            ):
+                return 'rules infraction'
+            case Result.ADJOURNED:
+                return 'unterminated'
+            case _:
+                return None
+
+    @property
+    def pgn_comment(self) -> str | None:
+        """The PGN movetext comment of a game with this result, for the
+        results that the Result tag cannot tell."""
+        match self:
+            case Result.FORFEIT_WIN:
+                return 'White wins by forfeit'
+            case Result.FORFEIT_LOSS:
+                return 'Black wins by forfeit'
+            case Result.DOUBLE_FORFEIT:
+                return 'Double forfeit'
+            case Result.PENALTY_LL | Result.UNRATED_PENALTY_LL:
+                return 'Penalty: 0-0'
+            case Result.PENALTY_DL | Result.UNRATED_PENALTY_DL:
+                return 'Penalty: 1/2-0'
+            case Result.PENALTY_LD | Result.UNRATED_PENALTY_LD:
+                return 'Penalty: 0-1/2'
+            case Result.ADJOURNED:
+                return 'Adjourned'
+            case _:
+                return None
 
     @property
     def bbp_field(self) -> str:
