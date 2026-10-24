@@ -4344,9 +4344,6 @@ msgctxt "rating sequence"
 msgid "Highest of FIDE and national: {sequence}"
 msgstr ""
 
-msgid "Highlight"
-msgstr ""
-
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
@@ -11638,6 +11635,9 @@ msgid "Verdict"
 msgstr ""
 
 msgid "Verdict:"
+msgstr ""
+
+msgid "Verify"
 msgstr ""
 
 msgid "Vietnam"

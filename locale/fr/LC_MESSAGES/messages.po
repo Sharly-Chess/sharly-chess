@@ -4344,9 +4344,6 @@ msgctxt "rating sequence"
 msgid "Highest of FIDE and national: {sequence}"
 msgstr "Le plus élevé du FIDE et du national : {sequence}"
 
-msgid "Highlight"
-msgstr "Surbrillance"
-
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
 
@@ -11641,6 +11638,9 @@ msgstr "Verdict"
 
 msgid "Verdict:"
 msgstr "Verdict :"
+
+msgid "Verify"
+msgstr "Contrôle"
 
 msgid "Vietnam"
 msgstr "Vietnam"
