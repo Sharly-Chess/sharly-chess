@@ -5,6 +5,7 @@
 - A name format setting (Last First / Last, First / First Last / First, Last), with an option to display last names in capitals, sets how players' names are displayed, whatever the language (5.2.0)
 - The update settings of the main application window have moved to a new About tab (5.2.0)
 - _FFE_ arbiter titles follow the 2026 reform (Young, Match, Club and Open Arbiter); the FIDE arbiter title (FA or IA) is filled in from the _FFE_ database, and existing accounts are converted following the transition rules of the DNA, the former Elite arbiters becoming FIDE or International Arbiters (5.2.0)
+- Events are backed up as they change, and a backup can be restored over an event or beside it (5.2.0)
 
 ## Tournaments
 
