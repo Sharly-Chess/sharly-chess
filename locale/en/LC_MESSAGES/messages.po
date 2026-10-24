@@ -7979,9 +7979,6 @@ msgstr ""
 msgid "Rating types"
 msgstr ""
 
-msgid "Rating used:"
-msgstr ""
-
 msgid "Ratings"
 msgstr ""
 
@@ -10861,6 +10858,9 @@ msgid "Time"
 msgstr ""
 
 msgid "Time control"
+msgstr ""
+
+msgid "Time control:"
 msgstr ""
 
 #, python-brace-format

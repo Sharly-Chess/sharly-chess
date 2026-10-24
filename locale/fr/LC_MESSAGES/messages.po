@@ -7981,9 +7981,6 @@ msgstr "Type de classement"
 msgid "Rating types"
 msgstr "Types de classement"
 
-msgid "Rating used:"
-msgstr "Classement utilisé :"
-
 msgid "Ratings"
 msgstr "Classements"
 
@@ -10864,6 +10861,9 @@ msgstr "Heure"
 
 msgid "Time control"
 msgstr "Cadence"
+
+msgid "Time control:"
+msgstr "Cadence :"
 
 #, python-brace-format
 msgid "Time outside of event time range ({range})."
