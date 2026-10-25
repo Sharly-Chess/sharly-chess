@@ -5,6 +5,9 @@
 - A name format setting (Last First / Last, First / First Last / First, Last), with an option to display last names in capitals, sets how players' names are displayed, whatever the language (5.2.0)
 - The update settings of the main application window have moved to a new About tab (5.2.0)
 - _FFE_ arbiter titles follow the 2026 reform (Young, Match, Club and Open Arbiter); the FIDE arbiter title (FA or IA) is filled in from the _FFE_ database, and existing accounts are converted following the transition rules of the DNA, the former Elite arbiters becoming FIDE or International Arbiters (5.2.0)
+- Only one _Sharly Chess_ runs on a data folder: starting it again opens the running one in the browser instead of starting a second server on another port, which would write to the same events (5.2.0)
+- On Windows, the data is stored in the local application data (`%LOCALAPPDATA%\Sharly Chess`) instead of the Documents, which cloud services such as OneDrive can synchronise and so block the events while _Sharly Chess_ writes to them. The data of the former default folder is moved on the first start, the previous folder being kept as a copy for two versions; a folder chosen in OneDrive, Google Drive, Dropbox or iCloud Drive is moved if the user agrees (5.2.0)
+- The FFE upload, the event clone and the event backup copy the event in one consistent snapshot, even while results are being entered (5.2.0)
 
 ## Tournaments
 
