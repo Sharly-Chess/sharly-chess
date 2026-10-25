@@ -39,7 +39,7 @@ from plugins.sce.sce_data import (
     SCETournamentSyncData,
     SCEPlayerSyncData,
 )
-from plugins.sce.sce_session import SCESession
+from plugins.sce.sce_session import SCESession, SCEStaleRegistrationException
 from plugins.sce.sce_sync_status import SuccessSCESyncStatus
 from plugins.sce.utils import SCEUtils
 from web.controllers.admin.base_admin_controller import (
@@ -783,13 +783,20 @@ class SCEAdminController(BaseAdminController):
                 resolve_sync_data,
                 plugin_data.conflict_sync_data.tournament_id,
                 plugin_data.id,
+                plugin_data.conflict_updated_at,
             )
             session.update_local_player(player, resolve_sync_data)
             plugin_data.last_sync_data = resolve_sync_data
 
             plugin_data.conflict_sync_data = None
+            plugin_data.conflict_updated_at = None
             SCEUtils.update_player_plugin_data(
                 player, plugin_data, write_stored_object=True
+            )
+        except SCEStaleRegistrationException:
+            error_message = _(
+                'The player has just been changed on Sharly-Chess.com, '
+                'check the values again before choosing.'
             )
         except SharlyChessException as e:
             logger.exception(e)

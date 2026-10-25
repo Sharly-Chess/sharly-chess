@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from plugins.sce.sce_batch import SCEBatchBuilder
+from plugins.sce.sce_batch import SCEBatchBuilder, is_stale_result
 
 
 @pytest.mark.unit
@@ -130,3 +130,56 @@ class TestSCEBatchBuilder:
             ('err-1', results[1]),
             ('ok-2', results[2]),
         ]
+
+
+@pytest.mark.unit
+class TestExpectedUpdatedAt:
+    def test_update_and_delete_carry_expected_updated_at(self):
+        b = SCEBatchBuilder()
+        b.add_update(
+            registration_id='R1',
+            tournament_id='T1',
+            data={},
+            on_success=lambda r: None,
+            on_error=lambda r: None,
+            log_label='Smith',
+            expected_updated_at='2026-05-14T10:00:00.123Z',
+        )
+        b.add_delete(
+            registration_id='R2',
+            on_success=lambda r: None,
+            on_error=lambda r: None,
+            log_label='Doe',
+            expected_updated_at='2026-05-14T09:58:41.007Z',
+        )
+
+        assert [op.op_dict['expected_updated_at'] for op in b.pending] == [
+            '2026-05-14T10:00:00.123Z',
+            '2026-05-14T09:58:41.007Z',
+        ]
+
+    def test_ops_without_a_read_value_carry_none(self):
+        b = SCEBatchBuilder()
+        b.add_update(
+            registration_id='R1',
+            tournament_id='T1',
+            data={},
+            on_success=lambda r: None,
+            on_error=lambda r: None,
+            log_label='Smith',
+        )
+        b.add_delete(
+            registration_id='R2',
+            on_success=lambda r: None,
+            on_error=lambda r: None,
+            log_label='Doe',
+        )
+
+        assert all('expected_updated_at' not in op.op_dict for op in b.pending)
+
+    def test_is_stale_result(self):
+        assert is_stale_result(
+            {'status': 'error', 'error': {'code': 'precondition_failed'}}
+        )
+        assert not is_stale_result({'status': 'error', 'error': {'code': 'conflict'}})
+        assert not is_stale_result({'status': 'ok'})

@@ -829,6 +829,8 @@ class SCEPlayerPluginData(PluginData):
     removal_pending: bool = False
     last_sync_data: SCEPlayerSyncData | None = None
     conflict_sync_data: SCEPlayerSyncData | None = None
+    # `updated_at` of the registration read as conflict_sync_data
+    conflict_updated_at: str | None = None
     duplicated_registration_id: str | None = None
     _legacy_is_duplicated: bool = False
 
@@ -854,6 +856,7 @@ class SCEPlayerPluginData(PluginData):
                 if stored_conflict_sync_data
                 else None
             ),
+            conflict_updated_at=stored_value.get('conflict_updated_at'),
             duplicated_registration_id=stored_value.get('duplicated_registration_id'),
             _legacy_is_duplicated=stored_value.get('is_duplicated', False),
         )
@@ -871,6 +874,7 @@ class SCEPlayerPluginData(PluginData):
                 if self.conflict_sync_data
                 else None
             ),
+            'conflict_updated_at': self.conflict_updated_at,
             'duplicated_registration_id': self.duplicated_registration_id,
             'is_duplicated': self._legacy_is_duplicated,
         }

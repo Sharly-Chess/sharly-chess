@@ -38,6 +38,7 @@ import logging  # noqa: E402
 import requests  # noqa: E402
 
 from common.logger import set_logging_config  # noqa: E402
+from common.sharly_chess_config import SharlyChessConfig  # noqa: E402
 from data.event import Event  # noqa: E402
 from data.loader import EventLoader  # noqa: E402
 from data.player import TournamentPlayer  # noqa: E402
@@ -197,20 +198,55 @@ def cmd_state(args: Namespace) -> None:
     )
 
 
+def api_request(
+    session: SCESession, method: str, path: str, body: Any
+) -> requests.Response:
+    """A v1 API request on the session's event, made with its tokens."""
+    url = f'{SCE_BASE_URL}/api/v1/events/{session.sce_event_id}{path}'
+
+    def request() -> requests.Response:
+        return requests.request(
+            method, url, headers=session.api_headers, json=body, timeout=15
+        )
+
+    return session._run_with_token_validation(request, skip_validation=True)
+
+
 def cmd_sync(args: Namespace) -> None:
-    """Runs one synchronisation, as the background synchroniser does."""
+    """Runs one synchronisation, as the background synchroniser does.
+
+    ``--during METHOD PATH [JSON]`` makes that API request after the sync has
+    downloaded the event and before it sends its changes, as another computer
+    or the organiser would in the meantime. The resync the synchroniser asks
+    for is reported as ``resync_requested`` instead of being run.
+    """
     uniq_id = args.event or only_event_uniq_id()
     records: list[str] = []
+    send_batch = SCESession.send_batch
+    during_status: list[int] = []
+
+    def send_batch_after_change(session: SCESession, builder: Any) -> None:
+        if args.during and not during_status:
+            method, path, *body = args.during
+            response = api_request(
+                session, method, path, json.loads(body[0]) if body else None
+            )
+            during_status.append(response.status_code)
+        send_batch(session, builder)
 
     class Collect(logging.Handler):
         def emit(self, record: logging.LogRecord) -> None:
             records.append(record.getMessage())
 
+    # Loading the configuration resets the logging handlers
+    SharlyChessConfig().load_and_set_env()
     logger = logging.getLogger('sharly-chess')
     logger.addHandler(Collect(level=logging.DEBUG))
     logger.setLevel(logging.DEBUG)
     with (
         patch.object(sce_background_synchronizer, '_publish_upload_event'),
+        patch.object(sce_background_synchronizer, 'schedule_sync') as schedule_sync,
+        patch.object(SCESession, 'send_batch', send_batch_after_change),
         patch('plugins.sce.sce_background_synchronizer.time.sleep'),
     ):
         sce_background_synchronizer.sync_event(uniq_id)
@@ -219,6 +255,8 @@ def cmd_sync(args: Namespace) -> None:
         {
             'status': SCEUtils.get_event_plugin_data(event).last_sync_attempt_status,
             'log': [r for r in records if 'Sharly-Chess.com sync' in r or 'SCE' in r],
+            'resync_requested': schedule_sync.called,
+            'during_status': during_status[0] if during_status else None,
         }
     )
 
@@ -363,17 +401,9 @@ def cmd_expire_token(args: Namespace) -> None:
 
 def cmd_api(args: Namespace) -> None:
     """A v1 API request on the event, made with this installation's tokens."""
-    event = load(args.event)
-    session = SCESession(event)
-    url = f'{SCE_BASE_URL}/api/v1/events/{session.sce_event_id}{args.path}'
+    session = SCESession(load(args.event))
     body = json.loads(args.json) if args.json else None
-
-    def request() -> requests.Response:
-        return requests.request(
-            args.method, url, headers=session.api_headers, json=body, timeout=15
-        )
-
-    response = session._run_with_token_validation(request, skip_validation=True)
+    response = api_request(session, args.method, args.path, body)
     try:
         data = response.json()
     except ValueError:
@@ -391,6 +421,9 @@ def main() -> None:
     )
     for name in ('state', 'sync', 'expire-token'):
         commands.add_parser(name).add_argument('--event')
+    commands.choices['sync'].add_argument(
+        '--during', nargs='+', metavar='ARG', help='METHOD PATH [JSON]'
+    )
     command = commands.add_parser('edit')
     command.add_argument('name')
     command.add_argument('set', nargs='+')
