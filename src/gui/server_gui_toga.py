@@ -1223,7 +1223,7 @@ class SharlyChessServerToga(toga.App):
             error_dialog = toga.ErrorDialog(_('Invalid folder'), error)
             await self.main_window.dialog(error_dialog)
             return
-        message = _('Confirm the new data folder "{folder}"?').format(
+        message = _('Confirm the new data folder [{folder}]?').format(
             folder=new_data_dir
         )
         if service := sync_service(new_data_dir):
@@ -1269,7 +1269,7 @@ class SharlyChessServerToga(toga.App):
         assert DATA_DIR_MIGRATION is not None
         confirm_dialog = toga.ConfirmDialog(
             _('Data folder'),
-            _('Move the data to "{folder}"?').format(
+            _('Move the data to [{folder}]?').format(
                 folder=DATA_DIR_MIGRATION.target_dir
             )
             + '\n'
@@ -1289,7 +1289,7 @@ class SharlyChessServerToga(toga.App):
             return
         question_dialog = toga.QuestionDialog(
             _('Data folder'),
-            _('Delete the previous data folder "{folder}"?').format(
+            _('Delete the previous data folder [{folder}]?').format(
                 folder=moved_data_dir
             )
             + '\n'
@@ -1302,7 +1302,7 @@ class SharlyChessServerToga(toga.App):
             await self.main_window.dialog(
                 toga.ErrorDialog(
                     _('Data folder'),
-                    _('The folder "{folder}" could not be deleted entirely.').format(
+                    _('The folder [{folder}] could not be deleted entirely.').format(
                         folder=moved_data_dir
                     ),
                 )
@@ -1324,13 +1324,13 @@ class SharlyChessServerToga(toga.App):
         title = self._dialog_title(_('Data folder'))
         if migration.state() == DataDirMoveState.MOVED:
             message = _(
-                'Your data has been moved to "{folder}", a folder that cloud '
+                'Your data has been moved to [{folder}], a folder that cloud '
                 'services such as OneDrive do not synchronise.'
             ).format(folder=DATA_DIR)
             moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
             if moved_data_dir and moved_data_dir != migration.data_dir:
                 message += '\n\n' + _(
-                    'The previous folder is kept as a copy at "{folder}", and will '
+                    'The previous folder is kept as a copy at [{folder}], and will '
                     'be deleted two versions from now. You can delete it sooner '
                     'from the settings.'
                 ).format(folder=moved_data_dir)
@@ -1338,11 +1338,11 @@ class SharlyChessServerToga(toga.App):
             DataDirMigration.notice_shown()
         elif migration.should_ask():
             message = _(
-                'Your data folder "{folder}" is synchronised by {service}, which '
+                'Your data folder [{folder}] is synchronised by {service}, which '
                 'can block the events while Sharly Chess writes to them.'
             ).format(folder=DATA_DIR, service=sync_service(DATA_DIR))
             message += '\n\n' + _(
-                'Do you want to move the data to "{folder}"? The current folder '
+                'Do you want to move the data to [{folder}]? The current folder '
                 'will be kept as a copy.'
             ).format(folder=migration.target_dir)
             if await self.main_window.dialog(toga.QuestionDialog(title, message)):
