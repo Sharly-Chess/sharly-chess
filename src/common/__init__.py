@@ -112,8 +112,8 @@ def windows_documents_dir() -> Path:
 
 
 def windows_local_app_data_dir() -> Path:
-    """The application data folder of the user that is neither synchronised
-    nor protected against ransomware, unlike the Documents."""
+    """The application data folder of the user, which cloud services do not
+    synchronise."""
     local_app_data = os.getenv('LOCALAPPDATA')
     return Path(local_app_data) if local_app_data else Path.home() / 'AppData' / 'Local'
 
@@ -168,9 +168,9 @@ TEST_DATA_DIR = BASE_DIR / 'tests' / 'tmp'
 
 
 def _data_dir_migration(data_dir: Path) -> DataDirMigration | None:
-    """The move of the data out of the Documents or OneDrive, on Windows only:
-    elsewhere the default folders are neither synchronised nor guarded. A move
-    asked from the settings is completed first."""
+    """The move of the data out of the Documents or a folder synchronised by a
+    cloud service, on Windows only: elsewhere the default folders are not
+    synchronised. A move asked from the settings is completed first."""
     match sys.platform:
         case 'win32':
             if (

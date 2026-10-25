@@ -7715,9 +7715,8 @@ msgstr "Aperçu"
 msgid "Preview the card with different sample data."
 msgstr "Prévisualisez le chevalet avec différentes données d’exemple."
 
-#, python-brace-format
-msgid "Previous data folder, kept as a copy: {folder}"
-msgstr "Ancien dossier des données, conservé en copie : {folder}"
+msgid "Previous data folder, kept as a copy"
+msgstr "Ancien dossier des données, conservé en copie"
 
 msgid "Previous round"
 msgstr "Ronde précédente"
@@ -10829,8 +10828,9 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
 
-msgid "This folder is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
-msgstr "Ce dossier est synchronisé par OneDrive, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
+#, python-brace-format
+msgid "This folder is synchronised by {service}, which can block the events while Sharly Chess writes to them."
+msgstr "Ce dossier est synchronisé par {service}, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
 
 msgid "This game has been played."
 msgstr "Cette partie a été jouée."
@@ -12352,12 +12352,12 @@ msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
 #, python-brace-format
-msgid "Your data folder \"{folder}\" is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
-msgstr "Votre dossier des données « {folder} » est synchronisé par OneDrive, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
+msgid "Your data folder \"{folder}\" is synchronised by {service}, which can block the events while Sharly Chess writes to them."
+msgstr "Votre dossier des données « {folder} » est synchronisé par {service}, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
 
 #, python-brace-format
-msgid "Your data has been moved to \"{folder}\", where OneDrive does not synchronise it and antivirus protections do not block it."
-msgstr "Vos données ont été déplacées vers « {folder} », où OneDrive ne les synchronise pas et où les protections antivirus ne les bloquent pas."
+msgid "Your data has been moved to \"{folder}\", a folder that cloud services such as OneDrive do not synchronise."
+msgstr "Vos données ont été déplacées vers « {folder} », un dossier que les services en ligne comme OneDrive ne synchronisent pas."
 
 msgid "Your pairings"
 msgstr "Vos appariements"

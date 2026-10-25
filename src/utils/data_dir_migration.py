@@ -1,8 +1,11 @@
+import json
 import logging
 import os
 import shutil
 import sqlite3
+import sys
 from enum import StrEnum
+from functools import cached_property
 from pathlib import Path
 
 from packaging.version import Version
@@ -16,6 +19,10 @@ STAGING_DIR_SUFFIX = '.partial'
 MAX_ATTEMPTS = 3
 _DATABASE_SUFFIXES = ('.sce', '.scch', '.scc')
 _ONEDRIVE_VARIABLES = ('OneDrive', 'OneDriveConsumer', 'OneDriveCommercial')
+# The variables of the folders where Dropbox writes the folders it synchronises.
+_DROPBOX_INFO_VARIABLES = ('APPDATA', 'LOCALAPPDATA')
+# The drive Google Drive streams the files to.
+_GOOGLE_DRIVE_VOLUME_LABEL = 'Google Drive'
 
 # Written before the logger, and so before the translations, exist.
 _README_TEXT = """\
@@ -50,8 +57,8 @@ class DataDirMoveState(StrEnum):
 class DataDirMoveReason(StrEnum):
     # The data is in the former default folder, in the Documents.
     LEGACY_DEFAULT = 'legacy_default'
-    # The user chose a folder that OneDrive synchronises.
-    ONEDRIVE = 'onedrive'
+    # The user chose a folder that a cloud service synchronises.
+    SYNCHRONISED = 'synchronised'
 
 
 def _same_path(first: Path, second: Path) -> bool:
@@ -68,24 +75,80 @@ def _is_within(path: Path, directory: Path) -> bool:
     )
 
 
-def onedrive_dirs() -> list[Path]:
-    return [Path(value) for name in _ONEDRIVE_VARIABLES if (value := os.getenv(name))]
+def _dropbox_dirs() -> list[Path]:
+    directories: list[Path] = []
+    for variable in _DROPBOX_INFO_VARIABLES:
+        if not (value := os.getenv(variable)):
+            continue
+        try:
+            accounts = json.loads(
+                (Path(value) / 'Dropbox' / 'info.json').read_text(encoding='utf-8')
+            )
+        except (OSError, ValueError):
+            continue
+        if isinstance(accounts, dict):
+            directories += [
+                Path(account['path'])
+                for account in accounts.values()
+                if isinstance(account, dict) and isinstance(account.get('path'), str)
+            ]
+    return directories or [Path.home() / 'Dropbox']
 
 
-def is_in_onedrive(path: Path) -> bool:
-    return any(_is_within(path, directory) for directory in onedrive_dirs())
+def _volume_label(path: Path) -> str | None:
+    label: str | None = None
+    if sys.platform == 'win32':
+        import ctypes
+
+        buffer = ctypes.create_unicode_buffer(261)
+        if ctypes.windll.kernel32.GetVolumeInformationW(
+            ctypes.c_wchar_p(path.anchor),
+            buffer,
+            len(buffer),
+            None,
+            None,
+            None,
+            None,
+            0,
+        ):
+            label = buffer.value
+    return label
+
+
+def synchronised_dirs() -> dict[str, list[Path]]:
+    """The folders that cloud services synchronise, by service."""
+    return {
+        'OneDrive': [
+            Path(value) for name in _ONEDRIVE_VARIABLES if (value := os.getenv(name))
+        ],
+        'Google Drive': [Path.home() / 'My Drive', Path.home() / 'Google Drive'],
+        'Dropbox': _dropbox_dirs(),
+        'iCloud Drive': [Path.home() / 'iCloudDrive'],
+    }
+
+
+def sync_service(path: Path) -> str | None:
+    """The cloud service that synchronises the folder, if any."""
+    for service, directories in synchronised_dirs().items():
+        if any(_is_within(path, directory) for directory in directories):
+            return service
+    if _volume_label(path) == _GOOGLE_DRIVE_VOLUME_LABEL:
+        return 'Google Drive'
+    return None
 
 
 class DataDirMigration:
-    """Moves the data folder out of the Documents or OneDrive, to the local
-    application data, where nothing synchronises nor guards the files.
+    """Moves the data folder out of the Documents or a folder synchronised by a
+    cloud service, to the local application data, which cloud services do not
+    synchronise.
 
     It runs on start, before anything reads or writes the data, and never stops
     the application from starting: the data is copied, the copy is checked,
     and only then does the application switch to it. On a failure the data
     stays where it was and the move is tried again on the next start. The data
-    is copied rather than moved, as moving a folder out of OneDrive deletes it
-    from the cloud and from the other computers it synchronises with."""
+    is copied rather than moved, as moving a folder out of a cloud service
+    deletes it from the cloud and from the other computers it synchronises
+    with."""
 
     def __init__(self, data_dir: Path, legacy_default_dir: Path, target_dir: Path):
         self.data_dir = data_dir
@@ -95,14 +158,14 @@ class DataDirMigration:
         self.messages: list[tuple[int, str]] = []
         self.moved: bool = False
 
-    @property
+    @cached_property
     def reason(self) -> DataDirMoveReason | None:
         if _same_path(self.data_dir, self.target_dir):
             return None
         if _same_path(self.data_dir, self.legacy_default_dir):
             return DataDirMoveReason.LEGACY_DEFAULT
-        if is_in_onedrive(self.data_dir):
-            return DataDirMoveReason.ONEDRIVE
+        if sync_service(self.data_dir):
+            return DataDirMoveReason.SYNCHRONISED
         return None
 
     @staticmethod
@@ -141,7 +204,7 @@ class DataDirMigration:
         """Whether the user is to be asked to move their data, which is only
         done for a folder they chose themselves."""
         return (
-            self.reason == DataDirMoveReason.ONEDRIVE
+            self.reason == DataDirMoveReason.SYNCHRONISED
             and self.state() == DataDirMoveState.NONE
         )
 

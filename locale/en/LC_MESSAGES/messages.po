@@ -7713,8 +7713,7 @@ msgstr ""
 msgid "Preview the card with different sample data."
 msgstr ""
 
-#, python-brace-format
-msgid "Previous data folder, kept as a copy: {folder}"
+msgid "Previous data folder, kept as a copy"
 msgstr ""
 
 msgid "Previous round"
@@ -10827,7 +10826,8 @@ msgstr ""
 msgid "This folder is not empty."
 msgstr ""
 
-msgid "This folder is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
+#, python-brace-format
+msgid "This folder is synchronised by {service}, which can block the events while Sharly Chess writes to them."
 msgstr ""
 
 msgid "This game has been played."
@@ -12350,11 +12350,11 @@ msgid "You must create a tournament before creating these screens."
 msgstr ""
 
 #, python-brace-format
-msgid "Your data folder \"{folder}\" is synchronised by OneDrive, which can block the events while Sharly Chess writes to them."
+msgid "Your data folder \"{folder}\" is synchronised by {service}, which can block the events while Sharly Chess writes to them."
 msgstr ""
 
 #, python-brace-format
-msgid "Your data has been moved to \"{folder}\", where OneDrive does not synchronise it and antivirus protections do not block it."
+msgid "Your data has been moved to \"{folder}\", a folder that cloud services such as OneDrive do not synchronise."
 msgstr ""
 
 msgid "Your pairings"

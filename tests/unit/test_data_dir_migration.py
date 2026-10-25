@@ -1,3 +1,4 @@
+import json
 import sqlite3
 import sys
 from pathlib import Path
@@ -15,6 +16,7 @@ from utils.data_dir_migration import (
     forget_moved_data_dir,
     is_left_by_a_move,
     moved_data_dir_to_delete,
+    sync_service,
 )
 from utils.instance_lock import InstanceLock
 from utils.program_variables import ProgramVar
@@ -25,13 +27,16 @@ VERSION = Version('5.2.0')
 @pytest.fixture(autouse=True)
 def program_vars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The variables are stored in a file of the test, not in the registry or
-    the property list of the user."""
+    the property list of the user, and the cloud services are looked for in the
+    folders of the test."""
     monkeypatch.setattr(sys, 'platform', 'linux')
     monkeypatch.setattr(
         program_variables, 'LINUX_DATA_FILE', tmp_path / 'program_vars.json'
     )
-    for name in ('OneDrive', 'OneDriveConsumer', 'OneDriveCommercial'):
+    for name in ('OneDrive', 'OneDriveConsumer', 'OneDriveCommercial', 'APPDATA'):
         monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv('LOCALAPPDATA', str(tmp_path / 'AppData' / 'Local'))
+    monkeypatch.setattr(Path, 'home', lambda: tmp_path / 'home')
 
 
 def _fill_data_dir(data_dir: Path) -> None:
@@ -68,13 +73,41 @@ def test_a_folder_chosen_in_onedrive_is_asked_for(
     monkeypatch.setenv('OneDrive', str(tmp_path / 'OneDrive'))
     migration = _migration(tmp_path, tmp_path / 'OneDrive' / 'Chess')
 
-    assert migration.reason == DataDirMoveReason.ONEDRIVE
+    assert migration.reason == DataDirMoveReason.SYNCHRONISED
     assert migration.should_ask()
     assert not migration.should_run()
 
     DataDirMigration.request()
     assert migration.should_run()
     assert not migration.should_ask()
+
+
+def test_the_folders_of_the_cloud_services_are_recognised(tmp_path: Path):
+    home = tmp_path / 'home'
+    dropbox_info = tmp_path / 'AppData' / 'Local' / 'Dropbox' / 'info.json'
+    dropbox_info.parent.mkdir(parents=True)
+    dropbox_info.write_text(
+        json.dumps(
+            {
+                'personal': {'path': str(tmp_path / 'D' / 'Dropbox')},
+                'business': {'path': str(tmp_path / 'D' / 'Dropbox (Club)')},
+            }
+        )
+    )
+
+    assert sync_service(home / 'My Drive' / 'Chess') == 'Google Drive'
+    assert sync_service(home / 'Google Drive' / 'Chess') == 'Google Drive'
+    assert sync_service(home / 'iCloudDrive' / 'Chess') == 'iCloud Drive'
+    assert sync_service(tmp_path / 'D' / 'Dropbox' / 'Chess') == 'Dropbox'
+    assert sync_service(tmp_path / 'D' / 'Dropbox (Club)' / 'Chess') == 'Dropbox'
+    assert sync_service(home / 'Dropbox' / 'Chess') is None
+    assert sync_service(home / 'Documents' / 'Chess') is None
+
+
+def test_the_default_dropbox_folder_is_recognised_without_its_settings(
+    tmp_path: Path,
+):
+    assert sync_service(tmp_path / 'home' / 'Dropbox' / 'Chess') == 'Dropbox'
 
 
 def test_a_declined_move_is_not_asked_again(

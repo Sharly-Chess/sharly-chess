@@ -61,8 +61,8 @@ from utils.data_dir_migration import (
     DataDirMigration,
     DataDirMoveState,
     forget_moved_data_dir,
-    is_in_onedrive,
     is_left_by_a_move,
+    sync_service,
 )
 from utils.program_variables import ProgramVar
 from web.server_engine import ServerEngine
@@ -689,24 +689,7 @@ class SharlyChessServerToga(toga.App):
             on_change=self._on_launch_browser_switch_change,
         )
 
-        self.data_path_input = toga.TextInput(
-            value=str(DATA_DIR.absolute()),
-            readonly=True,
-            width=self.compact_size[0] - self.view_margin * 2,
-        )
-        if sys.platform == 'darwin':
-            # toga maps TextInput to an NSTextField that wraps a long value
-            # onto a second line instead of clipping it, and readonly leaves
-            # it unselectable so there's no cursor to scroll with. Force the
-            # cell into single-line + scrollable mode and make the field
-            # selectable (but not editable), so a long path stays on one line
-            # and can be clicked into and scrolled, matching the Windows field.
-            native = self.data_path_input._impl.native
-            cell = native.cell
-            cell.usesSingleLineMode = True
-            cell.scrollable = True
-            cell.wraps = False
-            native.selectable = True
+        self.data_path_input = self._path_input(DATA_DIR.absolute())
         data_path_buttons = [
             toga.Button(_('Open'), on_press=self._open_data_path_explorer)
         ]
@@ -732,19 +715,24 @@ class SharlyChessServerToga(toga.App):
         ):
             self.moved_data_dir_box = toga.Box(
                 direction=COLUMN,
-                gap=5,
+                align_items='center',
+                gap=7,
                 children=[
-                    toga.Label(
-                        _('Previous data folder, kept as a copy: {folder}').format(
-                            folder=moved_data_dir
-                        )
-                    ),
+                    toga.Label(_('Previous data folder, kept as a copy')),
+                    self._path_input(moved_data_dir),
                     toga.Box(
                         direction=ROW,
+                        gap=10,
                         children=[
                             toga.Button(
+                                _('Open'),
+                                on_press=lambda widget: self._open_dir_in_explorer(
+                                    moved_data_dir
+                                ),
+                            ),
+                            toga.Button(
                                 _('Delete'), on_press=self._delete_moved_data_dir
-                            )
+                            ),
                         ],
                     ),
                 ],
@@ -823,6 +811,27 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.Window)
         self.main_window.content = self.main_box
+
+    def _path_input(self, path: Path) -> toga.TextInput:
+        path_input = toga.TextInput(
+            value=str(path),
+            readonly=True,
+            width=self.compact_size[0] - self.view_margin * 2,
+        )
+        if sys.platform == 'darwin':
+            # toga maps TextInput to an NSTextField that wraps a long value
+            # onto a second line instead of clipping it, and readonly leaves
+            # it unselectable so there's no cursor to scroll with. Force the
+            # cell into single-line + scrollable mode and make the field
+            # selectable (but not editable), so a long path stays on one line
+            # and can be clicked into and scrolled, matching the Windows field.
+            native = path_input._impl.native
+            cell = native.cell
+            cell.usesSingleLineMode = True
+            cell.scrollable = True
+            cell.wraps = False
+            native.selectable = True
+        return path_input
 
     def _settings_row(self, label: str, widget: toga.Widget) -> toga.Box:
         """A row of the settings: the fields fill the width left by the labels,
@@ -1217,11 +1226,11 @@ class SharlyChessServerToga(toga.App):
         message = _('Confirm the new data folder "{folder}"?').format(
             folder=new_data_dir
         )
-        if is_in_onedrive(new_data_dir):
+        if service := sync_service(new_data_dir):
             message += '\n\n' + _(
-                'This folder is synchronised by OneDrive, which can block the '
+                'This folder is synchronised by {service}, which can block the '
                 'events while Sharly Chess writes to them.'
-            )
+            ).format(service=service)
         message += '\n' + _('Restarting will be required to complete the move.')
         confirm_dialog = toga.ConfirmDialog(_('Data folder'), message)
         if not await self.main_window.dialog(confirm_dialog):
@@ -1307,7 +1316,7 @@ class SharlyChessServerToga(toga.App):
 
     async def _show_data_dir_move_dialogs(self) -> None:
         """Tells the user their data has moved, or asks them whether to move
-        a folder they chose in OneDrive."""
+        a folder they chose that a cloud service synchronises."""
         migration = DATA_DIR_MIGRATION
         if migration is None:
             return
@@ -1315,8 +1324,8 @@ class SharlyChessServerToga(toga.App):
         title = self._dialog_title(_('Data folder'))
         if migration.state() == DataDirMoveState.MOVED:
             message = _(
-                'Your data has been moved to "{folder}", where OneDrive does not '
-                'synchronise it and antivirus protections do not block it.'
+                'Your data has been moved to "{folder}", a folder that cloud '
+                'services such as OneDrive do not synchronise.'
             ).format(folder=DATA_DIR)
             moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
             if moved_data_dir and moved_data_dir != migration.data_dir:
@@ -1329,9 +1338,9 @@ class SharlyChessServerToga(toga.App):
             DataDirMigration.notice_shown()
         elif migration.should_ask():
             message = _(
-                'Your data folder "{folder}" is synchronised by OneDrive, which can '
-                'block the events while Sharly Chess writes to them.'
-            ).format(folder=DATA_DIR)
+                'Your data folder "{folder}" is synchronised by {service}, which '
+                'can block the events while Sharly Chess writes to them.'
+            ).format(folder=DATA_DIR, service=sync_service(DATA_DIR))
             message += '\n\n' + _(
                 'Do you want to move the data to "{folder}"? The current folder '
                 'will be kept as a copy.'

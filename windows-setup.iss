@@ -229,7 +229,7 @@ begin
   Result := (Dir <> '') and (Pos(Lowercase(AddBackslash(Dir)), Lowercase(AddBackslash(Path))) = 1);
 end;
 
-{ Sharly Chess moves the data out of the Documents and OneDrive to the local
+{ Sharly Chess moves the data out of the Documents and the cloud services to the local
   application data on its first start after the update: the exclusion of the
   previous data folder, if any, is given to the new one. }
 procedure CarryDefenderDataException;
@@ -244,6 +244,10 @@ begin
     or IsPathWithin(OldDataDir, GetEnv('OneDrive'))
     or IsPathWithin(OldDataDir, GetEnv('OneDriveConsumer'))
     or IsPathWithin(OldDataDir, GetEnv('OneDriveCommercial'))
+    or IsPathWithin(OldDataDir, ExpandConstant('{%USERPROFILE}\My Drive'))
+    or IsPathWithin(OldDataDir, ExpandConstant('{%USERPROFILE}\Google Drive'))
+    or IsPathWithin(OldDataDir, ExpandConstant('{%USERPROFILE}\Dropbox'))
+    or IsPathWithin(OldDataDir, ExpandConstant('{%USERPROFILE}\iCloudDrive'))
   ) then
     Exit;
   NewDataDir := ExpandConstant('{localappdata}\{#AppName}');
@@ -318,8 +322,8 @@ fr.SelectDataLocation=Sélectionner l'emplacement des données
 en.WhereData=Where should the data be stored?
 fr.WhereData=Où les données doivent-être sauvegardées ?
 
-en.PleaseSelectData=Please select a folder for the data. Avoid a folder synchronised by OneDrive or another cloud service.
-fr.PleaseSelectData=Merci de sélectionner un dossier pour les données. Évitez un dossier synchronisé par OneDrive ou un autre service en ligne.
+en.PleaseSelectData=Please select a folder for the data. Avoid a folder synchronised by a cloud service (OneDrive, Google Drive, Dropbox, iCloud Drive...).
+fr.PleaseSelectData=Merci de sélectionner un dossier pour les données. Évitez un dossier synchronisé par un service en ligne (OneDrive, Google Drive, Dropbox, iCloud Drive...).
 
 en.UpdateSuccessfull=Sharly Chess was sucessfully updated. The application will restart.
 fr.UpdateSuccessfull=Sharly Chess a été mis à jour avec succès. L'application va redémarrer.
