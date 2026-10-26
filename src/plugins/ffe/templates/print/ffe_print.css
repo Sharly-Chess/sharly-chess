@@ -36,6 +36,9 @@ label {
     display: inline-block;
     white-space: nowrap;
 }
+input, textarea {
+    font-size: inherit;
+}
 input {
     border: none;
 }

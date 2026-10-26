@@ -126,6 +126,9 @@
         </style>
     </head>
     <body>
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% endif %}
         <h1>
             {% if mode == 'achieved' %}
                 {{ _('Title Norms Achieved') }}

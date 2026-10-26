@@ -3111,6 +3111,12 @@ msgstr "Calendrier personnalisé aller-retour"
 msgid "Download"
 msgstr "Télécharger"
 
+msgid "Download the document as a PDF file"
+msgstr "Télécharger le document au format PDF"
+
+msgid "Download the document as a Word file, with the values entered in its fields"
+msgstr "Télécharger le document au format Word, avec les valeurs saisies dans ses champs"
+
 msgid "Download the players matching the search into a file."
 msgstr "Télécharger un fichier contenant les joueur·euses correspondant à la recherche."
 
@@ -6865,6 +6871,9 @@ msgstr "APP"
 msgid "PASS"
 msgstr "RÉUSSITE"
 
+msgid "PDF"
+msgstr "PDF"
+
 msgid "PGN (all rounds)"
 msgstr "PGN (toutes les rondes)"
 
@@ -7723,6 +7732,12 @@ msgstr "Ronde précédente"
 
 msgid "Primary score:"
 msgstr "Score principal :"
+
+msgid "Print"
+msgstr "Imprimer"
+
+msgid "Print the document"
+msgstr "Imprimer le document"
 
 msgid "Print the rules"
 msgstr "Imprimer les règles"
@@ -9839,11 +9854,17 @@ msgstr "La FIDE utilisera les classements standards des deux joueur·euses pour 
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
 msgstr "Le classement général inclut tou·tes les joueur·euses et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueur·euses doivent satisfaire tous les critères d'une catégorie."
 
+msgid "The PDF file could not be generated."
+msgstr "Le fichier PDF n'a pas pu être généré."
+
 msgid "The TRF export is not available for this pairing system: its score is not a count of game points."
 msgstr "L'export TRF n'est pas disponible pour ce système d'appariement : son score n'est pas un décompte de points de partie."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
+
+msgid "The Word file could not be generated."
+msgstr "Le fichier Word n'a pas pu être généré."
 
 #, python-brace-format
 msgid "The accelerated rounds are the first half of the rounds, rounded up. In the first half of the accelerated rounds, rounded up, each group A player gets {win} virtual points; in the other accelerated rounds, {draw}. Group B players get no virtual points."
@@ -12160,6 +12181,9 @@ msgstr "Exemptions gagnées lues comme des exemptions à un point, la ronde en c
 #, python-brace-format
 msgid "Won byes read as pairing-allocated byes ({rounds})."
 msgstr "Exemptions gagnées lues comme des exemptions d'appariement ({rounds})."
+
+msgid "Word"
+msgstr "Word"
 
 msgid "XLSX format"
 msgstr "Format XLSX"

@@ -11,15 +11,18 @@
         </style>
     </head>
     <body>
-        <div class="info">
+        {% set document_notes %}
             Ce document a été généré par Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.localized_copyright('fr') }}
             <br/>
             Tous les champs des formulaires FFE sont modifiables.
             <br/>
             Les points nécessitant votre attention sont indiqués en rouge (ils apparaissent en noir à l'impression).
-            <br/>
-            Pour enregistrer cette page au format PDF, ouvrez la boîte de dialogue d'impression de votre navigateur et choisissez l'option permettant d'enregistrer ou d'imprimer au format PDF.
-        </div>
+        {% endset %}
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% else %}
+            <div class="info">{{ document_notes }}</div>
+        {% endif %}
         {% block body %}
             BODY
         {% endblock body %}

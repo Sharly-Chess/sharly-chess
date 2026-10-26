@@ -49,6 +49,7 @@
             }
             input {
                 border: none;
+                font-size: inherit;
             }
             input[type="checkbox"] {
                 pointer-events: none;
@@ -236,6 +237,20 @@
         </style>
     </head>
     <body>
+        {% set document_notes %}
+            {{ _('Scroll down to review all the norms…') }}
+            <br />
+            {{ _('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.') }}
+            <br />
+            {{ _('All values may be modified by the arbiter if necessary.') }}
+            <br />
+            {{ _('Note: norms are computed based only on <em>completed</em> games.') }}
+        {% endset %}
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% else %}
+            <div class="info">{{ document_notes }}</div>
+        {% endif %}
         {# Reason-key → translated text map for the per-round audit block.
            Built once at body scope so the dict is shared across all
            per-norm sections. #}
@@ -253,20 +268,10 @@
         } %}
 
         {% for norm_title, norm in norms.items() %}
-            {% if loop.first %}
-                <div class="info" id="norm-{{ norm_title.name }}">
-                    {{ _('Scroll down to review all the norms…') }}
-                    <br />
-                    {{ _('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.') }}
-                    <br />
-                    {{ _('All values may be modified by the arbiter if necessary.') }}
-                    <br />
-                    {{ _('Note: norms are computed based only on <em>completed</em> games.') }}
-                </div>
-            {% else %}
+            {% if not loop.first %}
                 <div class="spacer"></div>
             {% endif %}
-            <div class="heading" {% if not loop.first %}id="norm-{{ norm_title.name }}{% endif %}">
+            <div class="heading" id="norm-{{ norm_title.name }}">
                 {{ norm_title.name }}
             </div>
             {# Non-print deep-link to the separate Norm Calculation Details

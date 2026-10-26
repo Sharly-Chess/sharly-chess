@@ -683,10 +683,12 @@ class ProjectBuilder(ABC):  # noqa: B024
         venv_lib_path = self.hook_get_venv_lib_path
         toga_path: Path = venv_lib_path / 'toga'
         iso4217parse_path: Path = venv_lib_path / 'iso4217parse'
+        docx_templates_path: Path = venv_lib_path / 'docx' / 'templates'
         for file in [
             toga_path / '__init__.pyi',
             iso4217parse_path / 'data.json',
             iso4217parse_path / 'symbols.json',
+            *(path for path in docx_templates_path.rglob('*') if path.is_file()),
         ]:
             pyinstaller_params.append(  # noqa: PERF401
                 f'--add-data={file}{data_separator}{file.parent.relative_to(venv_lib_path)}'
