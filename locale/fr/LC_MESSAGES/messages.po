@@ -7897,6 +7897,12 @@ msgstr "Quarts de finale"
 msgid "Quick-apply a tie-break set (replace actual tie-breaks)"
 msgstr "Appliquer un ensemble de départages (remplace les départages actuels)"
 
+msgid "Quit"
+msgstr "Quitter"
+
+msgid "Quit Sharly Chess?"
+msgstr "Quitter Sharly Chess ?"
+
 msgid "R"
 msgstr "R"
 
@@ -10537,6 +10543,9 @@ msgstr "Les écrans utilisés par le pilote d'afficheur sont désignés par l'ad
 msgid "The selected {competitors} have been merged."
 msgstr "Les {competitors} sélectionnés ont été fusionnés."
 
+msgid "The server will stop: the application will no longer be reachable from the browsers, the screens and the other computers."
+msgstr "Le serveur va s'arrêter : l'application ne sera plus accessible depuis les navigateurs, les écrans et les autres ordinateurs."
+
 msgid "The settings are set and can no longer be changed."
 msgstr "Les paramètres sont fixés et ne peuvent plus être modifiés."
 
@@ -12006,9 +12015,6 @@ msgstr "Avertir dans l'onglet des joueur·euses quand les listes de classement d
 
 msgid "Warning: all hours for this timer will be permanently deleted!"
 msgstr "Attention : tous les horaires de ce chronomètre seront définitivement supprimés !"
-
-msgid "Warning: closing this window will stop Sharly Chess."
-msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"

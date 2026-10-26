@@ -1572,6 +1572,23 @@ class SharlyChessServerToga(toga.App):
         self._background_tasks.add(task)
         task.add_done_callback(self._background_tasks.discard)
 
+    # Toga accepts an async on_exit, which its typing does not declare.
+    async def on_exit(self) -> bool:  # type: ignore[override]
+        if not self.server_running:
+            return True
+        assert isinstance(self.main_window, toga.Window)
+        return await self.main_window.dialog(
+            toga.ConfirmDialog(
+                self._dialog_title(_('Quit')),
+                _('Quit Sharly Chess?')
+                + '\n'
+                + _(
+                    'The server will stop: the application will no longer be '
+                    'reachable from the browsers, the screens and the other computers.'
+                ),
+            )
+        )
+
     def on_running(self) -> None:
         # Logging handler
         assert self.html_view is not None
@@ -1610,9 +1627,8 @@ class SharlyChessServerToga(toga.App):
         assert self.home_progress_bar is not None
         assert self.server_state_container is not None
         self.home_progress_bar.stop()
-        self.home_main_label.text = _(
-            'Warning: closing this window will stop Sharly Chess.'
-        )
+        assert self.home_view is not None
+        self.home_view.remove(self.home_main_label)
         self.server_state_container.clear()
         self.server_state_container.add(
             toga.Box(
