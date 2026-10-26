@@ -10003,6 +10003,10 @@ msgstr ""
 msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
+#, python-brace-format
+msgid "Too many results (>={limit}). Try adding filters."
+msgstr ""
+
 msgid "Too much information to display on a single projector?"
 msgstr ""
 

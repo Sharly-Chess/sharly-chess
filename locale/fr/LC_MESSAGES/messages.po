@@ -10005,6 +10005,10 @@ msgstr "Trop peu d'équipes pour générer les appariements (minimum : {min})."
 msgid "Too many byes for player [{player_name}]."
 msgstr "Trop de byes pour le·la joueurÏeuse [{player_name}]."
 
+#, python-brace-format
+msgid "Too many results (>={limit}). Try adding filters."
+msgstr "Trop de résultats (>={limit}). Essayez de rajouter des filtres."
+
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 

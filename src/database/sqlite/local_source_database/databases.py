@@ -620,3 +620,13 @@ class LocalSourcePlayerDatabase(GitHubLocalSourceDatabase):
     ) -> list[StoredPlayer]:
         """Search a player in the database.
         Returns maximum *limit* results (no limit if *limit* is None)."""
+
+    @abstractmethod
+    def get_result_count(
+        self,
+        string: str,
+        limit: int,
+        filters: dict | None = None,
+    ) -> int:
+        """Returns the number of records in the database matching
+        the specified string and filters."""

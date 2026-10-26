@@ -255,6 +255,64 @@ class FFESqlServer(SqlServer):
             offset=page * limit if limit else None,
         )
 
+    async def get_result_count(
+        self,
+        string: str,
+        limit: int,
+        filters: dict | None = None,
+    ) -> int:
+        string = string.upper().strip()
+        if not filters:
+            if PlayerFFELicence.validate(string):
+                return len(await self.get_stored_players_by_licence_numbers([string]))
+            if fide_id := self.string_matches_fide_id(string):
+                return len(await self.get_players_by_fide_id([fide_id]))
+        tokens: list[str] = [
+            unicode_normalize(token) for token in re.split(r'\s+', string)
+        ]
+        str_fields: tuple[tuple[str, str, str], ...] = (
+            ('joueur.Nom', '%', '%'),
+            ('joueur.Prenom', '%', '%'),
+            ('joueur.NrFFE', '', ''),
+        )
+        filter_conditions, filter_params = self._process_filters(filters or {})
+        conditions: list[str] = [
+            self.RATING_TYPE_CONDITION,
+            *filter_conditions,
+        ]
+        params: list[Any] = [limit, *list(filter_params)]
+        for token in tokens:
+            token_expressions: list[str] = [
+                f'(UPPER({field[0]}) LIKE %s)' for field in str_fields
+            ]
+            token_params: list[str | int] = [
+                f'{field[1]}{token}{field[2]}' for field in str_fields
+            ]
+            with suppress(ValueError):
+                int_value = int(token.strip())
+                token_expressions.append('(joueur.FideCode IN (%s, %s))')
+                token_params += [
+                    self.remote_fide_id_format_1(int_value),
+                    self.remote_fide_id_format_2(int_value),
+                ]
+            conditions += [
+                ' OR '.join(token_expressions),
+            ]
+            params += token_params
+        condition: str = ' AND '.join(f'({c})' for c in conditions)
+
+        query: str = f"""
+            SELECT COUNT(*) AS result_count
+            FROM (
+                SELECT TOP(%s) 1 AS N
+                FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref
+                WHERE {condition} AND {self.RATING_TYPE_CONDITION}
+            ) AS T;"""
+
+        await self.execute(query, tuple(params))
+
+        return (await self.fetchone()).get('result_count')
+
     async def _get_stored_player_by_condition(
         self, condition: str, params: list
     ) -> StoredPlayer | None:
@@ -431,7 +489,7 @@ class FFESqlServer(SqlServer):
             params.append(filters['ffe_league_filter'])
         if 'club_filter' in filters:
             club: str = filters['club_filter']
-            conditions.append('LOWER(club.Nom) LIKE LOWER(%s)')
+            conditions.append('club.Nom LIKE %s')
             params.append(f'%{club}%')
         if filters.get('year_of_birth_filter'):
             age_conditions = []

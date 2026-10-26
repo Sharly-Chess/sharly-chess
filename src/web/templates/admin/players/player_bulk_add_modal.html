@@ -48,7 +48,6 @@
                                         search: $("#search-input").val(),
                                         page: 1,
                                         data_source_id: $("#data-source-select").val(),
-                                        usage: "{{ usage }}",
                                         filters: getFilters(),
                                         tournament_id: $("#tournament-id").val() || 1,
                                         {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
@@ -74,7 +73,6 @@
                                         search: $("#search-input").val(),
                                         page: currentPage - 1,
                                         data_source_id: $("#data-source-select").val(),
-                                        usage: "{{ usage }}",
                                         filters: getFilters(),
                                         tournament_id: $("#tournament-id").val() || 1,
                                     }'
@@ -104,7 +102,6 @@
                                         search: $("#search-input").val(),
                                         page: currentPage + 1,
                                         data_source_id: $("#data-source-select").val(),
-                                        usage: "{{ usage }}",
                                         filters: getFilters(),
                                         tournament_id: $("#tournament-id").val() || 1,
                                         {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
@@ -129,7 +126,6 @@
                                         search: $("#search-input").val(),
                                         page: pageCount,
                                         data_source_id: $("#data-source-select").val(),
-                                        usage: "{{ usage }}",
                                         filters: getFilters(),
                                         tournament_id: $("#tournament-id").val() || 1,
                                         {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}

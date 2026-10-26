@@ -297,6 +297,17 @@ class DataSource(IdentifiableEntity, ABC):
         Returns maximum *limit* results (no limit if *limit* is None)."""
 
     @abstractmethod
+    async def get_result_count(
+        self,
+        string: str,
+        limit: int | None = None,
+        filters: dict | None = None,
+    ) -> int:
+        """Returns the number of records in the database matching
+        the specified string and filters.
+        Raise SharlyChessException if the limit is reached."""
+
+    @abstractmethod
     async def get_stored_player_by_source_id(
         self,
         player_source_id: str,
@@ -466,6 +477,29 @@ class LocalDataSource(DataSource, ABC):
         with self.local_database_type() as database:
             return database.search_player(string, federation, page, limit, filters)
 
+    async def get_result_count(
+        self,
+        string: str,
+        limit: int,
+        filters: dict | None = None,
+    ) -> int:
+        if not self.is_available:
+            raise SharlyChessException(
+                _(
+                    'This database is not installed '
+                    '(to install it: Menu > Data sources).'
+                )
+            )
+        with self.local_database_type() as database:
+            result_count = database.get_result_count(string, limit, filters)
+            if result_count >= limit:
+                raise SharlyChessException(
+                    _('Too many results (>={limit}). Try adding filters.').format(
+                        limit=limit
+                    )
+                )
+            return result_count
+
 
 class OnlineDataSource(DataSource, ABC):
     connection_status: ClassVar[bool | None] = None
@@ -547,6 +581,36 @@ class OnlineDataSource(DataSource, ABC):
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
+
+    async def get_result_count(
+        self,
+        string: str,
+        limit: int | None = None,
+        filters: dict | None = None,
+    ) -> int:
+        cls = self.__class__
+        cls._connection_last_checked_at = datetime.now()
+        if not NetworkMonitor.connected():
+            cls.connection_status = None
+            raise SharlyChessException(_('No internet connection'))
+        try:
+            result_count = await self._get_result_count(string, limit, filters)
+            cls.connection_status = True
+            return result_count
+        except SharlyChessException as exception:
+            cls.connection_status = False
+            raise exception
+
+    @abstractmethod
+    async def _get_result_count(
+        self,
+        string: str,
+        limit: int | None = None,
+        filters: dict | None = None,
+    ) -> int:
+        """Returns the number of records in the database matching
+        the specified string and filters.
+        Raise SharlyChessException if the limit is reached."""
 
 
 class FideDataSource(LocalDataSource):

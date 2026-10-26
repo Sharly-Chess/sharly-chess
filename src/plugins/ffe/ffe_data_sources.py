@@ -481,6 +481,22 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
                 unicode_normalize(string), federation, page, limit, filters
             )
 
+    async def _get_result_count(
+        self,
+        string: str,
+        limit: int | None = None,
+        filters: dict | None = None,
+    ) -> int:
+        async with FFESqlServer() as ffe_sql_server:
+            result_count = await ffe_sql_server.get_result_count(string, limit, filters)
+            if result_count >= limit:
+                raise SharlyChessException(
+                    _('Too many results (>={limit}). Try adding filters.').format(
+                        limit=limit
+                    )
+                )
+            return result_count
+
     @property
     def import_identifier_column(self) -> DatasheetColumn:
         return self._import_identifier_column

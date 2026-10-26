@@ -1,4 +1,5 @@
 import csv
+import asyncio
 from collections import defaultdict, Counter
 from collections.abc import Callable
 from contextlib import suppress
@@ -2995,15 +2996,24 @@ class PlayerAdminController(BaseEventAdminController):
 
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
+        result_count: int = 0
+        stored_players: list[StoredPlayer] = []
         connection_error: str | None = None
         search = search.strip()
         try:
-            stored_players = await data_source.search_player(
-                search,
-                web_context.get_admin_event().federation,
-                page - 1,
-                DataSource.SEARCH_LIMIT,
-                self._convert_filters(web_context.get_admin_event(), filters),
+            result_count, stored_players = await asyncio.gather(
+                data_source.get_result_count(
+                    search,
+                    2000,
+                    self._convert_filters(web_context.get_admin_event(), filters),
+                ),
+                data_source.search_player(
+                    search,
+                    web_context.get_admin_event().federation,
+                    page - 1,
+                    DataSource.SEARCH_LIMIT,
+                    self._convert_filters(web_context.get_admin_event(), filters),
+                ),
             )
 
             for stored_player in stored_players:
@@ -3035,7 +3045,7 @@ class PlayerAdminController(BaseEventAdminController):
                 'used_columns': used_columns,
                 'search_results': players,
                 'page': page,
-                'pages': 15,  # to be implemented
+                'pages': result_count // 30 + (result_count % 30 > 0),
                 'row_count': len(players),
                 'data_source': data_source,
                 'connection_error': connection_error,
@@ -3083,8 +3093,8 @@ class PlayerAdminController(BaseEventAdminController):
             if player:
                 event.delete_player(player)
 
-        newPlayers = await data_source.get_stored_players_by_source_ids(players_added)
-        for player in newPlayers:
+        new_players = await data_source.get_stored_players_by_source_ids(players_added)
+        for player in new_players:
             event.add_player(player, tournaments=[tournament])
 
         if len(players_added) or len(players_removed):
@@ -3094,7 +3104,7 @@ class PlayerAdminController(BaseEventAdminController):
                     '{added_count} player added and ',
                     '{added_count} players added and ',
                     len(players_added),
-                ).format(added_count=len(players_added))
+                ).format(added_count=len(new_players))
                 + ngettext(
                     '{removed_count} player removed.',
                     '{removed_count} players removed.',
