@@ -1,47 +1,50 @@
+{# Both macros are rendered in the form that holds the cadence select. #}
+
+{% macro display() %}
+    <div class="tc-display d-flex flex-wrap justify-content-end align-items-center gap-2 mt-1">
+        <i class="tc-clock bi-clock opacity-75"></i>
+        <span class="tc-readable-inline opacity-75"></span>
+        <button type="button" class="tc-edit tc-edit-label btn btn-sm btn-link p-0"></button>
+    </div>
+    <div class="tc-mismatch small text-warning text-end mt-1" hidden>
+        <i class="bi-exclamation-triangle-fill"></i>
+        <span class="tc-mismatch-text"></span>
+    </div>
+{% endmacro %}
+
+{% macro panel() %}
 {% set trf25 = data.time_control_trf25 or '' %}
 
-<div class="row gy-2 gx-3">
+<div class="row gy-2 gx-3 tc">
     <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
-    <div class="col-12">
-        <div id="tc-editor-modal" class="tc" data-initial="{{ trf25 }}">
-            <!-- Read-only display -->
-            <div class="tc-display d-flex align-items-center gap-2">
-                {{ _('%(string)s:', string=_('Time control')) }}
-                <span class="tc-readable-inline opacity-75"></span>
-                <button type="button" class="tc-edit btn btn-sm btn-outline-primary ms-2 cap-centred">
-                    <i class="bi-pencil-fill"></i> {{ _('Edit') }}
-                </button>
+    <div class="col-12 mt-0">
+        <div class="tc-panel form-fields-container" style="display:none">
+            <div class="form-check d-flex align-items-center gap-2 ps-0 mb-2">
+                <input
+                    class="form-check-input tc-diff float-none m-0"
+                    type="checkbox"
+                    id="tc-diff"
+                >
+                <label class="form-check-label" for="tc-diff">
+                    {{ _('Different for White / Black') }}
+                </label>
             </div>
 
-            <!-- Inline editor -->
-            <div class="tc-panel form-fields-container" style="display:none">
-                <div class="form-check d-flex align-items-center gap-2 ps-0 mb-2">
-                    <input
-                        class="form-check-input tc-diff float-none m-0"
-                        type="checkbox"
-                        id="tc-diff"
-                    >
-                    <label class="form-check-label" for="tc-diff">
-                        {{ _('Different for White / Black') }}
-                    </label>
-                </div>
+            <div class="tc-sides d-grid gap-2"></div>
 
-                <div class="tc-sides d-grid gap-2"></div>
-
-                <div class="small text-muted mt-2">
-                    <div class="small text-muted mt-1">
-                        <span class="tc-readable"></span>
-                    </div>
-                    <div class="tc-error text-danger"></div>
+            <div class="small text-muted mt-2">
+                <div class="small text-muted mt-1">
+                    <span class="tc-readable"></span>
                 </div>
+                <div class="tc-error text-danger"></div>
+            </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-2">
-                    <button type="button" class="tc-add-period btn btn-sm btn-outline-primary">
-                        + {{ _('Add period') }}
-                    </button>
-                    <button type="button" class="tc-cancel btn btn-sm btn-outline-secondary">{{ _('Cancel') }}</button>
-                    <button type="button" class="tc-ok btn btn-sm btn-primary">{{ _('Validate') }}</button>
-                </div>
+            <div class="d-flex justify-content-end gap-2 mt-2">
+                <button type="button" class="tc-add-period btn btn-sm btn-outline-primary">
+                    + {{ _('Add period') }}
+                </button>
+                <button type="button" class="tc-cancel btn btn-sm btn-outline-secondary">{{ _('Cancel') }}</button>
+                <button type="button" class="tc-ok btn btn-sm btn-primary">{{ _('Validate') }}</button>
             </div>
         </div>
     </div>
@@ -220,14 +223,54 @@
             });
         }
 
+        // FIDE classifies a game by the time each player has for 60 moves:
+        // blitz up to 10 minutes, rapid under 60, standard otherwise.
+        function fideCadence(tc) {
+            const sideSeconds = (periods) => {
+                let remaining = 60, total = 0;
+                for (const p of periods) {
+                    const moves = Math.min(p.moves ?? remaining, remaining);
+                    total += (p.seconds || 0) + (p.increment || 0) * moves;
+                    remaining -= moves;
+                    if (remaining <= 0) break;
+                }
+                return total;
+            };
+            const seconds = Math.min(sideSeconds(tc.white), tc.black ? sideSeconds(tc.black) : Infinity);
+            if (seconds <= 10 * 60) return '3';
+            if (seconds < 60 * 60) return '2';
+            return '1';
+        }
+
+        function updateDisplay($root) {
+            const trf = $('#time-control-trf25').val().trim();
+            const $label = $root.find('.tc-edit-label');
+            $root.find('.tc-readable-inline').text(trf ? humanizeTrf25Short(trf) : '');
+            $root.find('.tc-clock').prop('hidden', !trf);
+            $label.text(trf ? {{ _('Edit')|tojson }} : {{ _('Specify the time control')|tojson }});
+
+            const $mismatch = $root.find('.tc-mismatch');
+            let expected = null;
+            try { expected = trf ? fideCadence(parseTrf25(trf)) : null; } catch {}
+            if (!expected || expected === $('#cadence').val()) {
+                $mismatch.prop('hidden', true);
+                return;
+            }
+            const cadences = {{ rating_options|tojson }};
+            $mismatch.find('.tc-mismatch-text').text(
+                {{ _('FIDE classifies this time control as %(cadence)s.', cadence='CADENCE')|tojson }}
+                    .replace('CADENCE', cadences[expected])
+            );
+            $mismatch.prop('hidden', false);
+        }
 
         // ----- Init for the modal instance -----
         $(function() {
-            const $root = $('#tc-editor-modal');
+            const $hidden = $('#time-control-trf25');
+            const $root = $hidden.closest('form');
             if (!$root.length) return;
 
-            const $hidden = $('#time-control-trf25');
-            let initial = $root.data('initial') || $hidden.val() || '';
+            let initial = $hidden.val() || '';
             try {
                 parseTrf25(initial);   // validate
             } catch {
@@ -265,8 +308,8 @@
                     const tc = currentModel($root, { allowPartial:false, annotate:true }); // validate + mark fields
                     const out = formatTrf25(tc);
                     $root.find('.tc-readable').text(humanizeTrf25Short(out));
-                    $root.find('.tc-readable-inline').text(humanizeTrf25Short(out));
                     $hidden.val(out);
+                    updateDisplay($root);
                     hide();
                 } catch (e) {
                     $root.find('.tc-error').text(e.message || String(e));
@@ -326,10 +369,13 @@
                 return $root.find('.tc-panel').is(':visible');
             }
 
+            $root.on('change', '#cadence', function() { updateDisplay($root); });
+
             // First render from initial value
             $hidden.val(initial);
-            $root.find('.tc-readable-inline').text(humanizeTrf25Short(initial));
+            updateDisplay($root);
             updateDeleteButtons($root);
         });
     </script>
 </div>
+{% endmacro %}
