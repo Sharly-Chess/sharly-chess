@@ -1,13 +1,12 @@
 from typing import Any
 
-from common import BASE_DIR
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents.documents import (
     PrintDocument,
 )
+from data.print_documents.fonts import PRINT_FONT_FAMILY, print_font_faces
 from plugins.chess960.utils import board_svg
-from utils.file import ttf_file_inline_url
 
 
 class Chess960PrintDocument(PrintDocument):
@@ -29,13 +28,10 @@ class Chess960PrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        font_file = (
-            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-        )
         return {
             'sharly_chess_config': SharlyChessConfig(),
-            'font_family': font_file.stem,
-            'font_url': ttf_file_inline_url(font_file),
+            'font_family': PRINT_FONT_FAMILY,
+            'font_faces': print_font_faces(),
             'positions': {number: board_svg(number) for number in range(1, 961)},
             'event': self.event,
         }

@@ -16,11 +16,11 @@ rule sets.
 from pathlib import Path
 from typing import Any
 
-from common import BASE_DIR
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents import PrintOption
 from data.print_documents.documents import PrintDocument
+from data.print_documents.fonts import PRINT_FONT_FAMILY, print_font_faces
 from data.rule_sets import RuleSet
 from data.print_documents.options import (
     OptionalTeamsPrintOption,
@@ -35,7 +35,7 @@ from plugins.ffe.ffe_rule_sets import (
 )
 from plugins.ffe.utils import FFEUtils
 from utils.enum import Result
-from utils.file import image_file_inline_url, ttf_file_inline_url
+from utils.file import image_file_inline_url
 
 _PAIRING_SHEET_RULE_SET_IDS = frozenset(
     {
@@ -66,7 +66,6 @@ def _ordinal_fr(rank: int) -> str:
     return '1er' if rank == 1 else f'{rank}e'
 
 
-_FONT_FILE = BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
 _FFE_LOGO_FILE = PLUGIN_DIR / 'static/images/ffe-text.png'
 _IMAGES_DIR = PLUGIN_DIR / 'static/images'
 
@@ -308,8 +307,8 @@ class FfePairingSheetDocument(PrintDocument):
         return {
             'sharly_chess_config': SharlyChessConfig(),
             'document': self,
-            'font_family': _FONT_FILE.stem,
-            'font_url': ttf_file_inline_url(_FONT_FILE),
+            'font_family': PRINT_FONT_FAMILY,
+            'font_faces': print_font_faces(),
             'ffe_logo_url': image_file_inline_url(_FFE_LOGO_FILE),
             'competition_logo_url': self._competition_logo_url(),
             'competition_name': rule_set.name
