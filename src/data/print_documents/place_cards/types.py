@@ -375,7 +375,11 @@ class PairingCardType(PlaceCardType):
                 ]
         elif board_numbers:
             boards = [board for board in boards if board.number in board_numbers]
-        return [PlaceCardPairing(board, round_=round_) for board in boards]
+        return [
+            PlaceCardPairing(board, round_=round_)
+            for board in boards
+            if not board.exempt
+        ]
 
     @classmethod
     def preview_pairings(
