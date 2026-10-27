@@ -740,6 +740,11 @@ class Event:
     ) -> bool:
         if player.id == stored_player.id:
             return False
+        if (
+            stored_player.national_id
+            and stored_player.national_id == player.national_id
+        ):
+            return True
         if stored_player.date_of_birth and (
             stored_player.last_name,
             stored_player.first_name,
