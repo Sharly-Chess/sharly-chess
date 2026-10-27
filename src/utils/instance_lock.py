@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, ClassVar, Self
@@ -18,6 +19,11 @@ _INFO_SIZE = 4096
 # Windows locks are mandatory: a locked byte can not be read by the other
 # processes, so the one locked sits past the information, which stays readable.
 _LOCK_OFFSET = 1 << 20
+#: How long a start waits for an instance that is leaving to let the folder go:
+#: quitting Sharly Chess and starting it again at once is a common thing to do,
+#: and the lock lives as long as the process, which outlives its window.
+_WAIT_SECONDS = 5.0
+_RETRY_SECONDS = 0.25
 
 
 class InstanceLock:
@@ -51,6 +57,16 @@ class InstanceLock:
             return False
         self._fd = fd
         self._write_info({'pid': os.getpid(), 'started': self._now()})
+        return True
+
+    def acquire_waiting(self, wait_seconds: float = _WAIT_SECONDS) -> bool:
+        """Takes the lock, giving an instance that is leaving the time to let
+        it go, and returns False if one is still holding it by then."""
+        deadline = time.monotonic() + wait_seconds
+        while not self.acquire():
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(_RETRY_SECONDS)
         return True
 
     def release(self) -> None:

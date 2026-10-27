@@ -28,11 +28,6 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
-from utils.data_dir_migration import (
-    forget_moved_data_dir,
-    is_left_by_a_move,
-    moved_data_dir_to_delete,
-)
 from utils.enum import Extension
 from utils.program_variables import ProgramVar
 
@@ -127,24 +122,7 @@ class DataRecovery:
 
         cls._recover_legacy_event_db()
         cls._clean_unsupported_version()
-        cls._clean_moved_data_dir()
         SETUP_MARKER.write_text(SETUP_DONE)
-
-    @staticmethod
-    def _clean_moved_data_dir() -> None:
-        """Deletes the folder a move of the data left behind, once out of the
-        supported versions, unless the user has reused it since."""
-        moved_dir = moved_data_dir_to_delete(SHARLY_CHESS_VERSION)
-        if not moved_dir:
-            return
-        if moved_dir.is_dir() and is_left_by_a_move(moved_dir):
-            shutil.rmtree(moved_dir, ignore_errors=True)
-            if moved_dir.exists():
-                # Tried again on the next start.
-                logger.warning('Previous data folder [%s] not removed', moved_dir)
-                return
-            logger.info('Previous data folder [%s] removed', moved_dir)
-        forget_moved_data_dir()
 
     @staticmethod
     def _get_version_dir(version: Version) -> Path:

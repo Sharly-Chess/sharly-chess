@@ -443,7 +443,7 @@ try:
     # user is sent to the running one instead.
     if not TEST_ENV:
         instance_lock = InstanceLock(DATA_DIR)
-        if not instance_lock.acquire():
+        if not instance_lock.acquire_waiting():
             running_info = instance_lock.read_info()
             logger.warning(
                 'Sharly Chess is already running on [%s] (process %s), exiting.',

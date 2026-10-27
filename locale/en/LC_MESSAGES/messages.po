@@ -827,6 +827,9 @@ msgstr ""
 msgid "Actions prohibited by the FIDE regulations will be allowed, the tournament will be flagged as not in FIDE mode, and its TRF will record the round FIDE mode was left at, from which its data can no longer be trusted."
 msgstr ""
 
+msgid "Activate automatic backups"
+msgstr ""
+
 msgctxt "active account"
 msgid "Active"
 msgstr ""
@@ -1420,6 +1423,9 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+msgid "Back up now"
+msgstr ""
+
 msgid "Background color"
 msgstr ""
 
@@ -1427,6 +1433,19 @@ msgid "Background colour"
 msgstr ""
 
 msgid "Background image URL:"
+msgstr ""
+
+#, python-brace-format
+msgid "Backup of event [{uniq_id}] taken at {time}."
+msgstr ""
+
+msgid "Backups"
+msgstr ""
+
+msgid "Backups are turned off in the settings: no new one is being taken. The backups already taken can still be restored."
+msgstr ""
+
+msgid "Backups folder"
 msgstr ""
 
 msgid "Bahamas"
@@ -1466,10 +1485,136 @@ msgctxt "board number column header"
 msgid "Bd."
 msgstr ""
 
+#, python-brace-format
+msgid "Before [{tournament}] moved to round {round}"
+msgstr ""
+
+#, python-brace-format
+msgid "Before [{tournament}] was paired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before [{tournament}] was unpaired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a bye of round {round} of [{tournament}] was changed"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a bye of round {round} was changed"
+msgstr ""
+
+msgid "Before a bye was changed"
+msgstr ""
+
+msgid "Before a restoration"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a result of round {round} of [{tournament}] was changed"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a result of round {round} was changed"
+msgstr ""
+
+msgid "Before a result was changed"
+msgstr ""
+
+msgid "Before an upgrade"
+msgstr ""
+
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr ""
 
+msgid "Before moving to another round"
+msgstr ""
+
+#, python-brace-format
+msgid "Before moving to round {round}"
+msgstr ""
+
+msgid "Before players were distributed"
+msgstr ""
+
+msgid "Before players were imported"
+msgstr ""
+
+#, python-brace-format
+msgid "Before players were imported into [{tournament}]"
+msgstr ""
+
+#, python-brace-format
+msgid "Before round {round} of [{tournament}] was paired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before round {round} of [{tournament}] was paired by hand"
+msgstr ""
+
+#, python-brace-format
+msgid "Before round {round} of [{tournament}] was unpaired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before round {round} was paired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before round {round} was paired by hand"
+msgstr ""
+
+#, python-brace-format
+msgid "Before round {round} was unpaired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before the colours of a board of round {round} of [{tournament}] were swapped"
+msgstr ""
+
+#, python-brace-format
+msgid "Before the colours of a board of round {round} were swapped"
+msgstr ""
+
+msgid "Before the colours of a board were swapped"
+msgstr ""
+
 msgid "Before the first round"
+msgstr ""
+
+#, python-brace-format
+msgid "Before the number of rounds of [{tournament}] was changed"
+msgstr ""
+
+msgid "Before the number of rounds was changed"
+msgstr ""
+
+msgid "Before the pairings were edited by hand"
+msgstr ""
+
+#, python-brace-format
+msgid "Before the players of [{tournament}] were renumbered"
+msgstr ""
+
+msgid "Before the players were renumbered"
+msgstr ""
+
+msgid "Before the rounds were paired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before the tie-breaks of [{tournament}] were changed"
+msgstr ""
+
+msgid "Before the tie-breaks were changed"
+msgstr ""
+
+msgid "Before the tournament was unpaired"
+msgstr ""
+
+#, python-brace-format
+msgid "Before upgrading to {version}"
 msgstr ""
 
 msgid "Belarus"
@@ -1922,6 +2067,9 @@ msgstr ""
 msgid "Championships"
 msgstr ""
 
+msgid "Change"
+msgstr ""
+
 msgid "Change the games already played? Only do so to set them as they were really played, players having sat at the wrong boards."
 msgstr ""
 
@@ -2236,6 +2384,10 @@ msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
 #, python-brace-format
+msgid "Confirm the new backups folder [{folder}]?"
+msgstr ""
+
+#, python-brace-format
 msgid "Confirm the new data folder [{folder}]?"
 msgstr ""
 
@@ -2481,6 +2633,10 @@ msgid "Create tournament"
 msgstr ""
 
 msgid "Create with default screens"
+msgstr ""
+
+#, python-brace-format
+msgid "Created on {date}"
 msgstr ""
 
 #, python-brace-format
@@ -2839,10 +2995,6 @@ msgstr ""
 msgid "Delete the multi-screen."
 msgstr ""
 
-#, python-brace-format
-msgid "Delete the previous data folder [{folder}]?"
-msgstr ""
-
 msgid "Delete the rotator."
 msgstr ""
 
@@ -3054,14 +3206,16 @@ msgstr ""
 msgid "Do you like Sharly Chess? Help us keep it free and improving!"
 msgstr ""
 
-msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
-msgstr ""
+msgid "Do you want to add this folder to the Microsoft Defender exception list?"
+msgid_plural "Do you want to add these folders to the Microsoft Defender exception list?"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Do you want to install the update now?"
 msgstr ""
 
 #, python-brace-format
-msgid "Do you want to move the data to [{folder}]? The current folder will be kept as a copy."
+msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
 msgstr ""
 
 msgid "Do you want to try again?"
@@ -3661,6 +3815,14 @@ msgstr ""
 
 #, python-brace-format
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
+msgstr ""
+
+#, python-brace-format
+msgid "Event [{uniq_id}] has been restored."
+msgstr ""
+
+#, python-brace-format
+msgid "Event [{uniq_id}] has been restored. The state it was in has been kept as a snapshot, so this can be undone."
 msgstr ""
 
 #, python-brace-format
@@ -4284,6 +4446,9 @@ msgstr ""
 msgid "Give/take away access level {access_level_short_name}"
 msgstr ""
 
+msgid "Go back to the default backups folder?"
+msgstr ""
+
 msgid "Go to the display controller."
 msgstr ""
 
@@ -4559,6 +4724,14 @@ msgstr ""
 
 #, python-format
 msgid "Import players to tournament [%(tournament)s]"
+msgstr ""
+
+#, python-brace-format
+msgid "Imported from Sharly-Chess.com on {date}"
+msgstr ""
+
+#, python-brace-format
+msgid "Imported from a file on {date}"
 msgstr ""
 
 msgid "Imported pairings"
@@ -4892,6 +5065,9 @@ msgstr ""
 msgid "Issues"
 msgstr ""
 
+msgid "It also empties the files it thinks are cold, which is what old backups look like: such a backup has to be downloaded again before it can be restored, so it will not be there at a venue with no network."
+msgstr ""
+
 msgid "It is highly recommended to set at least one tie-break."
 msgstr ""
 
@@ -5007,6 +5183,10 @@ msgid "Largest number of players a team may have on its roster. Leave blank for 
 msgstr ""
 
 msgid "Last First"
+msgstr ""
+
+#, python-brace-format
+msgid "Last backup taken at {time}."
 msgstr ""
 
 msgid "Last board:"
@@ -5986,6 +6166,9 @@ msgstr ""
 msgid "No available update"
 msgstr ""
 
+msgid "No backup has been taken of this event yet."
+msgstr ""
+
 msgid "No built-in templates."
 msgstr ""
 
@@ -6321,6 +6504,9 @@ msgid "No timers"
 msgstr ""
 
 msgid "No title norm has been achieved in this tournament."
+msgstr ""
+
+msgid "No tournament"
 msgstr ""
 
 msgid "No tournament has been played yet."
@@ -7722,9 +7908,6 @@ msgstr ""
 msgid "Preview the card with different sample data."
 msgstr ""
 
-msgid "Previous data folder, kept as a copy"
-msgstr ""
-
 msgid "Previous round"
 msgstr ""
 
@@ -8284,16 +8467,20 @@ msgstr ""
 msgid "Rest"
 msgstr ""
 
-msgid "Restart Sharly Chess to complete the move."
-msgstr ""
-
-msgid "Restart to complete the move"
-msgstr ""
-
-msgid "Restarting will be required to complete the move."
-msgstr ""
-
 msgid "Restore"
+msgstr ""
+
+msgid "Restore a backup"
+msgstr ""
+
+msgid "Restore this backup (the original event is saved before being replaced by this backup, so the operation can be undone)."
+msgstr ""
+
+msgid "Restore this backup as a new event (the original event will remain available)."
+msgstr ""
+
+#, python-brace-format
+msgid "Restored from a backup on {date}"
 msgstr ""
 
 msgid "Result"
@@ -8596,6 +8783,10 @@ msgid "Round {round} of pairing number {number} is already accelerated."
 msgstr ""
 
 #, python-brace-format
+msgid "Round {round} of {rounds}"
+msgstr ""
+
+#, python-brace-format
 msgid "Round {round} of {rounds} could not be paired ({error}): the tournament was not generated."
 msgstr ""
 
@@ -8690,6 +8881,14 @@ msgid "Russia"
 msgstr ""
 
 msgid "Rwanda"
+msgstr ""
+
+#, python-brace-format
+msgid "R{first}–R{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "R{round}"
 msgstr ""
 
 msgid "SCR"
@@ -9150,9 +9349,6 @@ msgstr ""
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
-msgid "Sharly Chess no longer uses it, your data is in the current folder."
-msgstr ""
-
 msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
 msgstr ""
 
@@ -9175,6 +9371,9 @@ msgid "Sharly Chess server"
 msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr ""
+
+msgid "Sharly Chess will restart to complete the move."
 msgstr ""
 
 #, python-brace-format
@@ -9261,6 +9460,9 @@ msgid "Single elimination"
 msgstr ""
 
 msgid "Single elimination — two-game matches"
+msgstr ""
+
+msgid "Size"
 msgstr ""
 
 msgid "Size (pt)"
@@ -9480,6 +9682,9 @@ msgid "Starting rank"
 msgstr ""
 
 msgid "Starting rank ties:"
+msgstr ""
+
+msgid "State"
 msgstr ""
 
 msgid "Statistics"
@@ -9899,6 +10104,13 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
+#, python-brace-format
+msgid "The backup of event [{uniq_id}] failed: {error}"
+msgstr ""
+
+msgid "The backups already taken will be moved there."
+msgstr ""
+
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
@@ -9947,16 +10159,13 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
-msgid "The current folder will be kept as a copy."
+msgid "The current folder will be deleted once the copy has been checked."
 msgstr ""
 
 msgid "The current round was paired from this one: this correction breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr ""
 
-msgid "The data folder could not be added to the Microsoft Defender exception list."
-msgstr ""
-
-msgid "The data folder has been successfully added to the Microsoft Defender exception list."
+msgid "The data folder and the backups folder can not be one inside the other."
 msgstr ""
 
 msgid "The director is the person in charge of the event."
@@ -9978,6 +10187,9 @@ msgid "The event no longer exists, so it cannot be opened."
 msgstr ""
 
 msgid "The event type cannot be changed after creation."
+msgstr ""
+
+msgid "The event will be replaced by this backup."
 msgstr ""
 
 msgid "The features your federation, your software or your events need can be added to Sharly Chess as a plugin."
@@ -10014,9 +10226,15 @@ msgstr ""
 msgid "The fixed rating must be between 1 and {max}."
 msgstr ""
 
-#, python-brace-format
-msgid "The folder [{folder}] could not be deleted entirely."
-msgstr ""
+msgid "The folder could not be added to the Microsoft Defender exception list."
+msgid_plural "The folders could not be added to the Microsoft Defender exception list."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "The folder has been successfully added to the Microsoft Defender exception list."
+msgid_plural "The folders have been successfully added to the Microsoft Defender exception list."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "The following categories will also be deleted:"
 msgstr ""
@@ -10056,6 +10274,9 @@ msgid "The label used for this multi-screen in menus. Its range is appended auto
 msgstr ""
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
+msgstr ""
+
+msgid "The last backup could not be written."
 msgstr ""
 
 #, python-brace-format
@@ -10148,6 +10369,9 @@ msgid "The network on which the devices are connected."
 msgstr ""
 
 msgid "The new folder can't be a sub folder of the current folder."
+msgstr ""
+
+msgid "The new folder is in use, but the backups already taken could not be moved to it. They are still in the previous folder."
 msgstr ""
 
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
@@ -10361,10 +10585,6 @@ msgid_plural "The points the file gives {count} players do not match this scorin
 msgstr[0] ""
 msgstr[1] ""
 
-#, python-brace-format
-msgid "The previous folder is kept as a copy at [{folder}], and will be deleted two versions from now. You can delete it sooner from the settings."
-msgstr ""
-
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr ""
 
@@ -10538,6 +10758,10 @@ msgstr ""
 msgid "The settings are set and can no longer be changed."
 msgstr ""
 
+#, python-brace-format
+msgid "The snapshot has been restored as the new event [{uniq_id}]."
+msgstr ""
+
 msgid "The source event and tournament will not be deleted."
 msgstr ""
 
@@ -10552,6 +10776,9 @@ msgid "The source of the rating of {count} player was brought up to date."
 msgid_plural "The sources of the ratings of {count} players were brought up to date."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "The state it is in now is kept as a backup first, so this can be undone."
+msgstr ""
 
 msgid "The stronger seed takes White in every match (for a team, board-one White)."
 msgstr ""
@@ -10759,6 +10986,12 @@ msgstr ""
 msgid "This action is not possible for this round."
 msgstr ""
 
+msgid "This backup was taken by a more recent version of the application and cannot be restored by this one."
+msgstr ""
+
+msgid "This backup was taken by another version of the application and its content could not be read. It can still be restored."
+msgstr ""
+
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
 msgstr ""
 
@@ -10807,7 +11040,25 @@ msgstr ""
 msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
 msgstr ""
 
+msgid "This event could not be opened. Restoring a backup replaces its file, which is what brings it back."
+msgstr ""
+
+msgid "This event could not be read to be backed up, which means the event itself may be damaged. Restoring the most recent backup below is the way out."
+msgstr ""
+
+msgid "This event could not be read to be backed up."
+msgstr ""
+
+msgid "This event could not be read, so there is nothing to keep of the state it is in now."
+msgstr ""
+
+msgid "This event could not be read. Archiving it sets its file aside, and its backups are kept with it: both can be brought back from the archives."
+msgstr ""
+
 msgid "This event exists on the server but could not be opened. It may be locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software."
+msgstr ""
+
+msgid "This event is no longer being backed up."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
@@ -10849,6 +11100,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "This folder is synchronised by {service}, which can block the events while Sharly Chess writes to them."
+msgstr ""
+
+#, python-brace-format
+msgid "This folder is synchronised by {service}, which keeps a copy of the backups off this computer."
 msgstr ""
 
 msgid "This game has been played."
@@ -11800,6 +12055,9 @@ msgstr ""
 msgid "Use match points for colour allocation"
 msgstr ""
 
+msgid "Use my own folder"
+msgstr ""
+
 #, python-brace-format
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr ""
@@ -11938,6 +12196,9 @@ msgid "View public screens"
 msgstr ""
 
 msgid "View the Tournaments tab"
+msgstr ""
+
+msgid "View the backups of the event."
 msgstr ""
 
 msgid "View the menu."
@@ -12638,6 +12899,9 @@ msgstr ""
 msgid "item id"
 msgstr ""
 
+msgid "kB"
+msgstr ""
+
 msgid "last"
 msgstr ""
 
@@ -12728,6 +12992,9 @@ msgid "not among the ratings retrieved"
 msgstr ""
 
 msgid "not counted"
+msgstr ""
+
+msgid "not started"
 msgstr ""
 
 #, python-format
@@ -13205,6 +13472,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{rating} · from the rating lists"
+msgstr ""
+
+#, python-brace-format
+msgid "{results} of {boards} results"
 msgstr ""
 
 #, python-brace-format
