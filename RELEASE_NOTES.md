@@ -2,31 +2,54 @@
 
 ## General
 
-- The language, federation and date format settings have moved from the browser to the main application window (5.1.0)
-- Plugins are now installed and uninstalled from the main application window (5.1.0)
-- The event export feature has been moved to the event's configuration window (5.1.0)
-- A reminder to update player data is shown before distributing players across tournaments (5.1.0)
-- The administration interface adapts to phone screens (5.1.0)
+- A name format setting (Last First / Last, First / First Last / First, Last), with an option to display last names in capitals, sets how players' names are displayed, whatever the language (5.2.0)
+- The update settings of the main application window have moved to a new About tab (5.2.0)
+- _FFE_ arbiter titles follow the 2026 reform (Young, Match, Club and Open Arbiter); the FIDE arbiter title (FA or IA) is filled in from the _FFE_ database, and existing accounts are converted following the transition rules of the DNA, the former Elite arbiters becoming FIDE or International Arbiters (5.2.0)
+- Only one _Sharly Chess_ runs on a data folder: starting it again opens the running one in the browser instead of starting a second server on another port, which would write to the same events (5.2.0)
+- On Windows, the data is stored in the local application data (`%LOCALAPPDATA%\Sharly Chess`) instead of the Documents, which cloud services such as OneDrive can synchronise and so block the events while _Sharly Chess_ writes to them. The data of the former default folder is moved on the first start, the previous folder being kept as a copy for two versions; a folder chosen in OneDrive, Google Drive, Dropbox or iCloud Drive is moved if the user agrees (5.2.0)
+- The FFE upload, the event clone and the event backup copy the event in one consistent snapshot, even while results are being entered (5.2.0)
 
 ## Tournaments
 
-- Exclusion of players (or teams) who have not played 50% of the games (or matches) in accordance with FIDE 6.6 in round robins (5.1.0)
-- Separate players of the same club when distributing players on balanced tournaments, as much as possible (5.1.0)
+- FIDE mode for Swiss tournaments: actions prohibited by the FIDE regulations are refused unless the tournament leaves FIDE mode, which is final once the first round is paired and recorded in the TRF (5.2.0)
+- Team Swiss tournaments log the corrections to rounds already paired from and the changes to the number of rounds and the tie-breaks, each change asking only for a confirmation (5.2.0)
+- Warnings follow the levels of the FIDE Technical Commission: a notice, a confirmation, or a double confirmation that spells out the consequences (5.2.0)
+- In FIDE mode, once started, the points and the pairing-allocated bye value are fixed, the number of rounds and the tie-breaks change only after a double confirmation, and prohibited pairings are fixed after the first round (5.2.0)
+- Allowing more than one half-point bye per player asks for confirmation in FIDE mode (5.2.0)
+- After a TRF import, each imported round is checked against the pairing engine, and the rounds that differ are listed and logged (5.2.0)
+- The TRF export is named after its use: _TRF26 (ITDX)_ for a partial file while the tournament is not finished or games have no result, where those games are unknown results; _TRF26 (final)_ for the final report, which alone carries the corrections made for the rating report (5.2.0)
+- A new _PGN (all rounds)_ export gives the games of every paired round in a single file, and both PGN exports now carry the results of the games, forfeits included, with the round dates, the players' FIDE IDs and teams, and the time control (5.2.0)
+- Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
+- In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
 
 ## Players
 
-- The player search can now be narrowed by federation, gender, age category and club (plus licence and league for _FFE_ searches), and the filters can be filled in one go from the criteria of any tournament of the event (5.0.3)
+- Players' names are stored as entered; first names written all in capitals or all in lower case are displayed capitalised (5.2.0)
+- The players tab is sorted by the name displayed first (5.2.0)
+- Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 
 ## Pairings
 
-- Ask if a round should be marked as completed for individual round robins (5.1.0)
-- Added support for individual and team knockout pairings (single/double elimination, and two-game-match variants) (5.1.0)
-- Results entered on an administration pairings screen now notify the other administration screens immediately, as results entered on an input screen already did (5.1.0)
-- The team ranking of fixed-table tournaments (Molter) now shows the game points and the tie-breaks, which were all displayed as zero (5.1.0)
-- Bonus / penalty points can no longer be given to an individual player of a team event from the player's record: team events adjust whole teams (5.1.0)
+- In FIDE mode, editing the pairings of a round by hand is validated against the pairing engine at the end, or cancelled; the next round waits for the validation (5.2.0)
+- Manual pairings warn about repeated games, prohibited pairings, colour rules and ineligible pairing-allocated byes (5.2.0)
+- In FIDE mode, each correction to the previous round is confirmed and logged; older rounds cannot be changed (5.2.0)
+- A game of an older round found wrong can be corrected for the rating report only: the TRF and Papi exports give it as corrected, the TRF with a comment saying what the pairings and the standings used (5.2.0)
+- A log of the pairing integrity breaches and settings changes, shown on the pairings page and written as comments in the TRF (5.2.0)
+- Double round robins can choose whether the last two rounds of the first cycle are reversed, as recommended by FIDE to avoid three games in a row with the same colour (5.2.0)
+- Round robins, individual and team, can be paired from a schedule set by hand (the new custom schedule variations) or edited after pairing from the Berger tables; the schedule is checked against the round-robin rules before it is saved (each pair meeting once, or twice, and no three games in a row with the same colour), and once results are entered, games played at the wrong boards can be corrected and a schedule breaking the rules saved anyway, the log and the TRF listing the rules it breaks for as long as it does (5.2.0)
+- Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
+- The rating-based tie-breaks (ARO, TPR, APRO, PTP, APPO and RTNG) can give players without a FIDE or national rating a fixed rating, 1400 by default, instead of their estimated rating (5.2.0)
+- Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the FFE T2 minutes (5.2.0)
+- The arbiter now publishes each round: until then, the screens and the online services (Sharly-Chess.com, Chess-Results, FFE, custom uploads) stay on the previous round, while the new pairings can be checked and printed. A round can be published once the rounds before it are finished, and unpublished as long as it has no results (5.2.0)
+- In round robins and fixed-table tournaments (Molter, Scheveningen), whose pairings are known in advance, the online services receive the pairings of every round as soon as they are made; publishing a round moves the screens on to it and makes its results public. Publishing replaces the End round button of round robins (5.2.0)
+- When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
 
 ## Documents
 
-- Place cards can now be edited with an embedded editor (5.1.0)
-- A reminder to update player data is shown before generating place cards (5.1.0)
-- Team tournaments paired on fixed tables (Molter) print the pairings document, with its options, in place of the match sheets (5.1.0)
+- The FFE T2 minutes open with the events logged for the chosen tournaments (5.2.0)
+- The rules of the accelerated systems can be printed, from the documents or from the pairing settings: the rules of the system, the groups, the virtual points granted round by round and the players of each group (5.2.0)
+- Pairing place cards are not generated anymore for Pairing Allocated Byes (5.2.0)
+
+## Sharly-Chess.com
+
+- Several computers can synchronise the same event with Sharly-Chess.com: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)

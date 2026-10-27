@@ -1,6 +1,6 @@
 {{ admin_macros.select_input(
     name='players_board_format',
-    label=_('Board:'),
+    label=_('%(string)s:', string=_('Board')),
     select_options=players_board_format_options,
     data=data, errors=errors
 ) }}

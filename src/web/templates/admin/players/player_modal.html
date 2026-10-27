@@ -1,3 +1,4 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
 <div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-player-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -55,6 +56,23 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% if regeneration %}
+                    <div class="alert alert-warning d-flex">
+                        {{ warning_macros.level_icon(3) }}
+                        <div>
+                            <p class="mb-1">
+                                {{ _(
+                                    'Saving this player changes the order of the pairing numbers, '
+                                    'from which rounds have already been paired. This breaches the '
+                                    'integrity of the pairings, and will be logged in the TRF:'
+                                ) }}
+                            </p>
+                            <p class="mb-1 font-monospace">{{ regeneration }}</p>
+                            <p class="mb-0">{{ _('Save again to confirm.') }}</p>
+                        </div>
+                    </div>
+                    <input type="hidden" name="regeneration_confirmed" value="on">
+                {% endif %}
                 <h4>
                     {{ _('Identity') }}
                 </h4>
@@ -63,7 +81,7 @@
                     <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='last_name',
-                            label=_('Name:'),
+                            label=_('%(string)s:', string=_('Name')),
                             placeholder=_('E.g.: DOE'),
                             data=data, errors=errors
                         ) }}
@@ -71,7 +89,7 @@
                     <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='first_name',
-                            label=_('First name:'),
+                            label=_('%(string)s:', string=_('First name')),
                             placeholder=_('E.g.: John'),
                             data=data, errors=errors
                         ) }}
@@ -79,7 +97,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.date_input(
                             name='date_of_birth',
-                            label=_('Date of birth:'),
+                            label=_('%(string)s:', string=_('Date of birth')),
                             tooltip_text=_(
                                 'Only the year of birth is required for most tournaments. '
                                 'it is therefore recommanded to only ask for your players\' '
@@ -94,15 +112,31 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='gender',
-                            label=_('Gender:'),
+                            label=_('%(string)s:', string=_('Gender')),
                             select_options=gender_options,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
+                            name='mail',
+                            label=_('Email:'),
+                            placeholder=_('E.g.: john.doe@chess.com'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='phone',
+                            label=_('%(string)s:', string=_('Phone number')),
+                            data=data, errors=errors
+                        ) }}
+                        {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
                             name='club',
-                            label=_('Club:'),
+                            label=_('%(string)s:', string=_('Club')),
                             placeholder=_('E.g.: My favourite club!'),
                             data=data, errors=errors
                         ) }}
@@ -110,7 +144,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='federation',
-                            label=_('Federation:'),
+                            label=_('%(string)s:', string=_('Federation')),
                             select_options=federation_options,
                             data=data, errors=errors
                         ) }}
@@ -119,235 +153,12 @@
                 {% for template in plugin_templates_by_section['identity'] %}
                     {% include template %}
                 {% endfor %}
-
-                {% if is_team_event %}
-                    <h4>{{ _('Team') }}</h4>
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12">
-                            {{ admin_macros.select_input(
-                                name='team_id',
-                                label=_('Team:'),
-                                select_options=team_options,
-                                disabled=team_locked,
-                                input_tooltip=_(
-                                    'This player has already been paired; '
-                                    'their team cannot be changed.'
-                                ) if team_locked else '',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-                {% else %}
-                    <h4>
-                        {{ _('Tournament') }}
-                    </h4>
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12 col-sm-8">
-                            {{ admin_macros.select_input(
-                                name='tournament_id',
-                                label=_('Tournament:'),
-                                select_options=tournament_options,
-                                disabled=admin_player.has_real_pairings,
-                                input_tooltip=(
-                                    _('The player has already been paired, removing them from the tournament is impossible.')
-                                    if admin_player.has_real_pairings else ''
-                                ),
-                                data=data, errors=errors
-                            ) }}
-                            {% if admin_player.has_real_pairings %}
-                                <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
-                            {% endif %}
-                        </div>
-
-                        <div class="col-12 col-sm-4">
-                            {{ admin_macros.number_input(
-                                name='fixed',
-                                label=_('Fixed board:'),
-                                tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
-                                min=1,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-                {% endif %}
-
-                <h4>
-                    {{ _('Ratings') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    {% set show_estimated_ratings = (
-                        data['standard_rating_estimated'] or
-                        data['rapid_rating_estimated'] or
-                        data['blitz_rating_estimated']
-                    ) %}
-                    {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
-                        <div class="col-4">
-                            {%
-                                with
-                                    fide=tournament_rating.form_key ~ '_rating_fide',
-                                    national=tournament_rating.form_key ~ '_rating_national',
-                                    estimated=tournament_rating.form_key ~ '_rating_estimated',
-                                    k=tournament_rating.form_key ~ '_rating_k'
-                            %}
-                                {%
-                                    with
-                                        fide_id=fide|replace('_', '-'),
-                                        national_id=national|replace('_', '-'),
-                                        estimated_id=estimated|replace('_', '-'),
-                                        k_id=k|replace('_', '-')
-                                %}
-                                    <label class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input
-                                            name="{{ fide }}"
-                                            type="number"
-                                            id="{{ fide_id }}"
-                                            data-testid="{{ fide_id }}"
-                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %} mb-2"
-                                            aria-describedby="{{ fide_id }}-help {{ fide_id }}-error"
-                                            value="{{ data[fide] }}"
-                                        />
-                                        <div>{{ rating_type_labels['fide'] }}</div>
-                                        <input
-                                            name="{{ k }}"
-                                            type="number"
-                                            id="{{ k_id }}"
-                                            data-testid="{{ k_id }}"
-                                            class="form-control d-inline {% if k in errors %}is-invalid{% endif %} mb-2"
-                                            style="max-width: 4.5rem"
-                                            aria-describedby="{{ k_id }}-help {{ k_id }}-error"
-                                            placeholder="{{ k_factor_placeholders[tournament_rating] }}"
-                                            min="{{ min_k_factor }}"
-                                            max="{{ max_k_factor }}"
-                                            value="{{ data[k] }}"
-                                        />
-                                        <div
-                                            {{ macros.tooltip_attributes('info', _(
-                                                'The FIDE coefficient (k) of the player. '
-                                                'When left empty, the coefficient shown is estimated '
-                                                'from the rating and the age of the player.'
-                                            )) }}
-                                        >
-                                            {{ pgettext('FIDE rating coefficient', 'K') }}
-                                        </div>
-                                    </div>
-                                    {% if fide in errors %}
-                                        <div id="{{ fide_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[fide] }}
-                                        </div>
-                                    {% endif %}
-                                    {% if k in errors %}
-                                        <div id="{{ k_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[k] }}
-                                        </div>
-                                    {% endif %}
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input
-                                            name="{{ national }}"
-                                            type="number"
-                                            id="{{ national_id }}"
-                                            data-testid="{{ national_id }}"
-                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %} mb-2"
-                                            aria-describedby="{{ national_id }}-help {{ national_id }}-error"
-                                            value="{{ data[national] }}"
-                                        />
-                                        <div>{{ rating_type_labels['national'] }}</div>
-                                    </div>
-                                    {% if national in errors %}
-                                        <div id="{{ national_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[national] }}
-                                        </div>
-                                    {% endif %}
-                                    <div
-                                        class="estimated-container d-flex align-items-center gap-2"
-                                        {% if not show_estimated_ratings %}
-                                            style="display:none !important"
-                                        {% endif %}
-                                    >
-                                        <input
-                                            name="{{ estimated }}"
-                                            type="number"
-                                            id="{{ estimated_id }}"
-                                            data-testid="{{ estimated_id }}"
-                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %}"
-                                            aria-describedby="{{ estimated_id }}-help {{ estimated_id }}-error"
-                                            value="{{ data[estimated] }}"
-                                        />
-                                        <div>{{ rating_type_labels['estimated'] }}</div>
-                                    </div>
-                                    {% if estimated in errors %}
-                                        <div id="{{ estimated_id }}-error" class="form-text invalid-feedback" style="display: block">
-                                            {{ errors[estimated] }}
-                                        </div>
-                                    {% endif %}
-                                {% endwith %}
-                            {% endwith %}
-                        </div>
-                    {% endfor %}
-                    {% if not show_estimated_ratings %}
-                        <div class="text-center">
-                            <button
-                                id="add-estimated"
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                {{ macros.tooltip_attributes('info', _(
-                                    'Players may have default estimated ratings depending on the activated plugins.'
-                                )) }}
-                            >
-                                <i class="bi-plus-circle pe-1"></i>
-                                {{ _('Add manual estimated ratings') }}
-                            </button>
-                            <script>
-                                $('#add-estimated').click(function (e) {
-                                    $('.estimated-container').css('display', 'flex');
-                                    $(this).parent().css('display', 'none');
-                                })
-                            </script>
-                        </div>
-                    {% endif %}
-                </div>
-                <script>
-                    (function () {
-                        // Section B-02-8.3.3 of the FIDE handbook.
-                        function estimateKFactor(fideRating, yearOfBirth) {
-                            if (!fideRating) {
-                                return 40;
-                            }
-                            if (fideRating > 2400) {
-                                return 10;
-                            }
-                            var age = new Date().getFullYear() - yearOfBirth;
-                            if (yearOfBirth && age <= 18 && fideRating < 2300) {
-                                return 40;
-                            }
-                            return 20;
-                        }
-                        function updateKFactorPlaceholders() {
-                            var yearMatch = ($('#date-of-birth').val() || '').match(/\d{4}/);
-                            var yearOfBirth = yearMatch ? parseInt(yearMatch[0], 10) : null;
-                            {% for tournament_rating in tournament_ratings_strings %}
-                                {% set key = tournament_rating.form_key|replace('_', '-') %}
-                                $('#{{ key }}-rating-k').attr('placeholder', estimateKFactor(
-                                    parseInt($('#{{ key }}-rating-fide').val(), 10),
-                                    yearOfBirth
-                                ));
-                            {% endfor %}
-                        }
-                        $('#date-of-birth, input[name$="_rating_fide"]').on(
-                            'input change', updateKFactorPlaceholders
-                        );
-                    })();
-                </script>
-
-                <h4>
-                    {{ _('FIDE') }}
-                </h4>
                 {% set is_woman = data['gender'] == woman_gender_value %}
-                <div class="row gy-2 gx-3">
+                <div class="row gy-2 gx-3 mt-0">
                     <div id="fide-id-col" class="{{ 'col-12' if is_woman else 'col-12 col-sm-6' }}">
                         {{ admin_macros.number_input(
                             name='fide_id',
-                            label=_('FIDE ID:'),
+                            label=_('%(string)s:', string=_('FIDE ID')),
                             disabled=action == 'update' or data['fide_id'] != '',
                             input_tooltip=_(
                                 'Replace the player to update this field.'
@@ -390,36 +201,101 @@
                         $gender.on('change', updateWomenTitleLayout);
                     })();
                 </script>
-                {% for template in plugin_templates_by_section['fide'] %}
-                    {% include template %}
-                {% endfor %}
-
-                <h4>
-                    {{ _('Contact and registration') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='mail',
-                            label=_('Email:'),
-                            placeholder=_('E.g.: john.doe@chess.com'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='phone',
-                            label=_('Phone number:'),
-                            data=data, errors=errors
-                        ) }}
-                        {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
-                    </div>
+                <div class="row gy-2 gx-3 mt-0">
+                    {% if national_data_source %}
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.text_input(
+                                name='national_id',
+                                label=national_data_source.national_id_form_label,
+                                placeholder=(
+                                    _('E.g.: %(string)s', string=national_data_source.national_id_form_placeholder)
+                                    if national_data_source.national_id_form_placeholder else ''
+                                ),
+                                disabled=action == 'update' or data['national_source'] != '',
+                                input_tooltip=_(
+                                    'Replace the player to update this field.'
+                                ) if action == 'update' or data['national_source'] != '' else '',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    {% else %}
+                        <input type="hidden" name="national_id" value="{{ data['national_id'] or '' }}">
+                    {% endif %}
+                    <input type="hidden" name="national_source" value="{{ data['national_source'] or '' }}">
+                    {% for template in plugin_templates_by_section['national'] %}
+                        {% include template %}
+                    {% endfor %}
                 </div>
-                <div class="row gy-2 gx-3">
+
+                {% if is_team_event %}
+                    <h4>{{ _('Team') }}</h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12">
+                            {{ admin_macros.select_input(
+                                name='team_id',
+                                label=_('%(string)s:', string=_('Team')),
+                                select_options=team_options,
+                                disabled=team_locked,
+                                input_tooltip=_(
+                                    'This player has already been paired; '
+                                    'their team cannot be changed.'
+                                ) if team_locked else '',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% else %}
+                    <h4>
+                        {{ _('Tournament') }}
+                    </h4>
+                    <div class="row gy-2 gx-3 align-items-center">
+                        <div class="col-12">
+                            {{ admin_macros.select_input(
+                                name='tournament_id',
+                                label=_('%(string)s:', string=_('Tournament')),
+                                select_options=tournament_options,
+                                disabled=admin_player.has_real_pairings,
+                                input_tooltip=(
+                                    _('The player has already been paired, removing them from the tournament is impossible.')
+                                    if admin_player.has_real_pairings else ''
+                                ),
+                                data=data, errors=errors
+                            ) }}
+                            {% if admin_player.has_real_pairings %}
+                                <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                            {{ admin_macros.number_input(
+                                name='fixed',
+                                label=_('%(string)s:', string=_('Fixed board')),
+                                tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
+                                min=1,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                            {{ admin_macros.switch_input(
+                                name='byes_allowed',
+                                placeholder=_('Eligible for byes'),
+                                tooltip_text=_('When disabled, no Half-Point Bye can be assigned to the player.'),
+                                disabled=byes_locked,
+                                input_tooltip=(
+                                    _('The player has already been assigned a bye.')
+                                    if byes_locked else ''
+                                ),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="row gy-2 gx-3 mt-0">
                     <div class="col-12 col-sm-6 col-lg-3">
                         {{ admin_macros.number_input(
                             name='owed',
-                            label=_('Owed:'),
+                            label=_('%(string)s:', string=_('Owed')),
                             step=0.01,
                             data=data, errors=errors
                         ) }}
@@ -427,7 +303,7 @@
                     <div class="col-12 col-sm-6 col-lg-3">
                         {{ admin_macros.number_input(
                             name='paid',
-                            label=_('Paid:'),
+                            label=_('%(string)s:', string=_('Paid')),
                             step=0.01,
                             data=data, errors=errors
                         ) }}
@@ -435,12 +311,220 @@
                     <div class="col-12 col-lg-6">
                         {{ admin_macros.text_input(
                             name='comment',
-                            label=_('Comment:'),
+                            label=_('%(string)s:', string=_('Comment')),
                             data=data, errors=errors
                         ) }}
                     </div>
 
                 </div>
+
+                <h4>
+                    {{ _('Ratings') }}
+                    {% if current_period %}
+                        <small class="text-muted">
+                            {{ _('Period %(index)d', index=current_period.index + 1) }}
+                            · {{ current_period.rounds_str }}
+                        </small>
+                    {% endif %}
+                </h4>
+                {% if is_team_event %}
+                    {% set _rating_context_key = team_tournament_ids.get(data['team_id'] or '', '') %}
+                {% else %}
+                    {% set _rating_context_key = data['tournament_id'] or '' %}
+                {% endif %}
+                {% set _rating_context = rating_contexts.get(_rating_context_key, rating_contexts['']) %}
+                <input type="hidden" name="ratings" value="{{ data['ratings'] }}">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-check-label d-block pb-1" for="tournament-rating">
+                            {{ _('Tournament rating') }}
+                            (<span id="rating-cadence">{{ _rating_context['cadence'] }}</span>):
+                        </label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input
+                                name="tournament_rating"
+                                type="number"
+                                id="tournament-rating"
+                                data-testid="tournament-rating"
+                                class="form-control d-inline {% if 'tournament_rating' in errors %}is-invalid{% endif %}"
+                                aria-describedby="tournament-rating-description tournament-rating-error"
+                                placeholder="{{ _rating_context['placeholder'] }}"
+                                value="{{ data['tournament_rating'] }}"
+                            />
+                            <div id="rating-suffix" class="text-nowrap">{{ _rating_context['suffix'] }}</div>
+                        </div>
+                        {% if 'tournament_rating' in errors %}
+                            <div id="tournament-rating-error" class="form-text invalid-feedback" style="display: block">
+                                {{ errors['tournament_rating'] }}
+                            </div>
+                        {% endif %}
+                        <div id="tournament-rating-description" class="form-text">{{ _rating_context['description'] }}</div>
+                        <div id="rating-choices-container" class="form-text mt-2 {% if not _rating_context['choices'] %}d-none{% endif %}">
+                            {{ _('Rating chosen:') }}
+                            <div id="rating-choices" class="ps-2">
+                                {% for choice in _rating_context['choices'] %}
+                                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                                        <input
+                                            class="form-check-input rating-choice flex-shrink-0"
+                                            style="margin: 0; position: relative; top: 0.14em"
+                                            type="radio"
+                                            name="rating_pin"
+                                            id="rating-pin-{{ loop.index }}"
+                                            value="{{ choice['key'] }}"
+                                            {% if choice['key'] == (data['rating_pin'] or '') %}checked{% endif %}
+                                        />
+                                        <label class="form-check-label" for="rating-pin-{{ loop.index }}">{{ choice['label'] }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-check-label d-block pb-1">{{ _('%(string)s:', string=_('Official FIDE rating')) }}</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <div id="official-rating" class="form-control-plaintext flex-grow-1">{{ _rating_context['official'] }}</div>
+                            <div
+                                id="rating-k-container"
+                                class="d-flex align-items-center gap-2 flex-shrink-0 {% if not _rating_context['has_official'] %}d-none{% endif %}"
+                            >
+                                <div
+                                    {{ macros.tooltip_attributes('info', _(
+                                        'The FIDE coefficient (k) of the player. '
+                                        'When left empty, the coefficient shown is estimated '
+                                        'from the rating and the age of the player.'
+                                    )) }}
+                                >
+                                    {{ pgettext('FIDE rating coefficient', 'K') }}
+                                </div>
+                                <input
+                                    name="rating_k"
+                                    type="number"
+                                    id="rating-k"
+                                    data-testid="rating-k"
+                                    class="form-control d-inline {% if 'rating_k' in errors %}is-invalid{% endif %}"
+                                    style="max-width: 4.5rem"
+                                    aria-describedby="rating-k-error"
+                                    placeholder="{{ _rating_context['k_placeholder'] }}"
+                                    min="{{ min_k_factor }}"
+                                    max="{{ max_k_factor }}"
+                                    value="{{ data['rating_k'] }}"
+                                    {% if not _rating_context['has_official'] %}disabled{% endif %}
+                                />
+                            </div>
+                        </div>
+                        {% if 'rating_k' in errors %}
+                            <div id="rating-k-error" class="form-text invalid-feedback" style="display: block">
+                                {{ errors['rating_k'] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <script>
+                        (() => {
+                            const ratingContexts = {{ rating_contexts|tojson }};
+                            const teamTournamentIds = {{ team_tournament_ids|tojson }};
+                            function showRatingContext() {
+                                const key = $('#team-id').length
+                                    ? (teamTournamentIds[$('#team-id').val()] || '')
+                                    : ($('#tournament-id').val() || '');
+                                const context = ratingContexts[key] || ratingContexts[''];
+                                $('#rating-cadence').text(context.cadence);
+                                $('#tournament-rating').val(context.value).attr('placeholder', context.placeholder);
+                                $('#rating-suffix').html(context.suffix);
+                                $('#tournament-rating-description').text(context.description);
+                                $('#rating-choices').empty().append(
+                                    context.choices.map((choice, index) => $('<div class="d-flex align-items-baseline gap-2 mb-2">').append(
+                                        $('<input class="form-check-input rating-choice flex-shrink-0" style="margin: 0; position: relative; top: 0.14em" type="radio" name="rating_pin">')
+                                            .attr('id', `rating-pin-${index + 1}`)
+                                            .val(choice.key)
+                                            .prop('checked', choice.key === context.pinned),
+                                        $('<label class="form-check-label">')
+                                            .attr('for', `rating-pin-${index + 1}`)
+                                            .html(choice.label),
+                                    ))
+                                );
+                                $('#rating-choices-container').toggleClass('d-none', !context.choices.length);
+                                currentChoices = context.choices;
+                                $('#official-rating').html(context.official);
+                                $('#rating-k-container').toggleClass('d-none', !context.has_official);
+                                $('#rating-k')
+                                    .val(context.k)
+                                    .attr('placeholder', context.k_placeholder)
+                                    .prop('disabled', !context.has_official);
+                            }
+                            let currentChoices = {{ _rating_context['choices']|tojson }};
+                            $('#tournament-id, #team-id').on('change', showRatingContext);
+                            // The rating a plugin prescribes follows the age
+                            // category, so the date of birth
+                            function refreshPrescribedRating() {
+                                const form = $('#modal-form');
+                                $.get(
+                                    '{{ url_for('admin-player-prescribed-rating', event_uniq_id=admin_event.uniq_id) }}',
+                                    form.serialize(),
+                                    (answer) => $('#tournament-rating').attr('placeholder', answer.placeholder),
+                                );
+                            }
+                            $('#date-of-birth').on('change', refreshPrescribedRating);
+                            $('#tournament-id, #team-id').on('change', refreshPrescribedRating);
+                            $('#rating-choices').on('change', '.rating-choice', function () {
+                                const choice = currentChoices.find((choice) => choice.key === this.value);
+                                if (choice) {
+                                    $('#tournament-rating').val(choice.value);
+                                    $('#rating-suffix').html(choice.suffix);
+                                    $('#tournament-rating-description').text(choice.description);
+                                }
+                            });
+                        })();
+                    </script>
+                </div>
+                {% if earlier_period_ratings %}
+                    <button
+                        type="button"
+                        class="collapse-button collapsed mt-2"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#earlier-period-ratings"
+                        aria-expanded="false"
+                    >
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <i class="bi-chevron-down text-body"></i>
+                            {{ _('Ratings of the earlier periods') }}
+                        </span>
+                    </button>
+                    <div id="earlier-period-ratings" class="collapse">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    {% for tournament_rating_strings in tournament_ratings_strings.values() %}
+                                        <th class="fw-normal">{{ tournament_rating_strings['label'] }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for period, ratings in earlier_period_ratings %}
+                                    <tr>
+                                        <td class="text-nowrap">
+                                            {{ _('Period %(index)d', index=period.index + 1) }}
+                                            · {{ period.rounds_str }}
+                                            {% if period.dates_str %}
+                                                <span class="text-muted">· {{ period.dates_str }}</span>
+                                            {% endif %}
+                                        </td>
+                                        {% for tournament_rating in tournament_ratings_strings %}
+                                            <td>
+                                                {{ ratings[tournament_rating] }}
+                                                {% if ratings[tournament_rating].k_factor %}
+                                                    <span class="text-muted">
+                                                        ({{ pgettext('FIDE rating coefficient', 'K') }}{{ ratings[tournament_rating].k_factor }})
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
             </form>
         </div>
         <div class="modal-footer">

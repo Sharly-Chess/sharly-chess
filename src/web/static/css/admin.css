@@ -32,6 +32,9 @@
 
 .compact-sidebar .sidebar .nav-icon-main-badge {
     position: absolute;
+    top: 2px;
+    bottom: auto;
+    right: 6px;
 }
 
 .player-link {
@@ -76,6 +79,11 @@
 
 .warning-cell {
     border: 2px solid rgba(var(--bs-warning-rgb));
+}
+
+.provisional-badge {
+    background-color: var(--bs-orange);
+    color: var(--bs-white);
 }
 
 .w-15em {
@@ -900,4 +908,16 @@
 .toggle.rounded .toggle-off,
 .toggle.rounded .toggle-handle{
     border-radius: 20rem !important;
+}
+
+/* These labels can wrap, and trimming each check to its cap height would
+   stack their lines onto the next element. */
+.match-sheet-list .form-check,
+.match-sheet-list .form-check-label,
+.wrapping-form-check .form-check {
+    text-box-trim: none;
+}
+
+.wrapping-form-check .switch-placeholder {
+    line-height: 1.25;
 }

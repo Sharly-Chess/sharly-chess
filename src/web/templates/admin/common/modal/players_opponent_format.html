@@ -1,6 +1,6 @@
 {{ admin_macros.select_input(
     name='players_opponent_format',
-    label=_('Opponent:'),
+    label=_('%(string)s:', string=_('Opponent')),
     select_options=players_opponent_format_options,
     data=data, errors=errors
 ) }}

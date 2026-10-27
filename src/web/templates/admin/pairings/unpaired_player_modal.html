@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import "/admin/common/warning_macros.j2" as warning_macros with context %}
 
 {% set can_set_zpb = client.can_set_zero_point_bye(admin_tournament.id) %}
 {% with
@@ -92,7 +93,7 @@
                                         hx-patch="{{ action_route }}"
                                     {% else %}
                                         hx-get="{{ url_for(
-                                            'admin-pairings-safety-mode-modal',
+                                            'admin-pairings-warning-modal',
                                             event_uniq_id=admin_event.uniq_id,
                                             tournament_id=admin_tournament.id,
                                             round=admin_round,
@@ -130,7 +131,7 @@
                                             hx-patch="{{ action_route }}"
                                         {% else %}
                                             hx-get="{{ url_for(
-                                                'admin-pairings-safety-mode-modal',
+                                                'admin-pairings-warning-modal',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=admin_tournament.id,
                                                 round=admin_round,
@@ -152,6 +153,8 @@
                                 class="w-100"
                                 {% if not client.can_set_half_point_bye(admin_tournament.id) %}
                                     {{ macros.tooltip_attributes('warning', _('You are not allowed to set Half-Point Byes.'), 'right') }}
+                                {% elif not tournament_player.byes_allowed %}
+                                    {{ macros.tooltip_attributes('info', _('The player is not eligible for byes.'), 'top') }}
                                 {% elif no_bye_possible %}
                                     {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=tournament_player.tournament.last_rounds_no_byes), 'top') }}
                                 {% elif not hpb_possible %}
@@ -165,35 +168,62 @@
                                     round=admin_round,
                                     player_id=tournament_player.id,
                                 ) %}
+                                {% set hpb_request %}
+                                    {% if action in allowed_actions %}
+                                        hx-patch="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-warning-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PATCH',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% endset %}
+                                {% set hpb_needs_confirmation = tournament_player.half_point_bye_needs_confirmation(admin_round) %}
                                 <button
                                     class="btn btn-outline-primary w-100"
                                     {% if (
                                         not client.can_set_half_point_bye(admin_tournament.id)
+                                        or not tournament_player.byes_allowed
                                         or no_bye_possible
                                         or not hpb_possible
                                     ) %}
                                         disabled
+                                    {% elif hpb_needs_confirmation %}
+                                        onclick="$('#second-hpb-confirmation').removeClass('d-none');"
                                     {% else %}
-                                        {% if action in allowed_actions %}
-                                            hx-patch="{{ action_route }}"
-                                        {% else %}
-                                            hx-get="{{ url_for(
-                                                'admin-pairings-safety-mode-modal',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=admin_tournament.id,
-                                                round=admin_round,
-                                                action=action,
-                                                redirect_method='PATCH',
-                                                redirect_route=action_route,
-                                            ) }}"
-                                        {% endif %}
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
+                                        {{ hpb_request }}
                                     {% endif %}
                                 >
                                     {{ _('Half-Point Bye') }}
                                 </button>
                             </span>
+                            {% if hpb_needs_confirmation %}
+                                <div class="w-100">
+                                    {% call(button) warning_macros.confirmation(
+                                        'second-hpb-confirmation',
+                                        _(
+                                            'The FIDE regulations allow a player one half-point bye per tournament, '
+                                            'and %(player)s already has one.',
+                                            player=tournament_player.full_name,
+                                        ),
+                                        _('Set Half-Point Bye'),
+                                        hidden=true,
+                                    ) %}
+                                        {% if button == 'cancel' %}
+                                            onclick="$('#second-hpb-confirmation').addClass('d-none');"
+                                        {% else %}
+                                            {{ hpb_request }}
+                                        {% endif %}
+                                    {% endcall %}
+                                </div>
+                            {% endif %}
                         {% endif %}
                         {% set action = 'MANUAL_PAIRING' %}
                         {% set action_route = url_for(
@@ -220,7 +250,7 @@
                                             hx-patch="{{ action_route }}"
                                         {% else %}
                                             hx-get="{{ url_for(
-                                                'admin-pairings-safety-mode-modal',
+                                                'admin-pairings-warning-modal',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=admin_tournament.id,
                                                 round=admin_round,

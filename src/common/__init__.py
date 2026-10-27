@@ -11,7 +11,9 @@ from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
+from utils.data_dir_migration import DataDirMigration
 from utils.file import shutil_delete_onexc
+from utils.instance_lock import InstanceLock
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
 
 
@@ -94,17 +96,34 @@ def _app_base_dir() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def windows_documents_dir() -> Path:
+    """The Documents folder of the user, wherever Windows has put it (in
+    OneDrive, for instance)."""
+    doc_reg_key = (
+        r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
+    )
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, doc_reg_key) as key:
+            documents_path = winreg.QueryValueEx(key, 'Personal')[0]
+    except OSError:
+        return Path.home() / 'Documents'
+    # The value is usually stored unexpanded (%USERPROFILE%\Documents).
+    return Path(os.path.expandvars(documents_path))
+
+
+def windows_local_app_data_dir() -> Path:
+    """The application data folder of the user, which cloud services do not
+    synchronise."""
+    local_app_data = os.getenv('LOCALAPPDATA')
+    return Path(local_app_data) if local_app_data else Path.home() / 'AppData' / 'Local'
+
+
 def _default_data_dir() -> Path:
     if DEVEL_ENV:
         return BASE_DIR / 'dev-data'
     match sys.platform:
         case 'win32':
-            doc_reg_key = (
-                r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
-            )
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, doc_reg_key) as key:
-                documents_path = winreg.QueryValueEx(key, 'Personal')[0]
-            return Path(documents_path) / 'Sharly Chess'
+            return windows_local_app_data_dir() / 'Sharly Chess'
         case 'darwin':
             return MACOS_SUPPORT_DIR / 'data'
         case 'linux':
@@ -147,8 +166,34 @@ def _app_data_dir() -> Path:
 BASE_DIR = _app_base_dir()
 TEST_DATA_DIR = BASE_DIR / 'tests' / 'tmp'
 
+
+def _data_dir_migration(data_dir: Path) -> DataDirMigration | None:
+    """The move of the data out of the Documents or a folder synchronised by a
+    cloud service, on Windows only: elsewhere the default folders are not
+    synchronised. A move asked from the settings is completed first."""
+    match sys.platform:
+        case 'win32':
+            if (
+                DEVEL_ENV
+                or TEST_ENV
+                or MANUAL_PATH_USED
+                or ProgramVar.PREVIOUS_DATA_DIR.read_path_value()
+            ):
+                return None
+            return DataDirMigration(
+                data_dir=data_dir,
+                legacy_default_dir=windows_documents_dir() / 'Sharly Chess',
+                target_dir=_default_data_dir(),
+            )
+        case _:
+            return None
+
+
 # Architecture of the directory containing the app's data.
 DATA_DIR = _app_data_dir()
+DATA_DIR_MIGRATION = _data_dir_migration(DATA_DIR)
+if DATA_DIR_MIGRATION:
+    DATA_DIR = DATA_DIR_MIGRATION.run(SHARLY_CHESS_VERSION)
 BACKUP_BASE_DIR = DATA_DIR / 'backup'  # Dev only
 ARCHIVES_DIR = DATA_DIR / 'archives'
 CUSTOM_DIR = DATA_DIR / 'custom'
@@ -207,6 +252,14 @@ if (
     and not any(DATA_DIR.iterdir())
 ):
     # The data dir changed: move the previous content over
+    if InstanceLock.is_held_by_another_process(previous_dir):
+        # The move is kept pending: starting would otherwise run on the new,
+        # empty folder while the running instance keeps the data.
+        raise SharlyChessException(
+            f'The data directory can not be moved from "{previous_dir}" to '
+            f'"{DATA_DIR}" while Sharly Chess is running on it. Close it, then '
+            'start Sharly Chess again to complete the move.'
+        )
     try:
         # Remove the dir so it's copied at the location instead of in a subfolder
         DATA_DIR.rmdir()
@@ -260,6 +313,12 @@ except OSError as error:
     raise SharlyChessException(
         f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}'
     ) from error
+
+if DATA_DIR_MIGRATION and DATA_DIR_MIGRATION.messages:
+    from common.logger import get_logger
+
+    for level, message in DATA_DIR_MIGRATION.messages:
+        get_logger().log(level, message)
 
 if DEVEL_ENV:
     import tomllib

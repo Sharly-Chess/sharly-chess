@@ -63,7 +63,9 @@ class PlaceCardType(IdentifiableEntity, ABC):
                 PlayerRatingType.ESTIMATED,
             ]
         ).short_name
-        place_card_player.last_name = last_name
+        place_card_player.last_name = (
+            SharlyChessConfig().name_formatter.format_last_name(last_name)
+        )
         place_card_player.first_name = _('First name')
         place_card_player.full_name = Player.player_full_name(
             place_card_player.first_name,
@@ -79,6 +81,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
         ).short_name
         config = SharlyChessConfig()
         place_card_player.federation = random.choice(list(config.federations.keys()))
+        place_card_player.national_id = f'{random.randint(10_000, 99_999)}'
         place_card_player.club = _("Player's club")
         place_card_player.category = random.choice(
             config.default_player_category_set.categories
@@ -335,6 +338,7 @@ class PairingCardType(PlaceCardType):
     ) -> PlaceCardPairing:
         place_card_pairing: PlaceCardPairing = PlaceCardPairing()
         place_card_pairing.number = random.randint(1, 99)
+        place_card_pairing.round = random.randint(1, 9)
         place_card_pairing.white_player = cls.get_random_player(
             last_name=_('WHITE PLAYER'),
             color=pgettext('white color for place cards', 'W'),
@@ -371,7 +375,11 @@ class PairingCardType(PlaceCardType):
                 ]
         elif board_numbers:
             boards = [board for board in boards if board.number in board_numbers]
-        return [PlaceCardPairing(board) for board in boards]
+        return [
+            PlaceCardPairing(board, round_=round_)
+            for board in boards
+            if not board.exempt
+        ]
 
     @classmethod
     def preview_pairings(

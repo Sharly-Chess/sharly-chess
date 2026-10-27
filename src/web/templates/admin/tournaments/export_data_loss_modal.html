@@ -19,7 +19,7 @@
                 {{ _(
                     'Some of the Sharly Chess data is not included in the %(format)s format. '
                     'For data transfers or backups, using the SCE format is highly recommended.',
-                    format=admin_exporter.name,
+                    format=admin_exporter.label(admin_tournament),
                 ) }}
             </p>
             <div class="d-flex flex-column align-items-center justify-content-center gap-2">
@@ -71,7 +71,7 @@
                 >
                     <i class="bi-exclamation-triangle-fill pe-1"></i>
                     {{ _('Export tournament') }}
-                    {{ _('(%(format)s format)', format=admin_exporter.name) }}
+                    {{ _('(%(format)s format)', format=admin_exporter.label(admin_tournament)) }}
                 </button>
             </div>
             <script>

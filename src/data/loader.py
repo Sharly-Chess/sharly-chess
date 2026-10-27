@@ -115,7 +115,6 @@ class EventLoader:
                     uniq_id=uniq_id,
                     name=uniq_id,
                     federation='',
-                    player_rating_type=0,
                     start_date=modified,
                     stop_date=modified,
                     accessible=False,
@@ -216,18 +215,18 @@ class EventLoader:
             base_name, [event.name for event in self.get_events_metadata()]
         )
 
-    def load_event(self, uniq_id: str) -> Event:
+    def load_event(self, uniq_id: str, public_view: bool = False) -> Event:
         from web.performance import current_request_performance, record_event_load
 
         if current_request_performance() is None:
             self.load_event_ids(uniq_id)
             with EventDatabase(uniq_id) as event_database:
-                return Event(event_database.load_stored_event())
+                return Event(event_database.load_stored_event(), public_view)
         start = perf_counter()
         try:
             self.load_event_ids(uniq_id)
             with EventDatabase(uniq_id) as event_database:
-                return Event(event_database.load_stored_event())
+                return Event(event_database.load_stored_event(), public_view)
         finally:
             record_event_load(perf_counter() - start)
 
@@ -353,9 +352,7 @@ class ArchiveLoader:
     def get_sorted_archives() -> list[Archive]:
         return sorted(
             [
-                Archive(
-                    file, file.stem, datetime.fromtimestamp(file.lstat().st_birthtime)
-                )
+                Archive(file, file.stem, datetime.fromtimestamp(file.lstat().st_mtime))
                 for file in ARCHIVES_DIR.glob(f'*.{Extension.ARCHIVE}')
             ],
             key=lambda archive: archive.date,
@@ -370,7 +367,7 @@ class ArchiveLoader:
         return Archive(
             arch_file,
             arch_file.stem,
-            datetime.fromtimestamp(arch_file.lstat().st_ctime),
+            datetime.fromtimestamp(arch_file.lstat().st_mtime),
         )
 
     @staticmethod

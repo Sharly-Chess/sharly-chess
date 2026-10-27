@@ -117,8 +117,8 @@
                                 {% set player_class=player_unchanged_class %}
                             {% endif %}
                             <tr
-                                class="{% if player_updated %}player-updated{% else %}player-unchanged{% endif %}"
-                                style="{% if update_enabled and not player_updated %}display: none{% endif %}"
+                                class="{% if player_updated %}player-updated{% elif comparator.not_found %}player-not-found{% else %}player-unchanged{% endif %}"
+                                style="{% if update_enabled and not player_updated and not comparator.not_found %}display: none{% endif %}"
                             >
                                 {% if update_enabled %}
                                     <td scope="col" class="text-nowrap text-center {{ player_class }}">
@@ -139,11 +139,14 @@
                                 {% for field in fields %}
                                     {% set field_updated=field.id in diff_field_ids %}
                                     {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
+                                    {% set field_not_found=comparator.not_found and field.id == data_source.import_identifier_column.id %}
                                     <td
                                         scope="col"
-                                        class="text-nowrap {{ field.cell_classes }} {{ player_class }} {{ field_class }}"
+                                        class="text-nowrap {{ field.cell_classes }} {{ player_class }} {{ field_class }} {% if field_not_found %}error-cell{% endif %}"
                                         {% if field_updated %}
                                             {{ macros.tooltip_attributes('info', field.updated_tooltip_message(player, match_player), 'top') }}
+                                        {% elif field_not_found %}
+                                            {{ macros.tooltip_attributes('warning', _('Player not found in the data source.'), 'top') }}
                                         {% endif %}
                                     >
                                         {% if field.cell_template %}

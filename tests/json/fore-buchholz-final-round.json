@@ -1,0 +1,299 @@
+{
+  "variables": {
+    "name": "Fore Buchholz final round",
+    "rounds": "3",
+    "startDate": "01/03/2026",
+    "endDate": "01/03/2026",
+    "timeControl": "",
+    "venue": "Sharly-Chess HQ",
+    "ratingClass": "Elo",
+    "homologation": "",
+    "arbiter": "",
+    "type": "Suisse",
+    "pairing": "Standard",
+    "tiebreak1": "",
+    "tiebreak2": "",
+    "tiebreak3": "",
+    "ratingThreshold1": "0",
+    "ratingThreshold2": "0",
+    "pointSystem": "NON"
+  },
+  "players": [
+    {
+      "federation": "FRA",
+      "lastName": "ALPHA",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 2000,
+      "owed": 0,
+      "refFFE": 700000001,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 1,
+          "color": "N",
+          "opponent": 1
+        },
+        "2": {
+          "result": 0,
+          "color": "F"
+        },
+        "3": {
+          "result": 4,
+          "color": "N",
+          "opponent": 2
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "BRAVO",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1990,
+      "owed": 0,
+      "refFFE": 700000002,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 3,
+          "color": "B",
+          "opponent": 0
+        },
+        "2": {
+          "result": 3,
+          "color": "B",
+          "opponent": 2
+        },
+        "3": {
+          "result": 2,
+          "color": "N",
+          "opponent": 6
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "CHARLIE",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1980,
+      "owed": 0,
+      "refFFE": 700000003,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 3,
+          "color": "B",
+          "opponent": 3
+        },
+        "2": {
+          "result": 1,
+          "color": "N",
+          "opponent": 1
+        },
+        "3": {
+          "result": 6,
+          "color": "B",
+          "opponent": 0
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "DELTA",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1970,
+      "owed": 0,
+      "refFFE": 700000004,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 1,
+          "color": "N",
+          "opponent": 2
+        },
+        "2": {
+          "result": 1,
+          "color": "B",
+          "opponent": 4
+        },
+        "3": {
+          "result": 4,
+          "color": "B",
+          "opponent": 4
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "ECHO",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1960,
+      "owed": 0,
+      "refFFE": 700000005,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 3,
+          "color": "B",
+          "opponent": 5
+        },
+        "2": {
+          "result": 3,
+          "color": "N",
+          "opponent": 3
+        },
+        "3": {
+          "result": 6,
+          "color": "N",
+          "opponent": 3
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "FOXTROT",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1950,
+      "owed": 0,
+      "refFFE": 700000006,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 1,
+          "color": "N",
+          "opponent": 4
+        },
+        "2": {
+          "result": 1,
+          "color": "N",
+          "opponent": 6
+        },
+        "3": {
+          "result": 0,
+          "color": "F"
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "GOLF",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1940,
+      "owed": 0,
+      "refFFE": 700000007,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 3,
+          "color": "B",
+          "opponent": 7
+        },
+        "2": {
+          "result": 3,
+          "color": "B",
+          "opponent": 5
+        },
+        "3": {
+          "result": 2,
+          "color": "B",
+          "opponent": 1
+        }
+      }
+    },
+    {
+      "federation": "FRA",
+      "lastName": "HOTEL",
+      "fixedBoard": 0,
+      "gender": "M",
+      "checkedIn": true,
+      "fideRapidElo": "E",
+      "elo": 1930,
+      "owed": 0,
+      "refFFE": 700000008,
+      "licenceType": "N",
+      "paid": 0,
+      "rapidElo": 1399,
+      "category": "Sen",
+      "fideElo": "F",
+      "fideBlitzElo": "E",
+      "blitzElo": 1399,
+      "rounds": {
+        "1": {
+          "result": 1,
+          "color": "N",
+          "opponent": 6
+        },
+        "2": {
+          "result": 2,
+          "color": "F"
+        },
+        "3": {
+          "result": 0,
+          "color": "F"
+        }
+      }
+    }
+  ]
+}

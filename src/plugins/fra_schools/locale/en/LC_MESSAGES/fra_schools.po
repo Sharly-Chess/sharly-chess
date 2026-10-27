@@ -30,6 +30,9 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "Category"
+msgstr ""
+
 msgid "Choose at least one school."
 msgstr ""
 
@@ -45,6 +48,9 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Departmental phase"
+msgstr ""
+
 msgid "Edit the selected French school."
 msgstr ""
 
@@ -52,10 +58,10 @@ msgstr ""
 msgid "Exclude: {values}"
 msgstr ""
 
-msgid "FFE 8-board school team championship. Roster of 8 to 10 pupils with at least 2 girls and 2 boys, draws are not counted in the score, 9-round Swiss for the national final."
+msgid "FFE Scholar Championship"
 msgstr ""
 
-msgid "FFE Scholar Championship"
+msgid "FFE school team championship. 8 boards from a roster of 8 to 10 pupils with at least 2 girls and 2 boys (4 boards from 4 or 5 pupils with at least 1 girl and 1 boy for high schools), draws are not counted in the score, 9-round Swiss for the national final."
 msgstr ""
 
 #, python-brace-format
@@ -86,6 +92,9 @@ msgstr ""
 msgid "Hide the UAI codes for the FFE upload"
 msgstr ""
 
+msgid "High schools"
+msgstr ""
+
 msgid "Include incomplete teams"
 msgstr ""
 
@@ -97,6 +106,9 @@ msgid "Loading more results…"
 msgstr ""
 
 msgid "Max. teams per school:"
+msgstr ""
+
+msgid "Middle schools"
 msgstr ""
 
 msgid "Missing boys"
@@ -112,12 +124,16 @@ msgid "National final"
 msgstr ""
 
 #, python-brace-format
-msgid "Need at least {min} boys on the roster ({n} listed)."
-msgstr ""
+msgid "Need at least {min} boy on the roster ({n} listed)."
+msgid_plural "Need at least {min} boys on the roster ({n} listed)."
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-brace-format
-msgid "Need at least {min} girls on the roster ({n} listed)."
-msgstr ""
+msgid "Need at least {min} girl on the roster ({n} listed)."
+msgid_plural "Need at least {min} girls on the roster ({n} listed)."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Negative game-point total brought back to 0."
 msgstr ""
@@ -135,6 +151,12 @@ msgstr ""
 msgid "Postal code"
 msgstr ""
 
+msgid "Primary and middle schools"
+msgstr ""
+
+msgid "Primary schools"
+msgstr ""
+
 #, python-brace-format
 msgid "Ranking by school after round #{round}"
 msgstr ""
@@ -147,7 +169,7 @@ msgstr ""
 
 msgctxt "school column header"
 msgid "School"
-msgstr "School"
+msgstr ""
 
 msgid "School not specified"
 msgstr ""
@@ -159,7 +181,7 @@ msgstr ""
 msgid "Search by: %(fields)s"
 msgstr ""
 
-msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls, or 4 players including 1 boy and 1 girl for high schools."
 msgstr ""
 
 #, python-format
@@ -202,8 +224,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
+msgid "{count} schools"
+msgstr ""
+
+#, python-brace-format
 msgid "{n} board forfeited above a board on which a game was played, counted as -1."
 msgid_plural "{n} boards forfeited above a board on which a game was played, counted as -1 each."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{n} estimated rating counted as {rating} (art. 5.1.5)."
+msgid_plural "{n} estimated ratings counted as {rating} (art. 5.1.5)."
 msgstr[0] ""
 msgstr[1] ""
 

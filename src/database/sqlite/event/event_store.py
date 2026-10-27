@@ -214,6 +214,36 @@ class StoredTeamPointAdjustment:
 
 
 @dataclass
+class StoredPibe:
+    """A pairing integrity breaching event: something done to a round after
+    the rounds that followed were paired from it."""
+
+    id: int | None
+    tournament_id: int
+    round_: int
+    type: str
+    description: str
+    date: datetime = field(default_factory=datetime.now)
+    members: dict[int, int] = field(default_factory=dict)
+    """The player (or team) each pairing number of the description stood
+    for when the event was logged."""
+
+
+@dataclass
+class StoredRatingCorrection:
+    """A game of a round too old to change, recorded differently in the
+    rating report: the colours the players had and the result of white."""
+
+    id: int | None
+    tournament_id: int
+    round_: int
+    white_player_id: int
+    black_player_id: int
+    result: int
+    date: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
 class StoredPlayerPointAdjustment:
     """Manual per-player, per-round bonus / penalty points for individual
     tournaments. A single ``delta`` (which may be negative) because those
@@ -232,18 +262,40 @@ class StoredProhibitedPairingGroup:
     """A set of members (player ids, or team ids in team mode) that must
     not be paired together. ``round_`` is None for a reusable manual
     template group, or a round number for an immutable per-round
-    snapshot (manual + dimension-derived, flattened). ``is_hard``
-    distinguishes hard from soft constraints. ``protect_rank`` is the
-    soft-relaxation cutoff frozen for a round snapshot (members ranked
-    ``<= protect_rank`` kept their soft separations); ``None`` for
-    template groups, hard-only rounds, and imported snapshots."""
+    snapshot (manual + dimension-derived, flattened). ``constraint`` is
+    the :class:`~utils.enum.ProhibitedPairingConstraint` value of the
+    group. ``protect_rank`` is the soft-relaxation cutoff frozen for a
+    round snapshot (members ranked ``<= protect_rank`` kept the
+    separations of their groups relaxed from the bottom of the standings);
+    ``None`` for template groups, rounds without such groups, and imported
+    snapshots."""
 
     id: int | None
     tournament_id: int
     round_: int | None = None
-    is_hard: bool = True
+    constraint: str = 'HARD'
     member_ids: list[int] = field(default_factory=list[int])
     protect_rank: int | None = None
+
+
+@dataclass
+class StoredTournamentPeriod:
+    """A rating period of a tournament: the period of at most 30 days that
+    is reported to FIDE as a tournament of its own. ``first_round`` is the
+    round it starts at, and it runs to the round before the next period's
+    — so the periods of a tournament are contiguous and cover every round.
+    A tournament of 30 days or less has a single period starting at round
+    1, and every read path resolves against it as it does today."""
+
+    id: int | None
+    tournament_id: int
+    first_round: int = 1
+    # A period is submitted as a tournament of its own, so a plugin whose
+    # service wants one registration per period keeps that period's
+    # identifiers here rather than on the tournament.
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
 
 
 @dataclass
@@ -256,11 +308,32 @@ class StoredTournamentPlayer:
 
 
 @dataclass
+class StoredPlayerPeriod:
+    """A player as one period of a long tournament knew them.
+
+    FIDE B.01 1.1.4 has both the ratings and the titles of a period being
+    those in force while it was played, so a period records the pair. An
+    empty title is a title held, or not held, exactly as the player's own
+    columns say."""
+
+    ratings: dict[int, dict[str, Any]] = field(
+        default_factory=dict[int, dict[str, Any]]
+    )
+    title: str = ''
+    women_title: str = ''
+
+
+@dataclass
 class StoredPlayer:
     id: int | None
     last_name: str = ''
-    ratings: dict[int, dict[str, int | None]] = field(
-        default_factory=dict[int, dict[str, int | None]]
+    ratings: dict[int, dict[str, Any]] = field(
+        default_factory=dict[int, dict[str, Any]]
+    )
+    # The rating periods, by id, where what the player held differed from
+    # the columns above, which are the first period's.
+    periods: dict[int, StoredPlayerPeriod] = field(
+        default_factory=dict[int, StoredPlayerPeriod]
     )
     first_name: str | None = None
     date_of_birth: date | None = None
@@ -274,9 +347,14 @@ class StoredPlayer:
     title: str = ''
     women_title: str = ''
     fide_id: int | None = None
+    #: Identifier in the national federation, and the data source it comes
+    #: from (`DataSource.national_source_id`).
+    national_id: str | None = None
+    national_source: str | None = None
     federation: str = 'FID'
     club: str | None = None
     fixed: int | None = None
+    byes_allowed: bool = True
     check_in: bool = False
     team_id: int | None = None
     team_index: int | None = None
@@ -306,15 +384,16 @@ class StoredTournament:
     stop_date: date = field(default_factory=date.today)
     pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] = field(default_factory=dict[str, Any])
-    current_round: int | None = None
+    published_round: int = 0
     check_in_open: bool = True
     rounds: int = 1
-    rating: int = 1
-    player_rating_type: int | None = None
+    cadence: int = 1
+    rating_preference: int | None = None
+    rating_sequence: list[str] = field(default_factory=list[str])
+    unrated_rating: int | None = None
     last_update: datetime = field(default_factory=datetime.now)
     last_player_update: datetime | None = None
     last_pairing_update: datetime | None = None
-    override_unrated_rapid_blitz: bool = True
     game_points: dict[int, float] | None = None
     criteria: dict[str, Any] = field(default_factory=dict)
     round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
@@ -330,8 +409,18 @@ class StoredTournament:
     rule_set: str | None = None
     rule_set_config: dict[str, Any] = field(default_factory=dict[str, Any])
     prohibited_pairing_dimension: str | None = None
-    prohibited_pairing_dimension_is_hard: bool = True
+    prohibited_pairing_dimension_constraint: str = 'HARD'
     round_robin_participation_rule: bool = True
+    starting_rank_tie_order: str = 'ALPHABETICAL'
+    starting_rank_lot_seed: int | None = None
+    fide_mode: bool = True
+    fide_mode_exit_round: int | None = None
+    manual_pairing_round: int | None = None
+    manual_pairing_boards: list[dict[str, Any]] = field(default_factory=list)
+    multi_period: bool = False
+    tie_break_rating: str = ''
+    round_robin_schedule: dict[str, Any] | None = None
+    round_robin_schedule_draft: dict[str, Any] | None = None
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )
@@ -357,8 +446,15 @@ class StoredTournament:
     stored_player_point_adjustments: list[StoredPlayerPointAdjustment] = field(
         default_factory=list[StoredPlayerPointAdjustment]
     )
+    stored_pibes: list[StoredPibe] = field(default_factory=list[StoredPibe])
+    stored_rating_corrections: list[StoredRatingCorrection] = field(
+        default_factory=list[StoredRatingCorrection]
+    )
     stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
         default_factory=list['StoredProhibitedPairingGroup']
+    )
+    stored_tournament_periods: list[StoredTournamentPeriod] = field(
+        default_factory=list[StoredTournamentPeriod]
     )
 
     # Plugins can add their own tournament data
@@ -393,6 +489,7 @@ class StoredScreen:
     menu_text: str | None
     timer_id: int | None
     input_exit_button: bool | None = None
+    boards_hide_players: bool | None = None
     players_show_unpaired: bool | None = None
     players_player_format: int | None = None
     players_board_format: int | None = None
@@ -432,6 +529,7 @@ class StoredFamily:
     menu_text: str
     timer_id: int | None
     input_exit_button: bool | None = None
+    boards_hide_players: bool | None = None
     players_show_unpaired: bool | None = None
     players_player_format: int | None = None
     players_board_format: int | None = None
@@ -546,7 +644,8 @@ class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
-    player_rating_type: int
+    rating_preference: int | None = None
+    unrated_rating: int | None = None
     public: bool = False
     location: str | None = None
     background_color: str | None = None
@@ -565,6 +664,10 @@ class BaseStoredEvent:
     organiser_director: str | None = None
     allow_multi_tournament_players: bool = True
     event_type: EventType = EventType.INDIVIDUAL
+    check_ratings: bool = True
+    #: The snapshots of the rating lists, by list, the arbiter last
+    #: dismissed the findings of the ratings check for.
+    ratings_check_dismissed: dict[str, float] = field(default_factory=dict)
 
     # The ids of the tags of the event, as defined in the config database.
     # Ids are local to an installation: they are stripped on export/import

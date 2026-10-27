@@ -24,21 +24,21 @@ from data.columns.column import ColumnUsage
 from data.event import Event
 from data.norms import ForecastRequirement
 from data.pairings.engines import (
-    BergerPairingEngine,
     RoundRobinPairingEngine,
     TeamRoundRobinPairingEngine,
 )
+from data.pairings.acceleration import AcceleratedSwissVariation
 from data.pairings.fixed_table import PairingTableProvider
 from data.pairings.molter import MolterPairingSystem
 from data.pairings.scheveningen import ScheveningenPairingSystem
-from data.pairings.settings import BergerNumbersSetting
+from data.pairings.settings import AccelerationRule
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
     TeamRoundRobinPairingSystem,
 )
 from data.player import TournamentPlayer
-from utils.enum import TournamentRating
+from utils.enum import Cadence
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
@@ -100,6 +100,14 @@ if TYPE_CHECKING:
     from data.pairings.knockout_helpers.layout import BracketLayout
 
 logger: logging.Logger = get_logger()
+
+
+def provisional_title(title: str, tournament: Tournament, round_: int) -> str:
+    """*title*, said to be provisional when the standings after *round_*
+    count adjourned games as draws."""
+    if tournament.adjourned_boards(before_round=round_ + 1):
+        return _('{title} (provisional)').format(title=title)
+    return title
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):
@@ -430,7 +438,11 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
     def title(self) -> str:
         if self.ranking_round == 0:
             return _('Ranking before the first round')
-        return _('Ranking after round #{round}').format(round=self.ranking_round)
+        return provisional_title(
+            _('Ranking after round #{round}').format(round=self.ranking_round),
+            self.tournament,
+            self.ranking_round,
+        )
 
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
@@ -460,7 +472,11 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     def title(self) -> str:
         if self.ranking_round == 0:
             return _('Crosstable before the first round')
-        return _('Crosstable after round #{round}').format(round=self.ranking_round)
+        return provisional_title(
+            _('Crosstable after round #{round}').format(round=self.ranking_round),
+            self.tournament,
+            self.ranking_round,
+        )
 
     @property
     def include_player_history(self) -> bool:
@@ -652,6 +668,7 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
             'scores': self.ordered_players,
+            'ranking_round': self.ranking_round,
         }
 
 
@@ -712,12 +729,12 @@ class BoardPrintDocument(PrintDocument, ABC):
                 ).format(rounds=self.tournament.rounds),
                 at_round,
             )
-        if at_round.value > self.tournament.current_round:
+        if at_round.value > self.tournament.last_shown_round:
             if self.tournament.pairing_system == SwissPairingSystem():
                 raise OptionError(
                     _(
                         'There are no pairings for this round (last round with pairings: #{round}).'
-                    ).format(round=self.tournament.current_round),
+                    ).format(round=self.tournament.last_shown_round),
                     at_round,
                 )
             raise OptionError(
@@ -980,12 +997,12 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
                 ).format(rounds=self.tournament.rounds),
                 at_round,
             )
-        if at_round.value > self.tournament.current_round:
+        if at_round.value > self.tournament.last_shown_round:
             raise OptionError(
                 _(
                     'There are no pairings for this round (last round '
                     'with pairings: #{round}).'
-                ).format(round=self.tournament.current_round),
+                ).format(round=self.tournament.last_shown_round),
                 at_round,
             )
 
@@ -1024,6 +1041,85 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
         }
 
 
+class TeamPairingsPrintDocument(PrintDocument):
+    """The team matches of a round on a single list, without the players of
+    their boards, for team captains. Offered for systems that pair whole
+    teams."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'team-pairings'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team pairings')
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(t.pairing_system.paired_by_team for t in allowed_tournaments)
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, RoundPrintOption]
+
+    @property
+    def at_round(self) -> int:
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @property
+    def title(self) -> str:
+        return _('Team pairings for round #{round}').format(round=self.at_round)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/team_pairings.html'
+
+    @property
+    def team_boards(self) -> list[TeamBoard]:
+        self.tournament.set_for_round(self.at_round)
+        return self.tournament.get_round_team_boards(self.at_round)
+
+    @override
+    def validate_options(self) -> None:
+        super().validate_options()
+        if not self.tournament.pairing_system.paired_by_team:
+            raise OptionError(
+                _('The teams of this tournament are not paired against each other.'),
+                self._get_option(TournamentPrintOption),
+            )
+        at_round = self._get_option(RoundPrintOption)
+        if at_round.value is None:
+            return
+        if at_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                at_round,
+            )
+        if at_round.value > self.tournament.last_shown_round:
+            raise OptionError(
+                _(
+                    'There are no pairings for this round (last round '
+                    'with pairings: #{round}).'
+                ).format(round=self.tournament.last_shown_round),
+                at_round,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'team_boards': self.team_boards,
+            'show_points': not self.tournament.hide_team_block_points,
+        }
+
+
 class TeamRankingPrintDocument(PrintDocument):
     """Team-tournament equivalent of :class:`PlayerRankingPrintDocument`.
     Renders the team standings table (rank, team, played, W/D/L, MP/GP,
@@ -1058,7 +1154,11 @@ class TeamRankingPrintDocument(PrintDocument):
     def title(self) -> str:
         if self.ranking_round == 0:
             return _('Team ranking before the first round')
-        return _('Team ranking after round #{round}').format(round=self.ranking_round)
+        return provisional_title(
+            _('Team ranking after round #{round}').format(round=self.ranking_round),
+            self.tournament,
+            self.ranking_round,
+        )
 
     @override
     def validate_options(self) -> None:
@@ -1130,7 +1230,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name
+        return provisional_title(self.name, self.tournament, self.tournament.rounds)
 
     @property
     def template_name(self) -> str:
@@ -1285,7 +1385,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name
+        return provisional_title(self.name, self.tournament, self.ranking_round)
 
     @property
     def ranking_round(self) -> int:
@@ -1648,6 +1748,164 @@ class ScheveningenTablePrintDocument(FixedPairingTablePrintDocument):
         return _('No Scheveningen table is available for this tournament size.')
 
 
+class AccelerationRulesPrintDocument(PrintDocument):
+    """The acceleration a Swiss tournament is paired with: the rules of
+    the system, then how they apply to the tournament — the groups, the
+    virtual points granted (the rules exported as TRF 250 records) and
+    the players with their group."""
+
+    hide_for_team_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'acceleration-rules'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Acceleration rules')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/acceleration_rules.html'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            isinstance(tournament.pairing_variation, AcceleratedSwissVariation)
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self) -> None:
+        super().validate_options()
+        if not isinstance(self.tournament.pairing_variation, AcceleratedSwissVariation):
+            raise OptionError(
+                _(
+                    'This document is only available for tournaments paired '
+                    'with an accelerated system.'
+                ),
+                self._get_option(TournamentPrintOption),
+            )
+
+    @staticmethod
+    def _rounds_str(first_round: int, last_round: int) -> str:
+        if first_round == last_round:
+            return _('Round {round}').format(round=first_round)
+        return _('Rounds {min_round}-{max_round}').format(
+            min_round=first_round, max_round=last_round
+        )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        variation = tournament.pairing_variation
+        assert isinstance(variation, AcceleratedSwissVariation)
+        players = sorted(
+            tournament.tournament_players,
+            key=lambda player: (
+                player.pairing_number
+                if player.pairing_number is not None
+                else float('inf'),
+                player.full_name.lower(),
+            ),
+        )
+        players_by_number = {
+            player.pairing_number: player
+            for player in players
+            if player.pairing_number is not None
+        }
+        number_ranges_by_group = variation.get_acceleration_number_range_by_group(
+            tournament
+        )
+
+        def group_of(player: TournamentPlayer) -> str:
+            number = player.pairing_number
+            if number is None:
+                return ''
+            return next(
+                (
+                    str(group)
+                    for group, (first, last) in number_ranges_by_group.items()
+                    if first <= number <= last
+                ),
+                '',
+            )
+
+        def rule_players(rule: AccelerationRule) -> str:
+            if rule.group is not None:
+                return _('Group {group}').format(group=rule.group)
+            number_range = rule.resolved_number_range(tournament)
+            assert number_range is not None
+            first, last = number_range
+            if first != last:
+                return _('Nos. {first}–{last}').format(first=first, last=last)
+            player = players_by_number.get(first)
+            if player is None:
+                return _('No. {number}').format(number=first)
+            return _('No. {number} ({name})').format(
+                number=first, name=player.full_name
+            )
+
+        rules = variation.get_tournament_accelerated_rules(tournament)
+        return {
+            'tournament': tournament,
+            'variation': variation,
+            'description': variation.rules_description(tournament),
+            'rounds': _('Rounds: {rounds}.').format(
+                rounds=tournament.rounds,
+            ),
+            'scoring': _('Points for a win: {win}, for a draw: {draw}.').format(
+                win=Utils.points_str(tournament.win_points),
+                draw=Utils.points_str(tournament.draw_points),
+            ),
+            'groups': [
+                {
+                    'group': str(group),
+                    'first': first,
+                    'last': last,
+                    'count': last - first + 1,
+                    'r1_count': len(
+                        [
+                            player
+                            for player in tournament.players
+                            if first <= (player.pairing_number or 0) <= last
+                            and not player.pairings_by_round[1].next_round_bye
+                        ]
+                    ),
+                }
+                for group, (first, last) in number_ranges_by_group.items()
+            ],
+            'show_thresholds': any(rule.points_threshold for rule in rules),
+            'rules': [
+                {
+                    'rounds': self._rounds_str(*rule.resolved_round_range(tournament)),
+                    'players': rule_players(rule),
+                    'threshold': Utils.points_str(rule.points_threshold),
+                    'vpoints': Utils.points_str(rule.vpoints),
+                }
+                for rule in rules
+            ],
+            'players': [
+                {
+                    'number': player.pairing_number,
+                    'name': player.full_name,
+                    'rating': player.rating,
+                    'group': group_of(player),
+                }
+                for player in players
+            ],
+        }
+
+
 class RoundRobinSchedulePrintDocument(PrintDocument):
     """Round-by-round pairing schedule for a round-robin tournament
     (individual or team). Built from the Berger tables, so it's available
@@ -1759,14 +2017,9 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
     def _individual_rounds_data(
         tournament: Tournament, engine: Any, rounds: int
     ) -> list[dict[str, Any]]:
-        assert isinstance(engine, BergerPairingEngine)
-        player_count = tournament.player_count
-        number_by_player = BergerNumbersSetting.get_value(tournament)
-        player_by_number = {
-            number: tournament.tournament_players_by_id[player_id]
-            for player_id, number in number_by_player.items()
-            if player_id in tournament.tournament_players_by_id
-        }
+        assert isinstance(engine, RoundRobinPairingEngine)
+        players = tournament.tournament_players_by_id
+        schedule = engine.schedule(tournament)
         board_by_round_pair: dict[tuple[int, frozenset], Any] = {}
         for round_ in range(1, rounds + 1):
             for board in tournament.get_round_boards(round_):
@@ -1779,12 +2032,18 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
         for round_ in range(1, rounds + 1):
             matches: list[dict[str, Any]] = []
             exempt: str | None = None
-            for left_num, right_num in engine.get_round_pairings(player_count, round_):
-                left_player = player_by_number.get(left_num)
-                right_player = player_by_number.get(right_num)
+            schedule_round = (
+                schedule.rounds.get(round_) if schedule is not None else None
+            )
+            if schedule_round is None:
+                rounds_data.append({'number': round_, 'matches': [], 'exempt': None})
+                continue
+            if (resting := players.get(schedule_round.rest or 0)) is not None:
+                exempt = resting.full_name
+            for left_id, right_id in schedule_round.tables:
+                left_player = players.get(left_id or 0)
+                right_player = players.get(right_id or 0)
                 if left_player is None or right_player is None:
-                    real = left_player or right_player
-                    exempt = real.full_name if real is not None else None
                     continue
                 left_score = right_score = None
                 played_board = board_by_round_pair.get(
@@ -2198,7 +2457,7 @@ class NormReportPrintDocument(PrintDocument):
         if not super().is_available(allowed_tournaments):
             return False
         return any(
-            tournament.rating == TournamentRating.STANDARD
+            tournament.cadence == Cadence.STANDARD
             and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
@@ -2206,7 +2465,7 @@ class NormReportPrintDocument(PrintDocument):
     def validate_options(self) -> None:
         super().validate_options()
         tournament = self.tournament
-        if tournament.rating != TournamentRating.STANDARD:
+        if tournament.cadence != Cadence.STANDARD:
             raise OptionError(
                 _(
                     'This document is only available for standard time control tournaments.'
@@ -2447,7 +2706,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         if not super().is_available(allowed_tournaments):
             return False
         return any(
-            tournament.rating == TournamentRating.STANDARD
+            tournament.cadence == Cadence.STANDARD
             and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
@@ -2455,7 +2714,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
     def validate_options(self) -> None:
         super().validate_options()
         tournament = self.tournament
-        if tournament.rating != TournamentRating.STANDARD:
+        if tournament.cadence != Cadence.STANDARD:
             raise OptionError(
                 _(
                     'This document is only available for standard time control tournaments.'
@@ -2668,6 +2927,26 @@ class QRCodePrintDocument(PrintDocument):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [QRCodePrintOption, TournamentPrintOption, QRCodeNetworkPrintOption]
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        return True
+
+    @override
+    def validate_options(self) -> None:
+        qrcode_option = self._get_option(QRCodePrintOption)
+        qrcode_option.validate()
+        valid_option_types = qrcode_option.qrcode_type.get_valid_option_types()
+        for option in self.options:
+            if type(option) in valid_option_types:
+                option.validate()
+
+    @property
+    def tab_title(self) -> str:
+        qrcode_type = self._get_option(QRCodePrintOption).qrcode_type
+        if TournamentPrintOption in qrcode_type.get_valid_option_types():
+            return f'{self.name} - {self.tournament.name}'
+        return self.name
 
     @property
     def title(self) -> str:

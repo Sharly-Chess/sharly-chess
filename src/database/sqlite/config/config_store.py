@@ -44,6 +44,8 @@ class StoredConfig:
     check_beta_versions: bool
     last_notified_version: str | None
     date_formatter: str
+    name_formatter: str
+    capitalise_last_name: bool
     federation: str | None = None
     locale: str | None = None
     stored_player_category_sets: list[StoredPlayerCategorySet] = field(
@@ -54,6 +56,10 @@ class StoredConfig:
     )
     stored_tags: list[StoredTag] = field(default_factory=list[StoredTag])
     errors: dict[str, str] = field(default_factory=dict[str, str])
+    #: The key pair this computer is recognised by. The private half never
+    #: leaves the computer.
+    computer_private_key: str | None = None
+    computer_public_key: str | None = None
 
 
 @dataclass
@@ -73,4 +79,18 @@ class StoredLocalSourceDatabase:
     outdate_delay: str
     outdate_action: str
     updated_at: float | None = None
+    #: When the source published the copy, None when it does not tell.
+    published_at: float | None = None
+    #: Whether the list is read from its online source rather than from
+    #: this copy, for a list that has one.
+    read_online: bool = False
+    #: None until activated or deactivated once, see `LocalSourceDatabase.is_active`.
+    is_active: bool | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
+
+
+@dataclass
+class StoredOnlineDataSource:
+    name: str
+    #: None until activated or deactivated once, see `OnlineDataSource.is_active`.
+    is_active: bool | None = None

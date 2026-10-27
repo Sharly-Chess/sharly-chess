@@ -21,10 +21,11 @@ from abc import ABC, abstractmethod
 from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
+from fractions import Fraction
 from functools import cached_property
 from types import UnionType
 from typing import Any, SupportsFloat
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
 from common.i18n import _
 from data.pairings import PairingSystem
@@ -55,6 +56,11 @@ from data.tie_breaks.tie_breaks import (
     ForeBuchholzTieBreak,
     StandardBuchholzTieBreak,
     TieBreak,
+)
+from data.tie_breaks.direct_encounter import MinMax, rank_by_encounters
+from data.tie_breaks.unplayed_rounds import (
+    WeightedContribution,
+    cut_least_significant,
 )
 from utils.enum import Result, ScoreType
 
@@ -437,6 +443,7 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
         return [
             ESBVariantTieBreakOption,
             ESBCutterTieBreakOption,
+            PlayedModifierTieBreakOption,
             LegacyMarch2026TieBreakOption,
         ]
 
@@ -447,6 +454,10 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
     @cached_property
     def cutter(self) -> TieBreakCutter:
         return self._get_option(ESBCutterTieBreakOption).cutter
+
+    @cached_property
+    def played_modifier(self) -> bool:
+        return bool(self._get_option(PlayedModifierTieBreakOption).value)
 
     def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
         # Variants whose enum names a match-point side need the
@@ -466,11 +477,14 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
     @property
     def acronym(self) -> str:
         # The variant option is already encoded in ``base_acronym``
-        # (e.g. ``EMGSB``) — don't repeat it. Append only the cutter.
+        # (e.g. ``EMGSB``) — don't repeat it.
         parts: list[str] = [self.base_acronym]
-        cutter_option = self._get_option(ESBCutterTieBreakOption)
-        if cutter_option.is_variation and cutter_option.variation_acronym:
-            parts.append(cutter_option.variation_acronym)
+        for option_type in self.available_options():
+            if option_type is ESBVariantTieBreakOption:
+                continue
+            option = self._get_option(option_type)
+            if option.is_variation and option.variation_acronym:
+                parts.append(option.variation_acronym)
         return '/'.join(parts)
 
     @property
@@ -522,25 +536,23 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
         if cut >= after_round:
             return 0.0
 
-        @dataclass(frozen=True, order=True)
-        class _Contribution:
-            opp_total: float
-            value: float
-
-        general: list[_Contribution] = []
-        vur: list[_Contribution] = []
-        # Art. 15.2: with pre-determined pairings a forfeit is a regular
-        # match, so the real opponent's total counts. Byes cannot occur
-        # in such a system, so every unplayed match here is a forfeit.
-        forfeits_are_played = tournament_context.predetermined_pairings
+        contributions: list[WeightedContribution] = []
+        # The /P modifier asks for forfeits to count as matches against the
+        # scheduled opponent, and Art. 15.2 asks for it outright when the
+        # pairings are pre-determined (byes cannot occur in such a system, so
+        # every unplayed match there is a forfeit).
+        forfeits_are_played = (
+            self.played_modifier or tournament_context.predetermined_pairings
+        )
         for match in team_record.matches:
             if match.round_ > after_round:
                 continue
             if not tournament_context.match_counts_for_tie_breaks(match):
                 continue
-            if match.unplayed and not (
+            counted_as_played = match.played or (
                 forfeits_are_played and match.opponent_id is not None
-            ):
+            )
+            if not counted_as_played:
                 # Art. 16.4.1: a forfeit caps the dummy at the scheduled
                 # opponent's adjusted score; a bye caps at draw points ×
                 # rounds (16.4.2).
@@ -572,37 +584,17 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
                     after_round=after_round,
                 )
             own = team_record.own_against(match, own_score_type)
-            contribution = _Contribution(opp_total=opp_total, value=opp_total * own)
-            if match.voluntary_unplayed:
-                vur.append(contribution)
-            else:
-                general.append(contribution)
-
-        vur.sort()
-        general.sort()
-        # VUR cut rule (matches the individual SB implementation):
-        # the natural least-significant value is the contribution with
-        # the lowest opp_total (tie-break: lowest contribution). A VUR
-        # contribution is dropped first only when (a) its opp_total is
-        # already at or below the general LSV opp_total — natural cut —
-        # or (b) its contribution value is at least the general LSV
-        # contribution, in which case Art. 16.5 forces the cut to deny
-        # the competitor any benefit from the voluntary absence.
-        for _step in range(cut):
-            if not vur:
-                with suppress(IndexError):
-                    general.pop(0)
-            elif not general:
-                with suppress(IndexError):
-                    vur.pop(0)
-            else:
-                v = vur[0]
-                g = general[0]
-                if v.opp_total <= g.opp_total or v.value >= g.value:
-                    vur.pop(0)
-                else:
-                    general.pop(0)
-        return sum(c.value for c in vur) + sum(c.value for c in general)
+            contributions.append(
+                WeightedContribution(
+                    opponent_score=opp_total,
+                    value=opp_total * own,
+                    voluntary_unplayed=(
+                        match.voluntary_unplayed and not counted_as_played
+                    ),
+                )
+            )
+        kept = cut_least_significant(contributions, cut)
+        return sum(entry.value for entry in kept)
 
 
 # ---------------------------------------------------------------------------
@@ -710,7 +702,9 @@ class ScoresAndScheduleStrengthCombinationTieBreak(TeamTieBreak):
                 self._get_option(NormalizationFactorOverrideTieBreakOption).value
             )
         factor = override if override else self.normalization_factor(tournament_context)
-        return secondary + bh / factor
+        # Exactly, then rounded once: equal combinations of different scores
+        # must give equal values.
+        return float(Fraction(secondary) + Fraction(bh) / factor)
 
 
 # ---------------------------------------------------------------------------
@@ -926,66 +920,55 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
         *,
         after_round: int,
     ) -> dict[int, float]:
-        values: dict[int, float] = {}
-        for group in tied_groups:
-            self._resolve(
-                group,
-                0,
-                values,
-                tournament_context,
-                after_round,
-                tournament_context.primary_score,
-            )
-        return values
+        context = tournament_context
+        records = {team.team_id: team for group in tied_groups for team in group}
+        values: dict[int, int] = {}
 
-    def _resolve(
-        self,
-        group: list[TeamRecord],
-        min_value: int,
-        values: dict[int, float],
-        context: TeamTieBreakContext,
-        after_round: int,
-        score_type: ScoreType,
-    ) -> None:
-        if len(group) == 1:
-            values[group[0].team_id] = float(min_value)
-            return
-        min_max = {
-            t.team_id: self._team_min_max(t, group, score_type, context, after_round)
-            for t in group
-        }
-        subgroups = self._split(min_max, group)
-        if len(subgroups) > 1:
-            for sub in subgroups:
-                # A subgroup stays on the score that split its parent:
-                # it is "still within the same application of the
-                # tie-break" (TEC-2023 exercises, endnote [6]), not a
-                # fresh one starting from the primary. Restarting on the
-                # primary swaps teams 1 and 2 of exercise 45 against the
-                # published answer.
-                self._resolve(sub, min_value, values, context, after_round, score_type)
-                min_value += len(sub)
-            return
-        # Split failed — fall back to secondary if we were on primary,
-        # otherwise try the Art. 13.3.2 knock-out tie-breaks and, that
-        # failing, leave the entire group tied at the current rank.
-        if score_type == context.primary_score:
-            self._resolve(
-                group,
-                min_value,
-                values,
-                context,
-                after_round,
-                context.secondary_score,
+        def min_max_on(score_type: ScoreType) -> MinMax[int]:
+            def min_max(team_id: int, group_ids: Sequence[int]) -> tuple[float, float]:
+                return self._team_min_max(
+                    records[team_id],
+                    [records[group_id] for group_id in group_ids],
+                    score_type,
+                    context,
+                    after_round,
+                )
+
+            return min_max
+
+        def knockout_or_level(group_ids: Sequence[int], min_value: int) -> None:
+            ordered = self._knockout_order(
+                [records[team_id] for team_id in group_ids], context, after_round
             )
-            return
-        ordered = self._knockout_order(group, context, after_round)
-        if ordered is not None:
+            if ordered is None:
+                for team_id in group_ids:
+                    values[team_id] = min_value
+                return
             for rank, team in enumerate(reversed(ordered)):
-                values[team.team_id] = float(min_value + rank)
-            return
-        for team in group:
-            values[team.team_id] = float(min_value)
+                values[team.team_id] = min_value + rank
+
+        # A subgroup stays on the score that split its parent: it is "still
+        # within the same application of the tie-break" (TEC-2023 exercises,
+        # endnote [6]), not a fresh one starting from the primary. A group the
+        # primary cannot split goes on to the secondary, then to the Art.
+        # 13.3.2 knock-out tie-breaks.
+        def on_secondary(group_ids: Sequence[int], min_value: int) -> None:
+            rank_by_encounters(
+                group_ids,
+                min_max_on(context.secondary_score),
+                values,
+                min_value=min_value,
+                fallback=knockout_or_level,
+            )
+
+        for group in tied_groups:
+            rank_by_encounters(
+                [team.team_id for team in group],
+                min_max_on(context.primary_score),
+                values,
+                fallback=on_secondary,
+            )
+        return {team_id: float(value) for team_id, value in values.items()}
 
     def _knockout_order(
         self,
@@ -1019,18 +1002,13 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
             EDEKnockoutVariant.EDET: ('T',),
             EDEKnockoutVariant.EDEB: ('E',),
         }[variant]
-        include_forfeits = context.predetermined_pairings
-        with suppress(KeyError):
-            include_forfeits = include_forfeits or bool(
-                self._get_option(PlayedModifierTieBreakOption).value
-            )
         totals = {
             team.team_id: board_totals(
                 team,
                 context.team_player_count,
                 after_round=after_round,
-                include_forfeits=include_forfeits,
                 opponent_ids={other.team_id for other in group if other is not team},
+                encounter_forfeits=self._forfeits_count(context),
             )
             for team in group
         }
@@ -1045,6 +1023,18 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
                 return [first, second] if first_key > second_key else [second, first]
         return None
 
+    def _forfeits_count(self, context: TeamTieBreakContext) -> bool:
+        """Art. 6.1.1 excludes forfeits, but only those "not covered by
+        Article 15.2" — so with pre-determined pairings they count, and
+        in a Swiss the ``/P`` (PlayedModifier) flag is what "unless the
+        specific regulations of the tournament state otherwise" looks
+        like."""
+        try:
+            played_modifier = bool(self._get_option(PlayedModifierTieBreakOption).value)
+        except KeyError:
+            played_modifier = False
+        return played_modifier or context.predetermined_pairings
+
     def _team_min_max(
         self,
         team: TeamRecord,
@@ -1056,18 +1046,8 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
         """Return (min, max) of the score this team can have in the
         sub-crosstable restricted to ``group`` opponents, averaging
         repeated meets and treating missing matches as worst/best
-        case under the active score type.
-
-        Art. 6.1.1 excludes forfeits, but only those "not covered by
-        Article 15.2" — so with pre-determined pairings they count, and
-        in a Swiss the ``/P`` (PlayedModifier) flag is what "unless the
-        specific regulations of the tournament state otherwise" looks
-        like."""
-        try:
-            played_modifier = bool(self._get_option(PlayedModifierTieBreakOption).value)
-        except KeyError:
-            played_modifier = False
-        played_modifier = played_modifier or context.predetermined_pairings
+        case under the active score type."""
+        played_modifier = self._forfeits_count(context)
         group_ids = {t.team_id for t in group if t.team_id != team.team_id}
         played_score_by_opp: dict[int, list[float]] = {}
         for match in team.matches:
@@ -1095,30 +1075,6 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
             accrued + max_per * unplayed_count,
         )
 
-    @staticmethod
-    def _split(
-        min_max_by_id: dict[int, tuple[float, float]],
-        group: list[TeamRecord],
-    ) -> list[list[TeamRecord]]:
-        team_by_id = {t.team_id: t for t in group}
-        sorted_items = sorted(min_max_by_id.items(), key=lambda kv: kv[1])
-        if not sorted_items:
-            return []
-        first_id, (_first_min, first_max) = sorted_items[0]
-        cur_max = first_max
-        current: list[TeamRecord] = [team_by_id[first_id]]
-        subgroups: list[list[TeamRecord]] = []
-        for team_id, (min_, max_) in sorted_items[1:]:
-            if min_ <= cur_max:
-                cur_max = max(cur_max, max_)
-                current.append(team_by_id[team_id])
-            else:
-                subgroups.append(current)
-                cur_max = max_
-                current = [team_by_id[team_id]]
-        subgroups.append(current)
-        return subgroups
-
 
 # ---------------------------------------------------------------------------
 # Tie-breaks specific for team knock-outs (BC / TBR / BBE, Art. 12)
@@ -1130,16 +1086,25 @@ def board_totals(
     boards: int,
     *,
     after_round: int,
-    include_forfeits: bool,
     opponent_ids: set[int] | None = None,
+    encounter_forfeits: bool = True,
 ) -> list[float]:
     """Game points the team scored on each board, board 1 first.
+
+    Art. 12 counts "all games played by the team", with "individual
+    forfeit wins or losses ... considered as standard wins or losses", so
+    a forfeited board counts as it went, whether one player or the whole
+    team was absent; a pairing-allocated bye counts "the same as ... a
+    standard win" on every board, and the other byes are no games.
 
     ``opponent_ids`` restricts the sum to matches against those teams —
     what Art. 13.3.2 needs, since the knock-out tie-breaks it composes
     after EDE judge the tied teams' own encounters rather than their
     whole tournament (TEC-2023 exercises 46-48). A bye is nobody's
-    encounter, so it stays out of that restricted sum.
+    encounter, so it stays out of that restricted sum, and so is a
+    forfeited encounter when ``encounter_forfeits`` is off: the encounters
+    are the ones the direct encounter counted, which excludes forfeits
+    unless they count as played (Art. 6.1.1, 15.2).
     """
     totals = [0.0] * boards
     for match in team_record.matches:
@@ -1148,15 +1113,12 @@ def board_totals(
         if opponent_ids is not None and match.opponent_id not in opponent_ids:
             continue
         if match.match_type == TeamMatchType.PAB:
-            # Art. 12: a pairing-allocated bye counts on every board as
-            # the game points of a standard win, whatever game points
-            # the bye itself scored the team.
             for board_index in range(boards):
                 totals[board_index] += Result.WIN.point_value
             continue
-        if not match.played and not (
-            include_forfeits and match.opponent_id is not None
-        ):
+        if match.opponent_id is None:
+            continue
+        if opponent_ids is not None and not match.played and not encounter_forfeits:
             continue
         for board_index, score in enumerate(match.board_scores):
             if board_index >= boards:
@@ -1194,26 +1156,13 @@ class _BoardTieBreak(TeamTieBreak):
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        # The /P flag counts a wholly forfeited match as played, as
-        # Art. 15.2 already does for pre-determined pairings.
+        # Art. 12 counts forfeits whatever /P says; the flag is accepted so
+        # that a tie-break configured with it still loads.
         return [PlayedModifierTieBreakOption]
 
     @property
     def category(self) -> TieBreakCategory:
         return TeamScoreCategory()
-
-    def _include_forfeits(self, context: 'TeamTieBreakContext') -> bool:
-        """Whether a wholly forfeited match still contributes its
-        boards. True under pre-determined pairings (Art. 15.2), which
-        is the setting these tie-breaks are written for — "individual
-        forfeits are considered equivalent to actually played matches"
-        (TEC-2023 exercises, §12). Board-level forfeits inside a played
-        match always count: they are part of the match result."""
-        if context.predetermined_pairings:
-            return True
-        with suppress(KeyError):
-            return bool(self._get_option(PlayedModifierTieBreakOption).value)
-        return False
 
     def _board_totals(
         self,
@@ -1224,12 +1173,7 @@ class _BoardTieBreak(TeamTieBreak):
     ) -> list[float]:
         """Game points the team scored on each board across the
         tournament, board 1 first."""
-        return board_totals(
-            team_record,
-            boards,
-            after_round=after_round,
-            include_forfeits=self._include_forfeits(context),
-        )
+        return board_totals(team_record, boards, after_round=after_round)
 
     @staticmethod
     def _pack(digits: list[float], base: int) -> float:

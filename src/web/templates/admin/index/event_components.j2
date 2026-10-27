@@ -144,7 +144,7 @@
         <div class="collection-fact">
             <span class="collection-fact-label"><i class="bi-plugin"></i>{{ _('Plugins') }}</span>
             <span>
-                {{ item.enabled_plugins|length }}
+                <span>{{ item.enabled_plugins|length }}</span>
                 <i
                     class="{% if item.are_all_plugins_enabled %}bi-info-circle-fill{% else %}bi-exclamation-triangle-fill text-danger{% endif %} ps-1"
                     {{ macros.tooltip_attributes('', item.plugins_tooltip_message, 'right') }}

@@ -8,6 +8,7 @@ from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.pairings.fixed_table import FixedPairingTable
+    from data.player import Player
     from data.teams.team import Team
     from database.sqlite.event.event_store import StoredTournament
 
@@ -223,11 +224,12 @@ class RuleSet(IdentifiableEntity, ABC):
         return None
 
     @property
-    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
-        """When set, ``(dimension_id, is_hard)`` the rule set imposes
+    def forced_prohibited_pairing(self) -> tuple[str, str] | None:
+        """When set, ``(dimension_id, constraint)`` the rule set imposes
         for the tournament's prohibited pairings — the protection
         modal shows the configuration read-only. ``None`` (default)
-        leaves the configuration free."""
+        leaves the configuration free. ``constraint`` is a
+        :class:`~utils.enum.ProhibitedPairingConstraint` value."""
         return None
 
     def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
@@ -247,10 +249,19 @@ class RuleSet(IdentifiableEntity, ABC):
         """Round count this rule set imposes for the given pairing
         system / variation. ``None`` (default) means no lock — the
         arbiter chooses freely. ``pairing_variation_id`` lets the count
-        differ between variations of one system (e.g. a double
-        round-robin runs fewer rounds than the single one). When set,
-        :meth:`apply_defaults` writes the value on save and the
+        differ between variations of one system. ``0`` locks
+        it to the count the pairing system works out for itself. When
+        set, :meth:`apply_defaults` writes the value on save and the
         tournament modal locks the ``rounds`` field."""
+        return None
+
+    def pairing_variation_for(
+        self, pairing_system_id: str, team_count: int
+    ) -> str | None:
+        """Full id of the variation this rule set imposes for the given
+        pairing system with ``team_count`` teams entered, or ``None`` to
+        leave the arbiter's choice. It is followed until the tournament
+        is first paired, then settled."""
         return None
 
     def molter_table_overrides(self) -> dict[tuple[int, int], 'FixedPairingTable']:
@@ -270,6 +281,17 @@ class RuleSet(IdentifiableEntity, ABC):
         encapsulate every cup-specific check here so the core stays
         agnostic of any one federation's rule shape."""
         return []
+
+    def player_rating_in_team_average(self, player: 'Player') -> int | None:
+        """The rating ``player`` counts for in their team's average rating,
+        which numbers the teams when they are sorted on it. Default: their
+        event-default rating."""
+        return player.event_default_rating
+
+    def team_average_rating_explanation(self, team: 'Team') -> str | None:
+        """Why ``team``'s average rating differs from the mean of its
+        players' ratings, shown next to it; ``None`` when it doesn't."""
+        return None
 
     @property
     def tie_break_overrides_by_pairing(self) -> dict[str, list[tuple[str, dict]]]:

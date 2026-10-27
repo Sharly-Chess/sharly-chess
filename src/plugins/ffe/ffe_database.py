@@ -1,27 +1,31 @@
 import re
 from contextlib import suppress
-from datetime import datetime, date
+from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
 from packaging.version import Version
-from text_unidecode import unidecode
 
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
-from utils.types import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourcePlayerDatabase
+from database.sqlite.local_source_database import GitHubLocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from plugins import ffe
-from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
+from plugins.ffe.utils import (
+    PlayerFFELicence,
+    FfePlayerPluginData,
+    FfeNameKey,
+    ffe_database_name_keys,
+    ffe_list_ratings,
+)
 from utils.enum import (
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
     PlayerGender,
     PlayerTitle,
@@ -30,7 +34,7 @@ from utils.enum import (
 logger: Logger = get_logger()
 
 
-class FfeDatabase(LocalSourcePlayerDatabase):
+class FfeDatabase(GitHubLocalSourcePlayerDatabase):
     """
     The SQLite database class for FFE players. Usage:
     1. Check if the database exists and is up-to-date.
@@ -48,15 +52,17 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE')
+        return _('FFE (France)')
 
     @staticmethod
     def version() -> Version:
-        return Version('1')
+        return Version('2')
 
     @property
     def _source_file_name(self) -> str:
-        return 'ffe_players_v1.db'
+        return 'ffe_players_v2.db'
+
+    federation = 'FRA'
 
     @classmethod
     def credentials_file(cls) -> Path:
@@ -78,39 +84,47 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             outdate_action=NotifOutdatedAction.static_id(),
         )
 
-    @staticmethod
-    def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+    def get_stored_player_from_row(self, row: dict[str, Any]) -> StoredPlayer:
         fide_title = PlayerTitle(row['fide_title'])
         return StoredPlayer(
             id=0,
-            first_name=row['first_name'].title() if row['first_name'] else '',
-            last_name=row['last_name'].upper(),
+            first_name=row['first_name'] or '',
+            last_name=row['last_name'],
             date_of_birth=datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date(),
             gender=PlayerGender(row['gender']),
             title=fide_title.open_value,
             women_title=fide_title.women_value,
-            ratings={
-                TournamentRating.STANDARD.value: PlayerRating.from_type(
-                    row['standard_rating'],
-                    PlayerRatingType(row['standard_rating_type']),
-                ).stored_value,
-                TournamentRating.RAPID.value: PlayerRating.from_type(
-                    row['rapid_rating'], PlayerRatingType(row['rapid_rating_type'])
-                ).stored_value,
-                TournamentRating.BLITZ.value: PlayerRating.from_type(
-                    row['blitz_rating'], PlayerRatingType(row['blitz_rating_type'])
-                ).stored_value,
-            },
+            ratings=ffe_list_ratings(
+                {
+                    Cadence.STANDARD: (
+                        row['standard_rating'],
+                        PlayerRatingType(row['standard_rating_type']),
+                    ),
+                    Cadence.RAPID: (
+                        row['rapid_rating'],
+                        PlayerRatingType(row['rapid_rating_type']),
+                    ),
+                    Cadence.BLITZ: (
+                        row['blitz_rating'],
+                        PlayerRatingType(row['blitz_rating_type']),
+                    ),
+                },
+                self.rating_origin(),
+            ),
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
+            national_id=row['ffe_licence_number'] or None,
+            national_source=NATIONAL_SOURCE_ID,
             federation=row['federation'],
             club=row['club'],
-            transient_arbiter_titles={'ffe': row['ffe_arbiter_title']},
+            transient_arbiter_titles={
+                'ffe': row['ffe_arbiter_title'],
+                'fide': row['fide_arbiter_title'] or '',
+            },
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=row['ffe_id'],
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
-                    ffe_licence_number=row['ffe_licence_number'],
                     league=row['league'],
+                    ffe_id=row['ffe_id'],
                 ).to_stored_value()
             },
         )
@@ -296,22 +310,25 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
     def get_stored_players_by_name_keys(
-        self, name_keys: list[tuple[str, str, date]]
+        self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
-        query_array = ', '.join('(?, ?, ?)' for _ in name_keys)
-        params: list[str] = []
-        for name_key in name_keys:
-            params += [
-                unidecode(name_key[0]),
-                unidecode(name_key[1]),
-                self.dump_date_to_database_field(name_key[2]) or '',
-            ]
+        last_names = {name_key[0] for name_key in name_keys}
+        first_names = {name_key[1] for name_key in name_keys}
         self.execute(
             'SELECT * FROM player '
-            f'WHERE (last_name, first_name, date_of_birth) IN ({query_array})',
-            tuple(params),
+            f'WHERE last_name COLLATE NOCASE IN ({", ".join("?" * len(last_names))}) '
+            f'AND first_name COLLATE NOCASE IN ({", ".join("?" * len(first_names))})',
+            (*last_names, *first_names),
         )
-        return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+        keys = set(name_keys)
+        return [
+            stored_player
+            for row in self.fetchall()
+            if keys
+            & ffe_database_name_keys(
+                stored_player := self.get_stored_player_from_row(row)
+            )
+        ]
 
     @classmethod
     def _process_filters(cls, filters: dict) -> tuple[list[str], list[Any]]:
@@ -361,9 +378,10 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     # ---------------------------------------------------------------------------------
 
     @property
-    def legacy_min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
-        return Version('3.6.0')
+    def legacy_min_recovery_version(self) -> Version | None:
+        # Pre-version-5 databases use the version 1 schema, which lacks the
+        # columns of the current schema, so they cannot be recovered.
+        return None
 
     @staticmethod
     def _legacy_dir() -> Path:

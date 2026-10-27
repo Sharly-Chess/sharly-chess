@@ -31,6 +31,8 @@ from common.logger import get_logger, set_logging_config
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
+from database.sqlite.local_source_database import LocalSourceDatabaseManager
+from utils.instance_lock import InstanceLock
 from web.channels import channels_plugin
 from web.garbage_collection import RequestGarbageCollectionMiddleware
 from web.performance import PerformanceMiddleware
@@ -188,6 +190,9 @@ class ServerEngine:
             pdb_on_exception=self.debug,
             plugins=[channels_plugin],
             listeners=listeners,
+            # Installing a database holds the processor for as long as its
+            # conversion takes, so it only begins once the server answers.
+            on_startup=[lambda _: LocalSourceDatabaseManager().start_checking()],
         )
 
     async def serve(self) -> None:
@@ -201,6 +206,10 @@ class ServerEngine:
         sc_config = SharlyChessConfig()
         logger.info(f'Console logging level: {sc_config.console_log_level_str}')
 
+        NetworkMonitor.start_monitoring()
+
+        if federation := sc_config.federation:
+            DataSourceManager().activate_for_federation(federation.name)
         for data_source in DataSourceManager().objects():
             data_source.on_app_init()
 
@@ -231,11 +240,11 @@ class ServerEngine:
 
         logger.info(f'Port: {sc_config.web_port}')
         logger.info(f'Local URL: {sc_config.local_url}')
+        if InstanceLock.held:
+            InstanceLock.held.publish_url(sc_config.local_url)
 
         if sc_config.launch_browser:
             Thread(target=launch_browser, args=(sc_config.local_url,)).start()
-
-        NetworkMonitor.start_monitoring()
 
         logging_config = set_logging_config(
             console_log_level=sc_config.console_log_level,

@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from decimal import Decimal
 from functools import lru_cache, cache
-from math import floor
 from subprocess import CompletedProcess
 from typing import Any, Protocol, TYPE_CHECKING, cast, ClassVar
 from collections.abc import Iterable, Hashable, Collection
@@ -150,8 +149,10 @@ class Utils:
     @classmethod
     @lru_cache(maxsize=32)
     def performance_bonus(cls, fractional_score: float) -> int:
-        percent = 100 * fractional_score
-        index = floor(abs(50 - percent))
+        # The score is a whole percentage; read it back as one rather
+        # than truncating the float product (100 * 0.57 falls short of 57).
+        percent = round(100 * fractional_score)
+        index = abs(50 - percent)
         bonus = cls.PERFORMANCE_TABLE[index]
         if fractional_score < 0.5:
             bonus *= -1

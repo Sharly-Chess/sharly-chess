@@ -4,6 +4,8 @@ import common
 from plugins import PLUGINS_DIR
 
 PLUGIN_NAME: str = 'ffe'
+#: The `national_source` of the players whose national id is their FFE id.
+NATIONAL_SOURCE_ID: str = PLUGIN_NAME
 PLUGIN_DIR: Path = PLUGINS_DIR / PLUGIN_NAME
 TMP_DIR: Path = common.TMP_DIR / PLUGIN_NAME
 TMP_DIR.mkdir(parents=True, exist_ok=True)

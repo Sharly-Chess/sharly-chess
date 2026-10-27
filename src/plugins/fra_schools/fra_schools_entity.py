@@ -91,11 +91,14 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
         pass
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
-        if not value or tournament is None:
+        if not value:
             return
-        event = tournament.event
         school_code = FRASchoolsUtils.extract_school_code(value)
         if not school_code:
             raise SharlyChessException(
@@ -253,10 +256,6 @@ class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
     @property
     def cell_template(self) -> str | None:
         return '/fra_schools_player_school_cell.html'
-
-    @property
-    def is_tournament_column(self) -> bool:
-        return True
 
     def get_filter_key(self, player: Player) -> str:
         school = FRASchoolsUtils.get_player_school(player)

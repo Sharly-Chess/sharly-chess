@@ -31,6 +31,7 @@ class PlaceCardPlayer:
         self.gender: str = ''
         self.title: str = ''
         self.federation: str = ''
+        self.national_id: str = ''
         self.club: str = ''
         self.category: str = ''
         self.color: str = ''
@@ -48,13 +49,14 @@ class PlaceCardPlayer:
                 self.rating = str(tournament_player.rating)
             self.rating_type = tournament_player.rating_type.short_name
             self.full_name = tournament_player.full_name
-            self.first_name = tournament_player.first_name
-            self.last_name = tournament_player.last_name
+            self.first_name = tournament_player.display_first_name
+            self.last_name = tournament_player.display_last_name
             if tournament_player.year_of_birth:
                 self.year_of_birth = str(tournament_player.year_of_birth)
             self.gender = tournament_player.gender.short_name
             self.title = tournament_player.display_title
             self.federation = tournament_player.federation.name
+            self.national_id = tournament_player.national_id or ''
             self.club = tournament_player.club.name
             self.category = tournament_player.category.name
             self.color = color
@@ -108,8 +110,10 @@ class PlaceCardPairing:
     def __init__(
         self,
         board: Board | None = None,
+        round_: int = 0,
     ):
         self.number: int
+        self.round: int = round_
         self.white_player: PlaceCardPlayer
         self.black_player: PlaceCardPlayer
         if board:
@@ -188,7 +192,7 @@ class PlaceCardTournament:
         self.stop: PlaceCardDate
         if tournament:
             self.name = tournament.name
-            self.start = PlaceCardDate(tournament.stop_date)
+            self.start = PlaceCardDate(tournament.start_date)
             self.stop = PlaceCardDate(tournament.stop_date)
         else:
             self.name = _('Tournament name')

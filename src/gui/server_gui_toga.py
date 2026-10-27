@@ -16,6 +16,7 @@ import logging
 import os
 import queue
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -41,6 +42,7 @@ from common import (
     LOG_DIR,
     FLATPAK_ID,
     DATA_DIR,
+    DATA_DIR_MIGRATION,
     DEVEL_ENV,
     MANUAL_PATH_USED,
 )
@@ -55,6 +57,13 @@ from gui.gui_logger import GUILogHandler
 from gui.selection_popup import limit_popup_height
 from gui.web_view_background import show_window_through
 from utils import Utils
+from utils.data_dir_migration import (
+    DataDirMigration,
+    DataDirMoveState,
+    forget_moved_data_dir,
+    is_left_by_a_move,
+    sync_service,
+)
 from utils.program_variables import ProgramVar
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
@@ -368,6 +377,7 @@ class SharlyChessServerToga(toga.App):
         self.menu_plugins_btn: toga.Button | None = None
         self.menu_logs_btn: toga.Button | None = None
         self.menu_settings_btn: toga.Button | None = None
+        self.menu_about_btn: toga.Button | None = None
         self.active_view_name: str | None = None
         self.requested_window_size: tuple[int, int] | None = None
         #: The buttons displayed as selected, and whether the window is the
@@ -404,12 +414,18 @@ class SharlyChessServerToga(toga.App):
         self.launch_browser_switch: toga.Switch | None = None
         self.data_path_input: TextInput | None = None
         self.data_path_move_button: toga.Button | None = None
+        self.moved_data_dir_box: toga.Box | None = None
+        self.locale_select: toga.Selection | None = None
+        self.date_formatter_select: toga.Selection | None = None
+        self.name_formatter_select: toga.Selection | None = None
+        self.capitalise_last_name_switch: toga.Switch | None = None
+        self.experimental_switch: toga.Switch | None = None
+
+        # About view
+        self.about_view: toga.Box | None = None
         self.check_beta_switch: toga.Switch | None = None
         self.latest_version_label: toga.Label | None = None
         self.latest_version_btn: toga.Button | None = None
-        self.locale_select: toga.Selection | None = None
-        self.date_formatter_select: toga.Selection | None = None
-        self.experimental_switch: toga.Switch | None = None
 
         # Setup content, displayed while the settings have not been set
         self.federation_field: toga.Widget | None = None
@@ -425,6 +441,7 @@ class SharlyChessServerToga(toga.App):
             self.menu_plugins_btn,
             self.menu_logs_btn,
             self.menu_settings_btn,
+            self.menu_about_btn,
         ]
 
     @property
@@ -435,6 +452,7 @@ class SharlyChessServerToga(toga.App):
             self.plugins_view,
             self.logs_view,
             self.settings_view,
+            self.about_view,
         ]
 
     #: Margin around the content of a view.
@@ -517,6 +535,12 @@ class SharlyChessServerToga(toga.App):
             _('Settings'),
             style=self.menu_button_style,
             on_press=self._show_settings_view,
+            enabled=False,
+        )
+        self.menu_about_btn = toga.Button(
+            _('About'),
+            style=self.menu_button_style,
+            on_press=self._show_about_view,
             enabled=False,
         )
 
@@ -665,24 +689,7 @@ class SharlyChessServerToga(toga.App):
             on_change=self._on_launch_browser_switch_change,
         )
 
-        self.data_path_input = toga.TextInput(
-            value=str(DATA_DIR.absolute()),
-            readonly=True,
-            width=self.compact_size[0] - self.view_margin * 2,
-        )
-        if sys.platform == 'darwin':
-            # toga maps TextInput to an NSTextField that wraps a long value
-            # onto a second line instead of clipping it, and readonly leaves
-            # it unselectable so there's no cursor to scroll with. Force the
-            # cell into single-line + scrollable mode and make the field
-            # selectable (but not editable), so a long path stays on one line
-            # and can be clicked into and scrolled, matching the Windows field.
-            native = self.data_path_input._impl.native
-            cell = native.cell
-            cell.usesSingleLineMode = True
-            cell.scrollable = True
-            cell.wraps = False
-            native.selectable = True
+        self.data_path_input = self._path_input(DATA_DIR.absolute())
         data_path_buttons = [
             toga.Button(_('Open'), on_press=self._open_data_path_explorer)
         ]
@@ -693,26 +700,53 @@ class SharlyChessServerToga(toga.App):
                 _('Move'), on_press=self._handle_data_path_selection
             )
             data_path_buttons.append(self.data_path_move_button)
-        current_version_message = _('Current version: Sharly Chess {version}').format(
-            version=SHARLY_CHESS_VERSION
-        )
-        self.check_beta_switch = toga.Switch(
-            text=_('Include beta versions in updates'),
-            value=config.check_beta_versions,
-            on_change=self._on_check_beta_switch_change,
-        )
-        self.latest_version_label = toga.Label(
-            '', text_align='center'
-        )  # initialized later
-        self.latest_version_btn = toga.Button(
-            _('Search for updates'), on_press=self._search_for_updates
-        )
-        changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
+            if DATA_DIR_MIGRATION and DATA_DIR_MIGRATION.can_be_requested():
+                data_path_buttons.append(
+                    toga.Button(
+                        _('Move to the recommended folder'),
+                        on_press=self._request_data_dir_move,
+                    )
+                )
+        moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
+        if (
+            moved_data_dir
+            and moved_data_dir.is_dir()
+            and is_left_by_a_move(moved_data_dir)
+        ):
+            self.moved_data_dir_box = toga.Box(
+                direction=COLUMN,
+                align_items='center',
+                gap=7,
+                children=[
+                    toga.Label(_('Previous data folder, kept as a copy')),
+                    self._path_input(moved_data_dir),
+                    toga.Box(
+                        direction=ROW,
+                        gap=10,
+                        children=[
+                            toga.Button(
+                                _('Open'),
+                                on_press=lambda widget: self._open_dir_in_explorer(
+                                    moved_data_dir
+                                ),
+                            ),
+                            toga.Button(
+                                _('Delete'), on_press=self._delete_moved_data_dir
+                            ),
+                        ],
+                    ),
+                ],
+            )
         title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         general_children: list[toga.Widget] = [
             self._settings_row(_('Language:'), self._build_locale_select()),
-            self._settings_row(_('Federation:'), self._build_federation_select()),
+            self._settings_row(
+                _('{string}:').format(string=_('Federation')),
+                self._build_federation_select(),
+            ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
+            self._settings_row(_('Name format:'), self._build_name_formatter_select()),
+            self._settings_row('', self._build_capitalise_last_name_switch()),
             self._settings_row('', self.launch_browser_switch),
         ]
         if config.experimental_features:
@@ -733,9 +767,32 @@ class SharlyChessServerToga(toga.App):
                 children=data_path_buttons,
                 gap=10,
             ),
+        )
+        if self.moved_data_dir_box:
+            self.settings_view.add(self.moved_data_dir_box)
+
+        # About view
+        self.about_view = toga.Box(style=self.compact_view_style, gap=7)
+        current_version_message = _('Sharly Chess {version}').format(
+            version=SHARLY_CHESS_VERSION
+        )
+        self.check_beta_switch = toga.Switch(
+            text=_('Include beta versions in updates'),
+            value=config.check_beta_versions,
+            on_change=self._on_check_beta_switch_change,
+        )
+        self.latest_version_label = toga.Label(
+            '', text_align='center'
+        )  # initialized later
+        self.latest_version_btn = toga.Button(
+            _('Search for updates'), on_press=self._search_for_updates
+        )
+        changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
+        self.about_view.add(
+            toga.Label(_('Current version'), style=title_style),
+            toga.Label(current_version_message, text_align='center'),
             toga.Divider(margin=(5, 0)),
             toga.Label(_('Updates'), style=title_style),
-            toga.Label(current_version_message, text_align='center'),
             self.latest_version_label,
             toga.Box(
                 children=[self.latest_version_btn, changelog_button],
@@ -754,6 +811,27 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.Window)
         self.main_window.content = self.main_box
+
+    def _path_input(self, path: Path) -> toga.TextInput:
+        path_input = toga.TextInput(
+            value=str(path),
+            readonly=True,
+            width=self.compact_size[0] - self.view_margin * 2,
+        )
+        if sys.platform == 'darwin':
+            # toga maps TextInput to an NSTextField that wraps a long value
+            # onto a second line instead of clipping it, and readonly leaves
+            # it unselectable so there's no cursor to scroll with. Force the
+            # cell into single-line + scrollable mode and make the field
+            # selectable (but not editable), so a long path stays on one line
+            # and can be clicked into and scrolled, matching the Windows field.
+            native = path_input._impl.native
+            cell = native.cell
+            cell.usesSingleLineMode = True
+            cell.scrollable = True
+            cell.wraps = False
+            native.selectable = True
+        return path_input
 
     def _settings_row(self, label: str, widget: toga.Widget) -> toga.Box:
         """A row of the settings: the fields fill the width left by the labels,
@@ -857,6 +935,28 @@ class SharlyChessServerToga(toga.App):
         )
         return self.date_formatter_select
 
+    def _build_name_formatter_select(self) -> toga.Selection:
+        from utils.name_formatter import NameFormatterManager
+
+        self.name_formatter_select = self._select(
+            [
+                {'name_formatter': formatter_id, 'text': name}
+                for formatter_id, name in NameFormatterManager().options().items()
+            ],
+            SharlyChessConfig().name_formatter.id,
+            'name_formatter',
+            self._on_name_formatter_change,
+        )
+        return self.name_formatter_select
+
+    def _build_capitalise_last_name_switch(self) -> toga.Switch:
+        self.capitalise_last_name_switch = toga.Switch(
+            text=_('Capitalise last names'),
+            value=SharlyChessConfig().stored_config.capitalise_last_name,
+            on_change=self._on_capitalise_last_name_switch_change,
+        )
+        return self.capitalise_last_name_switch
+
     def _build_setup_content(self) -> None:
         """The content displayed while the settings of the application have not
         been set: the application can not be used before they are."""
@@ -884,12 +984,14 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Language:'), self._build_locale_select()),
             self._settings_row(
-                _('Federation:'),
+                _('{string}:').format(string=_('Federation')),
                 self._build_federation_select(
                     none_text=_('Please choose a federation')
                 ),
             ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
+            self._settings_row(_('Name format:'), self._build_name_formatter_select()),
+            self._settings_row('', self._build_capitalise_last_name_switch()),
             self.setup_start_button,
         )
         assert isinstance(self.main_window, toga.Window)
@@ -933,6 +1035,14 @@ class SharlyChessServerToga(toga.App):
 
     def _on_date_formatter_change(self, widget: toga.Selection, **kwargs: Any) -> None:
         self._update_config('date_formatter', getattr(widget.value, 'date_formatter'))  # noqa: B009
+
+    def _on_name_formatter_change(self, widget: toga.Selection, **kwargs: Any) -> None:
+        self._update_config('name_formatter', getattr(widget.value, 'name_formatter'))  # noqa: B009
+
+    def _on_capitalise_last_name_switch_change(
+        self, widget: toga.Switch, **kwargs: Any
+    ) -> None:
+        self._update_config('capitalise_last_name', widget.value)
 
     def _on_experimental_switch_change(
         self, widget: toga.Switch, **kwargs: Any
@@ -1068,6 +1178,9 @@ class SharlyChessServerToga(toga.App):
         self._show_view('settings')
         # The labels can only be measured once the view they are in is laid out.
         self._align_settings_labels()
+
+    def _show_about_view(self, widget: Any) -> None:
+        self._show_view('about')
         self._update_latest_version_components()
 
     def _toggle_log_settings(self, widget: Any) -> None:
@@ -1110,12 +1223,16 @@ class SharlyChessServerToga(toga.App):
             error_dialog = toga.ErrorDialog(_('Invalid folder'), error)
             await self.main_window.dialog(error_dialog)
             return
-        confirm_dialog = toga.ConfirmDialog(
-            _('Data folder'),
-            _('Confirm the new data folder "{folder}"?').format(folder=new_data_dir)
-            + '\n'
-            + _('Restarting will be required to complete the move.'),
+        message = _('Confirm the new data folder [{folder}]?').format(
+            folder=new_data_dir
         )
+        if service := sync_service(new_data_dir):
+            message += '\n\n' + _(
+                'This folder is synchronised by {service}, which can block the '
+                'events while Sharly Chess writes to them.'
+            ).format(service=service)
+        message += '\n' + _('Restarting will be required to complete the move.')
+        confirm_dialog = toga.ConfirmDialog(_('Data folder'), message)
         if not await self.main_window.dialog(confirm_dialog):
             return
         ProgramVar.write_variables(
@@ -1124,13 +1241,19 @@ class SharlyChessServerToga(toga.App):
                 ProgramVar.PREVIOUS_DATA_DIR: str(DATA_DIR),
             }
         )
+        self._show_restart_to_complete_move()
+        if sys.platform == 'win32':
+            await self._ask_windows_defender_exception(new_data_dir)
 
+    def _show_restart_to_complete_move(self) -> None:
         assert self.settings_view is not None
         assert self.data_path_input is not None
-        assert self.data_path_move_button is not None
         self.data_path_input.enabled = False
-        self.data_path_move_button.enabled = False
-        self.settings_view.index(self.data_path_input)
+        data_path_buttons = self.settings_view.children[
+            self.settings_view.index(self.data_path_input) + 1
+        ]
+        for button in data_path_buttons.children[1:]:
+            button.enabled = False
         self.settings_view.insert(
             self.settings_view.index(self.data_path_input) + 2,
             toga.Label(
@@ -1140,8 +1263,97 @@ class SharlyChessServerToga(toga.App):
                 text_align='center',
             ),
         )
-        if sys.platform == 'win32':
-            await self._ask_windows_defender_exception(new_data_dir)
+
+    async def _request_data_dir_move(self, widget: Any) -> None:
+        assert isinstance(self.main_window, toga.Window)
+        assert DATA_DIR_MIGRATION is not None
+        confirm_dialog = toga.ConfirmDialog(
+            _('Data folder'),
+            _('Move the data to [{folder}]?').format(
+                folder=DATA_DIR_MIGRATION.target_dir
+            )
+            + '\n'
+            + _('The current folder will be kept as a copy.')
+            + '\n'
+            + _('Restarting will be required to complete the move.'),
+        )
+        if not await self.main_window.dialog(confirm_dialog):
+            return
+        DataDirMigration.request()
+        self._show_restart_to_complete_move()
+
+    async def _delete_moved_data_dir(self, widget: Any) -> None:
+        assert isinstance(self.main_window, toga.Window)
+        moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
+        if not moved_data_dir:
+            return
+        question_dialog = toga.QuestionDialog(
+            _('Data folder'),
+            _('Delete the previous data folder [{folder}]?').format(
+                folder=moved_data_dir
+            )
+            + '\n'
+            + _('Sharly Chess no longer uses it, your data is in the current folder.'),
+        )
+        if not await self.main_window.dialog(question_dialog):
+            return
+        await asyncio.to_thread(shutil.rmtree, moved_data_dir, ignore_errors=True)
+        if moved_data_dir.exists():
+            await self.main_window.dialog(
+                toga.ErrorDialog(
+                    _('Data folder'),
+                    _('The folder [{folder}] could not be deleted entirely.').format(
+                        folder=moved_data_dir
+                    ),
+                )
+            )
+            return
+        forget_moved_data_dir()
+        assert self.settings_view is not None
+        if self.moved_data_dir_box:
+            self.settings_view.remove(self.moved_data_dir_box)
+            self.moved_data_dir_box = None
+
+    async def _show_data_dir_move_dialogs(self) -> None:
+        """Tells the user their data has moved, or asks them whether to move
+        a folder they chose that a cloud service synchronises."""
+        migration = DATA_DIR_MIGRATION
+        if migration is None:
+            return
+        assert isinstance(self.main_window, toga.Window)
+        title = self._dialog_title(_('Data folder'))
+        if migration.state() == DataDirMoveState.MOVED:
+            message = _(
+                'Your data has been moved to [{folder}], a folder that cloud '
+                'services such as OneDrive do not synchronise.'
+            ).format(folder=DATA_DIR)
+            moved_data_dir = ProgramVar.MOVED_DATA_DIR.read_path_value()
+            if moved_data_dir and moved_data_dir != migration.data_dir:
+                message += '\n\n' + _(
+                    'The previous folder is kept as a copy at [{folder}], and will '
+                    'be deleted two versions from now. You can delete it sooner '
+                    'from the settings.'
+                ).format(folder=moved_data_dir)
+            await self.main_window.dialog(toga.InfoDialog(title, message))
+            DataDirMigration.notice_shown()
+        elif migration.should_ask():
+            message = _(
+                'Your data folder [{folder}] is synchronised by {service}, which '
+                'can block the events while Sharly Chess writes to them.'
+            ).format(folder=DATA_DIR, service=sync_service(DATA_DIR))
+            message += '\n\n' + _(
+                'Do you want to move the data to [{folder}]? The current folder '
+                'will be kept as a copy.'
+            ).format(folder=migration.target_dir)
+            if await self.main_window.dialog(toga.QuestionDialog(title, message)):
+                DataDirMigration.request()
+                await self.main_window.dialog(
+                    toga.InfoDialog(
+                        title, _('Restart Sharly Chess to complete the move.')
+                    )
+                )
+            else:
+                DataDirMigration.decline()
 
     async def _ask_windows_defender_exception(self, new_data_dir: Path) -> None:
         assert isinstance(self.main_window, toga.Window)
@@ -1224,7 +1436,7 @@ class SharlyChessServerToga(toga.App):
         assert self.update_available_box is not None
         assert self.home_view is not None
 
-        skip_settings = self.active_view_name != 'settings'
+        skip_about = self.active_view_name != 'about'
         latest = VersionUpdater.LATEST_VERSION
         search_ongoing = self.version_search_ongoing
         searched_at = VersionUpdater.LATEST_VERSION_SEARCHED_AT
@@ -1236,7 +1448,7 @@ class SharlyChessServerToga(toga.App):
             message = _('Updates are available!')
             if self.update_available_box not in self.home_view.children:
                 self.home_view.insert(0, self.update_available_box)
-            if not skip_settings:
+            if not skip_about:
                 self.latest_version_label.style.font_weight = 'bold'
                 self.latest_version_btn.text = _('Install')
                 self.latest_version_btn.on_press = self._show_update_dialog
@@ -1244,7 +1456,7 @@ class SharlyChessServerToga(toga.App):
             message = _('No available update')
             message += f' ({self._last_search_message(searched_at)})'
 
-        if not skip_settings:
+        if not skip_about:
             self.latest_version_label.text = message
             self.latest_version_label.enabled = not search_ongoing
             self.latest_version_btn.enabled = not search_ongoing
@@ -1383,6 +1595,7 @@ class SharlyChessServerToga(toga.App):
         )
         if not self.server_running:
             self._on_start_server(None)
+        self._spawn_task(self._show_data_dir_move_dialogs())
 
     def make_link_button(self, url: str) -> toga.Label:
         button = toga.Button(url, style=Pack(align_items='center', margin_top=5))
@@ -1400,11 +1613,12 @@ class SharlyChessServerToga(toga.App):
         self.server_state_container.clear()
         self.server_state_container.add(
             toga.Box(
-                style=Pack(direction=ROW, align_items='center'),
+                style=Pack(direction=ROW, align_items='center', margin=(15, 0)),
                 children=[
                     toga.Button(
                         _('Open application (browser)'),
                         on_press=self._open_browser,
+                        font_weight='bold',
                     ),
                 ],
             )

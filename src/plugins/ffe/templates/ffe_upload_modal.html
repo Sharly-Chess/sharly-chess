@@ -101,7 +101,7 @@
                             _('You are not allowed to publish rules.')
                             if not client.can_publish_rules else
                             _('No tournament configured for FFE upload.')
-                            if not ffe_configured_tournaments else _(
+                            if not ffe_rules_tournaments else _(
                                 'Upload the rules in PDF format to the '
                                 'FFE website for one or more tournaments.'
                             )
@@ -112,7 +112,7 @@
                         hx-get="{{ url_for(
                             'ffe-rules-upload-modal', event_uniq_id=admin_event.uniq_id
                         ) }}"
-                        {% if not client.can_publish_rules or not ffe_configured_tournaments %}
+                        {% if not client.can_publish_rules or not ffe_rules_tournaments %}
                             disabled
                         {% endif %}
                     >

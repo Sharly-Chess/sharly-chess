@@ -597,6 +597,34 @@ class FideIdPlayersTabColumn(PlayersTabColumn):
         return any(player.fide_id for player in players)
 
 
+class NationalIdPlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'national_id'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('National ID')
+
+    @property
+    def header_template(self) -> str:
+        return 'headers/national_id.html'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/national_id.html'
+
+    @property
+    def is_compact(self) -> bool:
+        return True
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (not bool(player.national_id),)
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.national_id for player in players)
+
+
 class PaymentPlayersTabColumn(PlayersTabColumn):
     @staticmethod
     def static_id() -> str:

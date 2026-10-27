@@ -1,4 +1,7 @@
+import io
+import re
 import xml.etree.ElementTree as ET
+from datetime import date
 from sqlite3 import IntegrityError
 from unittest import TestCase
 from unittest.mock import PropertyMock, patch
@@ -6,6 +9,10 @@ from unittest.mock import PropertyMock, patch
 import pytest
 
 from data.event import Event
+from data.input_output.tournament_exporters import (
+    PgnAllRoundsTournamentExporter,
+    PgnTournamentExporter,
+)
 from data.loader import EventLoader
 from data.tie_breaks import TieBreakManager, TieBreak
 from data.tie_breaks.tie_breaks import (
@@ -22,7 +29,8 @@ from plugins.chess_results.utils import CRUtils
 from plugins.ffe.ffe_tie_breaks import PapiPerformanceTieBreak
 from plugins.ffe.papi_converter import PapiConverter
 from tests.test_config import TestUtils
-from utils.enum import RoleType
+from utils.enum import Result, RoleType
+from utils.time_control import trf25_to_pgn
 
 
 EVENT_ID = 'test-tournament-exporters-event'
@@ -44,6 +52,23 @@ class TournamentExporterTestCase(TestCase):
     def tearDown(self):
         TestUtils.delete_event(EVENT_ID)
         super().tearDown()
+
+    # -------------------------------------------------------------------------
+    # TRF
+    # -------------------------------------------------------------------------
+
+    def test_trf_players_level_on_every_criterion_share_the_rank(self):
+        """Ranked on the points alone, the four players on 3.5 are level
+        (C.07 Art. 4.2) and the rank field, which allows ties, says so."""
+        self._set_tie_breaks([])
+        rank_by_name = {
+            player.name: player.rank for player in self.tournament.to_trf().players
+        }
+        self.assertEqual(rank_by_name['BRUNO'], 1)
+        for name in ('ALYX', 'CHARLINE', 'DAVID', 'STEPHAN'):
+            self.assertEqual(rank_by_name[name], 2, name)
+        self.assertEqual(rank_by_name['FRANCK'], 6)
+        self.assertEqual(rank_by_name['LAIS'], 16)
 
     # -------------------------------------------------------------------------
     # Chess-Results
@@ -116,7 +141,7 @@ class TournamentExporterTestCase(TestCase):
         )
         with_k_factor = tournament_players[0]
         ratings = dict(with_k_factor.ratings)
-        ratings[self.tournament.rating].k_factor = 20
+        ratings[self.tournament.cadence].k_factor = 20
         with_k_factor.update_ratings(ratings)
 
         with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):
@@ -144,7 +169,7 @@ class TournamentExporterTestCase(TestCase):
         )
         with_k_factor = tournament_players[0]
         ratings = dict(with_k_factor.ratings)
-        ratings[self.tournament.rating].k_factor = 20
+        ratings[self.tournament.cadence].k_factor = 20
         with_k_factor.update_ratings(ratings)
 
         with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):
@@ -164,6 +189,34 @@ class TournamentExporterTestCase(TestCase):
         )
         assert changes_by_id[str(with_k_factor.id)] not in ('', '0')
         assert changes_by_id[str(tournament_players[1].id)] == ''
+
+    def test_chess_results_uploads_the_date_of_birth(self):
+        """``dob`` carries the year of birth alone as ``yyyy0000``, even
+        when the full date is known, and is empty when it is unknown."""
+        with_date, with_year, without = list(
+            self.tournament.tournament_players_by_pairing_number.values()
+        )[:3]
+        with_date.stored_player.date_of_birth = date(2009, 3, 7)
+        with_year.stored_player.date_of_birth = None
+        with_year.stored_player.year_of_birth = 1994
+        without.stored_player.date_of_birth = None
+        without.stored_player.year_of_birth = None
+
+        with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):
+            xml = ChessResultsSession(self.tournament).build_tournament_xml(
+                self.tournament,
+                sid='test-sid',
+                tnr='test-key',
+                creator_id='test-creator',
+                state=None,
+            )
+        dob_by_id = {
+            player.attrib['id']: player.attrib['dob']
+            for player in ET.fromstring(xml).findall('./players/player')
+        }
+        assert dob_by_id[str(with_date.id)] == '20090000'
+        assert dob_by_id[str(with_year.id)] == '19940000'
+        assert dob_by_id[str(without.id)] == ''
 
     def test_chess_results_getkey_escapes_tournament_name(self):
         """A tournament name with XML metacharacters (e.g. ``R&B``) must be
@@ -308,3 +361,88 @@ class TournamentExporterTestCase(TestCase):
             [WinsTieBreak(), PointsTieBreak()]
         )
         self.assertIsNotNone(warning)
+
+    # -------------------------------------------------------------------------
+    # PGN
+    # -------------------------------------------------------------------------
+
+    def _pgn_games(self, exporter: PgnTournamentExporter) -> list[str]:
+        file = io.StringIO()
+        exporter.dump_to_file(file, self.tournament)
+        return [
+            game.strip()
+            for game in re.split(r'^(?=\[Event )', file.getvalue(), flags=re.MULTILINE)
+            if game.strip()
+        ]
+
+    def test_pgn_all_rounds_exports_every_game_with_its_result(self):
+        games = self._pgn_games(PgnAllRoundsTournamentExporter())
+        expected_games = sum(
+            1
+            for round_ in range(1, self.tournament.last_paired_round + 1)
+            for board in self.tournament.get_round_boards(round_)
+            if board.optional_white_tournament_player and board.black_tournament_player
+        )
+        self.assertEqual(len(games), expected_games)
+        rounds = set()
+        for game in games:
+            headers, movetext = game.split('\n\n')
+            tags = re.findall(r'^\[(\w+) "(.*)"\]$', headers, re.MULTILINE)
+            self.assertEqual(
+                [name for name, _value in tags[:7]],
+                ['Event', 'Site', 'Date', 'Round', 'White', 'Black', 'Result'],
+            )
+            result = dict(tags)['Result']
+            self.assertNotEqual(result, '*')
+            self.assertTrue(movetext.strip().endswith(result))
+            rounds.add(dict(tags)['Round'].split('.')[0])
+        self.assertEqual(len(rounds), self.tournament.last_paired_round)
+
+    def test_pgn_last_round_exports_the_current_round_only(self):
+        current_round = str(self.tournament.current_round)
+        for game in self._pgn_games(PgnTournamentExporter()):
+            round_ = re.search(r'^\[Round "(\d+)\.\d+"\]$', game, re.MULTILINE)
+            assert round_ is not None
+            self.assertEqual(round_.group(1), current_round)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('result', list(Result))
+def test_pgn_result_has_a_tag_value(result: Result):
+    assert result.to_pgn in ('1-0', '0-1', '1/2-1/2', '*')
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'result, pgn, termination',
+    [
+        (Result.FORFEIT_WIN, '1-0', 'abandoned'),
+        (Result.FORFEIT_LOSS, '0-1', 'abandoned'),
+        (Result.DOUBLE_FORFEIT, '*', 'abandoned'),
+        (Result.PENALTY_DL, '*', 'rules infraction'),
+        (Result.ADJOURNED, '*', 'unterminated'),
+        (Result.NO_RESULT, '*', None),
+    ],
+)
+def test_pgn_result_without_a_played_outcome_is_explained(
+    result: Result, pgn: str, termination: str | None
+):
+    assert result.to_pgn == pgn
+    assert result.pgn_termination == termination
+    assert (result.pgn_comment is None) == (termination is None)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'trf25, pgn',
+    [
+        ('5400+30', '5400+30'),
+        ('40/6000+30:900+30', '40/6000+30:900+30'),
+        ('300', '300'),
+        ('W300-B240', None),
+        ('', None),
+        ('abc', None),
+    ],
+)
+def test_pgn_time_control(trf25: str, pgn: str | None):
+    assert trf25_to_pgn(trf25) == pgn

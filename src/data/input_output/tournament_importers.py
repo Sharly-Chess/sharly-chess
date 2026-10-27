@@ -11,6 +11,7 @@ from data.input_output.tournament_importer_options import (
     FileOption,
 )
 from data.loader import EventLoader
+from data.player import Player
 from data.tie_breaks.tie_breaks import PointsTieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -38,6 +39,9 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         super().__init__(options)
         self.stored_event_modified = False
         self.post_import_task: list[Callable[[Tournament], None]] = []
+        self.import_breaches: list[tuple[int, set, set]] = []
+        """The imported rounds whose pairings are not the engine's, each
+        with the engine's pairs and the imported ones that differ."""
         if self.reorder_boards:
             self.post_import_task.append(self._reorder_tournament_boards)
 
@@ -214,6 +218,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         )
         self.check_players_unicity(stored_players)
         self.check_pairing_inconsistencies(stored_tournament)
+        dropped_players: list[Player] = []
+        if tournament:
+            dropped_players = event.carry_over_reimported_players(
+                event.players_replaced_by_import(tournament), stored_players
+            )
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:
                 database.delete_players_in_tournament(tournament.id)
@@ -226,9 +235,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             )
             if self.stored_event_modified:
                 database.update_stored_event(event.stored_event)
+        event.notify_players_deleted(dropped_players)
         event = EventLoader().load_event(event.uniq_id)
         tournament = event.tournaments_by_id[tournament_id]
         tournament.set_tournament_players_pairing_numbers()
+        tournament.set_published_round(tournament.imported_published_round)
         if not self.check_in_imported:
             with EventDatabase(event.uniq_id, True) as database:
                 database.set_players_check_in(
@@ -470,7 +481,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                             player_id=other_player_id
                         )
                     )
-                if round_ not in pairings_by_round_by_player_id[player_id]:
+                if round_ not in pairings_by_round_by_player_id[other_player_id]:
                     raise ImporterError(
                         _('Player [{player_id}] - round {round}: ').format(
                             player_id=other_player_id, round=round_

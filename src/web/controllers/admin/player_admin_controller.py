@@ -1,8 +1,10 @@
-import csv
 import asyncio
+import copy
+import csv
 from collections import defaultdict, Counter
 from collections.abc import Callable
 from contextlib import suppress
+from dataclasses import replace
 from datetime import date
 from functools import cached_property
 from itertools import islice
@@ -14,6 +16,7 @@ from typing import Annotated, Any, cast, ClassVar
 from collections.abc import Collection, Iterable
 
 import chardet
+from markupsafe import Markup, escape
 from litestar.di import NamedDependency
 from litestar.exceptions import NotFoundException, ClientException
 
@@ -49,6 +52,22 @@ from data.player import (
     MAX_K_FACTOR,
 )
 from utils.types import PlayerRating
+from data.loader import EventLoader
+from data.rating_check import (
+    list_statuses,
+    automatic_check,
+    check_ratings,
+    forget_automatic_check,
+    list_versions,
+    stale_lists,
+)
+from data.rating_sequences import (
+    describe_rating,
+    official_rating,
+    other_ratings,
+    resolve_rating,
+)
+from data.pibes import Pibe, PibeType
 from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -60,6 +79,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
+    StoredPlayerPeriod,
     StoredTeam,
     StoredTournamentPlayer,
 )
@@ -67,7 +87,7 @@ from utils import Utils
 from utils.date_time import format_date
 from utils.enum import (
     PlayerGender,
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
     PlayerTitle,
     Result,
@@ -314,7 +334,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         sorted_players = sorted(
             players,
-            key=lambda player: sort_key_function(player) + player.name_sort_key,
+            key=lambda player: sort_key_function(player) + player.display_name_sort_key,
             reverse=not is_asc,
         )
         return [player.id for player in sorted_players]
@@ -448,7 +468,7 @@ class PlayerAdminController(BaseEventAdminController):
         ]
         template_context |= {
             'default_print_document': web_context.default_print_document,
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
             'search': SessionPlayersSearch(request, event).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
@@ -688,31 +708,162 @@ class PlayerAdminController(BaseEventAdminController):
         }
 
     @staticmethod
-    def _get_k_factor_placeholders(
+    def _player_period_ratings_context(admin_player: Player | None) -> dict[str, Any]:
+        """What the player's earlier periods were played on.
+
+        The fields of the form hold the period being played; a tournament
+        reported in periods keeps the ratings of the ones before it, which
+        the reports already made of them were built from."""
+        if admin_player is None:
+            return {}
+        tournament = admin_player.optional_single_tournament
+        if tournament is None or len(tournament.periods) < 2:
+            return {}
+        current_period = tournament.current_period
+        return {
+            'current_period': current_period,
+            'earlier_period_ratings': [
+                (period, admin_player.ratings_for(period))
+                for period in tournament.periods
+                if period.first_round < current_period.first_round
+            ],
+        }
+
+    @staticmethod
+    def _dump_form_ratings(ratings: dict[Cadence, PlayerRating]) -> str:
+        return json.dumps({tr.value: ratings[tr].stored_value for tr in Cadence})
+
+    @staticmethod
+    def _load_form_ratings(
         data: dict[str, str],
-    ) -> dict[TournamentRating, int]:
-        """The automatic coefficients (k) shown while the fields are left empty."""
-        year_of_birth: int | None = None
-        field = 'date_of_birth'
+    ) -> dict[Cadence, PlayerRating]:
+        """The ratings the form carries, with their sources, as the
+        player had them or the search found them."""
         try:
-            date_of_birth = WebContext.form_data_to_date(data, field)
-            year_of_birth = date_of_birth.year if date_of_birth else None
-        except FormError:
-            year_str = data.get(field, '')
-            if year_str.isdigit() and len(year_str) == 4:
-                year_of_birth = int(year_str)
-        placeholders: dict[TournamentRating, int] = {}
-        for tournament_rating in TournamentRating:
-            try:
-                fide_rating = WebContext.form_data_to_int(
-                    data, f'{tournament_rating.form_key}_rating_fide'
-                )
-            except ValueError:
-                fide_rating = None
-            placeholders[tournament_rating] = Player.estimate_fide_rating_coefficient(
-                fide_rating, year_of_birth
+            stored_ratings = json.loads(data.get('ratings') or '{}')
+        except ValueError:
+            stored_ratings = {}
+        return {
+            tr: PlayerRating.from_stored_value(stored_ratings.get(str(tr.value), {}))
+            for tr in Cadence
+        }
+
+    @classmethod
+    def _rating_form_context(
+        cls,
+        event: Event,
+        ratings: dict[Cadence, PlayerRating],
+        tournament: Tournament | None,
+        admin_player: Player | None,
+        form_player: Player | None = None,
+    ) -> dict[str, Any]:
+        """What the rating fields show for a player placed in a
+        tournament: the tournament rating, which the arbiter may correct,
+        where it came from, the other ratings the player holds, one of
+        which the arbiter may choose instead, and the official rating
+        beside it. *form_player* is the player as the form describes them,
+        whose category gives the rating a plugin prescribes."""
+        cadence, preference, sequence = event.rating_resolution(tournament)
+
+        def prescribed() -> int | None:
+            if form_player is None:
+                return None
+            category = PlayerCategory.from_year_of_birth(
+                event,
+                form_player.year_of_birth,
+                tournament.start_date if tournament else event.start_date,
+                tournament.stop_date if tournament else event.stop_date,
             )
-        return placeholders
+            return event.prescribed_rating(cadence, form_player, category, tournament)
+
+        tournament_player = (
+            admin_player.optional_single_tournament_player
+            if admin_player is not None
+            else None
+        )
+        if (
+            tournament_player is not None
+            and tournament is not None
+            and tournament_player.tournament.id == tournament.id
+            and ratings == tournament_player.ratings
+        ):
+            resolved = tournament_player.tournament_rating
+        else:
+            resolved = resolve_rating(
+                ratings,
+                cadence,
+                preference,
+                sequence,
+                event.is_single_national_rating,
+                prescribed,
+            )
+        unpinned = copy.deepcopy(ratings)
+        unpinned[cadence].pinned = None
+        automatic = resolve_rating(
+            unpinned,
+            cadence,
+            preference,
+            sequence,
+            event.is_single_national_rating,
+            lambda: resolved.value if resolved.prescribed else None,
+        )
+        choices = [
+            {
+                'key': key,
+                'value': rating.value,
+                'suffix': rating.suffix_html,
+                'description': describe_rating(rating),
+                'label': Markup('{} · {}{}').format(
+                    rating,
+                    describe_rating(rating),
+                    '' if in_sequence else f' ({_("not among the ratings retrieved")})',
+                ),
+            }
+            for key, rating, in_sequence in other_ratings(
+                unpinned, sequence, automatic, cadence, event.is_single_national_rating
+            )
+        ]
+        if choices:
+            choices.insert(
+                0,
+                {
+                    'key': '',
+                    'value': ''
+                    if automatic.prescribed or not automatic.value
+                    else automatic.value,
+                    'suffix': automatic.suffix_html,
+                    'description': describe_rating(automatic),
+                    'label': Markup(
+                        escape(_('{rating} · from the rating lists'))
+                    ).format(rating=automatic if automatic.value else _('No rating')),
+                },
+            )
+        official = official_rating(ratings, cadence)
+        k_cadence = official.cadence if official and official.cadence else cadence
+        year_of_birth = admin_player.year_of_birth if admin_player else None
+        return {
+            'cadence': str(cadence),
+            'value': ''
+            if resolved.prescribed or not resolved.value
+            else resolved.value,
+            'placeholder': resolved.value
+            if resolved.prescribed and resolved.value
+            else '',
+            'suffix': resolved.suffix_html,
+            'description': describe_rating(resolved),
+            'choices': choices,
+            'pinned': ratings[cadence].pinned or '',
+            'official': (
+                Markup('{} · {}').format(official, describe_rating(official))
+                if official is not None
+                else _('None, the player is unrated for FIDE.')
+            ),
+            'has_official': official is not None,
+            'k': ratings[k_cadence].k_factor or '',
+            'k_placeholder': Player.estimate_fide_rating_coefficient(
+                official.value if official else None, year_of_birth
+            ),
+        }
 
     @staticmethod
     def _k_factor_reference_date(
@@ -734,6 +885,16 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = web_context.admin_player.optional_single_tournament
         return tournament.start_date if tournament else event.start_date
 
+    @staticmethod
+    def _national_data_source(event: Event, data: dict[str, str]) -> DataSource | None:
+        """The data source whose national identifier the player form
+        shows: the one the player was fetched from, else the one of the
+        federation of the event; None when the form has no such field."""
+        manager = DataSourceManager()
+        if national_source := WebContext.form_data_to_str(data, 'national_source'):
+            return manager.national_source(national_source)
+        return manager.national_source_for_federation(event.federation)
+
     @classmethod
     def _render_players_form_modal(
         cls,
@@ -746,6 +907,7 @@ class PlayerAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
         warning_message: str | None = None,
         redirect_to: str | None = None,
+        regeneration: str | None = None,
     ) -> Template:
         request = web_context.request
         event = web_context.get_admin_event()
@@ -758,20 +920,23 @@ class PlayerAdminController(BaseEventAdminController):
             last_name: str | None = None
             date_of_birth: str | None = None
             gender = PlayerGender.NONE.value
-            ratings: dict[TournamentRating, PlayerRating] = {
-                tr: PlayerRating(estimated=0) for tr in TournamentRating
+            ratings: dict[Cadence, PlayerRating] = {
+                tr: PlayerRating() for tr in Cadence
             }
             title = PlayerTitle.NONE.value
             women_title = PlayerTitle.NONE.value
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
+            national_id: str | None = None
+            national_source: str | None = None
             mail: str | None = None
             phone: str | None = None
             comment: str | None = None
             owed: float = 0.0
             paid: float = 0.0
             fixed: int | None = None
+            byes_allowed: bool = True
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             stored_player = search_stored_player
             tournament_id: int | None = None
@@ -787,15 +952,17 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     if stored_player.year_of_birth:
                         date_of_birth = str(stored_player.year_of_birth)
-                    for tr_value, rating in stored_player.ratings.items():
-                        ratings[TournamentRating(tr_value)] = (
-                            PlayerRating.from_stored_value(rating)
-                        )
+                    # The fields hold the period being played, which is
+                    # what an edit records (see
+                    # ``_ratings_for_current_period``).
+                    ratings |= cls._current_period_ratings(admin_player, stored_player)
                     title = stored_player.title
                     women_title = stored_player.women_title
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
+                    national_id = stored_player.national_id or None
+                    national_source = stored_player.national_source or None
                 # Fields unused by the search, kept on replace
                 mail = stored_player.mail
                 phone = stored_player.phone
@@ -803,6 +970,7 @@ class PlayerAdminController(BaseEventAdminController):
                 owed = stored_player.owed
                 paid = stored_player.paid
                 fixed = stored_player.fixed
+                byes_allowed = stored_player.byes_allowed
                 stored_plugin_data = stored_player.plugin_data
             if action == FormAction.CREATE:
                 if len(event.sorted_not_finished_tournaments) == 1:
@@ -819,16 +987,18 @@ class PlayerAdminController(BaseEventAdminController):
                 else:
                     tournament_id = admin_player.single_tournament.id
 
-            rating_data: dict[str, Any] = {}
-            for tournament_rating in TournamentRating:
-                rating_ = ratings[tournament_rating]
-                key = tournament_rating.form_key
-                rating_data |= {
-                    f'{key}_rating_fide': rating_.fide or None,
-                    f'{key}_rating_national': rating_.national or None,
-                    f'{key}_rating_estimated': rating_.estimated or None,
-                    f'{key}_rating_k': rating_.k_factor,
-                }
+            initial_tournament = (
+                event.tournaments_by_id.get(tournament_id) if tournament_id else None
+            )
+            rating_context = cls._rating_form_context(
+                event, ratings, initial_tournament, admin_player
+            )
+            rating_data: dict[str, Any] = {
+                'ratings': cls._dump_form_ratings(ratings),
+                'tournament_rating': rating_context['value'],
+                'rating_pin': rating_context['pinned'],
+                'rating_k': rating_context['k'],
+            }
 
             plugin_form_data: dict[str, str] = {}
             for (
@@ -856,6 +1026,8 @@ class PlayerAdminController(BaseEventAdminController):
                     'women_title': women_title,
                     'federation': federation,
                     'fide_id': fide_id,
+                    'national_id': national_id,
+                    'national_source': national_source,
                     'club': club,
                     'mail': mail,
                     'phone': phone,
@@ -863,6 +1035,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'owed': owed,
                     'paid': paid,
                     'fixed': fixed or None,
+                    'byes_allowed': byes_allowed,
                     'date_of_birth': date_of_birth,
                     'redirect_to': redirect_to,
                 }
@@ -931,33 +1104,46 @@ class PlayerAdminController(BaseEventAdminController):
             templates_by_section=plugin_templates_by_section
         )
         search_filter_manager = SearchFilterManager(web_context.get_admin_event())
-        k_factor_placeholders = cls._get_k_factor_placeholders(data)
+        form_ratings = cls._load_form_ratings(data)
+        form_player = cls._form_player(event, data)
+        rating_contexts = {
+            '': cls._rating_form_context(
+                event, form_ratings, None, admin_player, form_player
+            )
+        } | {
+            str(tournament.id): cls._rating_form_context(
+                event, form_ratings, tournament, admin_player, form_player
+            )
+            for tournament in event.tournaments
+        }
+        template_context |= cls._player_period_ratings_context(admin_player)
         template_context |= {
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
-                TournamentRating.STANDARD: {
-                    'label': _('Standard:'),
+                Cadence.STANDARD: {
+                    'label': _('{string}:').format(string=_('Standard')),
                     'help': _(
                         'The rating used when the time control is at least 60 minutes.'
                     ),
                 },
-                TournamentRating.RAPID: {
-                    'label': _('Rapid:'),
+                Cadence.RAPID: {
+                    'label': _('{string}:').format(string=_('Rapid')),
                     'help': _(
                         'The rating used when the time control is more than 10 minutes and less than 60 minutes.'
                     ),
                 },
-                TournamentRating.BLITZ: {
-                    'label': _('Blitz:'),
+                Cadence.BLITZ: {
+                    'label': _('{string}:').format(string=_('Blitz')),
                     'help': _(
                         'The rating used when the time control is at most 10 minutes.'
                     ),
                 },
             },
-            'rating_type_labels': {
-                prt.form_key: prt.short_name for prt in PlayerRatingType
+            'rating_contexts': rating_contexts,
+            'team_tournament_ids': {
+                str(team.id): str(team.tournament_id or '')
+                for team in event.sorted_teams
             },
-            'k_factor_placeholders': k_factor_placeholders,
             'min_k_factor': MIN_K_FACTOR,
             'max_k_factor': MAX_K_FACTOR,
             'title_options': {
@@ -978,6 +1164,8 @@ class PlayerAdminController(BaseEventAdminController):
             'tournament_options': tournament_options,
             'team_options': team_options,
             'team_locked': team_locked,
+            'byes_locked': admin_player is not None
+            and cls._player_has_byes(admin_player),
             'is_team_event': event.is_team_event,
             'search_filters': search_filter_manager.get_filters(),
             'filters_by_tournament': json.dumps(
@@ -993,8 +1181,10 @@ class PlayerAdminController(BaseEventAdminController):
                 if action == 'create' and old_player_id
                 else None
             ),
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
+            'national_data_source': cls._national_data_source(event, data),
             'warning_message': warning_message,
+            'regeneration': regeneration,
             'add_other_active': SessionPlayersAddOtherActive(request).get(),
             'modal': 'player',
             'action': action,
@@ -1007,6 +1197,27 @@ class PlayerAdminController(BaseEventAdminController):
             )
         )
         return cls._admin_base_event_render(template_context)
+
+    @get(
+        path='/player-prescribed-rating/{event_uniq_id:str}',
+        name='admin-player-prescribed-rating',
+    )
+    async def htmx_admin_player_prescribed_rating(
+        self, request: HTMXRequest
+    ) -> Response[dict[str, str]]:
+        """The rating a plugin prescribes for the player the form describes,
+        as the date of birth or the tournament changes."""
+        web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        data = dict(request.query_params)
+        context = self._rating_form_context(
+            event,
+            self._load_form_ratings(data),
+            self._form_tournament(event, data),
+            None,
+            self._form_player(event, data),
+        )
+        return Response({'placeholder': str(context['placeholder'])})
 
     @get(
         path='/player-modal/create/{event_uniq_id:str}',
@@ -1052,6 +1263,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source: DataSource,
         player_source_id: str,
         k_factor_reference_date: date,
+        with_arbiter_title: bool = False,
     ) -> tuple[StoredPlayer | None, dict[str, str]]:
         errors: dict[str, str] = {}
         stored_player: StoredPlayer | None = None
@@ -1060,7 +1272,7 @@ class PlayerAdminController(BaseEventAdminController):
         try:
             stored_player = await data_source.fetch_player(
                 player_source_id=player_source_id,
-                with_arbiter_title=False,
+                with_arbiter_title=with_arbiter_title,
                 k_factor_reference_date=k_factor_reference_date,
             )
             if not stored_player:
@@ -1160,7 +1372,9 @@ class PlayerAdminController(BaseEventAdminController):
             team_id = WebContext.form_data_to_int(data, 'team_id')
             team = event.teams_by_id.get(team_id) if team_id else None
             tournament = team.tournament if team is not None else None
-            stored_player = cls._stored_player_from_data(data, tournament, player)
+            stored_player = cls._stored_player_from_data(
+                event, data, tournament, player
+            )
             if any(
                 cls._matches_existing_player(
                     stored_player, p, player.id if player else None
@@ -1171,7 +1385,7 @@ class PlayerAdminController(BaseEventAdminController):
                 return None, errors
             return stored_player, errors
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
-        stored_player = cls._stored_player_from_data(data, tournament, player)
+        stored_player = cls._stored_player_from_data(event, data, tournament, player)
         if event.get_player_duplicate(
             stored_player, tournament, player.id if player else None
         ):
@@ -1193,7 +1407,7 @@ class PlayerAdminController(BaseEventAdminController):
             return False
         return bool(
             stored.first_name == existing.first_name
-            and stored.last_name == existing.last_name
+            and normalized_key(stored.last_name) == normalized_key(existing.last_name)
         )
 
     @classmethod
@@ -1322,48 +1536,197 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
-        for tr in TournamentRating:
-            for prt in PlayerRatingType:
-                try:
-                    WebContext.form_data_to_int(
-                        data,
-                        field := f'{tr.form_key}_rating_{prt.form_key}',
-                        minimum=prt.min_value,
-                        maximum=prt.max_value,
-                    )
-                except ValueError:
-                    errors[field] = _(
-                        'Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}]).'
-                    ).format(
-                        rating_type=prt.name,
-                        rating=data[field],
-                        min=prt.min_value,
-                        max=prt.max_value,
-                    )
-        for tr in TournamentRating:
-            try:
-                WebContext.form_data_to_int(
-                    data,
-                    field := f'{tr.form_key}_rating_k',
-                    minimum=MIN_K_FACTOR,
-                    maximum=MAX_K_FACTOR,
-                )
-            except ValueError:
-                errors[field] = _(
-                    'Invalid coefficient (k) [{k_factor}] (expected in range [{min}-{max}]).'
-                ).format(
-                    k_factor=data[field],
-                    min=MIN_K_FACTOR,
-                    max=MAX_K_FACTOR,
-                )
+        rating_type = cls._edited_rating_type(event, data)
+        min_rating = rating_type.min_value
+        max_rating = rating_type.max_value
+        try:
+            WebContext.form_data_to_int(
+                data,
+                field := 'tournament_rating',
+                minimum=min_rating,
+                maximum=max_rating,
+            )
+        except ValueError:
+            errors[field] = _(
+                'Invalid rating [{rating}] (expected in range [{min}-{max}]).'
+            ).format(rating=data[field], min=min_rating, max=max_rating)
+        try:
+            WebContext.form_data_to_int(
+                data,
+                field := 'rating_k',
+                minimum=MIN_K_FACTOR,
+                maximum=MAX_K_FACTOR,
+            )
+        except ValueError:
+            errors[field] = _(
+                'Invalid coefficient (k) [{k_factor}] (expected in range [{min}-{max}]).'
+            ).format(
+                k_factor=data[field],
+                min=MIN_K_FACTOR,
+                max=MAX_K_FACTOR,
+            )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
             data=data, errors=errors
         )
         return errors
 
+    @staticmethod
+    def _player_has_byes(player: Player) -> bool:
+        tournament_player = player.optional_single_tournament_player
+        return tournament_player is not None and tournament_player.byes_count > 0
+
+    @classmethod
+    def _byes_allowed_from_data(
+        cls,
+        data: dict[str, str],
+        tournament: Tournament | None,
+        player: Player | None,
+    ) -> bool:
+        if tournament is None or tournament.is_team_tournament:
+            return player.byes_allowed if player else True
+        if player and cls._player_has_byes(player):
+            return True
+        return WebContext.form_data_to_bool(data, 'byes_allowed')
+
+    @staticmethod
+    def _current_period_ratings(
+        admin_player: Player | None, stored_player: StoredPlayer
+    ) -> dict[Cadence, PlayerRating]:
+        """The ratings the rating fields show: those of the period being
+        played, which are the player's own unless a later period recorded
+        ratings of its own."""
+        tournament = admin_player.optional_single_tournament if admin_player else None
+        if admin_player is not None and tournament is not None:
+            return admin_player.ratings_for(tournament.current_period)
+        return {
+            Cadence(tr_value): PlayerRating.from_stored_value(rating)
+            for tr_value, rating in stored_player.ratings.items()
+        }
+
+    @staticmethod
+    def _ratings_for_current_period(
+        player: Player | None,
+        form_ratings: dict[int, dict[str, Any]],
+        title: str,
+        women_title: str,
+    ) -> tuple[dict[int, dict[str, Any]], dict[int, StoredPlayerPeriod]]:
+        """Where the ratings the form carries belong.
+
+        The form shows the period being played, so in a tournament
+        reported in periods the ratings it comes back with are that
+        period's, and the player's own — what the first period was played
+        on — stay as they were. The periods already recorded are carried
+        through whatever happens: a player edited for their phone number
+        must not lose what their earlier periods were reported with."""
+        if player is None:
+            return form_ratings, {}
+        periods = dict(player.stored_player.periods)
+        tournament = player.optional_single_tournament
+        if tournament is None:
+            return form_ratings, periods
+        current_period = tournament.current_period
+        if current_period.first_round == 1 or current_period.id is None:
+            return form_ratings, periods
+        periods[current_period.id] = StoredPlayerPeriod(
+            ratings=form_ratings, title=title, women_title=women_title
+        )
+        return dict(player.stored_player.ratings), periods
+
+    @staticmethod
+    def _form_player(event: Event, data: dict[str, str]) -> Player:
+        """The player as the form describes them, so far as their category
+        goes: what the rating a plugin prescribes depends on."""
+        date_of_birth: date | None = None
+        year_of_birth: int | None = None
+        try:
+            date_of_birth = WebContext.form_data_to_date(data, 'date_of_birth')
+        except FormError:
+            with suppress(ValueError):
+                year_of_birth = WebContext.form_data_to_int(data, 'date_of_birth')
+        return Player(
+            event,
+            StoredPlayer(
+                id=0,
+                last_name=data.get('last_name') or '',
+                date_of_birth=date_of_birth,
+                year_of_birth=year_of_birth,
+                gender=data.get('gender') or PlayerGender.NONE.value,
+            ),
+        )
+
+    @classmethod
+    def _form_tournament(cls, event: Event, data: dict[str, str]) -> Tournament | None:
+        """The tournament the player of the form is placed in."""
+        try:
+            if event.is_team_event:
+                team_id = WebContext.form_data_to_int(data, 'team_id')
+                team = event.teams_by_id.get(team_id) if team_id else None
+                return team.tournament if team is not None else None
+            tournament_id = WebContext.form_data_to_int(data, 'tournament_id')
+        except ValueError:
+            return None
+        return event.tournaments_by_id.get(tournament_id) if tournament_id else None
+
+    @classmethod
+    def _edited_rating_type(
+        cls, event: Event, data: dict[str, str]
+    ) -> PlayerRatingType:
+        """The kind of the rating the tournament rating field edits, whose
+        range the value typed must be in."""
+        cadence, preference, sequence = event.rating_resolution(
+            cls._form_tournament(event, data)
+        )
+        return resolve_rating(
+            cls._load_form_ratings(data),
+            cadence,
+            preference,
+            sequence,
+            event.is_single_national_rating,
+            lambda: None,
+        ).type
+
+    @classmethod
+    def _edited_ratings(
+        cls, event: Event, data: dict[str, str], tournament: Tournament | None
+    ) -> dict[Cadence, PlayerRating]:
+        """The ratings the form carries, with the arbiter's edit of the
+        tournament rating applied where it came from: a list value is
+        corrected and keeps its source (TEC Manual 3.9.5.11.c), emptying
+        it restores what the list gave; a value no list supplied is the
+        one typed, emptying it leaves the player to the prescribed one."""
+        ratings = cls._load_form_ratings(data)
+        cadence, preference, sequence = event.rating_resolution(tournament)
+        ratings[cadence].pinned = (
+            WebContext.form_data_to_str(data, 'rating_pin') or None
+        )
+        resolved = resolve_rating(
+            ratings,
+            cadence,
+            preference,
+            sequence,
+            event.is_single_national_rating,
+            lambda: None,
+        )
+        typed = WebContext.form_data_to_int(data, 'tournament_rating') or None
+        if resolved.type == PlayerRatingType.ESTIMATED:
+            ratings[cadence].manual = typed
+        else:
+            assert resolved.cadence is not None
+            listed = resolved.origin.original if resolved.origin else None
+            value = typed or listed
+            if value is not None:
+                ratings[resolved.cadence].override(value, resolved.type)
+        official = official_rating(ratings, cadence)
+        if official is not None and official.cadence is not None:
+            ratings[official.cadence].k_factor = WebContext.form_data_to_int(
+                data, 'rating_k'
+            )
+        return ratings
+
     @classmethod
     def _stored_player_from_data(
         cls,
+        event: Event,
         data: dict[str, str],
         tournament: Tournament | None,
         player: Player | None = None,
@@ -1388,10 +1751,22 @@ class PlayerAdminController(BaseEventAdminController):
                 data, previous_object=previous_object
             ).to_stored_value()
 
+        form_ratings = {
+            tr.value: rating.stored_value
+            for tr, rating in cls._edited_ratings(event, data, tournament).items()
+        }
+        title = WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value
+        women_title = (
+            WebContext.form_data_to_str(data, 'women_title') or PlayerTitle.NONE.value
+        )
+        ratings, periods = cls._ratings_for_current_period(
+            player, form_ratings, title, women_title
+        )
+
         return StoredPlayer(
             id=None,
-            first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
-            last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
+            first_name=WebContext.form_data_to_str(data, 'first_name') or '',
+            last_name=WebContext.form_data_to_str(data, 'last_name') or '',
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             gender=WebContext.form_data_to_str(data, 'gender')
@@ -1401,31 +1776,18 @@ class PlayerAdminController(BaseEventAdminController):
             comment=data.get('comment'),
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
-            title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
-            women_title=WebContext.form_data_to_str(data, 'women_title')
-            or PlayerTitle.NONE.value,
-            ratings={
-                tr.value: PlayerRating(
-                    estimated=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_estimated'
-                    )
-                    or None,
-                    national=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_national'
-                    )
-                    or None,
-                    fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
-                    or None,
-                    k_factor=WebContext.form_data_to_int(
-                        data, f'{tr.form_key}_rating_k'
-                    ),
-                ).stored_value
-                for tr in TournamentRating
-            },
+            title=title,
+            women_title=women_title,
+            ratings=ratings,
+            periods=periods,
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
+            national_id=WebContext.form_data_to_str(data, 'national_id') or None,
+            national_source=WebContext.form_data_to_str(data, 'national_source')
+            or None,
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
+            byes_allowed=cls._byes_allowed_from_data(data, tournament, player),
             # Carry the existing team membership through the rebuild; team
             # changes are applied separately (and skipped for paired
             # players) so it must not be wiped here.
@@ -1525,6 +1887,32 @@ class PlayerAdminController(BaseEventAdminController):
             )
         return self._render_players_tab(web_context)
 
+    @staticmethod
+    def _pending_regeneration(
+        event: Event, player: Player, stored_player: StoredPlayer, data: dict[str, str]
+    ) -> str | None:
+        """The TRF comment of the pairing integrity breach saving the player
+        would make, by renumbering the players of a tournament paired from
+        the numbering."""
+        if event.is_team_event:
+            return None
+        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+        if tournament_id != player.optional_single_tournament_id:
+            return None
+        if not event.tournaments_by_id[tournament_id].logs_pairing_breaches:
+            return None
+        preview_event = EventLoader.get(None).load_event(event.uniq_id)
+        preview_player = preview_event.players_by_id[player.id]
+        preview_player.replace_stored_player(replace(stored_player, id=player.id))
+        preview_tournament = preview_event.tournaments_by_id[tournament_id]
+        if not (
+            description := preview_tournament.pairing_numbers.pending_regeneration()
+        ):
+            return None
+        return Pibe(
+            PibeType.REGENERATION, preview_tournament.current_round, description
+        ).trf_comment
+
     def _update_player(
         self,
         web_context: PlayerAdminWebContext,
@@ -1539,7 +1927,16 @@ class PlayerAdminController(BaseEventAdminController):
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
+        if not WebContext.form_data_to_bool(data, 'regeneration_confirmed') and (
+            regeneration := self._pending_regeneration(
+                event, player, stored_player, data
+            )
+        ):
+            return self._render_players_form_modal(
+                web_context, action, data=data, regeneration=regeneration
+            )
         event.update_player(player, stored_player)
+        forget_automatic_check(event)
         if event.is_team_event:
             # Team membership is set via the team picker; a paired player's
             # team is locked (moving them would orphan their boards), so we
@@ -1677,7 +2074,11 @@ class PlayerAdminController(BaseEventAdminController):
             fpb_disabled_message = _(
                 'Not enough byes available to set a Full-Point Bye (required: 2).'
             )
-        if round_ > tournament.rounds - tournament.last_rounds_no_byes:
+        if not tournament_player.byes_allowed:
+            message = _('The player is not eligible for byes.')
+            hpb_disabled_message = message
+            fpb_disabled_message = message
+        elif round_ > tournament.rounds - tournament.last_rounds_no_byes:
             message = ngettext(
                 "Byes can't be set for the last round of the tournament.",
                 "Byes can't be set for the last {rounds} rounds of the tournament.",
@@ -1723,6 +2124,9 @@ class PlayerAdminController(BaseEventAdminController):
         }
         template_context = {
             'get_bye_options': cls._get_bye_options,
+            'half_point_bye_value': WebContext.value_to_form_data(
+                Result.HALF_POINT_BYE.value
+            ),
             'modal': 'record',
             'data': data,
         }
@@ -1832,8 +2236,14 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
+        bye = Result(result)
+        if (
+            bye in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)
+            and not player.byes_allowed
+        ):
+            raise ClientException(f'Player [{player.id}] is not eligible for byes.')
         player.single_tournament.set_player_byes(
-            player.single_tournament_player, {round: Result(result)}
+            player.single_tournament_player, {round: bye}
         )
         return self._render_player_records_modal(web_context)
 
@@ -2082,7 +2492,9 @@ class PlayerAdminController(BaseEventAdminController):
         tournaments = web_context.player_addable_tournaments
         tournament_options = {'': '-'} | web_context.get_tournament_options(tournaments)
         data_sources = [
-            source for source in DataSourceManager().objects() if source.is_available
+            source
+            for source in DataSourceManager().active_objects()
+            if source.is_available
         ]
         template_context = {
             'modal': 'players_import',
@@ -2103,7 +2515,7 @@ class PlayerAdminController(BaseEventAdminController):
             'data_sources': data_sources,
             'build_list_tooltip': cls._build_list_tooltip,
             'split_column_ids': cls._split_datasheet_columns_ids,
-            'columns': PlayerDatasheetColumnHandler(event).columns,
+            'columns': PlayerDatasheetColumnHandler(event).export_columns,
             'data': default_data | (data or {}),
             'errors': errors or {},
         }
@@ -2214,7 +2626,7 @@ class PlayerAdminController(BaseEventAdminController):
                 value = content_by_column_id[column.id][index]
                 try:
                     column.augment_stored_player_with_tournament(
-                        tournament, stored_player, value
+                        event, tournament, stored_player, value
                     )
                     if (
                         column.is_unique
@@ -2306,7 +2718,7 @@ class PlayerAdminController(BaseEventAdminController):
                         continue
                     value = content_by_column_id[column.id][index]
                     column.augment_stored_player_with_tournament(
-                        tournament, stored_player, value
+                        event, tournament, stored_player, value
                     )
                 if not in_rating_period:
                     keep_reliable_k_factors(stored_player)
@@ -2322,7 +2734,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
 
         for index, stored_player in stored_players_by_index.items():
-            for tr in TournamentRating:
+            for tr in Cadence:
                 for prt in PlayerRatingType:
                     ratings = stored_player.ratings.get(tr.value, {})
                     if prt.form_key in ratings:
@@ -2544,6 +2956,11 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     for team in emptied:
                         next_team_index[team.id] = 0
+            dropped_players: list[Player] = []
+            if overwrite_players:
+                dropped_players = event.carry_over_reimported_players(
+                    event.players_replaced_by_import(tournament), stored_players
+                )
             with EventDatabase(event.uniq_id, True) as database:
                 if overwrite_players:
                     if tournament is not None:
@@ -2597,6 +3014,7 @@ class PlayerAdminController(BaseEventAdminController):
                             resort_tournament_ids.add(team.tournament_id)
                 if any(column.save_stored_event for column in used_columns):
                     database.update_stored_event(event.stored_event)
+            event.notify_players_deleted(dropped_players)
             Message.success(
                 request,
                 ngettext(
@@ -2751,6 +3169,20 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament=dst_tournament.name,
                 ),
             )
+        if player.national_id and any(
+            tournament_player.national_id == player.national_id
+            and tournament_player.national_source == player.national_source
+            for tournament_player in dst_tournament.tournament_players_by_id.values()
+        ):
+            raise ValueError(
+                _(
+                    'National ID [{national_id}] already present '
+                    'in tournament [{tournament}].'
+                ).format(
+                    national_id=player.national_id,
+                    tournament=dst_tournament.name,
+                ),
+            )
         plugin_manager.hook_for_event(event, 'validate_player_tournament_move')(
             tournament=dst_tournament,
             player=player.single_tournament_player,
@@ -2780,6 +3212,210 @@ class PlayerAdminController(BaseEventAdminController):
                 'max_round': tournament.rounds,
             },
         )
+
+    @staticmethod
+    def _ratings_check_players(web_context: PlayerAdminWebContext) -> list[Player]:
+        if tournament := web_context.admin_tournament:
+            return list(tournament.sorted_tournament_players)
+        return web_context.client.sorted_allowed_players
+
+    @get(
+        path='/event-ratings-check-modal/{event_uniq_id:str}/{tab:str}',
+        name='admin-event-ratings-check-modal',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
+    )
+    async def htmx_admin_event_ratings_check_modal(
+        self,
+        request: HTMXRequest,
+        tab: FromPath[str],
+        tournament_id: FromQuery[int | None] = None,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        event = web_context.get_admin_event()
+        players = self._ratings_check_players(web_context)
+        rating_check = await check_ratings(event, players)
+        template_context = web_context.template_context | {
+            'modal': 'ratings_check',
+            'rating_check': rating_check,
+            'stale_lists': await asyncio.to_thread(stale_lists, rating_check.lists),
+            'list_statuses': list_statuses(event, players),
+            'lists_updating': False,
+            'lists_updated': False,
+            'tab': tab,
+        }
+        return self._admin_base_event_render(template_context)
+
+    def _ratings_check_lists_render(
+        self,
+        web_context: PlayerAdminWebContext,
+        tab: str,
+        database_ids: list[str],
+        was_updating: bool,
+        started: bool = False,
+    ) -> Template:
+        """The lists the ratings update reads and the outdated ones among
+        them: while they are being updated, then, once they all are, the
+        window again, checking against the lists updated."""
+        from database.sqlite.local_source_database import LocalSourceDatabaseManager
+
+        manager = LocalSourceDatabaseManager()
+        databases = [
+            manager.get_object(database_id)
+            for database_id in database_ids
+            if database_id in manager.ids()
+        ]
+        updating = started or any(database.is_updating for database in databases)
+        return HTMXTemplate(
+            template_name='/admin/players/ratings_check_lists.html',
+            context=web_context.template_context
+            | {
+                'stale_lists': databases,
+                'list_statuses': list_statuses(
+                    web_context.get_admin_event(),
+                    self._ratings_check_players(web_context),
+                ),
+                'lists_updating': updating,
+                'lists_updated': was_updating and not updating,
+                'tab': tab,
+            },
+        )
+
+    @get(
+        path='/event-ratings-check-lists/{event_uniq_id:str}',
+        name='admin-event-ratings-check-lists',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
+    )
+    async def htmx_admin_event_ratings_check_lists(
+        self,
+        request: HTMXRequest,
+        tab: FromQuery[str],
+        tournament_id: FromQuery[int | None] = None,
+        database_ids: FromQuery[list[str] | None] = None,
+        updating: FromQuery[bool] = False,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        return self._ratings_check_lists_render(
+            web_context, tab, database_ids or [], updating
+        )
+
+    @post(
+        path='/event-ratings-check-lists-update/{event_uniq_id:str}',
+        name='admin-event-ratings-check-lists-update',
+        guards=[
+            TournamentActionGuard(AuthAction.UPDATE_PLAYERS),
+            ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES),
+        ],
+    )
+    async def htmx_admin_event_ratings_check_lists_update(
+        self,
+        request: HTMXRequest,
+        tab: FromQuery[str],
+        tournament_id: FromQuery[int | None] = None,
+        database_ids: FromQuery[list[str] | None] = None,
+    ) -> Template:
+        """Updates the outdated lists the ratings update reads."""
+        from database.sqlite.local_source_database import LocalSourceDatabaseManager
+
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        for database in LocalSourceDatabaseManager().objects():
+            if (
+                database.id in (database_ids or [])
+                and database.is_active
+                and not database.is_manual
+                and not database.is_updating
+            ):
+                database.update()
+        return self._ratings_check_lists_render(
+            web_context, tab, database_ids or [], True, started=True
+        )
+
+    @get(
+        path='/event-ratings-check-banner/{event_uniq_id:str}',
+        name='admin-event-ratings-check-banner',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
+    )
+    async def htmx_admin_event_ratings_check_banner(
+        self, request: HTMXRequest
+    ) -> Template:
+        """The findings of the ratings check, unasked (VCL Q139–140): shown
+        until the arbiter dismisses them, and again once a list changes."""
+        web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        if (
+            not event.check_ratings
+            or list_versions() == event.stored_event.ratings_check_dismissed
+        ):
+            return HTMXTemplate(template_name='/common/empty.html')
+        if not (count := await automatic_check(event)):
+            return HTMXTemplate(template_name='/common/empty.html')
+        return HTMXTemplate(
+            template_name='/admin/players/ratings_check_banner.html',
+            context=web_context.template_context | {'count': count},
+        )
+
+    @patch(
+        path='/event-ratings-check-dismiss/{event_uniq_id:str}',
+        name='admin-event-ratings-check-dismiss',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
+    )
+    async def htmx_admin_event_ratings_check_dismiss(
+        self, request: HTMXRequest
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        versions = list_versions()
+        with EventDatabase(event.uniq_id, write=True) as database:
+            database.set_ratings_check_dismissed(versions)
+        event.stored_event.ratings_check_dismissed = versions
+        return HTMXTemplate(template_name='/common/empty.html')
+
+    @patch(
+        path='/event-ratings-update/{event_uniq_id:str}/{tab:str}',
+        name='admin-event-ratings-update',
+        guards=[ActionGuard(AuthAction.UPDATE_PLAYERS)],
+    )
+    async def htmx_admin_event_ratings_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tab: FromPath[str],
+    ) -> Redirect:
+        flat_data = WebContext.flatten_list_data(data)
+        tournament_id = WebContext.form_data_to_int(flat_data, 'tournament_id')
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        event = web_context.get_admin_event()
+        player_ids = set(WebContext.form_data_to_list_int(flat_data, 'player_ids'))
+        rating_check = await check_ratings(
+            event, self._ratings_check_players(web_context)
+        )
+        updated_players = rating_check.apply(player_ids)
+        event.update_players(updated_players)
+        forget_automatic_check(event)
+        count = len([player for player in updated_players if player.id in player_ids])
+        sources = len(updated_players) - count
+        message = (
+            ngettext(
+                '{count} player updated.', '{count} players updated.', count
+            ).format(count=count)
+            if count
+            else _('No players updated.')
+        )
+        if sources:
+            message += ' ' + ngettext(
+                'The source of the rating of {count} player was brought up to date.',
+                'The sources of the ratings of {count} players were brought up to date.',
+                sources,
+            ).format(count=sources)
+        Message.success(request, message)
+        redirect_url = request.app.route_reverse(
+            f'admin-event-{tab}-tab', event_uniq_id=event.uniq_id
+        )
+        if tab == 'pairings':
+            redirect_url += '?skip_ratings_warning=1'
+        return Redirect(redirect_url, status_code=303)
 
     @patch(
         path='/players-update/{event_uniq_id:str}/{data_source_id:str}/{tab:str}',

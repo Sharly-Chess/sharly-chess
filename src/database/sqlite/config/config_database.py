@@ -12,6 +12,7 @@ from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlugin,
     StoredLocalSourceDatabase,
+    StoredOnlineDataSource,
     StoredPlayerCategorySet,
     StoredTag,
     StoredTieBreakSet,
@@ -99,6 +100,12 @@ class ConfigDatabase(MigrationDatabase):
             last_notified_version=row['last_notified_version'],
             locale=row['locale'],
             date_formatter=row['date_formatter'],
+            name_formatter=row['name_formatter'],
+            capitalise_last_name=self.load_bool_from_database_field(
+                row['capitalise_last_name']
+            ),
+            computer_private_key=row['computer_private_key'],
+            computer_public_key=row['computer_public_key'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -130,6 +137,8 @@ class ConfigDatabase(MigrationDatabase):
                 'last_notified_version',
                 'locale',
                 'date_formatter',
+                'name_formatter',
+                'capitalise_last_name',
             ],
         )
         field_sets = (f'`{f}` = ?' for f in fields)
@@ -137,6 +146,13 @@ class ConfigDatabase(MigrationDatabase):
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
         return self._get_stored_config()
+
+    def update_computer_keys(self, private_key: str, public_key: str) -> None:
+        """Records the key pair this computer is recognised by."""
+        self.execute(
+            'UPDATE `info` SET `computer_private_key` = ?, `computer_public_key` = ?',
+            (private_key, public_key),
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredPlugin
@@ -195,8 +211,13 @@ class ConfigDatabase(MigrationDatabase):
     # StoredLocalSourceDatabase
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
+    @classmethod
+    def _load_optional_bool(cls, value: Any) -> bool | None:
+        return None if value is None else cls.load_bool_from_database_field(value)
+
+    @classmethod
     def _row_to_stored_local_source_database(
+        cls,
         row: dict[str, Any],
     ) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
@@ -204,6 +225,9 @@ class ConfigDatabase(MigrationDatabase):
             outdate_delay=row['outdate_delay'],
             outdate_action=row['outdate_action'],
             updated_at=row['updated_at'],
+            published_at=row.get('published_at'),
+            read_online=cls.load_bool_from_database_field(row.get('read_online', 0)),
+            is_active=cls._load_optional_bool(row['is_active']),
         )
 
     def load_stored_local_source_database(
@@ -224,11 +248,17 @@ class ConfigDatabase(MigrationDatabase):
             'outdate_delay',
             'outdate_action',
             'updated_at',
+            'published_at',
+            'read_online',
+            'is_active',
         ]
         params: tuple = (
             stored_database.outdate_delay,
             stored_database.outdate_action,
             stored_database.updated_at,
+            stored_database.published_at,
+            stored_database.read_online,
+            stored_database.is_active,
         )
         field_sets = (f'`{f}` = ?' for f in fields)
         query = (
@@ -245,18 +275,51 @@ class ConfigDatabase(MigrationDatabase):
             'outdate_delay',
             'outdate_action',
             'updated_at',
+            'published_at',
+            'read_online',
+            'is_active',
         ]
         params: tuple = (
             stored_database.name,
             stored_database.outdate_delay,
             stored_database.outdate_action,
             stored_database.updated_at,
+            stored_database.published_at,
+            stored_database.read_online,
+            stored_database.is_active,
         )
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(
             f'INSERT INTO `local_source_database` ({fields_str}) '
             f'VALUES ({", ".join("?" for _ in params)})',
             params,
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredOnlineDataSource
+    # ---------------------------------------------------------------------------------
+
+    def load_stored_online_data_source(
+        self, data_source_name: str
+    ) -> StoredOnlineDataSource | None:
+        self.execute(
+            'SELECT * FROM `online_data_source` WHERE `name` = ?',
+            (data_source_name,),
+        )
+        if row := self.fetchone():
+            return StoredOnlineDataSource(
+                name=row['name'],
+                is_active=self._load_optional_bool(row['is_active']),
+            )
+        return None
+
+    def upsert_stored_online_data_source(
+        self, stored_data_source: StoredOnlineDataSource
+    ) -> None:
+        self.execute(
+            'INSERT INTO `online_data_source` (`name`, `is_active`) VALUES (?, ?) '
+            'ON CONFLICT(`name`) DO UPDATE SET `is_active` = excluded.`is_active`',
+            (stored_data_source.name, stored_data_source.is_active),
         )
 
     # ---------------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+<a
+    href="{{ url_for(
+        'document-view',
+        event_uniq_id=admin_event.uniq_id,
+        document='acceleration-rules',
+    ) ~ '?options=' ~ (('tournament=' ~ item.id) | urlencode) }}"
+    target="_blank"
+    class="ms-1"
+    aria-label="{{ _('Print the rules') }}"
+    {{ macros.tooltip_attributes('info', _('Print the rules'), 'top') }}
+><i class="bi-printer"></i></a>

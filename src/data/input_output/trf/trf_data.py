@@ -6,6 +6,20 @@ from dataclasses import dataclass, field
 
 TRF_DATE_FORMAT = '%Y/%m/%d'
 
+#: The dummy federations of the pseudo-NRS records, which carry the source
+#: of a rating in a partial TRF (TEC Manual 3.9.6.2.b): the FIDE standard,
+#: rapid and blitz lists, and a value entered manually.
+FIDE_STANDARD_PSEUDO_FEDERATION = 'SSS'
+FIDE_RAPID_PSEUDO_FEDERATION = 'RRR'
+FIDE_BLITZ_PSEUDO_FEDERATION = 'BBB'
+MANUAL_PSEUDO_FEDERATION = 'MMM'
+PSEUDO_FEDERATIONS = (
+    FIDE_STANDARD_PSEUDO_FEDERATION,
+    FIDE_RAPID_PSEUDO_FEDERATION,
+    FIDE_BLITZ_PSEUDO_FEDERATION,
+    MANUAL_PSEUDO_FEDERATION,
+)
+
 
 @dataclass
 class TrfGame:
@@ -43,6 +57,9 @@ class TrfPlayer:
     national_player_by_federation: dict[str, TrfNationalPlayer] = field(
         default_factory=dict
     )
+    #: Field name → text of the 001 fields that could not be read as the
+    #: format defines them.
+    unreadable: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -85,6 +102,9 @@ class TrfProhibitedPairing:
     first_round: int
     last_round: int | None
     pairing_numbers: list[int]
+    #: Avoided as the pairing engine's lowest-priority criterion (SCS
+    #: record) rather than forbidden (260 record).
+    soft: bool = False
 
 
 @dataclass
@@ -143,6 +163,9 @@ class TrfTournament:
     starting_rank_method: str = ''
     #: Federation the 172 method and the NRS records belong to.
     starting_rank_federation: str = ''
+    #: The other federations, real or pseudo (`PSEUDO_FEDERATIONS`), of
+    #: the NRS records, each given the method in a 172 record of its own.
+    other_starting_rank_federations: list[str] = field(default_factory=list)
     pairing_controller_id: str = ''
     tie_breaks: list[str] = field(default_factory=list)
     standings_tie_breaks: list[str] = field(default_factory=list)
@@ -153,6 +176,7 @@ class TrfTournament:
     players: list[TrfPlayer] = field(default_factory=list)
     accelerated_rounds: list[TrfAcceleratedRound] = field(default_factory=list)
     prohibited_pairings: list[TrfProhibitedPairing] = field(default_factory=list)
+    soft_prohibited_pairings: list[TrfProhibitedPairing] = field(default_factory=list)
     round_byes: list[TrfRoundBye] = field(default_factory=list)
     team_pabs: TrfTeamPABs | None = None
     team_forfeited_matches: list[TrfTeamForfeitedMatch] = field(default_factory=list)
@@ -162,9 +186,15 @@ class TrfTournament:
     )
     informative_team_pairings_records: list[str] = field(default_factory=list)
     informative_team_results_records: list[str] = field(default_factory=list)
+    #: The ``###`` comments written to log what befell the tournament
+    #: (FIDE mode left, pairing integrity breached), without the marker.
+    log_comments: list[str] = field(default_factory=list)
 
     xx_fields: dict[str, str] = field(default_factory=dict)
     bb_fields: dict[str, str] = field(default_factory=dict)
+    #: Starting ranks of the 001 records that were split over several
+    #: lines and joined back.
+    joined_player_lines: list[int] = field(default_factory=list)
 
     @property
     def num_rounds_estimation(self) -> int:

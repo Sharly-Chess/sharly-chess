@@ -40,7 +40,7 @@
             <em class="text-muted">—</em>
         {% elif lineup_team_board is defined and wtp.team_id %}
             <span class="lineup-view">
-                {% with tournament_player=wtp, display_rating=true, point_adjustment_round=admin_round %}
+                {% with tournament_player=wtp, display_rating=true, rating_round=admin_round, point_adjustment_round=admin_round %}
                     {% include '/admin/player_link.html' %}
                 {% endwith %}
             </span>
@@ -50,7 +50,7 @@
                 {% endwith %}
             </span>
         {% else %}
-            {% with tournament_player=wtp, display_rating=true, point_adjustment_round=admin_round %}
+            {% with tournament_player=wtp, display_rating=true, rating_round=admin_round, point_adjustment_round=admin_round %}
                 {% include '/admin/player_link.html' %}
             {% endwith %}
         {% endif %}
@@ -100,7 +100,8 @@
                 {% endif %}
             >
             {% endif %}
-                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
+                {% set _rating_correction = admin_tournament.rating_correction_for(board) if wtp and btp and admin_tournament.stored_tournament.stored_rating_corrections else none %}
+                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}{% if _rating_correction %}<span class="position-absolute" {{ macros.tooltip_attributes('warning', _rating_correction.summary(admin_tournament), 'top') }}>*</span>{% endif %}
                 {# Knock-out markers live inside the button so hovering/clicking
                    them counts as the button. The advancing side gets a numbered
                    badge; a drawn game a diagonally-cut warning corner. #}
@@ -116,9 +117,9 @@
                     >1</span>
                 {% elif ko_adv and ko_adv.manual_pending %}
                     <span
-                        class="position-absolute top-0 end-0 overflow-hidden"
+                        class="position-absolute overflow-hidden"
                         style="width: 1.7rem; height: 1.7rem;
-                            border-top-right-radius: 0.25rem;"
+                            border-top-right-radius: inherit; top: calc(-1 * var(--bs-btn-border-width, 0px)); right: calc(-1 * var(--bs-btn-border-width, 0px));"
                         {{ macros.tooltip_attributes('', _('Draw — choose who advances.'), 'top') }}
                     >
                         <span class="d-block w-100 h-100 bg-primary"
@@ -138,7 +139,7 @@
             {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
             {% if lineup_team_board is defined and btp.team_id %}
                 <span class="lineup-view">
-                    {% with tournament_player=btp, display_rating=true, point_adjustment_round=admin_round %}
+                    {% with tournament_player=btp, display_rating=true, rating_round=admin_round, point_adjustment_round=admin_round %}
                         {% include '/admin/player_link.html' %}
                     {% endwith %}
                 </span>
@@ -148,7 +149,7 @@
                     {% endwith %}
                 </span>
             {% else %}
-                {% with tournament_player=btp, display_rating=true, point_adjustment_round=admin_round %}
+                {% with tournament_player=btp, display_rating=true, rating_round=admin_round, point_adjustment_round=admin_round %}
                     {% include '/admin/player_link.html' %}
                 {% endwith %}
             {% endif %}

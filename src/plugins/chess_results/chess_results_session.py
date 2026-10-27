@@ -10,15 +10,13 @@ from requests import Session
 
 from common.logger import get_logger
 from data.event import Event
+from data.player import Player
+from data.pairings.engines import TeamRoundRobinPairingEngine
 from data.tournament import Tournament
-from data.pairings.variations import (
-    DoubleBergerRoundRobinVariation,
-    DoubleBergerTeamRoundRobinVariation,
-)
 from database.sqlite.config.config_database import ConfigDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
-    ChessResultTournamentRating,
+    ChessResultCadence,
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
     ChessResultPairingSystem,
@@ -44,8 +42,10 @@ CHESS_RESULTS_SOURCE = 13
 def _forfeit_code(result: Result) -> str:
     """Chess-Results ``forfeit`` marker: ``K`` for forfeits, ``D`` for
     penalty results (0-0 and the half-point penalties), ``U`` for
-    unrated results, empty otherwise."""
+    unrated results, ``H`` for adjourned games, empty otherwise."""
     match result:
+        case Result.ADJOURNED:
+            return 'H'
         case Result.FORFEIT_LOSS | Result.FORFEIT_WIN | Result.DOUBLE_FORFEIT:
             return 'K'
         case (
@@ -61,6 +61,22 @@ def _forfeit_code(result: Result) -> str:
             return 'U'
         case _:
             return ''
+
+
+def _result_points(result: Result, point_values: dict[Result, float]) -> str:
+    """Chess-Results ``reswhite`` / ``resblack``: empty for an adjourned
+    game, which the ``forfeit`` marker gives instead."""
+    if result.is_adjourned:
+        return ''
+    return str(result.points(point_values) or '')
+
+
+def _date_of_birth(player: Player) -> str:
+    """Chess-Results ``dob``: the year of birth as ``yyyy0000``, empty
+    when it is unknown."""
+    if player.year_of_birth:
+        return f'{player.year_of_birth}0000'
+    return ''
 
 
 def _upload_federation(event: Event) -> str:
@@ -161,10 +177,7 @@ class ChessResultsSession(Session):
         # "Replayed" (each pairing met more than once) is a variation, not a
         # separate system: a double round-robin reports its round count as
         # the replay so Chess-Results encodes it as a multi-cycle event.
-        is_replayed_pairing = isinstance(
-            tournament.pairing_variation,
-            (DoubleBergerRoundRobinVariation, DoubleBergerTeamRoundRobinVariation),
-        )
+        is_replayed_pairing = tournament.pairing_variation.is_double_round_robin
         if is_replayed_pairing:
             replay = str(tournament.rounds)
         if is_team:
@@ -209,7 +222,11 @@ class ChessResultsSession(Session):
                     arbiter.fide_arbiter_str for arbiter in tournament.arbiters
                 ),
                 'rounds': str(tournament.rounds),
-                'currentround': str(tournament.current_round or 0),
+                # Chess-Results shows no pairings for a tournament at round 0,
+                # even those sent before the first round is published.
+                'currentround': str(
+                    max(tournament.current_round, min(tournament.last_shown_round, 1))
+                ),
                 'rankinground': str(
                     max(
                         0,
@@ -224,9 +241,7 @@ class ChessResultsSession(Session):
                 'ratedfide': '-',
                 'ratednational': '-',
                 'replay': replay,
-                'timetype': ChessResultTournamentRating.get_outer_value(
-                    tournament.rating
-                )
+                'timetype': ChessResultCadence.get_outer_value(tournament.cadence)
                 or '',
                 'timecontrol': trf25_to_human_readable(tournament.time_control_trf25)
                 if tournament.time_control_trf25
@@ -302,7 +317,7 @@ class ChessResultsSession(Session):
             )
             prev_tb_values = tb_values
 
-            ratings = p.ratings.get(tournament.rating)
+            ratings = p.ratings.get(tournament.cadence)
             k_factor, k_factor_is_estimated = p.fide_rating_coefficient
             rating_change = p.fide_rating_change
             ET.SubElement(
@@ -320,7 +335,7 @@ class ChessResultsSession(Session):
                     'rtg': str(p.rating),
                     'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                     'rtgnat': str(getattr(ratings, 'national', '') or ''),
-                    'dob': str(p.year_of_birth),
+                    'dob': _date_of_birth(p),
                     'sex': ChessResultsPlayerGender.get_outer_value(p.gender) or '',
                     'fed': p.federation.name,
                     'board': '',
@@ -347,7 +362,7 @@ class ChessResultsSession(Session):
         point_values: dict[Result, float] = {
             Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.last_shown_round + 1):
             tournament.set_for_round(round_)
             tournament.compute_tournament_player_ranks(after_round=round_)
             last_board_id = 0
@@ -379,11 +394,11 @@ class ChessResultsSession(Session):
                             if board.black_tournament_player
                             else -1
                         ),
-                        'reswhite': str(
-                            board.white_pairing.result.points(point_values) or ''
+                        'reswhite': _result_points(
+                            board.white_pairing.result, point_values
                         ),
-                        'resblack': str(
-                            board.black_pairing.result.points(point_values) or ''
+                        'resblack': _result_points(
+                            board.black_pairing.result, point_values
                         )
                         if board.black_tournament_player
                         else '',
@@ -487,7 +502,7 @@ class ChessResultsSession(Session):
                 no_by_player_id[player.id] = no
                 member_tp = tournament_players_by_id.get(player.id)
                 ratings = (
-                    member_tp.ratings.get(tournament.rating) if member_tp else None
+                    member_tp.ratings.get(tournament.cadence) if member_tp else None
                 )
                 k_factor, k_factor_is_estimated = (
                     member_tp.fide_rating_coefficient if member_tp else (0, True)
@@ -506,7 +521,7 @@ class ChessResultsSession(Session):
                         'rtg': str(member_tp.rating if member_tp else ''),
                         'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                         'rtgnat': str(getattr(ratings, 'national', '') or ''),
-                        'dob': str(player.year_of_birth or ''),
+                        'dob': _date_of_birth(player),
                         'sex': ChessResultsPlayerGender.get_outer_value(player.gender)
                         or '',
                         'fed': player.federation.name,
@@ -569,7 +584,7 @@ class ChessResultsSession(Session):
         point_values: dict[Result, float] = {
             Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
-        for round_ in range(1, tournament.current_round + 1):
+        for round_ in range(1, tournament.last_shown_round + 1):
             tournament.set_for_round(round_)
             visible_matches = sorted(
                 (
@@ -650,19 +665,60 @@ class ChessResultsSession(Session):
                             'blackno': str(no_by_player_id.get(btp.id, 0))
                             if btp
                             else '0',
-                            'reswhite': str(
-                                white_pairing.result.points(point_values) or ''
+                            'reswhite': _result_points(
+                                white_pairing.result, point_values
                             )
                             if white_pairing
                             else '',
-                            'resblack': str(
-                                black_pairing.result.points(point_values) or ''
+                            'resblack': _result_points(
+                                black_pairing.result, point_values
                             )
                             if black_pairing
                             else '',
                             'forfeit': _forfeit_code(board.result),
                         },
                     )
+        self._append_scheduled_team_pairings(tpair, tournament, team_no)
+
+    @staticmethod
+    def _append_scheduled_team_pairings(
+        tpair: ET.Element, tournament: Tournament, team_no: dict[int, int]
+    ) -> None:
+        """The team pairings of the round-robin rounds not paired yet, from
+        the Berger tables: the line-ups are only known once a round is
+        paired, so these rounds have no player pairings."""
+        engine = tournament.pairing_variation.engine
+        if not isinstance(engine, TeamRoundRobinPairingEngine):
+            return
+        pattern = (tournament.color_pattern or 'W').upper()
+        for round_, team_pairs in engine.full_schedule(tournament).items():
+            if round_ <= tournament.last_shown_round:
+                continue
+            # Numbered as when the round is paired: the bye last.
+            ordered_pairs = sorted(team_pairs, key=lambda pair: pair[1] is None)
+            for pairing_no, (team_a_id, team_b_id) in enumerate(ordered_pairs, start=1):
+                if team_a_id not in team_no or (
+                    team_b_id is not None and team_b_id not in team_no
+                ):
+                    continue
+                if team_b_id is None:
+                    no1, no2 = team_no[team_a_id], -1
+                elif pattern[:1] == 'W':
+                    no1, no2 = team_no[team_a_id], team_no[team_b_id]
+                else:
+                    no1, no2 = team_no[team_b_id], team_no[team_a_id]
+                ET.SubElement(
+                    tpair,
+                    'teampairing',
+                    {
+                        'round': str(round_),
+                        'pairing': str(pairing_no),
+                        'no1': str(no1),
+                        'no2': str(no2),
+                        'res1': '',
+                        'res2': '',
+                    },
+                )
 
     def upload(self) -> FailureCRUploadStatus | None:
         """Upload the tournament to Chess-Results.com."""

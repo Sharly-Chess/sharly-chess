@@ -3,8 +3,8 @@ from enum import StrEnum, IntEnum
 from typing import Self
 
 from data.pairing import Pairing
+from data.pibes import RatingCorrection
 from data.pairings import PairingVariation, variations
-from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -24,7 +24,7 @@ from plugins.ffe.utils import PlayerFFELicence
 from data.pairings import acceleration as accelerations
 from utils import CoreMapper
 from utils.enum import (
-    TournamentRating,
+    Cadence,
     PlayerGender,
     PlayerTitle,
     PlayerRatingType,
@@ -54,10 +54,7 @@ class PapiPairingVariation(CoreMapper[str, PairingVariation]):
         if papi_key := super().get_outer_value(core_object):
             return papi_key
         pairing_system = core_object.system()
-        # A Scheveningen is exported as an individual Swiss.
-        if pairing_system == SwissPairingSystem() or isinstance(
-            pairing_system, ScheveningenPairingSystem
-        ):
+        if pairing_system == SwissPairingSystem():
             core_object = variations.StandardSwissVariation()
         elif pairing_system == RoundRobinPairingSystem():
             core_object = variations.BergerRoundRobinVariation()
@@ -71,14 +68,6 @@ class PapiPairingSystem(CoreMapper[str, PairingSystem]):
             'Suisse': SwissPairingSystem(),
             'ToutesRondes': RoundRobinPairingSystem(),
         }
-
-    @classmethod
-    def get_outer_value(cls, core_object: PairingSystem) -> str | None:
-        # A Scheveningen has no Papi type of its own; it is exported as an
-        # individual Swiss.
-        if isinstance(core_object, ScheveningenPairingSystem):
-            return 'Suisse'
-        return super().get_outer_value(core_object)
 
 
 class PapiTieBreak(CoreMapper[str, TieBreak]):
@@ -120,13 +109,13 @@ class PapiTieBreak(CoreMapper[str, TieBreak]):
         return super().get_outer_value(core_object)
 
 
-class PapiTournamentRating(CoreMapper[str, TournamentRating]):
+class PapiCadence(CoreMapper[str, Cadence]):
     @staticmethod
-    def _core_object_by_outer_value() -> dict[str, TournamentRating]:
+    def _core_object_by_outer_value() -> dict[str, Cadence]:
         return {
-            'Elo': TournamentRating.STANDARD,
-            'Rapide': TournamentRating.RAPID,
-            'Blitz': TournamentRating.BLITZ,
+            'Elo': Cadence.STANDARD,
+            'Rapide': Cadence.RAPID,
+            'Blitz': Cadence.BLITZ,
         }
 
 
@@ -313,8 +302,23 @@ class PapiRound:
         )
 
     @classmethod
+    def from_rating_correction(
+        cls, pairing: Pairing, correction: RatingCorrection, pab_value: Result
+    ) -> Self:
+        """The game of *pairing* as *correction* gives it for the rating."""
+        player_id = pairing.tournament_player.id
+        assert player_id is not None
+        return cls(
+            PapiColor.WHITE
+            if player_id == correction.white_player_id
+            else PapiColor.BLACK,
+            pairing.opponent_id,
+            cls._result_to_papi_result(correction.result_of(player_id), pab_value),
+        )
+
+    @classmethod
     def zero_point_bye(cls) -> Self:
-        """A zero-point bye: the entrant sits the round out with no opponent
+        """A Zero-Point Bye: the entrant sits the round out with no opponent
         and scores nothing. A knock-out gives one to a player in the rounds
         after they are eliminated, so Papi reads every entrant as paired or
         given a bye in each round it has played, without altering the score."""
@@ -329,7 +333,12 @@ class PapiRound:
                 return PapiResult.LOSS
             case Result.DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
+            case (
+                Result.NO_RESULT
+                | Result.ZERO_POINT_BYE
+                | Result.REST_GAME
+                | Result.ADJOURNED
+            ):
                 return PapiResult.UNPLAYED_OR_NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS

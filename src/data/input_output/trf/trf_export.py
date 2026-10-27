@@ -22,11 +22,22 @@ from data.input_output.trf.trf_data import (
 )
 from data.input_output.trf.trf_mappers import TrfPointSystemResult
 from data.pairings.engines import _team_ui_sort_key
+from data.pairings.round_robin_schedule import ScheduleBreach
 from data.pairings.settings import ColorSeedSetting
+from data.input_output.report_window import ReportWindow, build_window
+from data.pibes import (
+    FullPointBye,
+    Pibe,
+    RatingCorrection,
+    fide_mode_exit_trf_comment,
+)
+from data.pairing import Pairing
 from data.player import TournamentPlayer
+from data.tournament_period import TournamentPeriod
 from utils.enum import (
     BoardColor,
     PlayerRatingType,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
     TeamByeType,
@@ -34,6 +45,7 @@ from utils.enum import (
 )
 
 if TYPE_CHECKING:
+    from data.teams.team import Team
     from data.tournament import Tournament
 
 
@@ -48,21 +60,46 @@ class TrfExport:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list[TrfProhibitedPairing] | None = None,
+        rating_report: bool = False,
+        for_engine: bool = False,
+        period: TournamentPeriod | None = None,
     ) -> TrfTournament:
+        """The tournament as a TRF. The *rating_report* gives the games
+        corrected for the rating in their 001 records, and says what the
+        pairings and the standings used instead; the pairing engine reads
+        the games as they were used, and adjourned games as draws.
+
+        *period* reports one period of a tournament reported in periods: a
+        tournament of its own, holding that period's rounds numbered from
+        1, the players who played them, and points from those games — see
+        ``report_window``."""
         tournament = self.tournament
+        corrections = tournament.rating_corrections if rating_report else []
+        window = build_window(tournament, period) if period else None
+        if window is not None:
+            after_round = window.last_round
+        # Without a round, the file carries every round entered, a bye
+        # requested ahead included, and the standings the tournament shows.
+        ranking_round = after_round
         if after_round is None:
             after_round = tournament.rounds
-        tournament.compute_tournament_player_ranks(after_round=after_round)
+            ranking_round = tournament.max_ranking_round
+        tournament.compute_tournament_player_ranks(after_round=ranking_round)
         seed_setting = ColorSeedSetting()
         trf = TrfTournament(
-            name=tournament.name,
+            name=window.period.report_name if window else tournament.name,
             city=tournament.location or '',
             federation=tournament.event.federation,
             start_date=tournament.start_date.strftime(TRF_DATE_FORMAT),
             end_date=tournament.stop_date.strftime(TRF_DATE_FORMAT),
             num_players=len(tournament.tournament_players_by_id),
             num_rated_players=sum(
-                bool(player.fide_rating_value) for player in tournament.players
+                bool(
+                    player.official_rating_in(window.period)
+                    if window
+                    else player.official_rating
+                )
+                for player in tournament.players
             ),
             chief_arbiter=getattr(tournament.chief_arbiter, 'fide_arbiter_str', ''),
             deputy_arbiters=[
@@ -70,13 +107,19 @@ class TrfExport:
             ],
             round_dates=[
                 dt.strftime('%y/%m/%d') if dt else ''
-                for idx in range(1, after_round + 1)
+                # A period's file describes the tournament, so it carries
+                # the whole schedule however few rounds it fills in.
+                for idx in range(1, (tournament.rounds if window else after_round) + 1)
                 for dt in [tournament.round_datetimes.get(idx)]
             ],
             num_rounds=tournament.rounds,
             initial_color=seed_setting.get_value(tournament).value,
-            individuals_point_system=self._individuals_point_system(),
-            starting_rank_method=self._starting_rank_method(),
+            individuals_point_system=self._individuals_point_system(
+                after_round, for_engine
+            ),
+            starting_rank_method=''
+            if for_engine
+            else self._starting_rank_method(rating_report),
             starting_rank_federation=tournament.event.federation or '',
             pairing_controller_id='Sharly Chess',
             encoded_type=tournament.pairing_variation.trf_encoded_type,
@@ -84,32 +127,101 @@ class TrfExport:
             # standings, PTS included — no longer prefixed here, since the
             # Points tie-break carries its own place in the list.
             standings_tie_breaks=[
-                tie_break.trf_acronym for tie_break in tournament.tie_breaks
+                tie_break.team_trf_acronym
+                if tournament.is_team_tournament
+                else tie_break.trf_acronym
+                for tie_break in tournament.tie_breaks
             ],
             time_control=tournament.time_control_trf25 or '',
             players=[
-                player.to_trf(after_round, next_round_pairings_as_zpb)
+                player.to_trf(
+                    after_round,
+                    next_round_pairings_as_zpb,
+                    corrections,
+                    for_engine,
+                    window,
+                    rating_report,
+                )
                 for player in tournament.tournament_players_by_pairing_number.values()
             ],
             accelerated_rounds=self.accelerated_rounds(),
-            round_byes=self._round_byes(),
+            round_byes=self._round_byes(window),
         )
+        # The rank field allows ties, and players the criteria leave level
+        # are level (C.07 Art. 4.2): they share the rank the standings
+        # show, rather than take the pairing-number order the list is
+        # written in. A period's file states its own standings, which the
+        # window has already ranked.
+        if window is None:
+            shared_rank = self._shared_ranks()
+            for trf_player in trf.players:
+                trf_player.rank = shared_rank[trf_player.id]
+        if not for_engine and self._has_adjourned_games(after_round, window):
+            self._count_unplayed_games_as_draws(trf, after_round, window)
         if tournament.is_team_tournament:
             self._populate_team(
                 trf,
                 after_round=after_round,
                 next_round_pairings_as_zpb=next_round_pairings_as_zpb,
+                window=window,
             )
         else:
             trf.abnormal_points_assignments = (
-                self._individual_abnormal_points_assignments(after_round)
+                self._individual_abnormal_points_assignments(after_round, window)
             )
-        trf.prohibited_pairings = (
+        prohibited_pairings = (
             prohibited_pairing_override
             if prohibited_pairing_override is not None
             else self._prohibited_pairings()
         )
+        trf.prohibited_pairings = [p for p in prohibited_pairings if not p.soft]
+        trf.soft_prohibited_pairings = [p for p in prohibited_pairings if p.soft]
+        trf.log_comments = self._log_comments(after_round, corrections)
+        if trf.starting_rank_method:
+            trf.other_starting_rank_federations = sorted(
+                federation
+                for federation in trf.national_players_by_federation
+                if federation != trf.starting_rank_federation
+            )
         return trf
+
+    def _log_comments(
+        self, after_round: int, corrections: list[RatingCorrection]
+    ) -> list[str]:
+        tournament = self.tournament
+        entries: list[Pibe | RatingCorrection | FullPointBye | ScheduleBreach] = [
+            *tournament.pibes,
+            *corrections,
+            *tournament.full_point_byes,
+            *tournament.schedule_breaches,
+        ]
+        comments = [
+            entry.trf_comment_for(tournament)
+            for entry in entries
+            if entry.round_ <= after_round
+        ]
+        exit_round = tournament.fide_mode_exit_round
+        if exit_round is not None and exit_round <= after_round:
+            comments.append(fide_mode_exit_trf_comment(exit_round))
+        return comments
+
+    def _shared_ranks(self) -> dict[int, int]:
+        """Pairing number → rank, the same for players level on every
+        criterion, as the ranks were last computed."""
+        shared_rank: dict[int, int] = {}
+        previous_key: tuple | None = None
+        rank = 0
+        for player in self.tournament.tournament_players_by_rank.values():
+            key = (
+                player.is_excluded_from_standings,
+                player.rank_sort_key_without_pairing_number,
+            )
+            if key != previous_key:
+                previous_key = key
+                rank = player.rank
+            assert player.pairing_number is not None
+            shared_rank[player.pairing_number] = rank
+        return shared_rank
 
     def _prohibited_pairings(self) -> list[TrfProhibitedPairing]:
         """TRF26 260 records regenerated from the per-round snapshots: the
@@ -118,7 +230,8 @@ class TrfExport:
         whole, soft groups relaxed at the stored cutoff) — so the export is
         the truth, not the configured-before-relaxation set. Snapshots with
         no cutoff (a hard-only round, or an imported 260 set) emit every
-        group whole."""
+        group whole. The groups avoided as the lowest-priority criterion
+        are SCS records."""
         tournament = self.tournament
         result: list[TrfProhibitedPairing] = []
         groups_by_round: dict[int, list] = {}
@@ -131,6 +244,18 @@ class TrfExport:
                 protect_by_round[group.round_] = group.protect_rank
         for round_ in sorted(groups_by_round):
             groups = groups_by_round[round_]
+            lowest_criterion = ProhibitedPairingConstraint.LOWEST_CRITERION
+            result.extend(
+                tournament.prohibited_pairings.lowest_criterion_lines(
+                    [
+                        list(g.member_ids)
+                        for g in groups
+                        if g.constraint == lowest_criterion
+                    ],
+                    round_,
+                )
+            )
+            groups = [g for g in groups if g.constraint != lowest_criterion]
             protect_rank = protect_by_round.get(round_)
             if protect_rank is None:
                 # No relaxation recorded — every stored group is enforced
@@ -142,8 +267,9 @@ class TrfExport:
                     )
                 )
                 continue
-            hard_groups = [list(g.member_ids) for g in groups if g.is_hard]
-            soft_groups = [list(g.member_ids) for g in groups if not g.is_hard]
+            hard = ProhibitedPairingConstraint.HARD
+            hard_groups = [list(g.member_ids) for g in groups if g.constraint == hard]
+            soft_groups = [list(g.member_ids) for g in groups if g.constraint != hard]
             rank_by_member = tournament.prohibited_pairings.member_weakness_ranks(
                 after_round=round_ - 1
             )
@@ -160,12 +286,17 @@ class TrfExport:
         *,
         after_round: int,
         next_round_pairings_as_zpb: bool = False,
+        window: ReportWindow | None = None,
     ) -> None:
         """TRF26 team-mode records (310 rosters, 192 team code, 362
         match-point system, 352 board-colour sequence). Built on top
         of the individual TRF (001 player rows + 162 game points)
         produced by :meth:`build` — bbpPairings' ``--team`` mode
-        aggregates the per-player games into team match data."""
+        aggregates the per-player games into team match data.
+
+        *window* reports one period of the tournament: the teams that
+        played in it, numbered from 1, holding the players who played
+        for them and the match points those rounds were worth."""
         tournament = self.tournament
         match_points = tournament.match_points
         trf.teams_point_system = {
@@ -174,17 +305,21 @@ class TrfExport:
             'TL': float(match_points.get(Result.LOSS, 0.0)),
         }
         tpn_map = self._team_tpn_map()
+        rosters = self._team_rosters(after_round=after_round, window=window)
         trf.team_pabs = self._team_pabs_record(
-            after_round=after_round, tpn_by_team_id=tpn_map
+            after_round=after_round, tpn_by_team_id=tpn_map, window=window
         )
         trf.oodo_team_pairings = self._team_oodo_records(
-            after_round=after_round, tpn_by_team_id=tpn_map
+            after_round=after_round, tpn_by_team_id=tpn_map, window=window
         )
         (
             trf.informative_team_pairings_records,
             trf.informative_team_results_records,
         ) = self._team_informative_records(
-            after_round=after_round, tpn_by_team_id=tpn_map
+            after_round=after_round,
+            tpn_by_team_id=tpn_map,
+            rosters=rosters,
+            window=window,
         )
 
         team_player_count = tournament.team_player_count or 0
@@ -206,46 +341,55 @@ class TrfExport:
             after_round=after_round,
             tpn_by_team_id=tpn_map,
             next_round_pairings_as_zpb=next_round_pairings_as_zpb,
+            window=window,
         )
         trf.team_forfeited_matches = self._team_forfeited_matches(
-            after_round=after_round, tpn_by_team_id=tpn_map
+            after_round=after_round, tpn_by_team_id=tpn_map, window=window
         )
 
-        teams = sorted(tournament.teams, key=_team_ui_sort_key)
         tpn_by_team_id = tpn_map
-        tp_by_player_id = {tp.id: tp for tp in tournament.tournament_players}
-        team_totals = tournament.team_totals_after(after_round)
-        # Team rank from the tournament's own standings — primary
-        # score + secondary + (eventually) team tie-breaks. Falls back
-        # to the team-UI order for teams ``team_standings`` doesn't
-        # return.
+        teams = [
+            team
+            for team in sorted(tournament.teams, key=_team_ui_sort_key)
+            if team.id in tpn_by_team_id
+        ]
+        team_totals = (
+            tournament.team_totals_in(window.rounds)
+            if window
+            else tournament.team_totals_after(after_round)
+        )
         rank_by_team_id: dict[int, int] = {}
-        # Rank must match ``team_totals`` (bounded to ``after_round``) —
-        # otherwise the in-progress round leaks into the TRF rank fed to
-        # bbpPairings (e.g. during complementary pairing).
-        for row in tournament.team_standings(after_round=after_round):
-            rank_by_team_id[row.team.id] = row.rank
+        if window:
+            rank_by_team_id = self._window_team_ranks(teams, team_totals)
+        else:
+            # Team rank from the tournament's own standings — primary
+            # score + secondary + (eventually) team tie-breaks. Falls back
+            # to the team-UI order for teams ``team_standings`` doesn't
+            # return.
+            #
+            # Rank must match ``team_totals`` (bounded to ``after_round``) —
+            # otherwise the in-progress round leaks into the TRF rank fed to
+            # bbpPairings (e.g. during complementary pairing). The rank field
+            # allows ties, and teams the criteria leave level are level
+            # (C.07 Art. 4.2): they share the rank the standings reached them
+            # at, as the individual rank field does.
+            previous_key: tuple | None = None
+            shared_rank = 0
+            for row in tournament.team_standings(after_round=after_round):
+                key = (row.team.is_excluded_from_standings, row.rank_key)
+                if key != previous_key:
+                    previous_key = key
+                    shared_rank = row.rank
+                rank_by_team_id[row.team.id] = shared_rank
         nickname_by_team_id = self._team_nickname_map(tpn_by_team_id)
         trf_teams: list[TrfTeam] = []
         for team in teams:
             tpn = tpn_by_team_id[team.id]
-            # 310 lists the whole roster: the round's board order first
-            # (capped at the board count), then the remaining roster
-            # members as substitutes, so a never-fielded player still
-            # round-trips through the team record on re-import.
-            lineup = team.effective_round_lineup(after_round + 1)[:team_player_count]
-            ordered_members = list(lineup)
-            seen_ids = {member.id for member in lineup}
-            for member in team.players:
-                if member.id not in seen_ids:
-                    ordered_members.append(member)
-                    seen_ids.add(member.id)
-            player_ids: list[int] = []
-            for member in ordered_members:
-                tp = tp_by_player_id.get(member.id)
-                if tp is None or tp.pairing_number is None:
-                    continue
-                player_ids.append(tp.pairing_number)
+            player_ids = [
+                number
+                for player in rosters.get(team.id, [])
+                if (number := player.pairing_number) is not None
+            ]
             mp, gp = team_totals.get(team.id, (0.0, 0.0))
             trf_teams.append(
                 TrfTeam(
@@ -268,11 +412,68 @@ class TrfExport:
         if tournament.pairing_system.fide_team_swiss_code:
             trf.encoded_type = self._team_encoded_type()
         trf.abnormal_points_assignments = self._team_abnormal_points_assignments(
-            after_round=after_round, tpn_by_team_id=tpn_map
+            after_round=after_round, tpn_by_team_id=tpn_map, window=window
         )
 
+    def _team_rosters(
+        self, *, after_round: int, window: ReportWindow | None
+    ) -> dict[int, list[TournamentPlayer]]:
+        """Each team's 310 roster, ``team.id`` → players in roster order:
+        the board order of a round first (capped at the board count),
+        then the remaining roster members as substitutes, so a
+        never-fielded player still round-trips through the team record on
+        re-import. A period's file takes the board order of its last
+        round."""
+        tournament = self.tournament
+        team_player_count = tournament.team_player_count or 0
+        tp_by_player_id = {tp.id: tp for tp in tournament.tournament_players}
+        lineup_round = window.last_round if window else after_round + 1
+        rosters: dict[int, list[TournamentPlayer]] = {}
+        for team in tournament.teams:
+            lineup = team.effective_round_lineup(lineup_round)[:team_player_count]
+            ordered_members = list(lineup)
+            seen_ids = {member.id for member in lineup}
+            for member in team.players:
+                if member.id not in seen_ids:
+                    ordered_members.append(member)
+                    seen_ids.add(member.id)
+            members: list[TournamentPlayer] = []
+            for member in ordered_members:
+                tp = tp_by_player_id.get(member.id)
+                if tp is None or tp.pairing_number is None:
+                    continue
+                members.append(tp)
+            rosters[team.id] = members
+        return rosters
+
+    def _window_team_ranks(
+        self, teams: list['Team'], team_totals: dict[int, tuple[float, float]]
+    ) -> dict[int, int]:
+        """The standings a period's file states: the teams it holds ranked
+        on the points of the matches it holds, ties sharing a place."""
+        primary_is_match_points = (
+            self.tournament.primary_score == ScoreType.MATCH_POINTS
+        )
+
+        def score(team: 'Team') -> tuple[float, float]:
+            match_points, game_points = team_totals.get(team.id, (0.0, 0.0))
+            return (
+                (-match_points, -game_points)
+                if primary_is_match_points
+                else (-game_points, -match_points)
+            )
+
+        ranks: dict[int, int] = {}
+        previous_score: tuple[float, float] | None = None
+        previous_rank = 0
+        for position, team in enumerate(sorted(teams, key=score), start=1):
+            if score(team) != previous_score:
+                previous_rank, previous_score = position, score(team)
+            ranks[team.id] = previous_rank
+        return ranks
+
     def _individual_abnormal_points_assignments(
-        self, after_round: int
+        self, after_round: int, window: ReportWindow | None = None
     ) -> list[TrfAbnormalPointsAssignment]:
         """TRF26 299 records for an individual tournament: one blank-type
         line per (player, round) carrying a bonus / penalty, keyed on the
@@ -280,10 +481,13 @@ class TrfExport:
         teams — and the 001 points already include the delta, which is
         what a reader recomputing the score from the results expects."""
         assignments: list[TrfAbnormalPointsAssignment] = []
-        for player in self.tournament.tournament_players_by_pairing_number.values():
-            if player.pairing_number is None:
+        players = list(self.tournament.tournament_players_by_pairing_number.values())
+        rounds = window.rounds if window else range(1, after_round + 1)
+        for player in players:
+            number = player.pairing_number
+            if number is None:
                 continue
-            for round_ in range(1, after_round + 1):
+            for round_ in rounds:
                 delta = self.tournament.point_adjustments.for_player(player.id, round_)
                 if not delta:
                     continue
@@ -293,13 +497,17 @@ class TrfExport:
                         match_points=None,
                         game_points=delta,
                         round=round_,
-                        pairing_numbers=[player.pairing_number],
+                        pairing_numbers=[number],
                     )
                 )
         return assignments
 
     def _team_abnormal_points_assignments(
-        self, *, after_round: int, tpn_by_team_id: dict[int, int]
+        self,
+        *,
+        after_round: int,
+        tpn_by_team_id: dict[int, int],
+        window: ReportWindow | None = None,
     ) -> list[TrfAbnormalPointsAssignment]:
         """TRF26 299 records — the team bonus / penalty points actually
         applied, one line per (team, round) carrying a non-zero
@@ -312,7 +520,7 @@ class TrfExport:
             tpn = tpn_by_team_id.get(team.id)
             if tpn is None:
                 continue
-            for round_ in range(1, after_round + 1):
+            for round_ in window.rounds if window else range(1, after_round + 1):
                 mp, gp = self.tournament.point_adjustments.effective(team.id, round_)
                 if not mp and not gp:
                     continue
@@ -327,44 +535,36 @@ class TrfExport:
                 )
         return assignments
 
-    def _starting_rank_method(self) -> str:
-        """TRF26 172 — how the participants were ranked. Derived from the
-        ratings actually used rather than from the tournament setting:
-        the setting only states a preference, and which fallback fired
-        is what the receiver needs in order to reproduce the ranking.
+    def _starting_rank_method(self, rating_report: bool) -> str:
+        """TRF26 172 — how the participants were ranked: the method of
+        the tournament's rating preference.
 
-        Estimated ratings (and the floors a rule set may supply) have no
-        place in the format, so a tournament that used any of them is
-        ranked by a method the TRF cannot express — which is what
-        ``OTHER`` is for."""
+        A partial TRF carries a value no list supplied in an `MMM`
+        pseudo-NRS record, which the method then covers. The final report
+        has no place for it, so a tournament that ranked a player on one
+        is ranked there by a method the TRF cannot express — which is
+        what ``OTHER`` is for."""
         tournament = self.tournament
-        used = {player.rating_type for player in tournament.players}
-        if not used:
-            # Nothing to describe yet; state the preference.
-            return (
-                'FIDE'
-                if tournament.player_rating_type == PlayerRatingType.FIDE
-                else 'NRO'
-            )
-        if PlayerRatingType.ESTIMATED in used:
+        if rating_report and any(
+            player.rating and player.rating_type == PlayerRatingType.ESTIMATED
+            for player in tournament.players
+        ):
             return 'OTHER'
-        if used == {PlayerRatingType.FIDE}:
-            return 'FIDE'
-        if used == {PlayerRatingType.NATIONAL}:
-            return 'NRO'
-        # Both were used, so a fallback fired: say which way round.
-        return (
-            'FIDON'
-            if tournament.player_rating_type == PlayerRatingType.FIDE
-            else 'NIDOF'
-        )
+        return tournament.rating_preference.starting_rank_method
 
-    def _individuals_point_system(self) -> dict[str, float]:
+    def _individuals_point_system(
+        self, after_round: int, for_engine: bool
+    ) -> dict[str, float]:
         """TRF26 162 record — game-point values per result symbol.
         Only emits values that have been overridden vs the FIDE
         defaults; readers fall back to W=1 / D=0.5 / L=0 / ZPB=LOSS /
         PAB=WIN when a symbol is absent. bbpPairings ``--team``
-        accepts the full W / D / L / A (ZPB) / P (PAB) alphabet."""
+        accepts the full W / D / L / A (ZPB) / P (PAB) alphabet.
+
+        ``X`` gives the value of the unknown results: an adjourned game
+        counts as a draw, a game not played yet as nothing unless it sits
+        beside adjourned games, when it counts as a draw too and the
+        points of its players say so."""
         raw = self.tournament.stored_tournament.game_points or {}
         result: dict[str, float] = {}
         for outcome_value, value in raw.items():
@@ -376,13 +576,67 @@ class TrfExport:
             if not symbol:
                 continue
             result[symbol] = float(value)
+        if (
+            not for_engine
+            and (unknown := self._unknown_result_points(after_round)) is not None
+        ):
+            result[TrfPointSystemResult.UNKNOWN] = unknown
         return result
+
+    def _pairings_up_to(
+        self, after_round: int, window: ReportWindow | None = None
+    ) -> list[Pairing]:
+        """The pairings a report covers: those of the rounds up to
+        *after_round*, or of the rounds a period holds."""
+        return [
+            pairing
+            for player in self.tournament.tournament_players_by_pairing_number.values()
+            for round_, pairing in player.pairings.items()
+            if (round_ in window.rounds if window else round_ <= after_round)
+        ]
+
+    def _has_adjourned_games(
+        self, after_round: int, window: ReportWindow | None = None
+    ) -> bool:
+        return any(
+            pairing.result.is_adjourned
+            for pairing in self._pairings_up_to(after_round, window)
+        )
+
+    def _unknown_result_points(self, after_round: int) -> float | None:
+        """The points of an unknown result, or None when there is none."""
+        if self._has_adjourned_games(after_round):
+            return float(Result.ADJOURNED.points(self.tournament.point_values))
+        if any(
+            pairing.paired_no_result for pairing in self._pairings_up_to(after_round)
+        ):
+            return 0.0
+        return None
+
+    def _count_unplayed_games_as_draws(
+        self, trf: TrfTournament, after_round: int, window: ReportWindow | None = None
+    ) -> None:
+        """Add the value of a draw to the 001 points of each player with a
+        game not played yet, which ``X`` values as a draw beside the
+        adjourned games."""
+        draw = Result.ADJOURNED.points(self.tournament.point_values)
+        trf_player_by_id = {trf_player.id: trf_player for trf_player in trf.players}
+        for player in self.tournament.tournament_players_by_pairing_number.values():
+            number = player.pairing_number
+            unplayed = sum(
+                pairing.paired_no_result
+                for round_, pairing in player.pairings.items()
+                if (round_ in window.rounds if window else round_ <= after_round)
+            )
+            if unplayed and number in trf_player_by_id:
+                trf_player_by_id[number].points += unplayed * draw
 
     def _team_oodo_records(
         self,
         *,
         after_round: int,
         tpn_by_team_id: dict[int, int],
+        window: ReportWindow | None = None,
     ) -> list[TrfOOdOTeamPairing]:
         """TRF26 300 records — per-round team lineups in board order.
         Emitted twice per real (non-PAB) team match: once from team_a's
@@ -397,12 +651,12 @@ class TrfExport:
             if tp.team_id is not None
         }
         records: list[TrfOOdOTeamPairing] = []
+        rounds = window.rounds if window else range(1, after_round + 1)
         team_boards = sorted(
             (
                 tb
                 for tb in tournament.team_boards_by_id.values()
-                if 1 <= tb.round <= after_round
-                and tb.stored_team_board.team_b_id is not None
+                if tb.round in rounds and tb.stored_team_board.team_b_id is not None
             ),
             key=lambda tb: (tb.round, tb.index or 0),
         )
@@ -423,16 +677,20 @@ class TrfExport:
                 white_tp = board.optional_white_tournament_player
                 black_tp = board.black_tournament_player
                 for tp in (white_tp, black_tp):
-                    if tp is None or tp.pairing_number is None:
+                    if tp is None:
+                        continue
+                    number = tp.pairing_number
+                    if number is None:
                         continue
                     team_id = team_id_by_player_id.get(tp.id)
                     if team_id == stb.team_a_id:
-                        a_lineup[slot] = tp.pairing_number
+                        a_lineup[slot] = number
                     elif team_id == stb.team_b_id:
-                        b_lineup[slot] = tp.pairing_number
+                        b_lineup[slot] = number
+            round_ = tb.round
             records.append(
                 TrfOOdOTeamPairing(
-                    round=tb.round,
+                    round=round_,
                     team_id=a_tpn,
                     opponent_team_id=b_tpn,
                     boards=a_lineup,
@@ -440,7 +698,7 @@ class TrfExport:
             )
             records.append(
                 TrfOOdOTeamPairing(
-                    round=tb.round,
+                    round=round_,
                     team_id=b_tpn,
                     opponent_team_id=a_tpn,
                     boards=b_lineup,
@@ -453,6 +711,8 @@ class TrfExport:
         *,
         after_round: int,
         tpn_by_team_id: dict[int, int],
+        rosters: dict[int, list[TournamentPlayer]],
+        window: ReportWindow | None = None,
     ) -> tuple[list[str], list[str]]:
         """TRF26 801 (team pairings) and 802 (team results) — one row
         per team summarising every played round. Both are informative
@@ -492,12 +752,12 @@ class TrfExport:
         )
 
         # Pre-compute each player's RID character (position on their
-        # team's 310 roster + 1 → spec-encoded char).
-        rid_by_player_id: dict[int, str] = {}
-        for tp in tournament.tournament_players:
-            if tp.team_index is None:
-                continue
-            rid_by_player_id[tp.id] = _rid_char(tp.team_index + 1)
+        # team's 310 roster → spec-encoded char).
+        rid_by_player_id: dict[int, str] = {
+            player.id: _rid_char(position)
+            for roster in rosters.values()
+            for position, player in enumerate(roster, start=1)
+        }
 
         # Round → team_id → (opp_tpn, colour, board_results, rid_string,
         # match_gp, is_forfeit, bye_acronym_or_none).
@@ -508,22 +768,24 @@ class TrfExport:
                 tuple[int | None, str, str, str, float, bool, str | None],
             ],
         ] = {}
+        rounds = window.rounds if window else range(1, after_round + 1)
         for team_board in tournament.team_boards_by_id.values():
-            if not (1 <= team_board.round <= after_round):
+            if team_board.round not in rounds:
                 continue
             stb = team_board.stored_team_board
             round_data = per_round.setdefault(team_board.round, {})
             a_gp, b_gp = team_board.game_points
             if stb.team_b_id is None:
-                # Team-level PAB.
+                bye_type = TeamByeType(stb.bye_type or TeamByeType.PAB)
+                bye_score = tournament.team_scoring.bye_score(bye_type)
                 round_data[stb.team_a_id] = (
                     None,
                     ' ',
                     ' ' * team_player_count,
                     ' ' * team_player_count,
-                    tournament.team_pab_game_points,
+                    bye_score[1] if bye_score is not None else 0.0,
                     False,
-                    TeamByeType.PAB,
+                    bye_type,
                 )
                 continue
 
@@ -604,7 +866,11 @@ class TrfExport:
                 None,
             )
 
-        team_totals = tournament.team_totals_after(after_round)
+        team_totals = (
+            tournament.team_totals_in(window.rounds)
+            if window
+            else tournament.team_totals_after(after_round)
+        )
         nickname_by_team_id = self._team_nickname_map(tpn_by_team_id)
         max_tpn = max(tpn_by_team_id.values(), default=0)
         tpn_width = max(2, len(str(max_tpn)))
@@ -617,6 +883,8 @@ class TrfExport:
             header_802 = f'{tpn:>{tpn_width}} {nickname:<5} {mp:>6.1f} {gp:>6.1f}'
             blocks_801: list[str] = []
             blocks_802: list[str] = []
+            # Every round of the tournament has its block; a period fills in
+            # the ones it covers and leaves the others blank.
             for round_ in range(1, after_round + 1):
                 entry = per_round.get(round_, {}).get(team.id)
                 if entry is None:
@@ -704,7 +972,11 @@ class TrfExport:
         return nicknames
 
     def _team_pabs_record(
-        self, *, after_round: int, tpn_by_team_id: dict[int, int]
+        self,
+        *,
+        after_round: int,
+        tpn_by_team_id: dict[int, int],
+        window: ReportWindow | None = None,
     ) -> TrfTeamPABs | None:
         """TRF26 320 record: team-PAB match / game points + per-round
         team that received the PAB. Built when the team-PAB scores
@@ -717,8 +989,9 @@ class TrfExport:
         pab_mp = match_points.get(Result.PAIRING_ALLOCATED_BYE, draw_mp)
         pab_gp = tournament.team_pab_game_points
         team_id_by_round: dict[int, int] = {}
+        rounds = window.rounds if window else range(1, after_round + 1)
         for team_board in tournament.team_boards_by_id.values():
-            if team_board.round > after_round:
+            if team_board.round not in rounds:
                 continue
             stb = team_board.stored_team_board
             if stb.team_b_id is not None or stb.bye_type not in (
@@ -728,7 +1001,8 @@ class TrfExport:
                 continue
             tpn = tpn_by_team_id.get(stb.team_a_id)
             if tpn is not None:
-                team_id_by_round[team_board.round] = tpn
+                round_ = team_board.round
+                team_id_by_round[round_] = tpn
         default_gp = float(tournament.team_player_count or 0) * Result.DRAW.point_value
         non_default = pab_mp != draw_mp or pab_gp != default_gp
         if not team_id_by_round and not non_default:
@@ -760,17 +1034,19 @@ class TrfExport:
         )
         return f'FIDE_TEAM_{infix}{primary}_{secondary}'
 
-    def _round_byes(self) -> list[TrfRoundBye]:
+    def _round_byes(self, window: ReportWindow | None = None) -> list[TrfRoundBye]:
         round_byes: list[TrfRoundBye] = []
-        for round_ in range(1, self.tournament.rounds + 1):
+        rounds = window.rounds if window else range(1, self.tournament.rounds + 1)
+        for round_ in rounds:
             pairing_numbers_by_bye: dict[Result, list[int]] = defaultdict(list)
+            numbered_players = self.tournament.tournament_players_by_pairing_number
             for (
                 pairing_number,
                 player,
-            ) in self.tournament.tournament_players_by_pairing_number.items():
-                result = player.pairings[round_].result
-                if result.is_next_round_bye:
-                    pairing_numbers_by_bye[result].append(pairing_number)
+            ) in numbered_players.items():
+                pairing = player.pairings.get(round_)
+                if pairing is not None and pairing.result.is_next_round_bye:
+                    pairing_numbers_by_bye[pairing.result].append(pairing_number)
             for bye, pairing_numbers in pairing_numbers_by_bye.items():
                 round_bye = TrfRoundBye(
                     type=bye.to_trf.upper(),
@@ -786,6 +1062,7 @@ class TrfExport:
         after_round: int,
         tpn_by_team_id: dict[int, int],
         next_round_pairings_as_zpb: bool = False,
+        window: ReportWindow | None = None,
     ) -> list[TrfRoundBye]:
         """TRF26 240 records (team-mode interpretation): one entry per
         (round, bye type) listing the team TPNs flagged with
@@ -806,9 +1083,11 @@ class TrfExport:
             TeamByeType.ZPB: 'Z',
         }
         last_round = min(after_round + 1, tournament.rounds)
-        next_round = after_round + 1
+        # A period's file is never paired from, so the round after it has
+        # nothing to say in it.
+        next_round = -1 if window else after_round + 1
         records: list[TrfRoundBye] = []
-        for round_ in range(1, last_round + 1):
+        for round_ in window.rounds if window else range(1, last_round + 1):
             tpns_by_type: dict[str, list[int]] = defaultdict(list)
             for tb in tournament.get_round_team_boards(round_):
                 stb = tb.stored_team_board
@@ -852,7 +1131,11 @@ class TrfExport:
                         tpns_by_type['Z'].append(tpn)
             for t, tpns in tpns_by_type.items():
                 records.append(
-                    TrfRoundBye(type=t, round=round_, pairing_numbers=sorted(tpns))
+                    TrfRoundBye(
+                        type=t,
+                        round=round_,
+                        pairing_numbers=sorted(tpns),
+                    )
                 )
         return records
 
@@ -861,6 +1144,7 @@ class TrfExport:
         *,
         after_round: int,
         tpn_by_team_id: dict[int, int],
+        window: ReportWindow | None = None,
     ) -> list[TrfTeamForfeitedMatch]:
         """TRF26 330 records — one entry per played team match where
         one (or both) teams forfeited by failing to field any player.
@@ -872,7 +1156,7 @@ class TrfExport:
         pattern = tournament.color_pattern or ''
         team_a_board0_white = pattern[:1].upper() != BoardColor.BLACK.value
         records: list[TrfTeamForfeitedMatch] = []
-        for round_ in range(1, after_round + 1):
+        for round_ in window.rounds if window else range(1, after_round + 1):
             for tb in tournament.get_round_team_boards(round_):
                 stb = tb.stored_team_board
                 if stb.team_b_id is None:

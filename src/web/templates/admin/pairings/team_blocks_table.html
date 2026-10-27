@@ -1,6 +1,6 @@
 <table
     id="pairings-table"
-    class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %} {% if show_without_results %}table-danger-warning{% endif %}"
+    class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if unsafe_editing %}table-danger-header{% endif %} {% if show_without_results %}table-danger-warning{% endif %}"
     {% if show_without_results %}data-inplay-filter="1"{% endif %}
     {% if admin_team_boards %}style="table-layout: fixed;"{% endif %}
 >

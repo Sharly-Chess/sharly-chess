@@ -14,7 +14,7 @@
         <div class="col-12 col-md-6">
             {{ admin_macros.text_input(
                 name='last_name',
-                label=_('Last name:'),
+                label=_('%(string)s:', string=_('Last name')),
                 placeholder=_('E.g.: DOE'),
                 data=data, errors=errors
             ) }}
@@ -22,7 +22,7 @@
         <div class="col-12 col-md-6">
             {{ admin_macros.text_input(
                 name='first_name',
-                label=_('First name:'),
+                label=_('%(string)s:', string=_('First name')),
                 placeholder=_('E.g.: John'),
                 data=data, errors=errors
             ) }}
@@ -38,14 +38,14 @@
         <div class="col-12 col-md-6">
             {{ admin_macros.text_input(
                 name='phone',
-                label=_('Phone number:'),
+                label=_('%(string)s:', string=_('Phone number')),
                 data=data, errors=errors
             ) }}
         </div>
         <div class="col-12 col-md-6">
             {{ admin_macros.number_input(
                 name='fide_id',
-                label=_('FIDE ID:'),
+                label=_('%(string)s:', string=_('FIDE ID')),
                 min=1,
                 data=data, errors=errors
             ) }}

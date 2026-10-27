@@ -5,7 +5,7 @@ from typing import Annotated, Any
 
 from litestar import post, get
 from litestar.enums import RequestEncodingType
-from litestar.params import Body, FromPath
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
@@ -19,7 +19,8 @@ from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
-from plugins.ffe.utils import FFEUtils
+from plugins.ffe.ffe_team_session import FFETeamSession, SiteOption
+from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
 from plugins.utils import PluginUtils
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -66,12 +67,18 @@ class FfeTournamentController(BaseEventAdminController):
         ],
     ) -> Template:
         ffe_auth_valid: bool | None = None
+        # The fields of a rating period carry the suffix of the period they
+        # belong to, and the answer has to come back named the same way —
+        # it replaces the block it was asked from.
+        field_suffix: str = str(data.get('field_suffix') or '')
+        id_field = f'ffe_id{field_suffix}'
+        password_field = f'ffe_password{field_suffix}'
 
         if NetworkMonitor.connected():
             ffe_id: int = 0
             with contextlib.suppress(ValueError):
-                ffe_id = WebContext.form_data_to_int(data, 'ffe_id') or 0
-            ffe_password: str = WebContext.form_data_to_str(data, 'ffe_password') or ''
+                ffe_id = WebContext.form_data_to_int(data, id_field) or 0
+            ffe_password: str = WebContext.form_data_to_str(data, password_field) or ''
 
             if ffe_id and ffe_password:
                 ffe_auth_valid = await asyncio.to_thread(
@@ -81,20 +88,194 @@ class FfeTournamentController(BaseEventAdminController):
         errors = {}
         # Compare to False, None means 'unable to check'
         if ffe_auth_valid is False:
-            errors['ffe_id'] = _('Invalid FFE certification number or password.')
-            errors['ffe_password'] = _('Invalid FFE certification number or password.')
+            errors[id_field] = _('Invalid FFE certification number or password.')
+            errors[password_field] = _('Invalid FFE certification number or password.')
 
         return HTMXTemplate(
             template_name='ffe_tournament_ffe_auth_fields.html',
             context={
                 'data': {
-                    'ffe_id': data['ffe_id'],
-                    'ffe_password': data['ffe_password'],
+                    id_field: data.get(id_field, ''),
+                    password_field: data.get(password_field, ''),
                 },
                 'ffe_auth_valid': ffe_auth_valid is True,
-                'ffe_password_visible': data['ffe_password_visible'] == 'true',
+                'ffe_password_visible': data.get('ffe_password_visible') == 'true',
                 'event_uniq_id': event_uniq_id,
+                'field_suffix': field_suffix,
                 'errors': errors,
+            },
+        )
+
+    @staticmethod
+    def _team_lists(
+        login: str,
+        password: str,
+        competition_id: int | None,
+        division_id: int | None,
+        locale: str,
+    ) -> tuple[
+        bool | None,
+        list[SiteOption] | None,
+        list[SiteOption] | None,
+        list[SiteOption] | None,
+    ]:
+        """Log in with a group account and list the competitions the team
+        module manages, the divisions of *competition_id* and the groups
+        of *division_id*. Runs in a worker thread, hence the locale which
+        is thread-local."""
+        set_locale(locale)
+        session = FFETeamSession(tournament=None)
+        logged_in = session.login(login, password)
+        if not logged_in:
+            return logged_in, None, None, None
+        competitions = session.list_competitions()
+        divisions: list[SiteOption] | None = None
+        groups: list[SiteOption] | None = None
+        if competitions and competition_id in {
+            competition.id for competition in competitions
+        }:
+            assert competition_id is not None
+            divisions = session.list_divisions(competition_id)
+            if divisions and division_id in {division.id for division in divisions}:
+                assert division_id is not None
+                groups = session.list_groups(competition_id, division_id)
+        return True, competitions, divisions, groups
+
+    @post(
+        path='/ffe/team-auth/{event_uniq_id:str}',
+        name='ffe-team-auth',
+    )
+    async def htmx_ffe_team_auth(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: FromPath[str],
+        data: Annotated[
+            dict[str, Any],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Re-render the team-module connection fields with what the site
+        lists for the credentials, the competition and the division in
+        the form."""
+        from data.rule_sets import RuleSetManager
+
+        web_context = TournamentAdminWebContext(request, tournament_id=None)
+        event = web_context.get_admin_event()
+        login = WebContext.form_data_to_str(data, 'ffe_team_login') or ''
+        password = WebContext.form_data_to_str(data, 'ffe_team_password') or ''
+        competition_choice = (
+            WebContext.form_data_to_str(data, 'ffe_team_competition') or ''
+        )
+        division_choice = WebContext.form_data_to_str(data, 'ffe_team_division') or ''
+        group_choice = WebContext.form_data_to_str(data, 'ffe_team_group') or ''
+        division_hint = (
+            WebContext.form_data_to_str(data, 'ffe_team_division_hint') or ''
+        )
+        # A rule set that names its competition fixes the choice.
+        rule_set_competition_id: int | None = None
+        rule_set_id = WebContext.form_data_to_str(data, 'rule_set') or ''
+        if rule_set_id:
+            with contextlib.suppress(KeyError):
+                rule_set_competition_id = FFEUtils.rule_set_team_competition_id(
+                    RuleSetManager(event).get_type(rule_set_id)({})
+                )
+        competition_id, _competition_name = FfeTournamentPluginData._split_site_choice(
+            competition_choice
+        )
+        if rule_set_competition_id is not None:
+            competition_id = rule_set_competition_id
+        division_id, _division_name = FfeTournamentPluginData._split_site_choice(
+            division_choice
+        )
+
+        auth_valid: bool | None = None
+        competitions: list[SiteOption] | None = None
+        divisions: list[SiteOption] | None = None
+        groups: list[SiteOption] | None = None
+        message: str | None = None
+        errors: dict[str, str] = {}
+        if login and password:
+            if NetworkMonitor.connected():
+                auth_valid, competitions, divisions, groups = await asyncio.to_thread(
+                    self._team_lists,
+                    login,
+                    password,
+                    competition_id,
+                    division_id,
+                    get_locale(),
+                )
+                if auth_valid is None:
+                    message = _('FFE website could not be reached.')
+            else:
+                message = _('No internet connection.')
+        if auth_valid is False:
+            errors['ffe_team_login'] = _('Invalid FFE group account or password.')
+            errors['ffe_team_password'] = _('Invalid FFE group account or password.')
+        if competitions is not None:
+            competition = next(
+                (option for option in competitions if option.id == competition_id),
+                None,
+            )
+            competition_choice = (
+                FfeTournamentPluginData.site_choice(competition.id, competition.name)
+                if competition
+                else ''
+            )
+            if competition is None:
+                division_choice = group_choice = ''
+        if divisions is not None:
+            assert competition_id is not None
+            if division_id not in {division.id for division in divisions}:
+                # Not chosen yet (or gone): the phase of the rule set
+                # names the division to offer first.
+                division_choice = next(
+                    (
+                        FfeTournamentPluginData.site_choice(d.id, d.name)
+                        for d in divisions
+                        if d.name == division_hint
+                    ),
+                    '',
+                )
+                group_choice = ''
+                new_division_id, _name = FfeTournamentPluginData._split_site_choice(
+                    division_choice
+                )
+                if new_division_id is not None:
+                    _valid, _competitions, _divisions, groups = await asyncio.to_thread(
+                        self._team_lists,
+                        login,
+                        password,
+                        competition_id,
+                        new_division_id,
+                        get_locale(),
+                    )
+        if groups is not None:
+            group_id, _group_name = FfeTournamentPluginData._split_site_choice(
+                group_choice
+            )
+            if group_id not in {group.id for group in groups}:
+                group_choice = ''
+
+        return HTMXTemplate(
+            template_name='ffe_tournament_team_auth_fields.html',
+            context={
+                'data': {
+                    'ffe_team_login': login,
+                    'ffe_team_password': password,
+                    'ffe_team_competition': competition_choice,
+                    'ffe_team_division': division_choice,
+                    'ffe_team_group': group_choice,
+                },
+                'errors': errors,
+                'ffe_team_competitions': competitions,
+                'ffe_team_divisions': divisions,
+                'ffe_team_groups': groups,
+                'ffe_team_competition_locked': rule_set_competition_id is not None,
+                'ffe_team_auth_valid': auth_valid is True,
+                'ffe_team_password_visible': data.get('ffe_team_password_visible')
+                == 'true',
+                'ffe_team_message': message,
+                'event_uniq_id': event_uniq_id,
             },
         )
 
@@ -135,10 +316,16 @@ class FfeTournamentController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         tournament_id: FromPath[int],
+        period_id: FromQuery[int | None] = None,
     ) -> Template:
+        """Send the tournament to the FFE site — or one of its periods,
+        which is how a period already submitted is sent again after a
+        correction."""
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        FfeBackgroundUploader.upload_tournament(tournament.event.uniq_id, tournament.id)
+        FfeBackgroundUploader.upload_tournament(
+            tournament.event.uniq_id, tournament.id, period_id=period_id
+        )
         if FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(
                 request,

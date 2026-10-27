@@ -10,7 +10,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
-from data.safety_mode import SafetyMode
+from data.permissions import WarningLevel
 from data.tournament import Tournament
 
 logger: Logger = get_logger()
@@ -270,7 +270,7 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
-class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
+class SessionAdminCollectionViewMode(SubKeySessionVariable[str | None]):
     """The preferred projection for each card-based admin collection."""
 
     @property
@@ -278,8 +278,8 @@ class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
         return 'admin_collection_view_modes'
 
     @property
-    def default_value(self) -> str:
-        return 'list'
+    def default_value(self) -> str | None:
+        return None
 
 
 class SessionAdminCollectionShowDetails(SubKeySessionVariable[bool]):
@@ -500,7 +500,8 @@ class SessionPlayersActiveDataSource(SessionVariable[str]):
     def default_value(self) -> str:
         from data.input_output import DataSourceManager
 
-        return DataSourceManager().entity_types()[0].static_id()
+        data_sources = DataSourceManager().active_objects()
+        return data_sources[0].id if data_sources else ''
 
 
 class SessionPlayersAddOtherActive(BoolSessionVariable):
@@ -521,20 +522,54 @@ class SessionPlayersImportUseDataSource(BoolSessionVariable):
         return 'players_import_use_data_source'
 
 
-class SessionPairingsSafetyMode(SessionVariable[SafetyMode]):
+class SessionPairingsUnlockedWarningLevel(SessionVariable[WarningLevel]):
+    """The highest warning level already confirmed on the pairings page
+    shown: actions up to it run without asking again."""
+
     @property
     def key(self) -> str:
-        return 'pairings_safety_mode'
+        return 'pairings_unlocked_warning_level'
 
     @property
-    def default_value(self) -> SafetyMode:
-        return SafetyMode.SAFE
+    def default_value(self) -> WarningLevel:
+        return WarningLevel.NONE
 
-    def get(self) -> SafetyMode:
-        return SafetyMode(super().get())
+    def get(self) -> WarningLevel:
+        try:
+            return WarningLevel(super().get())
+        except ValueError:
+            return self.default_value
 
-    def set(self, safety_mode: SafetyMode) -> None:
-        self.request.session[self.key] = safety_mode.value
+    def set(self, level: WarningLevel) -> None:
+        self.request.session[self.key] = int(level)
+
+
+class SessionTieBreaksUnlocked(SessionVariable[list[str]]):
+    """The tournaments whose fixed tie-breaks the user confirmed changing,
+    until their tie-breaks modal is opened again."""
+
+    @property
+    def key(self) -> str:
+        return 'tie_breaks_unlocked'
+
+    @property
+    def default_value(self) -> list[str]:
+        return []
+
+    @staticmethod
+    def _tournament_key(tournament: 'Tournament') -> str:
+        return f'{tournament.event.uniq_id}/{tournament.id}'
+
+    def contains(self, tournament: 'Tournament') -> bool:
+        return self._tournament_key(tournament) in self.get()
+
+    def add(self, tournament: 'Tournament') -> None:
+        if not self.contains(tournament):
+            self.set([*self.get(), self._tournament_key(tournament)])
+
+    def discard(self, tournament: 'Tournament') -> None:
+        key = self._tournament_key(tournament)
+        self.set([value for value in self.get() if value != key])
 
 
 @dataclass
@@ -564,6 +599,19 @@ class SessionPairingsSelectedRound(TournamentSessionVariable[int | None]):
     @property
     def default_value(self) -> int | None:
         return None
+
+
+class SessionSchedulePlayedGamesUnlocked(TournamentSessionVariable[bool]):
+    """Whether the games already played can be changed in the round-robin
+    schedule being edited, to set them as they were really played."""
+
+    @property
+    def key(self) -> str:
+        return 'schedule_played_games_unlocked'
+
+    @property
+    def default_value(self) -> bool:
+        return False
 
 
 class SessionPrizeCategoriesAddOtherActive(BoolSessionVariable):

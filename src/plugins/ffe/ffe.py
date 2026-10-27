@@ -2,13 +2,12 @@ import copy
 import re
 from collections import Counter, defaultdict
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING, Optional, cast
 from collections.abc import Hashable, Iterable
 
 from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
-from common.exception import SharlyChessException
 from common.i18n import _, ngettext, pgettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
@@ -26,13 +25,25 @@ from data.criteria.tournament_criteria import (
     TournamentCriterion,
     GenderTournamentCriterion,
 )
-from data.input_output import DataSource, TournamentExporter, TournamentImporter
+from data.input_output import (
+    DataSource,
+    DataSourceManager,
+    TournamentExporter,
+    TournamentImporter,
+)
 from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingSystemManager, PairingVariationManager
 from data.pairings.variations import SwissVariation
-from data.player import Player, PlayerProfileLink, TournamentPlayer
-from utils.types import PlayerRating, PlayerRatingAndType
+from data.player import Player, TournamentPlayer
+from utils.types import PlayerRating
+from data.rating_sequences import (
+    PrescribedRatingRule,
+    RatingEntry,
+    RatingListFamily,
+    RatingSequence,
+    with_copies,
+)
 from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import (
     PlayerSplitter,
@@ -52,7 +63,12 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
+from plugins.ffe import (
+    migrations,
+    PLUGIN_NAME,
+    NATIONAL_SOURCE_ID,
+    ffe_tie_breaks,
+)
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from data.loader import EventLoader
 from plugins.ffe.ffe_data_sources import FfeLocalDataSource, FfeOnlineDataSource
@@ -64,9 +80,8 @@ from plugins.ffe.ffe_entity import (
     FfeLeaguePlayerFilter,
     FfeLeaguesFilterOption,
     FfeLeagueTableColumn,
-    FfeIdDatasheetColumn,
-    FfeLicenceNumberDatasheetColumn,
     FfeLicenceDatasheetColumn,
+    FfeLicenceNumberDatasheetColumn,
     FfeLeagueDatasheetColumn,
     FfeLicenceTypeTableColumn,
     FfeLeaguePlayersTabColumn,
@@ -117,6 +132,7 @@ from plugins.ffe.utils import (
     FfeAccountPluginData,
     FFEArbiterTitle,
     FFE_LEAGUES,
+    regional_league,
 )
 from plugins.ffe.utils import (
     FfeEventPluginData,
@@ -138,10 +154,11 @@ from plugins.utils import (
     TournamentConnectionField,
 )
 from utils.enum import (
-    EventType,
     PlayerRatingType,
+    ProhibitedPairingConstraint,
+    RatingPreference,
     Result,
-    TournamentRating,
+    Cadence,
 )
 from web.admin.collection import ListColumn
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
@@ -396,7 +413,7 @@ class FfePlugin(Plugin):
         return [
             RoundProhibitedPairingGroup(
                 name=_('Won both of the first two matches'),
-                is_hard=True,
+                constraint=ProhibitedPairingConstraint.HARD,
                 member_ids=winners,
             )
         ]
@@ -420,7 +437,7 @@ class FfePlugin(Plugin):
         templates_by_section['identity'].insert(
             0, '/ffe_player_form_identity_fields.html'
         )
-        templates_by_section['fide'].append('/ffe_player_form_fields.html')
+        templates_by_section['national'].append('/ffe_player_form_fields.html')
 
     @hookimpl
     def validate_player_form_fields(
@@ -439,9 +456,15 @@ class FfePlugin(Plugin):
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
-        ffe_licence_number = WebContext.form_data_to_str(
-            data, field := 'ffe_licence_number'
-        )
+        # The national identifier of a player taken from another federation's
+        # list is that federation's, and nothing here can tell whether it is
+        # well formed.
+        if WebContext.form_data_to_str(data, 'national_source') not in (
+            None,
+            NATIONAL_SOURCE_ID,
+        ):
+            return
+        ffe_licence_number = WebContext.form_data_to_str(data, field := 'national_id')
         if ffe_licence_number and not PlayerFFELicence.validate(ffe_licence_number):
             errors[field] = _(
                 'Invalid FFE licence number [{ffe_licence_number}].'
@@ -451,9 +474,9 @@ class FfePlugin(Plugin):
     def get_player_duplicate_key(
         self, stored_player: StoredPlayer
     ) -> tuple[str, Hashable] | None:
-        if licence_number := self.get_data(
-            stored_player.plugin_data, 'ffe_licence_number'
-        ):
+        if stored_player.national_source not in (None, NATIONAL_SOURCE_ID):
+            return None
+        if licence_number := stored_player.national_id:
             return self.id, licence_number
         return None
 
@@ -468,31 +491,37 @@ class FfePlugin(Plugin):
         if not fide_id:
             return
         if data_source.id == FfeLocalDataSource.static_id():
-            # nothing more to get from the online database for local searches
+            # A search of the FFE database brings what it holds already
             return
-        ffe_stored_player: StoredPlayer | None = None
-        if data_source.id != FfeOnlineDataSource.static_id():
-            # Try to get more information by requesting the FFE SQL server
-            ffe_stored_player = None
-            try:
-                # Try to get more information by requesting the FFE database
-                async with FFESqlServer() as ffe_sql_server:
-                    ffe_stored_player = (
-                        await ffe_sql_server.get_stored_player_by_fide_id(
-                            player_fide_id=fide_id,
-                        )
-                    )
-            except SharlyChessException:
-                pass
-        if not ffe_stored_player or with_arbiter_title:  # noqa: SIM102
-            if (ffe_database := FfeDatabase()).exists():
-                # Try to get more information by requesting the FFE database
-                with ffe_database:
-                    ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
-                        player_fide_id=fide_id,
-                    )
+        ffe_data_source = cast(
+            FfeLocalDataSource,
+            DataSourceManager().get_object(FfeLocalDataSource.static_id()),
+        )
+
+        async def read_installed() -> StoredPlayer | None:
+            if not ffe_data_source.is_installed:
+                return None
+            with FfeDatabase() as ffe_database:
+                return ffe_database.get_stored_player_by_fide_id(player_fide_id=fide_id)
+
+        async def read_online(__: DataSource) -> StoredPlayer | None:
+            async with FFESqlServer() as ffe_sql_server:
+                return await ffe_sql_server.get_stored_player_by_fide_id(
+                    player_fide_id=fide_id
+                )
+
+        if data_source.id == FfeOnlineDataSource.static_id():
+            # The installed copy completes what the online search gave
+            ffe_stored_player = await read_installed()
+        else:
+            ffe_stored_player = await ffe_data_source.first_answer(
+                read_installed, read_online
+            )
+            if with_arbiter_title:
+                # Only the installed copy holds the arbiter titles
+                ffe_stored_player = await read_installed() or ffe_stored_player
         if ffe_stored_player:
-            for rating_type in TournamentRating:
+            for rating_type in Cadence:
                 stored_rating = stored_player.ratings.get(rating_type.value, None)
                 rating = (
                     PlayerRating.from_stored_value(stored_rating)
@@ -504,17 +533,14 @@ class FfePlugin(Plugin):
                 )
                 if ffe_stored_rating:
                     ffe_rating = PlayerRating.from_stored_value(ffe_stored_rating)
-                    augmented_rating = PlayerRating(
-                        fide=rating.fide
-                        if rating and rating.fide is not None
-                        else ffe_rating.fide,
-                        national=rating.national
-                        if rating and rating.national is not None
-                        else ffe_rating.national,
-                        estimated=rating.estimated
-                        if rating and rating.estimated is not None
-                        else ffe_rating.estimated,
-                    )
+                    augmented_rating = rating or PlayerRating()
+                    for kind in (PlayerRatingType.FIDE, PlayerRatingType.NATIONAL):
+                        if augmented_rating.get_type_value(kind) is None:
+                            augmented_rating.set_value_from_type(
+                                ffe_rating.get_type_value(kind),
+                                kind,
+                                ffe_rating.origins.get(kind),
+                            )
                     stored_player.ratings[rating_type.value] = (
                         augmented_rating.stored_value
                     )
@@ -532,12 +558,21 @@ class FfePlugin(Plugin):
                 stored_player.comment = ffe_stored_player.comment
             if not stored_player.club:
                 stored_player.club = ffe_stored_player.club
+            if not stored_player.national_id:
+                stored_player.national_id = ffe_stored_player.national_id
+                stored_player.national_source = ffe_stored_player.national_source
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
             )
-            stored_player.transient_arbiter_titles['ffe'] = (
-                ffe_stored_player.transient_arbiter_titles.get('ffe', '')
-            )
+            ffe_arbiter_titles = ffe_stored_player.transient_arbiter_titles
+            if 'ffe' in ffe_arbiter_titles:
+                stored_player.transient_arbiter_titles['ffe'] = ffe_arbiter_titles[
+                    'ffe'
+                ]
+            if not stored_player.transient_arbiter_titles.get('fide'):
+                stored_player.transient_arbiter_titles['fide'] = ffe_arbiter_titles.get(
+                    'fide', ''
+                )
 
     @hookimpl
     def augment_place_card_player(
@@ -554,77 +589,71 @@ class FfePlugin(Plugin):
             'ffe_licence',
             plugin_data.ffe_licence.compact_name if plugin_data.ffe_licence else '',
         )
-        setattr(  # noqa: B010
-            place_card_player,
-            'ffe_licence_number',
-            plugin_data.ffe_licence_number or '',
-        )
 
     @hookimpl
     def place_card_field_tokens(self) -> list[dict[str, str]]:
         return [
             {'group': 'FFE', 'label': _('League'), 'expr': '{{ player.ffe_league }}'},
             {'group': 'FFE', 'label': _('Licence'), 'expr': '{{ player.ffe_licence }}'},
-            {
-                'group': 'FFE',
-                'label': _('Licence number'),
-                'expr': '{{ player.ffe_licence_number }}',
-            },
         ]
 
     @hookimpl
-    def insert_player_profile_links(
-        self,
-        player: Player,
-        links: list[PlayerProfileLink],
-    ) -> None:
-        plugin_data = FFEUtils.get_player_plugin_data(player)
-        # The licence number is what an arbiter recognises; the profile page
-        # is keyed on the numeric FFE id, which only players coming from an
-        # FFE source carry. Show whichever we have, link when we have both.
-        label = plugin_data.ffe_licence_number or (
-            str(plugin_data.ffe_id) if plugin_data.ffe_id else None
+    def get_forced_rating_preference(self, event: 'Event') -> RatingPreference:
+        # In France the FIDE rating is used if available, falling back to
+        # the national rating
+        return RatingPreference.FIDE_THEN_NATIONAL
+
+    @hookimpl
+    def get_forced_rating_sequence(
+        self, event: 'Event', cadence: Cadence
+    ) -> RatingSequence:
+        cadences = (
+            (cadence,) if cadence == Cadence.STANDARD else (cadence, Cadence.STANDARD)
         )
-        if not label:
-            return
-        links.append(
-            PlayerProfileLink(
-                label=_('FFE {id}').format(id=label),
-                url=(
-                    FFEUtils.player_url(plugin_data.ffe_id)
-                    if plugin_data.ffe_id
-                    else None
-                ),
-            )
+        fide = tuple(
+            RatingEntry(RatingListFamily.FIDE, PlayerRatingType.FIDE, fide_cadence)
+            for fide_cadence in cadences
+        )
+        return (
+            *with_copies(fide, event.national_fide_cadences),
+            RatingEntry(RatingListFamily.NATIONAL, PlayerRatingType.NATIONAL, cadence),
+        )
+
+    @property
+    def prescribed_rating_rule(self) -> PrescribedRatingRule:
+        return PrescribedRatingRule(
+            label=_('FFE estimate'),
+            description=_(
+                'FFE estimate by age: 1399 (1299 for juniors) in standard; '
+                '1199, 999 up to U14 and 799 up to U10 in rapid and blitz'
+            ),
         )
 
     @hookimpl
-    def get_player_rating(
+    def get_prescribed_rating_rule(self, event: 'Event') -> PrescribedRatingRule:
+        return self.prescribed_rating_rule
+
+    @hookimpl
+    def get_prescribed_rating(
         self,
-        tournament_rating: TournamentRating,
-        player_rating_type: PlayerRatingType,
+        tournament_rating: Cadence,
         player: 'Player',
         category: 'PlayerCategory',
-    ) -> PlayerRatingAndType | None:
-        # In France, regardless of the player_rating_type of the tournament,
-        # the FIDE rating is used, if available, falling back to the national rating
-        ratings = player.ratings[tournament_rating]
-        if ratings.fide is not None:
-            return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
-        if ratings.national is not None:
-            return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
-        if ratings.estimated is not None:
-            return PlayerRatingAndType(ratings.estimated, PlayerRatingType.ESTIMATED)
-        if tournament_rating == TournamentRating.STANDARD:
-            value = 1299 if isinstance(category, JuniorCategory) else 1399
-        else:
-            value = 1199
-            if isinstance(category, JuniorCategory):
-                if category.age_limit <= 10:
-                    value = 799
-                elif category.age_limit <= 14:
-                    value = 999
-        return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
+    ) -> int:
+        """The FFE estimate by age. It is computed whenever a rating is read,
+        never stored, so a change of these values would re-rank the players
+        of every past event once opened: a new rule must apply from the date
+        the FFE adopted it, keyed on the tournament's start date, the
+        current one staying in force before. The migration that clears the
+        stored estimates also relies on them ending in 99 below 1400."""
+        if tournament_rating == Cadence.STANDARD:
+            return 1299 if isinstance(category, JuniorCategory) else 1399
+        if isinstance(category, JuniorCategory):
+            if category.age_limit <= 10:
+                return 799
+            if category.age_limit <= 14:
+                return 999
+        return 1199
 
     @hookimpl
     def augment_trf_national_player(
@@ -632,7 +661,6 @@ class FfePlugin(Plugin):
     ) -> None:
         plugin_data = FFEUtils.get_player_plugin_data(player)
         trf_national_player.classification = plugin_data.ffe_licence.value
-        trf_national_player.national_id = plugin_data.ffe_licence_number or ''
         trf_national_player.origin = plugin_data.league or ''
 
     @hookimpl
@@ -649,38 +677,7 @@ class FfePlugin(Plugin):
             plugin_data.ffe_licence = PlayerFFELicence(tnp.classification)
         if tnp.origin in FFE_LEAGUES:
             plugin_data.league = tnp.origin
-        if PlayerFFELicence.validate(tnp.national_id):
-            plugin_data.ffe_licence_number = tnp.national_id
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-
-    @hookimpl
-    def validate_player_tournament_move(
-        self, tournament: 'Tournament', player: TournamentPlayer
-    ) -> None:
-        plugin_data = FFEUtils.get_player_plugin_data(player)
-        ffe_licence_number = plugin_data.ffe_licence_number
-        ffe_id = plugin_data.ffe_id
-        if ffe_licence_number and any(
-            FFEUtils.get_player_plugin_data(player_).ffe_licence_number
-            == ffe_licence_number
-            for player_ in tournament.tournament_players_by_id.values()
-        ):
-            message = _(
-                'FFE licence [{ffe_licence_number}] already '
-                'present in tournament [{tournament}].'
-            ).format(
-                ffe_licence_number=ffe_licence_number,
-                tournament=tournament.name,
-            )
-            raise ValueError(message)
-        if ffe_id and any(
-            FFEUtils.get_player_plugin_data(tournament_player_).ffe_id == ffe_id
-            for tournament_player_ in tournament.tournament_players_by_id.values()
-        ):
-            # This string is not translated because the error should never happen
-            raise ValueError(
-                f'FFE ID [{ffe_id}] already present in tournament [{tournament.name}].'
-            )
 
     @staticmethod
     def _get_ffe_club_sort_key(player: Player) -> tuple:
@@ -715,9 +712,8 @@ class FfePlugin(Plugin):
     ) -> None:
         tournament: type[DatasheetColumn] = player_datasheet.TournamentColumn
         ffe_columns: list[DatasheetColumn] = [
-            FfeIdDatasheetColumn(),
-            FfeLicenceNumberDatasheetColumn(),
             FfeLicenceDatasheetColumn(),
+            FfeLicenceNumberDatasheetColumn(),
         ]
         for column in ffe_columns:
             PluginUtils.insert_on_isinstance(
@@ -822,19 +818,15 @@ class FfePlugin(Plugin):
         return self.id, FfeTournamentPluginData
 
     @hookimpl
+    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+        return tournament.event.federation == 'FRA' and FFEUtils.is_configured(
+            tournament
+        )
+
+    @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> None:
-        # The FFE upload pipeline is Papi-based. In a team event only a
-        # Scheveningen (uploaded as an individual Swiss) auto-uploads; the
-        # other team systems have no Papi form.
-        if stored_event.event_type == EventType.TEAM:
-            from data.pairings.scheveningen import ScheveningenPairingSystem
-
-            if not (stored_tournament.pairing or '').startswith(
-                f'{ScheveningenPairingSystem.static_id()}_'
-            ):
-                return
         # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
@@ -865,15 +857,65 @@ class FfePlugin(Plugin):
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]] | None:
-        # The connection fields follow the pairing system chosen in the
-        # form: the template shows them for the systems listed here.
+        from data.rule_sets import RuleSetManager
+
+        # The connection fields follow the event: the team module for a
+        # team event, the Papi fields for the individual systems listed
+        # here. A rule set that names its competition fixes the choice,
+        # and its phase names the division to offer first.
+        rule_set_competitions: dict[str, str] = {}
+        division_hints: dict[str, dict[str, str]] = {}
+        if event.is_team_event:
+            for rule_set_type in RuleSetManager(event).entity_types():
+                rule_set = rule_set_type({})
+                competition_id = FFEUtils.rule_set_team_competition_id(rule_set)
+                if competition_id is None:
+                    continue
+                rule_set_competitions[rule_set.id] = str(competition_id)
+                division_hints[rule_set.id] = self._division_hints(rule_set_type)
         return '/ffe_tournament_form_fields.html', {
             'ffe_transfer_system_ids': [
                 system.id
                 for system in PairingSystemManager(event).objects()
                 if FFEUtils.system_supports_ffe_transfer(event, system)
             ],
+            'ffe_team_event': event.is_team_event,
+            'ffe_team_rule_set_competitions': rule_set_competitions,
+            'ffe_team_division_hints': division_hints,
+            'ffe_team_auth_valid': (
+                FFEUtils.team_transfer_configured(tournament) if tournament else False
+            ),
         }
+
+    @staticmethod
+    def _division_hints(rule_set_type: type['RuleSet']) -> dict[str, str]:
+        """Site division name per value of the rule set's phase field,
+        keyed by the form value, for the form to pre-select the division
+        the phase implies."""
+        from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet
+
+        assert issubclass(rule_set_type, FfeTeamCompetitionRuleSet)
+        hints: dict[str, str] = {}
+        for config_field in rule_set_type({}).config_fields:
+            if config_field.kind != 'select':
+                continue
+            for value in config_field.values():
+                rule_set = rule_set_type({config_field.id: value})
+                if name := rule_set.ffe_division_name:
+                    hints[f'{config_field.form_field_name(rule_set.id)}={value}'] = name
+        return hints
+
+    @hookimpl
+    def get_tournament_period_form_fields_template_and_data(
+        self, event: 'Event', tournament: 'Tournament'
+    ) -> tuple[str, dict[str, Any]] | None:
+        # Each period of a tournament reported in periods is submitted
+        # under its own homologation number; the first period's is the
+        # tournament's own, which is also where the whole tournament is
+        # published for the players.
+        if not FFEUtils.supports_ffe_transfer(tournament):
+            return None
+        return '/ffe_tournament_ffe_auth_fields.html', {}
 
     @hookimpl
     def validate_tournament_form_fields(
@@ -899,7 +941,7 @@ class FfePlugin(Plugin):
     ) -> TournamentConnectionField | None:
         if not FFEUtils.supports_ffe_transfer(tournament):
             return None
-        if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+        if not FFEUtils.is_configured(tournament):
             return None
         return TournamentConnectionField(
             label=_('FFE'),
@@ -930,6 +972,8 @@ class FfePlugin(Plugin):
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
+        if FFEUtils.supports_team_transfer(tournament):
+            return None
         return PapiConverter.check_tiebreaks_warning(
             tournament.tie_breaks, three_points_for_a_win=tournament.win_points == 3.0
         )
@@ -939,6 +983,8 @@ class FfePlugin(Plugin):
         self, tournament: 'Tournament'
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+            return None
+        if FFEUtils.supports_team_transfer(tournament):
             return None
         return PapiConverter.check_pairing_warning(tournament)
 
@@ -959,6 +1005,8 @@ class FfePlugin(Plugin):
     def signal_special_result_set(
         self, tournament: 'Tournament', result: Result
     ) -> str | None:
+        if FFEUtils.supports_team_transfer(tournament):
+            return None
         return PapiConverter.check_result(result, tournament)
 
     @hookimpl
@@ -979,8 +1027,6 @@ class FfePlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        # FFE upload is Papi-based. A team event only earns the transfer
-        # entry through a Scheveningen, which uploads as an individual Swiss.
         if not FFEUtils.event_supports_ffe_transfer(event):
             return []
         return [
@@ -1301,9 +1347,8 @@ class FfePlugin(Plugin):
         sync_data: SCEPlayerSyncData,
     ) -> None:
         plugin_data = FFEUtils.get_player_plugin_data(player)
-        sync_data.national_id = plugin_data.ffe_licence_number
         sync_data.ffe_licence = plugin_data.ffe_licence
-        sync_data.ffe_league = plugin_data.league
+        sync_data.ffe_league = regional_league(plugin_data.league)
 
     @hookimpl
     def augment_sce_player_sync_data_from_sce_data(
@@ -1315,7 +1360,7 @@ class FfePlugin(Plugin):
         sync_data.ffe_licence = PlayerFFELicence(
             sce_data['ffe_licence_type'] or PlayerFFELicence.NONE
         )
-        sync_data.ffe_league = sce_data['ffe_league']
+        sync_data.ffe_league = regional_league(sce_data['ffe_league'])
 
     @hookimpl
     def augment_stored_player_from_sce_player_sync_data(
@@ -1328,9 +1373,10 @@ class FfePlugin(Plugin):
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
-        plugin_data.ffe_licence_number = sync_data.national_id
         plugin_data.ffe_licence = sync_data.ffe_licence
-        plugin_data.league = sync_data.ffe_league
+        # A league Sharly-Chess.com does not know is kept rather than cleared.
+        if sync_data.ffe_league or regional_league(plugin_data.league):
+            plugin_data.league = sync_data.ffe_league
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
     @hookimpl

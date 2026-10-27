@@ -40,6 +40,13 @@
             >
                 <i class="bi-collection-fill pe-1"></i>{{ team.group.name }}
             </div>
+        {% elif view == 'card' and team.affiliation_warning_message %}
+            <div
+                class="small text-danger text-truncate"
+                {{ macros.tooltip_attributes('warning', team.affiliation_warning_message, 'top') }}
+            >
+                <i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No affiliation') }}
+            </div>
         {% endif %}
     </div>
 {% endmacro %}
@@ -108,14 +115,20 @@
 
 {% macro average_rating(team, view, placement) %}
     {% if team.average_rating %}
+        {% set explanation = team.average_rating_explanation %}
         <span
             class="text-nowrap"
-            {{ macros.tooltip_attributes('info', _('Average rating of the roster.'), 'top') }}
+            {{ macros.tooltip_attributes(
+                'info',
+                _('Average rating of the roster.') ~ (' ' ~ explanation if explanation else ''),
+                'top'
+            ) }}
         >
             <i class="bi-star-fill pe-1"></i>{{ team.average_rating }}
+            {%- if explanation %}<i class="bi-info-circle ps-1"></i>{% endif %}
             {%- if view == 'card' and not team.tournament %}
                 <span class="text-muted small">
-                    ({{ admin_event.default_tournament_rating.acronym }})
+                    ({{ admin_event.default_cadence.acronym }})
                 </span>
             {% endif %}
         </span>
@@ -134,6 +147,11 @@
     {% endif %}
     {% if team.group %}
         {{ team.group.name }}
+    {% elif team.affiliation_warning_message %}
+        <i
+            class="bi-exclamation-triangle-fill text-danger"
+            {{ macros.tooltip_attributes('warning', team.affiliation_warning_message, 'top') }}
+        ></i>
     {% else %}
         <span class="text-muted">—</span>
     {% endif %}
@@ -275,7 +293,7 @@
             {% set current_lineup = team.effective_round_slots(
                 1, board_count=team.players|length
             ) %}
-            {% set lineup_label = _('Base lineup:') %}
+            {% set lineup_label = _('%(string)s:', string=_('Base lineup')) %}
         {% endif %}
         {% if show_lineup %}
             <div class="card-block">
@@ -302,7 +320,7 @@
                                 <i class="bi-star-fill"></i>
                                 {{ _('Average rating: %(rating)d', rating=lineup_average) }}
                                 {%- if not team.tournament %}
-                                    ({{ admin_event.default_tournament_rating.acronym }})
+                                    ({{ admin_event.default_cadence.acronym }})
                                 {% endif %}
                             </div>
                         {% endif %}

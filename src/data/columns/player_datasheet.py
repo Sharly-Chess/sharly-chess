@@ -8,12 +8,13 @@ from text_unidecode import unidecode
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.event import Event
 from data.player import Player, MIN_YOB, MAX_YOB
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
 from utils.date_time import format_date
-from utils.enum import TournamentRating, PlayerRatingType, PlayerGender, PlayerTitle
+from utils.enum import Cadence, PlayerRatingType, PlayerGender, PlayerTitle
 from utils.types import PlayerRating
 
 
@@ -48,7 +49,11 @@ class DatasheetColumn(ABC):
         return False
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
         """Save the data of the cell value."""
         if self.is_required and not value:
@@ -63,6 +68,12 @@ class DatasheetColumn(ABC):
     @property
     def export_only(self) -> bool:
         """Defines if the column is only exported but not imported."""
+        return False
+
+    @property
+    def import_only(self) -> bool:
+        """Defines if the column is only read on import, never exported nor
+        listed: a former name of another column, still accepted."""
         return False
 
     @abstractmethod
@@ -139,10 +150,12 @@ class LastNameColumn(DatasheetColumn):
         return True
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
-        stored_player.last_name = value.upper()
+        stored_player.last_name = value
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return cast(bool, unidecode(player.last_name) == unidecode(value.upper()))
+        return cast(
+            bool, unidecode(player.last_name).upper() == unidecode(value).upper()
+        )
 
 
 class FirstNameColumn(DatasheetColumn):
@@ -154,10 +167,12 @@ class FirstNameColumn(DatasheetColumn):
         return player.first_name
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
-        stored_player.first_name = value.title() or None
+        stored_player.first_name = value or None
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return cast(bool, unidecode(player.first_name) == unidecode(value.title()))
+        return cast(
+            bool, unidecode(player.first_name).upper() == unidecode(value).upper()
+        )
 
 
 class DateOfBirthColumn(DatasheetColumn):
@@ -343,6 +358,22 @@ class FideIDColumn(DatasheetColumn):
         return True
 
 
+class NationalIdColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'national_id'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.national_id
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
+        stored_player.national_id = value.strip() or None
+
+    @property
+    def is_unique(self) -> bool:
+        return True
+
+
 class FixedColumn(DatasheetColumn):
     @property
     def id(self) -> str:
@@ -440,7 +471,11 @@ class RatingColumn(DatasheetColumn):
                 return
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
         if not value:
             return
@@ -448,9 +483,9 @@ class RatingColumn(DatasheetColumn):
             raise SharlyChessException(_('A positive integer is expected.'))
         rating = PlayerRating(int_value, int_value, int_value)
         rating_bucket = (
-            tournament.rating.value
+            tournament.cadence.value
             if tournament is not None
-            else TournamentRating.STANDARD.value
+            else Cadence.STANDARD.value
         )
         stored_player.ratings[rating_bucket] = rating.stored_value
 
@@ -478,23 +513,27 @@ class RatingTypeColumn(DatasheetColumn):
                 return
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
+        self,
+        event: Event,
+        tournament: Tournament | None,
+        stored_player: StoredPlayer,
+        value: str,
     ) -> None:
         try:
             rating_type = PlayerRatingType.from_key(value)
         except ValueError:
             rating_type = PlayerRatingType.ESTIMATED
         rating_bucket = (
-            tournament.rating.value
+            tournament.cadence.value
             if tournament is not None
-            else TournamentRating.STANDARD.value
+            else Cadence.STANDARD.value
         )
         rating = PlayerRating.from_stored_value(
             stored_player.ratings.get(rating_bucket, {})
         )
         for type_ in PlayerRatingType:
             if type_ != rating_type:
-                rating.set_value_from_type(None, rating_type)
+                rating.set_value_from_type(None, type_)
         stored_player.ratings[rating_bucket] = rating.stored_value
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
@@ -505,9 +544,7 @@ class RatingTypeColumn(DatasheetColumn):
 
 
 class TypedRatingColumn(DatasheetColumn):
-    def __init__(
-        self, tournament_type: TournamentRating, rating_type: PlayerRatingType
-    ):
+    def __init__(self, tournament_type: Cadence, rating_type: PlayerRatingType):
         super().__init__()
         self.tournament_type = tournament_type
         self.rating_type = rating_type

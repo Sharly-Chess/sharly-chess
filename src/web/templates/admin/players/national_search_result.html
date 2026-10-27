@@ -1,0 +1,18 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<img
+    class="player-federation-flag pe-1"
+    alt="{{ player.federation }}"
+    src="{{ macros.federation_flag_url(player.federation) }}"
+/>
+{% if not no_identifier %}
+    {{ player.national_id }}
+{% endif %}
+<span class="fw-bold">
+    {{ player.full_name }}
+</span>
+{% if player.year_of_birth %}
+    ({{ player.year_of_birth }}, {{ player.category.name }})
+{% endif %}
+-
+{% include '/admin/players/search_result_ratings.html' %}

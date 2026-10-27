@@ -2,6 +2,7 @@
 
 import inspect
 from collections.abc import Iterator
+from datetime import timedelta
 
 import pytest
 
@@ -18,7 +19,9 @@ from data.print_documents.managers import (
 )
 from data.print_documents import options
 from data.print_documents.options import PrintOption
+from data.print_documents.place_cards.data import PlaceCardTournament
 from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
+from data.print_documents.place_cards.types import PairingCardType
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -68,7 +71,6 @@ def _seed_team_event(event_id: str, pairing: str, rounds: int) -> Iterator[Event
             'pairing': pairing,
             'team_player_count': TEAM_SIZE,
             'rounds': rounds,
-            'current_round': 1,
         },
     )
     tournament_id = stored_tournament.id
@@ -104,8 +106,6 @@ def _seed_team_event(event_id: str, pairing: str, rounds: int) -> Iterator[Event
     tournament = event.tournaments_by_name[TOURNAMENT_NAME]
     assert tournament.generate_round_pairings(1) == ''
     _play_first_round(event_id, tournament)
-    with EventDatabase(event_id, write=True) as database:
-        database.set_tournament_current_round(tournament_id, 2)
     EventLoader.unload_event(event_id)
     yield EventLoader().load_event(event_id)
     EventLoader.unload_event(event_id)
@@ -261,6 +261,35 @@ def test_match_sheets_sheet_the_matches_of_a_team_paired_system(
 
 
 @pytest.mark.unit
+def test_team_pairings_list_the_matches_of_a_team_paired_system(
+    team_case: tuple[Event, dict[str, str]],
+):
+    """Teams paired against each other get the round's matches on one
+    list, each with its board score."""
+    event, option_values = team_case
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(event, documents.TeamPairingsPrintDocument, option_values)
+    assert documents.TeamPairingsPrintDocument.is_available([tournament])
+    team_boards = document.template_context['team_boards']
+    assert {tb.id for tb in team_boards} == {
+        tb.id for tb in tournament.get_round_team_boards(1)
+    }
+    assert all(
+        tb.game_score_display != '-' for tb in team_boards if tb.team_b is not None
+    )
+
+
+@pytest.mark.unit
+def test_team_pairings_are_not_offered_to_a_flat_team_system(
+    molter_case: tuple[Event, dict[str, str]],
+):
+    """Flat boards seated from a fixed table have no team matches to list."""
+    event, _option_values = molter_case
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    assert not documents.TeamPairingsPrintDocument.is_available([tournament])
+
+
+@pytest.mark.unit
 def test_match_sheets_print_the_pairings_of_a_flat_team_system(
     molter_case: tuple[Event, dict[str, str]],
 ):
@@ -280,3 +309,29 @@ def test_match_sheets_print_the_pairings_of_a_flat_team_system(
     assert [board.id for board in document.template_context['boards']] == [
         board.id for board in pairings.template_context['boards']
     ]
+
+
+@pytest.mark.unit
+def test_pairing_cards_carry_their_round(event: Event):
+    """Pairing cards can print the round they were made for, next to the
+    tournament's name."""
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    pairings = PairingCardType.pairings(tournament, 2)
+    assert pairings
+    assert {pairing.round for pairing in pairings} == {2}
+
+
+@pytest.mark.unit
+def test_place_cards_date_the_tournament_from_its_start(
+    event: Event, monkeypatch: pytest.MonkeyPatch
+):
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    monkeypatch.setattr(
+        tournament.stored_tournament,
+        'start_date',
+        tournament.stop_date - timedelta(days=40),
+    )
+    place_card_tournament = PlaceCardTournament(tournament)
+    assert place_card_tournament.start.day == tournament.start_date.day
+    assert place_card_tournament.start.month == tournament.start_date.month
+    assert place_card_tournament.start.year == tournament.start_date.year

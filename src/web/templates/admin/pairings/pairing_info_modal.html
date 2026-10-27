@@ -86,7 +86,7 @@
                                     <td class="compact-col">#{{ player_history.id }}</td>
                                     <td class="compact-col text">{{ player.display_title }}</td>
                                     <td>{{ player.full_name }}</td>
-                                    <td>{{ player.rating_str }}</td>
+                                    <td>{{ player.rating_str_in_round(admin_round) }}</td>
                                     <td class="compact-col text-center">
                                         {% with color_preference=player_history.color_preference, absolute=player_history.color_preference.absolute, strong=player_history.color_preference.strong %}
                                             <span

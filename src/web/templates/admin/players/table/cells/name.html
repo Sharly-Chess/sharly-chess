@@ -1,8 +1,6 @@
 <span class="d-flex align-items-center w-15em">
     <span class="text-ellipsis d-inline-block overflow-hidden flex-grow-1" >
-        {% with last_name_first=true %}
-            {% include '/admin/player_link.html' %}
-        {% endwith %}
+        {% include '/admin/player_link.html' %}
     </span>
 
     {% if tournament_player and not tournament_player.matches_tournament_criteria %}

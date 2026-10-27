@@ -155,9 +155,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
                     arbiter.last_name,
                     arbiter.first_name,
                     FFEUtils.get_account_plugin_data(arbiter).ffe_licence_number,
-                    FFEUtils.get_account_plugin_data(
-                        arbiter
-                    ).ffe_arbiter_title.short_name,
+                    FFEUtils.arbiter_qualification(arbiter),
                 ]
                 if item
             )
@@ -225,6 +223,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             'event_days': self.event_days,
             'date': self.date,
             'writer': self.writer,
+            'arbiter_qualification': FFEUtils.arbiter_qualification,
             'rounds': self.tournaments_rounds,
             'time_control': self.tournaments_time_control,
             'ffe_ids': self.tournament_ffe_ids,
@@ -287,10 +286,10 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
         }
 
 
-class FFETrainingCertificate1Type(FFETrainingCertificateType):
+class FFETrainingCertificateAFCType(FFETrainingCertificateType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-training-certificate-1'
+        return 'ffe-training-certificate-afc'
 
     @staticmethod
     def static_name() -> str:
@@ -298,37 +297,62 @@ class FFETrainingCertificate1Type(FFETrainingCertificateType):
 
     @property
     def training_title(self) -> str:
-        return 'AFC'
+        return 'AFClub'
 
     @property
     def training_skills(self) -> list[str]:
         return [
-            'Connaitre les règles du jeu',
+            'Maitrise des compétences organisationnelles (ponctualité, préparation du matériel, de la salle de jeu, pointage)',
+            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.3.8)',
+            'Connaitre et faire appliquer les règles du jeu',
+            'Anticiper et désamorcer les situations conflictuelles',
             'Maitrise du règlement de la compétition',
+            'Connaissance et maitrise de sa mission administrative',
             'Représenter dignement l’équipe d’arbitrage',
-            'Régler une pendule',
-            'Vérifier la mise en place en début de ronde',
-            'Présence',
-            'Intervenir sur une partie',
             'Se questionner/se concerter avec les autres arbitres',
-            'Connaissance générale de la Fédération et de la D.N.A.',
-            'Compétences organisationnelles',
         ]
 
     @property
     def training_levels(self) -> list[str]:
-        return [
-            'Parfait',
-            'Satisfaisant',
-            'Fragile',
-            'Insuffisant',
-        ]
+        return ['Parfait', 'Satisfaisant', 'Fragile', 'Insuffisant', 'Non évalué']
 
 
-class FFETrainingCertificate2Type(FFETrainingCertificateType):
+class FFETrainingCertificateAFMType(FFETrainingCertificateType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-training-certificate-2'
+        return 'ffe-training-certificate-afm'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Attestation de stage pratique AFM'
+
+    @property
+    def training_title(self) -> str:
+        return 'AFMatch'
+
+    @property
+    def training_skills(self) -> list[str]:
+        return [
+            'Connaitre et faire appliquer les règles du jeu fondamentales',
+            'Maitrise du règlement de la compétition',
+            'Représenter dignement l’équipe d’arbitrage',
+            'Régler une pendule',
+            'Vérifier la mise en place en début de ronde',
+            'Présence auprès des joueurs et des échiquiers',
+            'Intervenir sur une partie',
+            'Se questionner/se concerter avec les autres arbitres',
+            'Maitrise des compétences organisationnelles (ponctualité, préparation du matériel, de la salle de jeu, pointage)',
+        ]
+
+    @property
+    def training_levels(self) -> list[str]:
+        return ['Excellent', 'Satisfaisant', 'Fragile', 'Insuffisant', 'Non évalué']
+
+
+class FFETrainingCertificateAFOType(FFETrainingCertificateType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-training-certificate-afo'
 
     @staticmethod
     def static_name() -> str:
@@ -336,18 +360,19 @@ class FFETrainingCertificate2Type(FFETrainingCertificateType):
 
     @property
     def training_title(self) -> str:
-        return 'AFO'
+        return 'AFOpen'
 
     @property
     def training_skills(self) -> list[str]:
         return [
-            'Maitrise du logiciel Papi',
+            'Maitrise d’un logiciel d’appariement (Sharly Chess ou PAPI 3.3.8)',
             'Connaissance et maitrise de sa mission administrative',
             'Maitrise du règlement de la compétition',
             'Représenter dignement l’équipe d’arbitrage',
-            'Non évalué Relations avec l’organisateur',
+            'Relations avec l’organisateur',
             'Calcul des prix',
             'Système suisse et départages',
+            'Connaitre et faire appliquer les règles du jeu',
             'Se questionner/se concerter avec les autres arbitres',
         ]
 
@@ -554,7 +579,10 @@ class FFET1Type(FFETournamentsDocumentType):
         }
 
 
-class FFET2Type(FFEDocumentType):
+class FFET2Type(FFETournamentsDocumentType):
+    """The minutes of the tournaments, where the arbiter reports what had to
+    be done by hand. Starts with what the tournaments logged for their TRF."""
+
     @staticmethod
     def static_id() -> str:
         return 'ffe-t2-tournament-report'
@@ -563,9 +591,47 @@ class FFET2Type(FFEDocumentType):
     def static_name() -> str:
         return _('T2 Minutes')
 
+    @property
+    def report_text(self) -> str:
+        return self.report_text_for(self.tournaments)
+
     @classmethod
-    def get_valid_option_types(cls) -> list[type[PrintOption]]:
-        return []
+    def report_text_for(cls, tournaments: list[Tournament]) -> str:
+        """The events *tournaments* logged, in French, one line each."""
+        sections: list[str] = []
+        for tournament in tournaments:
+            entries = tournament.log_entries
+            exit_round = tournament.fide_mode_exit_round
+            if not entries and exit_round is None:
+                continue
+            lines = [f'{tournament.name}{cls._fide_mode_status(tournament)} :']
+            for entry in entries:
+                line = f'- Ronde {entry.round_} : {entry.summary(tournament, "fr")}'
+                if entry.date:
+                    line += f' ({entry.date:%d/%m/%Y %H:%M})'
+                lines.append(line)
+            sections.append('\n'.join(lines))
+        return '\n\n'.join(sections) or 'Rien à signaler.'
+
+    @staticmethod
+    def _fide_mode_status(tournament: Tournament) -> str:
+        """Whether *tournament* runs in FIDE mode, or the round it left it
+        at, for the systems that have it."""
+        if not tournament.pairing_system.supports_fide_mode:
+            return ''
+        if tournament.fide_mode:
+            return ' (mode FIDE)'
+        if (exit_round := tournament.fide_mode_exit_round) is not None:
+            return f' (mode FIDE quitté à la ronde {exit_round})'
+        return ' (hors mode FIDE)'
+
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        return super().template_context(ffe_document) | {
+            'report_text': self.report_text
+        }
 
 
 class FFEArbiterCompensationType(FFETournamentsDocumentType):

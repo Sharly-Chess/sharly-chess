@@ -14,7 +14,7 @@ from urllib import parse
 from playwright.sync_api import Page, Locator, expect
 
 from common import BASE_DIR, TMP_DIR
-from utils.enum import PlayerRatingType
+from utils.enum import RatingPreference
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
@@ -59,7 +59,9 @@ def _free_port(host: str) -> int:
 
     The port is chosen per test process rather than fixed: several
     checkouts (or pytest-xdist workers) can then run their suites at the
-    same time, each against a server of its own.
+    same time, each against a server of its own. Nothing holds it until
+    the server binds it, seconds later, and in the meantime it can go to
+    anything else on the machine: the server has to be ready to move.
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
         probe.bind((host, 0))
@@ -71,9 +73,18 @@ class TestConfig:
 
     # Server configuration
     TEST_HOST = '127.0.0.1'  # Use IP instead of localhost
+    #: Whether the port was asked for: a port picked here can be traded for
+    #: another one, a port asked for cannot.
+    TEST_PORT_FIXED = bool(os.environ.get('TEST_PORT'))
     TEST_PORT = int(os.environ.get('TEST_PORT') or _free_port(TEST_HOST))
     TEST_BASE_URL = f'http://{TEST_HOST}:{TEST_PORT}'
     TEST_TIMEOUT = 30  # seconds to wait for server startup
+
+    @classmethod
+    def move_to_free_port(cls):
+        """Pick another port, the one picked earlier having been taken."""
+        cls.TEST_PORT = _free_port(cls.TEST_HOST)
+        cls.TEST_BASE_URL = f'http://{cls.TEST_HOST}:{cls.TEST_PORT}'
 
     # Global timeout for all global expect calls.
     # NOTE(Amaras): I set to 10s = 10_000 ms because we often had false-positive failures.
@@ -124,7 +135,7 @@ class TestUtils:
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
-        'player_rating_type': PlayerRatingType.FIDE.value,
+        'rating_preference': RatingPreference.FIDE.value,
         'background_color': '#ffffff',
         'message_text': '',
         'message_color': '#000000',
@@ -413,9 +424,8 @@ class TestUtils:
             'last_rounds_no_byes': None,
             'location': None,
             'pairing': StandardSwissVariation.static_id(),
-            'current_round': None,
             'rounds': 7,
-            'rating': 1,
+            'cadence': 1,
             'stored_prize_groups': [],
             'plugin_data': None,
         }

@@ -1,3 +1,4 @@
+{% import '/admin/common/macros.j2' as admin_macros with context %}
 <form
     hx-patch="{{ url_for('admin-manual-tiebreak-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
     hx-target="body"
@@ -5,7 +6,12 @@
     hx-indicator="#please-wait"
 >
     <div class="d-flex">
-        <h4>{{ _('Ranking') }}</h4>
+        <h4>
+            {{ _('Ranking') }}
+            {% if admin_tournament.has_provisional_results %}
+                {{ admin_macros.provisional_badge() }}
+            {% endif %}
+        </h4>
         <div class="flex-grow-1"></div>
         {% if admin_tournament.tie_break_configuration.has_manual_values %}
             <button
@@ -39,7 +45,7 @@
                 <th class="title text-end">&nbsp;</th>
                 <th class="name text-start">{{ pgettext('name column header', 'Name') }}</th>
                 <th class="rating text-end">
-                    {{ admin_tournament.rating.print_view_header }}
+                    {{ admin_tournament.cadence.print_view_header }}
                 </th>
                 <th class="category text-center">{{ pgettext('category column header', 'Cat.') }}</th>
                 <th class="category text-center">{{ pgettext('gender column header', 'Gen.') }}</th>
@@ -93,6 +99,12 @@
             <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.display_title }}</td>
             <td class="name text-start {{ no_played_games_class }} fw-bold">
                 {%- include '/admin/player_link.html' -%}
+                {% if tournament_player.has_withdrawn_for_round(admin_tournament.rounds) %}
+                    <i
+                        class="bi-sign-stop text-danger ps-2"
+                        {{ macros.tooltip_attributes('warning', _('Withdrawn'), 'top') }}
+                    ></i>
+                {% endif %}
                 <button
                     type="button"
                     class="btn player-info p-1"

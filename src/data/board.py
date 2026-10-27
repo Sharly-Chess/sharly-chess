@@ -3,10 +3,12 @@ from datetime import datetime
 from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
+from common.i18n import _
 from database.sqlite.event.event_store import StoredBoard, set_stored_fields
 from database.sqlite.event.event_database import EventDatabase
 from utils.date_time import format_time
 from utils.enum import Result, PlayerRatingType, PlayerTitle
+from utils.time_control import trf25_to_pgn
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -30,6 +32,8 @@ def compute_round_board_numbers(
     the round is numbered compactly: each fixed number is honoured once (the
     earliest board in index order wins a clash) and every remaining board
     takes the next free number, so the round has neither gaps nor duplicates.
+    A board taken out of the round (unpaired) still holds its place, so the
+    other boards keep their numbers.
     """
     if leave_holes:
         return {
@@ -41,14 +45,30 @@ def compute_round_board_numbers(
         if fixed and fixed not in used:
             numbers[identifier] = fixed
             used.add(fixed)
+    present = {standard for _identifier, _fixed, standard in entries}
+    last = max(present, default=first_board_number - 1)
+    slots: list[tuple[int, int | None]] = sorted(
+        [
+            *(
+                (standard, identifier)
+                for identifier, _fixed, standard in entries
+                if identifier not in numbers
+            ),
+            *(
+                (standard, None)
+                for standard in range(first_board_number, last + 1)
+                if standard not in present
+            ),
+        ],
+        key=lambda slot: slot[0],
+    )
     counter = first_board_number
-    for identifier, _fixed, _standard in entries:
-        if identifier in numbers:
-            continue
+    for _standard, occupant in slots:
         while counter in used:
             counter += 1
-        numbers[identifier] = counter
         used.add(counter)
+        if occupant is not None:
+            numbers[occupant] = counter
     return numbers
 
 
@@ -279,6 +299,16 @@ class Board:  # noqa: PLW1641
         return self.result == Result.NO_RESULT
 
     @property
+    def round_and_players_str(self) -> str:
+        white = self.optional_white_tournament_player
+        black = self.black_tournament_player
+        return _('Round {round}: {white} – {black}').format(
+            round=self.round,
+            white=white.full_name if white else '—',
+            black=black.full_name if black else '—',
+        )
+
+    @property
     def result_str(self) -> str:
         if self.result == Result.PAIRING_ALLOCATED_BYE:
             tournament = self.tournament
@@ -332,53 +362,67 @@ class Board:  # noqa: PLW1641
             ),
         )
 
-    def to_pgn(
-        self,
-        tournament: 'Tournament',
-        round_: int,
-        pairings_usage: bool = True,
-    ) -> str:
-        assert self.number is not None
-        if self.optional_white_tournament_player is None:
-            # A forfeit hole has no game to export.
+    def to_pgn(self) -> str:
+        """The game of the board in the PGN format, without moves, or an
+        empty string when the board holds no game (a bye or a lineup hole)."""
+        white = self.optional_white_tournament_player
+        black = self.black_tournament_player
+        if white is None or black is None:
             return ''
-        result = self.result.to_pgn if self.result and not pairings_usage else '*'
+        tournament = self.tournament
+        result = self.result
+        date = tournament.round_datetimes.get(self.round) or tournament.start_date
+        tags: list[tuple[str, str | int]] = [
+            ('Event', tournament.full_name),
+            ('Site', tournament.location or '?'),
+            ('Date', date.strftime('%Y.%m.%d')),
+            ('Round', f'{self.round}.{self.number}'),
+            ('White', self._pgn_name(white)),
+            ('Black', self._pgn_name(black)),
+            ('Result', result.to_pgn),
+            ('Board', self.number),
+            *self._pgn_player_tags(white, 'White'),
+            *self._pgn_player_tags(black, 'Black'),
+            ('EventDate', tournament.event.start_date.strftime('%Y.%m.%d')),
+        ]
+        if time_control := trf25_to_pgn(tournament.time_control_trf25):
+            tags.append(('TimeControl', time_control))
+        if termination := result.pgn_termination:
+            tags.append(('Termination', termination))
+        movetext = result.to_pgn
+        if comment := result.pgn_comment:
+            movetext = f'{{{comment}}} {movetext}'
         return (
-            f'[Event "{self._format_pgn_string(tournament.full_name)}"]\n'
-            f'[Site "{self._format_pgn_string(tournament.location or "?")}"]\n'
-            f'[Date "{tournament.start_date.strftime("%Y.%m.%d")}"]\n'
-            f'[EventDate "{tournament.event.start_date.strftime("%Y.%m.%d")}"]\n'
-            f'[Round "{round_}.{self.number}"]\n'
-            + self._player_to_pgn(self.white_tournament_player, True)
-            + self._player_to_pgn(self.black_tournament_player, False)
-            + f'[Result "{result}"]\n'
-            '\n*\n\n'
+            ''.join(
+                f'[{name} "{self._format_pgn_string(str(value))}"]\n'
+                for name, value in tags
+            )
+            + f'\n{movetext}\n\n'
         )
 
-    @classmethod
-    def _player_to_pgn(
-        cls, tournament_player: Optional['TournamentPlayer'], is_white: bool
-    ) -> str:
-        field_prefix = 'White' if is_white else 'Black'
-        if tournament_player is None:
-            return f'[{field_prefix} ""]\n'
-        rating = (
-            tournament_player.rating
-            if tournament_player.rating_type == PlayerRatingType.FIDE
-            else '0'
-        )
-        name = tournament_player.last_name + (
-            f', {tournament_player.first_name}' if tournament_player.first_name else ''
-        )
-        return (
-            f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
-            + (
-                f'[{field_prefix}Title "{tournament_player.strongest_title.value}"]\n'
-                if tournament_player.strongest_title != PlayerTitle.NONE
-                else ''
-            )
-            + f'[{field_prefix}Elo "{rating}"]\n'
-        )
+    @staticmethod
+    def _pgn_name(tournament_player: 'TournamentPlayer') -> str:
+        if tournament_player.first_name:
+            return f'{tournament_player.last_name}, {tournament_player.first_name}'
+        return tournament_player.last_name
+
+    @staticmethod
+    def _pgn_player_tags(
+        tournament_player: 'TournamentPlayer', prefix: str
+    ) -> list[tuple[str, str | int]]:
+        tags: list[tuple[str, str | int]] = []
+        if tournament_player.strongest_title != PlayerTitle.NONE:
+            tags.append((f'{prefix}Title', tournament_player.strongest_title.value))
+        if (
+            tournament_player.rating_type == PlayerRatingType.FIDE
+            and tournament_player.rating
+        ):
+            tags.append((f'{prefix}Elo', tournament_player.rating))
+        if tournament_player.fide_id:
+            tags.append((f'{prefix}FideId', tournament_player.fide_id))
+        if team := tournament_player.team:
+            tags.append((f'{prefix}Team', team.name))
+        return tags
 
     @staticmethod
     def _format_pgn_string(string: str) -> str:

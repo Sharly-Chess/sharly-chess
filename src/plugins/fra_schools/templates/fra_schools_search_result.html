@@ -10,5 +10,5 @@
         $('#fra-schools-search').val('');
         $('#fra-schools-search-results').hide();"
 >
-    <b>{{ school.code }}</b> {{ school.name }}, <i>{{ school.city }} ({{ school.postal_code }})</i>
+    <b>{{ school.code }}</b> {{ school.name }}, <i>{{ school.city }}{% if school.postal_code %} ({{ school.postal_code }}){% endif %}</i>
 </li>

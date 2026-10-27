@@ -102,6 +102,8 @@ class Result(IntEnum):
     UNRATED_PENALTY_DL = 19  # 0.5-0
     UNRATED_PENALTY_LD = 20  # 0-0.5
 
+    ADJOURNED = 21  # counts as a draw until the game is finished
+
     def __str__(self) -> str:
         match self:
             case Result.WIN:
@@ -143,6 +145,8 @@ class Result(IntEnum):
                 return '0-½'
             case Result.UNRATED_PENALTY_LD:
                 return '0-½ (U)'
+            case Result.ADJOURNED:
+                return pgettext('adjourned game', 'adj.')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -174,6 +178,7 @@ class Result(IntEnum):
                 | Result.HALF_POINT_BYE
                 | Result.PENALTY_DL
                 | Result.UNRATED_PENALTY_DL
+                | Result.ADJOURNED
             ):
                 return 0.5
             case (
@@ -219,6 +224,7 @@ class Result(IntEnum):
                 | Result.HALF_POINT_BYE
                 | Result.PENALTY_DL
                 | Result.UNRATED_PENALTY_DL
+                | Result.ADJOURNED
             ):
                 value = values.get(Result.DRAW)
             case (
@@ -283,6 +289,8 @@ class Result(IntEnum):
                 return Result.UNRATED_PENALTY_LD
             case Result.UNRATED_PENALTY_LD:
                 return Result.UNRATED_PENALTY_DL
+            case Result.ADJOURNED:
+                return Result.ADJOURNED
             case (
                 Result.ZERO_POINT_BYE
                 | Result.HALF_POINT_BYE
@@ -308,6 +316,8 @@ class Result(IntEnum):
     @property
     def to_crosstable(self) -> str:
         match self:
+            case Result.ADJOURNED:
+                return '?'
             case (
                 Result.LOSS
                 | Result.UNRATED_LOSS
@@ -340,6 +350,8 @@ class Result(IntEnum):
     def to_berger_table(self) -> str:
         # Berger grids read nicer with ½ for a draw (matching the Pts and
         # tie-break columns) than the TRF '=' symbol.
+        if self == Result.ADJOURNED:
+            return '?'
         if self.is_draw:
             return '½'
         return self.to_trf
@@ -347,16 +359,15 @@ class Result(IntEnum):
     @property
     def to_pgn(self) -> str:
         match self:
-            case Result.WIN | Result.UNRATED_WIN:
+            case Result.WIN | Result.UNRATED_WIN | Result.FORFEIT_WIN:
                 return '1-0'
-            case Result.LOSS | Result.UNRATED_LOSS:
+            case Result.LOSS | Result.UNRATED_LOSS | Result.FORFEIT_LOSS:
                 return '0-1'
             case Result.DRAW | Result.UNRATED_DRAW:
                 return '1/2-1/2'
             case (
                 Result.NO_RESULT
-                | Result.FORFEIT_WIN
-                | Result.FORFEIT_LOSS
+                | Result.DOUBLE_FORFEIT
                 | Result.FULL_POINT_BYE
                 | Result.HALF_POINT_BYE
                 | Result.ZERO_POINT_BYE
@@ -364,12 +375,67 @@ class Result(IntEnum):
                 | Result.REST_GAME
                 | Result.PENALTY_LL
                 | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
                 | Result.PENALTY_LD
                 | Result.UNRATED_PENALTY_LD
+                | Result.ADJOURNED
             ):
                 return '*'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def pgn_termination(self) -> str | None:
+        """The PGN Termination tag value of a game with this result, or None
+        when the game has no result yet."""
+        match self:
+            case (
+                Result.WIN
+                | Result.UNRATED_WIN
+                | Result.LOSS
+                | Result.UNRATED_LOSS
+                | Result.DRAW
+                | Result.UNRATED_DRAW
+            ):
+                return 'normal'
+            case Result.FORFEIT_WIN | Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+                return 'abandoned'
+            case (
+                Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
+            ):
+                return 'rules infraction'
+            case Result.ADJOURNED:
+                return 'unterminated'
+            case _:
+                return None
+
+    @property
+    def pgn_comment(self) -> str | None:
+        """The PGN movetext comment of a game with this result, for the
+        results that the Result tag cannot tell."""
+        match self:
+            case Result.FORFEIT_WIN:
+                return 'White wins by forfeit'
+            case Result.FORFEIT_LOSS:
+                return 'Black wins by forfeit'
+            case Result.DOUBLE_FORFEIT:
+                return 'Double forfeit'
+            case Result.PENALTY_LL | Result.UNRATED_PENALTY_LL:
+                return 'Penalty: 0-0'
+            case Result.PENALTY_DL | Result.UNRATED_PENALTY_DL:
+                return 'Penalty: 1/2-0'
+            case Result.PENALTY_LD | Result.UNRATED_PENALTY_LD:
+                return 'Penalty: 0-1/2'
+            case Result.ADJOURNED:
+                return 'Adjourned'
+            case _:
+                return None
 
     @property
     def bbp_field(self) -> str:
@@ -398,12 +464,19 @@ class Result(IntEnum):
 
     @property
     def is_draw(self) -> bool:
+        """A drawn game, an adjourned game counting as a draw until it is
+        finished."""
         return self in (
             Result.DRAW,
             Result.UNRATED_DRAW,
             Result.PENALTY_DL,
             Result.UNRATED_PENALTY_DL,
+            Result.ADJOURNED,
         )
+
+    @property
+    def is_adjourned(self) -> bool:
+        return self == Result.ADJOURNED
 
     @property
     def is_unrated_draw(self) -> bool:
@@ -537,11 +610,13 @@ class Result(IntEnum):
             cls.UNRATED_PENALTY_LL,
             cls.UNRATED_PENALTY_DL,
             cls.UNRATED_PENALTY_LD,
+            cls.ADJOURNED,
         )
 
 
-class TournamentRating(IntEnum):
-    """A wrapper around the tournament rating type."""
+class Cadence(IntEnum):
+    """The time control a rating is published for and a tournament is
+    played at."""
 
     STANDARD = 1
     RAPID = 2
@@ -562,11 +637,11 @@ class TournamentRating(IntEnum):
     @property
     def form_key(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return 'standard'
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return 'rapid'
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return 'blitz'
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -574,11 +649,11 @@ class TournamentRating(IntEnum):
     @property
     def print_view_header(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return pgettext('std Elo column header', 'Elo')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return pgettext('rapid Elo column header', 'Rapid')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return pgettext('blitz Elo column header', 'Blitz')
             case _:
                 raise ValueError(f'Unknown value: {self}')
@@ -586,11 +661,11 @@ class TournamentRating(IntEnum):
     @property
     def name(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return _('Standard rating')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return _('Rapid rating')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return _('Blitz rating')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
@@ -598,11 +673,11 @@ class TournamentRating(IntEnum):
     @property
     def short_name(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return _('Standard')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return _('Rapid')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return _('Blitz')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
@@ -610,12 +685,26 @@ class TournamentRating(IntEnum):
     @property
     def acronym(self) -> str:
         match self:
-            case TournamentRating.STANDARD:
+            case Cadence.STANDARD:
                 return pgettext('standard rating acronym', 'Std')
-            case TournamentRating.RAPID:
+            case Cadence.RAPID:
                 return pgettext('rapid rating acronym', 'Rpd')
-            case TournamentRating.BLITZ:
+            case Cadence.BLITZ:
                 return pgettext('blitz rating acronym', 'Blz')
+            case _:
+                raise ValueError(f'Unknown rating: {self}')
+
+    @property
+    def marker(self) -> str:
+        """Marks a rating borrowed from this cadence, in superscript after
+        its kind."""
+        match self:
+            case Cadence.STANDARD:
+                return pgettext('standard rating marker', 'STD')
+            case Cadence.RAPID:
+                return pgettext('rapid rating marker', 'RPD')
+            case Cadence.BLITZ:
+                return pgettext('blitz rating marker', 'BTZ')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
 
@@ -762,6 +851,81 @@ class PlayerRatingType(IntEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+
+class RatingPreference(IntEnum):
+    """Which kind of rating a tournament ranks its players on, and which
+    it falls back on (TEC Manual 3.9.5.7). The values are those of the
+    TRF-26 starting rank methods (Record 172)."""
+
+    FIDE = 1
+    NATIONAL = 2
+    FIDE_THEN_NATIONAL = 3
+    NATIONAL_THEN_FIDE = 4
+    HIGHEST = 5
+    LOWEST = 6
+
+    @property
+    def kinds(self) -> tuple[PlayerRatingType, ...]:
+        match self:
+            case RatingPreference.FIDE:
+                return (PlayerRatingType.FIDE,)
+            case RatingPreference.NATIONAL:
+                return (PlayerRatingType.NATIONAL,)
+            case RatingPreference.NATIONAL_THEN_FIDE:
+                return PlayerRatingType.NATIONAL, PlayerRatingType.FIDE
+            case _:
+                return PlayerRatingType.FIDE, PlayerRatingType.NATIONAL
+
+    @property
+    def uses_national(self) -> bool:
+        return PlayerRatingType.NATIONAL in self.kinds
+
+    @property
+    def starting_rank_method(self) -> str:
+        match self:
+            case RatingPreference.FIDE:
+                return 'FIDE'
+            case RatingPreference.NATIONAL:
+                return 'NRO'
+            case RatingPreference.FIDE_THEN_NATIONAL:
+                return 'FIDON'
+            case RatingPreference.NATIONAL_THEN_FIDE:
+                return 'NIDOF'
+            case RatingPreference.HIGHEST:
+                return 'HBFN'
+            case RatingPreference.LOWEST:
+                return 'LBFN'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def from_starting_rank_method(cls, method: str) -> Self | None:
+        for preference in cls:
+            if preference.starting_rank_method == method.upper():
+                return preference
+        return None
+
+    @property
+    def name(self) -> str:
+        match self:
+            case RatingPreference.FIDE:
+                return pgettext('rating preference', 'FIDE')
+            case RatingPreference.NATIONAL:
+                return pgettext('rating preference', 'National')
+            case RatingPreference.FIDE_THEN_NATIONAL:
+                return pgettext('rating preference', 'FIDE, then national')
+            case RatingPreference.NATIONAL_THEN_FIDE:
+                return pgettext('rating preference', 'National, then FIDE')
+            case RatingPreference.HIGHEST:
+                return pgettext('rating preference', 'Highest of FIDE and national')
+            case RatingPreference.LOWEST:
+                return pgettext('rating preference', 'Lowest of FIDE and national')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class PlayerTitle(StrEnum):
@@ -995,6 +1159,16 @@ class ScoreType(StrEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def abbreviation(self) -> str:
+        match self:
+            case ScoreType.MATCH_POINTS:
+                return pgettext('match points', 'MP')
+            case ScoreType.GAME_POINTS:
+                return pgettext('game points', 'GP')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
 
 class TeamColourType(StrEnum):
     """Team colour-preference rule used when pairing (FIDE C.04.6 §1.7).
@@ -1045,6 +1219,75 @@ class TeamSortMode(StrEnum):
                 return _('Random')
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+
+class StartingRankTieOrder(StrEnum):
+    """How the players with the same rating and title are ordered in the
+    starting rank."""
+
+    ALPHABETICAL = 'ALPHABETICAL'
+    LOTS = 'LOTS'
+
+    def __str__(self) -> str:
+        match self:
+            case StartingRankTieOrder.ALPHABETICAL:
+                return _('Alphabetical order')
+            case StartingRankTieOrder.LOTS:
+                return _('Drawing of lots')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class ProhibitedPairingConstraint(StrEnum):
+    """How strongly a prohibited-pairing group keeps its members apart.
+    ``PROTECT_TOP`` enforces the group like a hard one and, when the round
+    cannot be paired, releases the members from the bottom of the
+    standings up. ``LOWEST_CRITERION`` makes it the pairing engine's
+    lowest-priority criterion, avoided only when no pairing rule suffers.
+    ``NONE`` only applies to the automatic grouping, which it turns off."""
+
+    NONE = 'NONE'
+    HARD = 'HARD'
+    PROTECT_TOP = 'PROTECT_TOP'
+    LOWEST_CRITERION = 'LOWEST_CRITERION'
+
+    def __str__(self) -> str:
+        match self:
+            case ProhibitedPairingConstraint.NONE:
+                return pgettext('constraint', 'None')
+            case ProhibitedPairingConstraint.HARD:
+                return _('Strict')
+            case ProhibitedPairingConstraint.PROTECT_TOP:
+                return _('Soft: relaxed from the bottom of the standings')
+            case ProhibitedPairingConstraint.LOWEST_CRITERION:
+                return _('Soft: avoided as much as the pairing rules allow')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def description(self) -> str:
+        match self:
+            case ProhibitedPairingConstraint.NONE:
+                return _('Nobody is kept apart.')
+            case ProhibitedPairingConstraint.HARD:
+                return _('The members are never paired together.')
+            case ProhibitedPairingConstraint.PROTECT_TOP:
+                return _(
+                    'The members are kept apart like a strict constraint. When '
+                    'the round cannot be paired otherwise, the lowest-ranked '
+                    'members are released first.'
+                )
+            case ProhibitedPairingConstraint.LOWEST_CRITERION:
+                return _(
+                    'The members are kept apart only when no pairing rule '
+                    '(colours, floaters…) suffers, whatever the standings.'
+                )
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def is_hard(self) -> bool:
+        return self == ProhibitedPairingConstraint.HARD
 
 
 class RoleType(StrEnum):
@@ -1160,9 +1403,7 @@ class TitleNorm(Enum):
 
     @staticmethod
     def minimum_rounds(tournament: 'Tournament') -> int:
-        from data.pairings.variations import DoubleBergerRoundRobinVariation
-
-        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+        if tournament.pairing_variation.is_double_round_robin:
             return 10  # 1.4.5.f -> 6 players -> 10 rounds
         return 9
 
@@ -1182,9 +1423,7 @@ class TitleNorm(Enum):
         not the tournament's nominal round count — see 1.4.1c which says
         the mix requirements apply to the actually-played opponents.
         """
-        from data.pairings.variations import DoubleBergerRoundRobinVariation
-
-        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+        if tournament.pairing_variation.is_double_round_robin:
             return ceil(played_games / 2)  # 1.4.5.f
         return max(ceil(played_games / 3), 3)
 

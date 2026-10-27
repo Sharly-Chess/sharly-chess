@@ -1,26 +1,30 @@
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from functools import partial
 from typing import Self, Any, TYPE_CHECKING
+
+from text_unidecode import unidecode
 
 from common.i18n import _, pgettext
 from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_upload_status import (
     FFEUploadStatus,
     NeverUploadedFFEUploadStatus,
     FailureFFEUploadStatus,
     NetworkFailureFFEUploadStatus,
     UnexpectedFailureFFEUploadStatus,
+    FinishedFFEUploadStatus,
     ModifiedFFEUploadStatus,
     UpToDateFFEUploadStatus,
     OngoingFFEUploadStatus,
@@ -31,17 +35,66 @@ from plugins.ffe.ffe_upload_status import (
     AuthFailureFFEUploadStatus,
     FinishedFailureFFEUploadStatus,
     PapiConversionFailureFFEUploadStatus,
+    GroupNotFoundFFEUploadStatus,
+    RejectedFFEUploadStatus,
 )
 from plugins.utils import PluginUtils, PluginData, AccountPluginData
+from utils import Utils
 from utils.date_time import format_datetime
 from utils.entity import EntityManager
 
 if TYPE_CHECKING:
     from data.pairings.systems import PairingSystem
-from utils.enum import FormAction
+    from data.rule_sets.rule_sets import RuleSet
+from utils.enum import Cadence, FideArbiterTitle, FormAction, PlayerRatingType
+from utils.types import PlayerRating, RatingOrigin
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+FfeNameKey = tuple[str, str, date | int]
+"""Last name, first name and date or year of birth of a player."""
+
+
+def ffe_name_key(last_name: str, first_name: str, birth: date | int) -> FfeNameKey:
+    return unidecode(last_name).upper(), unidecode(first_name).upper(), birth
+
+
+def ffe_database_name_keys(stored_player: StoredPlayer) -> set[FfeNameKey]:
+    """The name keys of a player of the FFE database, by date and by year of
+    birth."""
+    first_name = stored_player.first_name
+    date_of_birth = stored_player.date_of_birth
+    if not first_name or not date_of_birth:
+        return set()
+    return {
+        ffe_name_key(stored_player.last_name, first_name, date_of_birth),
+        ffe_name_key(stored_player.last_name, first_name, date_of_birth.year),
+    }
+
+
+def ffe_list_ratings(
+    ratings: dict[Cadence, tuple[int | None, PlayerRatingType]],
+    origin: RatingOrigin,
+) -> dict[int, dict[str, Any]]:
+    """The ratings of a player of the FFE list, each typed F or N. The
+    estimates the list carries are left out, the plugin prescribing them
+    by age."""
+    return {
+        tournament_rating.value: (
+            PlayerRating()
+            if rating_type == PlayerRatingType.ESTIMATED
+            else PlayerRating.from_type(value, rating_type, origin)
+        ).stored_value
+        for tournament_rating, (value, rating_type) in ratings.items()
+    }
+
+
+def is_ffe_estimate(value: int) -> bool:
+    """Whether *value* is an FFE estimate by age, all of which end in 99
+    below the FIDE floor of 1400."""
+    return value < 1400 and value % 100 == 99
+
 
 FFE_UPLOAD_DELAY = 3
 FFE_EPOCH = datetime(2000, 1, 1)
@@ -70,31 +123,68 @@ FFE_LEAGUES: dict[str, str] = {
 }
 
 
+def regional_league(league: str | None) -> str | None:
+    """The regional league code `league` stands for, or None.
+
+    FFE data holds values outside the regional leagues (e.g. "EXP"), which
+    Sharly-Chess.com does not know.
+    """
+    if not league:
+        return None
+    code = league.strip().upper()
+    return code if code in FFE_LEAGUES else None
+
+
 class FFEUtils:
     @staticmethod
     def system_supports_ffe_transfer(
         event: Event, pairing_system: 'PairingSystem'
     ) -> bool:
-        """Whether the FFE-site transfer (Papi upload and its fields) is
-        offered for a tournament of ``event`` paired with this system. The
-        transfer is Papi-based, so it needs a game-point score; every such
-        individual tournament qualifies; among the team systems only the
-        Scheveningen, which is uploaded as an individual Swiss."""
-        from data.pairings.scheveningen import ScheveningenPairingSystem
-
+        """Whether the Papi upload (and its fields) is offered for a
+        tournament of ``event`` paired with this system: it needs a
+        game-point score, and every tournament of a team event is sent
+        through the site's team module instead. A Scheveningen still
+        exports a Papi file by hand — that export has its own rules."""
         if not pairing_system.uses_result_points:
             return False
-        if not event.is_team_event:
-            return True
-        return isinstance(pairing_system, ScheveningenPairingSystem)
+        return not event.is_team_event
+
+    @staticmethod
+    def rule_set_team_competition_id(rule_set: 'RuleSet | None') -> int | None:
+        """The FFE team-module competition of *rule_set*, ``None`` when it
+        is not an FFE team competition."""
+        from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet
+
+        if not isinstance(rule_set, FfeTeamCompetitionRuleSet):
+            return None
+        return rule_set.ffe_competition_id()
+
+    @classmethod
+    def team_competition_id(cls, tournament: Tournament) -> int | None:
+        """The FFE team-module competition this tournament is sent to:
+        the one its rule set names, else the one chosen in the form."""
+        if not cls.supports_team_transfer(tournament):
+            return None
+        return (
+            cls.rule_set_team_competition_id(tournament.rule_set)
+            or cls.get_tournament_plugin_data(tournament).team_competition_id
+        )
+
+    @staticmethod
+    def supports_team_transfer(tournament: Tournament) -> bool:
+        """Whether the tournament is sent through the site's team module
+        (match reports, one per round and pair of teams) rather than as
+        a Papi file: every tournament of a team event is."""
+        return tournament.event.is_team_event
 
     @staticmethod
     def supports_ffe_transfer(tournament: Tournament) -> bool:
         """Whether the FFE-site transfer is offered for this tournament —
-        see :meth:`system_supports_ffe_transfer`."""
+        see :meth:`system_supports_ffe_transfer` and
+        :meth:`supports_team_transfer`."""
         return FFEUtils.system_supports_ffe_transfer(
             tournament.event, tournament.pairing_system
-        )
+        ) or FFEUtils.supports_team_transfer(tournament)
 
     @staticmethod
     def event_supports_ffe_transfer(event: Event) -> bool:
@@ -106,6 +196,28 @@ class FFEUtils:
             FFEUtils.supports_ffe_transfer(tournament)
             for tournament in event.tournaments
         )
+
+    @classmethod
+    def team_transfer_configured(cls, tournament: Tournament) -> bool:
+        """Whether the tournament names the group its match reports go
+        to, and the account that may write them. The competition comes
+        from the rule set when it names one, so it need not be stored."""
+        pd = cls.get_tournament_plugin_data(tournament)
+        return bool(
+            pd.team_login
+            and pd.team_password
+            and pd.team_division_id
+            and pd.team_group_id
+            and cls.team_competition_id(tournament)
+        )
+
+    @classmethod
+    def is_configured(cls, tournament: Tournament) -> bool:
+        """Whether the tournament holds the credentials its transfer needs."""
+        if cls.supports_team_transfer(tournament):
+            return cls.team_transfer_configured(tournament)
+        pd = cls.get_tournament_plugin_data(tournament)
+        return bool(pd.ffe_id and pd.password)
 
     @classmethod
     def resolve_auto_upload(cls, tournament: Tournament) -> bool:
@@ -126,6 +238,32 @@ class FFEUtils:
         return plugin_data
 
     @staticmethod
+    def get_period_own_plugin_data(
+        period: 'TournamentPeriod',
+    ) -> 'FfeTournamentPluginData':
+        """What the period itself holds — its own registration and the
+        outcome of its own uploads, with nothing borrowed from the
+        tournament."""
+        plugin_data = period.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfeTournamentPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_period_plugin_data(period: 'TournamentPeriod') -> 'FfeTournamentPluginData':
+        """What a rating period is submitted under.
+
+        Each period has its own homologation number; the first period
+        is submitted under the tournament's own, which is also where the
+        whole tournament is published for the players. A later period
+        with no registration of its own falls back to it too, so that a
+        tournament nobody has cut up yet still uploads."""
+        if period.first_round > 1:
+            plugin_data = FFEUtils.get_period_own_plugin_data(period)
+            if plugin_data.ffe_id:
+                return plugin_data
+        return FFEUtils.get_tournament_plugin_data(period.tournament)
+
+    @staticmethod
     def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
@@ -137,18 +275,48 @@ class FFEUtils:
         assert isinstance(plugin_data, FfeAccountPluginData)
         return plugin_data
 
-    @staticmethod
-    def ffe_actions_unavailable_message(tournament: Tournament) -> str | None:
+    @classmethod
+    def arbiter_qualification(cls, account: Account) -> str:
+        """The national and international titles of an arbiter, as written on the
+        FFE documents."""
+        plugin_data = cls.get_account_plugin_data(account)
+        items: list[str] = []
+        if plugin_data.ffe_arbiter_title != FFEArbiterTitle.NONE:
+            items.append(plugin_data.ffe_arbiter_title.short_name)
+        if account.fide_arbiter_title in (
+            FideArbiterTitle.FIDE,
+            FideArbiterTitle.INTERNATIONAL,
+        ):
+            items.append(account.fide_arbiter_title.short_name)
+        return ', '.join(items)
+
+    @classmethod
+    def upload_unavailable_message(cls, tournament: Tournament) -> str | None:
+        """Why the tournament's data cannot be sent to the FFE website,
+        credentials aside — what the transfer it uses cannot carry."""
+        if cls.supports_team_transfer(tournament):
+            from plugins.ffe.ffe_team_session import FFETeamSession
+
+            return FFETeamSession.upload_unavailable_message(tournament)
         from plugins.ffe.papi_converter import PapiConverter
 
-        pd = FFEUtils.get_tournament_plugin_data(tournament)
-        if not pd.ffe_id and not pd.password:
-            return _('FFE certification number and password not defined.')
-        if not pd.ffe_id:
-            return _('FFE certification number not defined.')
-        if not pd.password:
-            return _('FFE password not defined.')
         return PapiConverter.papi_export_unavailable_message(tournament)
+
+    @classmethod
+    def ffe_actions_unavailable_message(cls, tournament: Tournament) -> str | None:
+        pd = cls.get_tournament_plugin_data(tournament)
+        if cls.supports_team_transfer(tournament):
+            if not cls.team_transfer_configured(tournament):
+                return _(
+                    'FFE group account, competition, division or group not defined.'
+                )
+        elif not pd.ffe_id and not pd.password:
+            return _('FFE certification number and password not defined.')
+        elif not pd.ffe_id:
+            return _('FFE certification number not defined.')
+        elif not pd.password:
+            return _('FFE password not defined.')
+        return cls.upload_unavailable_message(tournament)
 
     @staticmethod
     def update_tournament_plugin_data(
@@ -189,15 +357,45 @@ class FFEUtils:
         return f'https://echecs.asso.fr/FicheJoueur.aspx?Id={ffe_id}'
 
     @classmethod
+    def team_group_url(cls, tournament: Tournament) -> str | None:
+        """The group's page in the site's team module (admin side, the
+        group account must be logged in)."""
+        from plugins.ffe.ffe_session import FFE_ADMIN_URL
+
+        pd = cls.get_tournament_plugin_data(tournament)
+        competition_id = cls.team_competition_id(tournament)
+        if not competition_id or not pd.team_division_id or not pd.team_group_id:
+            return None
+        return (
+            f'{FFE_ADMIN_URL}/Equipes.aspx?C={competition_id}'
+            f'&D={pd.team_division_id}&G={pd.team_group_id}'
+        )
+
+    @classmethod
+    def licence_number(cls, player: Player) -> str | None:
+        """The FFE licence number of a player, carried as their national
+        id."""
+        if player.national_source != NATIONAL_SOURCE_ID:
+            return None
+        return player.national_id
+
+    @classmethod
+    def licence(cls, player: Player) -> 'PlayerFFELicence':
+        """The licence of a player: a licence type without a licence
+        number means none."""
+        if not cls.licence_number(player):
+            return PlayerFFELicence.NONE
+        return cls.get_player_plugin_data(player).ffe_licence
+
+    @classmethod
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[FFEUploadStatus]:
         from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
-        from plugins.ffe.papi_converter import PapiConverter
 
         plugin_data = cls.get_tournament_plugin_data(tournament)
 
-        if not plugin_data.ffe_id or not plugin_data.password:
+        if not cls.is_configured(tournament):
             return [NotConfiguredFFEUploadStatus()]
 
         statuses: list[FFEUploadStatus] = []
@@ -209,7 +407,7 @@ class FFEUtils:
             )
             statuses.append(status)
 
-        if PapiConverter.papi_export_unavailable_message(tournament):
+        if cls.upload_unavailable_message(tournament):
             statuses.append(IncompatibleFFEUploadStatus())
 
         is_modified = FfeBackgroundUploader.ffe_upload_needed(tournament)
@@ -230,6 +428,59 @@ class FFEUtils:
             statuses.append(PendingFFEUploadStatus())
         return statuses
 
+    @classmethod
+    def resolve_period_upload_statuses(
+        cls, period: 'TournamentPeriod'
+    ) -> list[FFEUploadStatus]:
+        """How the submission of one period stands.
+
+        A period is submitted under its own registration, so it answers
+        for its own upload: whether it has been sent, how it went, and
+        whether the results have moved since.
+
+        Only the period being played is asked the last question. Once
+        the tournament has moved on, the period is submitted and the
+        federation closes its registration, so what the rounds after it
+        do cannot be sent there anyway — it reads as finished.
+
+        What moved is read from the tournament's own timestamps, which
+        say when a result, a player or a pairing last changed but not in
+        which round — so a change anywhere marks the period being
+        played. That errs towards sending it again, which costs nothing,
+        rather than leaving a stale one looking current."""
+        from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+
+        # What the period itself holds: borrowing the tournament's would
+        # report its upload as this period's.
+        plugin_data = cls.get_period_own_plugin_data(period)
+        if not plugin_data.ffe_id or not plugin_data.password:
+            return [NotConfiguredFFEUploadStatus()]
+        statuses: list[FFEUploadStatus] = []
+        if plugin_data.upload_failure_id:
+            statuses.append(
+                FFEUploadFailureStatusManager().get_object(
+                    plugin_data.upload_failure_id
+                )
+            )
+        if not plugin_data.last_upload_at:
+            # Said of a period already behind as much as of the one being
+            # played: a period nobody submitted is the arbiter's problem
+            # whether or not its rounds are over.
+            statuses.append(NeverUploadedFFEUploadStatus())
+        elif period.index < period.tournament.current_period.index:
+            statuses.append(FinishedFFEUploadStatus())
+        elif Utils.tournament_results_modified_since(
+            period.tournament, plugin_data.last_upload_at
+        ):
+            statuses.append(ModifiedFFEUploadStatus())
+        else:
+            statuses.append(UpToDateFFEUploadStatus())
+        if FfeBackgroundUploader.is_period_upload_ongoing(period):
+            statuses.append(OngoingFFEUploadStatus())
+        elif FfeBackgroundUploader.is_period_upload_pending(period):
+            statuses.append(PendingFFEUploadStatus())
+        return statuses
+
 
 class FFEUploadFailureStatusManager(EntityManager[FailureFFEUploadStatus]):
     def entity_types(self) -> list[type[FailureFFEUploadStatus]]:
@@ -240,6 +491,8 @@ class FFEUploadFailureStatusManager(EntityManager[FailureFFEUploadStatus]):
             AuthFailureFFEUploadStatus,
             FinishedFailureFFEUploadStatus,
             PapiConversionFailureFFEUploadStatus,
+            GroupNotFoundFFEUploadStatus,
+            RejectedFFEUploadStatus,
         ]
 
 
@@ -303,51 +556,24 @@ _LICENCE_SORT_INDEX = {
 
 class FFEArbiterTitle(StrEnum):
     NONE = ''
-    AS = 'AS'
     AFJ = 'AFJ'
+    AFM = 'AFM'
     AFC = 'AFC'
-    AFO1 = 'AFO1'
-    AFO2 = 'AFO2'
-    AFE1 = 'AFE1'
-    AFE2 = 'AFE2'
-
-    @classmethod
-    def from_html(cls, html_arbiter_string: str) -> 'FFEArbiterTitle':
-        match html_arbiter_string:
-            case 'Arbitre Jeune':
-                return cls.AFJ
-            case 'Arbitre Club':
-                return cls.AFC
-            case 'Arbitre Open 1':
-                return cls.AFO1
-            case 'Arbitre Open 2':
-                return cls.AFO2
-            case 'Arbitre Elite 1':
-                return cls.AFE1
-            case 'Arbitre Elite 2':
-                return cls.AFE2
-            case _:
-                return cls.NONE
+    AFO = 'AFO'
 
     @property
     def name(self) -> str:
         match self:
             case FFEArbiterTitle.NONE:
                 return '-'
-            case FFEArbiterTitle.AS:
-                return _('Trainee Arbiter')
             case FFEArbiterTitle.AFJ:
                 return _('Young Arbiter')
+            case FFEArbiterTitle.AFM:
+                return _('Match Arbiter')
             case FFEArbiterTitle.AFC:
                 return _('Club Arbiter')
-            case FFEArbiterTitle.AFO1:
-                return _('Open Arbiter (level 1)')
-            case FFEArbiterTitle.AFO2:
-                return _('Open Arbiter (level 2)')
-            case FFEArbiterTitle.AFE1:
-                return _('Elite Arbiter (level 1)')
-            case FFEArbiterTitle.AFE2:
-                return _('Elite Arbiter (level 2)')
+            case FFEArbiterTitle.AFO:
+                return _('Open Arbiter')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -406,10 +632,22 @@ class FfeEventPluginData(PluginData):
 class FfeTournamentPluginData(PluginData):
     ffe_id: int | None = None
     password: str | None = None
+    # Team competitions are sent through the site's team module, with a
+    # group account rather than a tournament certification number.
+    team_login: str | None = None
+    team_password: str | None = None
+    team_competition_id: int | None = None
+    team_competition_name: str | None = None
+    team_division_id: int | None = None
+    team_division_name: str | None = None
+    team_group_id: int | None = None
+    team_group_name: str | None = None
     auto_upload: bool = False
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
+    # What the site or the upload said, when the failure has a text.
+    upload_failure_message: str | None = None
 
     @property
     def last_upload_at_str(self) -> str:
@@ -422,6 +660,14 @@ class FfeTournamentPluginData(PluginData):
         return cls(
             ffe_id=stored_value.get('ffe_id'),
             password=stored_value.get('password'),
+            team_login=stored_value.get('team_login'),
+            team_password=stored_value.get('team_password'),
+            team_competition_id=stored_value.get('team_competition_id'),
+            team_competition_name=stored_value.get('team_competition_name'),
+            team_division_id=stored_value.get('team_division_id'),
+            team_division_name=stored_value.get('team_division_name'),
+            team_group_id=stored_value.get('team_group_id'),
+            team_group_name=stored_value.get('team_group_name'),
             auto_upload=stored_value.get('auto_upload', False),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
@@ -430,12 +676,21 @@ class FfeTournamentPluginData(PluginData):
                 stored_value.get('last_upload_attempt_at')
             ),
             upload_failure_id=stored_value.get('upload_failure_id'),
+            upload_failure_message=stored_value.get('upload_failure_message'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'ffe_id': self.ffe_id,
             'password': self.password,
+            'team_login': self.team_login,
+            'team_password': self.team_password,
+            'team_competition_id': self.team_competition_id,
+            'team_competition_name': self.team_competition_name,
+            'team_division_id': self.team_division_id,
+            'team_division_name': self.team_division_name,
+            'team_group_id': self.team_group_id,
+            'team_group_name': self.team_group_name,
             'auto_upload': self.auto_upload,
             'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
@@ -444,6 +699,7 @@ class FfeTournamentPluginData(PluginData):
                 self.last_upload_attempt_at
             ),
             'upload_failure_id': self.upload_failure_id,
+            'upload_failure_message': self.upload_failure_message,
         }
 
     @classmethod
@@ -456,14 +712,38 @@ class FfeTournamentPluginData(PluginData):
         plugin_data = cls(
             ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             password=WebContext.form_data_to_str(data, 'ffe_password'),
+            team_login=WebContext.form_data_to_str(data, 'ffe_team_login'),
+            team_password=WebContext.form_data_to_str(data, 'ffe_team_password'),
+        )
+        # The competition, division and group selects carry ``id|name``:
+        # the name is what the arbiter sees afterwards, the id what the
+        # upload uses.
+        plugin_data.team_competition_id, plugin_data.team_competition_name = (
+            cls._split_site_choice(
+                WebContext.form_data_to_str(data, 'ffe_team_competition')
+            )
+        )
+        plugin_data.team_division_id, plugin_data.team_division_name = (
+            cls._split_site_choice(
+                WebContext.form_data_to_str(data, 'ffe_team_division')
+            )
+        )
+        plugin_data.team_group_id, plugin_data.team_group_name = cls._split_site_choice(
+            WebContext.form_data_to_str(data, 'ffe_team_group')
         )
         if previous_object:
-            if action != 'clone' and plugin_data.ffe_id and plugin_data.password:
+            if action != 'clone' and (
+                (plugin_data.ffe_id and plugin_data.password)
+                or plugin_data.team_place_configured
+            ):
                 plugin_data.last_upload_at = previous_object.last_upload_at
                 plugin_data.last_upload_attempt_at = (
                     previous_object.last_upload_attempt_at
                 )
                 plugin_data.upload_failure_id = previous_object.upload_failure_id
+                plugin_data.upload_failure_message = (
+                    previous_object.upload_failure_message
+                )
             plugin_data.auto_upload = previous_object.auto_upload
         return plugin_data
 
@@ -472,34 +752,78 @@ class FfeTournamentPluginData(PluginData):
             {
                 'ffe_id': self.ffe_id if action != 'clone' else '',
                 'ffe_password': self.password if action != 'clone' else '',
+                'ffe_team_login': self.team_login if action != 'clone' else '',
+                'ffe_team_password': self.team_password if action != 'clone' else '',
+                'ffe_team_competition': self.site_choice(
+                    self.team_competition_id, self.team_competition_name
+                ),
+                'ffe_team_division': self.site_choice(
+                    self.team_division_id, self.team_division_name
+                ),
+                'ffe_team_group': self.site_choice(
+                    self.team_group_id, self.team_group_name
+                ),
             }
+        )
+
+    @staticmethod
+    def site_choice(id_: int | None, name: str | None) -> str:
+        """The ``id|name`` value of a site select option."""
+        return f'{id_}|{name}' if id_ else ''
+
+    @staticmethod
+    def _split_site_choice(value: str | None) -> tuple[int | None, str | None]:
+        if not value or '|' not in value:
+            return None, None
+        id_str, name = value.split('|', 1)
+        try:
+            return int(id_str), name
+        except ValueError:
+            return None, None
+
+    @property
+    def team_place_configured(self) -> bool:
+        """Whether the group the match reports go to, and the account
+        that may write them, are named. The competition is left out: a
+        rule set that names one does not store it."""
+        return bool(
+            self.team_login
+            and self.team_password
+            and self.team_division_id
+            and self.team_group_id
         )
 
 
 @dataclass
 class FfePlayerPluginData(PluginData):
-    ffe_id: int | None
+    """The licence number of the player is their national id; the FFE id
+    (the Ref of the FFE database) only keys the profile page."""
+
     ffe_licence: PlayerFFELicence
-    ffe_licence_number: str | None
     league: str | None
+    ffe_id: int | None = None
+
+    @property
+    def no_licence(self) -> PlayerFFELicence:
+        """The licence of a player without a licence number, which the
+        templates showing the licence fall back on."""
+        return PlayerFFELicence.NONE
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            ffe_id=stored_value.get('ffe_id'),
             ffe_licence=PlayerFFELicence(
                 stored_value.get('ffe_licence', PlayerFFELicence.NONE)
             ),
-            ffe_licence_number=stored_value.get('ffe_licence_number'),
             league=stored_value.get('league'),
+            ffe_id=stored_value.get('ffe_id'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'ffe_id': self.ffe_id,
             'ffe_licence': self.ffe_licence.value,
-            'ffe_licence_number': self.ffe_licence_number,
             'league': self.league,
+            'ffe_id': self.ffe_id,
         }
 
     @classmethod
@@ -510,13 +834,12 @@ class FfePlayerPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             ffe_licence=PlayerFFELicence(
                 WebContext.form_data_to_str(data, 'ffe_licence')
                 or PlayerFFELicence.NONE
             ),
-            ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             league=WebContext.form_data_to_str(data, 'ffe_league'),
+            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -524,10 +847,9 @@ class FfePlayerPluginData(PluginData):
             return {}
         return WebContext.values_dict_to_form_data(
             {
-                'ffe_id': self.ffe_id,
                 'ffe_licence': self.ffe_licence.value,
-                'ffe_licence_number': self.ffe_licence_number,
                 'ffe_league': self.league,
+                'ffe_id': self.ffe_id,
             }
         )
 
@@ -549,9 +871,9 @@ class FfeAccountPluginData(AccountPluginData):
     @classmethod
     def from_stored_player(cls, stored_player: StoredPlayer) -> Self:
         return cls(
-            ffe_licence_number=stored_player.plugin_data.get(PLUGIN_NAME, {}).get(
-                'ffe_licence_number', None
-            ),
+            ffe_licence_number=stored_player.national_id
+            if stored_player.national_source == NATIONAL_SOURCE_ID
+            else None,
             ffe_arbiter_title=FFEArbiterTitle(
                 stored_player.transient_arbiter_titles.get('ffe')
                 or FFEArbiterTitle.NONE

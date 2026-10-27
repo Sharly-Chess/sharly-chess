@@ -175,6 +175,21 @@ class TeamBoard:
         return a_gp + a_adj, b_gp + b_adj
 
     @property
+    def game_score_display(self) -> str:
+        """The board score of the match in game points, with ``F`` for a
+        team that forfeited all its games, or ``-`` while no game is
+        played."""
+        stb = self.stored_team_board
+        if stb.team_b_id is None:
+            return f'{self.tournament.team_pab_game_points:g} – F'
+        if self.no_games_played:
+            return '-'
+        a_gp, b_gp = self.game_points
+        a_str = 'F' if self.team_all_forfeit(stb.team_a_id) else f'{a_gp:g}'
+        b_str = 'F' if self.team_all_forfeit(stb.team_b_id) else f'{b_gp:g}'
+        return f'{a_str} – {b_str}'
+
+    @property
     def no_games_played(self) -> bool:
         """Returns True if no game of the team board is already played."""
         return all(board.no_result for board in self.boards)
@@ -208,6 +223,39 @@ class TeamBoard:
                 return False
         return saw_board
 
+    def no_board_played(self) -> bool:
+        """True when every board of the match was decided without a game —
+        a side left empty or a forfeit result — so the match itself was not
+        played. False while any board holds a game, played or still to
+        come."""
+        saw_board = False
+        for board in self.boards:
+            saw_board = True
+            pairing = board.optional_white_pairing or board.optional_black_pairing
+            if (
+                board.optional_white_tournament_player is not None
+                and board.black_tournament_player is not None
+                and pairing is not None
+                and pairing.result
+                not in (
+                    Result.FORFEIT_WIN,
+                    Result.FORFEIT_LOSS,
+                    Result.DOUBLE_FORFEIT,
+                )
+            ):
+                return False
+        return saw_board
+
+    def lost_by_both(self, game_points: tuple[float, float]) -> bool:
+        """True when neither team scored in a match that has a result: a
+        draw needs a point on each side, so such a match is lost by both."""
+        a_gp, b_gp = game_points
+        return (
+            a_gp == b_gp
+            and a_gp <= 0
+            and not all(board.no_result for board in self.boards)
+        )
+
     def match_points_pair(
         self, game_points: tuple[float, float] | None = None
     ) -> tuple[float, float] | None:
@@ -237,6 +285,8 @@ class TeamBoard:
             mp_a, mp_b = win_mp, loss_mp
         elif a_gp < b_gp:
             mp_a, mp_b = loss_mp, win_mp
+        elif self.lost_by_both((a_gp, b_gp)):
+            mp_a = mp_b = loss_mp
         else:
             mp_a = mp_b = draw_mp
         if self.team_all_forfeit(stb.team_a_id):
@@ -246,15 +296,27 @@ class TeamBoard:
         return mp_a, mp_b
 
     @property
+    def has_adjourned_game(self) -> bool:
+        return any(board.result.is_adjourned for board in self.boards)
+
+    @property
     def match_score_pair(self) -> tuple[str, str] | None:
         """``(team_a_score, team_b_score)`` strings following the
         tournament's primary score, or ``None`` for an unplayed match
         or a bye envelope. Lets callers orient the score from either
-        team's perspective (crosstables)."""
+        team's perspective (crosstables). A score counting adjourned games
+        as draws is marked as provisional."""
         if self.stored_team_board.team_b_id is None:
             return None
         if self.boards and all(board.no_result for board in self.boards):
             return None
+        score_pair = self._match_score_pair
+        if self.has_adjourned_game:
+            return f'{score_pair[0]}*', f'{score_pair[1]}*'
+        return score_pair
+
+    @property
+    def _match_score_pair(self) -> tuple[str, str]:
         tournament = self.tournament
         if tournament.primary_score == ScoreType.MATCH_POINTS:
             match_points = self.match_points_pair()
@@ -267,11 +329,9 @@ class TeamBoard:
             if self.team_all_forfeit(self.stored_team_board.team_a_id)
             else f'{a_gp:g}'
         )
-        b_str = (
-            'F'
-            if self.team_all_forfeit(self.stored_team_board.team_b_id)
-            else f'{b_gp:g}'
-        )
+        team_b_id = self.stored_team_board.team_b_id
+        assert team_b_id is not None
+        b_str = 'F' if self.team_all_forfeit(team_b_id) else f'{b_gp:g}'
         return a_str, b_str
 
     @property

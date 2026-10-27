@@ -55,7 +55,7 @@ from plugins.chessevent.tournament_importer.mappers import (
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.ffe.utils import FfePlayerPluginData, FFE_LEAGUES
 from plugins.manager import plugin_manager
-from utils.enum import TournamentRating, Result
+from utils.enum import Cadence, Result
 
 paris_tz = zoneinfo.ZoneInfo('Europe/Paris')
 epoch = datetime(1970, 1, 1, tzinfo=zoneinfo.ZoneInfo('UTC'))
@@ -233,7 +233,7 @@ class ChessEventTournamentImporter(TournamentImporter):
                 f'Unknown value [{tournament.pairing}] for field [pairing].'
             ) from None
         stored_tournament.location = tournament.location
-        stored_tournament.rating = tournament.rating
+        stored_tournament.cadence = tournament.rating
         stored_tournament.stored_tie_breaks = []
         for ce_tie_break in (
             tournament.tie_break_1,
@@ -305,13 +305,13 @@ class ChessEventTournamentImporter(TournamentImporter):
             raise unknown_exception('blitz_rating_type') from None
 
         ratings = {
-            TournamentRating.STANDARD.value: PlayerRating.from_type(
+            Cadence.STANDARD.value: PlayerRating.from_type(
                 player.standard_rating, standard_rating_type
             ).stored_value,
-            TournamentRating.RAPID.value: PlayerRating.from_type(
+            Cadence.RAPID.value: PlayerRating.from_type(
                 player.rapid_rating, rapid_rating_type
             ).stored_value,
-            TournamentRating.BLITZ.value: PlayerRating.from_type(
+            Cadence.BLITZ.value: PlayerRating.from_type(
                 player.blitz_rating, blitz_rating_type
             ).stored_value,
         }
@@ -322,15 +322,14 @@ class ChessEventTournamentImporter(TournamentImporter):
         if player.ffe_league and player.ffe_league not in FFE_LEAGUES:
             raise unknown_exception('ffe_league')
         ffe_plugin_data = FfePlayerPluginData(
-            player.ffe_id,
             ffe_licence,
-            player.ffe_license_number or None,
             player.ffe_league or None,
+            ffe_id=player.ffe_id or None,
         )
 
         return StoredPlayer(
             id=player_id,
-            last_name=unidecode(player.last_name).upper(),
+            last_name=unidecode(player.last_name),
             first_name=unidecode(player.first_name).title(),
             date_of_birth=(epoch + timedelta(seconds=float(player.birth))).astimezone(
                 paris_tz
@@ -345,6 +344,10 @@ class ChessEventTournamentImporter(TournamentImporter):
             women_title=title.women_value,
             ratings=ratings,
             fide_id=player.fide_id or None,
+            national_id=player.ffe_license_number or None,
+            national_source=(
+                ffe.NATIONAL_SOURCE_ID if player.ffe_license_number else None
+            ),
             federation=player.federation,
             club=player.ffe_club,
             fixed=player.board or None,

@@ -28,7 +28,7 @@ from data.pairings.settings import (
 )
 from data.pairings.systems import PairingSystem, SwissPairingSystem
 from data.pairings.variations import PairingVariation
-from data.safety_mode import PairingAction, PermissionHandler
+from data.permissions import PairingAction, PermissionHandler
 from database.sqlite.event.event_store import StoredBoard
 from utils.entity import EntityManager, EventBoundEntityManager
 from utils.enum import BoardColor, Result
@@ -179,7 +179,7 @@ class KeizerScorer:
             return (values.get(opponent_id, 0.0) if opponent_id else 0.0) / 2
         if result in _ABSENCE_RESULTS:
             return self._absence_fraction * values.get(player.id, 0.0)
-        # Losses, zero-point byes, forfeits and unplayed games earn nothing.
+        # Losses, Zero-Point Byes, forfeits and unplayed games earn nothing.
         return 0.0
 
     def _round(self, value: float) -> float:
@@ -237,7 +237,7 @@ class KeizerPairingSystem(PairingSystem['KeizerVariation']):
         # fits.
         return SwissPairingSystem().permission_handler
 
-    def default_current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
 

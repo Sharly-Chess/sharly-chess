@@ -31,11 +31,12 @@ from utils.enum import (
     BoardColor,
     EventType,
     PlayerGender,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
     TeamColourType,
     TeamSortMode,
-    TournamentRating,
+    Cadence,
 )
 
 if TYPE_CHECKING:
@@ -177,16 +178,35 @@ def _fmt(value: float) -> str:
     return str(int(value)) if value == int(value) else str(value)
 
 
-class _FfeTeamCupRuleSet(RuleSet, ABC):
-    """Shared scaffold for the two FFE team cups. Both share the
-    4-board team format, MP / GP scoring and colour rule; only roster
-    constraints (max size, Elo caps, parity) differ — those land in a
-    later phase."""
+class FfeTeamCompetitionRuleSet(RuleSet, ABC):
+    """A rule set for an FFE team competition, which can name where the
+    FFE site's team module expects its results."""
 
     @property
     @override
     def event_type(self) -> EventType:
         return EventType.TEAM
+
+    @staticmethod
+    def ffe_competition_id() -> int | None:
+        """Id of the competition in the FFE site's team module
+        (``SelectCompetition`` on ``Equipes.aspx``), for the results
+        upload; ``None`` for a competition the module does not manage."""
+        return None
+
+    @property
+    def ffe_division_name(self) -> str | None:
+        """Name of the site division (``SelectDivision``) matching the
+        configured phase, used to pre-select it in the tournament form;
+        ``None`` when the rule set cannot tell."""
+        return None
+
+
+class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
+    """Shared scaffold for the two FFE team cups. Both share the
+    4-board team format, MP / GP scoring and colour rule; only roster
+    constraints (max size, Elo caps, parity) differ — those land in a
+    later phase."""
 
     @override
     def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
@@ -198,10 +218,11 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
 
     @property
     @override
-    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
-        # The cups keep teams of the same affiliation apart when the
-        # pairing allows it (soft constraint on the team group).
-        return ('team-group', False)
+    def forced_prohibited_pairing(self) -> tuple[str, str] | None:
+        # "Il convient d'éviter autant que possible les matchs opposant les
+        # joueurs d'un même club": teams of the same affiliation give way to
+        # every Swiss criterion, whatever their standing.
+        return 'team-group', ProhibitedPairingConstraint.LOWEST_CRITERION.value
 
     @property
     def round3_winner_protection(self) -> bool:
@@ -217,7 +238,8 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return {
             FfeLicenceTournamentCriterion().form_key,
             'rounds',
-            'rating',
+            'TEAM_ROUND_ROBIN_pairing_variation',
+            'cadence',
             'team_player_count',
             'roster_max_size',
             'primary_score',
@@ -246,7 +268,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         stored_tournament.criteria[FfeLicenceTournamentCriterion.static_id()] = (
             PlayerFFELicence.A.value
         )
-        stored_tournament.rating = TournamentRating.STANDARD.value
+        stored_tournament.cadence = Cadence.STANDARD.value
         stored_tournament.team_player_count = 4
         stored_tournament.roster_max_size = self.roster_max_size
         stored_tournament.team_colour_type = TeamColourType.A.value
@@ -310,21 +332,33 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         pairing_system_id: str,
         pairing_variation_id: str | None = None,
     ) -> int | None:
-        # Phase rounds (Loubatière / Parité): the final runs 5 rounds
-        # whatever the system — the team-count table that picks the system
-        # only covers the qualifying phases, which run 3, apart from the
-        # aller-retour (double round-robin, a 2-team home-and-away) at 2.
-        from data.pairings.variations import DoubleBergerTeamRoundRobinVariation
-
+        # A round-robin's length follows from the number of teams, single
+        # or home-and-away alike. Otherwise (Loubatière / Parité) the final
+        # runs 5 rounds and the qualifying phases 3.
+        if pairing_system_id == 'TEAM_ROUND_ROBIN':
+            return 0
         if self.is_final_phase:
             return 5
-        if pairing_variation_id == DoubleBergerTeamRoundRobinVariation.static_id():
-            return 2
         return {
             'TEAM_SWISS': 3,
             'MOLTER': 3,
-            'TEAM_ROUND_ROBIN': 3,
         }.get(pairing_system_id)
+
+    @override
+    def pairing_variation_for(
+        self, pairing_system_id: str, team_count: int
+    ) -> str | None:
+        # Two teams meet home and away (aller-retour); more meet once.
+        from data.pairings.variations import (
+            BergerTeamRoundRobinVariation,
+            DoubleBergerTeamRoundRobinVariation,
+        )
+
+        if pairing_system_id != 'TEAM_ROUND_ROBIN':
+            return None
+        if team_count == 2:
+            return DoubleBergerTeamRoundRobinVariation.static_id()
+        return BergerTeamRoundRobinVariation.static_id()
 
     @override
     def molter_table_overrides(self) -> dict[tuple[int, int], FixedPairingTable]:
@@ -489,7 +523,10 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     ) -> 'PointAdjustment | None':
         """A game lost by forfeit counts −1 game point ("Une partie perdue
         par forfait sportif est comptée -1"). Applies to every pairing
-        system, Molter included."""
+        system, Molter included. In a team-vs-team match the score
+        cannot go below zero ("lorsque le total des points de parties
+        d'une équipe est négatif, le score est ramené à zéro"), so the
+        penalty stops at the points the team scored on the boards."""
         if team.tournament is None:
             return None
         count = sum(
@@ -499,14 +536,22 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         )
         if not count:
             return None
-        return PointAdjustment(
-            gp=-float(count),
-            explanation=ngettext(
-                '{n} game lost by forfeit, counted as -1.',
-                '{n} games lost by forfeit, counted as -1 each.',
-                count,
-            ).format(n=count),
-        )
+        penalty = float(count)
+        explanation = ngettext(
+            '{n} game lost by forfeit, counted as -1.',
+            '{n} games lost by forfeit, counted as -1 each.',
+            count,
+        ).format(n=count)
+        team_board = self._team_round_match(team, round_)
+        if team_board is not None:
+            a_gp, b_gp = team_board.game_points
+            scored = a_gp if team_board.stored_team_board.team_a_id == team.id else b_gp
+            if penalty > scored:
+                # Kept with its explanation even when nothing is left to
+                # take off, so the arbiter sees why the penalty is void.
+                penalty = max(scored, 0.0)
+                explanation += ' ' + _('The match score cannot go below zero.')
+        return PointAdjustment(gp=-penalty, explanation=explanation)
 
     def _following_board_played_penalty(
         self, team: 'Team', round_: int
@@ -545,7 +590,8 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         gp = self._game_points_for(pairing_system_id)
         defaults: dict[str, str] = {
             FfeLicenceTournamentCriterion().form_key: PlayerFFELicence.A.value,
-            'rating': str(TournamentRating.STANDARD.value),
+            'TEAM_ROUND_ROBIN_pairing_variation': '',
+            'cadence': str(Cadence.STANDARD.value),
             'team_player_count': '4',
             'roster_max_size': str(self.roster_max_size)
             if self.roster_max_size
@@ -569,7 +615,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id, pairing_variation_id)
             if rounds is not None:
-                defaults['rounds'] = str(rounds)
+                defaults['rounds'] = str(rounds) if rounds else ''
         return defaults
 
 
@@ -647,6 +693,21 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
     @override
     def is_final_phase(self) -> bool:
         return self.phase == _LOUBATIERE_PHASE_FINAL
+
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 8
+
+    @property
+    @override
+    def ffe_division_name(self) -> str | None:
+        return {
+            _LOUBATIERE_PHASE_DEPARTMENTAL: 'Phase Departementale',
+            _LOUBATIERE_PHASE_2: 'Phase 2',
+            _LOUBATIERE_PHASE_3: 'Phase 3',
+            _LOUBATIERE_PHASE_FINAL: 'Phase Finale',
+        }.get(self.phase)
 
     @override
     def team_point_adjustment(
@@ -741,6 +802,20 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
         phases, the Nationale 1 being the only other option."""
         return self.division in (_FEMININ_N2F_ZONE, _FEMININ_N2F_PHASE_2)
 
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 10
+
+    @property
+    @override
+    def ffe_division_name(self) -> str | None:
+        return {
+            _FEMININ_N1F: 'Nationale 1 F',
+            _FEMININ_N2F_ZONE: 'Nationale 2 F Phase Inter Zid',
+            _FEMININ_N2F_PHASE_2: 'Nationale 2 F',
+        }.get(self.division)
+
     @property
     @override
     def round3_winner_protection(self) -> bool:
@@ -754,7 +829,7 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
 
     @property
     @override
-    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
+    def forced_prohibited_pairing(self) -> tuple[str, str] | None:
         # Same-club avoidance is complementary rule 3, so it rides along
         # with the division rather than applying throughout.
         if self.division != _FEMININ_N2F_ZONE:
@@ -864,6 +939,21 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
     @override
     def is_final_phase(self) -> bool:
         return self.phase == _PARITE_PHASE_FINAL
+
+    @staticmethod
+    @override
+    def ffe_competition_id() -> int | None:
+        return 38
+
+    @property
+    @override
+    def ffe_division_name(self) -> str | None:
+        return {
+            _PARITE_PHASE_ZONE: 'Phase Ligue',
+            _PARITE_PHASE_2: 'Phase Interligue',
+            _PARITE_PHASE_2_SINGLE: 'Phase Interligue',
+            _PARITE_PHASE_FINAL: 'Finale',
+        }.get(self.phase)
 
     @property
     @override

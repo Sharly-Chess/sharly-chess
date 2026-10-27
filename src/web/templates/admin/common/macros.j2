@@ -157,6 +157,9 @@
             {% if option.subtitle %}
                 data-subtitle="{{ option.subtitle }}"
             {% endif %}
+            {% if option.html %}
+                data-html="{{ option.html|forceescape }}"
+            {% endif %}
             {% if option.disabled %}disabled{% endif %}
             {% if selected %}selected{% endif %}
         >
@@ -249,7 +252,7 @@
                     const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
                     return $div;
                 }
-                const $result = $('<span>' + data.text + '</span>');
+                const $result = $('<span>' + ($(data.element).attr('data-html') || data.text) + '</span>');
                 const tooltip = $(data.element).attr('data-bs-title');
                 if (tooltip) $result.attr('data-bs-title', tooltip);
                 const subtitle = $(data.element).attr('data-subtitle');
@@ -265,7 +268,7 @@
                 return $result;
             },
             templateSelection: function (data) {
-                const $result = $('<span>' + data.text + '</span>');
+                const $result = $('<span>' + ($(data.element).attr('data-html') || data.text) + '</span>');
                 const optionClass = $(data.element).data('class');
                 if (optionClass) $result.addClass(optionClass);
                 return $result;
@@ -588,6 +591,7 @@ with_indicator: display a loading indicator, optional
     autocomplete='',
     disabled=false,
     prevent_wrapping=false,
+    stacked=false,
     hx_get='',
     hx_post='',
     hx_target='',
@@ -609,7 +613,7 @@ with_indicator: display a loading indicator, optional
         {% else %}
             {% set value=data[name] %}
         {% endif %}
-        <div id="{{id}}-wrapper" class="input-block position-relative{% if prevent_wrapping %} flex-nowrap{% endif %}">
+        <div id="{{id}}-wrapper" class="input-block position-relative{% if prevent_wrapping %} flex-nowrap{% endif %}{% if stacked %} input-block-stacked{% endif %}">
             <div class="d-flex align-items-center">
                 {%- if label -%}
                     <span
@@ -993,6 +997,7 @@ with_indicator: display a loading indicator, optional
     with_indicator=false,
     autocomplete='',
     prevent_wrapping=false,
+    stacked=false,
     onkeyup='',
     hx_get='',
     hx_post='',
@@ -1285,11 +1290,13 @@ with_indicator: display a loading indicator, optional
     select_all=false,
     placeholder='',
     disabled=false,
-    input_tooltip=''
+    input_tooltip='',
+    stacked=false
 ) %}
     {{ _generic_input(
         name=name,
         input_type='select',
+        stacked=stacked,
         label=label,
         help_text=help_text,
         tooltip_text=tooltip_text,
@@ -1662,26 +1669,28 @@ with_indicator: display a loading indicator, optional
     {% for value, label in label_by_value.items() %}
         {% set id = radio_id ~ '-' ~ value %}
         <div class="form-check">
-            <input
-                id="{{ id }}"
-                class="form-check-input"
-                type="radio"
-                name="{{ name }}"
-                value="{{ value }}"
-                {% if value == selected %}
-                    checked
-                {% endif %}
-            >
-            <label class="form-check-label" for="{{ id }}">
-                {{ label }}
-                {% if value in tooltip_by_value %}
-                    <i
-                        class="bi-info-circle-fill ps-1"
-                        style="font-size: 90%"
-                        {{ macros.tooltip_attributes('', tooltip_by_value[value]) }}
-                    ></i>
-                {% endif %}
-            </label>
+            <span>
+                <input
+                    id="{{ id }}"
+                    class="form-check-input"
+                    type="radio"
+                    name="{{ name }}"
+                    value="{{ value }}"
+                    {% if value == selected %}
+                        checked
+                    {% endif %}
+                >
+                <label class="form-check-label" for="{{ id }}">
+                    {{ label }}
+                    {% if value in tooltip_by_value %}
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            style="font-size: 90%"
+                            {{ macros.tooltip_attributes('', tooltip_by_value[value]) }}
+                        ></i>
+                    {% endif %}
+                </label>
+            </span>
         </div>
 
     {% endfor %}
@@ -1862,14 +1871,45 @@ with_indicator: display a loading indicator, optional
 
 {% macro admin_title(
     title,
-    doc_ref
+    doc_ref,
+    fide_mode_badge=true
 ) %}
     <h5 class="admin-tab-title d-flex align-items-center gap-2 py-0 my-0 text-primary">
         {% if doc_ref %}
             {{ macros.doc_icon(doc_ref, 'fs-5') }}
         {% endif %}
         {{ title }}
+        {% if not fide_mode_badge %}
+        {% elif admin_tournament is defined and admin_tournament %}
+            {{ not_in_fide_mode_badge([admin_tournament] if admin_tournament.left_fide_mode else []) }}
+        {% elif admin_event is defined and admin_event %}
+            {{ not_in_fide_mode_badge(admin_event.tournaments | selectattr('left_fide_mode') | list) }}
+        {% endif %}
     </h5>
+{% endmacro %}
+
+{% macro not_in_fide_mode_badge(tournaments) %}
+    {% if tournaments %}
+        <span
+            class="badge text-bg-danger"
+            {{ macros.tooltip_attributes(
+                'warning',
+                _('Not in FIDE mode: %(tournaments)s', tournaments=tournaments | map(attribute='name') | join(', ')),
+                'bottom',
+            ) }}
+        >
+            <i class="bi-slash-circle pe-1"></i>{{ _('Not in FIDE mode') }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro provisional_badge() %}
+    <span
+        class="badge provisional-badge fs-6 align-middle"
+        {{ macros.tooltip_attributes('warning', _('Adjourned games count as draws until their result is entered.'), 'bottom') }}
+    >
+        <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
+    </span>
 {% endmacro %}
 
 {% macro display_controller_assign_dropdown(

@@ -40,6 +40,8 @@ def test_results_show_every_ordered_best_n_score():
         last_name='MURER',
         first_name='Brian',
         fide_id=651038188,
+        year_of_birth=None,
+        date_of_birth=None,
         participations=[
             FakeParticipation('Stage 1', 6, 6, 1),
             FakeParticipation('Stage 2', 5, 5, 2),
@@ -54,6 +56,8 @@ def test_results_show_every_ordered_best_n_score():
         last_name='SAUZON',
         first_name='Emilien',
         fide_id=651090899,
+        year_of_birth=None,
+        date_of_birth=None,
         participations=[
             FakeParticipation('Stage 1', 5, 5, 1),
             FakeParticipation('Stage 2', 6, 6, 2),
@@ -114,6 +118,8 @@ def test_direct_encounter_is_displayed_as_rank_progress():
         last_name='LOSER',
         first_name='Louis',
         fide_id=None,
+        year_of_birth=None,
+        date_of_birth=None,
         participations=[DirectParticipation(1, 2, 0)],
     )
     winner = SimpleNamespace(
@@ -121,6 +127,8 @@ def test_direct_encounter_is_displayed_as_rank_progress():
         last_name='WINNER',
         first_name='Wendy',
         fide_id=None,
+        year_of_birth=None,
+        date_of_birth=None,
         participations=[DirectParticipation(2, 1, 1)],
     )
     championship = SimpleNamespace(
@@ -181,7 +189,7 @@ def test_competitor_rows_select_players_and_carry_all_source_entries():
 
     row = ChampionshipAdminController._competitor_rows(cast(Any, championship))[0]
 
-    assert row['name'] == 'MURER, Brian'
+    assert row['name'] == 'MURER Brian'
     assert row['secondary'] == '651038188'
     assert row['category'] == 'U12'
     assert row['gender'] == 'M'

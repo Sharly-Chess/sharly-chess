@@ -1,8 +1,13 @@
+from collections.abc import Iterator
+from contextlib import contextmanager
 import json
 import random
 from collections import defaultdict, Counter
 from datetime import datetime
 from functools import partial
+from html import escape
+
+from markupsafe import Markup
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
@@ -14,13 +19,22 @@ from litestar.plugins.htmx import ClientRedirect, HTMXRequest, HTMXTemplate
 from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 
+from common import DEVEL_ENV
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.i18n import _, ngettext, pgettext
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.board import Board
-from utils.enum import PlayerRatingType
+from data.rating_sequences import (
+    sequence_from_keys,
+    sequence_keys,
+    RatingSequence,
+    sequence_html,
+    sequence_name,
+    sequence_preference,
+)
+from utils.enum import PlayerRatingType, RatingPreference
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
 from data.championship.championship_loader import ChampionshipLoader
@@ -58,13 +72,30 @@ from data.tie_breaks.sets import (
     stored_tie_break_to_dict,
     TieBreakSet,
 )
+from data.pairings.manual_pairing import (
+    describe_pairs,
+    pair_labels,
+    rounds_change_breach,
+)
+from data.pibes import Pibe, PibeType
 from data.tournament import Tournament
+from data.tournament_period import (
+    TIE_BREAK_RATING_BY_ROUND,
+    PeriodSpan,
+    dates_exceed_period,
+    period_field_data,
+    period_field_suffix,
+    period_first_rounds,
+    period_spans,
+    period_too_long_message,
+)
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredTieBreakSet
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTieBreak,
     StoredTournament,
+    StoredTournamentPeriod,
     StoredScreen,
     StoredPairing,
     StoredPrizeGroup,
@@ -80,10 +111,13 @@ from utils.enum import (
     BoardColor,
     EventType,
     FormAction,
+    ProhibitedPairingConstraint,
     Result,
     ScoreType,
+    StartingRankTieOrder,
     TeamColourType,
-    TournamentRating,
+    TeamSortMode,
+    Cadence,
 )
 from data.screens.manager import ScreenTypeManager
 from utils.types import Club
@@ -95,6 +129,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 from web.messages import Message
 from web.session import (
+    SessionTieBreaksUnlocked,
     SessionTournamentsShowDetails,
     SessionTieBreakAddOtherActive,
     SessionDistributeType,
@@ -169,6 +204,11 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             'admin_tournament': self.admin_tournament,
             'admin_tie_break_id': self.admin_tie_break_id,
             'admin_exporter': self.admin_exporter,
+            'tie_breaks_locked': self.admin_tournament is not None
+            and TournamentAdminController.tie_breaks_fixed(self.admin_tournament)
+            and not SessionTieBreaksUnlocked(self.request).contains(
+                self.admin_tournament
+            ),
             'allowed_tournaments': self.client.allowed_tournaments_for_action(
                 AuthAction.VIEW_TOURNAMENTS_TAB
             ),
@@ -228,7 +268,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'plugin_card_action_menu_items_templates': plugin_card_action_menu_items_templates,
                 'plugin_tab_action_menu_items_templates': plugin_tab_action_menu_items_templates,
                 'show_details': SessionTournamentsShowDetails(request).get(),
-                'data_sources': DataSourceManager().objects(),
+                'data_sources': DataSourceManager().active_objects(),
             }
             | plugin_context
             | (template_context or {})
@@ -298,11 +338,15 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes: int | None = None
             last_rounds_no_byes: int | None = None
             location: str | None = None
-            player_rating_type: int | None = None
+            rating_preference: int | None = None
+            rating_sequence: list[str] = []
+            unrated_rating: int | None = None
             pairing_variations: dict[str, str | None] = {
-                system.variation_field_id: None for system in pairing_systems
+                system.variation_field_id: next(
+                    iter(system.variation_manager(admin_event).options())
+                )
+                for system in pairing_systems
             }
-            override_unrated_rapid_blitz: bool = True
             team_player_count: int | None = None
             roster_max_size: int | None = None
             color_pattern: str | None = None
@@ -313,6 +357,10 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type: str | None = None
             enforce_roster_order: bool = False
             round_robin_participation_rule: bool = True
+            starting_rank_tie_order = StartingRankTieOrder.ALPHABETICAL.value
+            fide_mode: bool = True
+            multi_period: bool = False
+            period_first_rounds_data: set[int] = set()
             rule_set: str | None = None
             rule_set_config: dict[str, Any] = {}
             stored_plugin_data: dict[str, dict[str, Any]] = {}
@@ -320,7 +368,7 @@ class TournamentAdminController(BaseEventAdminController):
                 # Blank by default: the arbiter sets it (Swiss), or leaves it for
                 # a system that settles its own count. Stored as 0 = unset.
                 rounds = 0
-                rating = TournamentRating.STANDARD.value
+                cadence = Cadence.STANDARD.value
                 start_date = admin_event.start_date
                 stop_date = admin_event.stop_date
                 if admin_event.is_team_event:
@@ -337,18 +385,21 @@ class TournamentAdminController(BaseEventAdminController):
                 max_byes = stored_tournament.max_byes
                 last_rounds_no_byes = stored_tournament.last_rounds_no_byes
                 location = stored_tournament.location
-                player_rating_type = stored_tournament.player_rating_type
+                rating_preference = stored_tournament.rating_preference
+                unrated_rating = stored_tournament.unrated_rating
+                rating_sequence = (
+                    sequence_keys(chosen)
+                    if (chosen := admin_tournament.chosen_rating_sequence)
+                    else []
+                )
                 start_date = admin_tournament.start_date
                 stop_date = admin_tournament.stop_date
-                rating = admin_tournament.rating.value
+                cadence = admin_tournament.cadence.value
                 rounds = stored_tournament.rounds
                 pairing_system = admin_tournament.pairing_system
                 pairing_variations[
                     admin_tournament.pairing_system.variation_field_id
                 ] = admin_tournament.pairing_variation.id
-                override_unrated_rapid_blitz = (
-                    stored_tournament.override_unrated_rapid_blitz
-                )
                 team_player_count = stored_tournament.team_player_count
                 roster_max_size = stored_tournament.roster_max_size
                 color_pattern = stored_tournament.color_pattern
@@ -367,6 +418,13 @@ class TournamentAdminController(BaseEventAdminController):
                 round_robin_participation_rule = (
                     stored_tournament.round_robin_participation_rule
                 )
+                starting_rank_tie_order = admin_tournament.starting_rank_tie_order.value
+                fide_mode = stored_tournament.fide_mode
+                multi_period = stored_tournament.multi_period
+                period_first_rounds_data = {
+                    stored_period.first_round
+                    for stored_period in stored_tournament.stored_tournament_periods
+                }
                 rule_set = stored_tournament.rule_set
                 rule_set_config = stored_tournament.rule_set_config
                 for criterion in tournament_criteria:
@@ -385,6 +443,19 @@ class TournamentAdminController(BaseEventAdminController):
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action)
+            # A period submitted under a registration of its own carries its
+            # own values, under the plugin's field names suffixed with the
+            # period (``period_field_suffix``).
+            if action == 'update':
+                for period in web_context.get_admin_tournament().periods:
+                    suffix = period_field_suffix(period.first_round)
+                    for plugin_data in period.plugin_data.values():
+                        plugin_form_data |= {
+                            f'{field}{suffix}': value
+                            for field, value in plugin_data.to_form_data(
+                                action=action
+                            ).items()
+                        }
 
             criteria_form_data: dict[str, str] = {}
             for criterion in tournament_criteria:
@@ -416,6 +487,9 @@ class TournamentAdminController(BaseEventAdminController):
                 schedule_form_data[f'round_{round_num}_datetime'] = (
                     WebContext.value_to_form_data(dt) if dt else ''
                 )
+                schedule_form_data[f'round_{round_num}_period_start'] = (
+                    'on' if round_num in period_first_rounds_data else ''
+                )
 
             data = WebContext.values_dict_to_form_data(
                 {
@@ -427,11 +501,13 @@ class TournamentAdminController(BaseEventAdminController):
                     'max_byes': max_byes,
                     'last_rounds_no_byes': last_rounds_no_byes,
                     'location': location,
-                    'player_rating_type': player_rating_type,
+                    'rating_sequence': cls._rating_sequence_value(
+                        rating_preference, rating_sequence
+                    ),
+                    'unrated_rating': unrated_rating,
                     'rounds': rounds,
-                    'rating': rating,
+                    'cadence': cadence,
                     'pairing_system': pairing_system.id,
-                    'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                     'team_player_count': team_player_count,
                     'roster_max_size': roster_max_size,
                     'color_pattern': color_pattern,
@@ -482,6 +558,9 @@ class TournamentAdminController(BaseEventAdminController):
                     'round_robin_participation_rule': (
                         'on' if round_robin_participation_rule else ''
                     ),
+                    'starting_rank_tie_order': starting_rank_tie_order,
+                    'fide_mode': 'on' if fide_mode else '',
+                    'multi_period': 'on' if multi_period else '',
                     'rule_set': rule_set,
                     'date_range': WebContext.value_to_date_range_form_data(
                         start_date, stop_date
@@ -516,20 +595,12 @@ class TournamentAdminController(BaseEventAdminController):
             key: value for __, data in plugin_results for key, value in data.items()
         }
 
-        player_rating_type_options: dict[str, str] = {
-            '': '',
-            str(PlayerRatingType.FIDE.value): _('FIDE'),
-            str(PlayerRatingType.NATIONAL.value): pgettext(
-                'name for rating type national', 'National'
-            ),
-        }
-        player_rating_type_options[''] = _('Use default - {option}').format(
-            option=player_rating_type_options[str(admin_event.player_rating_type.value)]
-        )
-
         # data and errors are always populated by the if/else block above
         assert data is not None
         assert errors is not None
+        rating_sequence_options = cls._rating_sequence_options(
+            admin_event, data.get('rating_sequence') or ''
+        )
         # Resolve the round-count field first: for a system that settles its own
         # count it clears data['rounds'] (blank), and the schedule shows a prompt
         # to set a number rather than any rows.
@@ -613,11 +684,23 @@ class TournamentAdminController(BaseEventAdminController):
                 'cloned_tournament': web_context.admin_tournament
                 if action == 'clone'
                 else None,
-                'player_rating_type_options': player_rating_type_options,
+                'rating_sequence_options': rating_sequence_options,
+                'rating_sequence_locked': admin_event.rating_sequence_locked,
+                'prescribed_rating_rule': admin_event.prescribed_rating_rule,
+                'rating_sequence_labels': {
+                    cadence: {
+                        value: {'text': option.name, 'html': option.html}
+                        for value, option in options.items()
+                    }
+                    for cadence, options in rating_sequence_options.items()
+                },
                 'is_team_event': admin_event.is_team_event,
                 'BoardColor': BoardColor,
                 'score_type_options': {t.value: str(t) for t in ScoreType},
                 'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
+                'starting_rank_tie_order_options': {
+                    order.value: str(order) for order in StartingRankTieOrder
+                },
                 'modal': 'tournament',
                 'action': action,
                 'data': data,
@@ -652,6 +735,15 @@ class TournamentAdminController(BaseEventAdminController):
                 ),
                 'schedule_min_date': format_date(schedule_min_date),
                 'schedule_max_date': format_date(schedule_max_date),
+                'dates_exceed_period': dates_exceed_period(
+                    schedule_min_date, schedule_max_date
+                ),
+                'period_spans': cls._form_data_period_spans(
+                    data, rounds, web_context.admin_tournament
+                ),
+                'period_field_templates': cls._period_field_templates(
+                    admin_event, web_context.admin_tournament
+                ),
             }
             | form_fields_templates_data
         )
@@ -678,11 +770,22 @@ class TournamentAdminController(BaseEventAdminController):
         rounds_are_automatic = rounds == 0
         tournament: Tournament | None = None
 
+        # Once paired, a system that settles its own count owns it: the field
+        # is greyed out, so whatever the form carries is not the arbiter's.
+        rounds_are_settled = False
         index = len(event.tournaments)
         if action == 'update':
             tournament = web_context.get_admin_tournament()
             index = tournament.index
-        if rounds < 0:
+            rounds_are_settled = (
+                tournament.pairing_variation.sets_its_own_round_count
+                and tournament.has_pairings
+            )
+            if rounds_are_settled:
+                rounds = tournament.stored_tournament.rounds
+        if rounds_are_settled:
+            pass
+        elif rounds < 0:
             errors[field] = _('A positive integer is expected.')
         elif rounds_are_automatic:
             pass
@@ -691,14 +794,14 @@ class TournamentAdminController(BaseEventAdminController):
                 'Impossible to set a round number lower '
                 'than the last round with pairings #{round}.'
             ).format(round=tournament.current_round)
-        rating = (
-            WebContext.form_data_to_int(data, field := 'rating')
-            or TournamentRating.STANDARD.value
+        cadence = (
+            WebContext.form_data_to_int(data, field := 'cadence')
+            or Cadence.STANDARD.value
         )
         try:
-            TournamentRating(rating)
+            Cadence(cadence)
         except ValueError:
-            errors[field] = f'Unknown rating [{rating}]'
+            errors[field] = f'Unknown cadence [{cadence}]'
         try:
             date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
             if date_range:
@@ -736,11 +839,14 @@ class TournamentAdminController(BaseEventAdminController):
             tournament = web_context.get_admin_tournament()
             if tournament.started:
                 not_updatable_values: dict[str, str] = {
-                    'rating': str(tournament.rating.value),
+                    'cadence': str(tournament.cadence.value),
                     tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
                     'pairing_system': tournament.pairing_system.id,
                 }
-                if not tournament.pairing_system.allow_rounds_update_once_started:
+                if not (
+                    rounds_are_settled
+                    or tournament.pairing_system.allow_rounds_update_once_started
+                ):
                     not_updatable_values |= {'rounds': str(tournament.rounds)}
                 for field, expected_value in not_updatable_values.items():
                     if data.get(field, '') != expected_value:
@@ -780,10 +886,32 @@ class TournamentAdminController(BaseEventAdminController):
         max_byes = WebContext.form_data_to_int(data, 'max_byes')
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
-        player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
-        override_unrated_rapid_blitz = WebContext.form_data_to_bool(
-            data, 'override_unrated_rapid_blitz'
+        rating_preference: int | None = None
+        rating_sequence: list[str] = []
+        if sequence_value := WebContext.form_data_to_str(data, 'rating_sequence'):
+            try:
+                preference_value, keys = sequence_value.split(';')
+                sequence = sequence_from_keys(keys.split(','))
+                rating_preference = sequence_preference(
+                    sequence, RatingPreference(int(preference_value))
+                ).value
+                rating_sequence = sequence_keys(sequence)
+            except ValueError:
+                errors['rating_sequence'] = _('Unknown ratings.')
+        # A field the federation sets is not submitted, and keeps its value
+        unrated_rating = (
+            web_context.admin_tournament.stored_tournament.unrated_rating
+            if action == 'update'
+            and web_context.admin_tournament is not None
+            and 'unrated_rating' not in data
+            else WebContext.form_data_to_int(data, 'unrated_rating')
         )
+        if unrated_rating is not None and not (
+            0 <= unrated_rating <= PlayerRatingType.ESTIMATED.max_value
+        ):
+            errors['unrated_rating'] = _(
+                'A rating from 0 to {max} is expected.'
+            ).format(max=PlayerRatingType.ESTIMATED.max_value)
 
         game_points: dict[int, float] = {}
         for result, gp_field in (
@@ -811,16 +939,30 @@ class TournamentAdminController(BaseEventAdminController):
 
         # A win must be worth at least a draw, and a draw at least a
         # loss.
-        win_gp = game_points.get(Result.WIN.value)
-        draw_gp = game_points.get(Result.DRAW.value)
-        loss_gp = game_points.get(Result.LOSS.value)
-        if (
-            win_gp is not None
-            and draw_gp is not None
-            and loss_gp is not None
-            and not (loss_gp <= draw_gp <= win_gp)
-        ):
+        win_gp = game_points.get(Result.WIN.value, Result.WIN.point_value)
+        draw_gp = game_points.get(Result.DRAW.value, Result.DRAW.point_value)
+        loss_gp = game_points.get(Result.LOSS.value, Result.LOSS.point_value)
+        if not (loss_gp <= draw_gp <= win_gp):
             errors['gp_draw'] = _('Game points must satisfy loss ≤ draw ≤ win.')
+        elif 2 * draw_gp > win_gp + loss_gp:
+            errors['gp_draw'] = _(
+                'Two draws cannot be worth more than a win and a loss.'
+            )
+
+        # A team PAB is a whole match's game points, so only an
+        # individual PAB compares to a single game.
+        pab_gp = game_points.get(Result.PAIRING_ALLOCATED_BYE.value)
+        if pab_gp is not None and not event.is_team_event:
+            if pab_gp > win_gp:
+                errors['gp_pab'] = _('A PAB cannot be worth more than a win.')
+            elif (win_gp, draw_gp, loss_gp) == (1.0, 0.5, 0.0) and pab_gp not in (
+                win_gp,
+                draw_gp,
+                loss_gp,
+            ):
+                errors['gp_pab'] = _(
+                    'With the standard scoring system, a PAB is worth 1, ½ or 0.'
+                )
 
         team_player_count: int | None = None
         roster_max_size: int | None = None
@@ -943,6 +1085,11 @@ class TournamentAdminController(BaseEventAdminController):
         round_robin_participation_rule = WebContext.form_data_to_bool(
             data, 'round_robin_participation_rule'
         )
+        starting_rank_tie_order, starting_rank_lot_seed = (
+            cls._read_starting_rank_tie_order(data, pairing_system, tournament, errors)
+        )
+        fide_mode, fide_mode_exit_round = cls._read_fide_mode(data, tournament, errors)
+        multi_period = WebContext.form_data_to_bool(data, 'multi_period')
 
         rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
         rule_set_type: type[RuleSet] | None = None
@@ -957,6 +1104,15 @@ class TournamentAdminController(BaseEventAdminController):
             if rule_set_type is not None
             else {}
         )
+        if not pairing:
+            if rule_set_type is not None:
+                # "Automatic": the rule set picks the variation from the
+                # entrants (see ``Tournament.pairing_variation``).
+                pairing = next(iter(pairing_system.variation_manager(event).options()))
+            else:
+                errors[pairing_system.variation_field_id] = _(
+                    'Please choose a variation.'
+                )
 
         stored_criteria: dict[str, Any] = {}
         for criterion in TournamentCriterionManager(event).objects():
@@ -989,6 +1145,10 @@ class TournamentAdminController(BaseEventAdminController):
             except FormError as e:
                 errors[field] = str(e)
                 round_datetimes[round_num] = None
+
+        stored_tournament_periods = cls._read_tournament_periods(
+            data, rounds, multi_period, round_datetimes, errors
+        )
 
         plugin_manager.hook_for_event(
             web_context.get_admin_event(), 'validate_tournament_form_fields'
@@ -1025,7 +1185,9 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
             location=location,
-            player_rating_type=player_rating_type,
+            rating_preference=rating_preference,
+            rating_sequence=rating_sequence,
+            unrated_rating=unrated_rating,
             start_date=start_date,
             stop_date=stop_date,
             # 0 = unset; a system that settles its own count keeps it (worked
@@ -1033,9 +1195,8 @@ class TournamentAdminController(BaseEventAdminController):
             # to at least one round. Don't force 1 here, or clearing an
             # automatic field would store a spurious count.
             rounds=rounds,
-            rating=rating or TournamentRating.STANDARD.value,
+            cadence=cadence,
             pairing=pairing or '',
-            override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             game_points=game_points or None,
             team_player_count=team_player_count,
             roster_max_size=roster_max_size,
@@ -1046,6 +1207,38 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type=team_colour_type,
             enforce_roster_order=enforce_roster_order,
             round_robin_participation_rule=round_robin_participation_rule,
+            starting_rank_tie_order=starting_rank_tie_order,
+            starting_rank_lot_seed=starting_rank_lot_seed,
+            fide_mode=fide_mode,
+            fide_mode_exit_round=fide_mode_exit_round,
+            multi_period=multi_period,
+            stored_tournament_periods=stored_tournament_periods,
+            # Set from the tie-breaks modal, the teams tab and the
+            # prohibited-pairings modal, and carried through the rebuild so
+            # saving the tournament does not forget them.
+            tie_break_rating=(
+                tournament.stored_tournament.tie_break_rating if tournament else ''
+            ),
+            team_sort_mode=(
+                tournament.stored_tournament.team_sort_mode
+                if tournament
+                else TeamSortMode.MANUAL.value
+            ),
+            prohibited_pairing_dimension=(
+                tournament.stored_tournament.prohibited_pairing_dimension
+                if tournament
+                else None
+            ),
+            prohibited_pairing_dimension_constraint=(
+                tournament.stored_tournament.prohibited_pairing_dimension_constraint
+                if tournament
+                else ProhibitedPairingConstraint.HARD.value
+            ),
+            round_robin_schedule=(
+                tournament.stored_tournament.round_robin_schedule
+                if tournament and action not in ['create', 'clone']
+                else None
+            ),
             rule_set=rule_set_id,
             rule_set_config=rule_set_config,
             plugin_data=plugin_data,
@@ -1060,7 +1253,264 @@ class TournamentAdminController(BaseEventAdminController):
             )
             assert rule_set_type is not None
             rule_set_type(rule_set_config).apply_defaults(stored_tournament, system_id)
+        if tournament is not None and stored_tournament.fide_mode:
+            cls._check_fide_mode_scoring(tournament, stored_tournament, errors)
         return stored_tournament, errors
+
+    @staticmethod
+    def _rounds_change(
+        tournament: Tournament, stored_tournament: StoredTournament
+    ) -> tuple[list[Pibe], dict[str, Any]]:
+        """What changing the number of rounds of a started tournament logs in
+        its TRF, the change and the difference it makes to the pairings of the
+        last paired round, and, in FIDE mode, the context of the warning
+        asking to confirm it. Nothing when the round count stays."""
+        leaves_fide_mode = tournament.fide_mode and not stored_tournament.fide_mode
+        if not (
+            tournament.logs_pairing_breaches
+            and not leaves_fide_mode
+            and tournament.started
+            and stored_tournament.rounds
+            and stored_tournament.rounds != tournament.rounds
+        ):
+            return [], {}
+        logs = [
+            Pibe(
+                PibeType.ROUNDS,
+                tournament.current_round,
+                f'{tournament.rounds} => {stored_tournament.rounds}',
+            )
+        ]
+        missing, extra = rounds_change_breach(tournament, stored_tournament.rounds) or (
+            set(),
+            set(),
+        )
+        if missing or extra:
+            logs.append(
+                Pibe(
+                    PibeType.CONFIGURATION,
+                    tournament.last_paired_round,
+                    f'{describe_pairs(tournament, missing)} => '
+                    f'{describe_pairs(tournament, extra)}',
+                )
+            )
+        if not tournament.fide_mode:
+            return logs, {}
+        return logs, {
+            'rounds_change': {
+                'before': tournament.rounds,
+                'after': stored_tournament.rounds,
+                'round': tournament.last_paired_round,
+                'engine_pairs': pair_labels(tournament, missing),
+                'arbiter_pairs': pair_labels(tournament, extra),
+            }
+        }
+
+    @staticmethod
+    def _check_fide_mode_scoring(
+        tournament: Tournament,
+        stored_tournament: StoredTournament,
+        errors: dict[str, str],
+    ) -> None:
+        """Refuse, in FIDE mode, a change to the points a result is worth
+        once the tournament has started: the rounds already paired were
+        paired on the former ones. Leaving FIDE mode in the same form allows
+        it."""
+        if not (tournament.fide_mode and tournament.started):
+            return
+        stored_before = tournament.stored_tournament
+        for prefix, before, after in (
+            ('gp', stored_before.game_points, stored_tournament.game_points),
+            ('mp', stored_before.match_points, stored_tournament.match_points),
+        ):
+            before, after = before or {}, after or {}
+            for result, field in (
+                (Result.WIN, 'win'),
+                (Result.DRAW, 'draw'),
+                (Result.LOSS, 'loss'),
+                (Result.ZERO_POINT_BYE, 'zpb'),
+                (Result.PAIRING_ALLOCATED_BYE, 'pab'),
+            ):
+                if before.get(result.value) != after.get(result.value):
+                    errors[f'{prefix}_{field}'] = _(
+                        'The points cannot be changed in FIDE mode once the '
+                        'tournament has started. Leave FIDE mode to change them.'
+                    )
+
+    @staticmethod
+    def _read_fide_mode(
+        data: dict[str, str], tournament: Tournament | None, errors: dict[str, str]
+    ) -> tuple[bool, int | None]:
+        """FIDE mode as set in the form, and the round it was left at.
+
+        Before the first pairing it can be switched freely. After, leaving it
+        takes the double confirmation, and is for good."""
+        fide_mode = WebContext.form_data_to_bool(data, 'fide_mode')
+        if tournament is not None and not tournament.pairing_system.supports_fide_mode:
+            stored_tournament = tournament.stored_tournament
+            return stored_tournament.fide_mode, stored_tournament.fide_mode_exit_round
+        if tournament is None or not tournament.leaving_fide_mode_is_final:
+            return fide_mode, None
+        stored_tournament = tournament.stored_tournament
+        if not stored_tournament.fide_mode:
+            return False, stored_tournament.fide_mode_exit_round
+        if fide_mode:
+            return True, None
+        if not WebContext.form_data_to_bool(data, 'fide_mode_exit_confirmed'):
+            errors['fide_mode'] = _('Leaving FIDE mode must be confirmed.')
+            return True, None
+        return False, tournament.current_round
+
+    @classmethod
+    def _form_data_period_spans(
+        cls,
+        data: dict[str, str],
+        rounds: int,
+        tournament: Tournament | None = None,
+    ) -> list[PeriodSpan]:
+        """The periods the form currently describes, for the schedule
+        section to list. Read from the form data so that a re-render after
+        a validation error shows what the arbiter last set, and matched to
+        the stored periods so each can show what it carries."""
+        if not WebContext.form_data_to_bool(data, 'multi_period'):
+            return []
+        round_datetimes: dict[int, datetime | None] = {}
+        for round_nb in range(1, rounds + 1):
+            try:
+                round_datetimes[round_nb] = WebContext.form_data_to_datetime(
+                    data, f'round_{round_nb}_datetime'
+                )
+            except FormError:
+                round_datetimes[round_nb] = None
+        return period_spans(
+            period_first_rounds(cls._marked_period_rounds(data, rounds), rounds),
+            rounds,
+            round_datetimes,
+            {
+                period.first_round: period.id
+                for period in (tournament.periods if tournament else [])
+                if period.id is not None
+            },
+        )
+
+    @staticmethod
+    def _period_field_templates(
+        event: 'Event', tournament: Tournament | None
+    ) -> list[str]:
+        """The templates of the fields a rating period carries — what a
+        plugin asks for once per period, such as the registration the period
+        is submitted under."""
+        if tournament is None:
+            return []
+        results = plugin_manager.hook_for_event(
+            event, 'get_tournament_period_form_fields_template_and_data'
+        )(event=event, tournament=tournament)
+        return [template for template, __ in results]
+
+    @staticmethod
+    def _save_period_plugin_data(
+        database: EventDatabase,
+        stored_tournament: StoredTournament,
+        data: dict[str, str],
+    ) -> None:
+        """Store what the plugins keep about each period.
+
+        A period is submitted as a tournament of its own, so a plugin whose
+        service wants one registration per period has its fields repeated
+        per period (``period_field_suffix``). Each plugin reads its own
+        field names from the period's share of the form and never learns
+        that periods exist."""
+        assert stored_tournament.id is not None
+        for stored_period in database.load_tournament_stored_periods(
+            stored_tournament.id
+        ):
+            assert stored_period.id is not None
+            period_data = period_field_data(data, stored_period.first_round)
+            if not period_data:
+                continue
+            plugin_data: dict[str, dict[str, Any]] = {}
+            for (
+                plugin_id,
+                plugin_data_class,
+            ) in Tournament.plugin_data_class_by_plugin_id().items():
+                previous = plugin_data_class.from_stored_value(
+                    stored_period.plugin_data.get(plugin_id, {})
+                )
+                plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                    period_data, previous_object=previous
+                ).to_stored_value()
+            database.set_tournament_period_plugin_data(stored_period.id, plugin_data)
+
+    @staticmethod
+    def _marked_period_rounds(data: dict[str, str], rounds: int) -> list[int]:
+        """The rounds the arbiter ticked as starting a rating period."""
+        return [
+            round_nb
+            for round_nb in range(2, rounds + 1)
+            if WebContext.form_data_to_bool(data, f'round_{round_nb}_period_start')
+        ]
+
+    @classmethod
+    def _read_tournament_periods(
+        cls,
+        data: dict[str, str],
+        rounds: int,
+        multi_period: bool,
+        round_datetimes: dict[int, datetime | None],
+        errors: dict[str, str],
+    ) -> list[StoredTournamentPeriod]:
+        """Read the tournament's rating periods from the form.
+
+        Round 1 starts one whatever the form says, and a tournament that is
+        not multi-period has that period alone. A period longer than FIDE
+        allows is reported on the round that starts it, which is where the
+        arbiter can split it."""
+        if not multi_period:
+            # Not a tournament FIDE wants cut up: its single period covers
+            # every round, however long it runs.
+            return [StoredTournamentPeriod(id=None, tournament_id=0, first_round=1)]
+        first_rounds = period_first_rounds(
+            cls._marked_period_rounds(data, rounds), rounds
+        )
+        for span in period_spans(first_rounds, rounds, round_datetimes):
+            if span.too_long:
+                errors[f'period_{span.first_round}'] = period_too_long_message(span)
+        return [
+            StoredTournamentPeriod(id=None, tournament_id=0, first_round=first_round)
+            for first_round in first_rounds
+        ]
+
+    @staticmethod
+    def _read_starting_rank_tie_order(
+        data: dict[str, str],
+        pairing_system: PairingSystem,
+        tournament: Tournament | None,
+        errors: dict[str, str],
+    ) -> tuple[str, int | None]:
+        """The order of the players with the same rating and title as set in
+        the form, and the seed of the drawing of lots.
+
+        It is fixed once the tournament has started. The seed is drawn the
+        first time the lots are chosen and kept, so that switching away and
+        back gives the same draw."""
+        stored_tournament = tournament.stored_tournament if tournament else None
+        seed = stored_tournament.starting_rank_lot_seed if stored_tournament else None
+        if tournament is not None and tournament.started:
+            return tournament.starting_rank_tie_order.value, seed
+        if not pairing_system.supports_starting_rank_tie_order:
+            return StartingRankTieOrder.ALPHABETICAL.value, seed
+        raw_order = (
+            WebContext.form_data_to_str(data, field := 'starting_rank_tie_order')
+            or StartingRankTieOrder.ALPHABETICAL.value
+        )
+        try:
+            order = StartingRankTieOrder(raw_order)
+        except ValueError:
+            errors[field] = f'Invalid order [{raw_order}].'
+            order = StartingRankTieOrder.ALPHABETICAL
+        if order == StartingRankTieOrder.LOTS and seed is None:
+            seed = random.randrange(1 << 31)
+        return order.value, seed
 
     @staticmethod
     def _rule_set_config_form_value(config_field: RuleSetField, value: Any) -> str:
@@ -1203,6 +1653,76 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @staticmethod
+    def _rating_sequence_value(preference_value: int | None, keys: list[str]) -> str:
+        """The select value of a stored sequence: the preference it is
+        compared or ordered with, and its ratings; empty for the default."""
+        if not keys:
+            return ''
+        sequence = sequence_from_keys(keys)
+        preference = sequence_preference(
+            sequence,
+            None if preference_value is None else RatingPreference(preference_value),
+        )
+        return f'{preference.value};{",".join(keys)}'
+
+    @classmethod
+    def _rating_sequence_options(
+        cls, event: Event, current_value: str
+    ) -> dict[str, dict[str, SelectOption]]:
+        """The sequences offered for each cadence of the tournament modal,
+        as select values and options; the empty value is the event's
+        default, the only one when a plugin imposes the sequence. A
+        preference a plugin imposes limits them to its own."""
+        source = event.national_rating_source
+        national_list_name = source.national_source_name if source else None
+
+        def option(
+            sequence: RatingSequence, preference: RatingPreference
+        ) -> SelectOption:
+            return SelectOption(
+                name=sequence_name(sequence, national_list_name, preference),
+                html=sequence_html(sequence, national_list_name, preference),
+            )
+
+        forced = event.forced_rating_preference
+        preferences = list(RatingPreference) if forced is None else [forced]
+        combinations: dict[str, dict[str, SelectOption]] = {}
+        for cadence in Cadence:
+            default = option(
+                event.default_rating_sequence(cadence, event.rating_preference),
+                event.rating_preference,
+            )
+            if event.forced_rating_sequence(cadence) is not None:
+                combinations[str(cadence.value)] = {'': default}
+                continue
+            options = {
+                '': SelectOption(
+                    name=_('Default - {option}').format(option=default.name),
+                    html=Markup(escape(_('Default - {option}'))).format(
+                        option=default.html
+                    ),
+                )
+            }
+            for preference in preferences:
+                for sequence in event.rating_sequence_options(cadence, preference):
+                    options[
+                        cls._rating_sequence_value(
+                            preference.value, sequence_keys(sequence)
+                        )
+                    ] = option(sequence, preference)
+            if current_value and current_value not in options:
+                try:
+                    preference_value, keys = current_value.split(';')
+                    options[current_value] = option(
+                        sequence_from_keys(keys.split(',')),
+                        RatingPreference(int(preference_value)),
+                    )
+                except ValueError:
+                    pass
+            combinations[str(cadence.value)] = options
+        return combinations
+
+    @staticmethod
     def _rounds_field_context(
         tournament: Tournament | None,
         data: dict[str, str],
@@ -1322,6 +1842,7 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: FromQuery[int | None] = None,
         rounds: FromQuery[str | None] = None,
         date_range: FromQuery[str | None] = None,
+        multi_period: FromQuery[str | None] = None,
     ) -> Template:
         """Return just the schedule section for an outerHTML swap.
 
@@ -1364,7 +1885,19 @@ class TournamentAdminController(BaseEventAdminController):
             if key.startswith('round_') and key.endswith('_datetime')
         }
 
-        schedule_form_data: dict[str, str] = {}
+        marked_rounds = {
+            int(key.removeprefix('round_').removesuffix('_period_start'))
+            for key, value in request.query_params.items()
+            if key.startswith('round_') and key.endswith('_period_start') and value
+        }
+
+        # Fields a period carries (the registration it is submitted under)
+        # come back with the request and have to survive the re-render.
+        schedule_form_data: dict[str, str] = {'multi_period': multi_period or ''} | {
+            field: value
+            for field, value in request.query_params.items()
+            if '_period_' in field
+        }
         has_any_value = False
         for round_num in range(1, rounds_value + 1):
             field = f'round_{round_num}_datetime'
@@ -1378,6 +1911,9 @@ class TournamentAdminController(BaseEventAdminController):
                 )
                 if dt:
                     has_any_value = True
+            schedule_form_data[f'round_{round_num}_period_start'] = (
+                'on' if round_num in marked_rounds else ''
+            )
 
         # evaluate if the schedule section should be open or collapsed
         # if collapsed it should remain collapsed
@@ -1393,8 +1929,14 @@ class TournamentAdminController(BaseEventAdminController):
             'data': schedule_form_data,
             'errors': {},
             'force_schedule_open': force_schedule_open,
+            'oob_multi_period': True,
             'schedule_min_date': format_date(min_date),
             'schedule_max_date': format_date(max_date),
+            'dates_exceed_period': dates_exceed_period(min_date, max_date),
+            'period_spans': self._form_data_period_spans(
+                schedule_form_data, rounds_value, tournament
+            ),
+            'period_field_templates': self._period_field_templates(event, tournament),
         }
 
         return HTMXTemplate(
@@ -1429,6 +1971,23 @@ class TournamentAdminController(BaseEventAdminController):
                 template_context=template_context,
             )
 
+        rounds_change_logs: list[Pibe] = []
+        if action == FormAction.UPDATE:
+            tournament = web_context.get_admin_tournament()
+            rounds_change_logs, rounds_change_context = self._rounds_change(
+                tournament, stored_tournament
+            )
+            if rounds_change_context and not WebContext.form_data_to_bool(
+                data, 'rounds_change_confirmed'
+            ):
+                return self._admin_event_tournaments_render(
+                    web_context=web_context,
+                    template_context=self._prepare_tournament_modal_data(
+                        action, web_context, data, errors={}
+                    )
+                    | rounds_change_context,
+                )
+
         if message := plugin_manager.hook_for_event(event, 'signal_tournament_set')(
             event=event, stored_tournament=stored_tournament
         ):
@@ -1461,11 +2020,41 @@ class TournamentAdminController(BaseEventAdminController):
 
                 database.update_stored_tournament(stored_tournament)
                 assert stored_tournament.id is not None
+                database.set_tournament_periods(
+                    stored_tournament.id,
+                    [
+                        stored_period.first_round
+                        for stored_period in (
+                            stored_tournament.stored_tournament_periods
+                        )
+                    ],
+                )
+                self._save_period_plugin_data(database, stored_tournament, data)
+                # A period merged into its neighbour takes the tie-break
+                # setting that named it with it, rather than leaving the
+                # tournament reading a period it no longer has.
+                if stored_tournament.tie_break_rating not in (
+                    '',
+                    TIE_BREAK_RATING_BY_ROUND,
+                ) and stored_tournament.tie_break_rating not in {
+                    str(stored_period.id)
+                    for stored_period in database.load_tournament_stored_periods(
+                        stored_tournament.id
+                    )
+                }:
+                    stored_tournament.tie_break_rating = ''
+                    database.update_stored_tournament(stored_tournament)
                 database.reseed_tie_breaks_on_pairing_change(
                     stored_tournament.id,
                     tournament.stored_tournament.pairing,
                     stored_tournament.pairing,
                 )
+                # A round-robin schedule belongs to its variation: another
+                # one starts from its own.
+                if stored_tournament.pairing != tournament.stored_tournament.pairing:
+                    database.set_tournament_round_robin_schedule(
+                        stored_tournament.id, None, None
+                    )
                 self._apply_rule_set_tie_breaks(database, event, stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
@@ -1569,6 +2158,8 @@ class TournamentAdminController(BaseEventAdminController):
 
                 tournament_id = tournament.id
 
+        for pibe in rounds_change_logs:
+            tournament.log_pibe(pibe)
         redirect_to = WebContext.form_data_to_str(data, 'redirect_to')
         if redirect_to:
             return Redirect(redirect_to, status_code=303)
@@ -1754,12 +2345,23 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: FromPath[int],
         exporter_id: FromPath[str],
+        period_id: FromQuery[int | None] = None,
     ) -> File | Template:
         web_context = TournamentAdminWebContext(
             request, tournament_id, exporter_id=exporter_id
         )
         tournament = web_context.get_admin_tournament()
         exporter = web_context.get_admin_exporter()
+        # A period is exported as the tournament FIDE receives it; without
+        # one the file covers the tournament entire.
+        period = next(
+            (
+                candidate
+                for candidate in tournament.periods
+                if candidate.id == period_id
+            ),
+            None,
+        )
 
         temp_file = NamedTemporaryFile(
             delete=False,
@@ -1769,10 +2371,13 @@ class TournamentAdminController(BaseEventAdminController):
         )
         try:
             with temp_file:
-                exporter.dump_to_file(temp_file, tournament)
+                exporter.dump_to_file(temp_file, tournament, period)
             return File(
                 path=temp_file.name,
-                filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
+                filename=(
+                    f'{exporter.file_name(tournament, period)}'
+                    f'.{exporter.file_extension}'
+                ),
             )
         except Exception as exception:
             temp_file.close()
@@ -1873,12 +2478,29 @@ class TournamentAdminController(BaseEventAdminController):
             web_context = TournamentAdminWebContext(
                 request, tournament_id, reload_event=True
             )
+            tournament = web_context.get_admin_tournament()
             Message.success(
                 request,
                 _('Tournament [{tournament}] successfully imported.').format(
-                    tournament=web_context.get_admin_tournament().name
+                    tournament=tournament.name
                 ),
             )
+            if importer.import_breaches:
+                return self._admin_event_tournaments_render(
+                    web_context,
+                    {
+                        'modal': 'import-check',
+                        'import_breaches': [
+                            {
+                                'round': round_,
+                                'engine_pairs': pair_labels(tournament, missing),
+                                'imported_pairs': pair_labels(tournament, extra),
+                            }
+                            for round_, missing, extra in importer.import_breaches
+                        ],
+                        'import_adjustments': getattr(importer, 'adjustments', []),
+                    },
+                )
             return self._admin_event_tournaments_render(web_context)
         except OptionError as error:
             errors[error.option.id] = str(error)
@@ -1932,11 +2554,29 @@ class TournamentAdminController(BaseEventAdminController):
             importer.check_players_unicity(stored_players)
             importer.check_pairing_inconsistencies(stored_tournament)
             features = importer.get_not_importable_features(event)
+            sections: list[tuple[str, list[str]]] = []
+            if importer.adjustments:
+                sections.append(
+                    (
+                        _(
+                            'This file is in the {version} format. It will be '
+                            'completed as follows:'
+                        ).format(version=importer.trf_version),
+                        importer.adjustments,
+                    )
+                )
             if features:
+                sections.append(
+                    (_("The following features won't be imported:"), features)
+                )
+            if sections:
                 message_type = 'warning'
-                message = _("The following features won't be imported:")
-                feature_list = ''.join(f'<li>{feature}</li>' for feature in features)
-                message += f'<ul class="mb-0">{feature_list}</ul>'
+                message = ''.join(
+                    f'{title}<ul class="mb-0">'
+                    + ''.join(f'<li>{escape(item)}</li>' for item in items)
+                    + '</ul>'
+                    for title, items in sections
+                )
 
         except (OptionError, ImporterError) as error:
             message = str(error)
@@ -1985,9 +2625,17 @@ class TournamentAdminController(BaseEventAdminController):
                 'This tie-break cannot decide which team advances in a knock-out.'
             )
         elif not advancement and (
-            message := tournament.tie_break_configuration.invalid_message(tie_break)
+            message := tournament.tie_break_configuration.invalid_type_message(
+                tie_break
+            )
         ):
             errors[field] = message
+        elif not advancement and (
+            option_error := tournament.tie_break_configuration.invalid_option_error(
+                tie_break
+            )
+        ):
+            errors[option_error.option.id] = str(option_error)
         else:
             existing_tie_breaks = [
                 tie_break_
@@ -2095,7 +2743,25 @@ class TournamentAdminController(BaseEventAdminController):
         }
 
     @staticmethod
+    def _tie_break_rating_options(tournament: Tournament) -> dict[str, str]:
+        """Which of a player's ratings a rating-based tie-break may read.
+
+        Empty for a tournament rated in one go, where a player holds one
+        rating and there is nothing to choose."""
+        if len(tournament.periods) < 2:
+            return {}
+        return {
+            '': _('First rating'),
+            TIE_BREAK_RATING_BY_ROUND: _("Each game's own period"),
+        } | {
+            str(period.id): _('Period %(index)d (%(rounds)s)')
+            % {'index': period.index + 1, 'rounds': period.rounds_str}
+            for period in tournament.periods
+        }
+
+    @classmethod
     def _tie_breaks_modal_context(
+        cls,
         tournament: Tournament,
         success_message: str | None = None,
         save_as_error: str | None = None,
@@ -2108,6 +2774,7 @@ class TournamentAdminController(BaseEventAdminController):
             # list; the standings-oriented preset sets do not apply.
             return {
                 'modal': 'tie_breaks',
+                'tie_break_rating_options': {},
                 'tie_break_set_select_options': {},
                 'tie_break_set_custom_names': [],
                 'tie_break_set_save_as_error': None,
@@ -2141,6 +2808,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         context: dict[str, Any] = {
             'modal': 'tie_breaks',
+            'tie_break_rating_options': cls._tie_break_rating_options(tournament),
             'tie_break_set_select_options': select_options,
             'tie_break_set_custom_names': existing_custom_set_names,
             'tie_break_set_save_as_error': save_as_error,
@@ -2188,13 +2856,14 @@ class TournamentAdminController(BaseEventAdminController):
         # rather than adding to it — a tournament always holds at least
         # the points, which would otherwise be listed twice.
         assert tournament.id is not None
-        with EventDatabase(tournament.event.uniq_id, write=True) as database:
-            database.delete_all_tournament_stored_tie_breaks(tournament.id)
-        tournament.tie_breaks_by_id.clear()
-        for stored_tb in tie_break_set.stored_tie_breaks:
-            tie_break = instantiate_tie_break(stored_tb, tournament.event)
-            if tie_break is not None:
-                tournament.tie_break_configuration.add(tie_break)
+        with self._tie_break_change(web_context):
+            with EventDatabase(tournament.event.uniq_id, write=True) as database:
+                database.delete_all_tournament_stored_tie_breaks(tournament.id)
+            tournament.tie_breaks_by_id.clear()
+            for stored_tb in tie_break_set.stored_tie_breaks:
+                tie_break = instantiate_tie_break(stored_tb, tournament.event)
+                if tie_break is not None:
+                    tournament.tie_break_configuration.add(tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2304,7 +2973,8 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
-        tournament.tie_break_configuration.add(tie_break)
+        with self._tie_break_change(web_context):
+            tournament.tie_break_configuration.add(tie_break)
         if add_other:
             template_context = self._tie_break_form_modal_context(
                 web_context, {}, FormAction.CREATE, errors
@@ -2338,7 +3008,8 @@ class TournamentAdminController(BaseEventAdminController):
             raise ValidationException(
                 f"Tie-breaks of type [{tie_break.id}] can't be duplicated."
             )
-        tournament.tie_break_configuration.add(tie_break)
+        with self._tie_break_change(web_context):
+            tournament.tie_break_configuration.add(tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2378,7 +3049,8 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
-        tournament.tie_break_configuration.update(tie_break_id, tie_break)
+        with self._tie_break_change(web_context):
+            tournament.tie_break_configuration.update(tie_break_id, tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2404,7 +3076,8 @@ class TournamentAdminController(BaseEventAdminController):
             tie_break_id=tie_break_id,
         )
         tournament = web_context.get_admin_tournament()
-        tournament.tie_break_configuration.delete(tie_break_id)
+        with self._tie_break_change(web_context):
+            tournament.tie_break_configuration.delete(tie_break_id)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2425,7 +3098,33 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        tournament.tie_break_configuration.reorder(data.get('tie_break_ids', []))
+        with self._tie_break_change(web_context):
+            tournament.tie_break_configuration.reorder(data.get('tie_break_ids', []))
+        return self._admin_base_event_render(
+            web_context.template_context | self._tie_breaks_modal_context(tournament)
+        )
+
+    @patch(
+        path='/tournament-tie-break-rating/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-tie-break-rating',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tournament_tie_break_rating(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Set which of a player's ratings the rating-based tie-breaks
+        read (C.07:10)."""
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        tournament.set_tie_break_rating(
+            WebContext.form_data_to_str(data, 'tie_break_rating') or ''
+        )
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2441,8 +3140,78 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
+        SessionTieBreaksUnlocked(request).discard(tournament)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
+        )
+
+    @post(
+        path='/tournaments/tie-breaks-unlock/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tie-breaks-unlock',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tie_breaks_unlock(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+    ) -> Template:
+        """Let the tie-breaks of a started FIDE-mode tournament be changed,
+        the double warning having been confirmed, until the modal is opened
+        again."""
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        SessionTieBreaksUnlocked(request).add(tournament)
+        return self._admin_base_event_render(
+            web_context.template_context | self._tie_breaks_modal_context(tournament)
+        )
+
+    @staticmethod
+    def tie_breaks_fixed(tournament: Tournament) -> bool:
+        """Whether changing the tie-breaks of *tournament* takes the double
+        warning, and is logged: they are published before a FIDE-mode
+        tournament starts."""
+        return (
+            tournament.fide_mode
+            and tournament.started
+            and tournament.tie_break_config_purpose != TieBreakPurpose.ADVANCEMENT
+        )
+
+    @contextmanager
+    def _tie_break_change(
+        self, web_context: TournamentAdminWebContext
+    ) -> Iterator[None]:
+        """Wrap a change to the tie-breaks: refused while they are fixed and
+        locked, logged in the TRF once the tournament has started."""
+        tournament = web_context.get_admin_tournament()
+        if not (
+            tournament.logs_pairing_breaches
+            and tournament.started
+            and tournament.tie_break_config_purpose != TieBreakPurpose.ADVANCEMENT
+        ):
+            yield
+            return
+        if self.tie_breaks_fixed(tournament) and not SessionTieBreaksUnlocked(
+            web_context.request
+        ).contains(tournament):
+            raise ClientException(
+                f'The tie-breaks of tournament [{tournament.name}] are fixed.'
+            )
+        before = self._tie_break_list(tournament)
+        yield
+        if (after := self._tie_break_list(tournament)) != before:
+            tournament.log_pibe(
+                Pibe(
+                    PibeType.TIE_BREAKS,
+                    tournament.current_round,
+                    f'{before} => {after}',
+                )
+            )
+
+    @staticmethod
+    def _tie_break_list(tournament: Tournament) -> str:
+        return ' '.join(
+            tie_break.trf_acronym
+            for tie_break in tournament.tie_break_configuration.all
         )
 
     @staticmethod
@@ -2622,6 +3391,117 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
+        path='/random-tournament-modal/{event_uniq_id:str}',
+        name='admin-random-tournament-modal',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def htmx_admin_random_tournament_modal(
+        self, request: HTMXRequest
+    ) -> Template:
+        """The options of the random tournament generator, as a form.
+
+        The generator is reached from the command line (``--generate-tournament``),
+        which is what the endorsement check-list asks for; this is the same
+        generator behind a form, for filling an event while working on it.
+        """
+        if not DEVEL_ENV:
+            raise NotFoundException()
+        web_context = TournamentAdminWebContext(request)
+        return HTMXTemplate(
+            template_name='admin/tournaments/random_tournament_modal.html',
+            context=web_context.template_context
+            | {
+                'data': {'count': '1'},
+                'errors': {},
+            },
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    @post(
+        path='/random-tournament/{event_uniq_id:str}',
+        name='admin-random-tournament',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def htmx_admin_random_tournament(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> ClientRedirect:
+        from data.loader import EventLoader
+        from data.pairings.random_tournaments import (
+            Frequency,
+            RandomTournamentGenerator,
+            TournamentSettings,
+        )
+
+        if not DEVEL_ENV:
+            raise NotFoundException()
+        web_context = TournamentAdminWebContext(request)
+        event = web_context.get_admin_event()
+
+        def frequency(field_name: str) -> Frequency | None:
+            return Frequency.parse(WebContext.form_data_to_str(data, field_name))
+
+        def acronyms(field_name: str) -> list[str]:
+            stated = WebContext.form_data_to_str(data, field_name) or ''
+            return [acronym.strip() for acronym in stated.split(',') if acronym.strip()]
+
+        name = WebContext.form_data_to_str(data, 'name') or 'Generated tournament'
+        count = max(1, WebContext.form_data_to_int(data, 'count') or 1)
+        generator = RandomTournamentGenerator(WebContext.form_data_to_int(data, 'seed'))
+        seed = generator.seed
+        try:
+            ratings = [int(rating) for rating in acronyms('ratings')]
+            rating_step = WebContext.form_data_to_str(data, 'rating_step')
+            settings = TournamentSettings(
+                players=WebContext.form_data_to_int(data, 'players'),
+                rounds=WebContext.form_data_to_int(data, 'rounds'),
+                teams=WebContext.form_data_to_int(data, 'teams'),
+                players_per_team=WebContext.form_data_to_int(data, 'players_per_team'),
+                ratings=ratings or None,
+                top_rating=WebContext.form_data_to_int(data, 'top_rating'),
+                rating_step=float(rating_step) if rating_step else None,
+                full_point_byes=frequency('full_point_byes'),
+                half_point_byes=frequency('half_point_byes'),
+                zero_point_byes=frequency('zero_point_byes'),
+                forfeit_wins=frequency('forfeit_wins'),
+                forfeit_losses=frequency('forfeit_losses'),
+                unusual_results=frequency('unusual_results'),
+                acceleration=WebContext.form_data_to_bool(data, 'acceleration'),
+                pab_points=1.0,
+                tie_breaks=acronyms('tie_breaks') or ['PTS'],
+                name=name,
+                # The tournament is going to be looked at, so the players
+                # are named rather than numbered.
+                realistic_names=True,
+                pair_rounds=WebContext.form_data_to_bool(data, 'pair_rounds'),
+            )
+            for _number in range(count):
+                generator.generate(settings, event.uniq_id)
+        except (ValueError, SharlyChessException) as error:
+            Message.error(request, str(error))
+        else:
+            Message.success(
+                request,
+                ngettext(
+                    'Tournament generated from seed {seed}.',
+                    '{count} tournaments generated from seed {seed}.',
+                    count,
+                ).format(count=count, seed=seed),
+            )
+        EventLoader.unload_event(event.uniq_id)
+        return ClientRedirect(
+            redirect_to=request.app.route_reverse(
+                'admin-event-tournaments-tab', event_uniq_id=event.uniq_id
+            )
+        )
+
+    @get(
         path='/delete-unpaired-players/{event_uniq_id:str}/{tournament_id:int}',
         name='delete-unpaired-players',
     )
@@ -2640,9 +3520,8 @@ class TournamentAdminController(BaseEventAdminController):
             for player in tournament.tournament_players
             if not player.has_real_pairings
         ]
-        with EventDatabase(event.uniq_id, True) as database:
-            for player in players:
-                database.delete_stored_player(player.id)
+        for player in players:
+            event.delete_player(player)
         Message.success(
             request,
             ngettext(

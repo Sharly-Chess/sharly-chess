@@ -6,26 +6,31 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
-from text_unidecode import unidecode
 
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from utils.types import PlayerRating
+from utils.types import RatingOrigin
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from database.sqlite.event.event_store import StoredPlayer
 from plugins import PLUGINS_DIR
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
     PapiPlayerGender,
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
 )
-from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
-from utils.enum import TournamentRating, PlayerRatingType
+from plugins.ffe.utils import (
+    FfePlayerPluginData,
+    PlayerFFELicence,
+    FfeNameKey,
+    ffe_database_name_keys,
+    ffe_list_ratings,
+)
+from utils.enum import Cadence, PlayerRatingType
 
 logger: Logger = get_logger()
 
@@ -119,34 +124,41 @@ class FFESqlServer(SqlServer):
         fide_title = PapiPlayerTitle.get_core_object(row['FideTitre'] or '')
         return StoredPlayer(
             id=None,
-            first_name=row['Prenom'].title() if row['Prenom'] else '',
-            last_name=row['Nom'].upper(),
+            first_name=row['Prenom'] or '',
+            last_name=row['Nom'],
             date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
             title=fide_title.open_value,
             women_title=fide_title.women_value,
-            ratings={
-                TournamentRating.STANDARD.value: PlayerRating.from_type(
-                    row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
-                ).stored_value,
-                TournamentRating.RAPID.value: PlayerRating.from_type(
-                    row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
-                ).stored_value,
-                TournamentRating.BLITZ.value: PlayerRating.from_type(
-                    row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
-                ).stored_value,
-            },
-            fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
+            ratings=ffe_list_ratings(
+                {
+                    Cadence.STANDARD: (
+                        row['Elo'],
+                        PapiPlayerRatingType.get_core_object(row['Fide']),
+                    ),
+                    Cadence.RAPID: (
+                        row['Rapide'],
+                        PapiPlayerRatingType.get_core_object(row['Fide03']),
+                    ),
+                    Cadence.BLITZ: (
+                        row['Elo06'],
+                        PapiPlayerRatingType.get_core_object(row['Fide06']),
+                    ),
+                },
+                RatingOrigin(NATIONAL_SOURCE_ID, date.today().isoformat(), online=True),
+            ),
+            fide_id=int((row['FideCode'] or '').strip("' ") or 0) or None,
+            national_id=row['NrFFE'] or None,
+            national_source=NATIONAL_SOURCE_ID,
             federation=row['Federation'],
             club=row['ClubNom'] if row['ClubNom'] else '',
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=row['Ref'],
                     ffe_licence=PapiPlayerFFELicence.get_core_object(
                         row['AffType'] or '', row['NrFFE']
                     ),
-                    ffe_licence_number=row['NrFFE'],
                     league=row['ClubLigue'],
+                    ffe_id=row['Ref'],
                 ).to_stored_value()
             },
         )
@@ -407,42 +419,26 @@ class FFESqlServer(SqlServer):
     NAME_KEYS_PAGE_SIZE = 30
 
     async def _get_stored_players_by_name_keys_page(
-        self, name_keys: list[tuple[str, str, date]]
+        self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
-        name_str_keys: list[str] = []
-        name_dob_str_keys: list[str] = []
-        for name_key in name_keys:
-            name_str_key = '|'.join(
-                (unidecode(name_key[0]).upper(), unidecode(name_key[1]).upper())
-            )
-            name_str_keys.append(name_str_key)
-            name_dob_str_keys.append(
-                '|'.join((name_str_key, name_key[2].strftime('%Y-%m-%d')))
-            )
+        name_str_keys = list({'|'.join(name_key[:2]) for name_key in name_keys})
         name_query = "UPPER(joueur.Nom) + '|' + UPPER(Joueur.Prenom)"
-        query_array = ', '.join('%s' for _ in name_keys)
+        query_array = ', '.join('%s' for _ in name_str_keys)
         stored_players = await self._get_stored_players_by_condition(
             f'{name_query} IN ({query_array})',
             name_str_keys,
         )
         # DOB formatting is too expensive in SQL Server, we have to do the
         # matching only on the name, and match the DOB in python
+        keys = set(name_keys)
         return [
             stored_player
             for stored_player in stored_players
-            if stored_player.date_of_birth
-            and '|'.join(
-                (
-                    stored_player.last_name.upper(),
-                    (stored_player.first_name or '').upper(),
-                    stored_player.date_of_birth.strftime('%Y-%m-%d'),
-                )
-            )
-            in name_dob_str_keys
+            if keys & ffe_database_name_keys(stored_player)
         ]
 
     async def get_stored_players_by_name_keys(
-        self, name_keys: list[tuple[str, str, date]]
+        self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
         stored_players: list[StoredPlayer] = []
         while name_keys:

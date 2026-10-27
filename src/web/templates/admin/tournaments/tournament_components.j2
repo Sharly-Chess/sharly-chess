@@ -44,10 +44,15 @@
                     ) }}
                 ></i>
             {% endif %}
+            {{ admin_macros.not_in_fide_mode_badge([item] if item.left_fide_mode else []) }}
         </span>
     {% else %}
         <span class="fw-bold text-truncate d-block">{{ item.name }}</span>
     {% endif %}
+{% endmacro %}
+
+{% macro fide_mode(item, view, placement) %}
+    {{ admin_macros.not_in_fide_mode_badge([item] if item.left_fide_mode else []) }}
 {% endmacro %}
 
 {% macro status(item, view, placement) %}
@@ -90,6 +95,12 @@
 {% endmacro %}
 
 {% macro round_progress(item, view, placement) %}
+    {% if item.rounds_are_unsettled %}
+        <span
+            class="text-nowrap text-secondary"
+            {{ macros.tooltip_attributes('info', _('The number of rounds follows from the pairing system.'), 'top') }}
+        >{{ _('Automatic') }}</span>
+    {% else %}
     {% set progress = ((item.current_round / item.rounds * 100) if item.rounds else 0)|round|int %}
     <span
         class="collection-progress d-inline-flex align-items-center gap-2"
@@ -104,6 +115,7 @@
         </span>
         <span class="num text-nowrap">{{ item.current_round }}/{{ item.rounds }}</span>
     </span>
+    {% endif %}
 {% endmacro %}
 
 {% macro rating(item, view, placement) %}
@@ -111,7 +123,7 @@
         class="text-nowrap"
         {{ macros.tooltip_attributes(
             'info',
-            _('%(rating)s (%(rating_type)s)', rating=item.rating, rating_type=item.player_rating_type.name),
+            _('%(rating)s (%(rating_type)s)', rating=item.cadence, rating_type=item.rating_preference),
             'top',
         ) }}
     >
@@ -120,7 +132,7 @@
             <i class="bi-arrow-right text-secondary px-1"></i>
             <span class="num">{{ item.max_player_rating }}</span>
         {% else %}
-            {{ item.rating }}
+            {{ item.cadence }}
         {% endif %}
     </span>
 {% endmacro %}
@@ -160,11 +172,23 @@
     {% endif %}
 {% endmacro %}
 
+{% macro pairing_rules_link(item) %}
+    {% if item.pairing_variation.rules_link_template %}
+        {% include item.pairing_variation.rules_link_template %}
+    {% endif %}
+{% endmacro %}
+
 {% macro pairing(item, view, placement) %}
     {% set warning_message = item.pairing_warning_message %}
+    {% set pairing_name = (
+        _('%(system)s (automatic)', system=item.pairing_system.name)
+        if item.pairing_variation_is_automatic
+        else item.pairing_variation.name
+    ) %}
     {% if view == 'list' %}
-        <span class="text-truncate" title="{{ item.pairing_variation.name }}">
-            {{ item.pairing_variation.name }}
+        <span class="text-truncate" title="{{ pairing_name }}">
+            {{ pairing_name }}
+            {{ pairing_rules_link(item) }}
             {% if warning_message %}<i class="bi-exclamation-triangle-fill text-warning ms-1" {{ macros.tooltip_attributes('warning', warning_message, 'top') }}></i>{% endif %}
         </span>
     {% else %}
@@ -173,7 +197,7 @@
                 <i class="bi-diagram-3-fill"></i>{{ _('Pairing system') }}
             </span>
             <span>
-                <span>{{ item.pairing_variation.name }}</span>
+                <span>{{ pairing_name }}</span>
                 {% with pairing_tooltip_message=item.pairing_variation.settings_tooltip_message(item) %}
                     {% if pairing_tooltip_message %}
                         <i
@@ -182,6 +206,7 @@
                         ></i>
                     {% endif %}
                 {% endwith %}
+                {{ pairing_rules_link(item) }}
                 {% if warning_message %}
                     <i
                         class="bi-exclamation-triangle-fill text-warning ps-1"
@@ -323,7 +348,7 @@
 
 {% macro criteria_content(tournament) %}
     {% if tournament.criteria %}
-        {{ tournament.criteria_string }}
+        <span>{{ tournament.criteria_string }}</span>
     {% else %}
         <span class="text-secondary"><i>{{ pgettext('said of several things', 'Undefined') }}</i></span>
     {% endif %}
@@ -436,17 +461,11 @@
                     last_rounds_no_byes=tournament.last_rounds_no_byes,
                 ) }}
             </div>
-            {% if tournament.rating != 1 %}
-                <div>
-                    {{ _('Unrated players') }}
-                    <i class="bi-arrow-right px-1"></i>
-                    {{
-                        _('standard ratings')
-                        if tournament.override_unrated_rapid_blitz
-                        else _('estimated ratings')
-                    }}
-                </div>
-            {% endif %}
+            <div>
+                {{ _('Rating retrieval') }}
+                <i class="bi-arrow-right px-1"></i>
+                {{ tournament.rating_sequence_html }}
+            </div>
         </section>
     {% endset %}
 
@@ -636,10 +655,11 @@
                                 {% set unavailable = exporter.is_unavailable_message(tournament) %}
                                 {% if unavailable %}
                                     <li {{ macros.tooltip_attributes('warning', unavailable, 'right') }}>
-                                        <button class="dropdown-item text-secondary" disabled>{{ exporter.name }}</button>
+                                        <button class="dropdown-item text-secondary" disabled>{{ exporter.label(tournament) }}</button>
                                     </li>
                                 {% else %}
                                     {% set warning_message = exporter.warning_message(tournament) %}
+                                    {% set tooltip = exporter.tooltip_for(tournament) %}
                                     <li
                                         class="dropdown-item text-start cursor-pointer"
                                         {% if exporter.data_loss_modal_redirect %}
@@ -662,12 +682,32 @@
                                         {% endif %}
                                         {% if warning_message %}
                                             {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
-                                        {% elif exporter.tooltip %}
-                                            {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                                        {% elif tooltip %}
+                                            {{ macros.tooltip_attributes('info', tooltip, 'right') }}
                                         {% endif %}
                                     >
-                                        {{ exporter.name }}
+                                        {{ exporter.label(tournament) }}
                                     </li>
+                                    {# A tournament reported in periods is submitted
+                                       one period at a time, each its own file. #}
+                                    {% if exporter.exports_periods and tournament.periods|length > 1 %}
+                                        {% for period in tournament.periods %}
+                                            <li
+                                                class="dropdown-item text-start cursor-pointer small"
+                                                data-export-url="{{ url_for(
+                                                    'admin-tournament-export',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=tournament.id,
+                                                    exporter_id=exporter.id,
+                                                ) }}?period_id={{ period.id }}"
+                                                onclick="downloadFile(this)"
+                                            >
+                                                <i class="bi-arrow-return-right pe-1"></i>
+                                                {{ _('Period %(index)d', index=loop.index) }}
+                                                · {{ period.rounds_str }}
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </ul>

@@ -1,11 +1,13 @@
 import asyncio
+import copy
 from abc import ABC, abstractmethod
-from dataclasses import replace
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date, datetime
-from functools import cached_property
+from functools import cached_property, partial
 from logging import Logger
-from typing import override, ClassVar
-from collections.abc import Collection
+from typing import override, ClassVar, cast
+from collections.abc import Awaitable, Callable, Collection, Iterator
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -13,6 +15,7 @@ from common.logger import get_logger
 from common.network import NetworkMonitor
 import data.columns.player_datasheet as pds
 from data.columns.handlers import PlayerDatasheetColumnHandler
+from data.tournament_period import TournamentPeriod
 from data.columns.player_datasheet import DatasheetColumn
 from data.event import Event
 from data.input_output.player_updater_fields import (
@@ -23,20 +26,19 @@ from data.input_output.player_updater_fields import (
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
-    StandardRatingUpdaterField,
-    RapidRatingUpdaterField,
-    BlitzRatingUpdaterField,
     FederationUpdaterField,
 )
-from data.player import Player
+from data.player import Player, PlayerProfileLink
+from database.sqlite.config.config_database import ConfigDatabase
+from database.sqlite.config.config_store import StoredOnlineDataSource
 from utils.types import PlayerRating
-from database.sqlite.event.event_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer, StoredPlayerPeriod
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.manager import plugin_manager
 from utils.date_time import format_datetime
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import Cadence, PlayerRatingType
 
 logger: Logger = get_logger()
 
@@ -73,18 +75,52 @@ def keep_reliable_k_factors(stored_player: StoredPlayer) -> None:
 
 
 class PlayerComparator:
+    """What a data source would change about a player, and the change
+    itself once the arbiter accepts it.
+
+    In a tournament reported in periods, the ratings compared and updated
+    are those of the period being played: refreshing them prepares that
+    period, and what the earlier ones were reported with stays as it is.
+    ``player`` is therefore a view of the player in the current period,
+    and ``target_player`` the player themselves."""
+
     def __init__(
         self,
         fields: list[PlayerUpdaterField],
         player: Player,
         match_stored_player: StoredPlayer | None = None,
+        not_found: bool = False,
     ):
-        self.player = player
+        self.target_player = player
+        self.period = self._recorded_period(player)
+        self.player = self._player_in_period(player, self.period)
+        self.not_found = not_found
         self.match_player: Player | None = None
         if match_stored_player:
             match_stored_player.id = 0
             self.match_player = Player(player.event, match_stored_player)
         self.diff_field_ids = self._get_diff_field_ids(fields)
+
+    @staticmethod
+    def _recorded_period(player: Player) -> TournamentPeriod | None:
+        """The period a rating update is recorded against, or None when the
+        player's own ratings are what it changes."""
+        tournament = player.optional_single_tournament
+        if tournament is None:
+            return None
+        period = tournament.current_period
+        return period if period.first_round > 1 and period.id is not None else None
+
+    @staticmethod
+    def _player_in_period(player: Player, period: TournamentPeriod | None) -> Player:
+        if period is None:
+            return player
+        stored_player = copy.deepcopy(player.stored_player)
+        stored_player.ratings = {
+            tournament_rating.value: rating.stored_value
+            for tournament_rating, rating in player.ratings_for(period).items()
+        }
+        return Player(player.event, stored_player)
 
     def _get_diff_field_ids(self, fields: list[PlayerUpdaterField]) -> list[str]:
         if not self.match_player:
@@ -103,7 +139,26 @@ class PlayerComparator:
             field.update_player(
                 self.player.stored_player, self.match_player.stored_player
             )
-        return self.player
+        if self.period is None:
+            return self.player
+        # Everything but the ratings belongs to the player, whatever period
+        # is being played; the ratings belong to the period.
+        updated = self.player.stored_player
+        stored_player = self.target_player.stored_player
+        base_ratings = stored_player.ratings
+        periods = stored_player.periods
+        for attribute, value in vars(updated).items():
+            setattr(stored_player, attribute, value)
+        stored_player.ratings = base_ratings
+        stored_player.periods = periods
+        assert self.period.id is not None
+        stored_player.periods[self.period.id] = StoredPlayerPeriod(
+            ratings=updated.ratings,
+            title=updated.title,
+            women_title=updated.women_title,
+        )
+        self.target_player.replace_stored_player(stored_player)
+        return self.target_player
 
 
 class DataSource(IdentifiableEntity, ABC):
@@ -112,6 +167,27 @@ class DataSource(IdentifiableEntity, ABC):
 
     SEARCH_LIMIT = 30
 
+    #: The federation whose events activate the data source, None for a
+    #: data source activated another way.
+    federation: ClassVar[str | None] = None
+
+    #: The search filters the data source supports, see
+    #: `SearchFilterManager.get_filters_by_datasource`.
+    search_filter_ids: ClassVar[tuple[str, ...]] = ()
+
+    #: The key stored as the `national_source` of the players whose
+    #: `national_id` the data source provides, shared by the data sources of
+    #: one federation; None for a data source without national identifiers.
+    national_source_id: ClassVar[str | None] = None
+
+    #: The cadences the national rating of the data source is published
+    #: for; one publishing the standard one alone rates every cadence on it.
+    national_cadences: ClassVar[frozenset[Cadence]] = frozenset(Cadence)
+
+    #: The cadences the data source also gives the FIDE rating of its
+    #: players for, besides their national rating.
+    fide_cadences: ClassVar[frozenset[Cadence]] = frozenset()
+
     @property
     @abstractmethod
     def is_available(self) -> bool:
@@ -119,6 +195,90 @@ class DataSource(IdentifiableEntity, ABC):
 
     def on_app_init(self) -> None:
         """Function to execute at the start of the server to initialize the data source."""
+
+    @property
+    def short_name(self) -> str:
+        """The name where room is short (the search bar)."""
+        return self.name
+
+    @property
+    def list_name(self) -> str:
+        """The name under a heading that says what kind of source it is."""
+        return self.name
+
+    # --------------------------------------------------------------------------
+    # National identifiers
+    # --------------------------------------------------------------------------
+
+    @property
+    def national_source_name(self) -> str:
+        """Short name put before a national identifier."""
+        return self.name
+
+    @property
+    def national_id_form_label(self) -> str:
+        """The label of the national identifier on the player form."""
+        return _('{source} ID:').format(source=self.national_source_name)
+
+    @property
+    def national_id_form_placeholder(self) -> str:
+        return ''
+
+    def player_profile_url(self, national_id: str) -> str | None:
+        """The federation's profile page of a player, None when there is
+        none."""
+        return None
+
+    def player_profile_link(self, player: Player) -> PlayerProfileLink | None:
+        """The national identifier of a player, shown on the identity line
+        of the record modal."""
+        if not player.national_id:
+            return None
+        return PlayerProfileLink(
+            label=f'{self.national_source_name} {player.national_id}',
+            url=self.player_profile_url(player.national_id),
+        )
+
+    def check_national_id_match(
+        self, player1: StoredPlayer, player2: StoredPlayer
+    ) -> bool:
+        """Whether two players carry the same identifier of the federation
+        of the data source. An identifier without a source (typed in, or
+        imported from a datasheet) is taken as one of the federation."""
+        if not self.national_source_id or not player1.national_id:
+            return False
+        return player1.national_id == player2.national_id and all(
+            player.national_source in (None, self.national_source_id)
+            for player in (player1, player2)
+        )
+
+    # --------------------------------------------------------------------------
+    # Activation
+    # --------------------------------------------------------------------------
+
+    @property
+    @abstractmethod
+    def is_active(self) -> bool:
+        """Whether the data source is offered in the application."""
+
+    @property
+    @abstractmethod
+    def is_forced_active(self) -> bool:
+        """Whether the data source is active whatever the user says (a
+        plugin needs it)."""
+
+    @abstractmethod
+    def activate(self) -> None:
+        """Offers the data source in the application."""
+
+    @abstractmethod
+    def deactivate(self) -> None:
+        """Withdraws the data source from the application."""
+
+    @abstractmethod
+    def activate_for_federation(self, federation: str) -> None:
+        """Activates the data source of a federation the first time it is
+        needed; a data source the user has removed stays removed."""
 
     @property
     def info_or_warning_message(self) -> tuple[str, bool]:
@@ -145,6 +305,11 @@ class DataSource(IdentifiableEntity, ABC):
     ) -> list[StoredPlayer] | None:
         """Get a list of stored players matching the given players."""
 
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        """Whether the player carries an identifier of the data source, and
+        should therefore be found in it."""
+        return False
+
     async def get_player_comparators(
         self,
         players: list[Player],
@@ -157,15 +322,6 @@ class DataSource(IdentifiableEntity, ABC):
         match_stored_players = await self.get_match_stored_players(players)
         if match_stored_players is None:
             return None
-        k_factors_by_fide_id = self._fide_k_factors_by_fide_id(match_stored_players)
-        database = FideDatabase()
-        covered_dates = {
-            reference_date
-            for reference_date in {
-                player.fide_k_factor_reference_date for player in players
-            }
-            if database.covers_rating_period(reference_date)
-        }
         player_comparators: list[PlayerComparator] = []
         for player in players:
             match_player = next(
@@ -178,90 +334,15 @@ class DataSource(IdentifiableEntity, ABC):
                 ),
                 None,
             )
-            if match_player is not None:
-                match_player = self._with_k_factors(
-                    match_player,
-                    self._k_factors_for_player(
-                        player,
-                        k_factors_by_fide_id.get(match_player.fide_id or 0, {}),
-                        player.fide_k_factor_reference_date in covered_dates,
-                    ),
-                )
-            player_comparator = PlayerComparator(fields, player, match_player)
+            player_comparator = PlayerComparator(
+                fields,
+                player,
+                match_player,
+                match_player is None and self.expects_match(player.stored_player),
+            )
             if not diff_only or player_comparator.diff_field_ids:
                 player_comparators.append(player_comparator)
         return player_comparators
-
-    @staticmethod
-    def _k_factors_for_player(
-        player: Player,
-        database_k_factors: dict[int, int | None],
-        in_rating_period: bool,
-    ) -> dict[int, int | None]:
-        """The k-factors the update proposes for a player: the ones of the
-        database inside its rating period, and outside of it what remains
-        trustworthy of them, the player keeping their own where nothing
-        does."""
-        if in_rating_period:
-            return database_k_factors
-        k_factors: dict[int, int | None] = {}
-        for tournament_rating in TournamentRating:
-            tr_value = tournament_rating.value
-            k_factor = reliable_k_factor(
-                database_k_factors.get(tr_value),
-                player.ratings[tournament_rating].fide,
-                player.year_of_birth,
-            )
-            k_factors[tr_value] = (
-                k_factor
-                if k_factor is not None
-                else player.ratings[tournament_rating].k_factor
-            )
-        return k_factors
-
-    @staticmethod
-    def _fide_k_factors_by_fide_id(
-        match_stored_players: list[StoredPlayer],
-    ) -> dict[int, dict[int, int | None]]:
-        """Read the k-factors of the matched players in the FIDE database,
-        so that they are brought over whatever the data source is."""
-        database = FideDatabase()
-        fide_ids = [
-            match_stored_player.fide_id
-            for match_stored_player in match_stored_players
-            if match_stored_player.fide_id
-        ]
-        if not fide_ids or not database.exists():
-            return {}
-        with database:
-            fide_stored_players = database.get_stored_players_by_fide_id(fide_ids)
-        return {
-            fide_stored_player.fide_id: {
-                tr_value: PlayerRating.from_stored_value(stored_rating).k_factor
-                for tr_value, stored_rating in fide_stored_player.ratings.items()
-            }
-            for fide_stored_player in fide_stored_players
-            if fide_stored_player.fide_id
-        }
-
-    @staticmethod
-    def _with_k_factors(
-        match_stored_player: StoredPlayer,
-        k_factors: dict[int, int | None],
-    ) -> StoredPlayer:
-        ratings: dict[int, dict[str, int | None]] = {}
-        for tournament_rating in TournamentRating:
-            tr_value = tournament_rating.value
-            rating = PlayerRating.from_stored_value(
-                match_stored_player.ratings.get(tr_value, {})
-            )
-            rating.k_factor = k_factors.get(tr_value)
-            ratings[tr_value] = rating.stored_value
-        return replace(match_stored_player, ratings=ratings)
-
-    # --------------------------------------------------------------------------
-    # Player search
-    # --------------------------------------------------------------------------
 
     @property
     def search_element_name(self) -> str:
@@ -369,10 +450,11 @@ class DataSource(IdentifiableEntity, ABC):
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
             src_stored_player.women_title = fide_stored_player.women_title
-            src_stored_player.transient_arbiter_titles['fide'] = (
-                fide_stored_player.transient_arbiter_titles.get('fide', '')
-            )
-            for rating_type in TournamentRating:
+            if fide_arbiter_title := fide_stored_player.transient_arbiter_titles.get(
+                'fide'
+            ):
+                src_stored_player.transient_arbiter_titles['fide'] = fide_arbiter_title
+            for rating_type in Cadence:
                 stored_fide_rating = fide_stored_player.ratings.get(
                     rating_type.value, None
                 )
@@ -384,8 +466,13 @@ class DataSource(IdentifiableEntity, ABC):
                 source_rating = PlayerRating.from_stored_value(
                     src_stored_player.ratings.get(rating_type.value, None) or {}
                 )
-                if source_rating.fide is None:
-                    source_rating.fide = fide_player_rating.fide
+                # The FIDE list is the authority on FIDE ratings, a copy a
+                # national list holds may be staler
+                source_rating.set_value_from_type(
+                    fide_player_rating.fide,
+                    PlayerRatingType.FIDE,
+                    fide_player_rating.origins.get(PlayerRatingType.FIDE),
+                )
                 source_rating.k_factor = (
                     fide_player_rating.k_factor
                     if in_rating_period
@@ -426,11 +513,87 @@ class DataSource(IdentifiableEntity, ABC):
         Return a dict with the ones that have been found."""
 
 
+#: Set while only the installed copies of the lists may be read, by a
+#: check that must not wait on a server.
+_installed_copies_only: ContextVar[bool] = ContextVar(
+    'installed_copies_only', default=False
+)
+
+
+@contextmanager
+def installed_copies_only() -> Iterator[None]:
+    """Read the lists from their installed copies alone, whatever source
+    the user set them to try first."""
+    token = _installed_copies_only.set(True)
+    try:
+        yield
+    finally:
+        _installed_copies_only.reset(token)
+
+
 class LocalDataSource(DataSource, ABC):
+    #: The online version of the list, which the lookups the application
+    #: makes on its own read first when the user sets it to, and fall back
+    #: on otherwise.
+    online_version_type: ClassVar[type['OnlineDataSource'] | None] = None
+
     @property
     @abstractmethod
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         """The type of the local database used for this source."""
+
+    @property
+    def online_version(self) -> 'OnlineDataSource | None':
+        if self.online_version_type is None:
+            return None
+        from data.input_output import DataSourceManager
+
+        return cast(
+            OnlineDataSource,
+            DataSourceManager().get_object(self.online_version_type.static_id()),
+        )
+
+    @property
+    def tries_online_first(self) -> bool:
+        """Whether the online version is read before the installed copy,
+        as the user set it on the copy."""
+        return (
+            self.online_version is not None
+            and self.database.stored_source_database.read_online
+        )
+
+    async def first_answer[T](
+        self,
+        installed: Callable[[], Awaitable[T | None]],
+        online: Callable[['OnlineDataSource'], Awaitable[T | None]],
+    ) -> T | None:
+        """What the installed copy or the online version gives, for a
+        lookup the application makes on its own: the one the user set
+        first is asked first, and the other when it is unavailable, fails
+        or gives nothing."""
+        online_version = self.online_version
+        reads: list[Callable[[], Awaitable[T | None]]] = []
+        if self.is_installed:
+            reads.append(installed)
+        if (
+            online_version is not None
+            and online_version.is_available
+            and not _installed_copies_only.get()
+        ):
+            read_online = partial(online, online_version)
+            if self.tries_online_first:
+                reads.insert(0, read_online)
+            else:
+                reads.append(read_online)
+        for read in reads:
+            try:
+                answer = await read()
+            except SharlyChessException as e:
+                logger.warning('%s: %s', self.name, e)
+                continue
+            if answer:
+                return answer
+        return None
 
     @cached_property
     def database(self) -> LocalSourcePlayerDatabase:
@@ -449,10 +612,33 @@ class LocalDataSource(DataSource, ABC):
         )
 
     @property
-    def is_available(self) -> bool:
+    def is_installed(self) -> bool:
         return self.local_database_type.file_path().exists()
 
+    @property
+    def is_available(self) -> bool:
+        return self.is_installed
+
+    @property
+    def is_active(self) -> bool:
+        return self.database.is_active
+
+    @property
+    def is_forced_active(self) -> bool:
+        return self.database.is_forced_active
+
+    def activate(self) -> None:
+        self.database.activate()
+
+    def deactivate(self) -> None:
+        self.database.deactivate()
+
+    def activate_for_federation(self, federation: str) -> None:
+        self.database.activate_for_federation(federation)
+
     def on_app_init(self) -> None:
+        # A missing database is installed by the background check, once the
+        # server is up: its conversion would otherwise delay the startup.
         self.database.check()
 
     @property
@@ -467,7 +653,7 @@ class LocalDataSource(DataSource, ABC):
         limit: int | None = None,
         filters: dict | None = None,
     ) -> list[StoredPlayer]:
-        if not self.is_available:
+        if not self.is_installed:
             raise SharlyChessException(
                 _(
                     'This database is not installed '
@@ -505,6 +691,54 @@ class OnlineDataSource(DataSource, ABC):
     connection_status: ClassVar[bool | None] = None
     _connection_last_checked_at: ClassVar[datetime | None] = None
     _background_tasks: ClassVar[set[asyncio.Task]] = set()
+    _stored_data_source: ClassVar[StoredOnlineDataSource | None] = None
+
+    @property
+    def stored_data_source(self) -> StoredOnlineDataSource:
+        cls = self.__class__
+        if cls._stored_data_source is None:
+            with ConfigDatabase() as database:
+                cls._stored_data_source = database.load_stored_online_data_source(
+                    self.id
+                ) or StoredOnlineDataSource(name=self.id)
+        return cls._stored_data_source
+
+    @property
+    def default_is_active(self) -> bool:
+        """Whether the data source is active until the user says otherwise."""
+        return False
+
+    @property
+    def is_forced_active(self) -> bool:
+        return False
+
+    @property
+    def is_active(self) -> bool:
+        if self.is_forced_active:
+            return True
+        stored_is_active = self.stored_data_source.is_active
+        if stored_is_active is None:
+            return self.default_is_active
+        return stored_is_active
+
+    def _set_is_active(self, is_active: bool) -> None:
+        stored_data_source = self.stored_data_source
+        stored_data_source.is_active = is_active
+        with ConfigDatabase(write=True) as database:
+            database.upsert_stored_online_data_source(stored_data_source)
+
+    def activate(self) -> None:
+        self._set_is_active(True)
+
+    def deactivate(self) -> None:
+        self._set_is_active(False)
+
+    def activate_for_federation(self, federation: str) -> None:
+        if self.federation != federation:
+            return
+        if self.stored_data_source.is_active is not None:
+            return
+        self.activate()
 
     @classmethod
     @abstractmethod
@@ -614,6 +848,8 @@ class OnlineDataSource(DataSource, ABC):
 
 
 class FideDataSource(LocalDataSource):
+    search_filter_ids = ('federation_filter', 'gender_filter', 'category_filter')
+
     @staticmethod
     def static_id() -> str:
         return 'fide'
@@ -621,6 +857,10 @@ class FideDataSource(LocalDataSource):
     @staticmethod
     def static_name() -> str:
         return _('FIDE database')
+
+    @property
+    def short_name(self) -> str:
+        return 'FIDE'
 
     @property
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
@@ -635,9 +875,6 @@ class FideDataSource(LocalDataSource):
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
-            StandardRatingUpdaterField([PlayerRatingType.FIDE]),
-            RapidRatingUpdaterField([PlayerRatingType.FIDE]),
-            BlitzRatingUpdaterField([PlayerRatingType.FIDE]),
             FederationUpdaterField(),
         ]
 
@@ -652,6 +889,9 @@ class FideDataSource(LocalDataSource):
 
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return bool(player1.fide_id) and player1.fide_id == player2.fide_id
+
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        return bool(stored_player.fide_id)
 
     async def get_match_stored_players(
         self, players: list[Player]

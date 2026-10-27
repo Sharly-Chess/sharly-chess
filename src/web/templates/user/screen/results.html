@@ -25,22 +25,22 @@
                         {% if team_board %}
                             {% set white_team_id, black_team_id = team_board.board_team_ids(board) %}
                             <div class="text-truncate">
-                                {% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                {% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str_in_round(board.round) }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                 {% with team=user_event.teams_by_id.get(white_team_id) %}
                                     {% if team %}<div class="small text-muted text-truncate">{{ team.name }}</div>{% endif %}
                                 {% endwith %}
                             </div>
                             <div class="text-center text-nowrap">{{ board.result_str }}</div>
                             <div class="text-truncate">
-                                {% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                {% if btp %}{{ btp.full_name }} {{ btp.rating_str_in_round(board.round) }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                 {% with team=user_event.teams_by_id.get(black_team_id) %}
                                     {% if team %}<div class="small text-muted text-truncate">{{ team.name }}</div>{% endif %}
                                 {% endwith %}
                             </div>
                         {% else %}
-                            <div class="text-truncate">{% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</div>
+                            <div class="text-truncate">{% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str_in_round(board.round) }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</div>
                             <div class="text-center text-nowrap">{{ board.result_str }}</div>
-                            <div class="text-truncate">{% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</div>
+                            <div class="text-truncate">{% if btp %}{{ btp.full_name }} {{ btp.rating_str_in_round(board.round) }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</div>
                         {% endif %}
                         {% endwith %}
                         {% endwith %}

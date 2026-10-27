@@ -1,15 +1,17 @@
 """The pairing numbers of a tournament's players.
 
 A player's number is their place in the starting rank. Once the system
-has frozen the numbering — a Swiss after its first pairing — a player
+has frozen the numbering — a Swiss once its fourth round is paired — a player
 inserted later takes the place their rank gives them and the others
 shift, as do the settings that address numbers.
 """
 
+from bisect import bisect_left
 from functools import cached_property
 from operator import attrgetter
 from typing import TYPE_CHECKING
 
+from data.pibes import Pibe, PibeType
 from database.sqlite.event.event_database import EventDatabase
 
 if TYPE_CHECKING:
@@ -39,6 +41,70 @@ class PairingNumbers:
     def assign(self) -> None:
         """Make sure every player has a pairing number."""
         __ = self.by_number
+
+    def _update_settings_from_moved_players(
+        self, sorted_tournament_players: list['TournamentPlayer']
+    ) -> bool:
+        """Shift the settings that address numbers so that they follow the
+        players whose starting rank has changed (a new rating, say): each
+        of them is taken out of their former place and inserted at their
+        new one. The players that keep their order relative to each other
+        — the longest such run — are the ones that have not moved."""
+        tournament = self.tournament
+        new_numbers = {
+            id(tournament_player): number
+            for number, tournament_player in enumerate(
+                sorted_tournament_players, start=1
+            )
+        }
+        new_numbers_in_former_order = [
+            new_numbers[id(tournament_player)]
+            for tournament_player in sorted(
+                sorted_tournament_players, key=attrgetter('pairing_number')
+            )
+        ]
+        unmoved_indexes = self._longest_increasing_run(new_numbers_in_former_order)
+        moved_indexes = [
+            index
+            for index in range(len(new_numbers_in_former_order))
+            if index not in unmoved_indexes
+        ]
+        if not moved_indexes:
+            return False
+        variation = tournament.pairing_variation
+        settings_updated = variation.update_settings_from_deleted_pairing_numbers(
+            tournament, [index + 1 for index in moved_indexes]
+        )
+        for number in sorted(
+            new_numbers_in_former_order[index] for index in moved_indexes
+        ):
+            settings_updated |= variation.update_settings_from_added_pairing_number(
+                tournament, number
+            )
+        return settings_updated
+
+    @staticmethod
+    def _longest_increasing_run(values: list[int]) -> set[int]:
+        """The indexes of a longest strictly increasing subsequence of
+        *values*."""
+        tail_indexes: list[int] = []
+        tail_values: list[int] = []
+        previous_indexes: list[int | None] = []
+        for index, value in enumerate(values):
+            length = bisect_left(tail_values, value)
+            previous_indexes.append(tail_indexes[length - 1] if length else None)
+            if length == len(tail_indexes):
+                tail_indexes.append(index)
+                tail_values.append(value)
+            else:
+                tail_indexes[length] = index
+                tail_values[length] = value
+        indexes: set[int] = set()
+        current = tail_indexes[-1] if tail_indexes else None
+        while current is not None:
+            indexes.add(current)
+            current = previous_indexes[current]
+        return indexes
 
     def _assign(self) -> None:
         """Number every player of the tournament."""
@@ -82,6 +148,9 @@ class PairingNumbers:
             sorted_tournament_players = sorted(
                 current_tournament_players, key=attrgetter('starting_rank_sort_key')
             )
+            settings_updated |= self._update_settings_from_moved_players(
+                sorted_tournament_players
+            )
         # Handing out the numbers for the first time is not an insertion:
         # nobody is being slotted into an existing order, so the pairing
         # settings that address numbers (acceleration rules) must not be
@@ -110,8 +179,16 @@ class PairingNumbers:
             for pairing_number, player in enumerate(sorted_tournament_players, start=1)
             if pairing_number != player.pairing_number
         }
-        if not tournament_players_by_updated_pairing_number:
+        if not tournament_players_by_updated_pairing_number and not settings_updated:
             return
+        regeneration = self._regeneration(
+            current_tournament_players, sorted_tournament_players
+        )
+        numbering_before = {
+            player.pairing_number: player.id
+            for player in current_tournament_players
+            if player.pairing_number is not None
+        }
         for (
             pairing_number,
             tournament_player,
@@ -136,3 +213,62 @@ class PairingNumbers:
                 database.set_tournament_pairing_settings(
                     tournament.id, tournament.stored_pairing_settings
                 )
+        if regeneration:
+            tournament.log_pibe(
+                Pibe(
+                    PibeType.REGENERATION,
+                    tournament.current_round,
+                    regeneration,
+                    members=numbering_before,
+                )
+            )
+
+    def pending_regeneration(self) -> str:
+        """The reordering the next numbering would make of the players
+        already numbered (see :meth:`_regeneration`), read before it is
+        made."""
+        tournament = self.tournament
+        if tournament.pairing_system.pairing_numbers_are_frozen(tournament):
+            return ''
+        numbered_tournament_players = [
+            player
+            for player in tournament.tournament_players
+            if player.pairing_number is not None
+        ]
+        return self._regeneration(
+            numbered_tournament_players,
+            sorted(
+                numbered_tournament_players, key=attrgetter('starting_rank_sort_key')
+            ),
+        )
+
+    def _regeneration(
+        self,
+        numbered_tournament_players: list['TournamentPlayer'],
+        renumbered_tournament_players: list['TournamentPlayer'],
+    ) -> str:
+        """How renumbering the players reorders the ones already numbered,
+        in their former numbers: ``'18 19 21 => 21 18 19'``. Empty when the
+        order holds — the players inserted or removed only shift the
+        others — or when no pairing was made from the numbering yet."""
+        tournament = self.tournament
+        if not (tournament.logs_pairing_breaches and tournament.has_pairings):
+            return ''
+        numbered_ids = {player.id for player in numbered_tournament_players}
+        before = sorted(
+            player.pairing_number or 0 for player in numbered_tournament_players
+        )
+        after = [
+            player.pairing_number or 0
+            for player in renumbered_tournament_players
+            if player.id in numbered_ids
+        ]
+        changed = [
+            index for index, number in enumerate(before) if number != after[index]
+        ]
+        if not changed:
+            return ''
+        span = slice(changed[0], changed[-1] + 1)
+        return (
+            f'{" ".join(map(str, before[span]))} => {" ".join(map(str, after[span]))}'
+        )

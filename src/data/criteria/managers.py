@@ -126,8 +126,12 @@ class SearchFilterManager:
         return filters
 
     def get_filters_by_datasource(self) -> dict:
+        from data.input_output import DataSourceManager
+
         datasource_mapping = {
-            'fide': ['federation_filter', 'gender_filter', 'category_filter']
+            data_source.static_id(): list(data_source.search_filter_ids)
+            for data_source in DataSourceManager().entity_types()
+            if data_source.search_filter_ids
         }
 
         plugin_manager.hook.insert_search_filter_for_datasource(

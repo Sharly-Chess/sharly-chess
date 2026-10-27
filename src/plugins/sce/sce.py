@@ -248,6 +248,12 @@ class SCEPlugin(Plugin):
         )
 
     @hookimpl
+    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+        return self.used_by_stored_tournament(
+            tournament.event.stored_event, tournament.stored_tournament
+        )
+
+    @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> None:
@@ -349,6 +355,8 @@ class SCEPlugin(Plugin):
         if SCEUtils.resolve_event_status(event).notify_error_status:
             return True
         if SCEUtils.resolve_last_sync_status(event).notify_error_status:
+            return True
+        if SCEUtils.get_players_removal_pending(event):
             return True
         for tournament in event.tournaments:
             plugin_data = SCEUtils.get_tournament_plugin_data(tournament)

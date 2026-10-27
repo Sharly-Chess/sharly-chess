@@ -1,3 +1,4 @@
+{% import "/admin/common/warning_macros.j2" as warning_macros with context %}
 {% set bye_definition_allowed=admin_player.single_tournament.pairing_system.allow_bye_definition %}
 {% set tournament_player=admin_player.single_tournament_player %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
@@ -29,7 +30,7 @@
                 </h2>
                 <div>{{ admin_player.club }}</div>
                 {% if admin_event.is_team_event and admin_player.team %}
-                    <div><strong>{{ _('Team:') }}</strong> {{ admin_player.team.name }}</div>
+                    <div><strong>{{ _('%(string)s:', string=_('Team')) }}</strong> {{ admin_player.team.name }}</div>
                 {% endif %}
                 {% set category = tournament_player.category.name %}
                 <div>
@@ -118,7 +119,7 @@
              <h4>
                 {{ _('Tournament record') }}
             </h4>
-            {% set display_rating_change = tournament.player_rating_type == 3 and tournament_player.tournament.started %}
+            {% set display_rating_change = tournament.uses_fide_ratings and tournament_player.tournament.started %}
             <table
                 id="record-table"
                 class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
@@ -309,18 +310,29 @@
                                         ) }}
                                         <script>
                                             $('#{{ id }}').change(function () {
-                                                htmx.ajax('PATCH',
+                                                const select = $(this);
+                                                const setBye = () => htmx.ajax('PATCH',
                                                     "{{ url_for(
                                                         'admin-player-set-bye',
                                                         event_uniq_id=admin_event.uniq_id,
                                                         player_id=admin_player.id,
                                                         round=round
-                                                    ) }}?result=" + $(this).val(),
+                                                    ) }}?result=" + select.val(),
                                                     {
                                                         target: "body",
                                                         swap: "outerHTML",
                                                     },
                                                 );
+                                                {% if tournament_player.half_point_bye_needs_confirmation(round) %}
+                                                    if (select.val() === '{{ half_point_bye_value }}') {
+                                                        $('#second-hpb-confirmation').removeClass('d-none').data({
+                                                            confirm: setBye,
+                                                            cancel: () => select.val('{{ data[name] }}').trigger('change.select2'),
+                                                        });
+                                                        return;
+                                                    }
+                                                {% endif %}
+                                                setBye();
                                             });
                                         </script>
                                     {% else %}
@@ -400,7 +412,7 @@
                                     {% endif %}
                                 </td>
                                 <td  class="text-nowrap text-end {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
-                                    {{ tournament_player.rating + delta }} F
+                                    {{ tournament_player.rating_used_by_fide.value + delta }} F
                                 </td>
                                 <td class="text-nowrap text-center {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
                                     ({{ delta }})
@@ -410,6 +422,22 @@
                     {% endif %}
                 </tbody>
             </table>
+            {% call(button) warning_macros.confirmation(
+                'second-hpb-confirmation',
+                _(
+                    'The FIDE regulations allow a player one half-point bye per tournament, '
+                    'and %(player)s already has one.',
+                    player=admin_player.full_name,
+                ),
+                _('Set Half-Point Bye'),
+                hidden=true,
+            ) %}
+                {% if button == 'cancel' %}
+                    onclick="const box = $('#second-hpb-confirmation'); box.addClass('d-none'); box.data('cancel')();"
+                {% else %}
+                    onclick="const box = $('#second-hpb-confirmation'); box.addClass('d-none'); box.data('confirm')();"
+                {% endif %}
+            {% endcall %}
             {% if not admin_event.is_team_event %}
                 <div>
                     <span class="fst-italic">

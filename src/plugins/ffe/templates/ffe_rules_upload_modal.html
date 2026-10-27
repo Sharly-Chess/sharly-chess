@@ -21,8 +21,8 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if ffe_configured_tournaments|length == 1 %}
-                    {% set tournament = ffe_configured_tournaments[0] %}
+                {% if ffe_rules_tournaments|length == 1 %}
+                    {% set tournament = ffe_rules_tournaments[0] %}
                     <h4>
                         {{ _('%(string)s:', string=_('Tournament')) }}
                         {{ tournament.name }}
@@ -35,7 +35,7 @@
                     file_accept='application/pdf',
                     data=data, errors=errors
                 ) }}
-                {% if ffe_configured_tournaments|length > 1 %}
+                {% if ffe_rules_tournaments|length > 1 %}
                     <table class="table prominent table-striped mt-3 mb-1 table-sm table-hover w-100 bg-light mx-auto justify-content-center">
                         <thead class="modal-table-sticky-header">
                             <tr>
@@ -55,7 +55,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for tournament in ffe_configured_tournaments %}
+                            {% for tournament in ffe_rules_tournaments %}
                                 <tr>
                                     <td class="ps-2">
                                         {% set name = 'tournament_' ~ tournament.id %}

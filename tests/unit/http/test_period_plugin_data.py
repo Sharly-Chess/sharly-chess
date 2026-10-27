@@ -1,0 +1,171 @@
+"""A period carries the identifiers of the registration it is submitted
+under.
+
+The FFE gives each period its own homologation number and password,
+so the tournament form asks for one set per period — under the plugin's
+own field names, suffixed with the period they belong to.
+"""
+
+from collections.abc import Iterator
+from datetime import datetime, timedelta
+
+import pytest
+from litestar.testing import TestClient
+
+from data.loader import EventLoader
+from database.sqlite.event.event_database import EventDatabase
+from tests.test_config import TestUtils
+from utils.date_time import format_date_range, format_datetime
+
+EVENT_ID = 'test-period-plugin-data'
+TOURNAMENT_NAME = 'test-period-plugin-data-tournament'
+ROUND_DATETIMES = {
+    round_nb: datetime(2026, 11, 2, 14) + timedelta(days=10 * (round_nb - 1))
+    for round_nb in range(1, 5)
+}
+
+
+@pytest.fixture
+def event() -> Iterator[str]:
+    TestUtils.create_event(EVENT_ID)
+    TestUtils.create_tournament(EVENT_ID, TOURNAMENT_NAME, overrides={'rounds': 4})
+    yield EVENT_ID
+    EventLoader.unload_event(EVENT_ID)
+    TestUtils.delete_event(EVENT_ID)
+
+
+def _tournament_id(event: str) -> int:
+    with EventDatabase(event) as database:
+        tournament_id = next(
+            stored.id
+            for stored in database.load_stored_tournaments()
+            if stored.name == TOURNAMENT_NAME
+        )
+    assert tournament_id is not None
+    return tournament_id
+
+
+def _periods(event: str):
+    with EventDatabase(event) as database:
+        return database.load_tournament_stored_periods(_tournament_id(event))
+
+
+def _update(http: TestClient, event: str, **fields: str):
+    return http.patch(
+        f'/tournament-update/{event}/{_tournament_id(event)}',
+        data={
+            'name': TOURNAMENT_NAME,
+            'rounds': '4',
+            'pairing_system': 'SWISS',
+            'SWISS_pairing_variation': 'SWISS_STANDARD',
+            'date_range': format_date_range(
+                datetime(2026, 11, 1).date(), datetime(2026, 12, 15).date()
+            ),
+        }
+        | {
+            f'round_{round_nb}_datetime': format_datetime(round_datetime)
+            for round_nb, round_datetime in ROUND_DATETIMES.items()
+        }
+        | fields,
+    )
+
+
+@pytest.mark.unit
+def test_the_form_asks_for_one_registration_per_period(http: TestClient, event: str):
+    _update(http, event, multi_period='on', round_3_period_start='on')
+    second_period = _periods(event)[1]
+    assert second_period.first_round == 3
+    modal = http.get(f'/tournament-modal/update/{event}/{_tournament_id(event)}')
+    assert modal.status_code == 200
+    assert 'ffe_id_period_3' in modal.text
+    assert 'ffe_password_period_3' in modal.text
+
+
+@pytest.mark.unit
+def test_a_period_keeps_its_own_registration(http: TestClient, event: str):
+    _update(http, event, multi_period='on', round_3_period_start='on')
+    _update(
+        http,
+        event,
+        multi_period='on',
+        round_3_period_start='on',
+        ffe_id_period_3='49944',
+        ffe_password_period_3='ABCDEFGHIJ',
+    )
+    stored = _periods(event)[1]
+    assert stored.plugin_data['ffe']['ffe_id'] == 49944
+    assert stored.plugin_data['ffe']['password'] == 'ABCDEFGHIJ'
+
+
+@pytest.mark.unit
+def test_the_tournament_keeps_its_own(http: TestClient, event: str):
+    """The fields without a period belong to the tournament, which is the
+    first period's registration — where the FFE publishes the whole
+    tournament for the players."""
+    _update(
+        http,
+        event,
+        multi_period='on',
+        round_3_period_start='on',
+        ffe_id='49943',
+        ffe_password='JIHGFEDCBA',
+    )
+    with EventDatabase(event) as database:
+        stored_tournament = next(
+            stored
+            for stored in database.load_stored_tournaments()
+            if stored.name == TOURNAMENT_NAME
+        )
+    assert stored_tournament.plugin_data['ffe']['ffe_id'] == 49943
+    assert _periods(event)[1].plugin_data == {}
+
+
+@pytest.mark.unit
+def test_a_boundary_not_saved_yet_asks_for_its_own_registration(
+    http: TestClient, event: str
+):
+    """A period has no id until it is saved, so its fields are named
+    after the round it starts at — otherwise every new card would carry
+    the same names and the form would post each of them twice."""
+    section = http.get(
+        f'/tournament-schedule-section/{event}',
+        params={
+            'tournament_id': str(_tournament_id(event)),
+            'rounds': '4',
+            'multi_period': 'on',
+            'round_2_period_start': 'on',
+            'round_3_period_start': 'on',
+            'round_4_period_start': 'on',
+            'date_range': format_date_range(
+                datetime(2026, 11, 1).date(), datetime(2026, 12, 15).date()
+            ),
+        }
+        | {
+            f'round_{round_nb}_datetime': format_datetime(round_datetime)
+            for round_nb, round_datetime in ROUND_DATETIMES.items()
+        },
+    )
+    assert section.status_code == 200
+    assert '_period_None' not in section.text
+    for first_round in (2, 3, 4):
+        assert section.text.count(f'name="ffe_id_period_{first_round}"') == 1
+
+
+@pytest.mark.unit
+def test_a_registration_entered_with_a_new_boundary_is_kept(
+    http: TestClient, event: str
+):
+    """The period and its registration arrive in the same save: the
+    fields name the round the period starts at, which the period it
+    creates has."""
+    _update(
+        http,
+        event,
+        multi_period='on',
+        round_3_period_start='on',
+        ffe_id_period_3='49944',
+        ffe_password_period_3='ABCDEFGHIJ',
+    )
+    stored = _periods(event)[1]
+    assert stored.first_round == 3
+    assert stored.plugin_data['ffe']['ffe_id'] == 49944

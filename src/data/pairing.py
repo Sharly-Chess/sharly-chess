@@ -1,4 +1,5 @@
 import weakref
+from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 from collections import namedtuple
 
@@ -15,6 +16,7 @@ from utils.enum import Result, BoardColor, PlayerRatingType
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.input_output.trf.trf_data import TrfGame
+    from data.pibes import RatingCorrection
     from data.player import TournamentPlayer
 
 logger: Logger = get_logger()
@@ -66,7 +68,14 @@ class Pairing:
         if self._result_value != self.stored_pairing.result:
             self._result_value = self.stored_pairing.result
             self._result = Result(self._result_value)
+        # A bye is part of the pairings, not a result.
+        if not self._result.is_bye and self.results_hidden:
+            return Result.NO_RESULT
         return self._result
+
+    @cached_property
+    def results_hidden(self) -> bool:
+        return self.tournament_player.tournament.hides_round_results(self.round)
 
     @property
     def points(self) -> float:
@@ -78,6 +87,8 @@ class Pairing:
 
     @property
     def illegal_moves(self) -> int:
+        if self.results_hidden:
+            return 0
         return self.stored_pairing.illegal_moves
 
     def update_result(self, event_database: EventDatabase, result: Result) -> None:
@@ -229,9 +240,36 @@ class Pairing:
     def next_round_bye(self) -> bool:
         return self.result.is_next_round_bye
 
-    def to_trf(self, round_number: int) -> 'TrfGame':
+    def to_trf(
+        self,
+        round_number: int,
+        correction: Optional['RatingCorrection'] = None,
+        for_engine: bool = False,
+    ) -> 'TrfGame':
+        """The game as a TRF round, or as *correction* gives it when it
+        corrects this very game. The pairing engine reads an adjourned game
+        as the draw it counts as; other readers get an unknown result for
+        it, and for a game not played yet."""
         from data.input_output.trf.trf_data import TrfGame
         from data.input_output.trf.trf_mappers import TrfColor
+
+        player_id = self.tournament_player.id
+        if (
+            correction is not None
+            and player_id is not None
+            and correction.player_ids == {player_id, self.opponent_id}
+        ):
+            return TrfGame(
+                opponent_id=getattr(self.opponent, 'pairing_number', None),
+                color=TrfColor.get_outer_value(
+                    BoardColor.WHITE
+                    if player_id == correction.white_player_id
+                    else BoardColor.BLACK,
+                    False,
+                ),
+                result=correction.result_of(player_id).to_trf,
+                round=round_number,
+            )
 
         opponent_pn = getattr(self.opponent, 'pairing_number', None)
         if self.result.is_bye:
@@ -251,9 +289,19 @@ class Pairing:
             color=TrfColor.get_outer_value(
                 self.color, self.result.is_bye or opponent_id == 0
             ),
-            result=self.result.to_trf,
+            result=self._trf_result(for_engine),
             round=round_number,
         )
+
+    def _trf_result(self, for_engine: bool) -> str:
+        from data.input_output.trf.trf_mappers import TrfResult
+
+        if for_engine:
+            if self.result.is_adjourned:
+                return Result.DRAW.to_trf
+        elif self.paired_no_result:
+            return TrfResult.UNKNOWN
+        return self.result.to_trf
 
     @property
     def color(self) -> BoardColor | None:
@@ -314,20 +362,8 @@ class Pairing:
         )
 
         comment = ''
-        opponent_rating_overridden = not opponent.rating_is_overridden(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        ) and opponent.will_fide_override_with_standard_rating(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        )
-        player_rating_overridden = not tournament_player.rating_is_overridden(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        ) and tournament_player.will_fide_override_with_standard_rating(
-            tournament_player.tournament.rating,
-            tournament_player.tournament.player_rating_type,
-        )
+        opponent_rating_overridden = opponent.fide_uses_standard_rating
+        player_rating_overridden = tournament_player.fide_uses_standard_rating
 
         if opponent_rating_overridden and player_rating_overridden:
             comment = _(

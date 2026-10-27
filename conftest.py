@@ -47,9 +47,6 @@ def pytest_configure(config):
     config.addinivalue_line(
         'markers', 'release_only: mark test as release only test (runs on release only)'
     )
-    # Relative page.goto() targets resolve against the port this process
-    # picked; the ini value is a fixed one.
-    config.option.base_url = TestConfig.TEST_BASE_URL
     # The pairing engines and web libraries are downloaded on first use.
     # Done here, once, before any pytest-xdist worker starts: left to the
     # servers the workers launch, they would all download into the same
@@ -78,21 +75,37 @@ def _coverage_is_running() -> bool:
 class BackendServer:
     """Manages the backend server for testing."""
 
-    def __init__(self, host: str | None = None, port: int | None = None):
-        self.host = host or TestConfig.TEST_HOST
-        self.port = port or TestConfig.TEST_PORT
+    #: How many ports to try the server on before giving up.
+    START_ATTEMPTS = 3
+
+    def __init__(self):
+        self.host = TestConfig.TEST_HOST
+        self.port = TestConfig.TEST_PORT
+        self.base_url = TestConfig.TEST_BASE_URL
         self.process: subprocess.Popen | None = None
         self.log_file: Path | None = None
         self.log_file_handle: TextIOWrapper | None = None
-        # Construct base URL with explicit port
-        if self.port == 80:
-            self.base_url = f'http://{self.host}'
-        else:
-            self.base_url = f'http://{self.host}:{self.port}'
-        self.test_db_dir = None
 
     def start(self):
-        """Start the backend server."""
+        """Start the backend server, on another port if its own is taken."""
+        for attempt in range(1, self.START_ATTEMPTS + 1):
+            self._launch()
+            if self._wait_for_server():
+                return
+            if (
+                attempt == self.START_ATTEMPTS
+                or TestConfig.TEST_PORT_FIXED
+                or not self._lost_port()
+            ):
+                raise RuntimeError(self._startup_failure())
+            print(f'Port {self.port} was taken before the server bound it, retrying')
+            self._discard()
+            TestConfig.move_to_free_port()
+            self.port = TestConfig.TEST_PORT
+            self.base_url = TestConfig.TEST_BASE_URL
+
+    def _launch(self):
+        """Start the server process, without waiting for it to be ready."""
 
         # A server left over from a previous run still answers on the port,
         # and _wait_for_server would take it for the one started here: the
@@ -103,6 +116,8 @@ class BackendServer:
                 f'Port {self.port} is already in use: stop whatever is '
                 'listening on it before running the tests.'
             )
+
+        env.update(TestConfig.get_test_env_vars())
 
         # Add src directory to PYTHONPATH for server to find modules
         current_pythonpath = env.get('PYTHONPATH', '')
@@ -138,9 +153,7 @@ class BackendServer:
             )
 
         # Create log file for server output - use unique name to avoid conflicts
-        import time
-
-        self.log_file = DATA_DIR / f'server_{int(time.time())}.log'
+        self.log_file = DATA_DIR / f'server_{int(time.time())}_{self.port}.log'
 
         # Keep reference to log file handle so we can close it later
         self.log_file_handle = open(self.log_file, 'w')
@@ -163,9 +176,6 @@ class BackendServer:
             cwd=Path(__file__).parent,  # Ensure we're in the right directory
             **group_kwargs,
         )
-
-        # Wait for server to be ready
-        self._wait_for_server()
 
     #: How long to let the server shut down cleanly before killing it. It
     #: holds the screens' event streams open and never exits on the
@@ -254,33 +264,59 @@ class BackendServer:
         if not self._wait_for_free_port():
             print(f'Warning: port {self.port} still in use after stopping the server')
 
-    def _wait_for_server(self, timeout: int | None = None):
-        """Wait for the server to be ready to accept connections."""
-        timeout = timeout or TestConfig.TEST_TIMEOUT
-        start_time = time.time()
-
-        while time.time() - start_time < timeout:
+    def _wait_for_server(self) -> bool:
+        """Wait for the server to accept connections, and say whether it
+        does."""
+        assert self.process is not None
+        deadline = time.time() + TestConfig.TEST_TIMEOUT
+        while time.time() < deadline:
             try:
                 response = requests.get(f'{self.base_url}/', timeout=5)
                 if response.status_code in [
                     200,
                     404,
                 ]:  # 404 is fine, means server is up
-                    return
+                    return True
             except requests.exceptions.RequestException:
                 pass
+            if self.process.poll() is not None:
+                return False
             time.sleep(0.5)
+        return False
 
-        error_message = f'Server did not start within {timeout} seconds'
-        if self.process and self.process.poll() is not None:
-            error_message += f' (exited with code {self.process.returncode})'
+    def _server_log(self) -> str:
+        assert self.log_file_handle is not None and self.log_file is not None
+        self.log_file_handle.flush()
+        return self.log_file.read_text(errors='replace')
+
+    def _lost_port(self) -> bool:
+        """Whether the server stopped because something else had bound its
+        port first."""
+        assert self.process is not None
+        if self.process.poll() is None:
+            return False
+        log = self._server_log()
+        # Taken by a listener, the server sees it and gives up on its own;
+        # held by any other socket, its bind fails with EADDRINUSE, which
+        # Windows numbers 10048.
+        return 'already in use' in log or '10048' in log
+
+    def _startup_failure(self) -> str:
+        assert self.process is not None
+        message = f'Server did not start within {TestConfig.TEST_TIMEOUT} seconds'
+        if self.process.poll() is not None:
+            message += f' (exited with code {self.process.returncode})'
         # The server's output went to its log file, not to a pipe.
-        if self.log_file_handle and self.log_file:
-            self.log_file_handle.flush()
-            error_message += f'\n\nServer log ({self.log_file}):\n'
-            error_message += self.log_file.read_text(errors='replace')[-4000:]
+        message += f'\n\nServer log ({self.log_file}):\n'
+        message += self._server_log()[-4000:]
+        return message
 
-        raise RuntimeError(error_message)
+    def _discard(self):
+        """Clear away a server that failed to start."""
+        self._signal_group(force=True)
+        assert self.process is not None and self.log_file_handle is not None
+        self.process.wait()
+        self.log_file_handle.close()
 
 
 @pytest.fixture(scope='session')
@@ -298,6 +334,16 @@ def backend_server(request):
     yield server
     print(f'Stopping server on {server.host}:{server.port}')
     server.stop()
+
+
+@pytest.fixture(scope='session')
+def base_url(backend_server) -> str:
+    """The URL relative page.goto() targets resolve against.
+
+    It is the server's, known only once the server is up: the port this
+    process picked may have been taken before the server could bind it.
+    """
+    return backend_server.base_url if backend_server else TestConfig.TEST_BASE_URL
 
 
 @pytest.fixture(scope='session')
@@ -345,9 +391,9 @@ def setup_page(request, backend_server):
 
 
 @pytest.fixture(scope='session')
-def lan_context(browser: Browser):
+def lan_context(browser: Browser, backend_server):
     config = SharlyChessConfig()
-    config.web_port = TestConfig.TEST_PORT
+    config.web_port = backend_server.port
     context = browser.new_context(base_url=config.lan_urls[0])
     yield context
     context.close()
@@ -411,7 +457,8 @@ class RetryingAPIRequestContext:
 @pytest.fixture(scope='session')
 def api_request_context(
     playwright: Playwright,
+    base_url: str,
 ) -> Generator[APIRequestContext]:
-    request_context = playwright.request.new_context(base_url=TestConfig.TEST_BASE_URL)
+    request_context = playwright.request.new_context(base_url=base_url)
     yield cast(APIRequestContext, RetryingAPIRequestContext(request_context))
     request_context.dispose()

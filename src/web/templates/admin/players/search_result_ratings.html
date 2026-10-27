@@ -1,0 +1,8 @@
+{% if player.has_real_rating %}
+    {% set _ratings = player.event_ratings %}
+    {% for cadence, rating in _ratings %}
+        {{ rating }}{% if _ratings|length > 1 %} ({{ cadence.acronym }}){% endif %}{% if not loop.last %} /{% endif %}
+    {% endfor %}
+{% else %}
+    <i>{{ pgettext('singular for unrated player', 'Unrated') }}</i>
+{% endif %}

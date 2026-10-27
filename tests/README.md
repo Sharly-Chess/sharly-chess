@@ -11,6 +11,10 @@ The suite has three tiers:
   for belongs here.
 - `e2e/` — Playwright against a real server, for what only a browser can
   show: htmx swaps, keyboard entry, screens rotating.
+- `gacrux/` — the TRF26 export of every test tournament, checked by Gacrux,
+  an independent pairing and tie-break checker (fetched into `tools/` on first
+  run). Left out of both CI suites and run by hand for the
+  endorsement. See `docs/technical-appendices/fide-endorsement.md`.
 
 ## Setup
 
@@ -34,8 +38,11 @@ TEST_ENV=true ./venv/bin/pytest tests/e2e
 pytest -m unit
 pytest -m e2e
 
+# The Gacrux checks, which no default run includes (see above)
+TEST_ENV=true pytest tests/gacrux -m gacrux
+
 # Release-only tests are skipped by default; a release runs them with
-pytest -m ""
+pytest -m "not gacrux"
 
 # With coverage (the floor is in pyproject.toml, under [tool.coverage.report])
 pytest --cov --cov-report=term-missing:skip-covered

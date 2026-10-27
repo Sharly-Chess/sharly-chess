@@ -191,6 +191,7 @@ class PlaceCardTemplateAdminController(BaseAdminController):
                 (_('Category'), 'category'),
                 (_('Federation'), 'federation'),
                 (_('Flag'), 'federation_flag | safe'),
+                (_('National ID'), 'national_id'),
                 (_('Club'), 'club'),
                 (_('Year of birth'), 'year_of_birth'),
                 (_('Gender'), 'gender'),
@@ -215,7 +216,13 @@ class PlaceCardTemplateAdminController(BaseAdminController):
             )
         elif type_id == 'pairing':
             groups.append(
-                group(_('Pairing'), [(_('Board number'), '{{ pairing.number }}')])
+                group(
+                    _('Pairing'),
+                    [
+                        (_('Board number'), '{{ pairing.number }}'),
+                        (_('Round'), '{{ pairing.round }}'),
+                    ],
+                )
             )
             groups.append(player_group('pairing.white_player', _('White player')))
             groups.append(player_group('pairing.black_player', _('Black player')))

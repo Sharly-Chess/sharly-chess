@@ -57,6 +57,7 @@ class _AbsentMatchPointsHarness(TestCase):
         match_points: dict[int, float],
         rule_set: str | None = None,
         game_points: dict[int, float] | None = None,
+        boards: int = N,
     ) -> None:
         TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
         stored_tournament = TestUtils.create_tournament(
@@ -64,8 +65,7 @@ class _AbsentMatchPointsHarness(TestCase):
             TOURNAMENT_NAME,
             overrides={
                 'rounds': TEAMS - 1,
-                'current_round': 1,
-                'team_player_count': N,
+                'team_player_count': boards,
                 'pairing': 'TEAM_ROUND_ROBIN_BERGER',
                 'primary_score': ScoreType.MATCH_POINTS,
                 'match_points': match_points,
@@ -89,7 +89,7 @@ class _AbsentMatchPointsHarness(TestCase):
                     )
                 )
                 self.team_ids.append(team_id)
-                for index in range(N):
+                for index in range(boards):
                     player_id = database.add_stored_player(
                         StoredPlayer(
                             id=None,
@@ -243,6 +243,88 @@ class TeamAbsentMatchPointsTestCase(_AbsentMatchPointsHarness):
         self.assertFalse(matches[opponent_id].voluntary_unplayed)
         self.assertEqual(matches[opponent_id].own_mp, 3.0)
 
+    def _forfeit_each_way(
+        self, tournament: Tournament, team_id: int, losses: list[int]
+    ) -> Tournament:
+        """Forfeit round one's boards, ``losses[index]`` naming the team that
+        loses board ``index``."""
+        team_board = self._round_one_match(tournament, team_id)
+        for index, board in enumerate(team_board.boards):
+            white_team_id, _ = team_board.board_team_ids(board)
+            tournament.add_result(
+                board,
+                Result.FORFEIT_LOSS
+                if white_team_id == losses[index]
+                else Result.FORFEIT_WIN,
+            )
+        return self._load()
+
+    def test_a_drawn_match_with_a_player_of_each_team_present_is_played(
+        self,
+    ) -> None:
+        """Each team forfeits one board: no game was played, but a player of
+        each team turned up, so both teams elected to play the round. The
+        drawn match is played for both, and a voluntary unplayed round for
+        neither."""
+        self._create(_CUP_MATCH_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        tournament = self._forfeit_each_way(tournament, team_id, [team_id, opponent_id])
+        matches = {
+            record.team_id: record.matches[0] for record in tournament.team_records()
+        }
+        for team in (team_id, opponent_id):
+            self.assertEqual(matches[team].match_type, TeamMatchType.PLAYED)
+            self.assertFalse(matches[team].voluntary_unplayed)
+
+    def test_a_match_won_on_forfeits_each_way_is_played_for_both(self) -> None:
+        """Every board forfeited, but not all by the same team: a player of
+        each team turned up, so the match is played for both teams and its
+        result stands."""
+        self._create(_CUP_MATCH_POINTS, boards=3)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        tournament = self._forfeit_each_way(
+            tournament, team_id, [team_id, opponent_id, opponent_id]
+        )
+        matches = {
+            record.team_id: record.matches[0] for record in tournament.team_records()
+        }
+        for team in (team_id, opponent_id):
+            self.assertEqual(matches[team].match_type, TeamMatchType.PLAYED)
+            self.assertFalse(matches[team].voluntary_unplayed)
+        self.assertEqual(matches[team_id].own_mp, 3.0)
+        self.assertEqual(matches[opponent_id].own_mp, 1.0)
+
+    def test_a_match_neither_team_scored_in_is_lost_by_both(self) -> None:
+        """Every board ends 0-0 over the board: a draw needs a point on each
+        side, so both teams lose the match, and it stays a played round."""
+        self._create(_CUP_MATCH_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        for board in self._round_one_match(tournament, team_id).boards:
+            tournament.add_result(board, Result.PENALTY_LL)
+        tournament = self._load()
+        for team in (team_id, opponent_id):
+            row = self._row(tournament, team)
+            self.assertEqual(row.mp, 1.0)
+            self.assertEqual(row.losses, 1)
+            self.assertEqual(row.draws, 0)
+        matches = {
+            record.team_id: record.matches[0] for record in tournament.team_records()
+        }
+        self.assertEqual(matches[team_id].match_type, TeamMatchType.PLAYED)
+        self._assert_tally_adds_up(tournament)
+
     def test_a_contested_match_stays_a_played_round(self) -> None:
         """One game over the board is enough: a team with three boards
         forfeited has not forfeited the match."""
@@ -327,11 +409,50 @@ class LoubatiereForfeitedMatchTestCase(_AbsentMatchPointsHarness):
         assert rule_set is not None
         team = tournament.event.teams_by_id[forfeit_id]
         adjustment = rule_set.team_point_adjustment(team, 1)
-        # The forfeited games still cost a game point each; the match
-        # points come from the absence value, not from an adjustment.
+        # The forfeited games cost a game point each, but the match
+        # score stops at zero and the team scored nothing: the penalty
+        # is void, and says so. The match points come from the absence
+        # value, not from an adjustment.
         assert adjustment is not None
-        self.assertEqual(adjustment.mp, 0.0)
-        self.assertLess(adjustment.gp, 0.0)
+        self.assertEqual((adjustment.mp, adjustment.gp), (0.0, 0.0))
+        self.assertIn('below zero', adjustment.explanation)
 
         self.assertEqual(self._mp(tournament, forfeit_id), 0.0)
         self.assertEqual(self._mp(tournament, opponent_id), 3.0)
+
+    def test_the_forfeit_penalty_decides_the_match_in_the_pairing_totals(
+        self,
+    ) -> None:
+        """2-2 over the boards, one of the team's two points a game lost by
+        forfeit: the -1 penalty makes the match 1-2, so the opponent wins
+        it. The totals the next round is paired on agree with the
+        standings."""
+        self._create(_CUP_MATCH_POINTS, rule_set=self.RULE_SET, boards=4)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        team_board = self._round_one_match(tournament, team_id)
+        losers = [opponent_id, opponent_id, team_id]
+        for index, board in enumerate(team_board.boards):
+            white_team_id, _ = team_board.board_team_ids(board)
+            if index < len(losers):
+                result = Result.LOSS if white_team_id == losers[index] else Result.WIN
+            else:
+                result = (
+                    Result.FORFEIT_LOSS
+                    if white_team_id == team_id
+                    else Result.FORFEIT_WIN
+                )
+            tournament.add_result(board, result)
+        tournament = self._load()
+
+        self.assertEqual(self._mp(tournament, team_id), 1.0)
+        self.assertEqual(self._mp(tournament, opponent_id), 3.0)
+        totals = tournament.team_totals_after(1)
+        self.assertEqual(totals[team_id][0], 1.0)
+        self.assertEqual(totals[opponent_id][0], 3.0)
+        self.assertEqual(
+            tournament.team_primary_score_before_round(opponent_id, 2), 3.0
+        )

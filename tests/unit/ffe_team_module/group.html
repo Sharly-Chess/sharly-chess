@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head id="ctl00_Head1"><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><link href="ffe.css?version=1" rel="stylesheet" type="text/css" /><link rel="shortcut icon" type="image/x-icon" href="images/ffe16.ico" /><title>
+	FFE - Gestion des compétitions par équipes
+</title></head>
+<body id="ctl00_ThisPage" bgcolor="#5C3385" text="#000000" leftmargin="0" topmargin="0" bottommargin="0">
+<form name="aspnetForm" method="post" action="Equipes.aspx" id="aspnetForm" style="margin:0px;" enctype="multipart/form-data">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="VIEWSTATE" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="E786A3C3" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="VIEWSTATE" />
+</div>
+<map name="MapFFE">
+  <area shape="rect" coords="8,8,56,56" href="http://www.echecs.asso.fr">
+</map>
+<table height=100% border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" id="TablePrincipale">
+
+<!----------------- Haut de Page ----------------->
+  <tr id="ctl00_RowEnTete" height="74px" valign="top">
+	<td colspan="2">
+      <table border="0" cellspacing="0" cellpadding="0" width="980px">
+<!-- rangée du Haut -->
+        <tr valign="top">
+<!-- Cellule Logo -->
+          <td><img src="images/banniere_haut.gif" border=0 usemap="#MapFFE" width="460px" /></td>
+<!-- Cellule Login -->
+          <td align="center" bgcolor="#990066" width="420px">
+
+          </td>
+<!-- Séparateur -->
+          <td><img src="images/banniere_sepa.gif" border="0" width="8px" /></td>
+<!-- Cellule Password -->
+          <td align="center" bgcolor="#593083" width="480px">
+
+            <table id="ctl00_TableConnected" border="0" cellpadding="0" cellspacing="0">
+		<tr valign="middle">
+			<td>
+                  &nbsp;<br /><a id="ctl00_CmdDeconnection" class="lien_menu" href="javascript:__doPostBack('ctl00$CmdDeconnection','')">Déconnexion</a>
+                </td>
+		</tr>
+	</table>
+
+          </td>
+        </tr>
+<!-- rangée du bas -->
+        <tr>
+          <td><img src="images/banniere_bas.gif" border="0" /></td>
+          <td colspan="3" align=right class="para_bleu_small">
+            <span id="ctl00_LabelUser">group-account est connecté&nbsp;&nbsp;</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+	<td background="images/fond_bordure.gif" width="20px"></td>
+</tr>
+
+
+<!-- rangée Centrale -->
+<tr valign=top height=100%>
+
+<!------------------ Cellule Menu ------------------------------>
+  <td width="150pt" bgcolor="#990066">
+    <table cellspacing="0" cellpadding="0" width="150" bgcolor="#990066" border="0">
+
+      <tr id="ctl00_RepeaterMenu_ctl00_RowImage" height="28" valign="bottom">
+	<td colspan="2"><img src="Images/menu_equipes.gif"></td>
+</tr>
+
+
+
+
+      <tr id="ctl00_RepeaterMenu_ctl01_RowTexte">
+	<td width="26"></td>
+	<td width="124">
+          <a id="ctl00_RepeaterMenu_ctl01_LienMenu" class="lien_menu" href="Equipes.aspx">Equipes</a>
+        </td>
+</tr>
+
+
+      <tr>
+        <td width=26></td>
+        <td width=124><span id="ctl00_LabelTest"></span></td>
+      </tr>
+    </table>
+  </td>
+
+<!------------------ Cellule Centrale ------------------------------>
+  <td width="830pt">
+
+
+<script language='JavaScript'>
+function openWindow2(url) {
+	popupWin = window.open(url,'new_page','width=520,height=600');
+}
+</script>
+
+<table id="TablePage" cellSpacing="6" cellPadding="1" class="Page">
+  <tr>
+    <td colspan=2><span id="ctl00_ContentPlaceHolderMain_LabelTitre" class="titre_menu">Module d'Administration</span></td>
+    <td align=center><a href="AideEquipe.pdf" Class=lien_texte target=_blank>Fichier d'Aide (pdf)</a></td>
+  </tr>
+  <tr>
+    <td colspan=3><span id="ctl00_ContentPlaceHolderMain_LabelSousTitre" class="titre_magenta">Compétitions par équipes</span><br /><img src="images/ligne.gif" /></td>
+  </tr>
+<!------------------ Menu du haut ------------------------>
+  <tr class=tableau_violet_f>
+    <td id="ctl00_ContentPlaceHolderMain_CellMenuGroupe" colspan="3">
+      <a id="ctl00_ContentPlaceHolderMain_LinkEMail" class="lien_titre" href="JavaScript:openWindow2('SendMail.aspx?saison=&amp;Id=3593')">E-Mail</a> |
+      <a id="ctl00_ContentPlaceHolderMain_LinkCorrespondants" class="lien_titre" href="GroupeCorrespondants.aspx?saison=&amp;Id=3593" target="_blank">Correspondants</a> |
+      <a id="ctl00_ContentPlaceHolderMain_LinkEtiquettes" class="lien_titre" href="GroupeEtiquettes.aspx?saison=&amp;Id=3593" target="_blank">Etiquettes</a> |
+      <a id="ctl00_ContentPlaceHolderMain_LinkCalendrier" class="lien_titre" href="GroupeCalendrier.aspx?saison=&amp;Id=3593" target="_blank">Calendrier</a> |
+      <a onclick="return confirm('lancer les appariements Berger ?');" id="ctl00_ContentPlaceHolderMain_LinkCmdApparier" class="lien_titre" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdApparier','')">Apparier</a> |
+      <a onclick="return confirm('calculer le classement ?');" id="ctl00_ContentPlaceHolderMain_LinkCmdClassement" class="lien_titre" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdClassement','')">Classement</a>
+    </td>
+
+  </tr>
+<!------------------ Partie principale ------------------------>
+  <tr>
+    <td valign=top align=center width=380>
+<!------------------ Table DropLists -------------------------->
+      <table width=100% cellspacing=0 cellpadding=0>
+        <tr>
+          <td width=95%><select name="ctl00$ContentPlaceHolderMain$SelectCompetition" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolderMain$SelectCompetition\',\'\')', 0)" id="ctl00_ContentPlaceHolderMain_SelectCompetition" class="centpourcent">
+	<option value="1">S&#233;lectionner une comp&#233;tition</option>
+	<option value="2">Interclubs</option>
+	<option value="3">Interclubs Jeunes</option>
+	<option value="10">Interclubs Feminins</option>
+	<option value="7">Coupe de France</option>
+	<option selected="selected" value="8">Coupe Jean-Claude Loubatiere</option>
+	<option value="9">Interclubs Rapide</option>
+	<option value="38">Coupe de la Parite</option>
+	<option value="11">Competitions Scolaires</option>
+	<option value="15">Ligue d'Auvergne-Rhone-Alpes</option>
+	<option value="21">Ligue de Bourgogne Franche-Comte</option>
+	<option value="12">Ligue de Bretagne</option>
+	<option value="22">Ligue du Centre Val de Loire</option>
+	<option value="23">Ligue de Corse</option>
+	<option value="18">Ligue du Grand Est</option>
+	<option value="39">Ligue de la Guadeloupe</option>
+	<option value="41">Ligue de Guyane</option>
+	<option value="16">Ligue des Hauts-De-France</option>
+	<option value="6">Ligue de l'Ile de France</option>
+	<option value="33">Ligue de la Martinique</option>
+	<option value="5">Ligue de Normandie</option>
+	<option value="19">Ligue de Nouvelle Aquitaine</option>
+	<option value="27">Ligue d'Occitanie</option>
+	<option value="35">Ligue de la Reunion</option>
+	<option value="4">Ligue des Pays de la Loire</option>
+	<option value="32">Ligue de Provence - Alpes - Cote d'Azur</option>
+
+</select></td>
+          <td width=5%>&nbsp;</td>
+        </tr>
+        <tr>
+          <td><select name="ctl00$ContentPlaceHolderMain$SelectDivision" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolderMain$SelectDivision\',\'\')', 0)" id="ctl00_ContentPlaceHolderMain_SelectDivision" class="centpourcent">
+	<option value="1">S&#233;lectionnez une Division</option>
+	<option selected="selected" value="706">Phase Departementale</option>
+	<option value="184">Phase 2</option>
+	<option value="202">Phase 3</option>
+	<option value="216">Phase Finale</option>
+
+</select></td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td><select name="ctl00$ContentPlaceHolderMain$SelectGroupe" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolderMain$SelectGroupe\',\'\')', 0)" id="ctl00_ContentPlaceHolderMain_SelectGroupe" class="centpourcent">
+	<option value="1">S&#233;lectionnez un Groupe</option>
+	<option value="3437">01 - Meximieux</option>
+	<option value="3400">02 - Chauny</option>
+	<option value="3462">02 - Chauny Molter</option>
+	<option value="3496">03 - Yzeure</option>
+	<option value="3420">05 - Briancon</option>
+	<option value="3464">06 - Cannes</option>
+	<option value="3458">07 - les Assions</option>
+	<option value="3388">08 - Vouziers</option>
+	<option value="3480">08 - Vouziers Molter</option>
+	<option value="3477">09 - Seix</option>
+	<option value="3436">10 - Verrieres</option>
+	<option value="3410">11 - Narbonne</option>
+	<option value="3385">12 - Naucelle</option>
+	<option value="3426">13 - Aubagne</option>
+	<option value="3446">14 - Herouville Saint-Clair</option>
+	<option value="3468">14 - Herouville Saint-Clair Molter</option>
+	<option value="3481">16 - la Couronne Molter</option>
+	<option value="3429">16 - la Couronne</option>
+	<option value="3419">17 - Saint-Porchaire</option>
+	<option value="3470">18 - Bourges</option>
+	<option value="3442">19 - Brive</option>
+	<option value="3488">21 - Esbarres</option>
+	<option value="3421">22 - Pleboulle</option>
+	<option value="3414">24 - Bergerac</option>
+	<option value="3412">25 - Besancon</option>
+	<option value="3433">26 - Valence</option>
+	<option value="3404">27 - Louviers</option>
+	<option value="3471">28 - Nogent le Roi</option>
+	<option value="3441">29 - Huelgoat</option>
+	<option value="3469">30 - Caissargues</option>
+	<option value="3499">30 - Caissargues Molter</option>
+	<option value="3422">31 - Blagnac</option>
+	<option value="3479">32 - Auch</option>
+	<option value="3460">33 - Gujan-Mestras</option>
+	<option value="3362">34 - Pezenas</option>
+	<option value="3413">35 - Liffre</option>
+	<option value="3497">36 - Argenton-Sur-Creuse</option>
+	<option value="3432">37 - Saint-Cyr-Sur-Loire</option>
+	<option value="3408">38 - Allevard les Bains</option>
+	<option value="3484">38 - Allevard les Bains Molter</option>
+	<option value="3475">39 - Lons-Le-Saunier</option>
+	<option value="3430">40 - Soorts-Hossegor</option>
+	<option value="3431">41 - Romorantin-Lantenay</option>
+	<option value="3472">42 - Saint-Chamond</option>
+	<option value="3387">44 - Aigrefeuille-Sur-Maine</option>
+	<option value="3383">45 - Olivet</option>
+	<option value="3354">46 - Lalbenque</option>
+	<option value="3418">47 - Foulayronnes</option>
+	<option value="3390">49 - Cholet</option>
+	<option value="3403">50 - Cherbourg</option>
+	<option value="3357">51 - Chalons-En-Champagne</option>
+	<option value="3492">52 - Saint-Dizier</option>
+	<option value="3384">53 - Bonchamp-Les-Laval</option>
+	<option value="3423">54 - Nancy</option>
+	<option value="3402">56 - Pontivy</option>
+	<option value="3416">57 - Sarreguemines</option>
+	<option value="3448">58 - Corbigny</option>
+	<option value="3407">59 - Hazebrouck</option>
+	<option value="3409">60 - Noyon</option>
+	<option value="3378">61 - Sees</option>
+	<option value="3443">62 - Noyelles sous Lens</option>
+	<option value="3406">63 - Lempdes</option>
+	<option value="3364">64 - Bayonne</option>
+	<option value="3445">65 - Tarbes</option>
+	<option value="3398">66 - Perpignan</option>
+	<option value="3386">67 - Bischwiller</option>
+	<option value="3486">67 - Bischwiller Molter</option>
+	<option value="3415">68 - Munster</option>
+	<option value="3405">69 - Lyon</option>
+	<option value="3478">71 - Louhans</option>
+	<option value="3411">72 - la Ferte Bernard</option>
+	<option value="3493">73 - Albertville</option>
+	<option value="3490">74 - Alex Molter</option>
+	<option value="3459">74 - Alex</option>
+	<option value="3485">75 - Paris</option>
+	<option value="3491">76 - Sotteville-Les-Rouen Molter</option>
+	<option value="3447">76 - Sotteville-Les-Rouen</option>
+	<option value="3355">77 - Fontainebleau</option>
+	<option value="3401">78 - Triel sur Seine</option>
+	<option value="3494">79 - Niort</option>
+	<option value="3379">80 - Ham</option>
+	<option value="3427">81 - Mazamet</option>
+	<option value="3482">81 - Mazamet Molter</option>
+	<option value="3461">82 - Montauban</option>
+	<option value="3380">83 - Sanary</option>
+	<option value="3438">84 - Caumont-Sur-Durance</option>
+	<option value="3382">85 - Chauche</option>
+	<option value="3361">86 - Migne-Auxances</option>
+	<option value="3495">87 - Couzeix</option>
+	<option value="3463">88 - Saint Die des Vosges Molter</option>
+	<option value="3399">88 - Saint Die des Vosges</option>
+	<option value="3489">89 - Vermenton</option>
+	<option value="3417">91 - Juvisy-Sur-Orge</option>
+	<option value="3356">92 - Bourg-La-Reine</option>
+	<option value="3377">93 - Montreuil</option>
+	<option value="3365">94 - Perreux-Sur-Marne</option>
+	<option value="3389">95 - Franconville</option>
+	<option selected="selected" value="3593">Test group Swiss</option>
+	<option value="3594">Test group Molter</option>
+
+</select></td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr height=4><td></td></tr>
+      </table>
+<!------------------ Fin DropLists ------------------------>
+<!------------------ Début Equipes ------------------------>
+      <table border=0 cellpadding=2 cellspacing=0 id=TableEquipes width=100%>
+        <tr><td colspan=7 align=center>
+        <span id="ctl00_ContentPlaceHolderMain_SpanMenuEquipe">
+          <b><a id="ctl00_ContentPlaceHolderMain_LinkCmdEquipeCreer" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdEquipeCreer','')">Créer une équipe</a></b>&nbsp;|&nbsp;
+          <b><a id="ctl00_ContentPlaceHolderMain_LinkCmdEquipeColler" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdEquipeColler','')">Coller une équipe</a></b>
+        </span>
+        </td></tr>
+
+        <tr class=tableau_violet_f>
+          <td width=18 align=right>Pl.</td>
+          <td align=left>Equipe</td>
+          <td width=20 align=right>Pts</td>
+          <td width=18 align=right>j.</td>
+          <td width=28 align=right>d.</td>
+          <td width=24 align=right>p.</td>
+          <td width=24 align=right>c.</td>
+		    </tr>
+
+        <tr class=liste_clair>
+          <td align=right width=18>&nbsp;</td>
+          <td align=left>
+            <input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterEquipes$ctl01$CmdCopierEquipe" id="ctl00_ContentPlaceHolderMain_RepeaterEquipes_ctl01_CmdCopierEquipe" src="images/t_fleche_h.gif" style="border-width:0px;" />&nbsp;
+            <a Class=lien_texte href="FicheEquipe.aspx?Id=2213&saison=">Sharly Test A</a>
+          </td>
+          <td align=right width=20>&nbsp;</td>
+          <td align=right width=18>&nbsp;</td>
+          <td align=right width=28>&nbsp;</td>
+          <td align=right width=24>&nbsp;</td>
+          <td align=right width=24>&nbsp;</td>
+        </tr>
+
+        <tr class=liste_fonce>
+          <td align=right width=18>&nbsp;</td>
+          <td align=left>
+            <input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterEquipes$ctl02$CmdCopierEquipe" id="ctl00_ContentPlaceHolderMain_RepeaterEquipes_ctl02_CmdCopierEquipe" src="images/t_fleche_h.gif" style="border-width:0px;" />&nbsp;
+            <a Class=lien_texte href="FicheEquipe.aspx?Id=2214&saison=">Sharly Test B</a>
+          </td>
+          <td align=right width=20>&nbsp;</td>
+          <td align=right width=18>&nbsp;</td>
+          <td align=right width=28>&nbsp;</td>
+          <td align=right width=24>&nbsp;</td>
+          <td align=right width=24>&nbsp;</td>
+        </tr>
+
+      <tr><td colspan=7 align=center><span id="ctl00_ContentPlaceHolderMain_LabelMessage" class="titre_magenta"></span></td></tr>
+      </table>
+<!------------------ Fin Equipes ------------------------>
+<!------------------ Début date ronde ---------------------->
+      <table id="ctl00_ContentPlaceHolderMain_TableDateRonde" border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr Class="texte_courant">
+		<td>Rd</td>
+		<td width="35%">Date</td>
+		<td width="35%">Lieu</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><select name="ctl00$ContentPlaceHolderMain$DropDateRondeNr$DropDownNumeric" id="ctl00_ContentPlaceHolderMain_DropDateRondeNr_DropDownNumeric">
+			<option selected="selected" value="0">0</option>
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+
+		</select></td>
+		<td width="35%"><input name="ctl00$ContentPlaceHolderMain$TextDateDefault" type="text" id="ctl00_ContentPlaceHolderMain_TextDateDefault" class="Width100p100" /></td>
+		<td width="35%"><input name="ctl00$ContentPlaceHolderMain$TextLieuDefault" type="text" id="ctl00_ContentPlaceHolderMain_TextLieuDefault" class="Width100p100" /></td>
+		<td><b><a id="ctl00_ContentPlaceHolderMain_LinkCmdEcrireDate" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdEcrireDate','')">Ecrire</a></b></td>
+	</tr>
+</table>
+
+<!------------------ Fin date Ronde ------------------------>
+    </td>
+    <td width=1 bgcolor=#990066></td>
+    <td valign=top align=center width=600>
+<!------------------ Table PV ------------------------>
+      <table border=0 cellpadding=2 cellspacing=0 id=TablePV width=100%>
+      <tr>
+        <td id="ctl00_ContentPlaceHolderMain_CellMenuPv" colspan="9" align="center">
+          <b><a id="ctl00_ContentPlaceHolderMain_LinkCmdPVCreer" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdPVCreer','')">Créer un PV</a></b> |
+          <b><a id="ctl00_ContentPlaceHolderMain_LinkCmdRondeCreer" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdRondeCreer','')">Créer une Ronde</a></b> |
+          <b><a id="ctl00_ContentPlaceHolderMain_LinkCmdTemporaire" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$LinkCmdTemporaire','')">Saisies temporaires</a></b>
+        </td>
+
+      </tr>
+
+<!------------------ En Tete de Ronde ------------------------>
+        <tr id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_Tr1" class="tableau_violet_f">
+	<td><input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImageButton1" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImageButton1" src="images/t_check_false.gif" style="border-width:0px;" /></td>
+	<td colspan="2" align="left">
+            <a href="GroupeCalendrier.aspx?Id=3593&Rd=0" class=lien_titre target=_blank >Ronde 0</a>
+          </td>
+	<td></td>
+	<td align="center">
+            <input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImgCmdDeClasser" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImgCmdDeClasser" src="images/t_fleche_g.gif" style="border-width:0px;" />
+          </td>
+	<td></td>
+	<td align="center">
+            <input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImgCmdClasser" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImgCmdClasser" src="images/t_fleche_d.gif" style="border-width:0px;" />
+          </td>
+	<td></td>
+	<td align="right">
+            <a href="EquipesPgn.aspx?Id=3593&Ronde=0" class=lien_titre target=_blank >PGN R0</a>
+		  </td>
+	<td><input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImageButton2" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImageButton2" src="images/t_check_false.gif" style="border-width:0px;" /></td>
+</tr>
+
+        <tr class=liste_clair>
+          <td width=5><input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImgCmdExportFide" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImgCmdExportFide" src="images/t_check_false.gif" style="border-width:0px;" /></td>
+          <td align=right width=10><a href="FichePV.aspx?saison=&Id=4310" class=lien_texte>4310</a></td>
+          <td width=40%><a id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_LinkCmdCopierBl" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$LinkCmdCopierBl','')">&nbsp;</a></td>
+          <td><input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImgCmdCollerBl" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImgCmdCollerBl" src="images/t_fleche_b.gif" onclick="return confirm('Coller l équipe ?');" style="border-width:0px;" /></td>
+          <td align=right class=texte_bleu><b>&nbsp;</b></td>
+          <td align=center class=texte_bleu><b> - </b></td>
+          <td align=right class=texte_bleu><b>&nbsp;</b></td>
+          <td width=5><input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImgCmdCollerNr" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImgCmdCollerNr" src="images/t_fleche_b.gif" onclick="return confirm('Coller l équipe ?');" style="border-width:0px;" /></td>
+          <td align=left width=40%><a id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_LinkCmdCopierNr" class="lien_texte" href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$LinkCmdCopierNr','')">&nbsp;</a></td>
+          <td width=5><input type="image" name="ctl00$ContentPlaceHolderMain$RepeaterPV$ctl00$ImgCmdExport" id="ctl00_ContentPlaceHolderMain_RepeaterPV_ctl00_ImgCmdExport" src="images/t_check_false.gif" style="border-width:0px;" /></td>
+        </tr>
+
+      </table>
+<!------------------ Fin PV ------------------------>
+<!-------------- Table Temporaire ------------------->
+      <table border=0 cellpadding=2 cellspacing=0 id=TableTemp width=100%>
+      <tr>
+
+      </tr>
+
+      </table>
+    </td>
+  </tr>
+  <tr id="ctl00_ContentPlaceHolderMain_RowPgnFile">
+	<td colspan="3" class="texte_courant">
+      Envoyer le fichier pgn sur le serveur :
+      <input name="ctl00$ContentPlaceHolderMain$BtnChoixFichier" type="file" id="ctl00_ContentPlaceHolderMain_BtnChoixFichier" size="80" style="font-size:12;" />
+      <input type="submit" name="ctl00$ContentPlaceHolderMain$EnvoieFichier" value="Envoyer" id="ctl00_ContentPlaceHolderMain_EnvoieFichier" style="font-size:12;" /><br />
+
+    </td>
+</tr>
+
+</table>
+
+
+  </td>
+<!------------------ Cellule de Droite ------------------------------>
+  <td id="ctl00_BordureDroite" background="images/fond_bordure.gif" width="20"></td>
+
+</tr>
+
+<!------------------ Bas de Page ------------------------------>
+  <tr id="ctl00_RowBasPage" valign="bottom">
+	<td width="150px" bgcolor="#990066">&nbsp;</td>
+	<td class="texte_footer" align="center" bgcolor="#ffffff" width="830px">
+    Copyright &nbsp;© 2003 | FFE | Fédération Française des Echecs | <span id="ctl00_LabelAdresse">6 rue de l'Eglise | 92600 ASNIERES SUR SEINE</span><br />
+    tél : <span id="ctl00_LabelTel">01 39 44 65 80</span> | fax : 01 30 69 93 15 | webmestre : <a href="mailto:erick.mouret@echecs.asso.fr" class="lien_footer">erick.mouret@echecs.asso.fr</a>
+  </td>
+	<td background="images/fond_bordure.gif" width="20"></td>
+</tr>
+
+<!------------------fin bas de Page Page --------------------------->
+</table>
+</form>
+</body>
+</html>

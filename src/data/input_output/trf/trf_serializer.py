@@ -1,8 +1,10 @@
 from common.sharly_chess_config import SharlyChessConfig
 from .trf_data import TrfTournament
+from .trf_data import PSEUDO_FEDERATIONS
 from .trf_entry import ENTRIES, NationalPlayerEntry
 
 import io
+import re
 from typing import TextIO
 
 
@@ -47,6 +49,36 @@ class TrfSerializer:
         for field, value in tournament.bb_fields.items():
             fp.write(f'{field} {value}\n')
 
+        if tournament.log_comments:
+            fp.write('\n')
+            for comment in tournament.log_comments:
+                fp.write(f'### {comment}\n')
+
+    #: A line holding round blocks only: the rest of a 001 record that an
+    #: editor or a mail program wrapped.
+    CONTINUATION_PATTERN = re.compile(
+        r'^(?=.*\d)(  [ \d]{4} [bsw\- ] .)+\s*$', re.IGNORECASE
+    )
+
+    @classmethod
+    def _join_wrapped_player_lines(
+        cls, lines: list[str], tournament: TrfTournament
+    ) -> list[str]:
+        joined: list[str] = []
+        for line in lines:
+            if (
+                joined
+                and joined[-1].startswith('001 ')
+                and cls.CONTINUATION_PATTERN.match(line.rstrip('\r\n'))
+            ):
+                joined[-1] = joined[-1].rstrip('\r\n') + line
+                player_id = joined[-1][4:8].strip()
+                if player_id.isdigit():
+                    tournament.joined_player_lines.append(int(player_id))
+                continue
+            joined.append(line)
+        return joined
+
     @classmethod
     def _parse_tournament(cls, lines: list[str]) -> TrfTournament:
         tournament = TrfTournament()
@@ -56,7 +88,7 @@ class TrfSerializer:
             if code not in ('NON', 'FID')
         ]
 
-        for line in lines:
+        for line in cls._join_wrapped_player_lines(lines, tournament):
             data = line[4:].replace('\n', '')
             for entry_ in ENTRIES:
                 if line.startswith(entry_.din + ' '):
@@ -64,7 +96,11 @@ class TrfSerializer:
                     break
 
             din = line[:3]
-            if din in federation_codes:
+            if din in federation_codes or (
+                # A record header may start like a pseudo-NRS record
+                din in PSEUDO_FEDERATIONS
+                and NationalPlayerEntry.LINE_PATTERN.fullmatch(data.ljust(80))
+            ):
                 NationalPlayerEntry(din).load(tournament, data)
 
             if line.startswith('XX'):

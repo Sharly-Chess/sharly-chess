@@ -1,0 +1,235 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable admin-random-tournament-modal"
+    style="--bs-modal-width: min(90vw, 650px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Generate a random tournament') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-info py-2">
+                {{ _(
+                    'A field left blank is given a random value. The rounds are '
+                    'paired by the pairing engine, the results come from the '
+                    'players\' ratings and the standings from the tie-break engine.'
+                ) }}
+            </div>
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-post="{{ url_for('admin-random-tournament', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <h4>{{ _('Field') }}</h4>
+                <div class="row gy-2">
+                    {% if admin_event.is_team_event %}
+                        {{ admin_macros.number_input(
+                            name='teams',
+                            label=_('%(string)s:', string=_('Teams')),
+                            placeholder=_('Random, 4 to 24'),
+                            min='2',
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.number_input(
+                            name='players_per_team',
+                            label=_('%(string)s:', string=_('Players per team')),
+                            placeholder=_('Random, 2 to 6'),
+                            min='1',
+                            data=data, errors=errors
+                        ) }}
+                    {% else %}
+                        {{ admin_macros.number_input(
+                            name='players',
+                            label=_('%(string)s:', string=_('Players')),
+                            placeholder=_('Random, 8 to 120'),
+                            min='2',
+                            data=data, errors=errors
+                        ) }}
+                    {% endif %}
+                    {{ admin_macros.number_input(
+                        name='rounds',
+                        label=_('%(string)s:', string=_('Rounds')),
+                        placeholder=_('Random, 3 to 11'),
+                        min='1',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <h4 class="mt-3 mb-2">{{ _('Ratings') }}</h4>
+                <div class="row gy-2">
+                    {{ admin_macros.text_input(
+                        name='ratings',
+                        label=_('%(string)s:', string=_('Ratings')),
+                        placeholder=_('Random'),
+                        tooltip_text=_(
+                            'The rating of each player, strongest first, comma-separated. '
+                            'Given, it overrides the top rating and the step below.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.number_input(
+                        name='top_rating',
+                        label=_('%(string)s:', string=_('Top rating')),
+                        placeholder=_('Random, 1800 to 2500'),
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.text_input(
+                        name='rating_step',
+                        label=_('%(string)s:', string=_('Rating step')),
+                        placeholder=_('Random, 2 to 25'),
+                        tooltip_text=_(
+                            'How much each player is rated below the one above them.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <h4 class="mt-3 mb-2">{{ _('Tournament') }}</h4>
+                <div class="row gy-2">
+                    {{ admin_macros.text_input(
+                        name='tie_breaks',
+                        label=_('%(string)s:', string=_('Tie-breaks')),
+                        placeholder='PTS',
+                        tooltip_text=_(
+                            'The criteria the standings are ranked on, as TRF26 acronyms, '
+                            'comma-separated.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.text_input(
+                        name='name',
+                        label=_('%(string)s:', string=_('Name')),
+                        placeholder=_('Generated tournament'),
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.number_input(
+                        name='count',
+                        label=_('%(string)s:', string=_('Number of tournaments')),
+                        min='1',
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.number_input(
+                        name='seed',
+                        label=_('%(string)s:', string=_('Random seed')),
+                        placeholder=_('New each time'),
+                        tooltip_text=_(
+                            'Give a seed to obtain the same tournament again.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                {% if not admin_event.is_team_event %}
+                    <div class="row gy-2">
+                        {{ admin_macros.switch_input(
+                            name='acceleration',
+                            placeholder=_('Use the Baku acceleration method'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endif %}
+                <div class="row gy-2">
+                    {{ admin_macros.switch_input(
+                        name='pair_rounds',
+                        placeholder=_('Pair the rounds and enter the results'),
+                        tooltip_text=_(
+                            'Left off, the tournament is entered and nothing else: '
+                            'a field waiting for its first pairing.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div id="played-rounds">
+                    <h4 class="mt-3 mb-2">
+                        {{ _('Byes, forfeits and unusual results') }}
+                    </h4>
+                    <div class="alert alert-secondary py-2">
+                        {% if admin_event.is_team_event %}
+                            {{ _(
+                                'Each is a fixed number for the whole tournament (4), or '
+                                'the chance each team or board has in each round (5%% or '
+                                '0.05). A bye is the whole team\'s: it misses the round. '
+                                'Left blank, a random rate between 0%% and 8%% is used.'
+                            ) }}
+                        {% else %}
+                            {{ _(
+                                'Each is a fixed number for the whole tournament (4), or '
+                                'the chance each player or board has in each round (5%% or '
+                                '0.05). Left blank, a random rate between 0%% and 8%% is '
+                                'used.'
+                            ) }}
+                        {% endif %}
+                    </div>
+                    <div class="row gy-2">
+                        {{ admin_macros.text_input(
+                            name='full_point_byes',
+                            label=_('%(string)s:', string=_('Full-point byes')),
+                            placeholder=_('Random'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.text_input(
+                            name='half_point_byes',
+                            label=_('%(string)s:', string=_('Half-point byes')),
+                            placeholder=_('Random'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.text_input(
+                            name='zero_point_byes',
+                            label=_('%(string)s:', string=_('Zero-point byes')),
+                            placeholder=_('Random'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.text_input(
+                            name='forfeit_wins',
+                            label=_('%(string)s:', string=_('Forfeit wins')),
+                            placeholder=_('Random'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.text_input(
+                            name='forfeit_losses',
+                            label=_('%(string)s:', string=_('Forfeit losses')),
+                            placeholder=_('Random'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.text_input(
+                            name='unusual_results',
+                            label=_('%(string)s:', string=_('Unusual results')),
+                            placeholder=_('Random'),
+                            tooltip_text=_(
+                                'A half point to one side only, or nothing to either.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <script>
+                    $('#pair-rounds').change(function () {
+                        $('#played-rounds').toggle(this.checked);
+                    }).trigger('change');
+                </script>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                id="submit-button"
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi bi-dice-5-fill pe-1"></i>
+                {{ _('Generate') }}
+            </button>
+        </div>
+    </div>
+</div>

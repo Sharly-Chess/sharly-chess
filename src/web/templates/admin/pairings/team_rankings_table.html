@@ -1,3 +1,4 @@
+{% import '/admin/common/macros.j2' as admin_macros with context %}
 {% set standings = admin_tournament.team_standings() %}
 {% set primary_is_mp = (
     admin_tournament.pairing_system.paired_by_team
@@ -6,7 +7,12 @@
 {% set primary_is_gp = not primary_is_mp %}
 {% set team_tie_breaks = admin_tournament.team_tie_breaks %}
 <div class="d-flex">
-    <h4>{{ _('Team ranking') }}</h4>
+    <h4>
+        {{ _('Team ranking') }}
+        {% if admin_tournament.has_provisional_results %}
+            {{ admin_macros.provisional_badge() }}
+        {% endif %}
+    </h4>
 </div>
 <table
     id="team-rankings-table"
@@ -53,6 +59,12 @@
                 <td class="rank text-end">{{ '—' if is_excluded else row.rank }}</td>
                 <td class="name text-start">
                     <strong>{{ row.team.name }}</strong>
+                    {% if row.team.has_withdrawn %}
+                        <i
+                            class="bi-sign-stop text-danger ps-2"
+                            {{ macros.tooltip_attributes('warning', _('Withdrawn'), 'top') }}
+                        ></i>
+                    {% endif %}
                 </td>
                 <td class="text-center">{{ row.played }}</td>
                 {% if primary_is_mp %}

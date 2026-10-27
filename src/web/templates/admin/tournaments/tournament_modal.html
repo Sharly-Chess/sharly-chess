@@ -1,3 +1,4 @@
+{% import "/admin/common/warning_macros.j2" as warning_macros with context %}
 <div class="modal-dialog modal-dialog-scrollable admin-tournament-edit-modal">
     <div class="modal-content">
         {# Required for time pickers #}
@@ -45,7 +46,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
-                            label=_('Name:'),
+                            label=_('%(string)s:', string=_('Name')),
                             placeholder=_('E.g.: Main tournament'),
                             data=data, errors=errors
                         ) }}
@@ -54,51 +55,116 @@
                     <div class="col-12 col-md-6">
                         {% include 'tournament_rounds_field.html' %}
                     </div>
+                    {% if rounds_change %}
+                        <div class="col-12">
+                            <input type="hidden" name="rounds_change_confirmed" id="rounds-change-confirmed" value="">
+                            {% set rounds_change_message %}
+                                {{ _(
+                                    'Changing the number of rounds from %(before)d to %(after)d once the '
+                                    'tournament has started is not compliant with the FIDE regulations.',
+                                    before=rounds_change.before, after=rounds_change.after,
+                                ) }}
+                            {% endset %}
+                            {% set rounds_change_consequences %}
+                                <p class="mb-1">{{ _('The change will be recorded in the TRF of the tournament.') }}</p>
+                                {% if rounds_change.engine_pairs or rounds_change.arbiter_pairs %}
+                                    <p class="mb-1">
+                                        {{ _(
+                                            'The pairings of round %(round)d no longer match those of the pairing '
+                                            'engine: this breach of the integrity of the pairings will be logged and '
+                                            'recorded in the TRF of the tournament.',
+                                            round=rounds_change.round,
+                                        ) }}
+                                    </p>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="fw-bold">{{ _('Pairing engine') }}</div>
+                                            {% for label in rounds_change.engine_pairs %}
+                                                <div class="small">{{ label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="fw-bold">{{ _('Current pairings') }}</div>
+                                            {% for label in rounds_change.arbiter_pairs %}
+                                                <div class="small">{{ label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="small fst-italic mb-0">{{ _('Pairing numbers in brackets.') }}</p>
+                                {% endif %}
+                            {% endset %}
+                            {% call(button) warning_macros.double_confirmation(
+                                'rounds-change',
+                                rounds_change_message,
+                                rounds_change_consequences,
+                                _('Change the number of rounds'),
+                            ) %}
+                                {% if button == 'cancel' %}
+                                    onclick="$('#rounds').val('{{ rounds_change.before }}'); $('#rounds-change').addClass('d-none');"
+                                {% else %}
+                                    onclick="$('#rounds-change-confirmed').val('on'); document.getElementById('modal-form').requestSubmit();"
+                                {% endif %}
+                            {% endcall %}
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='rating',
-                            label=_('Rating:'),
+                            name='cadence',
+                            label=_('Time control:'),
+                            tooltip_text=_('The time control whose ratings the tournament is played on.'),
                             select_options=rating_options,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='player_rating_type',
-                            label=_('Rating to use:'),
-                            tooltip_text=_('Affects the rating that will be chosen for each player.'),
-                            select_options=player_rating_type_options,
+                        {{ admin_macros.number_input(
+                            name='unrated_rating',
+                            label=_('Unrated players:'),
+                            placeholder=prescribed_rating_rule.label if prescribed_rating_rule else admin_event.unrated_rating,
+                            tooltip_text=_(
+                                'The rating of the players no list rates and for whom no value is typed.'
+                            ),
+                            input_tooltip=prescribed_rating_rule.description if prescribed_rating_rule else '',
+                            disabled=prescribed_rating_rule is not none,
+                            min=0,
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
-                <div id="estimated-ratings" class="row gy-2 gx-3">
+                <div class="row gy-2 gx-3">
                     <div class="col-12">
-                        {{ admin_macros.switch_input(
-                            name='override_unrated_rapid_blitz',
-                            placeholder=_('Use the standard FIDE rating for unrated players'),
+                        {{ admin_macros.select_input(
+                            name='rating_sequence',
+                            label=_('%(string)s:', string=_('Rating retrieval')),
                             tooltip_text=_(
-                                'For players without a rapid or blitz FIDE rating, '
-                                'use instead their standard FIDE rating.'
+                                'The ratings looked for, set by the federation of the event, in order of priority (the first rating found is used).'
+                            ) if rating_sequence_locked else _(
+                                'The ratings looked for, in order of priority (the first rating found is used).'
                             ),
+                            select_options=rating_sequence_options[(data['cadence'] or '1')|string],
+                            disabled=rating_sequence_locked,
+                            input_tooltip=_('Set by the federation of the event.') if rating_sequence_locked else '',
                             data=data, errors=errors
                         ) }}
                     </div>
                     <script>
-                        $('#rating,#player-rating-type').change(function() {
-                            const fideRatingValues = ['3'];
-                            {% if admin_event.player_rating_type == 3 %}
-                                fideRatingValues.push('');
-                            {% endif %}
-                            if ($('#rating').val() !== '1' && fideRatingValues.includes($('#player-rating-type').val())) {
-                                $('#estimated-ratings').show();
-                            } else {
-                                $('#estimated-ratings').hide();
-                            }
-                        });
-                        triggerModalInitEvent('#rating');
+                        (() => {
+                            const sequenceOptions = {{ rating_sequence_labels|tojson }};
+                            $('#cadence').change(function() {
+                                const options = sequenceOptions[$('#cadence').val()];
+                                const select = $('#rating-sequence');
+                                const selected = select.val();
+                                select.empty();
+                                for (const [value, label] of Object.entries(options)) {
+                                    const option = new Option(label.text, value);
+                                    option.dataset.html = label.html;
+                                    select.append(option);
+                                }
+                                select.val(selected in options ? selected : '').trigger('change');
+                            });
+                        })();
                     </script>
                 </div>
 
@@ -111,6 +177,7 @@
                             on_date_picker_hide=reload_schedule_script,
                             data=data, errors=errors
                         ) }}
+                        {% include '/admin/tournaments/tournament_multi_period_field.html' %}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
@@ -277,6 +344,45 @@
                             });
                     </script>
                 </div>
+                {% if not is_team_event %}
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6 starting-rank-tie-order-option">
+                            {{ admin_macros.select_input(
+                                name='starting_rank_tie_order',
+                                label=_('Starting rank ties:'),
+                                tooltip_text=_(
+                                    'How the players with the same rating and '
+                                    'title are ordered in the starting rank.'
+                                ),
+                                select_options=starting_rank_tie_order_options,
+                                disabled=admin_tournament.started,
+                                input_tooltip=(
+                                    _('This field can\'t be modified once the tournament has started.')
+                                    if admin_tournament.started else ''
+                                ),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <script>
+                            (function () {
+                                const TIE_ORDER = {{
+                                    pairing_systems
+                                    | selectattr('supports_starting_rank_tie_order')
+                                    | map(attribute='id')
+                                    | list
+                                    | tojson
+                                }};
+                                function syncTieOrder() {
+                                    const id = $('#pairing-system').val() || '';
+                                    $('.starting-rank-tie-order-option')
+                                        .toggle(TIE_ORDER.includes(id));
+                                }
+                                $('#pairing-system').on('change', syncTieOrder);
+                                syncTieOrder();
+                            })();
+                        </script>
+                    </div>
+                {% endif %}
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
@@ -388,6 +494,75 @@
                             }
                             $('#pairing-system').on('change', syncParticipationRule);
                             syncParticipationRule();
+                        })();
+                    </script>
+                    {% set fide_mode_final = admin_tournament and admin_tournament.leaving_fide_mode_is_final %}
+                    {% set fide_mode_left = fide_mode_final and not admin_tournament.stored_tournament.fide_mode %}
+                    <div class="col-12 fide-mode-option">
+                        {{ admin_macros.switch_input(
+                            name='fide_mode',
+                            placeholder=_('FIDE mode'),
+                            tooltip_text=(
+                                _('FIDE mode was left at round %(round)d.', round=admin_tournament.fide_mode_exit_round)
+                                if fide_mode_left and admin_tournament.fide_mode_exit_round
+                                else _(
+                                    'Actions prohibited by the FIDE regulations are refused, '
+                                    'and the corrections that breach the integrity of the '
+                                    'pairings are logged in the TRF. Once the first round is '
+                                    'paired, a tournament that leaves FIDE mode never returns to it.'
+                                )
+                            ),
+                            disabled=fide_mode_left,
+                            data=data, errors=errors
+                        ) }}
+                        {% if fide_mode_final and not fide_mode_left %}
+                            <input type="hidden" name="fide_mode_exit_confirmed" id="fide-mode-exit-confirmed" value="">
+                            {% call(button) warning_macros.double_confirmation(
+                                'fide-mode-exit',
+                                _('Leaving FIDE mode is not compliant with the FIDE regulations.'),
+                                warning_macros.leave_fide_mode_consequences(admin_tournament),
+                                _('Leave FIDE mode'),
+                                hidden=true,
+                            ) %}
+                                {% if button == 'cancel' %}
+                                    onclick="$('#fide-mode').prop('checked', true); resetFideModeExit();"
+                                {% else %}
+                                    onclick="$('#fide-mode-exit-confirmed').val('on'); $('#fide-mode-exit').addClass('d-none');"
+                                {% endif %}
+                            {% endcall %}
+                            <script>
+                                function resetFideModeExit() {
+                                    const box = $('#fide-mode-exit');
+                                    box.addClass('d-none');
+                                    box.find('[data-step="1"]').removeClass('d-none');
+                                    box.find('[data-step="2"]').addClass('d-none');
+                                    $('#fide-mode-exit-confirmed').val('');
+                                }
+                                $('#fide-mode').on('change', function () {
+                                    if (this.checked) {
+                                        resetFideModeExit();
+                                    } else {
+                                        $('#fide-mode-exit').removeClass('d-none');
+                                    }
+                                });
+                            </script>
+                        {% endif %}
+                    </div>
+                    <script>
+                        (function () {
+                            const FIDE_MODE = {{
+                                pairing_systems
+                                | selectattr('supports_fide_mode')
+                                | map(attribute='id')
+                                | list
+                                | tojson
+                            }};
+                            function syncFideMode() {
+                                const id = $('#pairing-system').val() || '';
+                                $('.fide-mode-option').toggle(FIDE_MODE.includes(id));
+                            }
+                            $('#pairing-system').on('change', syncFideMode);
+                            syncFideMode();
                         })();
                     </script>
                 </div>
@@ -568,7 +743,7 @@
                         <div id="team-colour-type-cell" class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='team_colour_type',
-                                label=_('Colour rule:'),
+                                label=_('%(string)s:', string=_('Colour rule')),
                                 tooltip_text=_(
                                     'Defines how team colour preferences are calculated. '
                                     'Type A uses simple White/Black preferences, '
@@ -680,7 +855,7 @@
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
                                     name='gp_win',
-                                    label=_('Win:'),
+                                    label=_('%(string)s:', string=_('Win')),
                                     placeholder='1',
                                     step='any',
                                     data=data, errors=errors
@@ -689,7 +864,7 @@
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
                                     name='gp_draw',
-                                    label=_('Draw:'),
+                                    label=_('%(string)s:', string=_('Draw')),
                                     placeholder='0.5',
                                     step='any',
                                     data=data, errors=errors
@@ -698,7 +873,7 @@
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
                                     name='gp_loss',
-                                    label=_('Loss:'),
+                                    label=_('%(string)s:', string=_('Loss')),
                                     placeholder='0',
                                     step='any',
                                     data=data, errors=errors
@@ -825,7 +1000,7 @@
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
                                         name='mp_win',
-                                        label=_('Win:'),
+                                        label=_('%(string)s:', string=_('Win')),
                                         placeholder='2',
                                         step='any',
                                         data=data, errors=errors
@@ -834,7 +1009,7 @@
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
                                         name='mp_draw',
-                                        label=_('Draw:'),
+                                        label=_('%(string)s:', string=_('Draw')),
                                         placeholder='1',
                                         step='any',
                                         data=data, errors=errors
@@ -843,7 +1018,7 @@
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
                                         name='mp_loss',
-                                        label=_('Loss:'),
+                                        label=_('%(string)s:', string=_('Loss')),
                                         placeholder='0',
                                         step='any',
                                         data=data, errors=errors
@@ -1036,15 +1211,43 @@
                                 });
                             }
 
+                            // A select the rule set no longer holds on
+                            // "Automatic" falls back to its first option.
+                            function dropUnlockedAutomatic() {
+                                $('option[data-rule-set-automatic]').each(function() {
+                                    const $input = $(this).parent();
+                                    if ($input.attr('data-rule-set-locked')) return;
+                                    const wasAutomatic = $(this).is(':selected');
+                                    $(this).remove();
+                                    if (wasAutomatic) {
+                                        $input.val($input.find('option').first().val())
+                                              .trigger('change');
+                                    } else {
+                                        $input.trigger('change.select2');
+                                    }
+                                });
+                            }
+
                             function lockField(name, defaults, title) {
                                 const fid = inputId(name);
                                 const $input = $('#' + fid);
                                 if ($input.length === 0) return;
+                                // Already locked by the server (the
+                                // tournament is paired): it shows what was
+                                // settled, not the rule set's default.
+                                if ($input.prop('disabled') && !$input.attr('data-rule-set-locked')) return;
                                 // Disabled first, so the change handlers
                                 // below already see the field as locked.
                                 $input.prop('disabled', true)
                                       .attr('data-rule-set-locked', '1');
                                 if (Object.prototype.hasOwnProperty.call(defaults, name)) {
+                                    if ($input.is('select') && defaults[name] === ''
+                                        && $input.find('option[value=""]').length === 0) {
+                                        $input.prepend(
+                                            $('<option value="" data-rule-set-automatic></option>')
+                                                .text({{ _('Automatic')|tojson }})
+                                        );
+                                    }
                                     setValue($input, defaults[name]);
                                 }
                                 // Disabled inputs swallow hover events so
@@ -1096,12 +1299,17 @@
                                 const id = $ruleSet.val();
                                 showConfigFields(id);
                                 if (id) lockForRuleSet(id);
+                                dropUnlockedAutomatic();
                             }
 
                             function setValue($input, value) {
+                                // Setting the variation re-runs refresh(),
+                                // which comes back here with the same value.
                                 if ($input.is(':checkbox')) {
+                                    if ($input.prop('checked') === (value === 'on')) return;
                                     $input.prop('checked', value === 'on');
                                 } else {
+                                    if ($input.val() === value) return;
                                     $input.val(value);
                                 }
                                 if ($input.is('select')) {

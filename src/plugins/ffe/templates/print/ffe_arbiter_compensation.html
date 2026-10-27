@@ -37,7 +37,7 @@
                 </div>
                 <div class="item">
                     <label for="arbiter-ffe-arbiter-title">Niveau :</label>
-                    <input required id="arbiter-ffe-arbiter-title" value="{% if arbiter %}{{ arbiter.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
+                    <input required id="arbiter-ffe-arbiter-title" value="{% if arbiter %}{{ arbiter_qualification(arbiter) }}{% endif %}"/>
                 </div>
                 <div class="item">
                     <label for="arbiter-phone">Tél :</label>

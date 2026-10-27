@@ -7,13 +7,17 @@ the answers to a bad form or a name already taken can be asserted
 without a browser.
 """
 
+import shutil
 from collections.abc import Iterator
 
 import pytest
 from litestar.testing import TestClient
 
+from common import BASE_DIR
 from data.loader import EventLoader
+from database.sqlite.event.event_database import EventDatabase
 from tests.test_config import TestUtils
+from utils.enum import ProhibitedPairingConstraint, Result, TeamSortMode
 
 EVENT_ID = 'test-admin-http'
 TOURNAMENT_NAME = 'test-admin-http-tournament'
@@ -157,6 +161,45 @@ def test_a_draw_cannot_be_worth_more_than_a_win(http: TestClient, event: str):
 
 
 @pytest.mark.unit
+def test_two_draws_cannot_be_worth_more_than_a_win_and_a_loss(
+    http: TestClient, event: str
+):
+    response = create_tournament(http, event, gp_win='2', gp_draw='1.5', gp_loss='0')
+    assert response.status_code == 200
+    assert 'Two draws cannot be worth more than a win and a loss.' in response.text
+    assert tournament_names(event) == [TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+def test_a_pab_cannot_be_worth_more_than_a_win(http: TestClient, event: str):
+    response = create_tournament(http, event, gp_pab='1.5')
+    assert response.status_code == 200
+    assert 'A PAB cannot be worth more than a win.' in response.text
+    assert tournament_names(event) == [TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+def test_a_standard_pab_is_worth_a_standard_result(http: TestClient, event: str):
+    response = create_tournament(http, event, gp_pab='0.25')
+    assert response.status_code == 200
+    assert 'With the standard scoring system, a PAB is worth 1, ½ or 0.' in (
+        response.text
+    )
+    assert tournament_names(event) == [TOURNAMENT_NAME]
+
+
+@pytest.mark.unit
+def test_a_custom_pab_may_be_any_value_up_to_a_win(http: TestClient, event: str):
+    response = create_tournament(
+        http, event, gp_win='3', gp_draw='1', gp_loss='0', gp_pab='2'
+    )
+    assert response.status_code == 200
+    assert sorted(tournament_names(event)) == sorted(
+        [TOURNAMENT_NAME, 'Second tournament']
+    )
+
+
+@pytest.mark.unit
 def test_game_points_cannot_be_negative(http: TestClient, event: str):
     """A negative score has no representation in the TRF the engine
     reads."""
@@ -264,20 +307,111 @@ def test_the_tournament_modal_opens_for_every_action(
 
 UPDATE_FIELDS = {
     'rounds': '5',
-    'rating': '1',
+    'cadence': '1',
     'pairing_system': 'SWISS',
     'SWISS_pairing_variation': 'SWISS_STANDARD',
+    'fide_mode': 'on',
 }
+
+
+def update_fields(event: str) -> dict[str, str]:
+    """The update form as the modal sends it, the points already set."""
+    EventLoader.unload_event(event)
+    loaded = EventLoader().load_event(event)
+    game_points = loaded.tournaments_by_name[
+        TOURNAMENT_NAME
+    ].stored_tournament.game_points
+    return UPDATE_FIELDS | {
+        field: str(game_points[result.value])
+        for result, field in (
+            (Result.WIN, 'gp_win'),
+            (Result.DRAW, 'gp_draw'),
+            (Result.LOSS, 'gp_loss'),
+            (Result.ZERO_POINT_BYE, 'gp_zpb'),
+            (Result.PAIRING_ALLOCATED_BYE, 'gp_pab'),
+        )
+        if game_points and result.value in game_points
+    }
 
 
 @pytest.mark.unit
 def test_a_tournament_is_renamed(http: TestClient, event: str):
     response = http.patch(
         f'/tournament-update/{event}/{tournament_id(event)}',
-        data=UPDATE_FIELDS | {'name': 'Renamed tournament'},
+        data=update_fields(event) | {'name': 'Renamed tournament'},
     )
     assert response.status_code == 200
     assert tournament_names(event) == ['Renamed tournament']
+
+
+def tournament_fide_mode(event: str) -> tuple[bool, int | None]:
+    EventLoader.unload_event(event)
+    loaded = EventLoader().load_event(event)
+    tournament = loaded.tournaments_by_name[TOURNAMENT_NAME]
+    return tournament.fide_mode, tournament.fide_mode_exit_round
+
+
+@pytest.mark.unit
+def test_leaving_fide_mode_once_paired_must_be_confirmed(http: TestClient, event: str):
+    fields = update_fields(event) | {'name': TOURNAMENT_NAME}
+    del fields['fide_mode']
+    response = http.patch(
+        f'/tournament-update/{event}/{tournament_id(event)}', data=fields
+    )
+    assert response.status_code == 200
+    assert 'Leaving FIDE mode must be confirmed.' in response.text
+    assert tournament_fide_mode(event) == (True, None)
+
+
+@pytest.mark.unit
+def test_a_paired_tournament_leaves_fide_mode_for_good(http: TestClient, event: str):
+    fields = update_fields(event) | {
+        'name': TOURNAMENT_NAME,
+        'fide_mode_exit_confirmed': 'on',
+    }
+    del fields['fide_mode']
+    http.patch(f'/tournament-update/{event}/{tournament_id(event)}', data=fields)
+    fide_mode, exit_round = tournament_fide_mode(event)
+    assert not fide_mode
+    assert exit_round is not None
+
+    http.patch(
+        f'/tournament-update/{event}/{tournament_id(event)}',
+        data=update_fields(event) | {'name': TOURNAMENT_NAME},
+    )
+    assert tournament_fide_mode(event) == (False, exit_round)
+
+
+@pytest.mark.unit
+def test_saving_the_tournament_keeps_the_settings_set_outside_its_modal(
+    http: TestClient, event: str
+):
+    """The prohibited pairings and the team order are set from their own
+    screens, so the tournament modal's save leaves them as they were."""
+    stored_tournament = (
+        EventLoader().load_event(event).tournaments_by_name[TOURNAMENT_NAME]
+    ).stored_tournament
+    stored_tournament.prohibited_pairing_dimension = 'club'
+    stored_tournament.prohibited_pairing_dimension_constraint = (
+        ProhibitedPairingConstraint.PROTECT_TOP.value
+    )
+    stored_tournament.team_sort_mode = TeamSortMode.RANDOM.value
+    with EventDatabase(event, write=True) as database:
+        database.update_stored_tournament(stored_tournament)
+    response = http.patch(
+        f'/tournament-update/{event}/{tournament_id(event)}',
+        data=update_fields(event) | {'name': TOURNAMENT_NAME},
+    )
+    assert response.status_code == 200
+    EventLoader.unload_event(event)
+    saved = (
+        EventLoader().load_event(event).tournaments_by_name[TOURNAMENT_NAME]
+    ).stored_tournament
+    assert saved.prohibited_pairing_dimension == 'club'
+    assert saved.prohibited_pairing_dimension_constraint == (
+        ProhibitedPairingConstraint.PROTECT_TOP.value
+    )
+    assert saved.team_sort_mode == TeamSortMode.RANDOM.value
 
 
 @pytest.mark.unit
@@ -288,7 +422,7 @@ def test_a_started_tournament_keeps_the_rating_it_was_played_on(
     has been played; the name is not."""
     response = http.patch(
         f'/tournament-update/{event}/{tournament_id(event)}',
-        data=UPDATE_FIELDS | {'name': TOURNAMENT_NAME, 'rating': '2'},
+        data=update_fields(event) | {'name': TOURNAMENT_NAME, 'cadence': '2'},
     )
     assert response.status_code == 200
     assert "This field can't be updated once the tournament has started." in (
@@ -330,3 +464,76 @@ def test_the_rounds_field_is_rebuilt_for_the_chosen_system(
         params={'pairing_system': 'ROUND_ROBIN', 'rounds': '5'},
     )
     assert response.status_code == 200
+
+
+EXAMPLE_EVENT_ID = 'test-admin-http-round-robin'
+ROUND_ROBIN_NAME = 'Tournoi petits pions'
+
+
+@pytest.fixture
+def round_robin_event() -> Iterator[str]:
+    """An example event whose round-robin has been played through, its
+    stored round count one short of the count its entrants give."""
+    shutil.copyfile(
+        BASE_DIR / 'examples' / 'events' / '18e_open_rapide_de_domloup.sce',
+        EventDatabase(EXAMPLE_EVENT_ID).file,
+    )
+    yield EXAMPLE_EVENT_ID
+    EventLoader.unload_event(EXAMPLE_EVENT_ID)
+    TestUtils.delete_event(EXAMPLE_EVENT_ID)
+
+
+def round_robin_id(event: str) -> int:
+    EventLoader.unload_event(event)
+    tournament = EventLoader().load_event(event).tournaments_by_name[ROUND_ROBIN_NAME]
+    assert tournament.id is not None
+    return tournament.id
+
+
+def round_count_errors(text: str) -> list[str]:
+    text = text.replace('&#39;', "'")
+    return [
+        message
+        for message in (
+            'Impossible to set a round number lower',
+            "This field can't be updated once the tournament has started.",
+        )
+        if message in text
+    ]
+
+
+@pytest.mark.unit
+def test_a_paired_round_robin_opens_without_a_round_count_error(
+    http: TestClient, round_robin_event: str
+):
+    """The round count of a paired round-robin is the system's, whatever
+    was stored, so the form has nothing to object to."""
+    response = http.get(
+        f'/tournament-modal/update/{round_robin_event}'
+        f'/{round_robin_id(round_robin_event)}'
+    )
+    assert response.status_code == 200
+    assert not round_count_errors(response.text)
+
+
+@pytest.mark.unit
+def test_a_paired_round_robin_saves_without_its_greyed_round_count(
+    http: TestClient, round_robin_event: str
+):
+    """The greyed-out field is not submitted; the tournament saves all
+    the same."""
+    response = http.patch(
+        f'/tournament-update/{round_robin_event}/{round_robin_id(round_robin_event)}',
+        data={
+            'name': 'Renamed round-robin',
+            'cadence': '2',
+            'pairing_system': 'ROUND_ROBIN',
+            'ROUND_ROBIN_pairing_variation': 'ROUND_ROBIN_BERGER',
+            'date_range': '',
+        },
+    )
+    assert response.status_code == 200
+    assert not round_count_errors(response.text)
+    EventLoader.unload_event(round_robin_event)
+    loaded = EventLoader().load_event(round_robin_event)
+    assert 'Renamed round-robin' in loaded.tournaments_by_name

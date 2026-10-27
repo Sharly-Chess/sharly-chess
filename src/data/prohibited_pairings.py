@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 from plugins.manager import plugin_manager
+from utils.enum import ProhibitedPairingConstraint
 
 if TYPE_CHECKING:
     from data.input_output.trf.trf_data import TrfProhibitedPairing
@@ -29,7 +30,7 @@ class RoundProhibitedPairingGroup:
     tournament, player ids otherwise."""
 
     name: str
-    is_hard: bool
+    constraint: ProhibitedPairingConstraint
     member_ids: list[int]
 
 
@@ -108,8 +109,8 @@ class ProhibitedPairings:
         self.tournament = tournament
 
     @property
-    def forced_by_rule_set(self) -> tuple[str, bool] | None:
-        """The ``(dimension_id, is_hard)`` the tournament's rule set
+    def forced_by_rule_set(self) -> tuple[str, str] | None:
+        """The ``(dimension_id, constraint)`` the tournament's rule set
         imposes, or ``None`` when the configuration is free."""
         rule_set = self.tournament.rule_set
         return rule_set.forced_prohibited_pairing if rule_set else None
@@ -122,11 +123,13 @@ class ProhibitedPairings:
         return self.tournament.stored_tournament.prohibited_pairing_dimension
 
     @property
-    def dimension_is_hard(self) -> bool:
+    def dimension_constraint(self) -> ProhibitedPairingConstraint:
         forced = self.forced_by_rule_set
         if forced is not None:
-            return forced[1]
-        return self.tournament.stored_tournament.prohibited_pairing_dimension_is_hard
+            return ProhibitedPairingConstraint(forced[1])
+        return ProhibitedPairingConstraint(
+            self.tournament.stored_tournament.prohibited_pairing_dimension_constraint
+        )
 
     def dimension(self) -> 'PairingDimension | None':
         dimension_id = self.dimension_id
@@ -140,13 +143,13 @@ class ProhibitedPairings:
     def set_config(
         self,
         dimension_id: str | None,
-        dimension_is_hard: bool,
+        dimension_constraint: ProhibitedPairingConstraint,
         database: 'EventDatabase',
     ) -> None:
         tournament = self.tournament
         tournament.stored_tournament.prohibited_pairing_dimension = dimension_id or None
-        tournament.stored_tournament.prohibited_pairing_dimension_is_hard = (
-            dimension_is_hard
+        tournament.stored_tournament.prohibited_pairing_dimension_constraint = (
+            dimension_constraint.value
         )
         database.update_stored_tournament(tournament.stored_tournament)
 
@@ -170,11 +173,14 @@ class ProhibitedPairings:
 
     def set_manual_groups(
         self,
-        groups: list[tuple[bool, list[int]]],
+        groups: list[tuple[ProhibitedPairingConstraint, list[int]]],
         database: 'EventDatabase',
     ) -> None:
         tournament = self.tournament
-        database.replace_manual_prohibited_pairing_groups(tournament.id, groups)
+        database.replace_manual_prohibited_pairing_groups(
+            tournament.id,
+            [(constraint.value, member_ids) for constraint, member_ids in groups],
+        )
         tournament.stored_tournament.stored_prohibited_pairing_groups = (
             database.load_tournament_stored_prohibited_pairing_groups(tournament.id)
         )
@@ -198,31 +204,38 @@ class ProhibitedPairings:
             if len(member_ids) >= 2
         ]
 
-    def dimension_groups(self) -> list[tuple[bool, list[int]]]:
+    def dimension_groups(
+        self,
+    ) -> list[tuple[ProhibitedPairingConstraint, list[int]]]:
         """Live dimension-derived groups for the current config, each
-        ``(is_hard, member_ids)``. Empty when no dimension is selected."""
-        is_hard = self.dimension_is_hard
-        return [(is_hard, member_ids) for _key, member_ids in self.dimension_buckets()]
+        ``(constraint, member_ids)``. Empty when no dimension is selected
+        or its constraint is ``NONE``."""
+        constraint = self.dimension_constraint
+        if constraint == ProhibitedPairingConstraint.NONE:
+            return []
+        return [
+            (constraint, member_ids) for _key, member_ids in self.dimension_buckets()
+        ]
 
     def computed_groups(
         self, round_: int | None = None
-    ) -> list[tuple[bool, list[int]]]:
+    ) -> list[tuple[ProhibitedPairingConstraint, list[int]]]:
         """The live groups for the current config — dimension-derived
-        plus the manual template groups. Each is ``(is_hard,
+        plus the manual template groups. Each is ``(constraint,
         member_ids)``. This is what a full pairing snapshots.
 
         When ``round_`` is given, plugin-contributed dynamic groups for
         that round (the ``get_round_prohibited_pairing_groups`` hook —
         e.g. results-based protections) are merged in too."""
-        groups: list[tuple[bool, list[int]]] = list(self.dimension_groups())
+        groups = self.dimension_groups()
         groups.extend(
-            (group.is_hard, list(group.member_ids))
+            (ProhibitedPairingConstraint(group.constraint), list(group.member_ids))
             for group in self.manual_groups()
             if len(group.member_ids) >= 2
         )
         if round_ is not None:
             groups.extend(
-                (rule_group.is_hard, list(rule_group.member_ids))
+                (rule_group.constraint, list(rule_group.member_ids))
                 for rule_group in self.round_rule_groups(round_)
             )
         return groups
@@ -288,28 +301,28 @@ class ProhibitedPairings:
 
     def relaxation_inputs(
         self, after_round: int
-    ) -> tuple[list[list[int]], list[list[int]], dict[int, int]]:
+    ) -> tuple[list[list[int]], list[list[int]], list[list[int]], dict[int, int]]:
         """Split the round's configured prohibitions into the always-kept
-        hard groups and the soft groups, plus each member's standing rank
-        (1 = top) entering the round — the basis for soft relaxation.
+        hard groups, the soft groups relaxed from the bottom of the
+        standings and the soft groups avoided as the lowest-priority
+        criterion, plus each member's standing rank (1 = top) entering the
+        round — the basis for soft relaxation.
 
         Relaxation is member-level (*protect the top N*), so there is no
         pairwise expansion: a soft group is relaxed by splitting its
-        members at a rank cutoff. Skips the standings entirely when there
-        are no soft groups."""
+        members at a rank cutoff. Skips the standings entirely when no
+        group is relaxed from the bottom of the standings."""
         groups = self.computed_groups(after_round + 1)
-        hard_groups: list[list[int]] = [
-            list(member_ids) for is_hard, member_ids in groups if is_hard
-        ]
-        soft_groups: list[list[int]] = [
-            list(member_ids) for is_hard, member_ids in groups if not is_hard
-        ]
-        if not soft_groups:
-            return hard_groups, [], {}
+
+        def members_of(constraint: ProhibitedPairingConstraint) -> list[list[int]]:
+            return [list(member_ids) for c, member_ids in groups if c == constraint]
+
+        protect_top_groups = members_of(ProhibitedPairingConstraint.PROTECT_TOP)
         return (
-            hard_groups,
-            soft_groups,
-            self.member_weakness_ranks(after_round),
+            members_of(ProhibitedPairingConstraint.HARD),
+            protect_top_groups,
+            members_of(ProhibitedPairingConstraint.LOWEST_CRITERION),
+            self.member_weakness_ranks(after_round) if protect_top_groups else {},
         )
 
     def applied_lines(
@@ -351,6 +364,16 @@ class ProhibitedPairings:
                 m for m in group if rank_by_member.get(m, bottom) > protect_rank
             ]
             lines.extend(self._soft_clique_lines(protected, unprotected, round_))
+        return lines
+
+    def lowest_criterion_lines(
+        self, groups: list[list[int]], round_: int
+    ) -> 'list[TrfProhibitedPairing]':
+        """The SCS lines of the groups avoided as the lowest-priority
+        criterion, one per group."""
+        lines = self.applied_lines(groups, [], 0, {}, round_)
+        for line in lines:
+            line.soft = True
         return lines
 
     def _soft_clique_lines(
@@ -412,7 +435,7 @@ class ProhibitedPairings:
         return any(
             ranks.get(member, bottom) > protect_rank
             for group in groups
-            if not group.is_hard
+            if group.constraint == ProhibitedPairingConstraint.PROTECT_TOP
             for member in group.member_ids
         )
 
@@ -433,7 +456,7 @@ class ProhibitedPairings:
         released = {
             member
             for group in groups
-            if not group.is_hard
+            if group.constraint == ProhibitedPairingConstraint.PROTECT_TOP
             for member in group.member_ids
             if ranks.get(member, bottom) > protect_rank
         }
@@ -446,14 +469,17 @@ class ProhibitedPairings:
         hard and soft groups that were the basis for this round's pairing)
         together with the soft-relaxation cutoff ``protect_rank`` chosen for
         the round. The configured groups drive the read-only modal; groups
-        plus ``protect_rank`` let the TRF 260 export regenerate the exact
+        plus ``protect_rank`` let the TRF export regenerate the exact
         effective set bbpPairings enforced — without persisting the (huge)
         pairwise expansion."""
         tournament = self.tournament
         database.replace_round_prohibited_pairing_snapshot(
             tournament.id,
             round_,
-            self.computed_groups(round_),
+            [
+                (constraint.value, member_ids)
+                for constraint, member_ids in self.computed_groups(round_)
+            ],
             protect_rank,
         )
         tournament.stored_tournament.stored_prohibited_pairing_groups = (

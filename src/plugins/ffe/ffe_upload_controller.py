@@ -58,12 +58,21 @@ class FfeWebContext(AdminWebContext):
 
     @property
     def ffe_configured_tournaments(self) -> list[Tournament]:
-        ffe_configured_tournaments: list[Tournament] = []
-        for tournament in self.allowed_tournaments:
-            plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
-            if plugin_data.ffe_id and plugin_data.password:
-                ffe_configured_tournaments.append(tournament)
-        return ffe_configured_tournaments
+        return [
+            tournament
+            for tournament in self.allowed_tournaments
+            if FFEUtils.is_configured(tournament)
+        ]
+
+    @property
+    def ffe_rules_tournaments(self) -> list[Tournament]:
+        """The tournaments rules can be uploaded for: the team module
+        has no rules upload."""
+        return [
+            tournament
+            for tournament in self.ffe_configured_tournaments
+            if not FFEUtils.supports_team_transfer(tournament)
+        ]
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -72,6 +81,7 @@ class FfeWebContext(AdminWebContext):
             'tournament': self.tournament,
             'allowed_tournaments': self.allowed_tournaments,
             'ffe_configured_tournaments': self.ffe_configured_tournaments,
+            'ffe_rules_tournaments': self.ffe_rules_tournaments,
             'FFE_UPLOAD_DELAY': FFE_UPLOAD_DELAY,
         }
 
@@ -119,7 +129,7 @@ class FfeUploadController(BaseEventAdminController):
                 {'all_tournaments': True}
                 | {
                     f'tournament_{tournament.id}': True
-                    for tournament in web_context.ffe_configured_tournaments
+                    for tournament in web_context.ffe_rules_tournaments
                 }
             )
         template_context = web_context.template_context
@@ -179,6 +189,78 @@ class FfeUploadController(BaseEventAdminController):
         FfeBackgroundUploader.schedule_upload(tournament, True)
 
         return self._render_upload_results(web_context)
+
+    @post(
+        path=(
+            '/ffe/upload-modal/upload-period/{event_uniq_id:str}/'
+            '{tournament_id:int}/{period_id:int}'
+        ),
+        name='ffe-modal-upload-period',
+    )
+    async def htmx_ffe_modal_upload_period(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        period_id: FromPath[int],
+    ) -> Template:
+        """Send one period, under the registration it was declared with
+        — what a correction to a period already submitted needs."""
+        web_context = FfeWebContext(request, tournament_id)
+        tournament = web_context.get_tournament()
+        period = next(
+            (
+                candidate
+                for candidate in tournament.periods
+                if candidate.id == period_id
+            ),
+            None,
+        )
+        if period is None:
+            raise NotFoundException(f'Period [{period_id}] not found.')
+        FfeBackgroundUploader.upload_period(tournament, period_id)
+        return self._render_upload_results(web_context)
+
+    @post(
+        path=(
+            '/ffe/upload-modal/make-period-visible/{event_uniq_id:str}/'
+            '{tournament_id:int}/{period_id:int}'
+        ),
+        name='ffe-modal-make-period-visible',
+    )
+    async def htmx_ffe_modal_make_period_visible(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        period_id: FromPath[int],
+    ) -> Template:
+        """Show one period's registration on the FFE site, so that the
+        players can see the games it carries and the arbiter that they
+        reached the registration they were meant for."""
+        web_context = FfeWebContext(request, tournament_id)
+        tournament = web_context.get_tournament()
+        period = next(
+            (
+                candidate
+                for candidate in tournament.periods
+                if candidate.id == period_id
+            ),
+            None,
+        )
+        if period is None:
+            raise NotFoundException(f'Period [{period_id}] not found.')
+        FfeBackgroundUploader.upload_tournament(
+            tournament.event.uniq_id,
+            tournament.id,
+            set_visible=True,
+            period_id=period_id,
+        )
+        message_type: str | None = None
+        if FFEUtils.get_period_own_plugin_data(period).upload_failure_id:
+            message = _('Period visibility could not be set.')
+            message_type = 'error'
+        else:
+            message = _('Period is now visible on the FFE website.')
+        return self._render_ffe_upload_modal(web_context, message, message_type)
 
     @post(
         path='/ffe/upload-modal/make-visible/{event_uniq_id:str}/{tournament_id:int}',
@@ -255,7 +337,7 @@ class FfeUploadController(BaseEventAdminController):
 
         selected_tournaments = [
             tournament
-            for tournament in web_context.ffe_configured_tournaments
+            for tournament in web_context.ffe_rules_tournaments
             if WebContext.form_data_to_path(
                 normalized_data, f'tournament_{tournament.id}'
             )

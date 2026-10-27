@@ -61,6 +61,8 @@ class PointAdjustments:
         """Combined manual + rule-set (MP, GP) adjustment for the team's
         round. Folded into standings, tie-break records, screens and the
         TRF 299 export."""
+        if self.tournament.hides_round_results(round_):
+            return 0.0, 0.0
         mp, gp = self.manual(team_id, round_)
         rule_set_adjustment = self.from_rule_set(team_id, round_)
         if rule_set_adjustment is not None:
@@ -120,7 +122,9 @@ class PointAdjustments:
         Unlike the team counterpart there is no rule-set contribution:
         rule sets award match points, which individual tournaments don't
         have."""
-        if self.tournament.is_team_tournament:
+        if self.tournament.is_team_tournament or self.tournament.hides_round_results(
+            round_
+        ):
             return 0.0
         adjustment = self.stored_for_player(player_id, round_)
         return adjustment.delta if adjustment else 0.0
@@ -132,7 +136,9 @@ class PointAdjustments:
         return sum(
             adjustment.delta
             for adjustment in self.tournament.stored_tournament.stored_player_point_adjustments
-            if adjustment.player_id == player_id and adjustment.round_ <= after_round
+            if adjustment.player_id == player_id
+            and adjustment.round_ <= after_round
+            and not self.tournament.hides_round_results(adjustment.round_)
         )
 
     def set_manual_for_player(

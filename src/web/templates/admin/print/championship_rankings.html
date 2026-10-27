@@ -7,6 +7,7 @@
     }
     table.championship-print th { background: #eee; }
     table.championship-print td.num, table.championship-print th.num { text-align: right; }
+    table.championship-print td.center, table.championship-print th.center { text-align: center; }
     .championship-set-title {
         font-weight: bold;
         font-size: 135%;
@@ -63,9 +64,12 @@
                     <th>{{ _('Competitor') }}</th>
                     {% if not is_team %}
                         <th>{{ pgettext('category column header', 'Cat.') }}</th>
-                        <th>{{ pgettext('gender column header', 'Gen.') }}</th>
+                        <th class="center">{{ pgettext('gender column header', 'Gen.') }}</th>
                     {% endif %}
                     <th>{{ pgettext('federation column header', 'Fed.') }}</th>
+                    {% if not is_team %}
+                        <th>{{ pgettext('club column header', 'Club') }}</th>
+                    {% endif %}
                     {% for header in rule_headers %}
                         <th class="num" title="{{ header.title }}">{{ header.acronym }}</th>
                     {% endfor %}
@@ -85,9 +89,12 @@
                         </td>
                         {% if not is_team %}
                             <td>{{ row.category or '—' }}</td>
-                            <td>{{ row.gender or '—' }}</td>
+                            <td class="center">{{ row.gender or '—' }}</td>
                         {% endif %}
                         <td>{{ row.federation or '—' }}</td>
+                        {% if not is_team %}
+                            <td>{{ row.club or '—' }}</td>
+                        {% endif %}
                         {% for cell in row.rule_cells %}
                             <td class="num">{% if cell.rank_progress is not none and cell.rank_progress > 0 %}▲&nbsp;{{ cell.rank_progress }}{% elif cell.rank_progress is not none and cell.rank_progress < 0 %}▼&nbsp;{{ -cell.rank_progress }}{% elif cell.value is none %}—{% else %}{{ score(cell.value) }}{% endif %}</td>
                         {% endfor %}

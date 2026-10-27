@@ -221,4 +221,4 @@ class FFEArbiterPrintOption(AccountPrintOption):
 
     @property
     def label(self) -> str:
-        return _('Arbiter:')
+        return _('{string}:').format(string=_('Arbiter'))

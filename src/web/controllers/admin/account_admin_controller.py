@@ -78,7 +78,7 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
             'show_details': SessionAccountsShowDetails(self.request).get(),
             'admin_account': self.admin_account,
             'admin_permission': self.admin_permission,
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
             'selected_data_source': SessionPlayersActiveDataSource(self.request).get(),
         }
 
@@ -225,7 +225,7 @@ class AccountAdminController(BaseEventAdminController):
             ) from None
 
         stored_player, errors = await PlayerAdminController.get_search_stored_player(
-            data_source, player_source_id, date.today()
+            data_source, player_source_id, date.today(), with_arbiter_title=True
         )
         if stored_player:
             stored_account = StoredAccount(

@@ -22,6 +22,7 @@ from data.columns.players_tab import (
     GenderPlayersTabColumn,
     FixedPlayersTabColumn,
     FideIdPlayersTabColumn,
+    NationalIdPlayersTabColumn,
     PaymentPlayersTabColumn,
     TournamentPlayersTabColumn,
     TeamPlayersTabColumn,
@@ -31,7 +32,7 @@ from data.columns.players_tab import (
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import Cadence, PlayerRatingType
 
 if TYPE_CHECKING:
     from data.input_output import DataSource
@@ -257,6 +258,7 @@ class PlayersTabColumnHandler:
             GenderPlayersTabColumn(),
             FixedPlayersTabColumn(),
             FideIdPlayersTabColumn(),
+            NationalIdPlayersTabColumn(),
             PaymentPlayersTabColumn(),
             TournamentPlayersTabColumn(),
             TeamPlayersTabColumn(),
@@ -345,6 +347,7 @@ class PlayerDatasheetColumnHandler:
             pds.PhoneColumn(),
             pds.GenderColumn(),
             pds.FideIDColumn(),
+            pds.NationalIdColumn(),
             # Team events list a team column (export + import) instead of
             # the export-only tournament column.
             pds.TeamColumn() if self._event.is_team_event else pds.TournamentColumn(),
@@ -367,7 +370,7 @@ class PlayerDatasheetColumnHandler:
         columns: list[DatasheetColumn] = [pds.RatingColumn(), pds.RatingTypeColumn()]
         columns.extend(
             pds.TypedRatingColumn(tournament_type, rating_type)
-            for tournament_type in TournamentRating
+            for tournament_type in Cadence
             for rating_type in rating_types
         )
         return columns
@@ -375,3 +378,7 @@ class PlayerDatasheetColumnHandler:
     @property
     def import_columns(self) -> Collection[DatasheetColumn]:
         return [column for column in self.columns if not column.export_only]
+
+    @property
+    def export_columns(self) -> Collection[DatasheetColumn]:
+        return [column for column in self.columns if not column.import_only]

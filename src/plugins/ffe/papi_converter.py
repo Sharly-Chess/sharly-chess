@@ -16,17 +16,26 @@ from common.tool_installer import PapiConverterInstaller
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
 from data.pairings.engines import DoubleBergerPairingEngine
-from data.pairings.scheveningen import ScheveningenPairingSystem
+from data.pairings.systems import SwissPairingSystem
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
     PairingVariation,
+    StandardSwissVariation,
 )
 from data.player import TournamentPlayer
-from utils.types import PlayerRating
+from utils.types import PlayerRating, PlayerRatingAndType
+from data.rating_sequences import (
+    RatingEntry,
+    RatingListFamily,
+    RatingSequence,
+    sequence_keys,
+)
 from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
+from data.input_output.report_window import ReportWindow, build_window
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
@@ -36,11 +45,11 @@ from database.sqlite.event.event_store import (
     StoredTieBreak,
     set_stored_fields,
 )
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
-    PapiTournamentRating,
+    PapiCadence,
     PapiTieBreak,
     PapiThreePointsForAWin,
     PapiPlayerGender,
@@ -53,6 +62,7 @@ from plugins.ffe.papi_mappers import (
 )
 from plugins.ffe.utils import FFEUtils
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
+from plugins.ffe.utils import is_ffe_estimate
 from plugins.manager import plugin_manager
 from data.pairings.acceleration import (
     BakuSwissVariation,
@@ -62,7 +72,7 @@ from data.pairings.acceleration import (
 )
 from utils import Utils
 from utils.enum import (
-    TournamentRating,
+    Cadence,
     PlayerGender,
     PlayerTitle,
     PlayerRatingType,
@@ -144,7 +154,7 @@ class PapiRating:
     value: int
     type_field: str
     type: str | None
-    tournament_rating: TournamentRating
+    tournament_rating: Cadence
 
 
 class PapiConverter:
@@ -381,7 +391,6 @@ class PapiConverter:
                 ).date(),
                 stop_date=datetime.strptime(variables.endDate, PAPI_DATE_FORMAT).date(),
             )
-        stored_tournament.override_unrated_rapid_blitz = False
         rounds = 7
         if variables.rounds:
             if not variables.rounds.isdigit():
@@ -395,13 +404,18 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('pairing', variables.pairing)
         stored_tournament.pairing = pairing
-        rating = TournamentRating.STANDARD
+        rating = Cadence.STANDARD
         if variables.ratingClass:
             try:
-                rating = PapiTournamentRating.get_core_object(variables.ratingClass)
+                rating = PapiCadence.get_core_object(variables.ratingClass)
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
-        stored_tournament.rating = rating.value
+        stored_tournament.cadence = rating.value
+        # Papi does not rank an unrated rapid or blitz player on their
+        # standard rating
+        stored_tournament.rating_sequence = sequence_keys(
+            PapiConverter._papi_sequence(rating)
+        )
         tie_breaks: list[StoredTieBreak] = []
         for index, papi_tie_break in enumerate(
             (
@@ -507,28 +521,28 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('fideTitle', papi_player.fideTitle)
 
-        ratings: dict[int, dict[str, int | None]] = {}
+        ratings: dict[int, dict[str, Any]] = {}
         papi_ratings = [
             PapiRating(
                 'elo',
                 papi_player.elo,
                 'fideElo',
                 papi_player.fideElo,
-                TournamentRating.STANDARD,
+                Cadence.STANDARD,
             ),
             PapiRating(
                 'rapidElo',
                 papi_player.rapidElo,
                 'fideRapidElo',
                 papi_player.fideRapidElo,
-                TournamentRating.RAPID,
+                Cadence.RAPID,
             ),
             PapiRating(
                 'blitzElo',
                 papi_player.blitzElo,
                 'fideBlitzElo',
-                papi_player.fideRapidElo,
-                TournamentRating.BLITZ,
+                papi_player.fideBlitzElo,
+                Cadence.BLITZ,
             ),
         ]
         for papi_rating in papi_ratings:
@@ -542,14 +556,18 @@ class PapiConverter:
                     rating_type = PapiPlayerRatingType.get_core_object(papi_rating.type)
                 except KeyError:
                     raise_unknown_value(papi_rating.type_field, papi_rating.type)
-            ratings[papi_rating.tournament_rating.value] = PlayerRating.from_type(
-                papi_rating.value, rating_type
+            # An FFE estimate is prescribed by age, not typed by the arbiter
+            ratings[papi_rating.tournament_rating.value] = (
+                PlayerRating()
+                if rating_type == PlayerRatingType.ESTIMATED
+                and is_ffe_estimate(papi_rating.value)
+                else PlayerRating.from_type(papi_rating.value, rating_type)
             ).stored_value
 
         fide_id: int | None = None
         if papi_player.fideCode:
             try:
-                fide_id = int(papi_player.fideCode.replace("'", '').strip())
+                fide_id = int(papi_player.fideCode.replace("'", '').strip()) or None
             except ValueError:
                 logger.warning('Invalid FIDE ID [%s], ignored.', papi_player.fideCode)
 
@@ -563,8 +581,8 @@ class PapiConverter:
                 raise_unknown_value('licenceType', papi_player.licenceType)
         return StoredPlayer(
             id=None,
-            last_name=papi_player.lastName.upper(),
-            first_name=papi_player.firstName.title() if papi_player.firstName else None,
+            last_name=papi_player.lastName,
+            first_name=papi_player.firstName or None,
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             gender=gender.value,
@@ -577,16 +595,17 @@ class PapiConverter:
             women_title=title.women_value,
             ratings=ratings,
             fide_id=fide_id,
+            national_id=papi_player.nrFFE or None,
+            national_source=NATIONAL_SOURCE_ID if papi_player.nrFFE else None,
             federation=papi_player.federation,
             club=papi_player.club,
             fixed=papi_player.fixedBoard,
             check_in=papi_player.checkedIn,
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=papi_player.refFFE,
                     ffe_licence=ffe_licence,
-                    ffe_licence_number=papi_player.nrFFE,
                     league=papi_player.league,
+                    ffe_id=papi_player.refFFE,
                 ).to_stored_value()
             },
         )
@@ -689,20 +708,22 @@ class PapiConverter:
         )
 
     @classmethod
-    def scheveningen_export_warning(cls, tournament: Tournament) -> str | None:
-        """The warning that a Scheveningen has no Papi form of its own and
-        is exported / uploaded as an individual Swiss. Shared by the export
-        modal and the tournament tab's pairing warning."""
-        if isinstance(tournament.pairing_system, ScheveningenPairingSystem):
-            return _(
-                'This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament.'
-            )
-        return None
+    def team_export_warning(cls, tournament: Tournament) -> str | None:
+        """The warning that the exported file describes an individual
+        Swiss: the Papi format knows no team play, so the teams are left
+        out, every board reads as a game of its own and the standings
+        are the game points — not the match points a team competition
+        may be ranked on."""
+        if not tournament.event.is_team_event:
+            return None
+        return _(
+            'The Papi format has no team play: the file describes an individual '
+            'Swiss tournament, where each board is a game of its own and the '
+            'players are ranked on their game points.'
+        )
 
     @classmethod
     def check_pairing_warning(cls, tournament: Tournament) -> str | None:
-        if warning := cls.scheveningen_export_warning(tournament):
-            return warning
         if isinstance(tournament.pairing_variation, AccelerationSwissVariation):
             return _(
                 "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
@@ -739,14 +760,6 @@ class PapiConverter:
     @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
-        # A Scheveningen is the one team system that can be flattened to an
-        # individual Swiss (every player has one opponent per round), so it
-        # is exported that way; the other team systems have no Papi form.
-        if tournament.event.is_team_event and not isinstance(
-            tournament.pairing_system, ScheveningenPairingSystem
-        ):
-            return _('Papi export is not available for team events.')
-
         # Papi ranks on the points and then on up to three tie-breaks;
         # there is no way to express a criterion that outranks the score.
         if not tournament.tie_break_configuration.leads_on_points:
@@ -797,7 +810,7 @@ class PapiConverter:
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
         warnings: list[str] = []
-        if warning := cls.scheveningen_export_warning(tournament):
+        if warning := cls.team_export_warning(tournament):
             warnings.append(warning)
         if warning := cls.check_tiebreaks_warning(
             tournament.tie_breaks,
@@ -806,6 +819,14 @@ class PapiConverter:
             warnings.append(warning)
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
             warnings.append(warning)
+        if tournament.rating_corrections:
+            warnings.append(
+                _(
+                    'The games corrected for the rating report are exported as '
+                    'corrected: the standings on the FFE website may differ from '
+                    'those of the tournament.'
+                )
+            )
         return '<br/>'.join(warnings) or None
 
     def write_papi_file(
@@ -814,12 +835,14 @@ class PapiConverter:
         target_file: Path,
         anonymize_player_data: bool = False,
         is_ffe_upload: bool = False,
+        period: TournamentPeriod | None = None,
     ) -> None:
-        """Write the tournament data to a papi file.
+        """Write the tournament data to a papi file, or the file of one
+        of its rating periods.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Raises a SharlyChessException if the conversion fails."""
         papi_data = self.tournament_to_papi_data(
-            tournament, anonymize_player_data, is_ffe_upload
+            tournament, anonymize_player_data, is_ffe_upload, period
         )
         papi_data_dict = {
             'variables': {
@@ -887,8 +910,15 @@ class PapiConverter:
         tournament: Tournament,
         anonymize_player_data: bool = False,
         is_ffe_upload: bool = False,
+        period: TournamentPeriod | None = None,
     ) -> PapiData:
-        """Convert a Tournament object to PapiData."""
+        """Convert a Tournament object to PapiData.
+
+        *period* builds the file of one period of a tournament reported in
+        periods: the rounds of that period numbered from 1, the players who
+        played them, the ratings they held then, and the homologation
+        number the period is submitted under."""
+        window = build_window(tournament, period) if period else None
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
         )
@@ -898,10 +928,21 @@ class PapiConverter:
         # Convert tournament variables
         variables = PapiVariables(
             name=tournament.full_name,
-            type=PapiPairingSystem.get_outer_value(tournament.pairing_system),
+            # A team tournament is flattened to an individual Swiss:
+            # the format has no team play, and its players each have one
+            # opponent per round.
+            type=PapiPairingSystem.get_outer_value(
+                SwissPairingSystem()
+                if tournament.event.is_team_event
+                else tournament.pairing_system
+            ),
             rounds=str(tournament.rounds),
-            pairing=PapiPairingVariation.get_outer_value(tournament.pairing_variation),
-            ratingClass=PapiTournamentRating.get_outer_value(tournament.rating),
+            pairing=PapiPairingVariation.get_outer_value(
+                StandardSwissVariation()
+                if tournament.event.is_team_event
+                else tournament.pairing_variation
+            ),
+            ratingClass=PapiCadence.get_outer_value(tournament.cadence),
             venue=tournament.location,
             startDate=tournament.start_date.strftime(PAPI_DATE_FORMAT),
             endDate=tournament.stop_date.strftime(PAPI_DATE_FORMAT),
@@ -916,25 +957,28 @@ class PapiConverter:
             ratingThreshold1=str(rating_thresholds[0]),
             ratingThreshold2=str(rating_thresholds[1]),
             homologation=str(
-                FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
+                FFEUtils.get_period_plugin_data(window.period).ffe_id
+                if window
+                else FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
             ),
         )
 
-        # Create mapping from internal player ID to index in PapiPlayer list
+        players = list(tournament.tournament_players)
         player_id_to_index = {
             tournament_player.id: index
-            for index, tournament_player in enumerate(tournament.tournament_players)
+            for index, tournament_player in enumerate(players)
         }
 
         # Convert players
         papi_players: list[PapiPlayer] = []
-        for tournament_player in tournament.tournament_players:
+        for tournament_player in players:
             papi_player = self._player_to_papi_player(
                 tournament_player,
                 player_id_to_index,
                 tournament.pab_equivalent_result,
                 manual_tiebreak_by_player_id.get(tournament_player.id, None),
                 anonymize_player_data,
+                window,
             )
             plugin_manager.hook_for_event(tournament.event, 'update_papi_player')(
                 papi_player=papi_player,
@@ -1033,6 +1077,7 @@ class PapiConverter:
         pab_value: Result,
         manual_tie_break_value: int | None,
         anonymize_player_data: bool,
+        window: ReportWindow | None = None,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
@@ -1082,32 +1127,54 @@ class PapiConverter:
             club=tournament_player.club.name,
             fixedBoard=fixed_board,
             checkedIn=tournament_player.check_in,
-            elo=self._get_papi_elo(tournament_player, TournamentRating.STANDARD),
-            fideElo=self._get_papi_elo_type(
-                tournament_player, TournamentRating.STANDARD
-            ),
-            rapidElo=self._get_papi_elo(tournament_player, TournamentRating.RAPID),
-            fideRapidElo=self._get_papi_elo_type(
-                tournament_player, TournamentRating.RAPID
-            ),
-            blitzElo=self._get_papi_elo(tournament_player, TournamentRating.BLITZ),
-            fideBlitzElo=self._get_papi_elo_type(
-                tournament_player, TournamentRating.BLITZ
-            ),
+            elo=self._get_papi_elo(tournament_player, Cadence.STANDARD),
+            fideElo=self._get_papi_elo_type(tournament_player, Cadence.STANDARD),
+            rapidElo=self._get_papi_elo(tournament_player, Cadence.RAPID),
+            fideRapidElo=self._get_papi_elo_type(tournament_player, Cadence.RAPID),
+            blitzElo=self._get_papi_elo(tournament_player, Cadence.BLITZ),
+            fideBlitzElo=self._get_papi_elo_type(tournament_player, Cadence.BLITZ),
             licenceType=PapiPlayerFFELicence.get_outer_value(
-                plugin_data.ffe_licence, plugin_data.ffe_licence_number
+                plugin_data.ffe_licence, FFEUtils.licence_number(tournament_player)
             ),
             refFFE=plugin_data.ffe_id
             or (self.MOCK_FFE_ID_DELTA + tournament_player.id),
-            nrFFE=plugin_data.ffe_licence_number,
+            nrFFE=FFEUtils.licence_number(tournament_player),
             league=plugin_data.league,
         )
 
         # Convert rounds/pairings
         tournament = tournament_player.tournament
         eliminates = tournament.pairing_system.eliminates_participants
+        # Papi files are rated: the games corrected for the rating report
+        # are given as corrected, whatever the standings on the FFE website.
+        correction_by_round = {
+            correction.round_: correction
+            for correction in tournament.rating_corrections
+            if tournament_player.id in correction.player_ids
+        }
         for round_, pairing in tournament_player.pairings_by_round.items():
-            papi_round = PapiRound.from_pairing(pairing, pab_value)
+            # A period is submitted as the tournament's own Papi with
+            # the other rounds unpaired: they keep their place, empty, and
+            # the rating server takes the results of the rounds that are
+            # filled in.
+            if window and not window.covers(round_):
+                continue
+            # A round whose pairings are not shown yet is sent as if unpaired.
+            hidden = (
+                tournament.event.public_view and round_ > tournament.last_shown_round
+            )
+            if hidden and (pairing.opponent_id is not None or pairing.exempt):
+                continue
+            correction = correction_by_round.get(round_)
+            if correction is not None and correction.player_ids == {
+                tournament_player.id,
+                pairing.opponent_id,
+            }:
+                papi_round = PapiRound.from_rating_correction(
+                    pairing, correction, pab_value
+                )
+            else:
+                papi_round = PapiRound.from_pairing(pairing, pab_value)
 
             # Get opponent index using the mapping from internal player ID to index
             opponent_index = None
@@ -1115,17 +1182,18 @@ class PapiConverter:
                 opponent_index = player_id_to_index.get(pairing.opponent_id)
             papi_round.opponent = opponent_index
 
-            # In a knock-out a player has no opponent in a round when they are
-            # eliminated (unpaired) or seated on a structural bye (a top seed
-            # sitting the round out). Papi cannot take a *scoring* bye with no
-            # adversary — it assigns a default one, so several such byes in a
-            # round collide on its per-round adversary index — so represent
-            # every opponent-less played round as a zero-point bye, which it
-            # accepts and which leaves the score untouched (a knock-out ranks
-            # on the round reached, not on the points).
+            # A player can have no opponent in a played round: in a
+            # knock-out, eliminated or seated on a structural bye; in a
+            # team competition, left out of the lineup. Papi cannot take
+            # a *scoring* bye with no adversary — it assigns a default
+            # one, so several such byes in a round collide on its
+            # per-round adversary index — so both read as a zero-point
+            # bye, which it accepts and which scores what the player
+            # scored: nothing.
             if (
-                eliminates
+                (eliminates or tournament.event.is_team_event)
                 and papi_round.opponent is None
+                and not hidden
                 and tournament.round_has_pairings(round_)
             ):
                 papi_round = PapiRound.zero_point_bye()
@@ -1134,29 +1202,44 @@ class PapiConverter:
 
         return papi_player
 
+    @staticmethod
+    def _papi_sequence(tournament_rating: Cadence) -> RatingSequence:
+        """The FIDE then the FFE rating of a cadence, which is what each
+        rating column of Papi holds."""
+        return (
+            RatingEntry(
+                RatingListFamily.FIDE, PlayerRatingType.FIDE, tournament_rating
+            ),
+            RatingEntry(
+                RatingListFamily.NATIONAL, PlayerRatingType.FIDE, tournament_rating
+            ),
+            RatingEntry(
+                RatingListFamily.NATIONAL, PlayerRatingType.NATIONAL, tournament_rating
+            ),
+        )
+
+    def _papi_rating(
+        self, tournament_player: TournamentPlayer, tournament_rating: Cadence
+    ) -> PlayerRatingAndType:
+        tournament = tournament_player.tournament
+        return tournament_player.resolve_rating(
+            tournament_rating,
+            tournament.rating_preference,
+            tournament.rating_sequence
+            if tournament_rating == tournament.cadence
+            else self._papi_sequence(tournament_rating),
+            tournament_player.category,
+        )
+
     def _get_papi_elo(
-        self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
+        self, tournament_player: TournamentPlayer, tournament_rating: Cadence
     ) -> int:
-        # Override unrated rapid/blitz rating in the export
-        # When exporting to Papi we can safely assume that the player type for the tournament rating is FIDE
-        if tournament_player.rating_is_overridden(
-            tournament_rating, PlayerRatingType.FIDE
-        ):
-            tournament_rating = TournamentRating.STANDARD
-        return tournament_player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
-        ).value
+        return self._papi_rating(tournament_player, tournament_rating).value
 
     def _get_papi_elo_type(
-        self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
+        self, tournament_player: TournamentPlayer, tournament_rating: Cadence
     ) -> str:
-        if tournament_player.rating_is_overridden(
-            tournament_rating, PlayerRatingType.FIDE
-        ):
-            tournament_rating = TournamentRating.STANDARD
-        rating_and_type = tournament_player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
-        )
+        rating_and_type = self._papi_rating(tournament_player, tournament_rating)
         rating_type = rating_and_type.type
         default_rating = PapiPlayerRatingType.get_outer_value(
             PlayerRatingType.ESTIMATED

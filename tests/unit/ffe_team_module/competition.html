@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head id="ctl00_Head1"><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><link href="ffe.css?version=1" rel="stylesheet" type="text/css" /><link rel="shortcut icon" type="image/x-icon" href="images/ffe16.ico" /><title>
+	FFE - Gestion des compétitions par équipes
+</title></head>
+<body id="ctl00_ThisPage" bgcolor="#5C3385" text="#000000" leftmargin="0" topmargin="0" bottommargin="0">
+<form name="aspnetForm" method="post" action="Equipes.aspx" id="aspnetForm" style="margin:0px;">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="VIEWSTATE" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="E786A3C3" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="VIEWSTATE" />
+</div>
+<map name="MapFFE">
+  <area shape="rect" coords="8,8,56,56" href="http://www.echecs.asso.fr">
+</map>
+<table height=100% border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" id="TablePrincipale">
+
+<!----------------- Haut de Page ----------------->
+  <tr id="ctl00_RowEnTete" height="74px" valign="top">
+	<td colspan="2">
+      <table border="0" cellspacing="0" cellpadding="0" width="980px">
+<!-- rangée du Haut -->
+        <tr valign="top">
+<!-- Cellule Logo -->
+          <td><img src="images/banniere_haut.gif" border=0 usemap="#MapFFE" width="460px" /></td>
+<!-- Cellule Login -->
+          <td align="center" bgcolor="#990066" width="420px">
+
+          </td>
+<!-- Séparateur -->
+          <td><img src="images/banniere_sepa.gif" border="0" width="8px" /></td>
+<!-- Cellule Password -->
+          <td align="center" bgcolor="#593083" width="480px">
+
+            <table id="ctl00_TableConnected" border="0" cellpadding="0" cellspacing="0">
+		<tr valign="middle">
+			<td>
+                  &nbsp;<br /><a id="ctl00_CmdDeconnection" class="lien_menu" href="javascript:__doPostBack('ctl00$CmdDeconnection','')">Déconnexion</a>
+                </td>
+		</tr>
+	</table>
+
+          </td>
+        </tr>
+<!-- rangée du bas -->
+        <tr>
+          <td><img src="images/banniere_bas.gif" border="0" /></td>
+          <td colspan="3" align=right class="para_bleu_small">
+            <span id="ctl00_LabelUser">group-account est connecté&nbsp;&nbsp;</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+	<td background="images/fond_bordure.gif" width="20px"></td>
+</tr>
+
+
+<!-- rangée Centrale -->
+<tr valign=top height=100%>
+
+<!------------------ Cellule Menu ------------------------------>
+  <td width="150pt" bgcolor="#990066">
+    <table cellspacing="0" cellpadding="0" width="150" bgcolor="#990066" border="0">
+
+      <tr id="ctl00_RepeaterMenu_ctl00_RowImage" height="28" valign="bottom">
+	<td colspan="2"><img src="Images/menu_equipes.gif"></td>
+</tr>
+
+
+
+
+      <tr id="ctl00_RepeaterMenu_ctl01_RowTexte">
+	<td width="26"></td>
+	<td width="124">
+          <a id="ctl00_RepeaterMenu_ctl01_LienMenu" class="lien_menu" href="Equipes.aspx">Equipes</a>
+        </td>
+</tr>
+
+
+      <tr>
+        <td width=26></td>
+        <td width=124><span id="ctl00_LabelTest"></span></td>
+      </tr>
+    </table>
+  </td>
+
+<!------------------ Cellule Centrale ------------------------------>
+  <td width="830pt">
+
+
+<script language='JavaScript'>
+function openWindow2(url) {
+	popupWin = window.open(url,'new_page','width=520,height=600');
+}
+</script>
+
+<table id="TablePage" cellSpacing="6" cellPadding="1" class="Page">
+  <tr>
+    <td colspan=2><span id="ctl00_ContentPlaceHolderMain_LabelTitre" class="titre_menu">Module d'Administration</span></td>
+    <td align=center><a href="AideEquipe.pdf" Class=lien_texte target=_blank>Fichier d'Aide (pdf)</a></td>
+  </tr>
+  <tr>
+    <td colspan=3><span id="ctl00_ContentPlaceHolderMain_LabelSousTitre" class="titre_magenta">Compétitions par équipes</span><br /><img src="images/ligne.gif" /></td>
+  </tr>
+<!------------------ Menu du haut ------------------------>
+  <tr class=tableau_violet_f>
+
+  </tr>
+<!------------------ Partie principale ------------------------>
+  <tr>
+    <td valign=top align=center width=380>
+<!------------------ Table DropLists -------------------------->
+      <table width=100% cellspacing=0 cellpadding=0>
+        <tr>
+          <td width=95%><select name="ctl00$ContentPlaceHolderMain$SelectCompetition" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolderMain$SelectCompetition\',\'\')', 0)" id="ctl00_ContentPlaceHolderMain_SelectCompetition" class="centpourcent">
+	<option value="1">S&#233;lectionner une comp&#233;tition</option>
+	<option value="2">Interclubs</option>
+	<option value="3">Interclubs Jeunes</option>
+	<option value="10">Interclubs Feminins</option>
+	<option value="7">Coupe de France</option>
+	<option selected="selected" value="8">Coupe Jean-Claude Loubatiere</option>
+	<option value="9">Interclubs Rapide</option>
+	<option value="38">Coupe de la Parite</option>
+	<option value="11">Competitions Scolaires</option>
+	<option value="15">Ligue d'Auvergne-Rhone-Alpes</option>
+	<option value="21">Ligue de Bourgogne Franche-Comte</option>
+	<option value="12">Ligue de Bretagne</option>
+	<option value="22">Ligue du Centre Val de Loire</option>
+	<option value="23">Ligue de Corse</option>
+	<option value="18">Ligue du Grand Est</option>
+	<option value="39">Ligue de la Guadeloupe</option>
+	<option value="41">Ligue de Guyane</option>
+	<option value="16">Ligue des Hauts-De-France</option>
+	<option value="6">Ligue de l'Ile de France</option>
+	<option value="33">Ligue de la Martinique</option>
+	<option value="5">Ligue de Normandie</option>
+	<option value="19">Ligue de Nouvelle Aquitaine</option>
+	<option value="27">Ligue d'Occitanie</option>
+	<option value="35">Ligue de la Reunion</option>
+	<option value="4">Ligue des Pays de la Loire</option>
+	<option value="32">Ligue de Provence - Alpes - Cote d'Azur</option>
+
+</select></td>
+          <td width=5%>&nbsp;</td>
+        </tr>
+        <tr>
+          <td><select name="ctl00$ContentPlaceHolderMain$SelectDivision" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolderMain$SelectDivision\',\'\')', 0)" id="ctl00_ContentPlaceHolderMain_SelectDivision" class="centpourcent">
+	<option selected="selected" value="1">S&#233;lectionnez une Division</option>
+	<option value="706">Phase Departementale</option>
+	<option value="184">Phase 2</option>
+	<option value="202">Phase 3</option>
+	<option value="216">Phase Finale</option>
+
+</select></td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr height=4><td></td></tr>
+      </table>
+<!------------------ Fin DropLists ------------------------>
+<!------------------ Début Equipes ------------------------>
+      <table border=0 cellpadding=2 cellspacing=0 id=TableEquipes width=100%>
+        <tr><td colspan=7 align=center>
+
+        </td></tr>
+
+      <tr><td colspan=7 align=center><span id="ctl00_ContentPlaceHolderMain_LabelMessage" class="titre_magenta"></span></td></tr>
+      </table>
+<!------------------ Fin Equipes ------------------------>
+<!------------------ Début date ronde ---------------------->
+
+<!------------------ Fin date Ronde ------------------------>
+    </td>
+    <td width=1 bgcolor=#990066></td>
+    <td valign=top align=center width=600>
+<!------------------ Table PV ------------------------>
+      <table border=0 cellpadding=2 cellspacing=0 id=TablePV width=100%>
+      <tr>
+
+      </tr>
+
+      </table>
+<!------------------ Fin PV ------------------------>
+<!-------------- Table Temporaire ------------------->
+      <table border=0 cellpadding=2 cellspacing=0 id=TableTemp width=100%>
+      <tr>
+
+      </tr>
+
+      </table>
+    </td>
+  </tr>
+
+</table>
+
+
+  </td>
+<!------------------ Cellule de Droite ------------------------------>
+  <td id="ctl00_BordureDroite" background="images/fond_bordure.gif" width="20"></td>
+
+</tr>
+
+<!------------------ Bas de Page ------------------------------>
+  <tr id="ctl00_RowBasPage" valign="bottom">
+	<td width="150px" bgcolor="#990066">&nbsp;</td>
+	<td class="texte_footer" align="center" bgcolor="#ffffff" width="830px">
+    Copyright &nbsp;© 2003 | FFE | Fédération Française des Echecs | <span id="ctl00_LabelAdresse">6 rue de l'Eglise | 92600 ASNIERES SUR SEINE</span><br />
+    tél : <span id="ctl00_LabelTel">01 39 44 65 80</span> | fax : 01 30 69 93 15 | webmestre : <a href="mailto:erick.mouret@echecs.asso.fr" class="lien_footer">erick.mouret@echecs.asso.fr</a>
+  </td>
+	<td background="images/fond_bordure.gif" width="20"></td>
+</tr>
+
+<!------------------fin bas de Page Page --------------------------->
+</table>
+</form>
+</body>
+</html>

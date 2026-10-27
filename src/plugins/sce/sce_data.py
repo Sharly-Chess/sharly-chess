@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, date
 from functools import cached_property
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from common.i18n import _
 from data.criteria.managers import TournamentCriterionManager
@@ -19,7 +19,7 @@ from plugins.sce.sce_mappers import SCEPlayerGender, SCETournamentCriteria
 from plugins.utils import PluginData
 from utils import Utils
 from utils.date_time import format_date, format_datetime
-from utils.enum import TournamentRating, PlayerTitle, PlayerRatingType, PlayerGender
+from utils.enum import Cadence, PlayerTitle, PlayerRatingType, PlayerGender
 from utils.time_control import trf25_to_human_readable
 from utils.types import PlayerRatingAndType, PlayerRating
 
@@ -29,6 +29,7 @@ class SCETokens:
     access_token: str
     refresh_token: str
     expires_at: datetime
+    device_id: str | None = None
 
 
 @dataclass
@@ -56,7 +57,7 @@ class SCEDuplicatedPlayer:
 @dataclass
 class SCETournamentSyncData:
     name: str
-    type: TournamentRating
+    type: Cadence
     rounds: int
     start_date: date
     stop_date: date
@@ -97,7 +98,7 @@ class SCETournamentSyncData:
     def from_sce_data(cls, data: dict[str, Any]) -> Self:
         return cls(
             name=data['name'],
-            type=TournamentRating.from_key(data['type']),
+            type=Cadence.from_key(data['type']),
             rounds=data['number_of_rounds'],
             start_date=datetime.fromisoformat(data['start_date']).date(),
             stop_date=datetime.fromisoformat(data['end_date']).date(),
@@ -117,7 +118,7 @@ class SCETournamentSyncData:
     def from_tournament(cls, tournament: Tournament) -> Self:
         return cls(
             name=tournament.name,
-            type=tournament.rating,
+            type=tournament.cadence,
             rounds=tournament.rounds,
             start_date=tournament.start_date,
             stop_date=tournament.stop_date,
@@ -146,7 +147,7 @@ class SCETournamentSyncData:
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             name=stored_value['name'],
-            type=TournamentRating(stored_value['type']),
+            type=Cadence(stored_value['type']),
             start_date=SQLiteDatabase.load_date_from_database_field(
                 stored_value['start_date']
             ),
@@ -242,7 +243,7 @@ class SCETournamentSyncData:
         stored_tournament.name = Utils.get_unused_item_name(
             self.name, used_tournament_names
         )
-        stored_tournament.rating = self.type.value
+        stored_tournament.cadence = self.type.value
         stored_tournament.rounds = self.rounds
         stored_tournament.start_date = self.start_date
         stored_tournament.stop_date = self.stop_date
@@ -294,6 +295,13 @@ class SCEFraSchoolSyncData:
 
 @dataclass
 class SCEPlayerSyncData:
+    # Sharly-Chess.com fields that only make sense together.
+    FIELD_GROUPS: ClassVar[tuple[frozenset[str], ...]] = (
+        frozenset({'rating', 'rating_type'}),
+        frozenset({'phone', 'phone_number'}),
+        frozenset({'fra_school_code', 'fra_school_label'}),
+    )
+
     tournament_id: str
     last_name: str
     first_name: str | None = None
@@ -355,13 +363,14 @@ class SCEPlayerSyncData:
         yob = data['year_of_birth']
         sync_data = cls(
             tournament_id=tournament_id,
-            last_name=data['last_name'].upper(),
+            last_name=data['last_name'],
             first_name=data['first_name'],
             federation=data['federation'],
             # As SC.com YOB are mandatory, consider 1900 as an
             # empty field to avoid setting it in the THP
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=data['fide_id'],
+            national_id=data['national_id'] or None,
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
             club=data['club'] or '',
             rating=data['rating'],
@@ -395,7 +404,8 @@ class SCEPlayerSyncData:
             last_name=player.last_name,
             first_name=player.first_name,
             year_of_birth=yob if yob > MIN_YOB else None,
-            fide_id=player.fide_id,
+            fide_id=player.fide_id or None,
+            national_id=player.national_id,
             title=player.strongest_title,
             club=player.club.name,
             federation=player.federation.name,
@@ -495,6 +505,20 @@ class SCEPlayerSyncData:
             'fra_school_label': self.fra_school.label if self.fra_school else None,
         }
 
+    def changed_sce_data(self, reference: Self) -> dict[str, Any]:
+        """The Sharly-Chess.com fields whose value differs from `reference`.
+
+        Fields that only make sense together are sent together, so that two
+        computers changing one each cannot leave a mismatched pair.
+        """
+        data = self.to_sce_data()
+        reference_data = reference.to_sce_data()
+        changed = {key for key, value in data.items() if value != reference_data[key]}
+        for group in self.FIELD_GROUPS:
+            if changed & group:
+                changed |= group
+        return {key: value for key, value in data.items() if key in changed}
+
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
         from plugins.sce.utils import SCEUtils
 
@@ -523,6 +547,9 @@ class SCEPlayerSyncData:
             stored_player.date_of_birth = None
             stored_player.year_of_birth = self.year_of_birth
         stored_player.fide_id = self.fide_id
+        if self.national_id != stored_player.national_id:
+            stored_player.national_id = self.national_id
+            stored_player.national_source = None
         stored_player.title = self.title.open_value
         stored_player.women_title = self.title.women_value
         stored_player.federation = self.federation or event.federation
@@ -532,7 +559,7 @@ class SCEPlayerSyncData:
         stored_player.comment = self.comment
         stored_player.check_in = self.check_in
         if current_rating != self.rating or current_rating_type != self.rating_type:
-            stored_player.ratings[tournament.rating.value] = PlayerRating.from_type(
+            stored_player.ratings[tournament.cadence.value] = PlayerRating.from_type(
                 self.rating, self.rating_type or PlayerRatingType.ESTIMATED
             ).stored_value
         plugin_data = SCEPlayerPluginData.from_stored_value(
@@ -564,7 +591,7 @@ class SCEPlayerSyncData:
             'year_of_birth': _('Year of birth'),
             'gender_str': _('Gender'),
             'fide_id': _('FIDE ID'),
-            'national_id': None,
+            'national_id': _('National ID'),
             'ffe_licence_str': None,
             'phone': _('Phone'),
             'comment': _('Comment'),
@@ -605,6 +632,7 @@ class SCEEventPluginData(PluginData):
                 expires_at=SQLiteDatabase.load_datetime_from_database_field(
                     stored_tokens.get('expires_at'),
                 ),
+                device_id=stored_tokens.get('device_id'),
             )
         return cls(
             id=stored_value.get('id', ''),
@@ -652,6 +680,7 @@ class SCEEventPluginData(PluginData):
                         self.tokens.expires_at
                     )
                 ),
+                'device_id': self.tokens.device_id,
             }
         return stored_value
 
@@ -797,6 +826,7 @@ class SCETournamentPluginData(PluginData):
 class SCEPlayerPluginData(PluginData):
     id: str | None = None
     deleted_id: str | None = None
+    removal_pending: bool = False
     last_sync_data: SCEPlayerSyncData | None = None
     conflict_sync_data: SCEPlayerSyncData | None = None
     duplicated_registration_id: str | None = None
@@ -813,6 +843,7 @@ class SCEPlayerPluginData(PluginData):
         return cls(
             id=stored_value.get('id'),
             deleted_id=stored_value.get('deleted_id'),
+            removal_pending=stored_value.get('removal_pending', False),
             last_sync_data=(
                 SCEPlayerSyncData.from_stored_value(stored_last_sync_data)
                 if stored_last_sync_data
@@ -831,6 +862,7 @@ class SCEPlayerPluginData(PluginData):
         return {
             'id': self.id,
             'deleted_id': self.deleted_id,
+            'removal_pending': self.removal_pending,
             'last_sync_data': (
                 self.last_sync_data.to_stored_value() if self.last_sync_data else None
             ),

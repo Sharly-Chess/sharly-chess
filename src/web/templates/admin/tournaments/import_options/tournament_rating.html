@@ -1,6 +1,6 @@
 {{ admin_macros.select_input(
     name=option.id,
-    label=_('Rating:'),
+    label=_('%(string)s:', string=_('Rating')),
     select_options=rating_options,
     data=data, errors=errors
 ) }}

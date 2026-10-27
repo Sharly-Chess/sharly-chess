@@ -67,6 +67,19 @@ def test_compact_reuses_the_displaced_table():
     assert sorted(numbers(entries)) == [1, 2, 3, 4]
 
 
+def test_an_unpaired_board_leaves_the_other_tables_numbered():
+    entries = [
+        entry for entry in entries_from([None, None, None, None]) if entry[0] != 1
+    ]
+    assert numbers(entries) == [1, 3, 4]
+
+
+def test_an_unpaired_board_leaves_the_displaced_tables_numbered():
+    full = entries_from([None, None, None, 2])
+    entries = [entry for entry in full if entry[0] != 2]
+    assert numbers(entries) == [1, 3, 2]
+
+
 def test_hole_mode_matches_legacy_behaviour():
     # Same round in hole mode: the fixed board takes 2, the natural table-2
     # board keeps 2 (duplicate) and the fixed board's own table (4) is a hole.

@@ -179,7 +179,7 @@ def test_a_roster_takes_the_players_chosen(http: TestClient, tournament: Tournam
         player.last_name
         for player in EVENT.tournament().teams_by_id[identifier].players
     ]
-    assert sorted(roster) == ['FIRST', 'SECOND']
+    assert sorted(roster) == ['First', 'Second']
 
 
 @pytest.mark.unit

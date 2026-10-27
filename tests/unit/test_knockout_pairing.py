@@ -29,7 +29,7 @@ class TestIndividualKnockout:
         TestUtils.create_tournament(
             EVENT_ID,
             TOURNAMENT_NAME,
-            overrides={'rounds': 3, 'current_round': 1, 'pairing': 'KNOCKOUT_STANDARD'},
+            overrides={'rounds': 3, 'pairing': 'KNOCKOUT_STANDARD'},
         )
         with EventDatabase(EVENT_ID, write=True) as database:
             tournament_id = next(
@@ -226,8 +226,8 @@ class TestIndividualKnockout:
     ):
         # Papi requires every entrant to be paired or given a bye in each played
         # round. A knocked-out player has no board once out, so the export must
-        # seat them with a zero-point bye rather than leaving them unpaired —
-        # and a zero-point bye so their score is not altered.
+        # seat them with a Zero-Point Bye rather than leaving them unpaired —
+        # and a Zero-Point Bye so their score is not altered.
         from plugins.ffe.papi_converter import PapiConverter
         from plugins.ffe.papi_mappers import PapiColor, PapiResult
 
@@ -241,7 +241,7 @@ class TestIndividualKnockout:
         papi_data = PapiConverter().tournament_to_papi_data(tournament)
         by_name = {player.lastName: player for player in papi_data.players}
         # PLAYER05 (seed 6) is knocked out in round 1, so has no board in
-        # rounds 2 and 3 — both must be zero-point byes, not unpaired.
+        # rounds 2 and 3 — both must be Zero-Point Byes, not unpaired.
         eliminated = by_name['PLAYER05']
         for round_ in (2, 3):
             assert eliminated.rounds[round_].color == PapiColor.BYE
@@ -252,7 +252,7 @@ class TestIndividualKnockout:
         champion = by_name['PLAYER00']
         assert champion.rounds[3].color != PapiColor.UNPAIRED
 
-        # A round-one bye (top seeds sit out) is a zero-point bye too, not a
+        # A round-one bye (top seeds sit out) is a Zero-Point Bye too, not a
         # scoring bye with no adversary — else the Papi binary assigns a
         # default adversary and the two round-one byes collide on its Rd01Adv
         # index.
@@ -878,7 +878,6 @@ class TestGroupedKnockout:
             GROUP_TOURNAMENT_NAME,
             overrides={
                 'rounds': 3,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_STANDARD',
             },
         )
@@ -1062,7 +1061,6 @@ class TestGroupedDoubleElimination:
             GDE_TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_DOUBLE_ELIMINATION',
             },
         )
@@ -1144,7 +1142,6 @@ class TestDoubleElimination:
             DE_TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_DOUBLE_ELIMINATION',
             },
         )
@@ -1692,7 +1689,6 @@ class TestTeamKnockout:
             TEAM_TOURNAMENT_NAME,
             overrides={
                 'rounds': 2,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },
@@ -1935,7 +1931,6 @@ class TestGroupedTeamKnockout:
             GT_TOURNAMENT_NAME,
             overrides={
                 'rounds': 2,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },
@@ -2063,7 +2058,6 @@ class TestTeamDoubleElimination:
             TDE_TOURNAMENT_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_DOUBLE_ELIMINATION',
             },
@@ -2208,7 +2202,6 @@ class TestIndividualTwoGameKnockout:
             TWO_GAME_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_STANDARD_TWO_GAME',
             },
         )
@@ -2632,7 +2625,6 @@ class TestTeamTwoGameKnockout:
             TWO_GAME_TEAM_NAME,
             overrides={
                 'rounds': 4,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD_TWO_GAME',
             },
@@ -2903,7 +2895,6 @@ class TestDoubleEliminationTwoGame:
             TWO_GAME_DE_NAME,
             overrides={
                 'rounds': 8,
-                'current_round': 1,
                 'pairing': 'KNOCKOUT_DOUBLE_ELIMINATION_TWO_GAME',
             },
         )
@@ -3043,7 +3034,6 @@ class TestTeamDoubleEliminationTwoGame:
             TWO_GAME_TDE_NAME,
             overrides={
                 'rounds': 8,
-                'current_round': 1,
                 'team_player_count': 1,
                 'pairing': 'TEAM_KNOCKOUT_DOUBLE_ELIMINATION_TWO_GAME',
             },
@@ -3152,7 +3142,6 @@ class TestTeamKnockoutEmptySeats:
             EMPTY_SEAT_TOURNAMENT_NAME,
             overrides={
                 'rounds': 1,
-                'current_round': 1,
                 'team_player_count': 2,
                 'pairing': 'TEAM_KNOCKOUT_STANDARD',
             },

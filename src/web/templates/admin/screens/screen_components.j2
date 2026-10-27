@@ -123,11 +123,13 @@
             {% endif %}
         {% endif %}
         {% if client.can_view_public_screens and screen_type.card_detail_template %}
-            <section class="collection-detail-section collection-detail-wide">
-                <h6>{{ _('Display options') }}</h6>
-                {% set data = screen_type.card_context(screen) %}
-                {% include screen_type.card_detail_template %}
-            </section>
+            {% set data = screen_type.card_context(screen) %}
+            {% if data is not none %}
+                <section class="collection-detail-section collection-detail-wide">
+                    <h6>{{ _('Display options') }}</h6>
+                    {% include screen_type.card_detail_template %}
+                </section>
+            {% endif %}
         {% endif %}
         {% if client.can_manage_screens %}
             <section class="collection-detail-section collection-detail-wide">

@@ -67,7 +67,9 @@ class RequestUtils:
             return cast(Event, request.state[cls.REQUEST_EVENT_ATTR])
         event_uniq_id = cls._get_request_param(request, cls.EVENT_UNIQ_ID_PARAM)
         try:
-            event = EventLoader.get(request).load_event(event_uniq_id)
+            event = EventLoader.get(request).load_event(
+                event_uniq_id, public_view=request.url.path.startswith('/view/')
+            )
         except DatabaseInaccessibleException as sce:
             raise HTTPException(
                 status_code=HTTP_423_LOCKED,
@@ -401,6 +403,8 @@ class SelectOption:
     classes: str = ''
     search: str | None = None
     subtitle: str | None = None
+    #: Markup shown in place of the name in the list and the selection.
+    html: str | None = None
 
 
 class PKCEUtils:

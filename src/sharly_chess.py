@@ -39,6 +39,36 @@ def _filtered_warn(*args, **kwargs):
 
 warnings.warn = _filtered_warn
 
+
+def show_startup_dialog(title: str, message: str, error: bool = True) -> None:
+    """Shows a message box before the window of the application exists."""
+    if sys.platform == 'win32':
+        import tkinter
+        from tkinter import messagebox
+
+        root = tkinter.Tk()
+        root.withdraw()
+        if error:
+            messagebox.showerror(title, message)
+        else:
+            messagebox.showwarning(title, message)
+        root.destroy()
+
+    elif sys.platform == 'darwin':
+        import subprocess
+
+        message = message.replace('"', '\\"')
+        title = title.replace('"', '\\"')
+        kind = 'critical' if error else 'warning'
+        script = (
+            f'display alert "{title}" message "{message}" as {kind} buttons {{"OK"}}'
+        )
+        subprocess.run(['osascript', '-e', script], check=True)
+
+    elif sys.platform == 'linux':
+        print(f'{title}: {message}')
+
+
 try:
     if sys.platform == 'darwin':
         # Prevent MacOS from sleeping the windowed app when it's in the background
@@ -97,9 +127,9 @@ try:
     from common.logger import (
         get_logger,
         print_interactive_error,
+        print_interactive_info,
         set_logging_config,
     )
-    from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
 
     logger = get_logger()
@@ -173,7 +203,99 @@ try:
         '-c',
         '--check-tournament',
         action='store_true',
-        help='generate a random tournament',
+        help=(
+            'check a tournament: the pairings of every round, and the '
+            'standings against the tie-breaks the file names'
+        ),
+    )
+    generator = parser.add_argument_group(
+        'random tournament generation',
+        'What a generated tournament is made of. Anything left out is drawn '
+        'rather than given a fixed value. A rate is the chance each player '
+        'has of a bye in a round, or each board of a result of that kind.',
+    )
+    generator.add_argument(
+        '-n', '--count', type=int, default=1, help='how many to generate'
+    )
+    generator.add_argument('--players', type=int, help='number of players')
+    generator.add_argument('--rounds', type=int, help='number of rounds')
+    generator.add_argument(
+        '--teams',
+        type=int,
+        help='number of teams, which makes it a team tournament',
+    )
+    generator.add_argument(
+        '--players-per-team',
+        type=int,
+        help='number of boards each team fills, which makes it a team tournament',
+    )
+    generator.add_argument(
+        '--ratings',
+        type=str,
+        help='the ratings to give the players, strongest first, comma-separated',
+    )
+    generator.add_argument('--top-rating', type=int, help='the highest rating')
+    generator.add_argument(
+        '--rating-step', type=float, help='the rating between one player and the next'
+    )
+    generator.add_argument(
+        '--full-point-byes',
+        type=str,
+        help='number of full-point byes, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--half-point-byes',
+        type=str,
+        help='number of half-point byes, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--zero-point-byes',
+        type=str,
+        help='number of Zero-Point Byes, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--forfeit-wins',
+        type=str,
+        help='number of forfeit wins, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--forfeit-losses',
+        type=str,
+        help='number of forfeit losses, or a percentage of the opportunities',
+    )
+    generator.add_argument(
+        '--unusual-results',
+        type=str,
+        help=(
+            'number of results giving a half point to one side only or nothing '
+            'to either, or a percentage of the boards'
+        ),
+    )
+    generator.add_argument(
+        '--pab-points',
+        type=float,
+        choices=(1.0, 0.5, 0.0),
+        help='what the pairing-allocated bye is worth: 1, 0.5 or 0',
+    )
+    generator.add_argument(
+        '--acceleration',
+        action=argparse.BooleanOptionalAction,
+        help='use the Baku acceleration method, or not',
+    )
+    generator.add_argument(
+        '--tie-breaks',
+        type=str,
+        help='the criteria the standings are ranked on, as TRF26 acronyms',
+    )
+    generator.add_argument(
+        '--realistic-names',
+        action='store_true',
+        help='name the players and teams rather than numbering them',
+    )
+    generator.add_argument(
+        '--no-pairings',
+        action='store_true',
+        help='enter the field and stop there, pairing no round',
     )
     parser.add_argument(
         'input_file',
@@ -187,6 +309,17 @@ try:
         type=str,
         help='the output file',
     )
+    parser.add_argument(
+        '-l',
+        '--check-list-file',
+        type=str,
+        help=(
+            'write the report of --check-tournament to this file, as JSON: '
+            'the boards of every round that differ from the pairing the '
+            'rules give, and the positions of the standings that the '
+            'tie-breaks named in the file do not give'
+        ),
+    )
 
     args = parser.parse_args(arguments)
 
@@ -197,7 +330,13 @@ try:
                 print_interactive_error('Argument --output-file is needed, exiting.')
                 sys.exit(1)
             try:
-                validate_filepath(args.output_file)
+                # A name may carry %d, which each generated tournament
+                # replaces with its number; validate what that becomes.
+                # Validated for the platform in use, not for every platform
+                # at once, which would refuse an absolute path outright.
+                validate_filepath(
+                    str(args.output_file).replace('%d', '00000'), platform='auto'
+                )
             except ValidationError:
                 print_interactive_error(
                     f'Invalid output file [{args.output_file}], exiting.'
@@ -213,7 +352,7 @@ try:
                 print_interactive_error('Input file is required, exiting.')
                 sys.exit(1)
             try:
-                validate_filepath(args.input_file)
+                validate_filepath(args.input_file, platform='auto')
             except ValidationError:
                 print_interactive_error(
                     f'Invalid input file [{args.input_file}], exiting.'
@@ -222,22 +361,109 @@ try:
             trf_input_file_path = Path(args.input_file)
 
         from data.pairings.checkers import BbpPairingsChecker
-        from data.pairings.generators import BbpPairingsGenerator
 
         if args.generate_tournament:
-            BbpPairingsGenerator().generate_tournament(
-                trf_input_file_path,
-                args.random_seed,
+            from data.pairings.random_tournaments import (
+                Frequency,
+                TournamentSettings,
+                generate_tournament_file,
             )
+
+            settings = TournamentSettings(
+                players=args.players,
+                rounds=args.rounds,
+                teams=args.teams,
+                players_per_team=args.players_per_team,
+                ratings=[
+                    int(rating) for rating in args.ratings.split(',') if rating.strip()
+                ]
+                if args.ratings
+                else None,
+                top_rating=args.top_rating,
+                rating_step=args.rating_step,
+                full_point_byes=Frequency.parse(args.full_point_byes),
+                half_point_byes=Frequency.parse(args.half_point_byes),
+                zero_point_byes=Frequency.parse(args.zero_point_byes),
+                forfeit_wins=Frequency.parse(args.forfeit_wins),
+                forfeit_losses=Frequency.parse(args.forfeit_losses),
+                unusual_results=Frequency.parse(args.unusual_results),
+                acceleration=args.acceleration,
+                pab_points=args.pab_points,
+                realistic_names=args.realistic_names,
+                pair_rounds=not args.no_pairings,
+                tie_breaks=[
+                    acronym.strip()
+                    for acronym in args.tie_breaks.split(',')
+                    if acronym.strip()
+                ]
+                if args.tie_breaks
+                else None,
+            )
+            # One file per tournament, numbered where the name says so; a
+            # seed given is the first one, so a run of them is reproducible.
+            output_file = trf_input_file_path
+            for index in range(max(1, args.count)):
+                output_file = Path(str(args.output_file).replace('%d', f'{index:05d}'))
+                if args.count > 1 and '%d' not in str(args.output_file):
+                    output_file = output_file.with_name(
+                        f'{output_file.stem}{index:05d}{output_file.suffix}'
+                    )
+                seed = None if args.random_seed is None else args.random_seed + index
+                used = generate_tournament_file(settings, output_file, seed)
+                print_interactive_info(
+                    f'Generated [{output_file.name}] from seed {used}.'
+                )
+            trf_input_file_path = output_file
         if args.check_tournament:
             if not trf_input_file_path.exists():
                 print_interactive_error(
                     f'TRF input file [{trf_input_file_path}] not found, exiting.'
                 )
                 sys.exit(1)
-            BbpPairingsChecker().check_tournament(trf_input_file_path)
+            tournament_check = BbpPairingsChecker.check_tournament(trf_input_file_path)
+            if args.check_list_file:
+                try:
+                    validate_filepath(args.check_list_file, platform='auto')
+                except ValidationError:
+                    print_interactive_error(
+                        f'Invalid check list file [{args.check_list_file}], exiting.'
+                    )
+                    sys.exit(1)
+                check_list_file = Path(args.check_list_file)
+                check_list_file.parent.mkdir(parents=True, exist_ok=True)
+                tournament_check.dump_to_file(check_list_file)
+                print_interactive_info(f'Wrote the report to [{check_list_file.name}].')
 
         sys.exit(0)
+
+    from common import DATA_DIR
+    from utils.instance_lock import InstanceLock
+
+    # A second server on the same data folder would write the same events: the
+    # user is sent to the running one instead.
+    if not TEST_ENV:
+        instance_lock = InstanceLock(DATA_DIR)
+        if not instance_lock.acquire():
+            running_info = instance_lock.read_info()
+            logger.warning(
+                'Sharly Chess is already running on [%s] (process %s), exiting.',
+                DATA_DIR.resolve(),
+                running_info.get('pid'),
+            )
+            import webbrowser
+
+            from common.sharly_chess_config import SharlyChessConfig
+
+            with suppress(Exception):
+                SharlyChessConfig().load_and_set_env()
+            running_url = running_info.get('url')
+            show_startup_dialog(
+                *InstanceLock.running_message(bool(running_url)), error=False
+            )
+            if running_url:
+                webbrowser.open(running_url)
+            sys.exit(0)
+        InstanceLock.held = instance_lock
 
     port = args.port or None
     debug = args.debug if DEVEL_ENV else False
@@ -364,6 +590,8 @@ try:
         if gtk_available:
             logger.info('Creating Toga application...')
             try:
+                from gui.server_gui_toga import SharlyChessServerToga
+
                 app = SharlyChessServerToga(
                     debug=debug, profile=args.profile, port=port
                 )
@@ -442,12 +670,7 @@ except Exception:
     if test_env:
         sys.exit(1)
 
-    title = 'Sharly Chess startup error'
-
     if sys.platform == 'win32':
-        import tkinter
-        from tkinter import messagebox
-
         base_dir = Path(sys.argv[0]).resolve().parent
         if not os.access(base_dir, os.W_OK):
             message = (
@@ -455,19 +678,4 @@ except Exception:
                 'Check the permissions of the directory then try again.'
             )
 
-        root = tkinter.Tk()
-        root.withdraw()
-        messagebox.showerror(title, message)
-        root.destroy()
-
-    elif sys.platform == 'darwin':
-        import subprocess
-
-        message = message.replace('"', '\\"')
-        script = (
-            f'display alert "{title}" message "{message}" as critical buttons {{"OK"}}'
-        )
-        subprocess.run(['osascript', '-e', script], check=True)
-
-    elif sys.platform == 'linux':
-        print(f'{title}: {message}')
+    show_startup_dialog('Sharly Chess startup error', message)

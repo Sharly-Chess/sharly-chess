@@ -86,7 +86,7 @@ class ChampionshipArchiveLoader:
                 ChampionshipArchive(
                     file,
                     file.stem,
-                    datetime.fromtimestamp(file.lstat().st_birthtime),
+                    datetime.fromtimestamp(file.lstat().st_mtime),
                 )
                 for file in ARCHIVES_DIR.glob(f'*.{Extension.CHAMPIONSHIP_DB}')
             ],
@@ -101,7 +101,7 @@ class ChampionshipArchiveLoader:
         return ChampionshipArchive(
             file,
             file.stem,
-            datetime.fromtimestamp(file.lstat().st_ctime),
+            datetime.fromtimestamp(file.lstat().st_mtime),
         )
 
 
@@ -184,6 +184,7 @@ class ChampionshipLoader:
             index += 1
             archive = ChampionshipArchiveLoader.get_archive_path(f'{uniq_id}#{index}')
         source.rename(archive)
+        archive.touch()
         return archive
 
     # -------------------------------------------------------------------------

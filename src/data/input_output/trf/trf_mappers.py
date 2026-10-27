@@ -3,6 +3,8 @@ from data.pairings import PairingVariation
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     BergerTeamRoundRobinVariation,
+    CustomRoundRobinVariation,
+    CustomTeamRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
     StandardSwissVariation,
@@ -21,6 +23,12 @@ from utils.enum import (
 
 
 class TrfPlayerGender(CoreMapper[str, PlayerGender]):
+    """001 position 10. The spec spells the field ``m/w`` and marks it
+    ``□`` — "warning if wrong" — with no pairing column, so a value it
+    does not spell is read as unspecified rather than refused: the
+    Gacrux tournament generator writes ``u``, and other programs leave
+    it blank. Both cases are accepted, as for the other letter codes."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerGender]:
         return {
@@ -29,6 +37,12 @@ class TrfPlayerGender(CoreMapper[str, PlayerGender]):
             'm': PlayerGender.MAN,
             'w': PlayerGender.WOMAN,
         }
+
+    @classmethod
+    def get_core_object(cls, outer_value: str) -> PlayerGender:
+        return cls._core_object_by_outer_value().get(
+            outer_value.lower(), PlayerGender.NONE
+        )
 
 
 class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
@@ -66,6 +80,9 @@ class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
 
 
 class TrfResult(CoreMapper[str, Result]):
+    UNKNOWN: ClassVar[str] = '?'
+    """An adjourned game, or a game not played yet."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, Result]:
         return {
@@ -81,6 +98,7 @@ class TrfResult(CoreMapper[str, Result]):
             'F': Result.FULL_POINT_BYE,
             'U': Result.PAIRING_ALLOCATED_BYE,
             'Z': Result.ZERO_POINT_BYE,
+            TrfResult.UNKNOWN: Result.ADJOURNED,
         }
 
     @classmethod
@@ -109,16 +127,28 @@ class TrfResult(CoreMapper[str, Result]):
         has_opponent: bool = False,
         is_round_robin: bool = False,
     ) -> Result:
+        """Any symbol the format does not define is an unknown result, as
+        is the one it defines for it: a game with an unknown result against
+        an opponent is an adjourned game."""
         if outer_value == ' ':
             if has_opponent:
                 return Result.NO_RESULT
             if is_round_robin:
                 return Result.REST_GAME
             return Result.ZERO_POINT_BYE
-        return super().get_core_object(outer_value)
+        outer_value = outer_value.upper()
+        if has_opponent and outer_value not in cls.outer_values():
+            return Result.ADJOURNED
+        result = super().get_core_object(outer_value)
+        if result.is_adjourned and not has_opponent:
+            raise KeyError(outer_value)
+        return result
 
 
 class TrfPointSystemResult(CoreMapper[str, Result]):
+    UNKNOWN: ClassVar[str] = 'X'
+    """The symbol giving the points of an unknown result."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, Result]:
         return {
@@ -175,11 +205,16 @@ class TrfEncodedType:
                 return BergerRoundRobinVariation()
             case 'FIDE_DOUBLEROUNDROBIN':
                 return DoubleBergerRoundRobinVariation()
+            # One code for single and double custom round-robins: the
+            # importer tells them apart by the number of rounds.
+            case 'CUSTOM_ROUNDROBIN':
+                return CustomRoundRobinVariation()
+            case 'CUSTOM_TEAM_ROUNDROBIN':
+                return CustomTeamRoundRobinVariation()
             case (
                 'FIDE_TEAM_ROUNDROBIN'
                 | 'BERGER_TEAM_ROUNDROBIN'
                 | 'BERGER_TEAM_ROUNDROBIN_G1'
-                | 'CUSTOM_TEAM_ROUNDROBIN'
                 | 'OTHER_TEAM_ROUNDROBIN'
             ):
                 return BergerTeamRoundRobinVariation()
@@ -277,8 +312,7 @@ class TrfEncodedType:
             ):
                 return 'FIDE_DOUBLEROUNDROBIN'
             case (
-                'CUSTOM_ROUNDROBIN'
-                | 'FIDE_SCHILLER'
+                'FIDE_SCHILLER'
                 | 'CUSTOM_SCHILLER'
                 | 'CUSTOM_SCHEVENINGEN'
                 | 'FIDE_SCHEVENINGEN_G1'

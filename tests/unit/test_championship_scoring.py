@@ -389,6 +389,41 @@ def test_direct_encounter_does_not_treat_an_unplayed_game_as_a_loss():
     assert direct_encounter.split([e, f, g], context) == [[e, f, g]]
 
 
+def test_with_a_game_missing_the_direct_encounter_ranks_only_from_the_top():
+    # Art. 6.3. A and B drew, both beat C, C beat D, B beat D; A and D never
+    # met. The scores keep {A, B} apart from {C, D}, but with a game missing
+    # the only one the standings can place is one alone on top, and nobody
+    # is: the four stay level, C no more placed above D than A above C.
+    shared_source = FakeSource('shared-ev', 1)
+    games = {
+        (1, 2): 0.5,
+        (1, 3): 1.0,
+        (2, 3): 1.0,
+        (3, 4): 1.0,
+        (2, 4): 1.0,
+    }
+    pairings: dict[int, list[FakePairing]] = {number: [] for number in range(1, 5)}
+    for (first, second), points in games.items():
+        pairings[first].append(FakePairing(opponent_id=second, points=points))
+        pairings[second].append(FakePairing(opponent_id=first, points=1.0 - points))
+    competitors: list[Any] = [
+        ReconciledPlayer(
+            [
+                _rp(
+                    shared_source,
+                    FakeTournamentPlayer(
+                        number, 3, pairings=pairings[number], last_name=name
+                    ),
+                )
+            ]
+        )
+        for number, name in enumerate('ABCD', start=1)
+    ]
+    context = ScoringContext(competitors)
+    split = DirectEncounterRule().split(competitors, context)
+    assert split == [competitors]
+
+
 def test_incomplete_direct_encounter_falls_through_to_later_best_n_rules():
     sources = [FakeSource(f'stage-{index}', 1) for index in range(1, 7)]
 

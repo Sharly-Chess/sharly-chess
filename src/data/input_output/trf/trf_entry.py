@@ -103,8 +103,13 @@ class MultipleLinesEntry(TrfEntry):
 
 
 class SingleLineIntEntry(SingleLineEntry):
+    """The leading number of the value: programs append remarks to the
+    counts of 062 / 072 / 082 (``367 (309)``), and a value holding no
+    number is read as none."""
+
     def parse(self, data: str) -> Any:
-        return int(data.strip())
+        match = re.match(r'\s*(\d+)', data)
+        return int(match.group(1)) if match else 0
 
 
 class SingleLineListEntry(SingleLineEntry):
@@ -141,9 +146,10 @@ class RoundDatesEntry(SingleLineEntry):
 
 class StartingRankMethodEntry(TrfEntry):
     """Record 172. The federation whose National Rating Support records
-    the method refers to sits at 5-7, the method itself at 9-13. The
-    record only means anything alongside NRS records, so it is written
-    only when there are any."""
+    the method refers to sits at 5-7, the method itself at 9-13; a record
+    follows for each other federation of the NRS records, the pseudo ones
+    of a partial TRF included (TEC Manual 3.9.6.2.b). Written only when
+    a method is given."""
 
     FEDERATION_POSITION = 5
     METHOD_POSITION = 9
@@ -154,16 +160,21 @@ class StartingRankMethodEntry(TrfEntry):
     def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         if not tournament.starting_rank_method:
             return
-        fp.write(
-            f'{self.din} {tournament.starting_rank_federation[:3]:<3} '
-            f'{tournament.starting_rank_method}\n'
-        )
+        for federation in (
+            tournament.starting_rank_federation,
+            *tournament.other_starting_rank_federations,
+        ):
+            fp.write(
+                f'{self.din} {federation[:3]:<3} {tournament.starting_rank_method}\n'
+            )
 
     def load(self, tournament: TrfTournament, data: str) -> None:
         # Read as tokens rather than by column: files written before the
         # federation was added (ours included) carry the bare method.
         parts = data.split()
-        if len(parts) >= 2:
+        if len(parts) >= 2 and tournament.starting_rank_method:
+            tournament.other_starting_rank_federations.append(parts[0])
+        elif len(parts) >= 2:
             tournament.starting_rank_federation, tournament.starting_rank_method = (
                 parts[0],
                 parts[1],
@@ -190,9 +201,9 @@ class PointSystemEntry(SingleLineEntry):
 class PlayerEntry(MultipleLinesEntry):
     LINE_PATTERN = re.compile(
         r'^(?P<id>[ \d]{4}) (?P<gender>[\w ])(?P<title>[\w ]{3}) '
-        r'(?P<name>.{33}) (?P<rating>[ \d]{4}) (?P<federation>[\w ]{3}) '
-        r'(?P<fide_id>[ \d]{11}) (?P<birth_date>.{10}) (?P<points>[ \d.]{4}) '
-        r'(?P<rank>[ \d]{4})(?P<games>(\s\s[ \d]{4} [bsw\- ] [1=0+wdl\-hfuz ]| {10})*)\s*$',
+        r'(?P<name>.{33}) (?P<rating>[ \d]{4}) (?P<federation>.{3}) '
+        r'(?P<fide_id>.{11}) (?P<birth_date>.{10}) (?P<points>[ \d.,/]{4}) '
+        r'(?P<rank>[ \d]{4})(?P<games>(\s\s[ \d]{4} [bsw\- ] .| {10})*)\s*$',
         re.IGNORECASE,
     )
 
@@ -239,6 +250,24 @@ class PlayerEntry(MultipleLinesEntry):
         if match is None:
             raise self.line_exception(data)
 
+        # Programs put other ids in the FIDE number column, and write the
+        # points with the decimal separator of the machine (``3,5``,
+        # ``3/5``). The text is kept for the importer to report.
+        unreadable: dict[str, str] = {}
+        fide_id_text = match.group('fide_id').strip()
+        fide_id: int | None = None
+        if fide_id_text.isdigit():
+            fide_id = int(fide_id_text) or None
+        elif fide_id_text:
+            unreadable['fide_id'] = fide_id_text
+        points_text = match.group('points').strip()
+        if re.search(r'[,/]', points_text):
+            unreadable['points'] = points_text
+        try:
+            points = float(re.sub(r'[,/]', '.', points_text) or 0)
+        except ValueError:
+            raise self.line_exception(data) from None
+
         return TrfPlayer(
             id=int(match.group('id')),
             gender=match.group('gender'),
@@ -246,9 +275,10 @@ class PlayerEntry(MultipleLinesEntry):
             name=match.group('name').strip(),
             rating=int_or_default(match.group('rating'), 0),
             federation=match.group('federation').strip(),
-            fide_id=int_or_default(match.group('fide_id')),
+            fide_id=fide_id,
             birth_date=match.group('birth_date').strip(),
-            points=float(match.group('points')),
+            points=points,
+            unreadable=unreadable,
             rank=int_or_default(match.group('rank')),
             # The regex captures each game including its leading
             # two whitespace separators; the parse loop expects games
@@ -453,13 +483,16 @@ class ProhibitedPairingEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self) -> None:
-        super().__init__('260', 'prohibited_pairings')
+    def __init__(
+        self, din: str = '260', field_name: str = 'prohibited_pairings'
+    ) -> None:
+        super().__init__(din, field_name)
 
     def get_header(self, tournament: TrfTournament) -> str | None:
         header = 'RRF RRL'
         num_columns = max(
-            len(pairing.pairing_numbers) for pairing in tournament.prohibited_pairings
+            len(pairing.pairing_numbers)
+            for pairing in tournament.__dict__[self.field_name]
         )
         for column in range(1, num_columns + 1):
             header += f' {str(column).rjust(4, "P")}'
@@ -480,7 +513,16 @@ class ProhibitedPairingEntry(MultipleLinesEntry):
             first_round=int(match.group('first_round')),
             last_round=int_or_default(match.group('last_round')),
             pairing_numbers=split_ints(match.group('pairing_numbers'), 5),
+            soft=self.field_name == 'soft_prohibited_pairings',
         )
+
+
+class SoftProhibitedPairingEntry(ProhibitedPairingEntry):
+    """Sharly Chess extension read by its bbpPairings build: pairs laid out
+    as in a 260 record, avoided as the lowest-priority pairing criterion."""
+
+    def __init__(self) -> None:
+        super().__init__('SCS', 'soft_prohibited_pairings')
 
 
 class RoundByeEntry(MultipleLinesEntry):
@@ -760,6 +802,7 @@ ENTRIES = [
     RoundByeEntry(),
     AcceleratedRoundEntry(),
     ProhibitedPairingEntry(),
+    SoftProhibitedPairingEntry(),
     TeamPABsEntry(),
     TeamForfeitedMatchEntry(),
     OOdOTeamPairingEntry(),

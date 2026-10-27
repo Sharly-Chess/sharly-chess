@@ -1,0 +1,51 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'boards.css' %}
+    .board-table { margin: 12pt auto 0; }
+    .board-table .team { text-align: left; padding: 2px 8px; }
+    .board-table .number,
+    .board-table .points,
+    .board-table .result { padding: 2px 8px; }
+{% endblock %}
+
+{% block content %}
+    {% if not team_boards %}
+        <div class="error">
+            {{ _('No paired team matches in this round.') }}
+        </div>
+    {% else %}
+        <table class="board-table">
+            <thead>
+                <tr class="board-header">
+                    <th class="number">{{ pgettext('table number column header', 'Tbl.') }}</th>
+                    {% if show_points %}
+                        <th class="points">{{ tournament.primary_score.abbreviation }}</th>
+                    {% endif %}
+                    <th class="team"></th>
+                    <th class="result">{{ pgettext('result column header', 'Res.') }}</th>
+                    <th class="team"></th>
+                    {% if show_points %}
+                        <th class="points">{{ tournament.primary_score.abbreviation }}</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for team_board in team_boards %}
+                    <tr class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}">
+                        <td class="number board-number">{{ team_board.display_number or '' }}</td>
+                        {% if show_points %}
+                            <td class="points">{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_a.id, team_board.round)) }}</td>
+                        {% endif %}
+                        <td class="team">{{ team_board.team_a.name }}</td>
+                        <td class="result">{{ team_board.game_score_display }}</td>
+                        <td class="team">{{ team_board.team_b.name if team_board.team_b else _('Bye') }}</td>
+                        {% if show_points %}
+                            <td class="points">{% if team_board.team_b %}{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_b.id, team_board.round)) }}{% endif %}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

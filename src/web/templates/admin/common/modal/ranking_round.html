@@ -1,6 +1,6 @@
 {{ admin_macros.number_input(
     name='ranking_round',
-    label=_('Round:'),
+    label=_('%(string)s:', string=_('Round')),
     placeholder='',
     tooltip_text=_('The round after which the ranking is displayed (if left empty, the last round finished).'),
     data=data, errors=errors

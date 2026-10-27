@@ -6,7 +6,7 @@ they are worked out side by side, from one reading of what a bye and a
 match are worth.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Literal
 
@@ -42,6 +42,10 @@ class TeamStanding:
     forfeits: int = 0
     tie_break_values: list[TieBreakValue] = field(default_factory=list)
     rank: int = 0
+    # Everything the standings rank on, short of the tie_order of last
+    # resort: teams sharing it are level, and share a rank wherever a rank
+    # is reported rather than a position (C.07 Art. 4.2).
+    rank_key: tuple[float, ...] = ()
 
     def score(self, score_type: ScoreType) -> float:
         """The team's match or game points, whichever ``score_type`` is."""
@@ -68,7 +72,7 @@ class TeamStanding:
 
 # What a bye counts as in the standings' tally of a team's rounds. A
 # pairing-allocated bye is awarded, so it is a win, as is a full-point
-# bye; a zero-point bye is the round the team was absent for.
+# bye; a Zero-Point Bye is the round the team was absent for.
 _BYE_OUTCOME: dict[str, Outcome] = {
     TeamByeType.ZPB: 'forfeits',
     TeamByeType.HPB: 'draws',
@@ -93,7 +97,7 @@ class TeamScoring:
     # What a bye is worth
     # -------------------------------------------------------------------------
 
-    def _bye_score(self, bye_type: str | None) -> tuple[float, float] | None:
+    def bye_score(self, bye_type: str | None) -> tuple[float, float] | None:
         """The ``(match points, game points)`` a team takes for a bye of
         that type, or ``None`` for a rest game — the bye a round robin or a
         two-game-match system allocates, which is not played and scores
@@ -101,7 +105,7 @@ class TeamScoring:
 
         A pairing-allocated bye (``None`` or ``PAB``) is worth what the
         tournament says a PAB is; the manual byes mirror the individual
-        ones, scaled by the board count. A zero-point bye is a team-level
+        ones, scaled by the board count. A Zero-Point Bye is a team-level
         forfeit: every board counts as a forfeited game, scored at the
         absent-board game point value (the ``gp_zpb`` override, otherwise
         0)."""
@@ -236,7 +240,7 @@ class TeamScoring:
                 continue
             if stb.team_b_id is None:
                 entry = standings.get(stb.team_a_id)
-                score = self._bye_score(stb.bye_type)
+                score = self.bye_score(stb.bye_type)
                 if entry is None or score is None:
                     continue
                 mp, gp = score
@@ -258,6 +262,8 @@ class TeamScoring:
                 a_outcome, b_outcome = 'wins', 'losses'
             elif a_gp_effective < b_gp_effective:
                 a_outcome, b_outcome = 'losses', 'wins'
+            elif team_board.lost_by_both((a_gp_effective, b_gp_effective)):
+                a_outcome = b_outcome = 'losses'
             else:
                 a_outcome = b_outcome = 'draws'
             # A side that forfeited the whole match is tallied as a
@@ -392,6 +398,7 @@ class TeamScoring:
         )
         for rank, row in enumerate(rows, 1):
             row.rank = rank
+            row.rank_key = base_key(row) + tuple(-v for v in values[row.team.id])
             row.tie_break_values = self._wrap_tie_break_values(
                 team_tie_breaks, values[row.team.id]
             )
@@ -440,7 +447,7 @@ class TeamScoring:
 
         A round carries the score the standings give it and the match
         type Art. 16 handling reads. A team marked absent is a
-        zero-point bye whose contribution is cut first, not a
+        Zero-Point Bye whose contribution is cut first, not a
         pairing-allocated bye scored as a win; a team that fielded
         nobody, or every one of whose players lost by forfeit, forfeited
         the match rather than playing it, and its opponent won by
@@ -550,7 +557,7 @@ class TeamScoring:
         """The record of a bye, or ``None`` for a rest game, which is not
         a match: no record, no points, invisible to the tie-breaks."""
         stb = team_board.stored_team_board
-        score = self._bye_score(stb.bye_type)
+        score = self.bye_score(stb.bye_type)
         if score is None:
             return None
         own_mp, own_gp = score
@@ -598,17 +605,21 @@ class TeamScoring:
         match_points_pair = team_board.match_points_pair()
         assert match_points_pair is not None
         a_mp, b_mp = match_points_pair
-        # A team is forfeit whether it fielded nobody or every one of
-        # its players lost by forfeit: either way no game was played
-        # on its side, and the round is not a played one for either
-        # team.
+        # A match is played when a game was played on any of its boards, or
+        # when a player of each team turned up and won their board by
+        # forfeit: both teams elected to play the round. Otherwise its
+        # result stands and it is a forfeit for the team that lost it, or
+        # for both teams when neither scored.
+        a_scores = self._board_scores_for(team_board, a_id)
+        b_scores = self._board_scores_for(team_board, b_id)
         a_type = b_type = TeamMatchType.PLAYED
-        if team_board.team_all_forfeit(a_id):
-            a_type, b_type = TeamMatchType.FORFEIT_LOSS, TeamMatchType.FORFEIT_WIN
-        if team_board.team_all_forfeit(b_id):
-            b_type = TeamMatchType.FORFEIT_LOSS
-            if a_type != TeamMatchType.FORFEIT_LOSS:
-                a_type = TeamMatchType.FORFEIT_WIN
+        if team_board.no_board_played() and not (any(a_scores) and any(b_scores)):
+            if a_mp > b_mp:
+                a_type, b_type = TeamMatchType.FORFEIT_WIN, TeamMatchType.FORFEIT_LOSS
+            elif a_mp < b_mp:
+                a_type, b_type = TeamMatchType.FORFEIT_LOSS, TeamMatchType.FORFEIT_WIN
+            else:
+                a_type = b_type = TeamMatchType.FORFEIT_LOSS
         return (
             TeamMatchRecord(
                 round_=team_board.round,
@@ -616,7 +627,7 @@ class TeamScoring:
                 own_mp=a_mp,
                 own_gp=a_gp,
                 match_type=a_type,
-                board_scores=self._board_scores_for(team_board, a_id),
+                board_scores=a_scores,
                 board_ratings=self._board_ratings_for(team_board, a_id),
             ),
             TeamMatchRecord(
@@ -625,7 +636,7 @@ class TeamScoring:
                 own_mp=b_mp,
                 own_gp=b_gp,
                 match_type=b_type,
-                board_scores=self._board_scores_for(team_board, b_id),
+                board_scores=b_scores,
                 board_ratings=self._board_ratings_for(team_board, b_id),
             ),
         )
@@ -709,21 +720,44 @@ class TeamScoring:
         ``after_round``, bonus / penalty points included. Returned dict
         is keyed by ``team.id``; teams with no team_board entries simply
         get ``(0.0, 0.0)``."""
+        adjustments = self.tournament.point_adjustments
+        return self._totals(
+            self._team_boards_through(after_round),
+            range(1, adjustments.bound(after_round) + 1),
+        )
+
+    def totals_in(self, rounds: range) -> dict[int, tuple[float, float]]:
+        """Per-team ``(match_points, game_points)`` over *rounds* alone —
+        the standings of a report that covers a period of the tournament,
+        which are the standings of that report and no other."""
+        return self._totals(
+            [
+                team_board
+                for team_board in self.tournament.team_boards_by_id.values()
+                if team_board.round in rounds
+            ],
+            rounds,
+        )
+
+    def _totals(
+        self, team_boards: Iterable[TeamBoard], adjustment_rounds: range
+    ) -> dict[int, tuple[float, float]]:
         totals: dict[int, list[float]] = {}
-        for team_board in self._team_boards_through(after_round):
+        for team_board in team_boards:
             stb = team_board.stored_team_board
             a_entry = totals.setdefault(stb.team_a_id, [0.0, 0.0])
             if stb.team_b_id is None:
-                score = self._bye_score(stb.bye_type)
+                score = self.bye_score(stb.bye_type)
                 if score is not None:
                     a_entry[0] += score[0]
                     a_entry[1] += score[1]
                 continue
             b_entry = totals.setdefault(stb.team_b_id, [0.0, 0.0])
             a_gp, b_gp = team_board.game_points
-            # The played results alone here: the adjustments are folded in
-            # below and reported separately in the 299 records.
-            match_points_pair = team_board.match_points_pair((a_gp, b_gp))
+            # Match result follows the effective game points, as in the
+            # standings; the deltas are added to the totals below and
+            # reported separately in the 299 records.
+            match_points_pair = team_board.match_points_pair()
             assert match_points_pair is not None
             a_entry[0] += match_points_pair[0]
             a_entry[1] += a_gp
@@ -736,7 +770,7 @@ class TeamScoring:
         # written on the same line, which does include them.
         adjustments = self.tournament.point_adjustments
         for team in self.tournament.teams:
-            for round_ in range(1, adjustments.bound(after_round) + 1):
+            for round_ in adjustment_rounds:
                 mp_adj, gp_adj = adjustments.effective(team.id, round_)
                 if not mp_adj and not gp_adj:
                     continue

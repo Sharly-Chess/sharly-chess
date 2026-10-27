@@ -106,6 +106,12 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         """Create the value to store in the database from a T object."""
         return object_
 
+    def is_left_to_pairing(self, data: dict[str, str]) -> bool:
+        """Whether the form data leaves the value to be decided when the
+        round is paired, so that saving the settings on their own must
+        not decide it."""
+        return False
+
     @classmethod
     def is_valid(cls, tournament: 'Tournament') -> bool:
         if not cls.is_set(tournament):
@@ -172,6 +178,9 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     def to_form_data(self, object_: BoardColor) -> dict[str, str]:
         return {self.id: object_.value}
 
+    def is_left_to_pairing(self, data: dict[str, str]) -> bool:
+        return data.get(self.id) in (self.RANDOM_ID, '')
+
     def get_data_errors(
         self, tournament: 'Tournament', data: dict[str, str]
     ) -> dict[str, str]:
@@ -183,17 +192,61 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
 
     @classmethod
     def _computed_value(cls, tournament: 'Tournament') -> BoardColor | None:
+        """The colour of the highest ranked participant paired in the
+        first round, which is what the seed colour means when it is not
+        stated (TRF26 record 152).
+
+        The ranking is the pairing numbers: they are the starting rank,
+        and an imported file carries its own, which the ratings need not
+        reproduce — two players on the same rating are separated there by
+        their names, and so could put a different player at the top of
+        the list than the file does. Only a tournament whose players are
+        not numbered yet is ranked by rating.
+
+        In a team tournament the initial-colour goes to the first-team of a
+        round-1 match when its TPN is odd, and the opposite colour when it is
+        even (C.04.6 art. 4.3.1), so it is read back that way from the first
+        match with a board.
+        """
+        if tournament.is_team_tournament:
+            return cls._computed_team_value(tournament)
         return next(
             (
                 player.pairings[1].color
                 for player in sorted(
                     tournament.tournament_players,
-                    key=lambda player: player.starting_rank_sort_key,
+                    key=lambda player: (
+                        player.pairing_number is None,
+                        player.pairing_number or 0,
+                        player.starting_rank_sort_key,
+                    ),
                 )
                 if 1 in player.pairings and player.pairings[1].color is not None
             ),
             None,
         )
+
+    @classmethod
+    def _computed_team_value(cls, tournament: 'Tournament') -> BoardColor | None:
+        for team_board in tournament.get_round_team_boards(1):
+            stb = team_board.stored_team_board
+            if stb.team_b_id is None or not team_board.boards:
+                continue
+            white_team_id, _black_team_id = team_board.board_team_ids(
+                team_board.boards[0]
+            )
+            teams = [
+                tournament.teams_by_id[stb.team_a_id],
+                tournament.teams_by_id[stb.team_b_id],
+            ]
+            if any(team.pairing_number is None for team in teams):
+                continue
+            first_team = min(teams, key=lambda team: team.pairing_number or 0)
+            first_is_white = first_team.id == white_team_id
+            if (first_team.pairing_number or 0) % 2 == 0:
+                first_is_white = not first_is_white
+            return BoardColor.WHITE if first_is_white else BoardColor.BLACK
+        return None
 
     @classmethod
     def from_stored_value(cls, value: Any) -> BoardColor:
@@ -304,6 +357,47 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
 
     def _berger_number_fields(self, data: dict[str, str]) -> list[str]:
         return [field for field in data if field.startswith(self.player_field_base)]
+
+
+class ReverseLastRoundsSetting(PairingSetting[bool]):
+    """Whether a double round-robin plays the last two rounds of the
+    first cycle in reverse order, so that no participant plays the same
+    colour three times in a row across the two cycles (FIDE Handbook
+    C.05 Annex 1, a recommendation)."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'REVERSE_LAST_ROUNDS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Reverse the last two rounds of the first cycle')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/reverse_last_rounds.html'
+
+    def tooltip_representation(self, value: bool) -> str | None:
+        return _('yes') if value else _('no')
+
+    def from_form_data(self, data: dict[str, str]) -> bool:
+        return data.get(self.id) == 'on'
+
+    def to_form_data(self, object_: bool) -> dict[str, str]:
+        return {self.id: 'on' if object_ else ''}
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        return {}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> bool:
+        return True
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> bool:
+        return bool(value)
 
 
 class KeizerRounding(StrEnum):

@@ -4,6 +4,11 @@
    team_b span covers Player. #}
 {% set team_a_colspan = 1 + (1 if has_illegal else 0) %}
 {% set team_b_colspan = 1 + (1 if has_illegal else 0) %}
+{# The header's buttons are laid out as flex boxes (centred icon, score on
+   one or two lines) so they get their height from here rather than from
+   their line box: a small button's, plus a little room for the two-line
+   score. #}
+{% set header_button_height = 'calc(var(--bs-btn-line-height, 1.5) * var(--bs-btn-font-size, .875rem) + 2 * var(--bs-btn-padding-y, .25rem) + 2 * var(--bs-btn-border-width, 1px) + .25rem)' %}
 <tbody
     id="team-block-header-{{ team_board.id }}"
     class="team-block-header-tbody"
@@ -55,9 +60,11 @@
                     {% set _a_mp, _a_gp = admin_tournament.point_adjustments.effective(
                         team_board.team_a.id, team_board.round
                     ) %}
-                    {% if _a_mp or _a_gp %}
+                    {% set _a_note = admin_tournament.point_adjustments.from_rule_set(team_board.team_a.id, team_board.round) %}
+                    {% set _a_note = _a_note.explanation if _a_note else '' %}
+                    {% if _a_mp or _a_gp or _a_note %}
                         <a
-                            class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_a_mp < 0 or _a_gp < 0) else 'text-bg-success' }}"
+                            class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_a_mp < 0 or _a_gp < 0) else ('text-bg-success' if (_a_mp or _a_gp) else 'text-bg-secondary') }}"
                             style="cursor: pointer;"
                             onclick="event.stopPropagation()"
                             hx-get="{{ url_for(
@@ -76,13 +83,14 @@
                                 macros.point_adjustment_tooltip(admin_tournament, team_board.team_a.id, team_board.round),
                                 'top'
                             ) }}
-                        >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
+                        >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _a_mp and not _a_gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
                     {% endif %}
                 </strong>
                 {% if client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="team-header-lineup-a btn btn-sm btn-outline-primary ms-2"
+                        class="team-header-lineup-a btn btn-sm btn-outline-primary ms-2 d-inline-flex align-items-center justify-content-center"
+                        style="height: {{ header_button_height }};"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -95,24 +103,37 @@
                         onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
-                        <i class="bi-list-ol"></i>
+                        <i class="bi-list-ol lh-1 d-flex align-items-center" style="font-size: 1.3rem;"></i>
                     </button>
                 {% endif %}
             </div>
         </td>
         <td class="team-header-cell-score text-center align-middle">
             {% set _score_text %}
-                {% if team_board.team_b %}
-                    {% if team_board.no_games_played %}
-                        -
-                    {% else %}
-                        {% set _a_gp, _b_gp = team_board.game_points %}
-                        {{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}
+                {{ team_board.game_score_display }}
+                {%- if team_board.team_b and not team_board.no_games_played and team_board.has_adjourned_game -%}
+                    <span {{ macros.tooltip_attributes('info', _('Includes adjourned games, counted as draws.'), 'bottom') }}>*</span>
+                {%- endif %}
+            {% endset %}
+            {# The score the match result is read from, when this round's
+               bonus/penalty points move it away from the board score. A
+               team's points never go below zero. Shown as a second, smaller
+               line under the board score. #}
+            {% set _effective_text %}
+                {% if team_board.team_b and not team_board.no_games_played %}
+                    {% set _eff_a, _eff_b = team_board.effective_game_points %}
+                    {% set _eff_a, _eff_b = [_eff_a, 0]|max, [_eff_b, 0]|max %}
+                    {% if (_eff_a, _eff_b) != team_board.game_points %}
+                        <small
+                            class="d-block fw-normal opacity-75 lh-1"
+                            style="font-size: .7rem;"
+                            {{ macros.tooltip_attributes('info', _('Score with bonus/penalty points, which decides the match result.'), 'bottom') }}
+                        >{{ '%g'|format(_eff_a) }} – {{ '%g'|format(_eff_b) }}</small>
                     {% endif %}
-                {% else %}
-                    {{ '%g'|format(admin_tournament.team_pab_game_points) }} – F
                 {% endif %}
             {% endset %}
+            {% set _score_classes = 'd-inline-flex flex-column justify-content-center lh-1 py-0' %}
+            {% set _score_style = 'width: 4.5rem; height: ' ~ header_button_height ~ ';' %}
             {# A knock-out's level match is clickable too, to designate the
                winner — with a marker on the advancing team (or a warning in
                the corner while unresolved). #}
@@ -121,16 +142,16 @@
                    marker) shows as plain text rather than a modal button. #}
                 {% if round_locked is defined and round_locked %}
                 <span
-                    class="d-inline-block position-relative text-nowrap text-center
-                        {% if team_board.all_games_played %}fw-bold{% endif %}"
-                    style="width: 4.5rem;"
+                    class="d-inline-block position-relative text-nowrap text-center align-middle
+                        {% if team_board.all_games_played %}fw-bold{% endif %} {{ _score_classes }}"
+                    style="{{ _score_style }}"
                 >
                 {% else %}
                 <button
                     type="button"
                     class="btn btn-sm btn-outline-primary position-relative
-                        {% if team_board.all_games_played %}fw-bold{% endif %} text-nowrap"
-                    style="width: 4.5rem;"
+                        {% if team_board.all_games_played %}fw-bold{% endif %} text-nowrap {{ _score_classes }}"
+                    style="{{ _score_style }}"
                     hx-get="{{ url_for(
                         'admin-event-team-pairing-modal',
                         event_uniq_id=admin_event.uniq_id,
@@ -146,6 +167,7 @@
                 >
                 {% endif %}
                     {{ _score_text | trim }}
+                    {{ _effective_text | trim }}
                     {# Markers live inside the button/text so hover/click count
                        as the button. #}
                     {% if ko_adv and ko_adv.winner_id %}
@@ -160,8 +182,8 @@
                         >1</span>
                     {% elif ko_adv and ko_adv.manual_pending %}
                         <span
-                            class="position-absolute top-0 end-0 overflow-hidden"
-                            style="width: 1.7rem; height: 1.7rem; border-top-right-radius: 0.25rem;"
+                            class="position-absolute overflow-hidden"
+                            style="width: 1.7rem; height: 1.7rem; border-top-right-radius: inherit; top: calc(-1 * var(--bs-btn-border-width, 0px)); right: calc(-1 * var(--bs-btn-border-width, 0px));"
                             {{ macros.tooltip_attributes('', _('Tied match — choose who advances.'), 'top') }}
                         >
                             <span class="d-block w-100 h-100 bg-dark"
@@ -175,7 +197,7 @@
                 {# Fixed-schedule systems (round-robin, two-game match): the
                    match belongs to a fixed schedule and can't be unpaired, so
                    show the score as plain text rather than a modal button. #}
-                <span class="fw-bold text-nowrap d-inline-block" style="width: 4.5rem;">{{ _score_text | trim }}</span>
+                <span class="fw-bold text-nowrap position-relative align-middle {{ _score_classes }}" style="{{ _score_style }}">{{ _score_text | trim }}{{ _effective_text | trim }}</span>
             {% endif %}
         </td>
         <td class="team-header-cell-team-b" colspan="{{ team_b_colspan }}">
@@ -183,7 +205,8 @@
                 {% if team_board.team_b and client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="team-header-lineup-b btn btn-sm btn-outline-primary me-2"
+                        class="team-header-lineup-b btn btn-sm btn-outline-primary me-2 d-inline-flex align-items-center justify-content-center"
+                        style="height: {{ header_button_height }};"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -196,7 +219,7 @@
                         onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
-                        <i class="bi-list-ol"></i>
+                        <i class="bi-list-ol lh-1 d-flex align-items-center" style="font-size: 1.3rem;"></i>
                     </button>
                 {% endif %}
                 <strong class="team-header-name-b text-end flex-grow-1">
@@ -217,9 +240,11 @@
                         {% set _b_mp, _b_gp = admin_tournament.point_adjustments.effective(
                             team_board.team_b.id, team_board.round
                         ) %}
-                        {% if _b_mp or _b_gp %}
+                        {% set _b_note = admin_tournament.point_adjustments.from_rule_set(team_board.team_b.id, team_board.round) %}
+                        {% set _b_note = _b_note.explanation if _b_note else '' %}
+                        {% if _b_mp or _b_gp or _b_note %}
                             <a
-                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_b_mp < 0 or _b_gp < 0) else 'text-bg-success' }}"
+                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_b_mp < 0 or _b_gp < 0) else ('text-bg-success' if (_b_mp or _b_gp) else 'text-bg-secondary') }}"
                                 style="cursor: pointer;"
                                 onclick="event.stopPropagation()"
                                 hx-get="{{ url_for(
@@ -238,7 +263,7 @@
                                     macros.point_adjustment_tooltip(admin_tournament, team_board.team_b.id, team_board.round),
                                     'top'
                                 ) }}
-                            >{% if _b_mp %}{{ '%+g'|format(_b_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _b_mp and _b_gp %} {% endif %}{% if _b_gp %}{{ '%+g'|format(_b_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
+                            >{% if _b_mp %}{{ '%+g'|format(_b_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _b_mp and _b_gp %} {% endif %}{% if _b_gp %}{{ '%+g'|format(_b_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _b_mp and not _b_gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
                         {% endif %}
                         {% if not admin_tournament.hide_team_block_points %}
                             {% set _b_score = admin_tournament.team_primary_score_before_round(

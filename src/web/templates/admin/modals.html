@@ -23,6 +23,8 @@
     {% include 'tournaments/tournament_modal.html' %}
 {% elif modal == 'tournament-delete' %}
     {% include 'tournaments/tournament_delete_modal.html' %}
+{% elif modal == 'import-check' %}
+    {% include 'tournaments/import_check_modal.html' %}
 {% elif modal == 'tournament-import' %}
     {% include 'tournaments/tournament_import_modal.html' %}
 {% elif modal == 'distribute-players' %}
@@ -51,6 +53,8 @@
     {% include 'players/check_in_tournament_reset_modal.html' %}
 {% elif modal == 'players_diff' %}
     {% include 'players/players_diff_modal.html' %}
+{% elif modal == 'ratings_check' %}
+    {% include 'players/ratings_check_modal.html' %}
 {% elif modal == 'players_import' %}
     {% include 'players/players_import_modal.html' %}
 {% elif modal == 'players_import_diff' %}
@@ -61,8 +65,18 @@
     {% include 'pairings/unpaired_team_modal.html' %}
 {% elif modal == 'team-record' %}
     {% include 'players/team_record_modal.html' %}
-{% elif modal == 'safety-mode' %}
-    {% include 'pairings/safety_mode_modal.html' %}
+{% elif modal == 'warning' %}
+    {% include 'pairings/warning_modal.html' %}
+{% elif modal == 'absolute-criteria' %}
+    {% include 'pairings/absolute_criteria_modal.html' %}
+{% elif modal == 'adjournment' %}
+    {% include 'pairings/adjournment_modal.html' %}
+{% elif modal == 'fide-log' %}
+    {% include 'pairings/fide_log_modal.html' %}
+{% elif modal == 'information' %}
+    {% include 'pairings/information_modal.html' %}
+{% elif modal == 'manual-pairing-check' %}
+    {% include 'pairings/manual_pairing_check_modal.html' %}
 {% elif modal == 'pairing' %}
     {% include 'pairings/pairing_modal.html' %}
 {% elif modal == 'team-pairing' %}
@@ -79,8 +93,8 @@
     {% include 'pairings/team_absents_modal.html' %}
 {% elif modal == 'unfinished-round' %}
     {% include 'pairings/unfinished_round_modal.html' %}
-{% elif modal == 'set-current-round' %}
-    {% include 'pairings/set_current_round_modal.html' %}
+{% elif modal == 'schedule-confirm' %}
+    {% include 'pairings/round_robin_schedule_confirm_modal.html' %}
 {% elif modal == 'pairing-ratings-warning' %}
     {% include 'pairings/ratings_warning_modal.html' %}
 {% elif modal == 'rounds-schedule-mismatch' %}

@@ -13,6 +13,7 @@ from web.admin.collection import (
     ComponentPlacement,
     ListColumn,
     get_admin_collection_spec,
+    resolve_admin_collection_view_mode,
 )
 from data.event import Event
 from web.controllers.admin.base_admin_controller import AdminWebContext
@@ -221,10 +222,33 @@ def test_collection_detail_placements_are_additive(key: str) -> None:
     assert list_core_components.isdisjoint(list_detail_components)
 
 
-def test_collection_view_defaults_to_list() -> None:
-    # The session variable only reads ``request.session``.
-    request = cast(HTMXRequest, SimpleNamespace(session={}))
+@pytest.mark.parametrize(
+    'collection_key, expected_view_mode',
+    [
+        ('teams', AdminCollectionViewMode.LIST),
+        ('tournaments', AdminCollectionViewMode.CARDS),
+    ],
+)
+def test_collection_view_defaults_to_spec_view_mode(
+    collection_key: str, expected_view_mode: AdminCollectionViewMode
+) -> None:
+    request = cast(HTMXRequest, SimpleNamespace(session={}, query_params={}))
     assert (
-        SessionAdminCollectionViewMode(request, 'new-collection').get()
+        resolve_admin_collection_view_mode(request, collection_key)
+        == expected_view_mode
+    )
+    assert (
+        SessionAdminCollectionViewMode(request, collection_key).get()
+        == expected_view_mode
+    )
+
+
+def test_collection_view_keeps_stored_view_mode() -> None:
+    request = cast(HTMXRequest, SimpleNamespace(session={}, query_params={}))
+    SessionAdminCollectionViewMode(request, 'tournaments').set(
+        AdminCollectionViewMode.LIST
+    )
+    assert (
+        resolve_admin_collection_view_mode(request, 'tournaments')
         == AdminCollectionViewMode.LIST
     )

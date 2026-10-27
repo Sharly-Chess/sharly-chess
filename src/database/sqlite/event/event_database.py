@@ -1,4 +1,3 @@
-import shutil
 from collections import defaultdict
 from datetime import datetime
 from collections.abc import Iterator
@@ -30,6 +29,8 @@ from database.sqlite.event.event_store import (
     StoredScreen,
     StoredPrizeGroup,
     StoredProhibitedPairingGroup,
+    StoredPlayerPeriod,
+    StoredTournamentPeriod,
     StoredPrizeCategory,
     StoredPrizeCriterion,
     StoredPrize,
@@ -47,6 +48,8 @@ from database.sqlite.event.event_store import (
     StoredTeamGroup,
     StoredTeamPairingBlock,
     StoredTeamPointAdjustment,
+    StoredPibe,
+    StoredRatingCorrection,
     StoredPlayerPointAdjustment,
     StoredTeamRoundLineupEntry,
 )
@@ -205,6 +208,7 @@ class EventDatabase(MigrationDatabase):
             arch_file = ArchiveLoader.get_archive_path(f'{self.uniq_id}#{index}')
         arch_file.parent.mkdir(parents=True, exist_ok=True)
         self.file.rename(arch_file)
+        arch_file.touch()
         logger.info('Database has been archived (%s).', arch_file)
         EventLoader.unload_event(self.uniq_id)
         return arch_file
@@ -222,7 +226,7 @@ class EventDatabase(MigrationDatabase):
         """Create a copy of the event database file corresponding to an event
         with name `new_uniq_id`."""
 
-        shutil.copy(self.file, EventDatabase(new_uniq_id).file)
+        self.copy_to(EventDatabase(new_uniq_id).file)
 
     def create_backup(self) -> 'EventBackup':
         """Creates a backup of the event database.
@@ -231,7 +235,7 @@ class EventDatabase(MigrationDatabase):
 
         backup = EventBackup(self.uniq_id, self.get_version())
         backup.file.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(self.file, backup.file)
+        self.copy_to(backup.file)
         return backup
 
     # ---------------------------------------------------------------------------------
@@ -310,7 +314,8 @@ class EventDatabase(MigrationDatabase):
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
-            player_rating_type=row.get('player_rating_type', 3),
+            rating_preference=row.get('rating_preference'),
+            unrated_rating=row.get('unrated_rating'),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
@@ -337,6 +342,12 @@ class EventDatabase(MigrationDatabase):
                 row['allow_multi_tournament_players']
             ),
             event_type=EventType(row['event_type']),
+            check_ratings=self.load_bool_from_database_field(
+                row.get('check_ratings', 1)
+            ),
+            ratings_check_dismissed=self.load_json_from_database_field(
+                row.get('ratings_check_dismissed') or None, {}
+            ),
             tag_ids=self.load_json_from_database_field(row['tag_ids'], []),
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
             enabled_plugins=self.load_json_from_database_field(
@@ -386,6 +397,12 @@ class EventDatabase(MigrationDatabase):
         metadata.rotator_count = self._get_table_count('rotator')
         return metadata
 
+    def set_ratings_check_dismissed(self, list_versions: dict[str, float]) -> None:
+        self.execute(
+            'UPDATE `info` SET `ratings_check_dismissed` = ?',
+            (self.dump_to_json_database_field(list_versions),),
+        )
+
     def update_stored_event(
         self,
         stored_event: StoredEvent,
@@ -398,7 +415,8 @@ class EventDatabase(MigrationDatabase):
                 'public',
                 'federation',
                 'location',
-                'player_rating_type',
+                'rating_preference',
+                'unrated_rating',
                 'background_color',
                 'message_text',
                 'message_color',
@@ -410,6 +428,7 @@ class EventDatabase(MigrationDatabase):
                 'organiser_email',
                 'organiser_director',
                 'allow_multi_tournament_players',
+                'check_ratings',
             ],
         ) | {
             'event_type': stored_event.event_type.value,
@@ -638,10 +657,10 @@ class EventDatabase(MigrationDatabase):
             pairing_settings=cls.load_json_from_database_field(
                 row['pairing_settings'], {}
             ),
-            current_round=row['current_round'],
+            published_round=row['published_round'] or 0,
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
-            rating=row['rating'],
+            cadence=row['cadence'],
             last_update=cls.load_datetime_from_database_field(row['last_update']),
             last_player_update=cls.load_optional_timestamp_from_database_field(
                 row['last_player_update']
@@ -652,10 +671,11 @@ class EventDatabase(MigrationDatabase):
             start_date=cls.load_date_from_database_field(row['start_date']),
             stop_date=cls.load_date_from_database_field(row['stop_date']),
             location=row['location'],
-            player_rating_type=row['player_rating_type'],
-            override_unrated_rapid_blitz=cls.load_bool_from_database_field(
-                row['override_unrated_rapid_blitz']
+            rating_preference=row['rating_preference'],
+            rating_sequence=cls.load_json_from_database_field(
+                row['rating_sequence'] or None, []
             ),
+            unrated_rating=row['unrated_rating'],
             game_points=cls._load_int_keyed_float_dict_from_db(row['game_points']),
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
             round_datetimes=cls._load_round_datetimes_from_database_field(
@@ -680,11 +700,27 @@ class EventDatabase(MigrationDatabase):
                 row['rule_set_config'], {}
             ),
             prohibited_pairing_dimension=row['prohibited_pairing_dimension'],
-            prohibited_pairing_dimension_is_hard=cls.load_bool_from_database_field(
-                row['prohibited_pairing_dimension_is_hard']
-            ),
+            prohibited_pairing_dimension_constraint=row[
+                'prohibited_pairing_dimension_constraint'
+            ],
             round_robin_participation_rule=cls.load_bool_from_database_field(
                 row['round_robin_participation_rule']
+            ),
+            starting_rank_tie_order=row['starting_rank_tie_order'],
+            starting_rank_lot_seed=row['starting_rank_lot_seed'],
+            fide_mode=cls.load_bool_from_database_field(row['fide_mode']),
+            fide_mode_exit_round=row['fide_mode_exit_round'],
+            manual_pairing_round=row['manual_pairing_round'],
+            manual_pairing_boards=cls.load_json_from_database_field(
+                row['manual_pairing_boards'], []
+            ),
+            multi_period=cls.load_bool_from_database_field(row['multi_period']),
+            tie_break_rating=row['tie_break_rating'],
+            round_robin_schedule=cls.load_json_from_database_field(
+                row['round_robin_schedule']
+            ),
+            round_robin_schedule_draft=cls.load_json_from_database_field(
+                row['round_robin_schedule_draft']
             ),
         )
 
@@ -743,6 +779,13 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.stored_prohibited_pairing_groups = (
                 self.load_tournament_stored_prohibited_pairing_groups(id_)
             )
+            stored_tournament.stored_pibes = self.load_tournament_stored_pibes(id_)
+            stored_tournament.stored_rating_corrections = (
+                self.load_tournament_stored_rating_corrections(id_)
+            )
+            stored_tournament.stored_tournament_periods = (
+                self.load_tournament_stored_periods(id_)
+            )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 
@@ -761,12 +804,12 @@ class EventDatabase(MigrationDatabase):
                 'paired_bye_result',
                 'max_byes',
                 'rounds',
-                'rating',
+                'cadence',
                 'pairing',
                 'location',
-                'player_rating_type',
+                'rating_preference',
+                'unrated_rating',
                 'last_rounds_no_byes',
-                'override_unrated_rapid_blitz',
                 'team_player_count',
                 'roster_max_size',
                 'color_pattern',
@@ -777,8 +820,14 @@ class EventDatabase(MigrationDatabase):
                 'team_sort_mode',
                 'rule_set',
                 'prohibited_pairing_dimension',
-                'prohibited_pairing_dimension_is_hard',
+                'prohibited_pairing_dimension_constraint',
                 'round_robin_participation_rule',
+                'starting_rank_tie_order',
+                'starting_rank_lot_seed',
+                'fide_mode',
+                'fide_mode_exit_round',
+                'multi_period',
+                'tie_break_rating',
             ],
         ) | {
             'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),
@@ -791,6 +840,10 @@ class EventDatabase(MigrationDatabase):
                 stored_tournament.round_datetimes
             ),
             'criteria': cls.dump_to_json_database_field(stored_tournament.criteria),
+            'rating_sequence': cls.dump_to_json_database_field(
+                stored_tournament.rating_sequence or None
+            )
+            or '',
             'rule_set_config': cls.dump_to_json_database_field(
                 stored_tournament.rule_set_config, {}
             ),
@@ -799,6 +852,9 @@ class EventDatabase(MigrationDatabase):
             ),
             'match_points': cls.dump_to_json_database_field(
                 stored_tournament.match_points
+            ),
+            'round_robin_schedule': cls.dump_to_json_database_field(
+                stored_tournament.round_robin_schedule
             ),
         }
 
@@ -815,6 +871,13 @@ class EventDatabase(MigrationDatabase):
         if tournament_id is None:
             raise RuntimeError('Tournament insertion failed')
         self.seed_default_tie_breaks(tournament_id, stored_tournament.pairing)
+        self.set_tournament_periods(
+            tournament_id,
+            [
+                stored_period.first_round
+                for stored_period in stored_tournament.stored_tournament_periods
+            ],
+        )
         return tournament_id
 
     @staticmethod
@@ -942,18 +1005,14 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def set_tournament_current_round(
-        self, tournament_id: int, current_round: int | None
+    def set_tournament_published_round(
+        self, tournament_id: int, published_round: int
     ) -> None:
+        now = self.now_as_database_timestamp()
         self.execute(
-            'UPDATE `tournament` SET '
-            '`current_round` = ?, `last_update` = ? '
-            'WHERE `id` = ?',
-            (
-                current_round,
-                self.now_as_database_timestamp(),
-                tournament_id,
-            ),
+            'UPDATE `tournament` SET `published_round` = ?, '
+            '`last_update` = ?, `last_pairing_update` = ? WHERE `id` = ?',
+            (published_round, now, now, tournament_id),
         )
 
     # ---------------------------------------------------------------------------------
@@ -1031,7 +1090,8 @@ class EventDatabase(MigrationDatabase):
             'SELECT `id`, `last_name`, `ratings`, `first_name`, '
             '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
             '`comment`, `owed`, `paid`, `title`, `women_title`, `fide_id`, '
-            '`federation`, `club`, `fixed`, `check_in`, `team_id`, '
+            '`national_id`, `national_source`, '
+            '`federation`, `club`, `fixed`, `byes_allowed`, `check_in`, `team_id`, '
             '`team_index`, `plugin_data` FROM `player`'
         )
         assert self.cursor is not None
@@ -1052,9 +1112,12 @@ class EventDatabase(MigrationDatabase):
             title,
             women_title,
             fide_id,
+            national_id,
+            national_source,
             federation,
             club,
             fixed,
+            byes_allowed,
             check_in,
             team_id,
             team_index,
@@ -1081,16 +1144,73 @@ class EventDatabase(MigrationDatabase):
                     title=title,
                     women_title=women_title,
                     fide_id=fide_id,
+                    national_id=national_id,
+                    national_source=national_source,
                     federation=federation,
                     club=club,
                     fixed=fixed,
+                    byes_allowed=self.load_bool_from_database_field(byes_allowed),
                     check_in=self.load_bool_from_database_field(check_in),
                     team_id=team_id,
                     team_index=team_index,
                     plugin_data=self.load_json_from_database_field(plugin_data, {}),
                 )
             )
+        player_periods = self.load_player_periods()
+        for stored_player in stored_players:
+            stored_player.periods = player_periods.get(stored_player.id or 0, {})
         return stored_players
+
+    def load_player_periods(self) -> dict[int, dict[int, StoredPlayerPeriod]]:
+        """Every player as the periods that differ from their own columns
+        knew them, keyed by player then by period."""
+        self.execute(
+            'SELECT `player_id`, `period_id`, `ratings`, `title`, `women_title` '
+            'FROM `player_period`'
+        )
+        player_periods: dict[int, dict[int, StoredPlayerPeriod]] = {}
+        for row in self.fetchall():
+            player_periods.setdefault(row['player_id'], {})[row['period_id']] = (
+                StoredPlayerPeriod(
+                    ratings=self.set_dict_int_keys(
+                        self.load_json_from_database_field(row['ratings'])
+                    ),
+                    title=row['title'],
+                    women_title=row['women_title'],
+                )
+            )
+        return player_periods
+
+    def set_player_period(
+        self,
+        player_id: int,
+        period_id: int,
+        stored_player_period: StoredPlayerPeriod,
+    ) -> None:
+        """Upsert what one period knew of a player. A period with nothing
+        to record is removed, so the player reads as unchanged there."""
+        if not stored_player_period.ratings:
+            self.execute(
+                'DELETE FROM `player_period` WHERE `player_id` = ? AND `period_id` = ?',
+                (player_id, period_id),
+            )
+            return
+        self.execute(
+            'INSERT INTO `player_period` '
+            '(`player_id`, `period_id`, `ratings`, `title`, `women_title`) '
+            'VALUES (?, ?, ?, ?, ?) '
+            'ON CONFLICT(`player_id`, `period_id`) DO UPDATE SET '
+            '`ratings` = excluded.`ratings`, '
+            '`title` = excluded.`title`, '
+            '`women_title` = excluded.`women_title`',
+            (
+                player_id,
+                period_id,
+                self.dump_to_json_database_field(stored_player_period.ratings),
+                stored_player_period.title,
+                stored_player_period.women_title,
+            ),
+        )
 
     @classmethod
     def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
@@ -1108,9 +1228,12 @@ class EventDatabase(MigrationDatabase):
                 'title',
                 'women_title',
                 'fide_id',
+                'national_id',
+                'national_source',
                 'federation',
                 'club',
                 'fixed',
+                'byes_allowed',
                 'check_in',
                 'year_of_birth',
                 'team_id',
@@ -1147,6 +1270,24 @@ class EventDatabase(MigrationDatabase):
             f'UPDATE `player` SET {field_sets} WHERE `id` = ?',
             (*tuple(fields.values()), stored_player.id),
         )
+        self._update_player_periods(stored_player)
+
+    def _update_player_periods(self, stored_player: StoredPlayer) -> None:
+        """Persist the periods that knew the player differently, so that
+        every path that saves a player saves them with it."""
+        assert stored_player.id is not None
+        period_ids = list(stored_player.periods)
+        self.execute(
+            'DELETE FROM `player_period` WHERE `player_id` = ?'
+            + (
+                f' AND `period_id` NOT IN ({",".join("?" * len(period_ids))})'
+                if period_ids
+                else ''
+            ),
+            (stored_player.id, *period_ids),
+        )
+        for period_id, stored_player_period in stored_player.periods.items():
+            self.set_player_period(stored_player.id, period_id, stored_player_period)
 
     def delete_stored_player(self, player_id: int) -> None:
         self.execute('DELETE FROM `player` WHERE `id` = ?;', (player_id,))
@@ -1442,15 +1583,17 @@ class EventDatabase(MigrationDatabase):
     def delete_all_stored_pairings(self) -> None:
         """Undo every round: the pairings and the boards they were played
         on, the team matches those boards sit in, the lineups fielded for
-        them and the adjustments made to them. A pairing left without its
-        board — or a board without its pairing — is an event no round can be
-        drawn in."""
+        them, the adjustments made to them and the integrity breaches logged
+        against them. A pairing left without its board — or a board without
+        its pairing — is an event no round can be drawn in."""
         self.execute('DELETE FROM `pairing`')
         self.execute('DELETE FROM `board`')
         self.execute('DELETE FROM `team_board`')
         self.execute('DELETE FROM `team_round_lineup`')
         self.execute('DELETE FROM `player_point_adjustment`')
         self.execute('DELETE FROM `team_point_adjustment`')
+        self.execute('DELETE FROM `pibe`')
+        self.execute('DELETE FROM `rating_correction`')
 
     # ---------------------------------------------------------------------------------
     # StoredBoard
@@ -2082,6 +2225,240 @@ class EventDatabase(MigrationDatabase):
         )
 
     # ---------------------------------------------------------------------------------
+    # StoredPibe
+    # ---------------------------------------------------------------------------------
+
+    def load_tournament_stored_pibes(self, tournament_id: int) -> list[StoredPibe]:
+        self.execute(
+            'SELECT * FROM `pibe` WHERE `tournament_id` = ? ORDER BY `id`',
+            (tournament_id,),
+        )
+        return [
+            StoredPibe(
+                id=row['id'],
+                tournament_id=row['tournament_id'],
+                round_=row['round'],
+                type=row['type'],
+                description=row['description'],
+                date=self.load_datetime_from_database_field(row['date']),
+                members={
+                    int(number): member_id
+                    for number, member_id in (
+                        self.load_json_from_database_field(row['members'], {}) or {}
+                    ).items()
+                },
+            )
+            for row in self.fetchall()
+        ]
+
+    def add_stored_pibe(self, stored_pibe: StoredPibe) -> None:
+        self.execute(
+            'INSERT INTO `pibe` '
+            '(`tournament_id`, `round`, `type`, `description`, `date`, `members`) '
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            (
+                stored_pibe.tournament_id,
+                stored_pibe.round_,
+                stored_pibe.type,
+                stored_pibe.description,
+                self.dump_datetime_to_database_field(stored_pibe.date),
+                self.dump_to_json_database_field(
+                    {
+                        str(number): member
+                        for number, member in stored_pibe.members.items()
+                    },
+                    {},
+                ),
+            ),
+        )
+
+    def delete_tournament_stored_pibes(
+        self, tournament_id: int, type_: str, round_: int
+    ) -> None:
+        self.execute(
+            'DELETE FROM `pibe` '
+            'WHERE `tournament_id` = ? AND `type` = ? AND `round` = ?',
+            (tournament_id, type_, round_),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredRatingCorrection
+    # ---------------------------------------------------------------------------------
+
+    def load_tournament_stored_rating_corrections(
+        self, tournament_id: int
+    ) -> list[StoredRatingCorrection]:
+        self.execute(
+            'SELECT * FROM `rating_correction` WHERE `tournament_id` = ? '
+            'ORDER BY `round`, `id`',
+            (tournament_id,),
+        )
+        return [
+            StoredRatingCorrection(
+                id=row['id'],
+                tournament_id=row['tournament_id'],
+                round_=row['round'],
+                white_player_id=row['white_player_id'],
+                black_player_id=row['black_player_id'],
+                result=row['result'],
+                date=self.load_datetime_from_database_field(row['date']),
+            )
+            for row in self.fetchall()
+        ]
+
+    def add_stored_rating_correction(
+        self, stored_rating_correction: StoredRatingCorrection
+    ) -> None:
+        self.execute(
+            'INSERT INTO `rating_correction` (`tournament_id`, `round`, '
+            '`white_player_id`, `black_player_id`, `result`, `date`) '
+            'VALUES (?, ?, ?, ?, ?, ?)',
+            (
+                stored_rating_correction.tournament_id,
+                stored_rating_correction.round_,
+                stored_rating_correction.white_player_id,
+                stored_rating_correction.black_player_id,
+                stored_rating_correction.result,
+                self.dump_datetime_to_database_field(stored_rating_correction.date),
+            ),
+        )
+
+    def delete_stored_rating_correction(
+        self, tournament_id: int, round_: int, player_ids: tuple[int, int]
+    ) -> None:
+        """Delete the correction of the game the two players played in
+        *round_*, whichever had white."""
+        self.execute(
+            'DELETE FROM `rating_correction` '
+            'WHERE `tournament_id` = ? AND `round` = ? '
+            'AND `white_player_id` IN (?, ?) AND `black_player_id` IN (?, ?)',
+            (tournament_id, round_, *player_ids, *player_ids),
+        )
+
+    def set_tournament_manual_pairing(
+        self,
+        tournament_id: int,
+        round_: int | None,
+        boards: list[dict[str, Any]],
+    ) -> None:
+        self.execute(
+            'UPDATE `tournament` SET `manual_pairing_round` = ?, '
+            '`manual_pairing_boards` = ?, `last_update` = ? WHERE `id` = ?',
+            (
+                round_,
+                self.dump_to_json_database_field(boards, []),
+                self.now_as_database_timestamp(),
+                tournament_id,
+            ),
+        )
+
+    def set_tournament_round_robin_schedule(
+        self,
+        tournament_id: int,
+        schedule: dict[str, Any] | None,
+        draft: dict[str, Any] | None,
+    ) -> None:
+        self.execute(
+            'UPDATE `tournament` SET `round_robin_schedule` = ?, '
+            '`round_robin_schedule_draft` = ?, `last_update` = ? WHERE `id` = ?',
+            (
+                self.dump_to_json_database_field(schedule),
+                self.dump_to_json_database_field(draft),
+                self.now_as_database_timestamp(),
+                tournament_id,
+            ),
+        )
+
+    def leave_tournament_fide_mode(
+        self, tournament_id: int, exit_round: int | None
+    ) -> None:
+        self.execute(
+            'UPDATE `tournament` SET '
+            '`fide_mode` = 0, `fide_mode_exit_round` = ?, `last_update` = ? '
+            'WHERE `id` = ?',
+            (exit_round, self.now_as_database_timestamp(), tournament_id),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTournamentPeriod
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_period(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentPeriod:
+        return StoredTournamentPeriod(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            first_round=row['first_round'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
+        )
+
+    def load_tournament_stored_periods(
+        self, tournament_id: int
+    ) -> list[StoredTournamentPeriod]:
+        self.execute(
+            'SELECT * FROM `tournament_period` WHERE `tournament_id` = ? '
+            'ORDER BY `first_round`',
+            (tournament_id,),
+        )
+        return [self._row_to_stored_tournament_period(row) for row in self.fetchall()]
+
+    def set_tournament_period_plugin_data(
+        self, period_id: int, plugin_data: dict[str, dict[str, Any]]
+    ) -> None:
+        """Store what the plugins keep about one period — the identifiers
+        of the registration it is submitted under."""
+        self.execute(
+            'UPDATE `tournament_period` SET `plugin_data` = ? WHERE `id` = ?',
+            (self.dump_to_json_database_field(plugin_data, {}), period_id),
+        )
+
+    def set_tournament_periods(
+        self, tournament_id: int, first_rounds: list[int]
+    ) -> None:
+        """Set the rounds the tournament's periods start at. Round 1 always
+        starts one, so it is added whatever the caller passes.
+
+        A period keeps its row, and with it the ratings its players were
+        prepared with, as long as the tournament still has a period in its
+        place: moving a boundary re-bounds the period rather than replacing
+        it. Only a period the tournament no longer has — one merged into
+        its neighbour — loses its rows."""
+        wanted = sorted({1} | set(first_rounds))
+        current = [
+            stored_period.id
+            for stored_period in self.load_tournament_stored_periods(tournament_id)
+        ]
+        # The rounds are rewritten in three steps: the periods that stay are
+        # parked out of the way, the surplus ones are dropped, and only then
+        # do the survivors take their new rounds — a period moved onto a round
+        # another is leaving would otherwise collide with it in passing.
+        kept = current[: len(wanted)]
+        for index, period_id in enumerate(kept):
+            self.execute(
+                'UPDATE `tournament_period` SET `first_round` = ? WHERE `id` = ?',
+                (-1 - index, period_id),
+            )
+        self.execute(
+            'DELETE FROM `tournament_period` WHERE `tournament_id` = ? '
+            'AND `first_round` >= 0',
+            (tournament_id,),
+        )
+        for index, period_id in enumerate(kept):
+            self.execute(
+                'UPDATE `tournament_period` SET `first_round` = ? WHERE `id` = ?',
+                (wanted[index], period_id),
+            )
+        for first_round in wanted:
+            self.execute(
+                'INSERT INTO `tournament_period` (`tournament_id`, `first_round`) '
+                'VALUES (?, ?) '
+                'ON CONFLICT(`tournament_id`, `first_round`) DO NOTHING',
+                (tournament_id, first_round),
+            )
+
+    # ---------------------------------------------------------------------------------
     # StoredProhibitedPairingGroup
     # ---------------------------------------------------------------------------------
 
@@ -2100,7 +2477,7 @@ class EventDatabase(MigrationDatabase):
                 id=row['id'],
                 tournament_id=row['tournament_id'],
                 round_=row['round'],
-                is_hard=self.load_bool_from_database_field(row['is_hard']),
+                constraint=row['constraint_type'],
                 protect_rank=row['protect_rank'],
             )
             groups.append(group)
@@ -2121,15 +2498,15 @@ class EventDatabase(MigrationDatabase):
         self,
         tournament_id: int,
         round_: int | None,
-        is_hard: bool,
+        constraint: str,
         member_ids: list[int],
         protect_rank: int | None = None,
     ) -> int:
         self.execute(
             'INSERT INTO `prohibited_pairing_group` '
-            '(`tournament_id`, `round`, `is_hard`, `protect_rank`) '
+            '(`tournament_id`, `round`, `constraint_type`, `protect_rank`) '
             'VALUES (?, ?, ?, ?)',
-            (tournament_id, round_, 1 if is_hard else 0, protect_rank),
+            (tournament_id, round_, constraint, protect_rank),
         )
         group_id = self._last_inserted_id()
         if not group_id:
@@ -2145,34 +2522,34 @@ class EventDatabase(MigrationDatabase):
     def replace_manual_prohibited_pairing_groups(
         self,
         tournament_id: int,
-        groups: list[tuple[bool, list[int]]],
+        groups: list[tuple[str, list[int]]],
     ) -> None:
         """Replace the tournament's manual template groups (``round``
-        NULL). Each group is ``(is_hard, member_ids)``."""
+        NULL). Each group is ``(constraint, member_ids)``."""
         self.execute(
             'DELETE FROM `prohibited_pairing_group` '
             'WHERE `tournament_id` = ? AND `round` IS NULL',
             (tournament_id,),
         )
-        for is_hard, member_ids in groups:
+        for constraint, member_ids in groups:
             self._add_stored_prohibited_pairing_group(
-                tournament_id, None, is_hard, member_ids
+                tournament_id, None, constraint, member_ids
             )
 
     def replace_round_prohibited_pairing_snapshot(
         self,
         tournament_id: int,
         round_: int,
-        groups: list[tuple[bool, list[int]]],
+        groups: list[tuple[str, list[int]]],
         protect_rank: int | None = None,
     ) -> None:
         """Replace the immutable per-round snapshot for ``round_``.
         ``protect_rank`` is the soft-relaxation cutoff for the round,
         stored on every row so the export can regenerate the applied set."""
         self.delete_round_prohibited_pairing_snapshot(tournament_id, round_)
-        for is_hard, member_ids in groups:
+        for constraint, member_ids in groups:
             self._add_stored_prohibited_pairing_group(
-                tournament_id, round_, is_hard, member_ids, protect_rank
+                tournament_id, round_, constraint, member_ids, protect_rank
             )
 
     def delete_round_prohibited_pairing_snapshot(
@@ -2199,6 +2576,9 @@ class EventDatabase(MigrationDatabase):
             tournament_id=row['tournament_id'],
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
+            ),
+            boards_hide_players=cls.load_bool_or_none_from_database_field(
+                row['boards_hide_players']
             ),
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
@@ -2258,6 +2638,7 @@ class EventDatabase(MigrationDatabase):
             'menu_text',
             'timer_id',
             'input_exit_button',
+            'boards_hide_players',
             'players_show_unpaired',
             'players_player_format',
             'players_board_format',
@@ -2286,6 +2667,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.menu_text,
             stored_family.timer_id,
             stored_family.input_exit_button,
+            stored_family.boards_hide_players,
             stored_family.players_show_unpaired,
             stored_family.players_player_format,
             stored_family.players_board_format,
@@ -2360,6 +2742,9 @@ class EventDatabase(MigrationDatabase):
             timer_id=row['timer_id'],
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
+            ),
+            boards_hide_players=cls.load_bool_or_none_from_database_field(
+                row['boards_hide_players']
             ),
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
@@ -2441,6 +2826,7 @@ class EventDatabase(MigrationDatabase):
             'type',
             'public',
             'input_exit_button',
+            'boards_hide_players',
             'players_show_unpaired',
             'players_player_format',
             'players_board_format',
@@ -2470,6 +2856,9 @@ class EventDatabase(MigrationDatabase):
             stored_screen.public,
             stored_screen.input_exit_button
             if stored_screen.type in ('input', 'check-in')
+            else None,
+            stored_screen.boards_hide_players
+            if stored_screen.type == 'boards'
             else None,
             stored_screen.players_show_unpaired
             if stored_screen.type == 'players'

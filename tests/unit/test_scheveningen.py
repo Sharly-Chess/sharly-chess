@@ -14,9 +14,7 @@ import pytest
 from data.event import Event
 from data.loader import EventLoader
 from data.pairings.scheveningen import (
-    ScheveningenPairingSystem,
     ScheveningenVariation,
-    StandardScheveningenVariation,
     scheveningen_table,
 )
 from data.print_documents.documents import (
@@ -690,15 +688,18 @@ class TestScheveningenTournament(TestCase):
         assert len(papi_data.players) == 8
         assert all(len(player.rounds) == 4 for player in papi_data.players)
 
-    def test_the_ffe_transfer_is_offered_for_the_scheveningen(self):
-        """The FFE-site transfer and its fields, hidden on team events,
-        are opened up for a Scheveningen — it uploads as an individual
-        Swiss."""
+    def test_the_scheveningen_is_sent_through_the_team_module(self):
+        """Every tournament of a team event is sent as match reports;
+        the Papi file a Scheveningen flattens to stays available as an
+        export."""
+        from plugins.ffe.papi_converter import PapiConverter
         from plugins.ffe.utils import FFEUtils
 
         tournament = self._paired_round(4)
+        assert FFEUtils.supports_team_transfer(tournament)
         assert FFEUtils.supports_ffe_transfer(tournament)
         assert FFEUtils.event_supports_ffe_transfer(tournament.event)
+        assert PapiConverter.papi_export_unavailable_message(tournament) is None
 
     def test_numbering_a_team_scheveningen_never_writes_to_the_db(self):
         """Team players are synthetic (no stored row), so their pairing
@@ -723,25 +724,22 @@ class TestScheveningenTournament(TestCase):
             tournament.compute_tournament_player_ranks()
         assert numbers == list(range(1, 9))
 
-    def test_the_pairing_tab_warns_it_becomes_a_swiss(self):
-        """The tournament tab's pairing warning flags the Scheveningen as
-        FFE-unknown, but only once an FFE ID links it to the site."""
+    def test_the_papi_export_warns_it_reads_as_a_swiss(self):
+        """The format has no Scheveningen: the export says what the file
+        will describe."""
+        from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
+
+        tournament = self._paired_round(4)
+        warning = PapiTournamentExporter().warning_message(tournament)
+        assert warning is not None and 'Swiss' in warning
+
+    def test_the_pairing_tab_stays_quiet(self):
+        """The FFE site is sent the matches of the team event, so the
+        pairing the Papi format would flatten them to says nothing about
+        what the site shows."""
         from plugins.ffe.utils import FFEUtils
 
         tournament = self._paired_round(4)
-        # No FFE ID: the tab stays quiet.
         assert tournament.pairing_warning_message is None
-        # Linked to the FFE site: the warning appears.
         FFEUtils.get_tournament_plugin_data(tournament).ffe_id = 12345
-        warning = tournament.pairing_warning_message
-        assert warning is not None and 'Swiss' in warning
-
-
-def test_the_scheveningen_maps_to_the_swiss_papi_type():
-    from plugins.ffe.papi_mappers import PapiPairingSystem, PapiPairingVariation
-
-    assert PapiPairingSystem.get_outer_value(ScheveningenPairingSystem()) == 'Suisse'
-    assert (
-        PapiPairingVariation.get_outer_value(StandardScheveningenVariation())
-        == 'Standard'
-    )
+        assert tournament.pairing_warning_message is None

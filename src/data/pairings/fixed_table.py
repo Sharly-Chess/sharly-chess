@@ -141,6 +141,12 @@ class FixedTablePairingSystem(
         return False
 
     @property
+    def pairing_info_button_template(self) -> str | None:
+        # Who meets whom follows from the table, so there is no score group
+        # or colour history to explain.
+        return None
+
+    @property
     def uses_team_letters(self) -> bool:
         # The table addresses teams by letter (A, B, …) — see team_by_letter.
         return True
@@ -525,6 +531,27 @@ class FixedTablePairingEngine(PairingEngine):
         return seats
 
     # -----------------------------------------------------------------------
+    def round_board_teams(
+        self, tournament: Tournament, round_: int
+    ) -> dict[int, tuple[Team, Team]]:
+        """``(white team, black team)`` per board index of the round, as
+        the table seats them — a hole's board included, which the board
+        itself cannot tell (its missing side has no player)."""
+        teams = self._teams_for_tournament(tournament)
+        n = tournament.team_player_count or 0
+        if not teams or n <= 0:
+            return {}
+        team_by_letter = {chr(ord('A') + i): team for i, team in enumerate(teams)}
+        board_teams: dict[int, tuple[Team, Team]] = {}
+        for index, p in enumerate(
+            self._build_combined_pairings(tournament, round_, len(teams), n)
+        ):
+            white_team = team_by_letter.get(p.white_team)
+            black_team = team_by_letter.get(p.black_team)
+            if white_team is not None and black_team is not None:
+                board_teams[index] = (white_team, black_team)
+        return board_teams
+
     # Helpers
     # -----------------------------------------------------------------------
 

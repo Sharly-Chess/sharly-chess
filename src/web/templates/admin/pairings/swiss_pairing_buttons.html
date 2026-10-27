@@ -5,6 +5,9 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {% if schedule_editor and schedule_editor.can_start %}
+        {% include '/admin/pairings/round_robin_schedule_button.html' %}
+    {% endif %}
     {% set set_all_present_message = (
         _('Pairings generation disabled if there are no players to pair.')
         if not admin_boards and not admin_unpaired and admin_absent_players
@@ -36,6 +39,7 @@
         {% endif %}
     {% endwith %}
     {% include 'prohibited_button.html' %}
+    {% include 'fide_log_button.html' %}
     {% include 'pairing_settings_button.html' %}
     </span>
     {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}
@@ -44,6 +48,7 @@
             {{ macros.tooltip_attributes('', (
                 _('You are not allowed to generate the pairings.')
                 if not can_use_pairing_engine else
+                manual_pairing_pending_message or
                 pairings_generation_disabled_message or
                 set_all_present_message or
                 _('Generate pairings for this round.')
@@ -53,21 +58,15 @@
                 class="btn btn-outline-primary text-nowrap"
                 {% if
                     not client.can_use_pairing_engine(admin_tournament.id)
+                    or manual_pairing_pending_message
                     or pairings_generation_disabled_message
                     or set_all_present_message
                 %}
                     disabled
                 {% else %}
-                    {% if not skip_ratings_warning and (admin_round == 1 or admin_tournament.multiple_fide_periods) %}
+                    {% if not skip_ratings_warning and (admin_round == 1 or admin_tournament.round_starts_period(admin_round)) %}
                         hx-get="{{ url_for(
                             'pairings-ratings-warning-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_round
-                        ) }}"
-                    {% elif admin_round == 1 and admin_tournament.pairing_variation.settings %}
-                        hx-get="{{ url_for(
-                            'pairings-settings-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round
@@ -82,6 +81,13 @@
                     {% elif admin_absent_players %}
                         hx-get="{{ url_for(
                             'pairings-absents-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
+                    {% elif admin_round == 1 and admin_tournament.pairing_variation.settings %}
+                        hx-get="{{ url_for(
+                            'pairings-settings-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round
@@ -137,7 +143,7 @@
                         hx-post="{{ action_route }}"
                     {% else %}
                         hx-get="{{ url_for(
-                            'admin-pairings-safety-mode-modal',
+                            'admin-pairings-warning-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
@@ -188,7 +194,7 @@
                             hx-post="{{ action_route }}"
                         {% else %}
                             hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
+                                'admin-pairings-warning-modal',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 round=admin_round,
@@ -210,4 +216,5 @@
             </span>
         {% endif %}
     {% endif %}
+    {% include 'publish_button.html' %}
 </span>

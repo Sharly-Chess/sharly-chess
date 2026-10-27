@@ -4,7 +4,6 @@
     {% set tooltip_message = tournament_status.tooltip_message(tournament) %}
     <span
         class="badge rounded-pill {{ tournament_status.css_classes }}"
-        style="height: 20px"
         {% if tooltip_message %}
             {{ macros.tooltip_attributes('', tooltip_message) }}
         {% endif %}

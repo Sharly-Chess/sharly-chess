@@ -1,12 +1,16 @@
 from datetime import date, datetime
+import hashlib
 import weakref
 from collections import Counter, defaultdict
-from collections.abc import Collection
+from collections.abc import Collection, Iterator
+from contextlib import contextmanager
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, cast
 from _weakref import ReferenceType
+
+from markupsafe import Markup
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
@@ -18,11 +22,19 @@ from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
+from data.pairings.round_robin_schedule import RoundRobinSchedule, ScheduleBreach
+from data.pibes import FullPointBye, Pibe, PibeType, RatingCorrection
 from data.player import Player, TournamentPlayer
 from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
 from data.point_adjustments import PointAdjustments
 from data.point_system import PointSystem
+from data.rating_sequences import (
+    RatingSequence,
+    sequence_from_keys,
+    sequence_html,
+    sequence_preference,
+)
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -30,6 +42,11 @@ from data.prohibited_pairings import ProhibitedPairings
 from data.screens.screen import Screen
 from data.teams.team_board import TeamBoard
 from data.teams.team_pairing_block import TeamPairingBlock
+from data.tournament_period import (
+    TIE_BREAK_RATING_BY_ROUND,
+    TournamentPeriod,
+    dates_exceed_period,
+)
 from data.tie_breaks.configuration import TieBreakConfiguration
 from data.tie_breaks import (
     TieBreak,
@@ -38,6 +55,7 @@ from data.tie_breaks import (
 from data.criteria.tournament_criteria import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
+    StoredTournamentPeriod,
     StoredTournamentPlayer,
     StoredPairing,
 )
@@ -50,14 +68,17 @@ from utils.enum import (
     PlayerGender,
     Result,
     ScoreType,
+    StartingRankTieOrder,
     TeamColourType,
     TeamSortMode,
-    TournamentRating,
+    Cadence,
     PlayerRatingType,
+    RatingPreference,
     RoleType,
     PlayerTitle,
     CheckInStatus,
     TitleNorm,
+    TeamByeType,
 )
 
 from utils.types import BigTournamentExemption
@@ -66,7 +87,13 @@ from data.norms import (
     compute_high_level_tournament,
 )
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
+from database.sqlite.event.event_store import (
+    StoredBoard,
+    StoredPibe,
+    StoredRatingCorrection,
+    StoredPrizeGroup,
+    StoredTournament,
+)
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -218,6 +245,120 @@ class Tournament:
         """True if at least one round has a scheduled datetime."""
         return any(v is not None for v in self.round_datetimes.values())
 
+    # Rating periods
+
+    @property
+    def multi_period(self) -> bool:
+        """Whether the tournament lasts more than 30 days and is therefore
+        reported to FIDE one period at a time (VCL Q210)."""
+        return bool(self.stored_tournament.multi_period)
+
+    @cached_property
+    def periods(self) -> list[TournamentPeriod]:
+        """The tournament's rating periods, in order. A tournament that is
+        not multi-period has the single period covering all its rounds, so
+        callers never branch on the number of periods."""
+        first_rounds: list[int] = [1]
+        if self.multi_period:
+            first_rounds = sorted(
+                {1}
+                | {
+                    stored_period.first_round
+                    for stored_period in self.stored_tournament.stored_tournament_periods
+                    if 1 < stored_period.first_round <= self.rounds
+                }
+            )
+        stored_periods_by_first_round = {
+            stored_period.first_round: stored_period
+            for stored_period in self.stored_tournament.stored_tournament_periods
+        }
+        periods: list[TournamentPeriod] = []
+        for index, first_round in enumerate(first_rounds):
+            last_round = (
+                first_rounds[index + 1] - 1
+                if index + 1 < len(first_rounds)
+                else self.rounds
+            )
+            periods.append(
+                TournamentPeriod(
+                    self,
+                    stored_periods_by_first_round.get(
+                        first_round, StoredTournamentPeriod(None, self.id, first_round)
+                    ),
+                    index,
+                    last_round,
+                )
+            )
+        return periods
+
+    @cached_property
+    def period_by_round(self) -> dict[int, TournamentPeriod]:
+        return {
+            round_nb: period for period in self.periods for round_nb in period.rounds
+        }
+
+    @property
+    def tie_break_rating(self) -> str:
+        """Which of a player's ratings a rating-based tie-break reads:
+        their first (C.07:10's default), the one of each game's own period,
+        or the one of a period the arbiter names.
+
+        Stored as '' for the first rating, 'round' for each game's period,
+        or the id of a period."""
+        return self.stored_tournament.tie_break_rating or ''
+
+    def set_tie_break_rating(self, tie_break_rating: str) -> None:
+        self.stored_tournament.tie_break_rating = tie_break_rating
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
+
+    def tie_break_period(self, round_: int) -> TournamentPeriod | None:
+        """The period whose ratings a tie-break reads for a game of this
+        round.
+
+        None when the tournament is rated in one go and the question does
+        not arise; otherwise the first period unless the arbiter said
+        otherwise, which is the first rating C.07:10 takes by default."""
+        if len(self.periods) < 2:
+            return None
+        setting = self.tie_break_rating
+        if not setting:
+            return self.periods[0]
+        if setting == TIE_BREAK_RATING_BY_ROUND:
+            return self.period_by_round.get(round_)
+        return next(
+            (period for period in self.periods if str(period.id) == setting),
+            self.periods[0],
+        )
+
+    def round_starts_period(self, round_: int) -> bool:
+        """Whether a round opens a period of a tournament reported in
+        periods — the moment its ratings are refreshed, and the only one
+        at which the arbiter has to be reminded of it."""
+        return len(self.periods) > 1 and any(
+            period.first_round == round_ for period in self.periods
+        )
+
+    @property
+    def current_period(self) -> TournamentPeriod:
+        """The period being played: the one holding the round the
+        tournament has reached.
+
+        Where it has reached is what the arbiter has paired, not what the
+        calendar says — a period can be played early or late, and pairing
+        its first round is the act that starts it. Before any round is
+        paired there is nothing to read, so the dates answer instead: the
+        period today falls in, the last one once they have all passed."""
+        period = self.period_by_round.get(self.current_round)
+        if period is not None:
+            return period
+        today = date.today()
+        for period in self.periods:
+            stop_date = period.stop_date
+            if stop_date is None or today <= stop_date:
+                return period
+        return self.periods[-1]
+
     @property
     def schedule_first_datetime(self) -> datetime | None:
         """Return the earliest scheduled round datetime, or None if no schedule."""
@@ -259,8 +400,9 @@ class Tournament:
 
     @property
     def multiple_fide_periods(self) -> bool:
-        """Returns True if the tournament lasts more than one month, False otherwise."""
-        return (self.stop_date - self.start_date).days > 30
+        """Whether the tournament runs longer than FIDE rates as a single
+        tournament, and is therefore reported in periods."""
+        return dates_exceed_period(self.start_date, self.stop_date)
 
     @property
     def location(self) -> str | None:
@@ -354,10 +496,40 @@ class Tournament:
 
     @cached_property
     def pairing_variation(self) -> 'PairingVariation':
+        """The stored variation, or until the tournament is paired, the
+        one its rule set picks for the teams entered."""
         from data.pairings import PairingVariationManager
 
-        return PairingVariationManager(self.event).get_object(
-            self.stored_tournament.pairing
+        manager = PairingVariationManager(self.event)
+        variation = manager.get_object(self.stored_tournament.pairing)
+        if self.rule_set is not None and not self._has_stored_pairings:
+            variation_id = self.rule_set.pairing_variation_for(
+                variation.system().id, self.team_count
+            )
+            if variation_id is not None:
+                return manager.get_object(variation_id)
+        return variation
+
+    @property
+    def pairing_variation_is_automatic(self) -> bool:
+        """Whether the rule set still picks the variation: until the
+        tournament is paired."""
+        return (
+            self.rule_set is not None
+            and not self._has_stored_pairings
+            and self.rule_set.pairing_variation_for(
+                self.pairing_system.id, self.team_count
+            )
+            is not None
+        )
+
+    @property
+    def rounds_are_unsettled(self) -> bool:
+        """Whether the pairing system will still work the round count
+        out: until the tournament is paired."""
+        return (
+            self.pairing_variation.sets_its_own_round_count
+            and not self._has_stored_pairings
         )
 
     @cached_property
@@ -365,20 +537,65 @@ class Tournament:
         return self.pairing_variation.system()
 
     @cached_property
-    def rating(self) -> TournamentRating:
-        return TournamentRating(self.stored_tournament.rating)
+    def cadence(self) -> Cadence:
+        return Cadence(self.stored_tournament.cadence)
 
     @cached_property
-    def player_rating_type(self) -> PlayerRatingType:
-        return (
-            PlayerRatingType(self.stored_tournament.player_rating_type)
-            if self.stored_tournament.player_rating_type is not None
-            else self.event.player_rating_type
+    def rating_preference(self) -> RatingPreference:
+        """Which kind of rating the players are ranked on, and which is
+        fallen back on: the one a plugin imposes, else the one the
+        tournament's sequence amounts to, else the event's."""
+        if (forced := self.event.forced_rating_preference) is not None:
+            return forced
+        stored = (
+            None
+            if self.stored_tournament.rating_preference is None
+            else RatingPreference(self.stored_tournament.rating_preference)
+        )
+        if self.stored_tournament.rating_sequence:
+            return sequence_preference(
+                sequence_from_keys(self.stored_tournament.rating_sequence), stored
+            )
+        return stored or self.event.rating_preference
+
+    @cached_property
+    def chosen_rating_sequence(self) -> RatingSequence | None:
+        """The sequence chosen for the tournament, None for the default
+        or when a plugin imposes it."""
+        if not self.stored_tournament.rating_sequence or (
+            self.event.forced_rating_sequence(self.cadence) is not None
+        ):
+            return None
+        return sequence_from_keys(self.stored_tournament.rating_sequence)
+
+    @cached_property
+    def rating_sequence(self) -> RatingSequence:
+        """The ratings tried, in order (TEC Manual 3.9.5.7), the default
+        of the cadence when none was chosen."""
+        return self.chosen_rating_sequence or self.event.default_rating_sequence(
+            self.cadence, self.rating_preference
         )
 
     @property
-    def override_unrated_rapid_blitz(self) -> bool:
-        return self.stored_tournament.override_unrated_rapid_blitz
+    def rating_sequence_html(self) -> Markup:
+        source = self.event.national_rating_source
+        return sequence_html(
+            self.rating_sequence,
+            source.national_source_name if source else None,
+            self.rating_preference,
+        )
+
+    @property
+    def unrated_rating(self) -> int:
+        """The rating of the players no list rates, when no plugin
+        prescribes one."""
+        if self.stored_tournament.unrated_rating is not None:
+            return self.stored_tournament.unrated_rating
+        return self.event.unrated_rating
+
+    @property
+    def uses_fide_ratings(self) -> bool:
+        return PlayerRatingType.FIDE in self.rating_preference.kinds
 
     # -------------------------------------------------------------------------
     # Team tournament settings
@@ -613,6 +830,367 @@ class Tournament:
         return bool(self.stored_tournament.round_robin_participation_rule)
 
     @property
+    def starting_rank_tie_order(self) -> StartingRankTieOrder:
+        """How the players with the same rating and title are ordered in
+        the starting rank."""
+        if not self.pairing_system.supports_starting_rank_tie_order:
+            return StartingRankTieOrder.ALPHABETICAL
+        try:
+            return StartingRankTieOrder(self.stored_tournament.starting_rank_tie_order)
+        except ValueError:
+            return StartingRankTieOrder.ALPHABETICAL
+
+    def starting_rank_tie_key(self, player: Player) -> tuple:
+        """The key that orders a player among those with the same rating
+        and title. A drawn lot is derived from the tournament's seed and the
+        player, so the draw holds however often the field is renumbered,
+        and a player entering later draws their own lot."""
+        match self.starting_rank_tie_order:
+            case StartingRankTieOrder.LOTS:
+                lot = hashlib.blake2b(
+                    f'{self.stored_tournament.starting_rank_lot_seed}:{player.id}'.encode(),
+                    digest_size=8,
+                ).digest()
+                return lot, player.id
+            case _:
+                return *player.name_sort_key, player.id
+
+    @property
+    def fide_mode(self) -> bool:
+        """Whether the tournament runs in FIDE mode: the actions the FIDE
+        regulations prohibit are refused, and the pairing integrity breaching
+        events are logged. Only for the systems that support it."""
+        return (
+            self.pairing_system.supports_fide_mode and self.stored_tournament.fide_mode
+        )
+
+    @property
+    def logs_pairing_breaches(self) -> bool:
+        """Whether the pairing integrity breaching events are logged: in
+        FIDE mode, and always for the systems that log them without it."""
+        pairing_system = self.pairing_system
+        return pairing_system.logs_pairing_breaches and (
+            self.fide_mode or not pairing_system.supports_fide_mode
+        )
+
+    @property
+    def left_fide_mode(self) -> bool:
+        """Whether the tournament could run in FIDE mode but does not."""
+        return self.pairing_system.supports_fide_mode and not self.fide_mode
+
+    @property
+    def fide_mode_exit_round(self) -> int | None:
+        """The first round played outside FIDE mode: the round it was left
+        at, or the first one if it was left before any pairing."""
+        if not self.left_fide_mode or not self.has_pairings:
+            return None
+        return self.stored_tournament.fide_mode_exit_round or 1
+
+    @property
+    def leaving_fide_mode_is_final(self) -> bool:
+        """Whether leaving FIDE mode can no longer be undone: once the first
+        round is paired, a tournament that leaves FIDE mode never re-enters
+        it."""
+        return self.has_pairings
+
+    def leave_fide_mode(self) -> None:
+        exit_round = self.current_round if self.has_pairings else None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.leave_tournament_fide_mode(self.id, exit_round)
+        self.stored_tournament.fide_mode = False
+        self.stored_tournament.fide_mode_exit_round = exit_round
+
+    @property
+    def manual_pairing_round(self) -> int | None:
+        """The round whose pairings are being edited by hand in FIDE mode:
+        from the first change until they are checked against the pairing
+        engine's."""
+        if not self.fide_mode:
+            return None
+        return self.stored_tournament.manual_pairing_round
+
+    def start_manual_pairing(self, round_: int) -> None:
+        """Start editing the pairings of *round_*, keeping its boards to put
+        them back if the editing is cancelled: the breach logged the last time
+        they were edited no longer stands."""
+        self._delete_pibes(PibeType.MPA, round_)
+        self._set_manual_pairing(
+            round_,
+            [
+                {
+                    'white': board.stored_board.white_player_id,
+                    'black': board.stored_board.black_player_id,
+                    'index': board.index,
+                    'fixed_number': board.stored_board.fixed_number,
+                    'result': board.result.value,
+                }
+                for board in self.get_round_boards(round_)
+                if board.stored_board.white_player_id is not None
+            ],
+        )
+
+    @property
+    def manual_pairing_start_boards(self) -> list[tuple[StoredBoard, Result]]:
+        """The boards of the round being edited as they were when the
+        editing started, each with its result from white's side."""
+        return [
+            (
+                StoredBoard(
+                    id=None,
+                    white_player_id=board['white'],
+                    black_player_id=board['black'],
+                    index=board['index'],
+                    fixed_number=board['fixed_number'],
+                ),
+                Result(board['result']),
+            )
+            for board in self.stored_tournament.manual_pairing_boards
+        ]
+
+    @property
+    def manual_pairing_start_pairs(self) -> set[tuple[int, int | None]] | None:
+        """The pairs of the round being edited when the editing started, by
+        player id; unknown in a team tournament, whose matches are not
+        kept."""
+        if self.is_team_tournament:
+            return None
+        return {
+            (stored_board.white_player_id, stored_board.black_player_id)
+            for stored_board, _result in self.manual_pairing_start_boards
+            if stored_board.white_player_id is not None
+        }
+
+    @property
+    def can_restore_manual_pairing(self) -> bool:
+        """Whether the boards of the round being edited can be put back as
+        they were: a team match also has its lineups, which are not kept."""
+        return self.manual_pairing_round is not None and not self.is_team_tournament
+
+    def end_manual_pairing(self, pibe: Pibe | None = None) -> None:
+        """Stop editing the pairings, logging the breach *pibe* when they
+        differ from the pairing engine's."""
+        if pibe is not None:
+            self.log_pibe(pibe)
+        self._set_manual_pairing(None, [])
+
+    def cancel_manual_pairing(self, round_: int) -> None:
+        """*round_* has been unpaired: nothing is left to check, and its
+        pairings no longer breach anything."""
+        self._delete_pibes(PibeType.MPA, round_)
+        if self.stored_tournament.manual_pairing_round == round_:
+            self._set_manual_pairing(None, [])
+
+    def _set_manual_pairing(
+        self, round_: int | None, boards: list[dict[str, Any]]
+    ) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_manual_pairing(self.id, round_, boards)
+        self.stored_tournament.manual_pairing_round = round_
+        self.stored_tournament.manual_pairing_boards = boards
+
+    @property
+    def round_robin_schedule(self) -> RoundRobinSchedule | None:
+        """The saved schedule of a round-robin, which its pairings are made
+        from."""
+        if (data := self.stored_tournament.round_robin_schedule) is None:
+            return None
+        return RoundRobinSchedule.from_json(data)
+
+    @property
+    def round_robin_schedule_draft(self) -> RoundRobinSchedule | None:
+        """The schedule being edited, until it is saved or the editing is
+        cancelled."""
+        if (data := self.stored_tournament.round_robin_schedule_draft) is None:
+            return None
+        return RoundRobinSchedule.from_json(data)
+
+    def set_round_robin_schedule(
+        self,
+        schedule: RoundRobinSchedule | None,
+        draft: RoundRobinSchedule | None,
+    ) -> None:
+        schedule_data = schedule.to_json() if schedule is not None else None
+        draft_data = draft.to_json() if draft is not None else None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_round_robin_schedule(
+                self.id, schedule_data, draft_data
+            )
+        self.stored_tournament.round_robin_schedule = schedule_data
+        self.stored_tournament.round_robin_schedule_draft = draft_data
+
+    def _delete_pibes(self, type_: PibeType, round_: int) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_tournament_stored_pibes(self.id, type_, round_)
+        self.stored_tournament.stored_pibes = [
+            stored_pibe
+            for stored_pibe in self.stored_tournament.stored_pibes
+            if (stored_pibe.type, stored_pibe.round_) != (type_, round_)
+        ]
+
+    @property
+    def pairing_number_members(self) -> dict[int, int]:
+        """The player (the team, when teams are paired) each pairing number
+        stands for."""
+        if self.is_team_tournament and self.pairing_system.paired_by_team:
+            return {
+                team.pairing_number: team.id
+                for team in self.teams
+                if team.pairing_number is not None and team.id is not None
+            }
+        return {
+            number: player.id
+            for number, player in self.tournament_players_by_pairing_number.items()
+            if player.id is not None
+        }
+
+    @property
+    def pibes(self) -> list[Pibe]:
+        """The pairing integrity breaching events, in the order they
+        occurred."""
+        return [
+            Pibe(
+                PibeType(stored_pibe.type),
+                stored_pibe.round_,
+                stored_pibe.description,
+                stored_pibe.date,
+                stored_pibe.members,
+            )
+            for stored_pibe in self.stored_tournament.stored_pibes
+        ]
+
+    def log_pibe(self, pibe: Pibe) -> None:
+        """Log *pibe*, with the player (or team) each pairing number stands
+        for now unless it says otherwise."""
+        stored_pibe = StoredPibe(
+            id=None,
+            tournament_id=self.id,
+            round_=pibe.round_,
+            type=pibe.type,
+            description=pibe.description,
+            members=pibe.members or self.pairing_number_members,
+        )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.add_stored_pibe(stored_pibe)
+        self.stored_tournament.stored_pibes.append(stored_pibe)
+
+    @property
+    def rating_corrections(self) -> list[RatingCorrection]:
+        """The games corrected for the rating report only, by round."""
+        return [
+            RatingCorrection(
+                stored.round_,
+                stored.white_player_id,
+                stored.black_player_id,
+                Result(stored.result),
+                stored.date,
+            )
+            for stored in self.stored_tournament.stored_rating_corrections
+        ]
+
+    def rating_correction_for(self, board: Board) -> RatingCorrection | None:
+        """The correction of the game on *board* for the rating report."""
+        players = {board.white_player_id, board.black_player_id}
+        return next(
+            (
+                correction
+                for correction in self.rating_corrections
+                if correction.round_ == board.round and correction.player_ids == players
+            ),
+            None,
+        )
+
+    def correct_for_rating(
+        self, board: Board, white_player_id: int, result: Result
+    ) -> None:
+        """Record the game on *board* in the rating report with
+        *white_player_id* as white, and the *result* of white, leaving the
+        board as the pairings and the standings used it; a game recorded as
+        it was played needs no correction."""
+        white_id, black_id = board.white_player_id, board.black_player_id
+        assert white_id is not None and black_id is not None
+        self.remove_rating_correction(board)
+        if white_player_id == white_id and result == board.result:
+            return
+        stored = StoredRatingCorrection(
+            id=None,
+            tournament_id=self.id,
+            round_=board.round,
+            white_player_id=white_player_id,
+            black_player_id=black_id if white_player_id == white_id else white_id,
+            result=result.value,
+        )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.add_stored_rating_correction(stored)
+        self.stored_tournament.stored_rating_corrections.append(stored)
+        self.stored_tournament.stored_rating_corrections.sort(
+            key=lambda correction: correction.round_
+        )
+
+    def remove_rating_correction(self, board: Board) -> None:
+        white_id, black_id = board.white_player_id, board.black_player_id
+        assert white_id is not None and black_id is not None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_rating_correction(
+                self.id, board.round, (white_id, black_id)
+            )
+        self.stored_tournament.stored_rating_corrections = [
+            stored
+            for stored in self.stored_tournament.stored_rating_corrections
+            if stored.round_ != board.round
+            or {stored.white_player_id, stored.black_player_id} != {white_id, black_id}
+        ]
+
+    @property
+    def log_entries(
+        self,
+    ) -> list[Pibe | RatingCorrection | FullPointBye | ScheduleBreach]:
+        """What the log lists: the pairing integrity breaching events, the
+        games corrected for the rating report, the full-point byes, then the
+        rules the saved round-robin schedule breaks."""
+        return [
+            *self.pibes,
+            *self.rating_corrections,
+            *self.full_point_byes,
+            *self.schedule_breaches,
+        ]
+
+    @property
+    def schedule_breaches(self) -> list[ScheduleBreach]:
+        """The rules the saved schedule of a custom round-robin breaks, for
+        the participants as they are."""
+        from data.pairings.engines import ScheduledRoundRobin
+
+        engine = self.pairing_variation.engine
+        if not isinstance(engine, ScheduledRoundRobin) or engine.follows_berger_tables:
+            return []
+        schedule = self.round_robin_schedule
+        if schedule is None or not engine.schedule_fits(self, schedule):
+            return []
+        return [
+            ScheduleBreach(violation, engine.encounters)
+            for violation in engine.schedule_violations(self, schedule)
+            if violation.forceable
+        ]
+
+    @property
+    def full_point_byes(self) -> list[FullPointBye]:
+        if self.is_team_tournament and self.pairing_system.paired_by_team:
+            return [
+                FullPointBye(round_, team_id=team_board.stored_team_board.team_a_id)
+                for round_ in range(1, self.rounds + 1)
+                for team_board in self.get_round_team_boards(round_)
+                if team_board.stored_team_board.team_b_id is None
+                and team_board.stored_team_board.bye_type == TeamByeType.FPB
+            ]
+        return [
+            FullPointBye(round_, player_id=player.id)
+            for round_ in range(1, self.rounds + 1)
+            for player in self.sorted_tournament_players
+            if (pairing := player.pairings.get(round_)) is not None
+            and pairing.full_point_bye
+        ]
+
+    @property
     def secondary_score_for_colours(self) -> bool:
         """Whether the secondary score breaks ties when deciding which
         team is the "first team" for colour allocation (§1.2.1, §4.3).
@@ -653,6 +1231,9 @@ class Tournament:
 
     def team_totals_after(self, after_round: int) -> dict[int, tuple[float, float]]:
         return self.team_scoring.totals_after(after_round)
+
+    def team_totals_in(self, rounds: range) -> dict[int, tuple[float, float]]:
+        return self.team_scoring.totals_in(rounds)
 
     @cached_property
     def teams_by_id(self) -> dict[int, 'Team']:
@@ -841,6 +1422,22 @@ class Tournament:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
         self.stored_tournament.pairing_settings = pairing_settings
         Utils.reset_cached_properties(self, 'pairing_settings')
+
+    @contextmanager
+    def previewing_pairing_settings(
+        self, pairing_settings: dict[str, Any]
+    ) -> Iterator[None]:
+        """Read the tournament with *pairing_settings* in place of the
+        stored ones, without saving them. The block must not await: the
+        loaded tournament is shared by every request."""
+        stored_pairing_settings = self.stored_tournament.pairing_settings
+        self.stored_tournament.pairing_settings = pairing_settings
+        Utils.reset_cached_properties(self, 'pairing_settings')
+        try:
+            yield
+        finally:
+            self.stored_tournament.pairing_settings = stored_pairing_settings
+            Utils.reset_cached_properties(self, 'pairing_settings')
 
     def get_pairing_settings_data_errors(self, data: dict[str, str]) -> dict[str, Any]:
         return self.pairing_variation.get_settings_data_errors(self, data)
@@ -1089,18 +1686,10 @@ class Tournament:
             if player.id not in unpaired_ids
         ]
 
-    @cached_property
+    @property
     def ex_aequo_rank_by_player_id(self) -> dict[int, int]:
-        rank_by_player_id: dict[int, int] = {}
-        previous_rank_key: tuple | None = None
-        previous_rank: int = 0
-        for player in self.tournament_players_by_rank.values():
-            rank_key = player.rank_sort_key_without_pairing_number
-            if rank_key != previous_rank_key:
-                previous_rank_key = rank_key
-                previous_rank = player.rank
-            rank_by_player_id[player.id] = previous_rank
-        return rank_by_player_id
+        self.ranking.ensure_computed()
+        return self.ranking.ex_aequo_rank_by_player_id
 
     @property
     def min_player_rating(self) -> int | None:
@@ -1166,7 +1755,9 @@ class Tournament:
 
     @cached_property
     def check_in_status_grouped_counts(self) -> Counter[CheckInStatus]:
-        return self.check_in_status_grouped_counts_for_round(self.current_round + 1)
+        return self.check_in_status_grouped_counts_for_round(
+            self.arbiter_current_round + 1
+        )
 
     def check_in_status_grouped_counts_for_round(
         self, round_: int
@@ -1350,15 +1941,101 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @cached_property
+    def arbiter_current_round(self) -> int:
+        """The round in play for the arbiter, published or not."""
+        return self.pairing_system.current_round(self)
+
+    @cached_property
     def current_round(self) -> int:
+        if self.event.public_view:
+            return min(self.arbiter_current_round, self.published_round)
+        return self.arbiter_current_round
+
+    @property
+    def published_round(self) -> int:
+        """The last round shown on the screens and whose results are sent to
+        the online services."""
+        return min(self.stored_tournament.published_round, self.last_paired_round)
+
+    @property
+    def last_shown_round(self) -> int:
+        """The last round whose pairings are shown. Predetermined pairings
+        are known in advance, so every paired round is, published or not."""
+        if self.pairing_system.predetermined_pairings:
+            return self.last_paired_round
+        return self.current_round
+
+    def hides_round_results(self, round_: int) -> bool:
+        """Whether the results of ``round_`` are kept from the public: those
+        of the rounds after the last published one."""
         return (
-            self.stored_tournament.current_round
-            or self.pairing_system.default_current_round(self)
+            self.event.public_view and round_ > self.stored_tournament.published_round
         )
 
-    def set_current_round(self, round_: int) -> None:
+    def unfinished_round_before(self, round_: int) -> int | None:
+        """The first round before ``round_`` still waiting for results."""
+        return next(
+            (r for r in range(1, round_) if not self.is_round_finished(r)), None
+        )
+
+    def can_publish_round(self, round_: int) -> bool:
+        """Publishing a round publishes the rounds before it too, once every
+        round before it is finished."""
+        rounds = range(self.published_round + 1, round_ + 1)
+        return (
+            bool(rounds)
+            and all(self.round_has_pairings(r) for r in rounds)
+            and self.manual_pairing_round not in rounds
+            and self.unfinished_round_before(round_) is None
+        )
+
+    def can_unpublish_round(self, round_: int) -> bool:
+        return (
+            round_ > 0
+            and round_ == self.published_round
+            and not self.round_has_played_result(round_)
+        )
+
+    @property
+    def imported_published_round(self) -> int:
+        """The rounds of an imported tournament were public where they come
+        from: up to the last one paired, or, for a system pairing every
+        round at once, up to the last one with a result."""
+        if self.pairing_system.round_per_round_pairing_generation:
+            return self.last_paired_round
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, self.rounds + 1))
+                if self.round_has_played_result(round_)
+            ),
+            1 if self.has_pairings else 0,
+        )
+
+    @cached_property
+    def shown_on_screens(self) -> bool:
+        return any(
+            family.tournament_id == self.id for family in self.event.families
+        ) or any(
+            screen_set.tournament_id == self.id
+            for screen in self.event.basic_screens
+            for screen_set in screen.screen_sets
+        )
+
+    @cached_property
+    def uploaded_online(self) -> bool:
+        """Whether the tournament is set up to be uploaded to an online
+        service."""
+        return any(
+            plugin_manager.hook_for_event(self.event, 'is_tournament_uploaded')(
+                tournament=self
+            )
+        )
+
+    def set_published_round(self, round_: int) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
-            database.set_tournament_current_round(self.id, round_)
+            database.set_tournament_published_round(self.id, round_)
+        self.stored_tournament.published_round = round_
 
     @property
     def max_ranking_round(self) -> int:
@@ -1527,10 +2204,26 @@ class Tournament:
             return _(
                 'Round {round} is already paired. Unpair it before pairing it again.'
             ).format(round=at_round)
+        self.persist_pairing_variation()
         self.persist_automatic_rounds()
         return self.pairing_variation.engine.generate_pairings(
             self, at_round, partial_pairings
         )
+
+    def persist_pairing_variation(self) -> None:
+        """Write down the variation the rule set picked, which the
+        tournament keeps once paired whatever its teams become."""
+        if self.pairing_variation.id == self.stored_tournament.pairing:
+            return
+        self.stored_tournament.pairing = self.pairing_variation.id
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
+
+    def set_pairing_variation(self, variation_id: str) -> None:
+        self.stored_tournament.pairing = variation_id
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
+        Utils.reset_cached_properties(self, 'pairing_variation', 'pairing_settings')
 
     def persist_automatic_rounds(self) -> None:
         """Write down the round count a system works out for itself.
@@ -1633,7 +2326,7 @@ class Tournament:
         """All entered results for the round's real boards (team events).
         Unlike :meth:`is_round_finished`, doesn't require every team to
         have an envelope — used to decide how far a late-joining team's
-        zero-point byes extend."""
+        Zero-Point Byes extend."""
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.tournament_players
@@ -1642,6 +2335,58 @@ class Tournament:
             # A board whose opponent slot is a hole has no game to
             # play (it's a forfeit), so it never holds up the round.
             and player.pairings[round_].opponent_id is not None
+        )
+
+    def adjourned_boards(self, before_round: int | None = None) -> list[Board]:
+        """The boards of the adjourned games, of the rounds before
+        *before_round* if given."""
+        return [
+            board
+            for board in self._boards_by_round_and_index
+            if board.result.is_adjourned
+            and (before_round is None or board.round < before_round)
+        ]
+
+    def boards_without_final_result(self) -> list[Board]:
+        """The games of the tournament whose result is not known yet:
+        adjourned, or not played yet."""
+        return [
+            board
+            for board in self._boards_by_round_and_index
+            if board.result.is_adjourned
+            or (
+                board.no_result
+                and board.stored_board.white_player_id is not None
+                and board.stored_board.black_player_id is not None
+            )
+        ]
+
+    @property
+    def _boards_by_round_and_index(self) -> list[Board]:
+        return sorted(
+            self.boards_by_id.values(), key=lambda board: (board.round, board.index)
+        )
+
+    @property
+    def has_provisional_results(self) -> bool:
+        """Whether the standings count adjourned games as draws."""
+        return bool(self.adjourned_boards())
+
+    def breaches_adjournment(self, board: Board, result: Result) -> bool:
+        """Whether entering *result* for the adjourned game of *board*
+        breaches the integrity of the pairings: the next round was paired
+        with the game counting as a draw, and *result* is not one."""
+        return (
+            self.logs_pairing_breaches
+            and board.result.is_adjourned
+            and result
+            not in (
+                Result.DRAW,
+                Result.UNRATED_DRAW,
+                Result.ADJOURNED,
+                Result.NO_RESULT,
+            )
+            and self.round_has_pairings(board.round + 1)
         )
 
     def is_round_paired(self, round_: int) -> bool:
@@ -1929,9 +2674,20 @@ class Tournament:
     @cached_property
     def tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
         players_by_id: dict[int, TournamentPlayer] = {}
+        event_players_by_id = self.event.players_by_id
         for (
             stored_tournament_player
         ) in self.stored_tournament.stored_tournament_players:
+            if stored_tournament_player.player_id not in event_players_by_id:
+                # The event was read while its player was being deleted:
+                # the entry is dropped rather than raised on, and the
+                # next load reads the two consistently.
+                logger.warning(
+                    '%sPlayer [%d] entered but not found in the event.',
+                    self.log_prefix,
+                    stored_tournament_player.player_id,
+                )
+                continue
             tournament_player = TournamentPlayer(self, stored_tournament_player)
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id
@@ -1947,10 +2703,7 @@ class Tournament:
     @cached_property
     def can_add_players(self) -> bool:
         """Determines if players can be added to the tournament."""
-        return not self.finished and (
-            not self.has_pairings
-            or self.pairing_system.allow_player_addition_once_paired
-        )
+        return not self.finished and self.pairing_system.allows_player_addition(self)
 
     @cached_property
     def can_add_teams(self) -> bool:
@@ -2021,7 +2774,7 @@ class Tournament:
         self.tournament_players_by_id[player_id] = TournamentPlayer(
             self, stored_tournament_player
         )
-        self._reset_player_derived_cache()
+        self.reset_player_derived_cache()
 
     def unregister_rostered_player(self, player_id: int) -> None:
         """The reverse: a player has left a team of this tournament."""
@@ -2035,9 +2788,9 @@ class Tournament:
             )
             if stored_tournament_player.player_id != player_id
         ]
-        self._reset_player_derived_cache()
+        self.reset_player_derived_cache()
 
-    def _reset_player_derived_cache(self) -> None:
+    def reset_player_derived_cache(self) -> None:
         """Drop what is computed from the tournament's player list."""
         Utils.reset_cached_properties(
             self,
@@ -2143,13 +2896,21 @@ class Tournament:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
         prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
+        rating_report: bool = False,
+        for_engine: bool = False,
+        period: TournamentPeriod | None = None,
     ) -> 'TrfTournament':
+        """The tournament's TRF, or — given a *period* — the file for
+        that period of it alone (see ``trf_window``)."""
         from data.input_output.trf.trf_export import TrfExport
 
         return TrfExport(self).build(
             after_round=after_round,
             next_round_pairings_as_zpb=next_round_pairings_as_zpb,
             prohibited_pairing_override=prohibited_pairing_override,
+            rating_report=rating_report,
+            for_engine=for_engine,
+            period=period,
         )
 
     @property

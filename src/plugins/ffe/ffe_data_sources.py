@@ -1,8 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import date
-from typing import cast
-
-from text_unidecode import unidecode
 
 from common.exception import SharlyChessException
 from common.i18n import _, pgettext
@@ -17,30 +13,34 @@ from data.input_output.data_source import LocalDataSource
 from data.input_output.player_updater_fields import (
     PlayerUpdaterField,
     FideIDUpdaterField,
+    NationalIdUpdaterField,
     TitleUpdaterField,
     WomenTitleUpdaterField,
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
-    StandardRatingUpdaterField,
-    RapidRatingUpdaterField,
-    BlitzRatingUpdaterField,
     FederationUpdaterField,
     ClubUpdaterField,
 )
-from data.player import Player
+from data.player import Player, PlayerProfileLink
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
-    FfeLicenceNumberDatasheetColumn,
-    FfeIdDatasheetColumn,
     FfeLicenceDatasheetColumn,
     FfeLeagueDatasheetColumn,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
-from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, get_data
+from plugins.ffe.utils import (
+    FFEUtils,
+    FfePlayerPluginData,
+    FfeNameKey,
+    ffe_database_name_keys,
+    ffe_name_key,
+    get_data,
+)
+from utils.enum import Cadence
 
 
 logger = get_logger()
@@ -83,29 +83,6 @@ class FfePlayerUpdaterField(PlayerUpdaterField, ABC):
     @abstractmethod
     def _get_ffe_string_value(self, plugin_data: FfePlayerPluginData) -> str:
         """Get the string value from the FFE plugin data."""
-
-
-class FfeLicenceNumberUpdaterField(FfePlayerUpdaterField):
-    @staticmethod
-    def static_id() -> str:
-        return 'ffe_licence_number'
-
-    @staticmethod
-    def static_name() -> str:
-        return 'FFE'
-
-    def _is_ffe_plugin_data_updated(
-        self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ) -> bool:
-        return src_pd.ffe_licence_number != match_pd.ffe_licence_number
-
-    def _update_ffe_plugin_data(
-        self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ) -> None:
-        src_pd.ffe_licence_number = match_pd.ffe_licence_number
-
-    def _get_ffe_string_value(self, plugin_data: FfePlayerPluginData) -> str:
-        return plugin_data.ffe_licence_number or ''
 
 
 class FfeLicenceUpdaterField(FfePlayerUpdaterField):
@@ -162,17 +139,14 @@ class _FfeDataSource(ABC):
     @property
     def _player_updater_fields(self) -> list[PlayerUpdaterField]:
         return [
-            FfeLicenceNumberUpdaterField(),
             FfeLicenceUpdaterField(),
+            NationalIdUpdaterField(),
             FideIDUpdaterField(),
             TitleUpdaterField(),
             WomenTitleUpdaterField(),
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
-            StandardRatingUpdaterField(),
-            RapidRatingUpdaterField(),
-            BlitzRatingUpdaterField(),
             FederationUpdaterField(),
             FfeLeagueUpdaterField(),
             ClubUpdaterField(),
@@ -183,23 +157,51 @@ class _FfeDataSource(ABC):
         self,
         ffe_licence_numbers: list[str],
         fide_ids: list[int],
-        name_keys: list[tuple[str, str, date]],
+        name_keys: list[FfeNameKey],
     ) -> list[StoredPlayer] | None:
         """Fetch player matches in the data source. Return None if it fails."""
 
     @staticmethod
     def _get_licence_number(stored_player: StoredPlayer) -> str | None:
-        return cast(
-            str | None, get_data(stored_player.plugin_data, 'ffe_licence_number', None)
-        )
+        if stored_player.national_source not in (None, NATIONAL_SOURCE_ID):
+            return None
+        return stored_player.national_id
 
     @staticmethod
-    def _get_name_key(stored_player: StoredPlayer) -> tuple[str, str, date] | None:
+    def _get_name_key(stored_player: StoredPlayer) -> FfeNameKey | None:
         first_name = stored_player.first_name
-        dob = stored_player.date_of_birth
-        if first_name and dob:
-            return unidecode(stored_player.last_name), unidecode(first_name), dob
+        birth = stored_player.date_of_birth or stored_player.year_of_birth
+        if first_name and birth:
+            return ffe_name_key(stored_player.last_name, first_name, birth)
         return None
+
+    @classmethod
+    def _get_match_keys(
+        cls, stored_player: StoredPlayer
+    ) -> list[str | int | FfeNameKey]:
+        """The keys identifying the player in the FFE database, strongest first."""
+        keys: list[str | int | FfeNameKey] = []
+        if licence_number := cls._get_licence_number(stored_player):
+            keys.append(licence_number)
+        if fide_id := stored_player.fide_id:
+            keys.append(fide_id)
+        if name_key := cls._get_name_key(stored_player):
+            keys.append(name_key)
+        return keys
+
+    @classmethod
+    def _get_ffe_keys(
+        cls, ffe_stored_player: StoredPlayer
+    ) -> set[str | int | FfeNameKey]:
+        """The keys by which a player of the FFE database is found."""
+        keys: set[str | int | FfeNameKey] = set(
+            ffe_database_name_keys(ffe_stored_player)
+        )
+        if licence_number := cls._get_licence_number(ffe_stored_player):
+            keys.add(licence_number)
+        if fide_id := ffe_stored_player.fide_id:
+            keys.add(fide_id)
+        return keys
 
     @classmethod
     def _check_player_match(
@@ -207,31 +209,52 @@ class _FfeDataSource(ABC):
         player1: StoredPlayer,
         player2: StoredPlayer,
     ) -> bool:
-        if licence_key := cls._get_licence_number(player1):
-            return licence_key == cls._get_licence_number(player2)
-        if fide_id := player1.fide_id:
-            return fide_id == player2.fide_id
-        if name_key := cls._get_name_key(player1):
-            return name_key == cls._get_name_key(player2)
-        return False
+        return not cls._get_ffe_keys(player2).isdisjoint(cls._get_match_keys(player1))
+
+    @classmethod
+    def _expects_match(cls, stored_player: StoredPlayer) -> bool:
+        return bool(cls._get_licence_number(stored_player))
 
     async def _get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
-        licence_numbers: list[str] = []
-        fide_ids: list[int] = []
-        name_keys: list[tuple[str, str, date]] = []
-        for player in players:
-            stored_player = player.stored_player
-            if licence_number := self._get_licence_number(stored_player):
-                licence_numbers.append(licence_number)
-            elif fide_id := stored_player.fide_id:
-                fide_ids.append(fide_id)
-            elif name_key := self._get_name_key(stored_player):
-                name_keys.append(name_key)
-        return await self._get_ffe_match_stored_players(
-            licence_numbers, fide_ids, name_keys
-        )
+        """Look the players up by their strongest key, falling back to the next
+        one for the players it does not find."""
+        pending_keys = [
+            keys
+            for player in players
+            if (keys := self._get_match_keys(player.stored_player))
+        ]
+        match_stored_players: list[StoredPlayer] = []
+        while pending_keys:
+            licence_numbers: list[str] = []
+            fide_ids: list[int] = []
+            name_keys: list[FfeNameKey] = []
+            for keys in pending_keys:
+                key = keys[0]
+                if isinstance(key, str):
+                    licence_numbers.append(key)
+                elif isinstance(key, int):
+                    fide_ids.append(key)
+                else:
+                    name_keys.append(key)
+            stored_players = await self._get_ffe_match_stored_players(
+                licence_numbers, fide_ids, name_keys
+            )
+            if stored_players is None:
+                return None
+            match_stored_players += stored_players
+            found_keys = {
+                key
+                for stored_player in stored_players
+                for key in self._get_ffe_keys(stored_player)
+            }
+            pending_keys = [
+                keys[1:]
+                for keys in pending_keys
+                if keys[0] not in found_keys and len(keys) > 1
+            ]
+        return match_stored_players
 
     @property
     def _search_fields(self) -> list[str]:
@@ -243,11 +266,35 @@ class _FfeDataSource(ABC):
 
     @staticmethod
     def _get_player_source_id(stored_player: StoredPlayer) -> str:
-        return str(get_data(stored_player.plugin_data, 'ffe_id'))
+        return str(get_data(stored_player.plugin_data, 'ffe_id') or '')
+
+    @property
+    def national_source_name(self) -> str:
+        return 'FFE'
+
+    @property
+    def national_id_form_label(self) -> str:
+        return _('{string}:').format(string=_('FFE licence no.'))
+
+    @property
+    def national_id_form_placeholder(self) -> str:
+        return 'R08943'
+
+    def player_profile_link(self, player: Player) -> PlayerProfileLink | None:
+        """The licence number is what an arbiter recognises; the profile
+        page is keyed on the FFE id, which only players fetched from an FFE
+        source carry."""
+        if not player.national_id:
+            return None
+        ffe_id = FFEUtils.get_player_plugin_data(player).ffe_id
+        return PlayerProfileLink(
+            label=_('FFE {id}').format(id=player.national_id),
+            url=FFEUtils.player_url(ffe_id) if ffe_id else None,
+        )
 
     @property
     def _import_identifier_column(self) -> DatasheetColumn:
-        return FfeLicenceNumberDatasheetColumn()
+        return pds.NationalIdColumn()
 
     @property
     def _imported_datasheet_columns(self) -> list[DatasheetColumn]:
@@ -263,7 +310,6 @@ class _FfeDataSource(ABC):
             pds.FederationColumn(),
             FfeLeagueDatasheetColumn(),
             pds.ClubColumn(),
-            FfeIdDatasheetColumn(),
             FfeLicenceDatasheetColumn(),
         ]
         columns += PlayerDatasheetColumnHandler.get_rating_columns()
@@ -276,19 +322,27 @@ class _FfeDataSource(ABC):
             identifier_values, [], []
         )
         return {
-            stored_player.plugin_data[PLUGIN_NAME]['ffe_licence_number']: stored_player
+            stored_player.national_id or '': stored_player
             for stored_player in stored_players or []
         }
 
 
-class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
+class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
+    federation = 'FRA'
+    national_source_id = NATIONAL_SOURCE_ID
+    fide_cadences = frozenset(Cadence)
+
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-local'
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE database (local)')
+        return _('FFE (France) - local database')
+
+    @property
+    def short_name(self) -> str:
+        return _('FFE (local)')
 
     @property
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
@@ -301,6 +355,9 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return self._check_player_match(player1, player2)
 
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        return self._expects_match(stored_player)
+
     async def get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
@@ -310,7 +367,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         self,
         ffe_licence_numbers: list[str],
         fide_ids: list[int],
-        name_keys: list[tuple[str, str, date]],
+        name_keys: list[FfeNameKey],
     ) -> list[StoredPlayer] | None:
         database = FfeDatabase()
         if not database.exists():
@@ -374,14 +431,30 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         return await self._get_stored_players_by_import_identifier(identifier_values)
 
 
-class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
+class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
+    federation = 'FRA'
+    national_source_id = NATIONAL_SOURCE_ID
+    fide_cadences = frozenset(Cadence)
+
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-online'
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE database (online)')
+        return _('FFE (France) - online database')
+
+    @property
+    def short_name(self) -> str:
+        return _('FFE (online)')
+
+    @property
+    def list_name(self) -> str:
+        return _('FFE (France)')
+
+    @property
+    def is_forced_active(self) -> bool:
+        return True
 
     @classmethod
     async def check_connection(cls) -> bool:
@@ -401,6 +474,9 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return self._check_player_match(player1, player2)
 
+    def expects_match(self, stored_player: StoredPlayer) -> bool:
+        return self._expects_match(stored_player)
+
     async def get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
@@ -410,7 +486,7 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
         self,
         ffe_licence_numbers: list[str],
         fide_ids: list[int],
-        name_keys: list[tuple[str, str, date]],
+        name_keys: list[FfeNameKey],
     ) -> list[StoredPlayer] | None:
         try:
             async with FFESqlServer() as server:
@@ -509,3 +585,6 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
         self, identifier_values: list[str]
     ) -> dict[str, StoredPlayer]:
         return await self._get_stored_players_by_import_identifier(identifier_values)
+
+
+FfeLocalDataSource.online_version_type = FfeOnlineDataSource

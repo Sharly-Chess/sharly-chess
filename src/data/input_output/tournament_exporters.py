@@ -6,6 +6,7 @@ from common.i18n.utils import unicode_normalize
 from common.i18n import _
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.tournament import Tournament
+from data.tournament_period import TournamentPeriod
 from utils.entity import IdentifiableEntity
 from utils.enum import EventType
 
@@ -28,6 +29,14 @@ class TournamentExporter(IdentifiableEntity, ABC):
         """Tooltip to display on the export button."""
         return None
 
+    def label(self, tournament: Tournament) -> str:
+        """Name of the export of *tournament*."""
+        return self.name
+
+    def tooltip_for(self, tournament: Tournament) -> str | None:
+        """Tooltip to display on the export button of *tournament*."""
+        return self.tooltip
+
     @property
     def data_loss_modal_redirect(self) -> bool:
         """Defines if the export button should redirect to the data loss warning modal."""
@@ -43,9 +52,21 @@ class TournamentExporter(IdentifiableEntity, ABC):
         Returns None for no warning."""
         return None
 
+    @property
+    def exports_periods(self) -> bool:
+        """Whether one period of a tournament reported in periods can be
+        exported on its own, as FIDE receives it."""
+        return False
+
     @abstractmethod
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
-        """Dump the content of the *tournament* to export into the *file*."""
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
+        """Dump the content of the *tournament* to export into the *file*,
+        or of one rating period of it."""
 
     @property
     @abstractmethod
@@ -53,9 +74,14 @@ class TournamentExporter(IdentifiableEntity, ABC):
         """Extension of the file to download."""
 
     @staticmethod
-    def file_name(tournament: Tournament) -> str:
-        """Name of the file to download."""
-        return tournament.sanitized_name
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
+        """Name of the file to download. A period says which rounds it
+        holds, as the registrations FIDE receives do."""
+        if period is None:
+            return tournament.sanitized_name
+        return f'{tournament.sanitized_name}-{period.rounds_str}'.replace('–', '-')
 
     @property
     def file_encoding(self) -> str | None:
@@ -91,8 +117,62 @@ class Trf26TournamentExporter(TournamentExporter):
             )
         return None
 
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
-        trf_tournament = TrfSerializer.dumps(tournament.to_trf())
+    @staticmethod
+    def is_final(tournament: Tournament) -> bool:
+        """Whether the TRF is the final report of *tournament*: every round
+        played and every game with its result. Before that, it is a partial
+        TRF for data exchange during the tournament (ITDX), where the games
+        without a result are unknown results."""
+        return (
+            tournament.round_has_pairings(tournament.rounds)
+            and tournament.is_round_finished(tournament.rounds)
+            and not tournament.boards_without_final_result()
+        )
+
+    def label(self, tournament: Tournament) -> str:
+        if self.is_final(tournament):
+            return _('TRF26 (final)')
+        return _('TRF26 (ITDX)')
+
+    def tooltip_for(self, tournament: Tournament) -> str | None:
+        if self.is_final(tournament):
+            return _(
+                'The final report of the tournament, with the games corrected '
+                'for the rating report.'
+            )
+        if boards := tournament.boards_without_final_result():
+            return _(
+                'A partial TRF, for data exchange during the tournament: the '
+                'games without a result are exported as unknown results ({games}).'
+            ).format(games=', '.join(board.round_and_players_str for board in boards))
+        return _(
+            'A partial TRF, for data exchange during the tournament, which is '
+            'not finished.'
+        )
+
+    @staticmethod
+    @override
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
+        name = TournamentExporter.file_name(tournament, period)
+        if Trf26TournamentExporter.is_final(tournament):
+            return name
+        return f'{name}-itdx'
+
+    @property
+    def exports_periods(self) -> bool:
+        return True
+
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
+        trf_tournament = TrfSerializer.dumps(
+            tournament.to_trf(rating_report=self.is_final(tournament), period=period)
+        )
         file.write(unicode_normalize(trf_tournament))
 
 
@@ -103,13 +183,14 @@ class PgnTournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return _('PGN')
+        return _('PGN (last round)')
 
     @property
     def tooltip(self) -> str:
         return _(
             'Export all the games of the last round of the tournament '
-            'to the PGN format (usage: pairings transfer).'
+            'to the PGN format, with their results (usage: pairings transfer, '
+            'game entry for publication).'
         )
 
     @property
@@ -126,13 +207,55 @@ class PgnTournamentExporter(TournamentExporter):
 
     @staticmethod
     @override
-    def file_name(tournament: Tournament) -> str:
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
         return (
             tournament.sanitized_name
             + '-'
             + _('round_{round}').format(round=tournament.current_round)
         )
 
-    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
         for board in tournament.boards:
-            file.write(board.to_pgn(tournament, tournament.current_round))
+            file.write(board.to_pgn())
+
+
+class PgnAllRoundsTournamentExporter(PgnTournamentExporter):
+    @staticmethod
+    def static_id() -> str:
+        return 'pgn-all-rounds'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('PGN (all rounds)')
+
+    @property
+    def tooltip(self) -> str:
+        return _(
+            'Export all the games of all the paired rounds of the tournament '
+            'to the PGN format, with their results (usage: pairings transfer, '
+            'game entry for publication).'
+        )
+
+    @staticmethod
+    @override
+    def file_name(
+        tournament: Tournament, period: TournamentPeriod | None = None
+    ) -> str:
+        return tournament.sanitized_name
+
+    def dump_to_file(
+        self,
+        file: IO,
+        tournament: Tournament,
+        period: TournamentPeriod | None = None,
+    ) -> None:
+        for round_ in range(1, tournament.last_paired_round + 1):
+            for board in tournament.get_round_boards(round_):
+                file.write(board.to_pgn())

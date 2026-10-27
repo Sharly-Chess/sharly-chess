@@ -1,13 +1,24 @@
 {% set tournament_ffe_data = ffe_utils.get_tournament_plugin_data(tournament) %}
 <span class="d-inline-flex align-items-center flex-wrap gap-2">
-    <span class="text-nowrap">
-        {{ tournament_ffe_data.ffe_id }}
-        <a
-            href="{{ ffe_utils.tournament_url(tournament_ffe_data.ffe_id) }}"
-            target="_blank"
-            {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
-        ><i class="bi bi-box-arrow-up-right"></i></a>
-    </span>
+    {% if ffe_utils.supports_team_transfer(tournament) %}
+        <span class="text-nowrap">
+            {{ tournament_ffe_data.team_group_name }}
+            <a
+                href="{{ ffe_utils.team_group_url(tournament) }}"
+                target="_blank"
+                {{ macros.tooltip_attributes('', _('Page of the group on the FFE website (group account required).')) }}
+            ><i class="bi bi-box-arrow-up-right"></i></a>
+        </span>
+    {% else %}
+        <span class="text-nowrap">
+            {{ tournament_ffe_data.ffe_id }}
+            <a
+                href="{{ ffe_utils.tournament_url(tournament_ffe_data.ffe_id) }}"
+                target="_blank"
+                {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
+            ><i class="bi bi-box-arrow-up-right"></i></a>
+        </span>
+    {% endif %}
     {% set auto_upload = ffe_utils.resolve_auto_upload(tournament) %}
     <i
         class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"

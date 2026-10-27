@@ -19,6 +19,9 @@ class PlayerRanking:
     def __init__(self, tournament: 'Tournament') -> None:
         self.tournament = tournament
         self.by_rank: dict[int, TournamentPlayer] | None = None
+        #: The rank shown for each player: tied players share the rank of
+        #: the first of them.
+        self.ex_aequo_rank_by_player_id: dict[int, int] = {}
         #: The round the standings were last computed for.
         self.after_round: int | None = None
 
@@ -120,8 +123,16 @@ class PlayerRanking:
             key=lambda p: (p.is_excluded_from_standings, p.rank_sort_key),
         )
         self.by_rank = dict(enumerate(sorted_tournament_players, start=1))
+        self.ex_aequo_rank_by_player_id = {}
+        previous_rank_key: tuple | None = None
+        previous_rank = 0
         for rank, player in self.by_rank.items():
             player.rank = rank
+            rank_key = player.rank_sort_key_without_pairing_number
+            if rank_key != previous_rank_key:
+                previous_rank_key = rank_key
+                previous_rank = rank
+            self.ex_aequo_rank_by_player_id[player.id] = previous_rank
         for tie_break_index, tie_break in enumerate(tie_breaks):
             if not tie_break.display_rank_delta:
                 continue

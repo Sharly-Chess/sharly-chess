@@ -410,6 +410,14 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     left: var(--side-bar-width);
 }
 
+/* Content above a table wider than the window, kept within the window
+   while the table scrolls sideways */
+.window-width {
+    position: sticky;
+    left: var(--side-bar-width);
+    max-width: calc(var(--vw, 100vw) - var(--side-bar-width));
+}
+
 #copyright-wrapper {
     display: flex;
     flex-grow: 1;
@@ -436,7 +444,25 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
 .input-block {
     display: flex;
     flex-wrap: wrap;
-    row-gap: .25rem;
+    row-gap: .5rem;
+}
+
+/* A field whose label always sits on its own line, so the field keeps its
+   shape whatever the length of the value shown. */
+.input-block-stacked {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* A field whose label always sits on its own line, so the field keeps its
+   shape whatever the length of the value shown. */
+.input-block-stacked {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.input-block-stacked .pw-input-group {
+    min-width: 0;
 }
 
 .tooltip.show {
@@ -478,6 +504,19 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
   outline: none !important;
   box-shadow: none !important;
   border-color: var(--bs-border-color);
+}
+
+/* The neutral focus border above would otherwise leave a validated
+   field half coloured: its addons keep their border, the field loses
+   it. */
+.form-control.is-valid:focus,
+.input-group .form-control.is-valid:focus {
+  border-color: var(--bs-form-valid-border-color);
+}
+
+.form-control.is-invalid:focus,
+.input-group .form-control.is-invalid:focus {
+  border-color: var(--bs-form-invalid-border-color);
 }
 
 [data-bs-theme=dark] .input-group:focus-within,
@@ -738,7 +777,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     align-items: center;
 }
 
-.collection-details-toggle {
+.top-nav-switch {
     flex: 0 0 auto;
     min-height: 1.5rem;
     margin-inline-end: .5rem;
@@ -746,7 +785,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     white-space: nowrap;
 }
 
-.collection-details-toggle .form-check-input {
+.top-nav-switch .form-check-input {
     margin-left: -2.75rem;
     margin-top: 0;
 }
@@ -891,6 +930,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     min-width: 0;
     padding: .8rem 1rem;
     overflow-wrap: anywhere;
+    container-type: inline-size;
 }
 
 .collection-card-summary + .collection-card-body {
@@ -930,9 +970,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-fact {
     display: grid;
-    grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr);
+    grid-template-columns: minmax(min-content, 2fr) minmax(0, 3fr);
     gap: .75rem;
     align-items: baseline;
+    line-height: 1.3;
 }
 
 .collection-fact > * {
@@ -941,10 +982,11 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-fact-label {
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     gap: .4rem;
     color: var(--bs-secondary-color);
     font-size: .85rem;
+    overflow-wrap: normal;
 }
 
 .collection-fact .text-start {
@@ -967,6 +1009,12 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-details-grid-triple {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@container (max-width: 22rem) {
+    .collection-details-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 .collection-detail-section h6 {
@@ -1431,6 +1479,9 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .modal * + h4, .modal * + .collapse-button, .modal * + form > h4:first-child {
     margin-top: 1.5rem;
 }
+.modal #alert-message + h4 {
+    margin-top: 0;
+}
 .modal h4, .modal * + .collapse-button {
     font-size: 1.3rem;
 }
@@ -1485,6 +1536,13 @@ body[data-bs-theme=light] .nav {
     .btn.compact-y-padding {
         padding-top: 0.35rem;
         padding-bottom: 0.35rem;
+    }
+
+    .btn.cap-centred {
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+        padding-top: calc(var(--bs-btn-padding-y) + 0.3rem);
+        padding-bottom: calc(var(--bs-btn-padding-y) + 0.3rem);
     }
 
     .badge {
@@ -1725,7 +1783,7 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] .form-check-input:checked,
-[data-bs-theme=dark] .form-check-input:indeterminate {
+[data-bs-theme=dark] .form-check-input[type=checkbox]:indeterminate {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
 }
@@ -2042,9 +2100,16 @@ input[type="color"].form-control {
 
 .form-fields-container {
     border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
     padding: 0.5rem 1rem;;
     margin: 1rem 0;
     background-color: rgba(var(--bs-body-bg-rgb), 0.30) ;
+}
+
+/* A period card groups fields of the form as .form-fields-container does,
+   so it is filled the same way. */
+.period-card {
+    background-color: rgba(var(--bs-body-bg-rgb), 0.30);
 }
 
 sup {

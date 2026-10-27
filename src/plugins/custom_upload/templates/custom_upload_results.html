@@ -95,7 +95,6 @@
                             {% set tooltip_message = status.tooltip_message(admin_event, document) %}
                             <span
                                 class="badge rounded-pill {{ status.css_classes }}"
-                                style="height: 20px"
                                 {% if tooltip_message %}
                                     {{ macros.tooltip_attributes('', tooltip_message) }}
                                 {% endif %}

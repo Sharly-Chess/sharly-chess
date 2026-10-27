@@ -1,0 +1,106 @@
+{% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+
+{% set validate_route = url_for(
+    'admin-pairings-validate-manual-pairing',
+    event_uniq_id=admin_event.uniq_id,
+    tournament_id=admin_tournament.id,
+    round=admin_round,
+) ~ '?confirmed=1' %}
+{% set differs = engine_pairs or arbiter_pairs or engine_error %}
+
+{% macro bye_problem_list() %}
+    {% if bye_problems %}
+        <p class="mb-1">{{ _('The pairing-allocated bye breaks the rules:') }}</p>
+        <ul>
+            {% for problem in bye_problems %}
+                <li>{{ problem }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
+{% macro differences() %}
+    {% if engine_error %}
+        <p class="mb-1">
+            {{ _('The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own.', round=admin_round) }}
+        </p>
+        <p class="small fst-italic">{{ _('Reason given by the pairing engine:') }} {{ engine_error }}</p>
+        {% if arbiter_pairs %}
+            <div class="fw-bold">{{ _('Pairings changed by hand') }}</div>
+            {% for label in arbiter_pairs %}
+                <div class="small">{{ label }}</div>
+            {% endfor %}
+            <p class="small fst-italic mt-2">{{ _('Pairing numbers in brackets.') }}</p>
+        {% endif %}
+    {% else %}
+        <p>{{ _('The pairings of round %(round)d differ from those of the pairing engine:', round=admin_round) }}</p>
+        <table class="table table-sm small mb-2" style="--bs-table-bg: transparent; --bs-table-color: inherit; --bs-table-border-color: currentColor;">
+            <thead>
+                <tr>
+                    <th>{{ _('Player') }}</th>
+                    <th>{{ _('Pairing engine') }}</th>
+                    <th>{{ _('Your pairings') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member, engine, actual in seat_rows %}
+                    <tr>
+                        <td>{{ member }}</td>
+                        <td>{{ engine }}</td>
+                        <td>{{ actual }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="small fst-italic">{{ _('Pairing numbers in brackets.') }}</p>
+    {% endif %}
+    {{ bye_problem_list() }}
+{% endmacro %}
+
+<div style="--bs-modal-width: min(90vw, 800px);" class="modal-dialog pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ warning_macros.level_icon(4 if differs else 3) }}
+                {{ _('Validate the pairings') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            {% if differs %}
+                {% call(button) warning_macros.double_confirmation(
+                    'manual-pairing-check',
+                    differences(),
+                    _(
+                        'Validating these pairings breaches the integrity of the pairings: '
+                        'it will be logged, and recorded in the TRF of the tournament.'
+                    ),
+                    _('Validate anyway'),
+                ) %}
+                    {% if button == 'cancel' %}
+                        data-bs-dismiss="modal"
+                    {% else %}
+                        hx-post="{{ validate_route }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                {% endcall %}
+            {% else %}
+                {{ bye_problem_list() }}
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        hx-post="{{ validate_route }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        {{ _('Validate anyway') }}
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
