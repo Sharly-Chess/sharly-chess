@@ -827,6 +827,9 @@ msgstr "Les actions interdites par le règlement FIDE sont refusées, et les cor
 msgid "Actions prohibited by the FIDE regulations will be allowed, the tournament will be flagged as not in FIDE mode, and its TRF will record the round FIDE mode was left at, from which its data can no longer be trusted."
 msgstr "Les actions interdites par le règlement FIDE seront autorisées, le tournoi sera signalé comme hors mode FIDE, et son TRF indiquera la ronde à laquelle le mode FIDE a été quitté, à partir de laquelle ses données ne sont plus fiables."
 
+msgid "Activate automatic backups"
+msgstr "Activer les sauvegardes automatiques"
+
 msgctxt "active account"
 msgid "Active"
 msgstr "Actif"
@@ -1420,6 +1423,9 @@ msgstr "PAR FORFAIT"
 msgid "Back"
 msgstr "Retour"
 
+msgid "Back up now"
+msgstr "Sauvegarder maintenant"
+
 msgid "Background color"
 msgstr "Couleur de fond"
 
@@ -1428,6 +1434,19 @@ msgstr "Couleur de fond"
 
 msgid "Background image URL:"
 msgstr "URL de l'image de fond :"
+
+#, python-brace-format
+msgid "Backup of event [{uniq_id}] taken at {time}."
+msgstr "Sauvegarde de l'évènement [{uniq_id}] effectuée à {time}."
+
+msgid "Backups"
+msgstr "Sauvegardes"
+
+msgid "Backups are turned off in the settings: no new one is being taken. The backups already taken can still be restored."
+msgstr "Les sauvegardes sont désactivées dans les réglages : aucune nouvelle sauvegarde n'est effectuée. Les sauvegardes déjà effectuées peuvent toujours être restaurées."
+
+msgid "Backups folder"
+msgstr "Dossier des sauvegardes"
 
 msgid "Bahamas"
 msgstr "Bahamas"
@@ -1466,11 +1485,137 @@ msgctxt "board number column header"
 msgid "Bd."
 msgstr "Éch."
 
+#, python-brace-format
+msgid "Before [{tournament}] moved to round {round}"
+msgstr "Avant le passage de [{tournament}] à la ronde {round}"
+
+#, python-brace-format
+msgid "Before [{tournament}] was paired"
+msgstr "Avant l'appariement de [{tournament}]"
+
+#, python-brace-format
+msgid "Before [{tournament}] was unpaired"
+msgstr "Avant le désappariement de [{tournament}]"
+
+#, python-brace-format
+msgid "Before a bye of round {round} of [{tournament}] was changed"
+msgstr "Avant la modification d'un bye de la ronde {round} de [{tournament}]"
+
+#, python-brace-format
+msgid "Before a bye of round {round} was changed"
+msgstr "Avant la modification d'un bye de la ronde {round}"
+
+msgid "Before a bye was changed"
+msgstr "Avant la modification d'un bye"
+
+msgid "Before a restoration"
+msgstr "Avant une restauration"
+
+#, python-brace-format
+msgid "Before a result of round {round} of [{tournament}] was changed"
+msgstr "Avant la modification d’un résultat de la ronde {round} de [{tournament}]"
+
+#, python-brace-format
+msgid "Before a result of round {round} was changed"
+msgstr "Avant la modification d’un résultat de la ronde {round}"
+
+msgid "Before a result was changed"
+msgstr "Avant la modification d’un résultat"
+
+msgid "Before an upgrade"
+msgstr "Avant une mise à jour"
+
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
 
+msgid "Before moving to another round"
+msgstr "Avant le passage à une autre ronde"
+
+#, python-brace-format
+msgid "Before moving to round {round}"
+msgstr "Avant le passage à la ronde {round}"
+
+msgid "Before players were distributed"
+msgstr "Avant la répartition des joueur·euses"
+
+msgid "Before players were imported"
+msgstr "Avant l'import des joueur·euses"
+
+#, python-brace-format
+msgid "Before players were imported into [{tournament}]"
+msgstr "Avant l'import des joueur·euses dans [{tournament}]"
+
+#, python-brace-format
+msgid "Before round {round} of [{tournament}] was paired"
+msgstr "Avant l’appariement de la ronde {round} de [{tournament}]"
+
+#, python-brace-format
+msgid "Before round {round} of [{tournament}] was paired by hand"
+msgstr "Avant l'appariement manuel de la ronde {round} de [{tournament}]"
+
+#, python-brace-format
+msgid "Before round {round} of [{tournament}] was unpaired"
+msgstr "Avant le désappariement de la ronde {round} de [{tournament}]"
+
+#, python-brace-format
+msgid "Before round {round} was paired"
+msgstr "Avant l’appariement de la ronde {round}"
+
+#, python-brace-format
+msgid "Before round {round} was paired by hand"
+msgstr "Avant l'appariement manuel de la ronde {round}"
+
+#, python-brace-format
+msgid "Before round {round} was unpaired"
+msgstr "Avant le désappariement de la ronde {round}"
+
+#, python-brace-format
+msgid "Before the colours of a board of round {round} of [{tournament}] were swapped"
+msgstr "Avant l'inversion des couleurs d'un échiquier de la ronde {round} de [{tournament}]"
+
+#, python-brace-format
+msgid "Before the colours of a board of round {round} were swapped"
+msgstr "Avant l'inversion des couleurs d'un échiquier de la ronde {round}"
+
+msgid "Before the colours of a board were swapped"
+msgstr "Avant l'inversion des couleurs d'un échiquier"
+
 msgid "Before the first round"
 msgstr "Avant la première ronde"
+
+#, python-brace-format
+msgid "Before the number of rounds of [{tournament}] was changed"
+msgstr "Avant la modification du nombre de rondes de [{tournament}]"
+
+msgid "Before the number of rounds was changed"
+msgstr "Avant la modification du nombre de rondes"
+
+msgid "Before the pairings were edited by hand"
+msgstr "Avant la modification manuelle des appariements"
+
+#, python-brace-format
+msgid "Before the players of [{tournament}] were renumbered"
+msgstr "Avant la renumérotation des joueur·euses de [{tournament}]"
+
+msgid "Before the players were renumbered"
+msgstr "Avant la renumérotation des joueur·euses"
+
+msgid "Before the rounds were paired"
+msgstr "Avant l'appariement des rondes"
+
+#, python-brace-format
+msgid "Before the tie-breaks of [{tournament}] were changed"
+msgstr "Avant la modification des départages de [{tournament}]"
+
+msgid "Before the tie-breaks were changed"
+msgstr "Avant la modification des départages"
+
+msgid "Before the tournament was unpaired"
+msgstr "Avant le désappariement du tournoi"
+
+#, python-brace-format
+msgid "Before upgrading to {version}"
+msgstr "Avant la mise à jour en version {version}"
 
 msgid "Belarus"
 msgstr "Bélarus"
@@ -1922,6 +2067,9 @@ msgstr "L'identifiant unique du Grand Prix a été renommé de [{old_uniq_id}] e
 msgid "Championships"
 msgstr "Grands Prix"
 
+msgid "Change"
+msgstr "Modifier"
+
 msgid "Change the games already played? Only do so to set them as they were really played, players having sat at the wrong boards."
 msgstr "Modifier les parties déjà jouées ? À ne faire que pour les rétablir telles qu'elles ont réellement été jouées, des joueur·euses s'étant trompé·es d'échiquier."
 
@@ -2236,6 +2384,10 @@ msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."
 
 #, python-brace-format
+msgid "Confirm the new backups folder [{folder}]?"
+msgstr "Confirmer le nouveau dossier des sauvegardes [{folder}] ?"
+
+#, python-brace-format
 msgid "Confirm the new data folder [{folder}]?"
 msgstr "Confirmer le nouveau dossier des données [{folder}] ?"
 
@@ -2482,6 +2634,10 @@ msgstr "Créer un tournoi"
 
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
+
+#, python-brace-format
+msgid "Created on {date}"
+msgstr "Créé le {date}"
 
 #, python-brace-format
 msgid "Creator: {template_creator}"
@@ -2839,10 +2995,6 @@ msgstr "Supprimer le menu."
 msgid "Delete the multi-screen."
 msgstr "Supprimer l'écran multiple."
 
-#, python-brace-format
-msgid "Delete the previous data folder [{folder}]?"
-msgstr "Supprimer l'ancien dossier des données [{folder}] ?"
-
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
 
@@ -3054,15 +3206,17 @@ msgstr "Ne pas utiliser cet ordre comme classement."
 msgid "Do you like Sharly Chess? Help us keep it free and improving!"
 msgstr "Vous aimez Sharly Chess ? Aidez-nous à le maintenir gratuit et à l'améliorer !"
 
-msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
-msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclusions de Microsoft Defender ?"
+msgid "Do you want to add this folder to the Microsoft Defender exception list?"
+msgid_plural "Do you want to add these folders to the Microsoft Defender exception list?"
+msgstr[0] "Voulez-vous ajouter ce dossier à la liste d'exclusions de Microsoft Defender ?"
+msgstr[1] "Voulez-vous ajouter ces dossiers à la liste d'exclusions de Microsoft Defender ?"
 
 msgid "Do you want to install the update now?"
 msgstr "Voulez-vous installer la mise à jour maintenant ?"
 
 #, python-brace-format
-msgid "Do you want to move the data to [{folder}]? The current folder will be kept as a copy."
-msgstr "Voulez-vous déplacer les données vers [{folder}] ? Le dossier actuel sera conservé en copie."
+msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
+msgstr "Voulez-vous déplacer les données vers [{folder}] ? Le dossier actuel est supprimé une fois la copie vérifiée, et {service} supprime à son tour la copie qu'il conserve."
 
 msgid "Do you want to try again?"
 msgstr "Voulez-vous réessayer ?"
@@ -3662,6 +3816,14 @@ msgstr "L'évènement [{uniq_id}] a été créé."
 #, python-brace-format
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été archivée ({arch})."
+
+#, python-brace-format
+msgid "Event [{uniq_id}] has been restored."
+msgstr "L'évènement [{uniq_id}] a été restauré."
+
+#, python-brace-format
+msgid "Event [{uniq_id}] has been restored. The state it was in has been kept as a snapshot, so this can be undone."
+msgstr "L'évènement [{uniq_id}] a été restauré. L'état dans lequel il était a été conservé sous forme d'instantané, cette opération peut donc être annulée."
 
 #, python-brace-format
 msgid "Event [{uniq_id}] has been updated."
@@ -4284,6 +4446,9 @@ msgstr "Indiquez une graine pour obtenir à nouveau le même tournoi."
 msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 
+msgid "Go back to the default backups folder?"
+msgstr "Revenir au dossier des sauvegardes par défaut ?"
+
 msgid "Go to the display controller."
 msgstr "Aller au pilote d'afficheur."
 
@@ -4560,6 +4725,14 @@ msgstr "Importer des joueur·euses dans l'évènement [%(event)s]"
 #, python-format
 msgid "Import players to tournament [%(tournament)s]"
 msgstr "Importer des joueur·euses dans le tournoi [%(tournament)s]"
+
+#, python-brace-format
+msgid "Imported from Sharly-Chess.com on {date}"
+msgstr "Importé depuis Sharly-Chess.com le {date}"
+
+#, python-brace-format
+msgid "Imported from a file on {date}"
+msgstr "Importé depuis un fichier le {date}"
 
 msgid "Imported pairings"
 msgstr "Appariements importés"
@@ -4892,6 +5065,9 @@ msgstr "Israël"
 msgid "Issues"
 msgstr "Problèmes"
 
+msgid "It also empties the files it thinks are cold, which is what old backups look like: such a backup has to be downloaded again before it can be restored, so it will not be there at a venue with no network."
+msgstr "Il vide aussi les fichiers qu'il juge dormants, ce à quoi ressemblent justement les anciennes sauvegardes : une telle sauvegarde doit être téléchargée de nouveau avant d'être restaurée, elle ne sera donc pas là sur un lieu de tournoi sans réseau."
+
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
 
@@ -5008,6 +5184,10 @@ msgstr "Plus grand nombre de joueur·euses qu'une équipe peut avoir dans son ef
 
 msgid "Last First"
 msgstr "Nom Prénom"
+
+#, python-brace-format
+msgid "Last backup taken at {time}."
+msgstr "Dernière sauvegarde effectuée à {time}."
 
 msgid "Last board:"
 msgstr "Dernier échiquier :"
@@ -5986,6 +6166,9 @@ msgstr "Aucun évènement archivé."
 msgid "No available update"
 msgstr "Pas de mise à jour disponible"
 
+msgid "No backup has been taken of this event yet."
+msgstr "Aucune sauvegarde de cet évènement n'a encore été effectuée."
+
 msgid "No built-in templates."
 msgstr "Aucun modèle intégré."
 
@@ -6322,6 +6505,9 @@ msgstr "Aucun chronomètre"
 
 msgid "No title norm has been achieved in this tournament."
 msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
+
+msgid "No tournament"
+msgstr "Aucun tournoi"
 
 msgid "No tournament has been played yet."
 msgstr "Aucun tournoi n'a encore été joué."
@@ -7724,9 +7910,6 @@ msgstr "Aperçu"
 msgid "Preview the card with different sample data."
 msgstr "Prévisualisez le chevalet avec différentes données d’exemple."
 
-msgid "Previous data folder, kept as a copy"
-msgstr "Ancien dossier des données, conservé en copie"
-
 msgid "Previous round"
 msgstr "Ronde précédente"
 
@@ -8116,7 +8299,7 @@ msgid "Ready"
 msgstr "Prêt"
 
 msgid "Reason"
-msgstr "Raison"
+msgstr "Motif"
 
 msgid "Reason given by the pairing engine:"
 msgstr "Raison donnée par le moteur d'appariement :"
@@ -8292,17 +8475,21 @@ msgstr "Résolvez le(s) match(s) à égalité de la ronde {round} avant d'appari
 msgid "Rest"
 msgstr "Exempt"
 
-msgid "Restart Sharly Chess to complete the move."
-msgstr "Relancez Sharly Chess pour terminer le déplacement."
-
-msgid "Restart to complete the move"
-msgstr "Redémarrer pour appliquer le déplacement"
-
-msgid "Restarting will be required to complete the move."
-msgstr "Un redémarrage sera requis pour appliquer le déplacement."
-
 msgid "Restore"
 msgstr "Restaurer"
+
+msgid "Restore a backup"
+msgstr "Restaurer une sauvegarde"
+
+msgid "Restore this backup (the original event is saved before being replaced by this backup, so the operation can be undone)."
+msgstr "Restaurer cette sauvegarde  (l'évènement d'origine est sauvegardé avant d'être remplacé par cette sauvegarde, l'opération peut donc être annulée)."
+
+msgid "Restore this backup as a new event (the original event will remain available)."
+msgstr "Restaurer cette sauvagarde comme un nouvel évènement (l'évènement original sera toujours disponible)."
+
+#, python-brace-format
+msgid "Restored from a backup on {date}"
+msgstr "Restauré depuis une sauvegarde le {date}"
 
 msgid "Result"
 msgstr "Résultat"
@@ -8604,6 +8791,10 @@ msgid "Round {round} of pairing number {number} is already accelerated."
 msgstr "La ronde {round} du numéro d'appariement {number} est déjà accélérée."
 
 #, python-brace-format
+msgid "Round {round} of {rounds}"
+msgstr "Ronde {round} sur {rounds}"
+
+#, python-brace-format
 msgid "Round {round} of {rounds} could not be paired ({error}): the tournament was not generated."
 msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}) : le tournoi n'a pas été généré."
 
@@ -8699,6 +8890,14 @@ msgstr "Russie"
 
 msgid "Rwanda"
 msgstr "Rwanda"
+
+#, python-brace-format
+msgid "R{first}–R{last}"
+msgstr "R{first}–R{last}"
+
+#, python-brace-format
+msgid "R{round}"
+msgstr "R{round}"
 
 msgid "SCR"
 msgstr "ÉCR"
@@ -9158,9 +9357,6 @@ msgstr "Sharly Chess est déjà en cours d'exécution sur cet ordinateur."
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
-msgid "Sharly Chess no longer uses it, your data is in the current folder."
-msgstr "Sharly Chess ne l'utilise plus, vos données sont dans le dossier actuel."
-
 msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
 msgstr "Sharly Chess propose un système de gestion des prix puissant et flexible, capable de s’adapter à une grande variété de structures de récompenses en tournoi."
 
@@ -9184,6 +9380,9 @@ msgstr "Serveur Sharly Chess"
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
+
+msgid "Sharly Chess will restart to complete the move."
+msgstr "Sharly Chess va redémarrer pour terminer le déplacement."
 
 #, python-brace-format
 msgid "Sharly Chess {latest} is available, you have {current}."
@@ -9270,6 +9469,9 @@ msgstr "Élimination simple"
 
 msgid "Single elimination — two-game matches"
 msgstr "Élimination simple — aller-retour"
+
+msgid "Size"
+msgstr "Taille"
 
 msgid "Size (pt)"
 msgstr "Taille (pt)"
@@ -9489,6 +9691,9 @@ msgstr "Classement initial"
 
 msgid "Starting rank ties:"
 msgstr "Ex æquo du classement initial :"
+
+msgid "State"
+msgstr "État"
 
 msgid "Statistics"
 msgstr "Statistiques"
@@ -9907,6 +10112,13 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
+#, python-brace-format
+msgid "The backup of event [{uniq_id}] failed: {error}"
+msgstr "La sauvegarde de l'évènement [{uniq_id}] a échoué : {error}"
+
+msgid "The backups already taken will be moved there."
+msgstr "Les sauvegardes déjà effectuées y seront déplacées."
+
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
 
@@ -9955,17 +10167,14 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
-msgid "The current folder will be kept as a copy."
-msgstr "Le dossier actuel sera conservé en copie."
+msgid "The current folder will be deleted once the copy has been checked."
+msgstr "Le dossier actuel sera supprimé une fois la copie vérifiée."
 
 msgid "The current round was paired from this one: this correction breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr "La ronde en cours a été appariée à partir de celle-ci : cette correction porte atteinte à l'intégrité des appariements. Elle sera enregistrée, et consignée dans le TRF du tournoi."
 
-msgid "The data folder could not be added to the Microsoft Defender exception list."
-msgstr "Le dossier des données n'a pas pu être ajouté à la liste d'exclusions de Microsoft Defender."
-
-msgid "The data folder has been successfully added to the Microsoft Defender exception list."
-msgstr "Le dossier des données a bien été ajouté à la liste d'exclusions de Microsoft Defender."
+msgid "The data folder and the backups folder can not be one inside the other."
+msgstr "Le dossier des données et le dossier des sauvegardes ne peuvent pas être l'un dans l'autre."
 
 msgid "The director is the person in charge of the event."
 msgstr "Le·la directeur·ice est la personne responsable de l’événement."
@@ -9987,6 +10196,9 @@ msgstr "L'événement n'existe plus, il ne peut donc pas être ouvert."
 
 msgid "The event type cannot be changed after creation."
 msgstr "Le type d'événement ne peut pas être modifié après la création."
+
+msgid "The event will be replaced by this backup."
+msgstr "L'évènement va être remplacé par cette sauvegarde."
 
 msgid "The features your federation, your software or your events need can be added to Sharly Chess as a plugin."
 msgstr "Les fonctionnalités dont votre fédération, votre logiciel ou vos évènements ont besoin peuvent être ajoutées à Sharly Chess sous forme de plugin."
@@ -10022,9 +10234,15 @@ msgstr "Le premier tournoi de l'écran."
 msgid "The fixed rating must be between 1 and {max}."
 msgstr "Le Elo fixe doit être compris entre 1 et {max}."
 
-#, python-brace-format
-msgid "The folder [{folder}] could not be deleted entirely."
-msgstr "Le dossier [{folder}] n'a pas pu être entièrement supprimé."
+msgid "The folder could not be added to the Microsoft Defender exception list."
+msgid_plural "The folders could not be added to the Microsoft Defender exception list."
+msgstr[0] "Le dossier n'a pas pu être ajouté à la liste d'exclusions de Microsoft Defender."
+msgstr[1] "Les dossiers n'ont pas pu être ajoutés à la liste d'exclusions de Microsoft Defender."
+
+msgid "The folder has been successfully added to the Microsoft Defender exception list."
+msgid_plural "The folders have been successfully added to the Microsoft Defender exception list."
+msgstr[0] "Le dossier a bien été ajouté à la liste d'exclusions de Microsoft Defender."
+msgstr[1] "Les dossiers ont bien été ajoutés à la liste d'exclusions de Microsoft Defender."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
@@ -10065,6 +10283,9 @@ msgstr "Le libellé utilisé pour cet écran multiple dans les menus. Sa plage e
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
 msgstr "Le libellé utilisé pour cet écran dans les menus. S'il est vide, le nom du tournoi est utilisé."
+
+msgid "The last backup could not be written."
+msgstr "La dernière sauvegarde n'a pas pu être écrite."
 
 #, python-brace-format
 msgid "The least and the most significant values are removed."
@@ -10157,6 +10378,9 @@ msgstr "Le réseau auquel les appareils sont connectés."
 
 msgid "The new folder can't be a sub folder of the current folder."
 msgstr "Le nouveau dossier ne peut être un sous-dossier do dossier actuel."
+
+msgid "The new folder is in use, but the backups already taken could not be moved to it. They are still in the previous folder."
+msgstr "Le nouveau dossier est utilisé, mais les sauvegardes déjà effectuées n'ont pas pu y être déplacées. Elles sont toujours dans le dossier précédent."
 
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'adapte au nombre d'échiquiers)."
@@ -10369,10 +10593,6 @@ msgid_plural "The points the file gives {count} players do not match this scorin
 msgstr[0] "Les points que le fichier donne au·à la joueur·euse {players} ne correspondent pas à ce barème."
 msgstr[1] "Les points que le fichier donne à {count} joueur·euses ne correspondent pas à ce barème (joueur·euses {players})."
 
-#, python-brace-format
-msgid "The previous folder is kept as a copy at [{folder}], and will be deleted two versions from now. You can delete it sooner from the settings."
-msgstr "L'ancien dossier est conservé en copie dans [{folder}] et sera supprimé dans deux versions. Vous pouvez le supprimer plus tôt depuis les paramètres."
-
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr "Les protections d'appariement ne peuvent pas être satisfaites pour cette ronde."
 
@@ -10549,6 +10769,10 @@ msgstr "Le serveur va s'arrêter : l'application ne sera plus accessible depuis
 msgid "The settings are set and can no longer be changed."
 msgstr "Les paramètres sont fixés et ne peuvent plus être modifiés."
 
+#, python-brace-format
+msgid "The snapshot has been restored as the new event [{uniq_id}]."
+msgstr "L'instantané a été restauré comme le nouvel évènement [{uniq_id}]."
+
 msgid "The source event and tournament will not be deleted."
 msgstr "L'événement et le tournoi source ne seront pas supprimés."
 
@@ -10563,6 +10787,9 @@ msgid "The source of the rating of {count} player was brought up to date."
 msgid_plural "The sources of the ratings of {count} players were brought up to date."
 msgstr[0] "La source du classement de {count} joueur·euse a été mise à jour."
 msgstr[1] "Les sources des classements de {count} joueur·euses ont été mises à jour."
+
+msgid "The state it is in now is kept as a backup first, so this can be undone."
+msgstr "L'état dans lequel il est actuellement est d'abord conservé sous forme de sauvegarde, cette opération peut donc être annulée."
 
 msgid "The stronger seed takes White in every match (for a team, board-one White)."
 msgstr "La meilleure tête de série prend les Blancs à chaque partie (pour une équipe, les Blancs à l'échiquier un)."
@@ -10770,6 +10997,12 @@ msgstr "Cette action n'est pas autorisée en mode FIDE. Pour continuer, le tourn
 msgid "This action is not possible for this round."
 msgstr "Cette action est impossible pour cette ronde."
 
+msgid "This backup was taken by a more recent version of the application and cannot be restored by this one."
+msgstr "Cette sauvegarde a été effectuée par une version plus récente de l'application et ne peut pas être restaurée par celle-ci."
+
+msgid "This backup was taken by another version of the application and its content could not be read. It can still be restored."
+msgstr "Cette sauvegarde a été effectuée par une autre version de l'application et son contenu n'a pas pu être lu. Elle peut tout de même être restaurée."
+
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
 msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre unÏe joueur·euse à cette place."
 
@@ -10818,8 +11051,26 @@ msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sh
 msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
 msgstr "Cet événement ne peut pas être ouvert : un ou plusieurs plugins requis sont désactivés. Vous pouvez activer les plugins dans les paramètres de l'application."
 
+msgid "This event could not be opened. Restoring a backup replaces its file, which is what brings it back."
+msgstr "Cet évènement n'a pas pu être ouvert. Restaurer une sauvegarde remplace son fichier, ce qui permet de le récupérer."
+
+msgid "This event could not be read to be backed up, which means the event itself may be damaged. Restoring the most recent backup below is the way out."
+msgstr "Cet évènement n'a pas pu être lu pour être sauvegardé, ce qui signifie que l'évènement lui-même est peut-être endommagé. Restaurer la sauvegarde la plus récente ci-dessous est la solution."
+
+msgid "This event could not be read to be backed up."
+msgstr "Cet évènement n'a pas pu être lu pour être sauvegardé."
+
+msgid "This event could not be read, so there is nothing to keep of the state it is in now."
+msgstr "Cet évènement n'a pas pu être lu, il n'y a donc rien à conserver de l'état dans lequel il est actuellement."
+
+msgid "This event could not be read. Archiving it sets its file aside, and its backups are kept with it: both can be brought back from the archives."
+msgstr "Cet évènement n'a pas pu être lu. L'archiver met son fichier de côté, et ses sauvegardes sont conservées avec lui : les deux peuvent être récupérés depuis les archives."
+
 msgid "This event exists on the server but could not be opened. It may be locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software."
 msgstr "Cet événement existe sur le serveur mais n'a pas pu être ouvert. Il est peut-être verrouillé par un autre programme, par une synchronisation de fichiers (OneDrive, Google Drive, DropBox, etc.) ou par un antivirus."
+
+msgid "This event is no longer being backed up."
+msgstr "Cet évènement n'est plus sauvegardé."
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des spectateur·ices)."
@@ -10861,6 +11112,10 @@ msgstr "Ce dossier n'est pas vide."
 #, python-brace-format
 msgid "This folder is synchronised by {service}, which can block the events while Sharly Chess writes to them."
 msgstr "Ce dossier est synchronisé par {service}, qui peut bloquer les évènements pendant que Sharly Chess y écrit."
+
+#, python-brace-format
+msgid "This folder is synchronised by {service}, which keeps a copy of the backups off this computer."
+msgstr "Ce dossier est synchronisé par {service}, ce qui conserve une copie des sauvegardes en dehors de cet ordinateur."
 
 msgid "This game has been played."
 msgstr "Cette partie a été jouée."
@@ -11811,6 +12066,9 @@ msgstr "Utiliser les points de parties pour l'attribution des couleurs"
 msgid "Use match points for colour allocation"
 msgstr "Utiliser les points de match pour l'attribution des couleurs"
 
+msgid "Use my own folder"
+msgstr "Utiliser mon propre dossier"
+
 #, python-brace-format
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr "Utiliser uniquement les caractères « {w} » et « {b} » (ou laisser vide pour la valeur par défaut)."
@@ -11950,6 +12208,9 @@ msgstr "Voir les écrans publics"
 
 msgid "View the Tournaments tab"
 msgstr "Voir l'onglet Tournois"
+
+msgid "View the backups of the event."
+msgstr "Voir les sauvegardes de l'évènement."
 
 msgid "View the menu."
 msgstr "Voir le menu."
@@ -12646,6 +12907,9 @@ msgstr "incomplète"
 msgid "item id"
 msgstr "identifiant d’élément"
 
+msgid "kB"
+msgstr "ko"
+
 msgid "last"
 msgstr "dernier"
 
@@ -12737,6 +13001,9 @@ msgstr "hors des classements récupérés"
 
 msgid "not counted"
 msgstr "non comptée"
+
+msgid "not started"
+msgstr "non commencé"
 
 #, python-format
 msgid "of %(n)s opponents"
@@ -13214,6 +13481,10 @@ msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
 #, python-brace-format
 msgid "{rating} · from the rating lists"
 msgstr "{rating} · selon les listes de classement"
+
+#, python-brace-format
+msgid "{results} of {boards} results"
+msgstr "{results} résultats sur {boards}"
 
 #, python-brace-format
 msgid "{screen_type}-screen"

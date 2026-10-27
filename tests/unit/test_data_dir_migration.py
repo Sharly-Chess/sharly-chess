@@ -1,27 +1,26 @@
 import json
+import logging
+import shutil
 import sqlite3
 import sys
+import time
 from pathlib import Path
 
 import pytest
-from packaging.version import Version
 
 from utils import program_variables
 from utils.data_dir_migration import (
     MAX_ATTEMPTS,
-    README_FILE_NAME,
+    STAGING_DIR_SUFFIX,
+    DataDirInUse,
     DataDirMigration,
     DataDirMoveReason,
     DataDirMoveState,
-    forget_moved_data_dir,
-    is_left_by_a_move,
-    moved_data_dir_to_delete,
+    complete_requested_move,
     sync_service,
 )
 from utils.instance_lock import InstanceLock
 from utils.program_variables import ProgramVar
-
-VERSION = Version('5.2.0')
 
 
 @pytest.fixture(autouse=True)
@@ -56,7 +55,7 @@ def _migration(tmp_path: Path, data_dir: Path | None = None) -> DataDirMigration
     return DataDirMigration(
         data_dir=data_dir or legacy_default_dir,
         legacy_default_dir=legacy_default_dir,
-        target_dir=tmp_path / 'AppData' / 'Local' / 'Sharly Chess',
+        target_dir=tmp_path / 'AppData' / 'Local' / 'Sharly Chess' / 'data',
     )
 
 
@@ -129,16 +128,16 @@ def test_a_folder_chosen_elsewhere_stays(tmp_path: Path):
     assert migration.reason is None
     assert not migration.should_run()
     assert not migration.should_ask()
-    assert migration.run(VERSION) == tmp_path / 'D' / 'Chess'
+    assert migration.run() == tmp_path / 'D' / 'Chess'
 
 
-def test_the_move_copies_the_data_and_sets_the_previous_folder_aside(
+def test_the_move_copies_the_data_and_deletes_the_previous_folder(
     tmp_path: Path,
 ):
     migration = _migration(tmp_path)
     _fill_data_dir(migration.data_dir)
 
-    data_dir = migration.run(VERSION)
+    data_dir = migration.run()
 
     assert data_dir == migration.target_dir
     connection = sqlite3.connect(data_dir / 'v5.1.7' / 'events' / 'open.sce')
@@ -147,11 +146,8 @@ def test_the_move_copies_the_data_and_sets_the_previous_folder_aside(
     assert (data_dir / 'archives' / 'old.sca').read_bytes() == b'archive'
     assert not migration.staging_dir.exists()
     assert not migration.data_dir.exists()
-    moved_dir = migration.data_dir.with_name('Sharly Chess (moved to AppData)')
-    assert str(data_dir) in (moved_dir / README_FILE_NAME).read_text()
+    assert list(migration.data_dir.parent.iterdir()) == []
     assert ProgramVar.DATA_DIR.read_path_value() == data_dir
-    assert ProgramVar.MOVED_DATA_DIR.read_path_value() == moved_dir
-    assert ProgramVar.MOVED_DATA_DIR_VERSION.read_value() == '5.2.0'
     assert DataDirMigration.state() == DataDirMoveState.MOVED
     assert any('Data moved' in message for __, message in migration.messages)
 
@@ -164,7 +160,7 @@ def test_a_failed_move_keeps_the_data_where_it_is(tmp_path: Path):
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
         assert migration.should_run()
-        assert migration.run(VERSION) == migration.data_dir
+        assert migration.run() == migration.data_dir
         assert DataDirMigration.failed_attempts() == attempt
 
     assert (migration.data_dir / 'v5.1.7' / 'events' / 'open.sce').is_file()
@@ -183,7 +179,7 @@ def test_the_move_waits_for_the_running_instance(tmp_path: Path):
     running = InstanceLock(migration.data_dir)
     assert running.acquire()
     try:
-        assert migration.run(VERSION) == migration.data_dir
+        assert migration.run(wait_seconds=0) == migration.data_dir
     finally:
         running.release()
 
@@ -191,42 +187,65 @@ def test_the_move_waits_for_the_running_instance(tmp_path: Path):
     assert not migration.target_dir.exists()
 
 
+def test_a_move_asked_for_that_fails_is_tried_again(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """The user asked for the move, so every start tries it again, and the
+    settings offer it once more when the attempts are spent."""
+    monkeypatch.setenv('OneDrive', str(tmp_path / 'OneDrive'))
+    migration = _migration(tmp_path, tmp_path / 'OneDrive' / 'Sharly Chess')
+    _fill_data_dir(migration.data_dir)
+    migration.target_dir.mkdir(parents=True)
+    (migration.target_dir / 'unexpected.txt').write_text('')
+    DataDirMigration.request()
+
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        assert migration.should_run()
+        assert migration.run(wait_seconds=0) == migration.data_dir
+        assert DataDirMigration.state() == DataDirMoveState.REQUESTED
+        assert DataDirMigration.failed_attempts() == attempt
+
+    assert not migration.should_run()
+    assert migration.can_be_requested()
+
+    DataDirMigration.request()
+    assert DataDirMigration.failed_attempts() == 0
+    assert migration.should_run()
+
+
 def test_a_launch_after_the_move_runs_on_the_new_folder(tmp_path: Path):
     first = _migration(tmp_path)
     _fill_data_dir(first.data_dir)
     second = _migration(tmp_path)
 
-    first.run(VERSION)
+    first.run()
     ProgramVar.DATA_DIR_MOVE.clear_value()
 
-    assert second.run(VERSION) == first.target_dir
+    assert second.run() == first.target_dir
 
 
-@pytest.mark.parametrize(
-    ('current', 'deleted'),
-    [('5.2.3', False), ('5.3.0', False), ('5.4.0', True), ('6.0.0', True)],
-)
-def test_the_previous_folder_is_deleted_two_versions_later(
-    tmp_path: Path, current: str, deleted: bool
+def test_a_previous_folder_that_can_not_be_deleted_is_only_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
-    ProgramVar.MOVED_DATA_DIR.write_value(str(tmp_path / 'moved'))
-    ProgramVar.MOVED_DATA_DIR_VERSION.write_value('5.2.0')
+    """The data is at its new folder and checked there, so the start goes on:
+    what is left of the previous folder is named in the log and nothing else."""
+    migration = _migration(tmp_path)
+    _fill_data_dir(migration.data_dir)
+    delete = shutil.rmtree
 
-    expected = tmp_path / 'moved' if deleted else None
-    assert moved_data_dir_to_delete(Version(current)) == expected
+    def keep_the_data_dir(path: Path, *, ignore_errors: bool = False) -> None:
+        if Path(path) != migration.data_dir:
+            delete(path, ignore_errors=ignore_errors)
 
+    monkeypatch.setattr(shutil, 'rmtree', keep_the_data_dir)
 
-def test_only_the_folder_left_by_the_move_is_deleted(tmp_path: Path):
-    moved_dir = tmp_path / 'moved'
-    moved_dir.mkdir()
-    assert not is_left_by_a_move(moved_dir)
-    (moved_dir / README_FILE_NAME).write_text('')
-    assert is_left_by_a_move(moved_dir)
-
-    ProgramVar.MOVED_DATA_DIR.write_value(str(moved_dir))
-    ProgramVar.MOVED_DATA_DIR_VERSION.write_value('5.2.0')
-    forget_moved_data_dir()
-    assert moved_data_dir_to_delete(Version('9.0.0')) is None
+    assert migration.run(wait_seconds=0) == migration.target_dir
+    assert (migration.data_dir / 'v5.1.7' / 'events' / 'open.sce').is_file()
+    assert ProgramVar.DATA_DIR.read_path_value() == migration.target_dir
+    assert any(
+        level == logging.WARNING and 'could not be deleted' in message
+        for level, message in migration.messages
+    )
 
 
 def test_a_folder_in_use_postpones_the_move_without_a_failure(
@@ -234,14 +253,147 @@ def test_a_folder_in_use_postpones_the_move_without_a_failure(
 ):
     migration = _migration(tmp_path)
     _fill_data_dir(migration.data_dir)
+    monkeypatch.setattr(Path, 'rename', _refusing(migration.data_dir))
 
-    def refuse_rename(directory: Path) -> None:
-        raise PermissionError(5, 'Access is denied')
-
-    monkeypatch.setattr(
-        DataDirMigration, '_check_not_in_use', staticmethod(refuse_rename)
-    )
-
-    assert migration.run(VERSION) == migration.data_dir
+    assert migration.run(wait_seconds=0) == migration.data_dir
     assert DataDirMigration.failed_attempts() == 0
     assert migration.should_run()
+
+
+def test_the_move_waits_for_the_folder_to_be_let_go(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """The start that completes a move often begins before the one that asked
+    for it has finished leaving, and Windows holds the log file of a process
+    until the process itself is gone."""
+    migration = _migration(tmp_path)
+    _fill_data_dir(migration.data_dir)
+    refuse = _refusing(migration.data_dir)
+    in_use = True
+
+    def rename(self: Path, target: Path) -> None:
+        if in_use:
+            refuse(self, target)
+        else:
+            Path.replace(self, target)
+
+    def let_go(seconds: float) -> None:
+        nonlocal in_use
+        in_use = False
+
+    monkeypatch.setattr(Path, 'rename', rename)
+    monkeypatch.setattr(time, 'sleep', let_go)
+
+    assert migration.run() == migration.target_dir
+    assert (migration.target_dir / 'archives' / 'old.sca').read_bytes() == b'archive'
+    assert not migration.data_dir.exists()
+
+
+def _requested_move(tmp_path: Path) -> tuple[Path, Path]:
+    """The folder the data is in and the empty folder the start has made for
+    it, as a move asked from the settings finds them."""
+    previous_dir = tmp_path / 'Documents' / 'Sharly Chess'
+    _fill_data_dir(previous_dir)
+    data_dir = tmp_path / 'D' / 'Chess'
+    data_dir.mkdir(parents=True)
+    return previous_dir, data_dir
+
+
+def test_a_move_asked_from_the_settings_takes_the_data_over(tmp_path: Path):
+    previous_dir, data_dir = _requested_move(tmp_path)
+
+    assert complete_requested_move(previous_dir, data_dir) is None
+
+    assert not previous_dir.exists()
+    connection = sqlite3.connect(data_dir / 'v5.1.7' / 'events' / 'open.sce')
+    assert connection.execute('SELECT name FROM player').fetchall() == [('Carlsen',)]
+    connection.close()
+    assert (data_dir / 'archives' / 'old.sca').read_bytes() == b'archive'
+
+
+def test_a_move_the_folder_can_not_be_renamed_for_copies_the_data(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Renaming fails between two drives, and on Windows while a file of the
+    folder is still open: the data is copied and checked instead."""
+    previous_dir, data_dir = _requested_move(tmp_path)
+    monkeypatch.setattr(Path, 'rename', _refusing(previous_dir))
+
+    assert complete_requested_move(previous_dir, data_dir, wait_seconds=0) is None
+
+    assert not previous_dir.exists()
+    assert (data_dir / 'archives' / 'old.sca').read_bytes() == b'archive'
+    assert not data_dir.with_name(data_dir.name + STAGING_DIR_SUFFIX).exists()
+
+
+def test_a_previous_folder_left_behind_by_a_move_is_returned_not_raised(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """The data is at the folder the user asked for, so a file that could not
+    be deleted is reported and nothing is undone: calling it a failure would
+    send them back to a folder that no longer holds their events."""
+    previous_dir, data_dir = _requested_move(tmp_path)
+    monkeypatch.setattr(Path, 'rename', _refusing(previous_dir))
+    monkeypatch.setattr(shutil, 'rmtree', _keeping(previous_dir))
+
+    assert complete_requested_move(previous_dir, data_dir, wait_seconds=0) == (
+        previous_dir
+    )
+
+    assert (data_dir / 'archives' / 'old.sca').read_bytes() == b'archive'
+
+
+def test_a_move_that_fails_leaves_the_data_where_it_is(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    previous_dir, data_dir = _requested_move(tmp_path)
+    monkeypatch.setattr(Path, 'rename', _refusing(previous_dir))
+
+    def refuse_copy(source: Path, target: Path) -> None:
+        raise PermissionError(32, 'The file is used by another process')
+
+    monkeypatch.setattr(shutil, 'copytree', refuse_copy)
+
+    with pytest.raises(OSError, match='another process'):
+        complete_requested_move(previous_dir, data_dir, wait_seconds=0)
+
+    assert (previous_dir / 'archives' / 'old.sca').read_bytes() == b'archive'
+    assert data_dir.is_dir()
+    assert list(data_dir.iterdir()) == []
+
+
+def test_a_move_waits_for_the_instance_that_asked_for_it(tmp_path: Path):
+    previous_dir, data_dir = _requested_move(tmp_path)
+    running = InstanceLock(previous_dir)
+    assert running.acquire()
+    try:
+        with pytest.raises(DataDirInUse):
+            complete_requested_move(previous_dir, data_dir, wait_seconds=0)
+    finally:
+        running.release()
+
+    assert (previous_dir / 'archives' / 'old.sca').is_file()
+
+
+def _refusing(directory: Path):
+    """A rename that fails for one folder, as Windows does for a folder holding
+    a file another process still has open."""
+
+    def rename(self: Path, target: Path) -> None:
+        if self == directory:
+            raise PermissionError(5, 'Access is denied')
+        Path.replace(self, target)
+
+    return rename
+
+
+def _keeping(directory: Path):
+    """A deletion that leaves one folder behind, as Windows does for a folder
+    holding a file another process still has open."""
+    delete = shutil.rmtree
+
+    def rmtree(path: Path, *, ignore_errors: bool = False) -> None:
+        if Path(path) != directory:
+            delete(path, ignore_errors=ignore_errors)
+
+    return rmtree

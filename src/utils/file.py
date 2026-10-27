@@ -1,9 +1,27 @@
 import base64
 import hashlib
+import os
 from collections.abc import Callable
 from contextlib import suppress
 from pathlib import Path
 from typing import Any
+
+
+def is_within(path: Path, directory: Path) -> bool:
+    """Whether the path is the folder itself or sits inside it, the names
+    compared as the file system compares them."""
+    path_str = os.path.normcase(os.path.normpath(path))
+    directory_str = os.path.normcase(os.path.normpath(directory))
+    return path_str == directory_str or path_str.startswith(
+        directory_str.rstrip(os.sep) + os.sep
+    )
+
+
+def overlap(first: Path, second: Path) -> bool:
+    """Whether two folders are the same or one holds the other, which neither
+    the data nor the backups can be: each is moved, emptied and deleted on its
+    own, and a folder inside the other is taken along or lost with it."""
+    return is_within(first, second) or is_within(second, first)
 
 
 def file_fingerprint(file: Path) -> bytes:

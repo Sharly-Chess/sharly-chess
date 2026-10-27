@@ -64,16 +64,20 @@ def check_windows_defender_exception(arguments: list[str]) -> list[str]:
     defender_parser.add_argument(
         '--win-defender-exception-path',
         type=str,
+        action='append',
     )
     args, remaining_args = defender_parser.parse_known_args(arguments)
-    def_path = args.win_defender_exception_path
-    if not def_path:
+    def_paths = args.win_defender_exception_path
+    if not def_paths:
         return remaining_args
+    # Every folder in the one call: each call asks the user for the elevation,
+    # and the data folder and the backups folder are excluded together.
+    excluded = ','.join(f'"""{def_path}"""' for def_path in def_paths)
     params = [
         '/C',
         'powershell',
         '-Command',
-        f'"Add-MpPreference -ExclusionPath """{def_path}""" -Force"',
+        f'"Add-MpPreference -ExclusionPath {excluded} -Force"',
     ]
     result = ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
         None, 'runas', 'cmd.exe', ' '.join(params), None, 0

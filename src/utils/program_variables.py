@@ -37,12 +37,9 @@ class ProgramVar(StrEnum):
 
     DATA_DIR = 'data_directory'
     PREVIOUS_DATA_DIR = 'previous_data_directory'
-    # Where the move of the data folder out of the Documents or OneDrive stands
-    # (see DataDirMigration), and the folder it left behind, with the version
-    # that moved it.
+    # Where the move of the data folder out of the Documents or OneDrive
+    # stands (see DataDirMigration).
     DATA_DIR_MOVE = 'data_directory_move'
-    MOVED_DATA_DIR = 'moved_data_directory'
-    MOVED_DATA_DIR_VERSION = 'moved_data_directory_version'
     VERSION = 'version'
     LEGACY_VERSION = 'legacy_version'
     LEGACY_VERSION_DIR = 'legacy_version_directory'
