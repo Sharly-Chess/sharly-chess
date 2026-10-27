@@ -71,13 +71,8 @@
                             </span>
                         </td>
                         {% for _, field in used_columns %}
-                            {% if field == "category" %}
-                                {% set value = player.category_name %}
-                            {% else %}
-                                {% set value = player[field] %}
-                            {% endif %}
                             <td class="text-nowrap text-start text-ellipsis mw-15em">
-                                {{ value }}
+                                {{ player[field] }}
                             </td>
                         {% endfor %}
                     </tr>
@@ -96,32 +91,7 @@
     </style>
     <script>
     updatePageDisplay({{page}} || 1, {{pages}} || 1)
-
-    function onRowClick(row, event) {
-        console.log(row);
-        let checkbox = $(row).find("input[type=checkbox]");
-        //console.log(val)
-        checkbox.prop("checked", !checkbox.prop("checked"))
-        if (row.dataset.inTournament) {
-            if (checkbox.is(":checked")){
-                $(row).removeClass("red")
-                playersRemoved = playersRemoved.filter(x => x != row.dataset.inTournament)
-            } else {
-                $(row).addClass("red")
-                playersRemoved.push(row.dataset.inTournament)
-            }
-        } else {
-            if (checkbox.is(":checked")){
-                $(row).addClass("green")
-                playersAdded.push(row.dataset.id)
-            } else {
-                $(row).removeClass("green")
-                playersAdded = playersAdded.filter(x => x != row.dataset.id)
-            }
-        }
-        console.log(playersAdded, playersRemoved)
-        //event.preventDefault()
-    }
-
+    playersAdded = [];
+    playersRemoved = [];
     </script>
 {% endif %}

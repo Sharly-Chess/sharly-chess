@@ -25,7 +25,7 @@
                         name='tournament_id',
                         label=_('Tournament:'),
                         select_options=tournament_options,
-                        onchange="$('#search-input')[0].dispatchEvent(new CustomEvent('refresh_search_query', {bubbles: true, cancelable: true}));",
+                        onchange="reloadTable()",
                     ) }}
                 </div>
 
@@ -33,50 +33,12 @@
                     <div id="page-controls" class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end">
                         <div class="d-inline-flex gap-1">
                             <span {{ macros.tooltip_attributes('info', _('First page'), 'bottom') }}>
-                                <button
-                                    class="btn btn-outline-primary text-nowrap"
-                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="#bulk-search-result-container"
-                                    hx-indicator="#please-wait"
-                                    hx-on::after-request="window.scrollTo(0, 0)"
-                                    {% if false %}
-                                        disabled
-                                    {% else %}
-                                        hx-trigger="click, SC_Ctrl_Shift_ArrowLeft from:body"
-                                    {% endif %}
-                                    hx-vals='js:{
-                                        search: $("#search-input").val(),
-                                        page: 1,
-                                        data_source_id: $("#data-source-select").val(),
-                                        filters: getFilters(),
-                                        tournament_id: $("#tournament-id").val() || 1,
-                                        {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
-                                    }'
-                                >
+                                <button class="btn btn-outline-primary text-nowrap" onclick="reloadTable(1, false)">
                                     <i class="bi bi-skip-backward-fill position-relative round-control-icon"></i>
                                 </button>
                             </span>
                             <span {{ macros.tooltip_attributes('info', _('Previous page'), 'bottom') }}>
-                                <button
-                                    class="btn btn-outline-primary text-nowrap"
-                                    style="transform: scaleX(-1);"
-                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="#bulk-search-result-container"
-                                    hx-indicator="#please-wait"
-                                    hx-on::after-request="window.scrollTo(0, 0)"
-                                    {% if false %}
-                                        disabled
-                                    {% else %}
-                                        hx-trigger="click, SC_Shift_ArrowLeft from:body"
-                                    {% endif %}
-                                    hx-vals='js:{
-                                        search: $("#search-input").val(),
-                                        page: currentPage - 1,
-                                        data_source_id: $("#data-source-select").val(),
-                                        filters: getFilters(),
-                                        tournament_id: $("#tournament-id").val() || 1,
-                                    }'
-                                >
+                                <button class="btn btn-outline-primary text-nowrap" style="transform: scaleX(-1);" onclick="reloadTable(currentPage - 1, false)">
                                     <i class="bi bi-play-fill position-relative round-control-icon"></i>
                                 </button>
                             </span>
@@ -84,53 +46,17 @@
                                 {{ admin_macros.number_input(
                                     name='page_number',
                                     label=_('Page:'),
+                                    min=1, max=1,
+                                    onchange="reloadTable(this.value, false)"
                                 ) }}
                             </div>/ <span id="page-count">1</span>
                             <span {{ macros.tooltip_attributes('info', _('Next page'), 'bottom') }}>
-                                <button
-                                    class="btn btn-outline-primary text-nowrap"
-                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="#bulk-search-result-container"
-                                    hx-indicator="#please-wait"
-                                    hx-on::after-request="window.scrollTo(0, 0)"
-                                    {% if false %}
-                                        disabled
-                                    {% else %}
-                                        hx-trigger="click, SC_Shift_ArrowRight from:body"
-                                    {% endif %}
-                                    hx-vals='js:{
-                                        search: $("#search-input").val(),
-                                        page: currentPage + 1,
-                                        data_source_id: $("#data-source-select").val(),
-                                        filters: getFilters(),
-                                        tournament_id: $("#tournament-id").val() || 1,
-                                        {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
-                                    }'
-                                >
+                                <button class="btn btn-outline-primary text-nowrap" onclick="reloadTable(currentPage + 1, false)">
                                     <i class="bi-play-fill position-relative round-control-icon"></i>
                                 </button>
                             </span>
                             <span {{ macros.tooltip_attributes('info', _('Last page'), 'bottom') }}>
-                                <button
-                                    class="btn btn-outline-primary text-nowrap"
-                                    hx-get="{{ url_for('admin-bulk-search-player', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="#bulk-search-result-container"
-                                    hx-indicator="#please-wait"
-                                    hx-on::after-request="window.scrollTo(0, 0)"
-                                    {% if false %}
-                                        disabled
-                                    {% else %}
-                                        hx-trigger="click, SC_Ctrl_Shift_ArrowRight from:body"
-                                    {% endif %}
-                                    hx-vals='js:{
-                                        search: $("#search-input").val(),
-                                        page: pageCount,
-                                        data_source_id: $("#data-source-select").val(),
-                                        filters: getFilters(),
-                                        tournament_id: $("#tournament-id").val() || 1,
-                                        {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
-                                    }'
-                                >
+                                <button class="btn btn-outline-primary text-nowrap" onclick="reloadTable(pageCount, false)">
                                     <i class="bi bi-fast-forward-fill position-relative round-control-icon"></i>
                                 </button>
                             </span>
@@ -138,7 +64,7 @@
                     </div>
                 </div>
             </div>
-            <div id="bulk-search-result-container">
+            <div id="bulk-search-result-container" hx-on::after-swap="restoreRowSelection()">
             </div>
         </div>
         <div class="modal-footer">
@@ -175,12 +101,81 @@ var currentPage;
 var pageCount;
 var playersAdded = [];
 var playersRemoved = [];
+var storedChanges = {playersAdded:[], playersRemoved:[]}
 
 function updatePageDisplay(current, count) {
     currentPage = current;
     pageCount = count;
 
     $("#page-number").val(currentPage || 1)
+    $("#page-number").prop("max", pageCount || 1)
     $("#page-count").html(pageCount || 1)
+}
+
+function reloadTable(page=1, resetChanges=true) {
+    if (!resetChanges) {
+        storedChanges.playersAdded = [...playersAdded];
+        storedChanges.playersRemoved = [...playersRemoved];
+    }
+
+    $('#search-input')[0].dispatchEvent(
+        new CustomEvent(
+            'refresh_search_query',
+            {
+                bubbles: true,
+                cancelable: true,
+                detail: {
+                    page: page,
+                }
+            }
+        )
+    );
+}
+
+function onRowClick(row, event) {
+    let checkbox = $(row).find("input[type=checkbox]");
+    checkbox.prop("checked", !checkbox.prop("checked"));
+
+    if (row.dataset.inTournament) {
+        if (checkbox.is(":checked")) {
+            $(row).removeClass("red");
+            playersRemoved = playersRemoved.filter(x => x != row.dataset.inTournament);
+        } else {
+            $(row).addClass("red");
+            if (!playersRemoved.includes(row.dataset.inTournament)) {
+                playersRemoved.push(row.dataset.inTournament);
+            }
+        }
+    } else {
+        if (checkbox.is(":checked")) {
+            $(row).addClass("green");
+            if (!playersAdded.includes(row.dataset.id)) {
+                playersAdded.push(row.dataset.id);
+            }
+        } else {
+            $(row).removeClass("green");
+            playersAdded = playersAdded.filter(x => x != row.dataset.id)
+        }
+    }
+}
+
+function restoreRowSelection() {
+    playersAdded = storedChanges.playersAdded;
+    playersRemoved = storedChanges.playersRemoved;
+
+    for (let id of storedChanges.playersAdded) {
+        row = $(`#bulk-add-table tr[data-id=${id}]`);
+        if (row.length) {
+            row.click();
+        }
+    }
+    for (let id of storedChanges.playersRemoved) {
+        row = $(`#bulk-add-table tr[data-in-tournament=${id}]`);
+        if (row.length) {
+            row.click();
+        }
+    }
+    storedChanges.playersAdded = [];
+    storedChanges.playersRemoved = [];
 }
 </script>
