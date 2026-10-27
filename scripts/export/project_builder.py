@@ -487,7 +487,19 @@ class ProjectBuilder(ABC):  # noqa: B024
             len(external_files_created),
         )
 
-        # 3. --- Generate extra licence information notices ---
+        # 3. --- Copy the licence of the bundled fonts ---
+
+        font_licence_file = packages_dir / 'Atkinson_Hyperlegible_Next.txt'
+        with open(font_licence_file, 'w', encoding='utf-8') as f:
+            f.write('Font: Atkinson Hyperlegible Next\n')
+            f.write('Licence Type: SIL Open Font License 1.1\n')
+            f.write('=' * 50 + '\n\n')
+            f.write(
+                (BASE_DIR / 'src/web/static/fonts/OFL.txt').read_text(encoding='utf-8')
+            )
+        logger.info('Created font licence file: %s', font_licence_file.name)
+
+        # 4. --- Generate extra licence information notices ---
 
         notice_file = self.licences_dir / 'NOTICE.txt'
         logger.info('Creating notice file [%s]...', notice_file)
@@ -683,10 +695,12 @@ class ProjectBuilder(ABC):  # noqa: B024
         venv_lib_path = self.hook_get_venv_lib_path
         toga_path: Path = venv_lib_path / 'toga'
         iso4217parse_path: Path = venv_lib_path / 'iso4217parse'
+        docx_templates_path: Path = venv_lib_path / 'docx' / 'templates'
         for file in [
             toga_path / '__init__.pyi',
             iso4217parse_path / 'data.json',
             iso4217parse_path / 'symbols.json',
+            *(path for path in docx_templates_path.rglob('*') if path.is_file()),
         ]:
             pyinstaller_params.append(  # noqa: PERF401
                 f'--add-data={file}{data_separator}{file.parent.relative_to(venv_lib_path)}'

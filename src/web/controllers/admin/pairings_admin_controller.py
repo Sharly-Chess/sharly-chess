@@ -82,6 +82,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.controllers.admin.event_documents_controller import export_toolbar_context
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import WebContext
 from web.guards import (
@@ -3658,7 +3659,8 @@ class PairingsAdminController(BaseEventAdminController):
             template_name=document.template_name,
             context=web_context.template_context
             | {'document': document}
-            | document_context,
+            | document_context
+            | export_toolbar_context(request, tournament.event),
         )
 
     @staticmethod

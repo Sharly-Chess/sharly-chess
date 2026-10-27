@@ -1,9 +1,4 @@
-@font-face {
-    font-family: "{{ font_family }}";
-    src: url("{{ font_url }}") format("truetype");
-    font-weight: 400 900;
-    font-style: normal;
-}
+{{ font_faces }}
 * {
     font-family: {{ font_family }}, sans-serif;
 }
@@ -40,6 +35,9 @@ section > div + div {
 label {
     display: inline-block;
     white-space: nowrap;
+}
+input, textarea {
+    font-size: inherit;
 }
 input {
     border: none;

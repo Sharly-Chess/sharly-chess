@@ -3111,6 +3111,12 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
+msgid "Download the document as a PDF file"
+msgstr ""
+
+msgid "Download the document as a Word file, with the values entered in its fields"
+msgstr ""
+
 msgid "Download the players matching the search into a file."
 msgstr ""
 
@@ -6863,6 +6869,9 @@ msgstr ""
 msgid "PASS"
 msgstr ""
 
+msgid "PDF"
+msgstr ""
+
 msgid "PGN (all rounds)"
 msgstr ""
 
@@ -7720,6 +7729,12 @@ msgid "Previous round"
 msgstr ""
 
 msgid "Primary score:"
+msgstr ""
+
+msgid "Print"
+msgstr ""
+
+msgid "Print the document"
 msgstr ""
 
 msgid "Print the rules"
@@ -9837,10 +9852,16 @@ msgstr ""
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
 msgstr ""
 
+msgid "The PDF file could not be generated."
+msgstr ""
+
 msgid "The TRF export is not available for this pairing system: its score is not a count of game points."
 msgstr ""
 
 msgid "The URL of the image to display."
+msgstr ""
+
+msgid "The Word file could not be generated."
 msgstr ""
 
 #, python-brace-format
@@ -12157,6 +12178,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Won byes read as pairing-allocated byes ({rounds})."
+msgstr ""
+
+msgid "Word"
 msgstr ""
 
 msgid "XLSX format"

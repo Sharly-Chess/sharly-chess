@@ -2,14 +2,23 @@ import urllib
 from collections import defaultdict
 from typing import Annotated, Any, cast
 
-from litestar import get, post
+import msgspec
+from litestar import Request, Response, get, post
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import (
+    InternalServerException,
+    NotFoundException,
+    ValidationException,
+)
 from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
+from pathvalidate import sanitize_filename
 
 from common.exception import OptionError
 from common.i18n import _
+from common.logger import get_logger
+from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.event import Event
@@ -25,6 +34,12 @@ from data.print_documents.documents import (
     QRCodePrintDocument,
 )
 from data.print_documents.options import TournamentsPrintOption
+from data.print_documents.pdf_rendering import (
+    PdfRenderers,
+    PdfRenderingError,
+    decode_pdf_export,
+)
+from data.print_documents.word_export import build_word_document, decode_word_export
 from data.print_documents.options import TournamentPrintOption
 from data.tournament import Tournament
 from web.controllers.admin.base_event_admin_controller import (
@@ -32,9 +47,56 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.controllers.base_controller import WebContext
+from web.controllers.document_pdf_source_controller import DocumentPdfSources
 from web.guards import EventGuard, ActionGuard, PrintGuard
 from web.session import SessionPrintLastTournaments
 from web.streaming_template import StreamingHTMXTemplate
+
+
+logger = get_logger()
+
+_EXPORT_TOOLBAR_TEMPLATE = '/admin/print/_export_toolbar.html'
+_WORD_MEDIA_TYPE = (
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+)
+
+
+def export_toolbar_context(
+    request: Request[Any, Any, Any], event: Event | None = None
+) -> dict[str, Any]:
+    """The context of a document viewed in the browser, which shows the export
+    toolbar. The documents of an event can be exported to Word, and to PDF when
+    the desktop application renders them."""
+    word_export_url: str | None = None
+    pdf_export_url: str | None = None
+    if event is not None:
+        word_export_url = request.app.route_reverse(
+            'document-word', event_uniq_id=event.uniq_id
+        )
+        if PdfRenderers.renderer is not None:
+            pdf_export_url = request.app.route_reverse(
+                'document-pdf', event_uniq_id=event.uniq_id
+            )
+    sharly_chess_config = SharlyChessConfig()
+    icons_version = sharly_chess_config.bootstrap_icons_version
+    return {
+        'export_toolbar': _EXPORT_TOOLBAR_TEMPLATE,
+        'export_toolbar_version': sharly_chess_config.version,
+        'export_toolbar_icons': (
+            f'/lib/bootstrap-icons/bootstrap-icons-{icons_version}'
+            '/bootstrap-icons.min.css'
+        ),
+        'word_export_url': word_export_url,
+        'pdf_export_url': pdf_export_url,
+    }
+
+
+def _attachment(filename: str) -> dict[str, str]:
+    return {
+        'Content-Disposition': (
+            f"attachment; filename*=UTF-8''{urllib.parse.quote(filename)}"
+        )
+    }
 
 
 class EventDocumentsController(BaseEventAdminController):
@@ -360,9 +422,71 @@ class EventDocumentsController(BaseEventAdminController):
                 'document': print_document,
             }
             | print_document.template_context
+            | export_toolbar_context(request, event)
         )
         return StreamingHTMXTemplate(
             template_name=print_document.template_name, context=template_context
+        )
+
+    @post(
+        path='/document-word/{event_uniq_id:str}',
+        name='document-word',
+    )
+    async def document_word(self, request: HTMXRequest) -> Response[bytes]:
+        """The Word file of a document, from its layout in the browser."""
+        try:
+            export = decode_word_export(await request.body())
+        except msgspec.DecodeError as error:
+            raise ValidationException(str(error)) from error
+        filename = f'{sanitize_filename(export.title) or "document"}.docx'
+        return Response(
+            content=build_word_document(export),
+            media_type=_WORD_MEDIA_TYPE,
+            headers=_attachment(filename),
+        )
+
+    @post(
+        path='/document-pdf/{event_uniq_id:str}',
+        name='document-pdf',
+    )
+    async def document_pdf(self, request: HTMXRequest) -> Response[bytes]:
+        """The PDF file of a document as the browser shows it, rendered by the
+        desktop application."""
+        renderer = PdfRenderers.renderer
+        if renderer is None:
+            raise NotFoundException(
+                'Documents are rendered as PDF by the desktop application only.'
+            )
+        try:
+            export = decode_pdf_export(await request.body())
+        except msgspec.DecodeError as error:
+            raise ValidationException(str(error)) from error
+        token = DocumentPdfSources.add(export.html)
+        try:
+            # The web engine runs on this computer, whatever address the
+            # browser reached the server at.
+            server = request.scope.get('server')
+            if server is None or server[1] is None:
+                raise PdfRenderingError('The address of the server is unknown.')
+            host, port = server
+            if host in ('', '0.0.0.0', '::'):
+                host = '127.0.0.1'
+            elif ':' in host:
+                host = f'[{host}]'
+            path = request.app.route_reverse('document-pdf-source', token=token)
+            content = await renderer.render(
+                f'http://{host}:{port}{path}', export.margins
+            )
+        except PdfRenderingError as error:
+            logger.error(
+                'The PDF of [%s] could not be rendered: %s', export.title, error
+            )
+            raise InternalServerException(str(error)) from error
+        finally:
+            DocumentPdfSources.discard(token)
+        filename = f'{sanitize_filename(export.title) or "document"}.pdf'
+        return Response(
+            content=content, media_type='application/pdf', headers=_attachment(filename)
         )
 
     @classmethod

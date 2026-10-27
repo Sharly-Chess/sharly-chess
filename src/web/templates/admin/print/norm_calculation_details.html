@@ -121,6 +121,9 @@
         </style>
     </head>
     <body>
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% endif %}
         {# Audit-reason key → translated text map (consumed by section 8). #}
         {% set reason_text = {
             'included': _('Counted toward the norm.'),

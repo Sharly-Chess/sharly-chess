@@ -78,6 +78,9 @@ from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.admin.account_admin_controller import AccountAdminController
 from web.controllers.index_controller import IndexController
+from web.controllers.document_pdf_source_controller import (
+    DocumentPdfSourceController,
+)
 from web.controllers.qrcode_controller import QRCodeController
 from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.input_user_controller import InputUserController
@@ -123,6 +126,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     PlayerAdminController,
     DisplayControllerAdminController,
     QRCodeController,
+    DocumentPdfSourceController,
     AccountAdminController,
     ProfileController,
     static_files_router,
