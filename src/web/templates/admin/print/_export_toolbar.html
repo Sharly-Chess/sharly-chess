@@ -1,0 +1,111 @@
+<link rel="stylesheet" href="{{ url_for('static', file_path=export_toolbar_icons) }}">
+<style>
+    @media screen {
+        html {
+            padding-top: var(--document-export-toolbar-height, 44px);
+        }
+    }
+    .document-export-toolbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-sizing: border-box;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 6px 12px;
+        background-color: #F1F3F5;
+        border-bottom: 1px solid #CED4DA;
+    }
+    .document-export-toolbar * {
+        background-color: transparent;
+    }
+    .document-export-toolbar .document-export-heading {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .document-export-toolbar .document-export-title {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        font-weight: bold;
+        color: #343A40;
+    }
+    .document-export-toolbar .document-export-notes,
+    .document-export-toolbar .document-export-notes * {
+        margin-top: 2px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-style: italic;
+        line-height: 1.35;
+        color: #495057;
+    }
+    .document-export-toolbar .document-export-buttons {
+        display: flex;
+        flex: 0 0 auto;
+        border: 1px solid #212529;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .document-export-toolbar button {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        line-height: 1;
+        color: #212529;
+        border: none;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+    .document-export-toolbar button + button {
+        border-left: 1px solid #212529;
+    }
+    .document-export-toolbar button .bi {
+        font-size: 13px;
+        color: inherit;
+    }
+    .document-export-toolbar button:hover {
+        color: #FFFFFF;
+        background-color: #212529;
+    }
+    .document-export-toolbar button:disabled {
+        opacity: 0.65;
+        cursor: progress;
+    }
+    .document-export-toolbar button[hidden] {
+        display: none;
+    }
+    @media print {
+        .document-export-toolbar {
+            display: none !important;
+        }
+    }
+</style>
+<div class="document-export-toolbar"{% if word_export_url %} data-word-export-url="{{ word_export_url }}"{% endif %}{% if pdf_export_url %} data-pdf-export-url="{{ pdf_export_url }}"{% endif %}>
+    <div class="document-export-heading">
+        <span class="document-export-title"></span>
+        {% if document_notes %}
+            <div class="document-export-notes">{{ document_notes }}</div>
+        {% endif %}
+    </div>
+    <div class="document-export-buttons">
+        <button type="button" data-export="print" title="{{ _('Print the document') }}">
+            <i class="bi bi-printer"></i>{{ _('Print') }}
+        </button>
+        <button type="button" data-export="pdf" hidden title="{{ _('Download the document as a PDF file') }}" data-error-message="{{ _('The PDF file could not be generated.') }}">
+            <i class="bi bi-download"></i>{{ _('PDF') }}
+        </button>
+        <button type="button" data-export="word" hidden title="{{ _('Download the document as a Word file, with the values entered in its fields') }}" data-error-message="{{ _('The Word file could not be generated.') }}">
+            <i class="bi bi-download"></i>{{ _('Word') }}
+        </button>
+    </div>
+</div>
+<script src="{{ url_for('static', file_path='/js/document_export.js') }}?version={{ export_toolbar_version }}"></script>

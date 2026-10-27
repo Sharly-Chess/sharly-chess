@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, date
 from functools import cached_property
 from typing import Any, TYPE_CHECKING
 
-from common import BASE_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -13,12 +12,13 @@ from data.account import Account
 from data.event import Event
 from data.player import TournamentPlayer
 from data.print_documents import PrintOption
+from data.print_documents.fonts import PRINT_FONT_FAMILY, print_font_faces
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_DIR
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.entity import IdentifiableEntity
 from utils.enum import RoleType, PlayerRatingType
-from utils.file import image_file_inline_url, ttf_file_inline_url
+from utils.file import image_file_inline_url
 from utils.time_control import trf25_to_human_readable
 
 if TYPE_CHECKING:
@@ -207,13 +207,10 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         self.set_ffe_document(ffe_document)
-        font_file = (
-            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-        )
         return {
             'sharly_chess_config': SharlyChessConfig(),
-            'font_family': font_file.stem,
-            'font_url': ttf_file_inline_url(font_file),
+            'font_family': PRINT_FONT_FAMILY,
+            'font_faces': print_font_faces(),
             'ffe_logo_url': image_file_inline_url(
                 PLUGIN_DIR / 'static/images/ffe-text.png'
             ),

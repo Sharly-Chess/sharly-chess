@@ -8,6 +8,9 @@
         </style>
     </head>
     <body>
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% endif %}
         <h1>{{ _('All Chess960 positions') }}</h1>
         <div class="positions-wrapper">
             {% for number, svg in positions.items() %}

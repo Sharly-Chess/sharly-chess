@@ -81,6 +81,7 @@ from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
+from web.controllers.admin.event_documents_controller import export_toolbar_context
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard
@@ -1805,7 +1806,11 @@ class ChampionshipAdminController(BaseAdminController):
             )
             print_options.append(type(option)(championship, option_value))
         print_document = document_type(championship, print_options)
-        context = {'document': print_document} | self._document_context(print_document)
+        context = (
+            {'document': print_document}
+            | self._document_context(print_document)
+            | export_toolbar_context(request)
+        )
         return StreamingHTMXTemplate(
             template_name=print_document.template_name, context=context
         )

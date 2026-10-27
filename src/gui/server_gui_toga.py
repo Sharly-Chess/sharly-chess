@@ -52,8 +52,10 @@ from common.logger import get_logger
 from common.updaters.sparkle_updater import SparkleUpdater
 from common.updaters.version_updater import VersionUpdater
 from common.updaters.windows_updater import WindowsUpdater
+from data.print_documents.pdf_rendering import PdfRenderers
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
+from gui.pdf_renderer import TogaPdfRenderer
 from gui.selection_popup import limit_popup_height
 from gui.web_view_background import show_window_through
 from utils import Utils
@@ -478,6 +480,7 @@ class SharlyChessServerToga(toga.App):
     # --- Toga lifecycle ---
     def startup(self) -> None:
         SharlyChessConfig().load_and_set_env()
+        PdfRenderers.register(TogaPdfRenderer(self.loop))
 
         # The web views are built once and reused by every content: rebuilding
         # the one of the logs would lose the logs it holds.
