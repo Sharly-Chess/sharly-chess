@@ -331,6 +331,43 @@ class NationalPlayerDatabase(LocalSourcePlayerDatabase, ABC):
         )
         return [self._get_player_from_row(row) for row in self.fetchall()]
 
+    def get_result_count(
+        self,
+        string: str,
+        limit: int,
+        filters: dict | None = None,
+    ) -> int:
+        tokens: list[str] = [
+            search_key(token) for token in re.split(r'\s+', string.strip())
+        ]
+        filter_conditions, filter_params = self._process_filters(filters or {})
+        token_conditions: list[str] = []
+        params: list[Any] = list(filter_params)
+        for token in tokens:
+            expressions = ['(last_name_key LIKE ?)', '(first_name_key LIKE ?)']
+            params += [f'%{token}%', f'%{token}%']
+            expressions.append('(national_id = ?)')
+            params.append(token)
+            with suppress(ValueError):
+                fide_id = int(token)
+                expressions.append('(fide_id = ?)')
+                params.append(fide_id)
+            token_conditions.append(f'({" OR ".join(expressions)})')
+        conditions = ' AND '.join(filter_conditions + token_conditions) or '1'
+
+        query: str = f"""
+        SELECT COUNT(*) as result_count
+        FROM (
+            SELECT 1
+            FROM player
+            WHERE {conditions}
+            LIMIT ?
+        );"""
+        params.append(limit)
+
+        self.execute(query, tuple(params))
+        return self.fetchone().get('result_count')
+
     @staticmethod
     def _process_filters(filters: dict) -> tuple[list[str], list[Any]]:
         conditions: list[str] = []

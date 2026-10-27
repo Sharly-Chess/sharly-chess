@@ -128,6 +128,12 @@ class NationalDataSource(LocalDataSource, ABC):
         with self.national_database_type() as database:
             return database.get_stored_player_by_national_id(player_source_id)
 
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> StoredPlayer | None:
+        with self.national_database_type() as database:
+            return database.get_stored_players_by_national_id(player_source_ids)
+
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         return stored_player.national_id or ''
 
