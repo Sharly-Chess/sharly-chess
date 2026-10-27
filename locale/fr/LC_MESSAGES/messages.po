@@ -7901,7 +7901,7 @@ msgid "Quit"
 msgstr "Quitter"
 
 msgid "Quit Sharly Chess?"
-msgstr "Quitter Sharly Chess ?"
+msgstr "Quitter Sharly Chess ?"
 
 msgid "R"
 msgstr "R"
@@ -10544,7 +10544,7 @@ msgid "The selected {competitors} have been merged."
 msgstr "Les {competitors} sélectionnés ont été fusionnés."
 
 msgid "The server will stop: the application will no longer be reachable from the browsers, the screens and the other computers."
-msgstr "Le serveur va s'arrêter : l'application ne sera plus accessible depuis les navigateurs, les écrans et les autres ordinateurs."
+msgstr "Le serveur va s'arrêter : l'application ne sera plus accessible depuis les navigateurs, les écrans et les autres ordinateurs."
 
 msgid "The settings are set and can no longer be changed."
 msgstr "Les paramètres sont fixés et ne peuvent plus être modifiés."
