@@ -8078,6 +8078,12 @@ msgstr ""
 msgid "Quick-apply a tie-break set (replace actual tie-breaks)"
 msgstr ""
 
+msgid "Quit"
+msgstr ""
+
+msgid "Quit Sharly Chess?"
+msgstr ""
+
 msgid "R"
 msgstr ""
 
@@ -10755,6 +10761,9 @@ msgstr ""
 msgid "The selected {competitors} have been merged."
 msgstr ""
 
+msgid "The server will stop: the application will no longer be reachable from the browsers, the screens and the other computers."
+msgstr ""
+
 msgid "The settings are set and can no longer be changed."
 msgstr ""
 
@@ -12264,9 +12273,6 @@ msgid "Warn on the players tab when the rating lists give some players a differe
 msgstr ""
 
 msgid "Warning: all hours for this timer will be permanently deleted!"
-msgstr ""
-
-msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
