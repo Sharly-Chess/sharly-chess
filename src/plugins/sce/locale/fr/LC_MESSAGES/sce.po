@@ -396,6 +396,9 @@ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 msgid "Synchronize players"
 msgstr "Synchroniser les joueur·euses"
 
+msgid "The player has just been changed on Sharly-Chess.com, check the values again before choosing."
+msgstr "Le·la joueur·euse vient d'être modifié·e sur Sharly-Chess.com, vérifiez à nouveau les valeurs avant de choisir."
+
 msgid "These players are no longer registered on Sharly-Chess.com, but they have already played. Withdraw them from the rest of the tournament, or keep them and register them again on Sharly-Chess.com."
 msgstr "Ces joueur·euses ne sont plus inscrit·es sur Sharly-Chess.com, mais il·elles ont déjà joué. Déclarez-les forfait pour la suite du tournoi, ou conservez-les et inscrivez-les de nouveau sur Sharly-Chess.com."
 

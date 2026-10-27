@@ -23,6 +23,10 @@ logger = get_logger()
 
 _ONGOING_EVENTS_UNIQ_IDS: set[str] = set()
 _TIMEOUT_THREADS: dict[str, Timer] = {}
+# Events whose next sync is run at once because another computer changed some
+# registrations during the previous one. That sync is not followed by another
+# immediate one, so that two computers changing the same player cannot loop.
+_STALE_RESYNC_EVENTS_UNIQ_IDS: set[str] = set()
 
 
 def is_sync_ongoing(event_uniq_id: str) -> bool:
@@ -70,6 +74,9 @@ def sync_event(event_uniq_id: str) -> None:
     time.sleep(0.5)
 
     event: Event | None = None
+    is_stale_resync = event_uniq_id in _STALE_RESYNC_EVENTS_UNIQ_IDS
+    _STALE_RESYNC_EVENTS_UNIQ_IDS.discard(event_uniq_id)
+    resync_now = False
     try:
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
@@ -78,8 +85,10 @@ def sync_event(event_uniq_id: str) -> None:
         if not NetworkMonitor.connected():
             _exit_with_status(event, NetworkFailureSCESyncStatus())
             return
-        status = SCESession(event).sync_event()
+        session = SCESession(event)
+        status = session.sync_event()
         _exit_with_status(event, status)
+        resync_now = bool(session.stale_count) and not is_stale_resync
     except Exception as e:
         logger.exception(e)
         if event:
@@ -91,7 +100,10 @@ def sync_event(event_uniq_id: str) -> None:
         _ONGOING_EVENTS_UNIQ_IDS.discard(event_uniq_id)
         if event:
             plugin_data = SCEUtils.get_event_plugin_data(event)
-            if plugin_data.auto_player_sync:
+            if resync_now:
+                _STALE_RESYNC_EVENTS_UNIQ_IDS.add(event_uniq_id)
+                schedule_sync(event, force=True)
+            elif plugin_data.auto_player_sync:
                 schedule_sync(event)
         _publish_upload_event()
 

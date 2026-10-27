@@ -26,6 +26,19 @@ from plugins.sce.sce_session import SCESession, _BatchSyncCounters
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 
+UPDATED_AT = '2026-05-14T10:00:00.123Z'
+
+STALE_RESULT = {
+    'index': 0,
+    'status': 'error',
+    'error': {
+        'code': 'precondition_failed',
+        'message': 'Registration changed since expected_updated_at',
+        'current_updated_at': '2026-05-14T10:00:02.418Z',
+    },
+}
+
+
 def make_sync_data(
     tid: str = 'T1',
     last_name: str = 'Doe',
@@ -444,7 +457,7 @@ class TestPartialUpdates:
         assert op['tournament_id'] == 'T1'
         assert op['data'] == {}
 
-    def test_forced_tournament_and_local_change_send_two_partial_updates(
+    def test_forced_tournament_and_local_change_send_one_update(
         self, session, builder, counters, monkeypatch
     ):
         last = make_sync_data(tid='T1', club='Old')
@@ -454,10 +467,13 @@ class TestPartialUpdates:
         sce = make_sync_data(tid='T2', club='Old')
         _patch_from_player(monkeypatch, local)
 
-        session._plan_player_sync(player, sce, builder, counters)
+        session._plan_player_sync(player, sce, builder, counters, UPDATED_AT)
 
-        assert [op.op_dict['data'] for op in builder.pending] == [{}, {'club': 'New'}]
-        assert all(op.op_dict['tournament_id'] == 'T1' for op in builder.pending)
+        assert len(builder) == 1
+        op = builder.pending[0].op_dict
+        assert op['tournament_id'] == 'T1'
+        assert op['data'] == {'club': 'New'}
+        assert op['expected_updated_at'] == UPDATED_AT
 
     def test_create_still_sends_the_whole_record(
         self, session, builder, counters, monkeypatch
@@ -472,3 +488,118 @@ class TestPartialUpdates:
             k: v for k, v in local.to_sce_data().items() if k != 'tournament_id'
         }
         assert builder.pending[0].op_dict['data'] == expected
+
+
+# ── Writes made from a stale read ───────────────────────────────────────────
+
+
+@pytest.mark.unit
+class TestExpectedUpdatedAt:
+    """Updates carry the `updated_at` of the registration they were computed
+    from, and a refusal because it changed since is merged again at the next
+    sync rather than reported as a failure."""
+
+    def test_create_carries_no_precondition(
+        self, session, builder, counters, monkeypatch
+    ):
+        _patch_from_player(monkeypatch, make_sync_data(tid='T1'))
+        player = make_player()
+
+        session._plan_player_sync(player, None, builder, counters, UPDATED_AT)
+
+        assert 'expected_updated_at' not in builder.pending[0].op_dict
+
+    def test_local_push_carries_the_read_updated_at(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        _patch_from_player(monkeypatch, make_sync_data(tid='T1', club='New'))
+
+        session._plan_player_sync(
+            player, make_sync_data(tid='T1', club='Old'), builder, counters, UPDATED_AT
+        )
+
+        assert builder.pending[0].op_dict['expected_updated_at'] == UPDATED_AT
+
+    def test_merge_carries_the_read_updated_at(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', last_name='Doe', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        _patch_from_player(
+            monkeypatch, make_sync_data(tid='T1', last_name='Smith', club='Old')
+        )
+        sce = make_sync_data(tid='T1', last_name='Doe', club='New')
+
+        session._plan_player_sync(player, sce, builder, counters, UPDATED_AT)
+
+        assert builder.pending[0].op_dict['expected_updated_at'] == UPDATED_AT
+
+    def test_forced_tournament_alone_carries_the_read_updated_at(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd, has_real_pairings=True)
+        _patch_from_player(monkeypatch, make_sync_data(tid='T1'))
+
+        session._plan_player_sync(
+            player, make_sync_data(tid='T2'), builder, counters, UPDATED_AT
+        )
+
+        assert len(builder) == 1
+        assert builder.pending[0].op_dict['expected_updated_at'] == UPDATED_AT
+
+    def test_stale_refusal_is_counted_apart_and_keeps_last_sync_data(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        _patch_from_player(monkeypatch, make_sync_data(tid='T1', club='New'))
+
+        session._plan_player_sync(
+            player, make_sync_data(tid='T1', club='Old'), builder, counters, UPDATED_AT
+        )
+        builder.pending[0].on_error(STALE_RESULT)
+
+        assert counters.stale_count == 1
+        assert counters.failure_count == 0
+        assert player.plugin_data[PLUGIN_NAME].last_sync_data == last
+
+    def test_other_refusal_is_a_failure(self, session, builder, counters, monkeypatch):
+        last = make_sync_data(tid='T1', club='Old')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        _patch_from_player(monkeypatch, make_sync_data(tid='T1', club='New'))
+
+        session._plan_player_sync(
+            player, make_sync_data(tid='T1', club='Old'), builder, counters, UPDATED_AT
+        )
+        builder.pending[0].on_error(
+            {'index': 0, 'status': 'error', 'error': {'code': 'bad_request'}}
+        )
+
+        assert counters.stale_count == 0
+        assert counters.failure_count == 1
+
+    def test_conflict_keeps_the_read_updated_at(
+        self, session, builder, counters, monkeypatch
+    ):
+        last = make_sync_data(tid='T1', last_name='Doe')
+        pd = SCEPlayerPluginData(id='SCE-1', last_sync_data=last)
+        player = make_player(plugin_data=pd)
+        _patch_from_player(monkeypatch, make_sync_data(tid='T1', last_name='Smith'))
+
+        session._plan_player_sync(
+            player,
+            make_sync_data(tid='T1', last_name='Jones'),
+            builder,
+            counters,
+            UPDATED_AT,
+        )
+
+        assert player.plugin_data[PLUGIN_NAME].conflict_updated_at == UPDATED_AT

@@ -393,6 +393,9 @@ msgstr ""
 msgid "Synchronize players"
 msgstr ""
 
+msgid "The player has just been changed on Sharly-Chess.com, check the values again before choosing."
+msgstr ""
+
 msgid "These players are no longer registered on Sharly-Chess.com, but they have already played. Withdraw them from the rest of the tournament, or keep them and register them again on Sharly-Chess.com."
 msgstr ""
 

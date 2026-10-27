@@ -21,6 +21,17 @@ from collections.abc import Callable, Generator
 BATCH_CHUNK_SIZE = 100
 
 
+def _with_precondition(
+    op_dict: dict[str, Any], expected_updated_at: str | None
+) -> dict[str, Any]:
+    """Makes the op apply only if the registration still has the
+    `updated_at` it was read with; otherwise the server refuses it with
+    `precondition_failed`."""
+    if expected_updated_at:
+        op_dict['expected_updated_at'] = expected_updated_at
+    return op_dict
+
+
 @dataclass
 class _PendingOp:
     """An op queued for batch dispatch plus the callbacks that apply its result.
@@ -31,7 +42,8 @@ class _PendingOp:
 
     `on_error(result)` is invoked with the per-op error dict
     (`{index, status: 'error', error: {code, message}}`). Lets the caller
-    distinguish 409 (duplicate) from other failures.
+    distinguish 409 (duplicate) and 412 (changed since read, see
+    `is_stale_result`) from other failures.
 
     `log_label` is a short identifier (typically the player's display name)
     used when logging batch outcomes.
@@ -85,16 +97,20 @@ class SCEBatchBuilder:
         on_success: Callable[[dict[str, Any]], None],
         on_error: Callable[[dict[str, Any]], None],
         log_label: str,
+        expected_updated_at: str | None = None,
     ) -> None:
         op_data = {k: v for k, v in data.items() if k != 'tournament_id'}
         self.pending.append(
             _PendingOp(
-                op_dict={
-                    'op': 'update',
-                    'registration_id': registration_id,
-                    'tournament_id': tournament_id,
-                    'data': op_data,
-                },
+                op_dict=_with_precondition(
+                    {
+                        'op': 'update',
+                        'registration_id': registration_id,
+                        'tournament_id': tournament_id,
+                        'data': op_data,
+                    },
+                    expected_updated_at,
+                ),
                 on_success=on_success,
                 on_error=on_error,
                 log_label=log_label,
@@ -107,10 +123,14 @@ class SCEBatchBuilder:
         on_success: Callable[[dict[str, Any]], None],
         on_error: Callable[[dict[str, Any]], None],
         log_label: str,
+        expected_updated_at: str | None = None,
     ) -> None:
         self.pending.append(
             _PendingOp(
-                op_dict={'op': 'delete', 'registration_id': registration_id},
+                op_dict=_with_precondition(
+                    {'op': 'delete', 'registration_id': registration_id},
+                    expected_updated_at,
+                ),
                 on_success=on_success,
                 on_error=on_error,
                 log_label=log_label,
@@ -135,3 +155,10 @@ class SCEBatchBuilder:
                 op.on_success(result)
             else:
                 op.on_error(result)
+
+
+def is_stale_result(result: dict[str, Any]) -> bool:
+    """True when an op was refused because the registration changed on
+    Sharly-Chess.com since it was read: nothing failed, the next sync merges
+    the newer data."""
+    return (result.get('error') or {}).get('code') == 'precondition_failed'

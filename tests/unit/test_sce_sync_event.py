@@ -28,6 +28,7 @@ from plugins.sce.sce_data import (
     SCETournamentPluginData,
 )
 from plugins.sce.sce_session import SCESession
+from plugins.sce.sce_sync_status import SuccessSCESyncStatus
 from plugins.sce.utils import SCEUtils
 
 from tests.test_config import TestUtils
@@ -101,6 +102,9 @@ def _add_local_player_with_sce_id(
         return player_id
 
 
+REGISTRATION_UPDATED_AT = '2026-05-14T09:58:41.007Z'
+
+
 def _canned_registration(sce_player_id: str) -> dict:
     """Shape of one registration in the SC.com `data['tournaments']`
     payload. Includes all keys the FFE + FRA-schools augment hooks read
@@ -121,6 +125,7 @@ def _canned_registration(sce_player_id: str) -> dict:
         'comment': None,
         'gender': None,
         'checked_in': False,
+        'updated_at': REGISTRATION_UPDATED_AT,
         # FFE plugin
         'ffe_licence_type': None,
         'ffe_league': None,
@@ -245,6 +250,46 @@ class TestSyncEventDeleteRetry(TestCase):
             epd.deleted_player_ids,
             'Already-deleted-on-SC.com (404) should not be retried',
         )
+
+    def test_delete_carries_the_read_updated_at(self):
+        session = self._build_session_with_canned_batch(
+            sce_player_id='SCE-OK',
+            batch_response={'results': [{'index': 0, 'status': 'ok'}]},
+        )
+
+        session.sync_event()
+
+        ops = session._run_with_token_validation.call_args.args[0].keywords['ops']  # type: ignore[attr-defined]
+        assert ops == [
+            {
+                'op': 'delete',
+                'registration_id': 'SCE-OK',
+                'expected_updated_at': REGISTRATION_UPDATED_AT,
+            }
+        ]
+
+    def test_stale_delete_is_retried_without_failing_the_sync(self):
+        session = self._build_session_with_canned_batch(
+            sce_player_id='SCE-STALE',
+            batch_response={
+                'results': [
+                    {
+                        'index': 0,
+                        'status': 'error',
+                        'error': {
+                            'code': 'precondition_failed',
+                            'message': 'Registration changed since expected_updated_at',
+                        },
+                    }
+                ]
+            },
+        )
+
+        status = session.sync_event()
+
+        self.assertIsInstance(status, SuccessSCESyncStatus)
+        self.assertEqual(session.stale_count, 1)
+        self.assertIn('SCE-STALE', self._reload_event_plugin_data().deleted_player_ids)
 
     def test_successful_delete_clears_from_deleted_player_ids(self):
         session = self._build_session_with_canned_batch(

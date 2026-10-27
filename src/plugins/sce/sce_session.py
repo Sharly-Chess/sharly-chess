@@ -15,6 +15,7 @@ from litestar.status_codes import (
     HTTP_403_FORBIDDEN,
     HTTP_200_OK,
     HTTP_404_NOT_FOUND,
+    HTTP_412_PRECONDITION_FAILED,
 )
 from requests import Session, HTTPError, Response
 
@@ -36,7 +37,7 @@ from database.sqlite.event.event_store import (
 from plugins.fra_schools.fra_schools import FRASchoolsPlugin
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_CLIENT_ID
-from plugins.sce.sce_batch import SCEBatchBuilder
+from plugins.sce.sce_batch import SCEBatchBuilder, is_stale_result
 from plugins.sce.sce_event_status import (
     NotFoundSCEEventStatus,
     UnexpectedHttpSCEEventStatus,
@@ -98,6 +99,11 @@ REQUIRED_SCOPES = [
 ]
 
 
+class SCEStaleRegistrationException(SharlyChessException):
+    """Raised when a write is refused because the registration changed on
+    Sharly-Chess.com since it was read."""
+
+
 class _BatchSyncCounters:
     """Mutable counter object updated by batch-op result callbacks.
 
@@ -110,6 +116,7 @@ class _BatchSyncCounters:
         self.conflict_count: int = 0
         self.duplicate_count: int = 0
         self.failure_count: int = 0
+        self.stale_count: int = 0
 
 
 class SCESession(Session):
@@ -119,6 +126,9 @@ class SCESession(Session):
         super().__init__()
         self.event = event
         self.new_check_ins_tournament_sce_ids: set[str] = set()
+        # Ops of the last sync refused because another computer changed the
+        # registration first
+        self.stale_count: int = 0
 
     @property
     def tokens(self) -> SCETokens:
@@ -370,11 +380,15 @@ class SCESession(Session):
         data: SCEPlayerSyncData,
         sce_tournament_id: str,
         sce_player_id: str,
+        expected_updated_at: str | None,
     ) -> requests.Response:
+        json_data = data.to_sce_data()
+        if expected_updated_at:
+            json_data['expected_updated_at'] = expected_updated_at
         return requests.patch(
             self.registration_url(sce_tournament_id, sce_player_id),
             headers=self.api_headers,
-            json=data.to_sce_data(),
+            json=json_data,
             timeout=SCE_TIMEOUT,
         )
 
@@ -383,15 +397,25 @@ class SCESession(Session):
         data: SCEPlayerSyncData,
         sce_tournament_id: str,
         sce_player_id: str,
+        expected_updated_at: str | None = None,
     ) -> None:
-        self._run_with_token_validation(
+        """Raises SCEStaleRegistrationException if the registration no
+        longer has `expected_updated_at` on Sharly-Chess.com."""
+        response = self._run_with_token_validation(
             partial(
                 self._update_registration_request,
                 data=data,
                 sce_tournament_id=sce_tournament_id,
                 sce_player_id=sce_player_id,
-            )
+                expected_updated_at=expected_updated_at,
+            ),
+            skip_validation=True,
         )
+        if response.status_code == HTTP_412_PRECONDITION_FAILED:
+            raise SCEStaleRegistrationException(
+                f'Registration [{sce_player_id}] changed on SC.com since read'
+            )
+        self.validate_api_response(response)
 
     def _delete_registration_request(
         self, sce_tournament_id: str, sce_player_id: str
@@ -466,6 +490,7 @@ class SCESession(Session):
         plugin_data.removal_pending = False
         plugin_data.last_sync_data = None
         plugin_data.conflict_sync_data = None
+        plugin_data.conflict_updated_at = None
         SCEUtils.update_player_plugin_data(player, plugin_data)
 
     # -------------------------------------------------------------------------
@@ -587,14 +612,27 @@ class SCESession(Session):
         sce_sync_data: SCEPlayerSyncData | None,
         builder: SCEBatchBuilder,
         counters: _BatchSyncCounters,
+        sce_updated_at: str | None = None,
     ) -> None:
         """Emits create/update/delete ops into `builder` and registers
         callbacks that mutate plugin_data + counters after the server
         response arrives. Local-only effects (soft-delete, hard-delete,
-        update_local_player) run inline since they don't touch SC.com."""
+        update_local_player) run inline since they don't touch SC.com.
+
+        `sce_updated_at` is the `updated_at` of the registration read as
+        `sce_sync_data`: updates apply only if nobody changed it since."""
 
         def log_operation(message: str) -> None:
             self._log_player_sync_operation(player, message)
+
+        def count_failure(result: dict[str, Any], message: str) -> None:
+            if is_stale_result(result):
+                counters.stale_count += 1
+                log_operation('Changed on SC.com meanwhile, merging again')
+                return
+            err = result.get('error') or {}
+            counters.failure_count += 1
+            log_operation(f'{message}: {err.get("message", "unknown error")}')
 
         log_name = player.last_name + (
             f' {player.first_name}' if player.first_name else ''
@@ -650,12 +688,20 @@ class SCESession(Session):
         # Branch C: both ends present → tournament force + 3-way merge.
         local_sync_data = SCEPlayerSyncData.from_player(player)
 
-        if (
+        # A player who has played stays in their tournament. An update sent
+        # below carries the tournament and moves them back; otherwise
+        # force_tournament() sends the move alone, as a second op on the same
+        # registration would be refused once the first has changed it.
+        tournament_forced = (
             local_sync_data.tournament_id != sce_sync_data.tournament_id
             and player.has_real_pairings
-        ):
-            forced_sync_data = copy.deepcopy(sce_sync_data)
-            forced_sync_data.tournament_id = local_sync_data.tournament_id
+        )
+        if tournament_forced:
+            sce_sync_data.tournament_id = local_sync_data.tournament_id
+
+        def force_tournament() -> None:
+            if not tournament_forced:
+                return
 
             def on_force_success(result: dict[str, Any]) -> None:
                 log_operation(
@@ -663,21 +709,17 @@ class SCESession(Session):
                 )
 
             def on_force_error(result: dict[str, Any]) -> None:
-                err = result.get('error') or {}
-                counters.failure_count += 1
-                log_operation(
-                    f'Tournament force failed: {err.get("message", "unknown error")}'
-                )
+                count_failure(result, 'Tournament force failed')
 
             builder.add_update(
                 registration_id=sce_id,
                 tournament_id=local_sync_data.tournament_id,
-                data=forced_sync_data.changed_sce_data(sce_sync_data),
+                data={},
                 on_success=on_force_success,
                 on_error=on_force_error,
                 log_label=log_name,
+                expected_updated_at=sce_updated_at,
             )
-            sce_sync_data.tournament_id = local_sync_data.tournament_id
 
         last_sync_data = plugin_data.last_sync_data
         local_check_in_updated = (
@@ -696,6 +738,7 @@ class SCESession(Session):
                     self.new_check_ins_tournament_sce_ids.add(tid)
 
         if local_sync_data == sce_sync_data:
+            force_tournament()
             if local_sync_data != last_sync_data:
                 finalise_save(local_sync_data)
             return
@@ -707,11 +750,7 @@ class SCESession(Session):
                 log_operation('Local changes uploaded (SC.com)')
 
             def on_local_push_error(result: dict[str, Any]) -> None:
-                err = result.get('error') or {}
-                counters.failure_count += 1
-                log_operation(
-                    f'SC.com update failed: {err.get("message", "unknown error")}'
-                )
+                count_failure(result, 'SC.com update failed')
 
             builder.add_update(
                 registration_id=sce_id,
@@ -720,11 +759,13 @@ class SCESession(Session):
                 on_success=on_local_push_success,
                 on_error=on_local_push_error,
                 log_label=log_name,
+                expected_updated_at=sce_updated_at,
             )
             return
 
         if local_sync_data == last_sync_data:
             # Modified on SC.com → pull to local (no HTTP needed)
+            force_tournament()
             self.update_local_player(player, sce_sync_data)
             finalise_save(sce_sync_data)
             log_operation('SC.com changes imported (local)')
@@ -743,11 +784,7 @@ class SCESession(Session):
                 log_operation('Dual changes merged (SC.com + local)')
 
             def on_merge_error(result: dict[str, Any]) -> None:
-                err = result.get('error') or {}
-                counters.failure_count += 1
-                log_operation(
-                    f'Dual-change merge update failed: {err.get("message", "unknown error")}'
-                )
+                count_failure(result, 'Dual-change merge update failed')
 
             builder.add_update(
                 registration_id=sce_id,
@@ -756,9 +793,12 @@ class SCESession(Session):
                 on_success=on_merge_success,
                 on_error=on_merge_error,
                 log_label=log_name,
+                expected_updated_at=sce_updated_at,
             )
         except SharlyChessException as e:
+            force_tournament()
             plugin_data.conflict_sync_data = sce_sync_data
+            plugin_data.conflict_updated_at = sce_updated_at
             SCEUtils.update_player_plugin_data(
                 player, plugin_data, write_stored_object=True
             )
@@ -848,6 +888,7 @@ class SCESession(Session):
                 p_plugin_data.removal_pending = False
                 p_plugin_data.last_sync_data = None
                 p_plugin_data.conflict_sync_data = None
+                p_plugin_data.conflict_updated_at = None
                 SCEUtils.update_player_plugin_data(player, p_plugin_data)
             self._plan_player_sync(
                 player,
@@ -1119,6 +1160,7 @@ class SCESession(Session):
         update_player_conflicts: bool,
     ) -> None:
         sce_player_sync_data_by_id: dict[str, SCEPlayerSyncData] = {}
+        sce_updated_at_by_id: dict[str, str | None] = {}
         if update_player_conflicts:
             sce_tournament_ids = {
                 SCEUtils.get_tournament_plugin_data(tournament).id
@@ -1132,6 +1174,9 @@ class SCESession(Session):
                         SCEPlayerSyncData.from_sce_data(
                             self.event, registration_data, sce_tournament_id
                         )
+                    )
+                    sce_updated_at_by_id[registration_data['id']] = (
+                        registration_data.get('updated_at')
                     )
 
         for tournament in self.event.tournaments:
@@ -1162,11 +1207,13 @@ class SCESession(Session):
                 sce_player_sync_data = sce_player_sync_data_by_id.get(
                     player_plugin_data.id
                 )
-                if (
-                    sce_player_sync_data
-                    and sce_player_sync_data != player_plugin_data.conflict_sync_data
+                sce_updated_at = sce_updated_at_by_id.get(player_plugin_data.id)
+                if sce_player_sync_data and (
+                    sce_player_sync_data != player_plugin_data.conflict_sync_data
+                    or sce_updated_at != player_plugin_data.conflict_updated_at
                 ):
                     player_plugin_data.conflict_sync_data = sce_player_sync_data
+                    player_plugin_data.conflict_updated_at = sce_updated_at
                     SCEUtils.update_player_plugin_data(player, player_plugin_data)
 
     def _log_player_data_operation(self, data: SCEPlayerSyncData, message: str) -> None:
@@ -1205,6 +1252,9 @@ class SCESession(Session):
         # Registrations of the whole event: a player moved to a tournament
         # this computer does not hold is told apart from a deleted one.
         sce_player_sync_data_by_id: dict[str, SCEPlayerSyncData] = {}
+        # Sent back with each write, so that it is refused if the registration
+        # changed since this download
+        sce_updated_at_by_id: dict[str, str | None] = {}
         for tournament_data in data['tournaments']:
             sce_id = tournament_data['id']
             for registration_data in tournament_data['registrations']:
@@ -1212,6 +1262,9 @@ class SCESession(Session):
                     SCEPlayerSyncData.from_sce_data(
                         self.event, registration_data, sce_id, with_mail=True
                     )
+                )
+                sce_updated_at_by_id[registration_data['id']] = registration_data.get(
+                    'updated_at'
                 )
 
         local_sce_player_ids: list[str] = []
@@ -1301,6 +1354,11 @@ class SCESession(Session):
                         self._log_sync_operation(
                             f'Player [{lbl}] - Already deleted on SC.com (treated as success)'
                         )
+                    elif is_stale_result(r):
+                        batch_counters.stale_count += 1
+                        self._log_sync_operation(
+                            f'Player [{lbl}] - Changed on SC.com meanwhile, merging again'
+                        )
                     else:
                         batch_counters.failure_count += 1
                         self._log_sync_operation(
@@ -1313,6 +1371,7 @@ class SCESession(Session):
                     on_success=on_delete_success,
                     on_error=on_delete_error,
                     log_label=label,
+                    expected_updated_at=sce_updated_at_by_id[sce_player_id],
                 )
                 self._log_player_data_operation(sce_sync_data, 'Deletion (SC.com)')
             else:
@@ -1338,11 +1397,17 @@ class SCESession(Session):
             # underlying tournament_players_by_id dict.
             players = list(tournament.tournament_players)
             for player in players:
-                player_sce_id = SCEUtils.get_player_plugin_data(player).id
-                sync_data = sce_player_sync_data_by_id.get(player_sce_id or '')
-                self._plan_player_sync(player, sync_data, builder, batch_counters)
+                player_sce_id = SCEUtils.get_player_plugin_data(player).id or ''
+                self._plan_player_sync(
+                    player,
+                    sce_player_sync_data_by_id.get(player_sce_id),
+                    builder,
+                    batch_counters,
+                    sce_updated_at_by_id.get(player_sce_id),
+                )
         if not builder.is_empty():
             self.send_batch(builder)
+        self.stale_count = batch_counters.stale_count
         conflict_count = batch_counters.conflict_count
         duplicate_count += batch_counters.duplicate_count
         for sce_id in self.new_check_ins_tournament_sce_ids:
@@ -1365,6 +1430,11 @@ class SCESession(Session):
             message += f', {duplicate_count} duplicated players'
         if batch_counters.failure_count:
             message += f', {batch_counters.failure_count} changes not sent'
+        if batch_counters.stale_count:
+            message += (
+                f', {batch_counters.stale_count} changes to merge again'
+                ' (changed on SC.com meanwhile)'
+            )
         self._log_sync_operation(message, is_info=True)
         if batch_counters.failure_count:
             return OperationFailuresSCESyncStatus()

@@ -50,6 +50,7 @@ dirs: dict[str, Path] = {}
 failures: list[str] = []
 passes = 0
 sync_log: list[str] = []
+STALE_LOG = 'Changed on SC.com meanwhile'
 
 
 def run(computer: str, *args: str, interactive: bool = False) -> dict[str, Any]:
@@ -100,10 +101,25 @@ def player(computer: str, name: str, event: str | None = None) -> dict | None:
     return None
 
 
-def sync(computer: str, event: str | None = None) -> str:
-    result = run(computer, 'sync', *(['--event', event] if event else []))
+def sync_result(
+    computer: str, event: str | None = None, during: list[str] | None = None
+) -> dict[str, Any]:
+    """Runs one sync; `during` = METHOD PATH [JSON], an API request made with
+    the computer's tokens between its download and its writes."""
+    args = ['--event', event] if event else []
+    if during:
+        args += ['--during', *during]
+    result = run(computer, 'sync', *args)
     sync_log.extend(f'{computer}: {line}' for line in result['log'])
-    return result['status']
+    return result
+
+
+def sync(computer: str, event: str | None = None) -> str:
+    return sync_result(computer, event)['status']
+
+
+def refused(result: dict[str, Any]) -> bool:
+    return any(STALE_LOG in line for line in result['log'])
 
 
 def api(method: str, path: str, body: dict | None = None) -> dict[str, Any]:
@@ -153,6 +169,9 @@ def delete_live_registrations(prefix: str = 'LIVE') -> None:
 class Scenario:
     def __init__(self) -> None:
         self.tag = secrets.token_hex(3).upper()
+        # Writes refused as made from a stale read are expected only where
+        # the scenario makes a change during a sync
+        self.expects_stale = False
         self.t = {t['name']: t['sce_id'] for t in state('B')['tournaments']}
 
     def name(self, base: str) -> str:
@@ -232,6 +251,109 @@ def s_same_field_conflict(s: Scenario) -> None:
     check('B player has a conflict', b and b['conflict'], b)
     r = remote_by_name(p)
     check('SC.com keeps A value', r and r['club'] == 'Club A', r)
+
+
+def s_stale_update_merged(s: Scenario) -> None:
+    """A write refused because SC.com changed meanwhile is merged at once."""
+    s.expects_stale = True
+    p = s.name('STALE')
+    registration_id = s.register('T1', p)
+    sync('A')
+    run('A', 'edit', p, 'comment=Comment A')
+    url = s.registration_url('T1', registration_id)
+    result = sync_result('A', during=['PATCH', url, '{"club": "Club SC"}'])
+    check('change made during the sync', result['during_status'] == 200, result)
+    check('A update refused', refused(result), result['log'])
+    check('resync requested', result['resync_requested'], result)
+    check('not a failure', result['status'] == 'SUCCESS', result['status'])
+    r = remote_by_name(p)
+    check('SC.com keeps its club', r and r['club'] == 'Club SC', r)
+    status = sync('A')
+    check('resync succeeds', status == 'SUCCESS', status)
+    r = remote_by_name(p)
+    check(
+        'SC.com has both',
+        r and (r['club'], r['comment']) == ('Club SC', 'Comment A'),
+        r,
+    )
+    a = player('A', p)
+    check('A has both', a and (a['club'], a['comment']) == ('Club SC', 'Comment A'), a)
+
+
+def s_stale_same_field_conflict(s: Scenario) -> None:
+    """A field changed on SC.com during a sync that pushes the same field is
+    a conflict, not an overwrite."""
+    s.expects_stale = True
+    p = s.name('STALECONFLICT')
+    registration_id = s.register('T1', p)
+    sync('A')
+    run('A', 'edit', p, 'club=Club A')
+    url = s.registration_url('T1', registration_id)
+    result = sync_result('A', during=['PATCH', url, '{"club": "Club SC"}'])
+    check('A update refused', refused(result), result['log'])
+    r = remote_by_name(p)
+    check('SC.com value not overwritten', r and r['club'] == 'Club SC', r)
+    status = sync('A')
+    check('resync reports the conflict', 'CONFLICT' in (status or ''), status)
+    a = player('A', p)
+    check('A player has a conflict', a and a['conflict'], a)
+    check('A keeps its value', a and a['club'] == 'Club A', a)
+
+
+def s_stale_check_in_kept(s: Scenario) -> None:
+    """A check-in made on SC.com during a sync survives A's own push."""
+    s.expects_stale = True
+    p = s.name('STALECHECKIN')
+    registration_id = s.register('T1', p)
+    sync('A')
+    run('A', 'edit', p, 'comment=Comment A')
+    url = s.registration_url('T1', registration_id) + '/check-in'
+    result = sync_result('A', during=['POST', url])
+    check('A update refused', refused(result), result['log'])
+    sync('A')
+    r = remote_by_name(p)
+    check('still checked in on SC.com', r and r['checked_in'] is True, r)
+    check('comment pushed', r and r['comment'] == 'Comment A', r)
+    a = player('A', p)
+    check('A sees the check-in', a and a['check_in'] is True, a)
+
+
+def s_stale_delete(s: Scenario) -> None:
+    """A local deletion refused because SC.com changed meanwhile is sent
+    again at the next sync."""
+    s.expects_stale = True
+    p = s.name('STALEDEL')
+    registration_id = s.register('T2', p)
+    sync('B')
+    run('B', 'delete', p)
+    url = s.registration_url('T2', registration_id)
+    result = sync_result('B', during=['PATCH', url, '{"comment": "Edited"}'])
+    check('deletion refused', refused(result), result['log'])
+    check('resync requested', result['resync_requested'], result)
+    check('still on SC.com', remote_by_name(p) is not None)
+    check('still queued', registration_id in state('B')['deleted_player_ids'])
+    sync('B')
+    check('deleted on SC.com', remote_by_name(p) is None)
+    check('queue emptied', not state('B')['deleted_player_ids'])
+
+
+def s_move_paired_away_with_edit(s: Scenario) -> None:
+    """A player who has played, moved on SC.com and edited locally, is moved
+    back by the update that carries the edit."""
+    p = s.name('MOVEEDIT')
+    registration_id = s.register('T1', p)
+    sync('A')
+    run('A', 'pair', p, '1')
+    run('A', 'edit', p, 'comment=Comment A')
+    api(
+        'PATCH', s.registration_url('T1', registration_id), {'tournament_id': s.t['T3']}
+    )
+    result = sync_result('A')
+    check('nothing refused', not refused(result), result['log'])
+    check('sync succeeds', result['status'] == 'SUCCESS', result['status'])
+    r = remote_by_name(p)
+    check('back in T1 on SC.com', r and r['tournament_id'] == s.t['T1'], r)
+    check('comment pushed', r and r['comment'] == 'Comment A', r)
 
 
 def removed_after_playing(s: Scenario, base: str) -> tuple[str, int]:
@@ -421,11 +543,16 @@ SCENARIOS: dict[str, Callable[[Scenario], None]] = {
     'paired_removed_keep': s_paired_removed_keep,
     'move_unpaired_away': s_move_unpaired_away,
     'move_paired_away': s_move_paired_away,
+    'move_paired_away_with_edit': s_move_paired_away_with_edit,
     'sync_deletion_not_queued': s_sync_deletion_not_queued,
     'local_deletion_sent': s_local_deletion_sent,
     'conflicts_do_not_block': s_conflicts_do_not_block,
     'copied_event': s_copied_event,
     'ffe_leagues': s_ffe_leagues,
+    'stale_update_merged': s_stale_update_merged,
+    'stale_same_field_conflict': s_stale_same_field_conflict,
+    'stale_check_in_kept': s_stale_check_in_kept,
+    'stale_delete': s_stale_delete,
 }
 ALL_SCENARIOS: dict[str, Callable[[Scenario], None]] = {
     **SCENARIOS,
@@ -514,6 +641,11 @@ def main() -> None:
         scenario = Scenario()
         try:
             ALL_SCENARIOS[name](scenario)
+            if not scenario.expects_stale:
+                check(
+                    'no write refused as stale',
+                    not any(STALE_LOG in line for line in sync_log),
+                )
         except Exception:
             failures.append(f'{name}: exception')
             traceback.print_exc()
