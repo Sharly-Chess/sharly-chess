@@ -34,9 +34,14 @@ logger: Logger = get_logger()
 # of falling back to the first nav tab.
 PLUGINS_ADMIN_TAB = 'plugins'
 
-# The documentation website, on top of the application itself: the plugins pages
-# only open links of these hosts, all the others are rejected.
-DOCUMENTATION_HOSTS = ('sharly-chess.com', 'www.sharly-chess.com')
+# The documentation website (thp., and its old hosts, which redirect there), on top
+# of the application itself: the plugins pages only open links of these hosts, all
+# the others are rejected.
+DOCUMENTATION_HOSTS = (
+    'thp.sharly-chess.com',
+    'sharly-chess.com',
+    'www.sharly-chess.com',
+)
 #: The hosts of the project a page is allowed to open on top of those.
 PROJECT_HOSTS = ('discord.gg',)
 

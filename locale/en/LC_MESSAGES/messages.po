@@ -12889,10 +12889,10 @@ msgstr ""
 msgid "game points"
 msgstr ""
 
-msgid "https://sharly-chess.com/changelog/"
+msgid "https://thp.sharly-chess.com/changelog/"
 msgstr ""
 
-msgid "https://sharly-chess.com/getting-started/"
+msgid "https://thp.sharly-chess.com/getting-started/"
 msgstr ""
 
 msgid "in"

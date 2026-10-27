@@ -27,8 +27,8 @@
 
   <launchable type="desktop-id">com.sharlychess.SharlyChess.desktop</launchable>
 
-  <url type="homepage">https://sharly-chess.com</url>
-  <url type="help">https://sharly-chess.com/getting-started/</url>
+  <url type="homepage">https://thp.sharly-chess.com</url>
+  <url type="help">https://thp.sharly-chess.com/getting-started/</url>
   <url type="bugtracker">https://github.com/sharly-chess/sharly-chess</url>
 
   <content_rating type="oars-1.1" />
