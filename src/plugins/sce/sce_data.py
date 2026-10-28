@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, replace
 from datetime import datetime, date
 from functools import cached_property
 from typing import Any, ClassVar, Self
@@ -323,8 +323,27 @@ class SCEPlayerSyncData:
     ffe_league: str | None = None
     fra_school: SCEFraSchoolSyncData | None = None
 
+    # Fees, only imported from SC.com and left out of the sync comparisons
+    owed: float | None = field(default=None, compare=False)
+    paid: float | None = field(default=None, compare=False)
+
     # Not stored
     mail: str | None = None
+
+    @property
+    def payment(self) -> tuple[float | None, float | None]:
+        return self.owed, self.paid
+
+    def with_payment_of(self, other: 'SCEPlayerSyncData') -> Self:
+        return replace(self, owed=other.owed, paid=other.paid)
+
+    def augment_stored_player_payment(self, stored_player: StoredPlayer) -> None:
+        stored_player.owed = self.owed or 0.0
+        stored_player.paid = self.paid or 0.0
+
+    @staticmethod
+    def _amount_from_cents(cents: int | None) -> float | None:
+        return cents / 100 if cents is not None else None
 
     @property
     def title_str(self) -> str:
@@ -385,6 +404,8 @@ class SCEPlayerSyncData:
                 else PlayerGender.NONE
             ),
             check_in=data['checked_in'],
+            owed=cls._amount_from_cents(data.get('amount_cents')),
+            paid=cls._amount_from_cents(data.get('paid_cents')),
             mail=data.get('user_email') if with_mail else None,
         )
         plugin_manager.hook_for_event(
@@ -449,6 +470,8 @@ class SCEPlayerSyncData:
             fra_school=SCEFraSchoolSyncData.from_dict_value(
                 stored_value.get('fra_school')
             ),
+            owed=stored_value.get('owed'),
+            paid=stored_value.get('paid'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -475,6 +498,8 @@ class SCEPlayerSyncData:
             'comment': self.comment,
             'check_in': self.check_in,
             'fra_school': self.fra_school.to_dict() if self.fra_school else None,
+            'owed': self.owed,
+            'paid': self.paid,
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -526,6 +551,7 @@ class SCEPlayerSyncData:
             self.to_stored_value(),
             other_data.to_stored_value(),
             ref_data.to_stored_value(),
+            avoid_keys=['owed', 'paid'],
         )
         return self.from_stored_value(merged_stored_value)
 
