@@ -332,7 +332,7 @@ class SharlyChessServerToga(toga.App):
             formal_name='Sharly Chess',
             app_id=app_id,
             icon=icon_path,
-            home_page='https://sharly-chess.com',
+            home_page='https://thp.sharly-chess.com',
             version=str(SHARLY_CHESS_VERSION),
         )
         self.debug = debug
@@ -1882,11 +1882,11 @@ class SharlyChessServerToga(toga.App):
 
     @staticmethod
     def _open_documentation(widget: Any = None, **kwargs: Any) -> None:
-        webbrowser.open(_('https://sharly-chess.com/getting-started/'))
+        webbrowser.open(_('https://thp.sharly-chess.com/getting-started/'))
 
     @staticmethod
     def _open_changelog(widget: Any = None, **kwargs: Any) -> None:
-        webbrowser.open(_('https://sharly-chess.com/changelog/'))
+        webbrowser.open(_('https://thp.sharly-chess.com/changelog/'))
 
     @staticmethod
     def _open_discord(widget: Any) -> None:
