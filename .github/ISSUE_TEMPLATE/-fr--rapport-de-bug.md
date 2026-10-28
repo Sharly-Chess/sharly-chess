@@ -3,7 +3,7 @@ name: "[FR] Rapport de bug"
 about: Merci d'utiliser ce modèle pour remonter un bug
 title: "[BUG] "
 labels: bug
-assignees: Amaras
+assignees: ""
 
 ---
 
