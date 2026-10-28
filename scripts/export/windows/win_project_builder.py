@@ -38,6 +38,10 @@ class WinProjectBuilder(ProjectBuilder):
             # TODO Used for MacOS and Windows, move this to a normal option if also needed on Linux.
             '--windowed',
             f'--icon=src/web/static/images/{self.project_name}.ico',
+            # Toga's WinForms WebView loads its DLLs from the WebView2 package and
+            # reads that package's version at import.
+            '--collect-data=WebView2',
+            '--copy-metadata=dotnet-WebView2.WinForms',
         ]
 
     def _rename_executable_file(self):
