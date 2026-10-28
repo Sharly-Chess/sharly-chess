@@ -29,6 +29,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
 from utils.enum import Extension
+from utils.file import shutil_delete_onexc
 from utils.program_variables import ProgramVar
 
 logger = get_logger()
@@ -204,7 +205,7 @@ class DataRecovery:
         for version in versions:
             if version >= min_version:
                 continue
-            shutil.rmtree(cls._get_version_dir(version), ignore_errors=True)
+            shutil.rmtree(cls._get_version_dir(version), onexc=shutil_delete_onexc)
             logger.info('Data of version [%s] removed (no longer supported)', version)
 
     @classmethod
