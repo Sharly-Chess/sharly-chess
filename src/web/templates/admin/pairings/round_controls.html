@@ -151,19 +151,24 @@
     </div>
 
     <div class="d-inline-flex gap-1 {{ 'd-none' if tournament_options|length <= 1 else '' }}">
-        {% if prev_tournament_id %}
+        <span {{ macros.tooltip_attributes('info', _('Previous tournament'), 'bottom') }}>
             <button
-                class="d-none"
-                hx-trigger="SC_Shift_ArrowUp from:body"
+                class="btn btn-outline-primary text-nowrap"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"tournament_id": "{{ prev_tournament_id }}"}'
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
+                {% if prev_tournament_id %}
+                    hx-trigger="click, SC_Shift_ArrowUp from:body"
+                {% else %}
+                    disabled
+                {% endif %}
             >
+                <i class="bi bi-caret-up-fill position-relative round-control-icon"></i>
             </button>
-        {% endif %}
+        </span>
         <select
             name="tournament_id"
             class="form-select"
@@ -184,19 +189,24 @@
                 </option>
             {% endfor %}
         </select>
-        {% if next_tournament_id %}
+        <span {{ macros.tooltip_attributes('info', _('Next tournament'), 'bottom') }}>
             <button
-                class="d-none"
-                hx-trigger="SC_Shift_ArrowDown from:body"
+                class="btn btn-outline-primary text-nowrap"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"tournament_id": "{{ next_tournament_id }}"}'
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
+                {% if next_tournament_id %}
+                    hx-trigger="click, SC_Shift_ArrowDown from:body"
+                {% else %}
+                    disabled
+                {% endif %}
             >
+                <i class="bi bi-caret-down-fill position-relative round-control-icon"></i>
             </button>
-        {% endif %}
+        </span>
     </div>
 </div>
 <script>
