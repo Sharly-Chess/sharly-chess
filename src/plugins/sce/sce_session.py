@@ -551,6 +551,7 @@ class SCESession(Session):
             },
         )
         sync_data.augment_stored_player(stored_player, tournament, database=database)
+        sync_data.augment_stored_player_payment(stored_player)
         duplicate_player = self.event.get_player_duplicate(stored_player, tournament)
         if not duplicate_player:
             stored_player.id = database.add_stored_player(stored_player)
@@ -572,6 +573,11 @@ class SCESession(Session):
             p_plugin_data.id = sce_id
             p_plugin_data.deleted_id = None
             p_plugin_data.last_sync_data = sce_sync_data
+            if sce_sync_data.owed is not None:
+                sce_sync_data.augment_stored_player_payment(
+                    duplicate_tournament_player.stored_player
+                )
+                database.update_stored_player(duplicate_tournament_player.stored_player)
             SCEUtils.update_player_plugin_data_from_database(
                 duplicate_tournament_player, p_plugin_data, database
             )
@@ -605,6 +611,27 @@ class SCESession(Session):
                 self.event, data.tournament_id
             )
             self.event.move_player_to_tournament(player, new_tournament)
+
+    def _import_sce_payment(
+        self,
+        player: TournamentPlayer,
+        plugin_data: SCEPlayerPluginData,
+        sce_sync_data: SCEPlayerSyncData,
+    ) -> None:
+        """Import the fees of SC.com when they changed since the last sync,
+        keeping the payments recorded locally otherwise."""
+        last_sync_data = plugin_data.last_sync_data
+        if sce_sync_data.owed is None or (
+            last_sync_data and last_sync_data.payment == sce_sync_data.payment
+        ):
+            return
+        sce_sync_data.augment_stored_player_payment(player.stored_player)
+        if last_sync_data:
+            plugin_data.last_sync_data = last_sync_data.with_payment_of(sce_sync_data)
+        SCEUtils.update_player_plugin_data(
+            player, plugin_data, write_stored_object=True
+        )
+        self._log_player_sync_operation(player, 'SC.com fees imported (local)')
 
     def _plan_player_sync(
         self,
@@ -721,6 +748,7 @@ class SCESession(Session):
                 expected_updated_at=sce_updated_at,
             )
 
+        self._import_sce_payment(player, plugin_data, sce_sync_data)
         last_sync_data = plugin_data.last_sync_data
         local_check_in_updated = (
             last_sync_data
@@ -730,7 +758,7 @@ class SCESession(Session):
 
         def finalise_save(new_last_sync_data: SCEPlayerSyncData) -> None:
             pd = SCEUtils.get_player_plugin_data(player)
-            pd.last_sync_data = new_last_sync_data
+            pd.last_sync_data = new_last_sync_data.with_payment_of(sce_sync_data)
             SCEUtils.update_player_plugin_data(player, pd, write_stored_object=True)
             if local_check_in_updated:
                 tid = getattr(pd.last_sync_data, 'tournament_id', None)
