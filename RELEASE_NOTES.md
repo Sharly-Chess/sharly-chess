@@ -30,6 +30,7 @@
 - Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 - The fees and payments of the registrations on _Sharly-Chess.com_ are imported into the players' owed and paid amounts when synchronising; payments recorded in _Sharly Chess_ are kept until they change on _Sharly-Chess.com_ (5.2.0)
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
+- Improved player search in the _FFE_ database: online searches are faster, and players whose names the _FFE_ database cut or abbreviated (such as `MERCIER-PIQUEM.` for Mercier-Piquemal) are found from their full names, both by searches and when matching imported players (5.2.0)
 
 ## Pairings
 

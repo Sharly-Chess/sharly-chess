@@ -55,9 +55,86 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 FfeNameKey = tuple[str, str, date | int]
 """Last name, first name and date or year of birth of a player."""
 
+FFE_NAME_LENGTH: int = 20
+"""The FFE database cuts the last and first names longer than this."""
+
+
+def ffe_name(name: str) -> str:
+    """The name as the FFE database holds it."""
+    ascii_name: str = unidecode(name)
+    return ascii_name.upper().strip()[:FFE_NAME_LENGTH].rstrip()
+
 
 def ffe_name_key(last_name: str, first_name: str, birth: date | int) -> FfeNameKey:
-    return unidecode(last_name).upper(), unidecode(first_name).upper(), birth
+    return ffe_name(last_name), ffe_name(first_name), birth
+
+
+FFE_ABBREVIATION_MIN_LENGTH: int = 3
+"""The shortest start of a name abbreviated with a dot that tells it apart
+from the other names it starts."""
+
+
+def ffe_name_abbreviation(held_name: str) -> str | None:
+    """The start the FFE database kept of a name it abbreviated with a dot,
+    as the old records and the patronymics are."""
+    if len(held_name) > FFE_ABBREVIATION_MIN_LENGTH and held_name.endswith('.'):
+        return held_name[:-1]
+    return None
+
+
+def ffe_held_name_matches(held_name: str, name: str) -> bool:
+    """Whether the FFE database holds the name as *held_name*: whole, cut or
+    abbreviated."""
+    held_name, name = ffe_name(held_name), ffe_name(name)
+    if held_name == name:
+        return True
+    abbreviation = ffe_name_abbreviation(held_name)
+    return abbreviation is not None and name.startswith(abbreviation)
+
+
+def ffe_name_key_matches(name_key: FfeNameKey, stored_player: StoredPlayer) -> bool:
+    """Whether the player of the FFE database has the name key."""
+    last_name, first_name, birth = name_key
+    date_of_birth = stored_player.date_of_birth
+    if not stored_player.first_name or not date_of_birth:
+        return False
+    if birth != (date_of_birth if isinstance(birth, date) else date_of_birth.year):
+        return False
+    return ffe_held_name_matches(
+        stored_player.last_name, last_name
+    ) and ffe_held_name_matches(stored_player.first_name, first_name)
+
+
+FFE_ABBREVIATED_NAME_MIN_LENGTH: int = 12
+"""The length of the shortest names the old records abbreviated with a dot,
+which a shorter search cannot run past."""
+
+
+def ffe_cut_name_matches(
+    held_name: str, word: str, min_tail_length: int, at_length: bool, abbreviated: bool
+) -> bool:
+    """Whether a searched word runs past the end of a name the FFE database
+    cut, at its length (only when *at_length*) or with a dot (only when
+    *abbreviated*): the name ends with the start of the word after a space or
+    a hyphen, or the word starts with the whole name. A tail shorter than
+    *min_tail_length* starts too many words to tell them apart, and an
+    abbreviation needs `FFE_ABBREVIATION_MIN_LENGTH` letters, the titles (Dr.,
+    Jr.) and the initials ending in a dot as well."""
+    held_name, word = held_name.upper(), word.upper()
+    if at_length and len(held_name) == FFE_NAME_LENGTH:
+        start = held_name
+    elif abbreviated and held_name.endswith('.'):
+        start, min_tail_length = held_name[:-1], FFE_ABBREVIATION_MIN_LENGTH
+    else:
+        return False
+    if len(start) >= min_tail_length and word.startswith(start):
+        return True
+    for separator in (' ', '-'):
+        if separator in start:
+            tail = start.rsplit(separator, 1)[1]
+            if len(tail) >= min_tail_length and word.startswith(tail):
+                return True
+    return False
 
 
 def ffe_database_name_keys(stored_player: StoredPlayer) -> set[FfeNameKey]:
