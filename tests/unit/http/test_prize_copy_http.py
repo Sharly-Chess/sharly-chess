@@ -167,13 +167,53 @@ def test_a_category_is_copied_to_a_new_bracket(
 
 
 @pytest.mark.unit
+def test_the_main_category_is_copied_to_a_new_bracket_of_its_tournament(
+    http: TestClient, source: tuple[int, int, int]
+):
+    tournament_id, group_id, _ = source
+    main_category = EVENT.tournament().main_prize_category
+    assert main_category is not None
+    response = http.post(
+        f'/prizes/prize-category/copy/{EVENT_ID}/{tournament_id}/{group_id}/'
+        f'{main_category.id}',
+        data={'target': f'{tournament_id}-new'},
+    )
+    assert response.status_code == 200
+    assert 'already has a main category' in response.text
+    new_group = next(
+        group for group in EVENT.tournament().prize_groups if group.id != group_id
+    )
+    [copy] = new_group.categories
+    assert copy.name == 'General'
+    assert not copy.is_main
+
+
+@pytest.mark.unit
+def test_the_main_category_is_duplicated_as_a_regular_category(
+    http: TestClient, source: tuple[int, int, int]
+):
+    tournament_id, group_id, _ = source
+    main_category = EVENT.tournament().main_prize_category
+    assert main_category is not None
+    response = http.post(
+        f'/prizes/prize-category/duplicate/{EVENT_ID}/{tournament_id}/{group_id}/'
+        f'{main_category.id}'
+    )
+    assert response.status_code == 200
+    [group] = EVENT.tournament().prize_groups
+    assert [
+        (category.name, category.is_main) for category in group.sorted_categories
+    ] == [('General', True), ('General (2)', False), ('Women', False)]
+
+
+@pytest.mark.unit
 def test_a_category_is_not_copied_to_an_unknown_bracket(
     http: TestClient, source: tuple[int, int, int]
 ):
     tournament_id, group_id, women_id = source
     response = http.post(
         f'/prizes/prize-category/copy/{EVENT_ID}/{tournament_id}/{group_id}/{women_id}',
-        data={'target': f'{tournament_id}-{group_id}'},
+        data={'target': f'{tournament_id}-0'},
     )
     assert response.status_code == 200
     assert 'Select a prize bracket.' in response.text

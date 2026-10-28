@@ -161,18 +161,33 @@ def test_copy_category_in_same_tournament_keeps_player_criteria(event: Event):
 def test_copy_main_category_stays_main_only_without_main(event: Event):
     group = _add_group(event, 'A', 'Group')
     source = _add_category(group, 'General', is_main=True)
-    empty_group = _add_group(event, 'B', 'Empty')
-    group_with_main = _add_group(event, 'B', 'With main')
-    _add_category(group_with_main, 'Other main', is_main=True)
+    first_group = _add_group(event, 'B', 'First')
+    second_group = _add_group(event, 'B', 'Second')
 
-    empty_group.copy_category(source)
-    group_with_main.copy_category(source)
+    first_group.copy_category(source)
+    second_group.copy_category(source)
 
     reloaded_event = EventLoader().load_event(EVENT_UNIQ_ID)
-    assert _get_group(reloaded_event, 'B', 'Empty').main_category is not None
-    reloaded = _get_group(reloaded_event, 'B', 'With main')
-    assert reloaded.main_category is not None
-    assert reloaded.main_category.name == 'Other main'
+    main_category = _get_group(reloaded_event, 'B', 'First').main_category
+    assert main_category is not None
+    assert main_category.prize_sharing == AveragePrizeSharing()
+    [regular] = _get_group(reloaded_event, 'B', 'Second').categories
+    assert not regular.is_main
+    assert regular.prize_sharing == NoPrizeSharing()
+    assert regular.sharing_threshold is None
+
+
+@pytest.mark.unit
+def test_duplicate_prize_group_with_main_category(event: Event):
+    group = _add_group(event, 'A', 'Group')
+    _add_category(group, 'General', is_main=True)
+    tournament = event.tournaments_by_name['A']
+
+    tournament.copy_prize_group(group)
+
+    reloaded_event = EventLoader().load_event(EVENT_UNIQ_ID)
+    assert _get_group(reloaded_event, 'A', 'Group').main_category is not None
+    assert _get_group(reloaded_event, 'A', 'Group (2)').main_category is None
 
 
 @pytest.mark.unit

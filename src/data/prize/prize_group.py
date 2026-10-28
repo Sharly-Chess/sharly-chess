@@ -13,6 +13,7 @@ from data.player import TournamentPlayer
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
+from data.prize.prize_sharing import NoPrizeSharing
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeGroup, StoredPrizeCategory
 from utils import Utils
@@ -102,20 +103,23 @@ class PrizeGroup:
 
     def copy_category(self, source: PrizeCategory) -> PrizeCategory:
         """Add a copy of a category of this group or of another one, with its
-        criteria and prizes. The copy is the main category only if this group
-        has none yet. Criteria bound to the players of another tournament are
-        not copied."""
-        category = self.add_category(
-            replace(
-                source.stored_prize_category,
-                id=None,
-                prize_group_id=self.id,
-                name=self.get_unused_category_name(source.name),
-                is_main=source.is_main and self.main_category is None,
-                stored_prize_criteria=[],
-                stored_prizes=[],
-            )
+        criteria and prizes. The copy is the main category only if the
+        tournament has none yet; otherwise it is a regular category, which
+        does not share prizes. Criteria bound to the players of another
+        tournament are not copied."""
+        stored_category = replace(
+            source.stored_prize_category,
+            id=None,
+            prize_group_id=self.id,
+            name=self.get_unused_category_name(source.name),
+            stored_prize_criteria=[],
+            stored_prizes=[],
         )
+        if source.is_main and self.tournament.main_prize_category is not None:
+            stored_category.is_main = False
+            stored_category.prize_sharing = NoPrizeSharing.static_id()
+            stored_category.sharing_threshold = None
+        category = self.add_category(stored_category)
         for prize in source.prizes:
             category.add_prize(
                 replace(prize.stored_prize, id=None, prize_category_id=category.id)

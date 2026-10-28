@@ -522,7 +522,12 @@ class PrizeAdminController(BaseEventAdminController):
                     {'tournament_ids': _('Select at least one tournament.')},
                 ),
             )
+        warnings = self._tournament_bound_criteria_warnings(
+            prize_group.sorted_categories
+        )
         for target_tournament in target_tournaments:
+            if prize_group.main_category and target_tournament.main_prize_category:
+                warnings.append(self._main_category_demoted_warning(target_tournament))
             target_tournament.copy_prize_group(prize_group)
         self._copy_message(
             request,
@@ -534,7 +539,7 @@ class PrizeAdminController(BaseEventAdminController):
                     tournament.name for tournament in target_tournaments
                 ),
             ),
-            self._tournament_bound_criteria_warnings(prize_group.sorted_categories),
+            warnings,
         )
         return self._admin_event_prizes_render(web_context)
 
@@ -555,6 +560,13 @@ class PrizeAdminController(BaseEventAdminController):
                 ).format(categories=', '.join(names))
             ]
         return []
+
+    @staticmethod
+    def _main_category_demoted_warning(tournament: Tournament) -> str:
+        return _(
+            'Tournament [{tournament}] already has a main category, the copy '
+            'of the main category is a regular category.'
+        ).format(tournament=tournament.name)
 
     @staticmethod
     def _copy_message(request: HTMXRequest, success: str, warnings: list[str]) -> None:
@@ -976,9 +988,13 @@ class PrizeAdminController(BaseEventAdminController):
         cls, web_context: PrizeAdminWebContext
     ) -> dict[str, str]:
         """The prize groups a category can be copied to, keyed by
-        `<tournament id>-<prize group id>`, plus a new group per tournament."""
+        `<tournament id>-<prize group id>`, plus a new group per tournament.
+        The tournament of the category comes first."""
         options: dict[str, str] = {}
-        for tournament in web_context.copy_target_tournaments:
+        for tournament in [
+            web_context.get_admin_tournament(),
+            *web_context.copy_target_tournaments,
+        ]:
             for prize_group in tournament.sorted_prize_groups:
                 options[f'{tournament.id}-{prize_group.id}'] = (
                     f'{tournament.name} / {prize_group.name}'
@@ -1076,12 +1092,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_category = target_group.copy_category(source_category)
         warnings = self._tournament_bound_criteria_warnings([source_category])
         if source_category.is_main and not prize_category.is_main:
-            warnings.append(
-                _(
-                    'Prize bracket [{prize_group}] already has a main category, '
-                    'the copy is a regular category.'
-                ).format(prize_group=target_group.name)
-            )
+            warnings.append(self._main_category_demoted_warning(target_tournament))
         self._copy_message(
             request,
             _(

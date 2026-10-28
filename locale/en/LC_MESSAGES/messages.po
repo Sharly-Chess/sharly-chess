@@ -2462,7 +2462,7 @@ msgstr ""
 msgid "Copy the prize bracket"
 msgstr ""
 
-msgid "Copy to another tournament…"
+msgid "Copy to another prize bracket…"
 msgstr ""
 
 msgid "Copy to other tournaments…"
@@ -3366,6 +3366,9 @@ msgid "Duplicate the account."
 msgstr ""
 
 msgid "Duplicate the category and its criteria and prizes."
+msgstr ""
+
+msgid "Duplicate the category and its prizes as a regular category."
 msgstr ""
 
 msgid "Duplicate the event."
@@ -7968,10 +7971,6 @@ msgid "Prize bracket"
 msgstr ""
 
 #, python-brace-format
-msgid "Prize bracket [{prize_group}] already has a main category, the copy is a regular category."
-msgstr ""
-
-#, python-brace-format
 msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
 msgstr ""
 
@@ -10983,9 +10982,6 @@ msgstr ""
 msgid "There are no public screens available for this event."
 msgstr ""
 
-msgid "There can only be one main category."
-msgstr ""
-
 msgid "There needs to be at least one screen or multi-screen defined for the rotator to be accessible."
 msgstr ""
 
@@ -11601,6 +11597,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
+msgstr ""
+
+#, python-brace-format
+msgid "Tournament [{tournament}] already has a main category, the copy of the main category is a regular category."
 msgstr ""
 
 #, python-brace-format

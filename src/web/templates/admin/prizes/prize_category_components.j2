@@ -332,20 +332,19 @@
                     <i class="bi-pencil-fill"></i>
                 </button>
             </span>
-            {% set can_copy_elsewhere = client.can_manage_prizes and copy_target_tournaments %}
-            <div class="btn-group">
+                        <div class="btn-group">
                 <span
                     {% if not client.can_manage_prizes %}
                         {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
                     {% elif prize_category.is_main %}
-                        {{ macros.tooltip_attributes('info', _('There can only be one main category.'), 'top') }}
+                        {{ macros.tooltip_attributes('info', _('Duplicate the category and its prizes as a regular category.'), 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('info', _('Duplicate the category and its criteria and prizes.'), 'top') }}
                     {% endif %}
                 >
                     <button
                         class="btn btn-sm btn-outline-primary"
-                        {% if prize_category.is_main or not client.can_manage_prizes %}
+                        {% if not client.can_manage_prizes %}
                             disabled
                         {% else %}
                             hx-post="{{ url_for(
@@ -362,7 +361,7 @@
                         <i class="bi-copy"></i>
                     </button>
                 </span>
-                {% if can_copy_elsewhere %}
+                {% if client.can_manage_prizes %}
                     <button
                         type="button"
                         class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split"
@@ -387,7 +386,7 @@
                                 data-bs-target="#modal-wrapper"
                             >
                                 <i class="bi-box-arrow-right pe-1"></i>
-                                {{ _('Copy to another tournament…') }}
+                                {{ _('Copy to another prize bracket…') }}
                             </button>
                         </li>
                     </ul>

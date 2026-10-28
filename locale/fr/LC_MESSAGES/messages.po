@@ -2462,8 +2462,8 @@ msgstr "Copier la catégorie"
 msgid "Copy the prize bracket"
 msgstr "Copier le groupe non cumulable"
 
-msgid "Copy to another tournament…"
-msgstr "Copier vers un autre tournoi…"
+msgid "Copy to another prize bracket…"
+msgstr "Copier vers un autre groupe non cumulable…"
 
 msgid "Copy to other tournaments…"
 msgstr "Copier vers d'autres tournois…"
@@ -3367,6 +3367,9 @@ msgstr "Dupliquer le compte."
 
 msgid "Duplicate the category and its criteria and prizes."
 msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
+
+msgid "Duplicate the category and its prizes as a regular category."
+msgstr "Dupliquer la catégorie et ses prix en catégorie ordinaire."
 
 msgid "Duplicate the event."
 msgstr "Dupliquer l'évènement."
@@ -7970,10 +7973,6 @@ msgid "Prize bracket"
 msgstr "Groupe non cumulable"
 
 #, python-brace-format
-msgid "Prize bracket [{prize_group}] already has a main category, the copy is a regular category."
-msgstr "Le groupe non cumulable [{prize_group}] a déjà une catégorie générale, la copie est une catégorie ordinaire."
-
-#, python-brace-format
 msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
 msgstr "Le groupe non cumulable [{prize_group}] a été copié vers : {tournaments}."
 
@@ -10985,9 +10984,6 @@ msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée 
 msgid "There are no public screens available for this event."
 msgstr "Aucun écran public n’est disponible pour cet évènement."
 
-msgid "There can only be one main category."
-msgstr "Il ne peut y avoir qu'une seule catégorie générale."
-
 msgid "There needs to be at least one screen or multi-screen defined for the rotator to be accessible."
 msgstr "Il doit y avoir au moins un écran ou un écran multiple défini pour que l'écran rotatif soit accessible."
 
@@ -11604,6 +11600,10 @@ msgstr "Le tournoi [%(tournament)s] quittera définitivement le mode FIDE : il 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
+
+#, python-brace-format
+msgid "Tournament [{tournament}] already has a main category, the copy of the main category is a regular category."
+msgstr "Le tournoi [{tournament}] a déjà une catégorie générale, la copie de la catégorie générale est une catégorie ordinaire."
 
 #, python-brace-format
 msgid "Tournament [{tournament}] has been created and default screens have been added."

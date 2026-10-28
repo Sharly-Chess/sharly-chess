@@ -47,7 +47,7 @@
 
 ## Prizes
 
-- Prize brackets can be duplicated, and prize brackets and categories can be copied to the other tournaments of the event; criteria selecting individual players stay with their own tournament. Cloning a tournament now keeps the ranking basis of the prize categories and the complementary value of the prizes (5.2.0)
+- Prize brackets can be duplicated, prize brackets can be copied to the other tournaments of the event, and categories to any prize bracket of the event, the copy of a main category being a regular category when its tournament already has one; criteria selecting individual players stay with their own tournament. Cloning a tournament now keeps the ranking basis of the prize categories and the complementary value of the prizes (5.2.0)
 
 ## Documents
 
