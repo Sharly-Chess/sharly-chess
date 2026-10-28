@@ -1,4 +1,3 @@
-import copy
 from functools import partial
 from typing import Any, Annotated, ClassVar
 
@@ -166,6 +165,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'tournament_options': self.get_tournament_options(self.allowed_tournaments),
             'prize_group_options': self.get_prize_group_options(),
             'show_details': self.show_details,
+            'copy_target_tournaments': self.copy_target_tournaments,
             'default_print_document': PrizeAssignmentPrintDocument.static_id()
             if self.admin_tournament and self.admin_tournament.finished
             else PrizeListPrintDocument.static_id(),
@@ -190,6 +190,17 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
     def get_admin_prize(self) -> Prize:
         assert self.admin_prize is not None
         return self.admin_prize
+
+    @property
+    def copy_target_tournaments(self) -> list[Tournament]:
+        """The other tournaments of the event that prizes can be copied to."""
+        return [
+            tournament
+            for tournament in self.client.allowed_tournaments_for_action(
+                AuthAction.MANAGE_PRIZES
+            )
+            if not self.admin_tournament or tournament.id != self.admin_tournament.id
+        ]
 
     def get_prize_group_options(self) -> dict[str, str]:
         if not self.admin_tournament:
@@ -413,6 +424,146 @@ class PrizeAdminController(BaseEventAdminController):
             PrizeAdminWebContext(request, tournament_id, prize_group_id),
             {'modal': 'prize_group_delete'},
         )
+
+    @post(
+        path=(
+            '/prizes/prize-group/duplicate/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}'
+        ),
+        name='admin-prize-group-duplicate',
+        guards=manage_guards,
+    )
+    async def htmx_admin_prize_group_duplicate(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+        tournament = web_context.get_admin_tournament()
+        tournament.copy_prize_group(web_context.get_admin_prize_group())
+        return self._admin_event_prizes_render(
+            web_context, self._prize_groups_modal_context(tournament)
+        )
+
+    @get(
+        path=(
+            '/prizes/prize-group/copy-modal/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}'
+        ),
+        name='admin-prize-group-copy-modal',
+        guards=manage_guards,
+    )
+    async def htmx_admin_prize_group_copy_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+        return self._admin_event_prizes_render(
+            web_context, self._prize_group_copy_modal_context(web_context)
+        )
+
+    @staticmethod
+    def _prize_group_copy_modal_context(
+        web_context: PrizeAdminWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            'modal': 'prize_group_copy',
+            'target_tournament_options': {
+                web_context.value_to_form_data(tournament.id): tournament.name
+                for tournament in web_context.copy_target_tournaments
+            },
+            'data': data or {},
+            'errors': errors or {},
+        }
+
+    @post(
+        path=(
+            '/prizes/prize-group/copy/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}'
+        ),
+        name='admin-prize-group-copy',
+        guards=manage_guards,
+    )
+    async def htmx_admin_prize_group_copy(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+        prize_group = web_context.get_admin_prize_group()
+        event = web_context.get_admin_event()
+        flat_data = WebContext.flatten_list_data(data)
+        allowed_ids = {
+            tournament.id for tournament in web_context.copy_target_tournaments
+        }
+        target_tournaments = [
+            event.tournaments_by_id[target_id]
+            for target_id in WebContext.form_data_to_list_int(
+                flat_data, 'tournament_ids'
+            )
+            if target_id in allowed_ids
+        ]
+        if not target_tournaments:
+            return self._admin_event_prizes_render(
+                web_context,
+                self._prize_group_copy_modal_context(
+                    web_context,
+                    flat_data,
+                    {'tournament_ids': _('Select at least one tournament.')},
+                ),
+            )
+        for target_tournament in target_tournaments:
+            target_tournament.copy_prize_group(prize_group)
+        self._copy_message(
+            request,
+            _(
+                'Prize bracket [{prize_group}] has been copied to: {tournaments}.'
+            ).format(
+                prize_group=prize_group.name,
+                tournaments=', '.join(
+                    tournament.name for tournament in target_tournaments
+                ),
+            ),
+            self._tournament_bound_criteria_warnings(prize_group.sorted_categories),
+        )
+        return self._admin_event_prizes_render(web_context)
+
+    @staticmethod
+    def _tournament_bound_criteria_warnings(
+        prize_categories: list[PrizeCategory],
+    ) -> list[str]:
+        if names := [
+            prize_category.name
+            for prize_category in prize_categories
+            if prize_category.tournament_bound_criteria
+        ]:
+            return [
+                _(
+                    'Criteria selecting individual players only apply to their '
+                    'own tournament and have not been copied (categories: '
+                    '{categories}).'
+                ).format(categories=', '.join(names))
+            ]
+        return []
+
+    @staticmethod
+    def _copy_message(request: HTMXRequest, success: str, warnings: list[str]) -> None:
+        """Only the last message set is shown, so the warnings come along
+        with the success message."""
+        if warnings:
+            Message.warning(request, [success, *warnings])
+        else:
+            Message.success(request, success)
 
     # -------------------------------------------------------------------------
     # Prize categories
@@ -804,20 +955,7 @@ class PrizeAdminController(BaseEventAdminController):
 
         prize_group = web_context.get_admin_prize_group()
         copy_category = web_context.get_admin_prize_category()
-        stored_category = copy.deepcopy(copy_category.stored_prize_category)
-        stored_category.name = prize_group.get_unused_category_name(copy_category.name)
-        stored_category.index = len(prize_group.categories)
-        stored_category.stored_prizes = []
-        stored_category.stored_prize_criteria = []
-        prize_category = prize_group.add_category(stored_category)
-        for prize in copy_category.prizes:
-            stored_prize = copy.deepcopy(prize.stored_prize)
-            stored_prize.prize_category_id = prize_category.id
-            prize_category.add_prize(stored_prize)
-        for criterion in copy_category.criteria:
-            stored_criterion = copy.deepcopy(criterion.stored_prize_criterion)
-            stored_criterion.prize_category_id = prize_category.id
-            prize_category.add_criterion(stored_criterion)
+        prize_category = prize_group.copy_category(copy_category)
         # Place the copy directly after the duplicated category.
         category_ids = [category.id for category in prize_group.sorted_categories]
         category_ids.remove(prize_category.id)
@@ -828,6 +966,133 @@ class PrizeAdminController(BaseEventAdminController):
             _('Prize category [{prize_category}] has been duplicated.').format(
                 prize_category=prize_category.name,
             ),
+        )
+        return self._admin_event_prizes_render(web_context)
+
+    NEW_PRIZE_GROUP_TARGET = 'new'
+
+    @classmethod
+    def _prize_category_copy_target_options(
+        cls, web_context: PrizeAdminWebContext
+    ) -> dict[str, str]:
+        """The prize groups a category can be copied to, keyed by
+        `<tournament id>-<prize group id>`, plus a new group per tournament."""
+        options: dict[str, str] = {}
+        for tournament in web_context.copy_target_tournaments:
+            for prize_group in tournament.sorted_prize_groups:
+                options[f'{tournament.id}-{prize_group.id}'] = (
+                    f'{tournament.name} / {prize_group.name}'
+                )
+            options[f'{tournament.id}-{cls.NEW_PRIZE_GROUP_TARGET}'] = (
+                f'{tournament.name} / {_("New prize bracket")}'
+            )
+        return options
+
+    @classmethod
+    def _prize_category_copy_modal_context(
+        cls,
+        web_context: PrizeAdminWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            'modal': 'prize_category_copy',
+            'target_options': cls._prize_category_copy_target_options(web_context),
+            'data': data or {},
+            'errors': errors or {},
+        }
+
+    @get(
+        path=(
+            '/prizes/prize-category/copy-modal/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-category-copy-modal',
+        guards=manage_guards,
+    )
+    async def htmx_admin_prize_category_copy_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+    ) -> Template:
+        web_context = PrizeAdminWebContext(
+            request, tournament_id, prize_group_id, prize_category_id
+        )
+        return self._admin_event_prizes_render(
+            web_context, self._prize_category_copy_modal_context(web_context)
+        )
+
+    @post(
+        path=(
+            '/prizes/prize-category/copy/{event_uniq_id:str}/'
+            '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
+        ),
+        name='admin-prize-category-copy',
+        guards=manage_guards,
+    )
+    async def htmx_admin_prize_category_copy(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+    ) -> Template:
+        web_context = PrizeAdminWebContext(
+            request, tournament_id, prize_group_id, prize_category_id
+        )
+        source_category = web_context.get_admin_prize_category()
+        target = WebContext.form_data_to_str(data, 'target') or ''
+        if target not in self._prize_category_copy_target_options(web_context):
+            return self._admin_event_prizes_render(
+                web_context,
+                self._prize_category_copy_modal_context(
+                    web_context,
+                    data,
+                    {'target': _('Select a prize bracket.')},
+                ),
+            )
+        target_tournament_id, target_group_id = target.split('-')
+        target_tournament = web_context.get_admin_event().tournaments_by_id[
+            int(target_tournament_id)
+        ]
+        if target_group_id == self.NEW_PRIZE_GROUP_TARGET:
+            target_group = target_tournament.add_prize_group(
+                StoredPrizeGroup(
+                    id=None,
+                    tournament_id=target_tournament.id,
+                    name=target_tournament.get_unused_prize_group_name(
+                        _('Main group') if not target_tournament.prize_groups else None
+                    ),
+                )
+            )
+        else:
+            target_group = target_tournament.prize_groups_by_id[int(target_group_id)]
+        prize_category = target_group.copy_category(source_category)
+        warnings = self._tournament_bound_criteria_warnings([source_category])
+        if source_category.is_main and not prize_category.is_main:
+            warnings.append(
+                _(
+                    'Prize bracket [{prize_group}] already has a main category, '
+                    'the copy is a regular category.'
+                ).format(prize_group=target_group.name)
+            )
+        self._copy_message(
+            request,
+            _(
+                'Prize category [{prize_category}] has been copied to '
+                '[{tournament} / {prize_group}].'
+            ).format(
+                prize_category=prize_category.name,
+                tournament=target_tournament.name,
+                prize_group=target_group.name,
+            ),
+            warnings,
         )
         return self._admin_event_prizes_render(web_context)
 

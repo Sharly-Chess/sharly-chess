@@ -1,0 +1,59 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(95vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Copy the prize bracket') }}</h2>
+        </div>
+        <div class="modal-body">
+            <p class="text-secondary">
+                {{ _(
+                    'The prize bracket [%(prize_group)s] and its categories are '
+                    'added to each selected tournament.',
+                    prize_group=admin_prize_group.name
+                ) }}
+            </p>
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-post="{{ url_for(
+                    'admin-prize-group-copy',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                ) }}"
+            >
+                {{ admin_macros.select_input(
+                    name='tournament_ids',
+                    label=_('%(string)s:', string=_('Tournaments')),
+                    multiple_select=true,
+                    select_all=true,
+                    select_options=target_tournament_options,
+                    data=data, errors=errors,
+                ) }}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-copy pe-1"></i>
+                {{ _('Copy') }}
+            </button>
+        </div>
+    </div>
+</div>
+<script>requestRefresh()</script>

@@ -497,6 +497,19 @@
     display: none;
 }
 
+/* A split button whose main button is wrapped in a tooltip span escapes
+   Bootstrap's sibling selectors, which size the toggle and square the
+   joined corners. */
+.btn-group > span:has(> .btn-sm) + .dropdown-toggle-split {
+    padding-right: .375rem;
+    padding-left: .375rem;
+}
+
+.btn-group > span:has(+ .dropdown-toggle-split) > .btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 .search-results-dropdown {
     max-height: 400px;
     width: fit-content;

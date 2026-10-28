@@ -1,4 +1,6 @@
 from collections import deque
+import copy
+from dataclasses import replace
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
@@ -96,6 +98,41 @@ class PrizeGroup:
             category_ids.remove(object_id)
             category_ids.insert(0, object_id)
             self.reorder_categories(category_ids)
+        return category
+
+    def copy_category(self, source: PrizeCategory) -> PrizeCategory:
+        """Add a copy of a category of this group or of another one, with its
+        criteria and prizes. The copy is the main category only if this group
+        has none yet. Criteria bound to the players of another tournament are
+        not copied."""
+        category = self.add_category(
+            replace(
+                source.stored_prize_category,
+                id=None,
+                prize_group_id=self.id,
+                name=self.get_unused_category_name(source.name),
+                is_main=source.is_main and self.main_category is None,
+                stored_prize_criteria=[],
+                stored_prizes=[],
+            )
+        )
+        for prize in source.prizes:
+            category.add_prize(
+                replace(prize.stored_prize, id=None, prize_category_id=category.id)
+            )
+        same_tournament = source.prize_group.tournament.id == self.tournament.id
+        for criterion in source.criteria:
+            if not same_tournament and criterion.player_filter.is_tournament_bound():
+                continue
+            stored_criterion = criterion.stored_prize_criterion
+            category.add_criterion(
+                replace(
+                    stored_criterion,
+                    id=None,
+                    prize_category_id=category.id,
+                    options=copy.deepcopy(stored_criterion.options),
+                )
+            )
         return category
 
     def delete_category(self, category_id: int) -> None:
