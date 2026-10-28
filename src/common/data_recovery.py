@@ -29,6 +29,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
 from utils.enum import Extension
+from utils.file import shutil_delete_onexc
 from utils.program_variables import ProgramVar
 
 logger = get_logger()
@@ -141,15 +142,10 @@ class DataRecovery:
             try:
                 version_str = version_dir.name[1:]
                 version = Version(version_str)
-                if version.major < 5:
-                    logger.warning(
-                        'version dir [%s] is a legacy version (ignored)',
-                        version_dir.absolute(),
-                    )
-                elif version_str != str(version):
+                if version_str != str(version):
                     # Only reversible version names are taken into account
                     raise InvalidVersion()
-                elif version != SHARLY_CHESS_VERSION:
+                if version != SHARLY_CHESS_VERSION:
                     versions.append(version)
             except InvalidVersion:
                 logger.warning('invalid version dir [%s]', version_dir.absolute())
@@ -196,7 +192,7 @@ class DataRecovery:
             )
             if last_major_minor is not None:
                 sup_minor_count = max(2 - current.minor, 0)
-                last_sup_minor = min(last_major_minor - sup_minor_count, 0)
+                last_sup_minor = max(last_major_minor - sup_minor_count, 0)
                 min_version = get_min_version(current.major - 1, last_sup_minor)
         if max_previous > min_version:
             min_version = max_previous
@@ -204,8 +200,16 @@ class DataRecovery:
         for version in versions:
             if version >= min_version:
                 continue
-            shutil.rmtree(cls._get_version_dir(version), ignore_errors=True)
-            logger.info('Data of version [%s] removed (no longer supported)', version)
+            try:
+                shutil.rmtree(cls._get_version_dir(version), onexc=shutil_delete_onexc)
+            except OSError as error:
+                logger.warning(
+                    'Data of version [%s] could not be removed: %s', version, error
+                )
+            else:
+                logger.info(
+                    'Data of version [%s] removed (no longer supported)', version
+                )
 
     @classmethod
     def _recover_version(cls, version: Version) -> bool:
