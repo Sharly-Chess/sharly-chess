@@ -78,9 +78,19 @@
             </button>
         {% endif %}
     {% endif %}
+    {% set updated_at_html %}
+        {% if database.is_outdated and not database.is_updating %}
+            <span class="text-danger fw-bold">
+                <i class="bi bi-exclamation-circle-fill pe-1"></i>
+                {{ database.updated_at_str }}
+            </span>
+        {% else %}
+            {{ database.updated_at_str }}
+        {% endif %}
+    {% endset %}
     <script>
         {% with id=database.id %}
-            $('#{{ id }}-updated-at').text({{ database.updated_at_str|tojson }});
+            $('#{{ id }}-updated-at').html({{ updated_at_html|tojson }});
             $('#{{ id }}-content').text({{ database.content_description|tojson }});
         {% endwith %}
     </script>
