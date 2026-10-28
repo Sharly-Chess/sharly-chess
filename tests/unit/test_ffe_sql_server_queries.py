@@ -1,6 +1,9 @@
 """The queries of the remote _FFE_ SQL Server cannot be run against an
 in-memory database: these tests check what they are built from."""
 
+import asyncio
+from collections.abc import Coroutine
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from typing import Any
 
@@ -26,12 +29,18 @@ class _QueryCapture(FFESqlServer):
         return []
 
 
+def _run(coroutine: Coroutine[Any, Any, Any]) -> None:
+    # The playwright fixtures of the suite already run a loop here
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        executor.submit(asyncio.run, coroutine).result()
+
+
 @pytest.mark.parametrize(
     'search', ['DUPONT', 'LOUSTALOT-BARBE SERGENT', "O'NEILL KIAN", '1503014 X']
 )
-async def test_search_binds_every_parameter(search: str) -> None:
+def test_search_binds_every_parameter(search: str) -> None:
     server = _QueryCapture()
-    await server.search_player(search, 'FRA', 0, 20, {'gender_filter': 'F'})
+    _run(server.search_player(search, 'FRA', 0, 20, {'gender_filter': 'F'}))
     [(query, params)] = server.queries
     # The driver formats the query with the % operator
     assert query % tuple(f'@P{i}' for i in range(len(params)))
@@ -49,11 +58,11 @@ async def test_search_binds_every_parameter(search: str) -> None:
         ('SERGENT LOUSTALOT BARBE', 3, 3),
     ],
 )
-async def test_only_searches_longer_than_the_names_match_cut_names(
+def test_only_searches_longer_than_the_names_match_cut_names(
     search: str, words_cut_at_length: int, abbreviated_words: int
 ) -> None:
     server = _QueryCapture()
-    await server.search_player(search, 'FRA', 0, 20)
+    _run(server.search_player(search, 'FRA', 0, 20))
     [(query, _params)] = server.queries
     for field in ('joueur.Nom', 'joueur.Prenom'):
         assert query.count(f'WHEN LEN({field}) = 20') == words_cut_at_length
@@ -70,10 +79,10 @@ def test_names_with_an_apostrophe_are_looked_up_both_ways() -> None:
     assert FFESqlServer._held_names('DUPONT') == ['DUPONT']
 
 
-async def test_name_keys_bind_both_ways_of_holding_an_apostrophe() -> None:
+def test_name_keys_bind_both_ways_of_holding_an_apostrophe() -> None:
     server = _QueryCapture()
-    await server.get_stored_players_by_name_keys(
-        [("O'NEILL", 'KIAN', date(2001, 1, 1))]
+    _run(
+        server.get_stored_players_by_name_keys([("O'NEILL", 'KIAN', date(2001, 1, 1))])
     )
     # Nothing found, the abbreviated names are looked up next
     [(query, params), (abbreviation_query, abbreviation_params)] = server.queries
