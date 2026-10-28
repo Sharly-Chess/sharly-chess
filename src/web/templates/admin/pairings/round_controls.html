@@ -17,7 +17,7 @@
                 <i class="bi bi-skip-backward-fill position-relative round-control-icon"></i>
             </button>
         </span>
-        <span {{ macros.tooltip_attributes('info', _('Previous round'), 'bottom') }}>
+        <span {{ macros.tooltip_attributes('info', _('Previous round') ~ ' <span class="text-nowrap"><i class="bi bi-shift pe-1"></i>+<i class="bi bi-arrow-left-square ps-1"></i></span>', 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
                 style="transform: scaleX(-1);"
@@ -101,7 +101,7 @@
                 });
             })();
         </script>
-        <span {{ macros.tooltip_attributes('info', _('Next round'), 'bottom') }}>
+        <span {{ macros.tooltip_attributes('info', _('Next round') ~ ' <span class="text-nowrap"><i class="bi bi-shift pe-1"></i>+<i class="bi bi-arrow-right-square ps-1"></i></span>', 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
                 {% if not schedule_editing and admin_tournament.pairing_system.show_unfinished_round_modal and not (admin_tournament.finished and not admin_tournament.round_has_pairings(admin_round)) and (not (admin_tournament.round_has_pairings(admin_round) and admin_tournament.is_round_finished(admin_round)) or admin_tournament.board_operations.unboarded_holes(admin_round)) %}
@@ -151,7 +151,7 @@
     </div>
 
     <div class="d-inline-flex gap-1 {{ 'd-none' if tournament_options|length <= 1 else '' }}">
-        <span {{ macros.tooltip_attributes('info', _('Previous tournament'), 'bottom') }}>
+        <span {{ macros.tooltip_attributes('info', _('Previous tournament') ~ ' <span class="text-nowrap"><i class="bi bi-shift pe-1"></i>+<i class="bi bi-arrow-up-square ps-1"></i></span>', 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
@@ -189,7 +189,7 @@
                 </option>
             {% endfor %}
         </select>
-        <span {{ macros.tooltip_attributes('info', _('Next tournament'), 'bottom') }}>
+        <span {{ macros.tooltip_attributes('info', _('Next tournament') ~ ' <span class="text-nowrap"><i class="bi bi-shift pe-1"></i>+<i class="bi bi-arrow-down-square ps-1"></i></span>', 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
