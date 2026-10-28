@@ -169,6 +169,20 @@ class Event:
 
         return DataSourceManager().national_source_for_federation(self.federation)
 
+    def national_identity(self, stored_player: StoredPlayer) -> tuple[str, str] | None:
+        """The national identifier of a player with the source it belongs
+        to. An identifier without a source (typed in, or imported from a
+        datasheet) is taken as one of the event's federation; None when the
+        player has none, or when that federation has no national source."""
+        if not stored_player.national_id:
+            return None
+        source = stored_player.national_source
+        if not source and (data_source := self.national_rating_source) is not None:
+            source = data_source.national_source_id
+        if not source:
+            return None
+        return source, stored_player.national_id
+
     @property
     def national_rating_cadences(self) -> frozenset[Cadence]:
         if (data_source := self.national_rating_source) is None:
@@ -748,6 +762,10 @@ class Event:
             return True
         if stored_player.fide_id and stored_player.fide_id == player.fide_id:
             return True
+        if (
+            national_identity := self.national_identity(stored_player)
+        ) and national_identity == self.national_identity(player.stored_player):
+            return True
         duplicate_key_hook = plugin_manager.hook_for_event(
             self, 'get_player_duplicate_key'
         )
@@ -793,6 +811,8 @@ class Event:
             )
         if stored_player.fide_id:
             keys.add(('fide', stored_player.fide_id))
+        if national_identity := self.national_identity(stored_player):
+            keys.add(('national', *national_identity))
         keys.update(
             ('plugin', key)
             for key in plugin_manager.hook_for_event(self, 'get_player_duplicate_key')(
@@ -810,6 +830,7 @@ class Event:
         # None and '' remain distinct despite Player normalizing both to ''.
         seen_birth_identities: dict[tuple[str, str, date], bool] = {}
         seen_fide_ids: set[int] = set()
+        seen_national_identities: set[tuple[str, str]] = set()
         seen_plugin_keys: set[object] = set()
 
         for player in self.players:
@@ -834,6 +855,10 @@ class Event:
                 if stored_player.fide_id in seen_fide_ids:
                     return True
                 seen_fide_ids.add(stored_player.fide_id)
+            if national_identity := self.national_identity(stored_player):
+                if national_identity in seen_national_identities:
+                    return True
+                seen_national_identities.add(national_identity)
             for key in duplicate_key_hook(stored_player=stored_player):
                 if key in seen_plugin_keys:
                     return True

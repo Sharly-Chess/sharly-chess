@@ -277,16 +277,8 @@ class Player:
     def national_source(self) -> str | None:
         """The source of the national identifier: the one it was fetched
         from, or the federation's of the event for an identifier typed in."""
-        from data.input_output import DataSourceManager
-
-        if not self.national_id:
-            return None
-        if self.stored_player.national_source:
-            return self.stored_player.national_source
-        data_source = DataSourceManager().national_source_for_federation(
-            self.event.federation
-        )
-        return data_source.national_source_id if data_source else None
+        national_identity = self.event.national_identity(self.stored_player)
+        return national_identity[0] if national_identity else None
 
     @cached_property
     def profile_links(self) -> list[PlayerProfileLink]:
