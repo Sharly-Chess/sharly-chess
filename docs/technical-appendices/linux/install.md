@@ -200,5 +200,5 @@ flatpak remote-delete --user sharly-chess-dev
 | App does not appear in menu | Did you restart after the first Flatpak installation? |
 | GPG verification error | Add `--no-gpg-verify` to the `remote-add` command |
 | Missing icon | `gtk-update-icon-cache ~/.local/share/icons/hicolor` |
-| Missing runtime | `flatpak install --user flathub org.gnome.Platform//49` |
+| Missing runtime | `flatpak install --user flathub org.gnome.Platform//51` |
 | "App not found" during install | Check that the remote is added: `flatpak remotes --user` |

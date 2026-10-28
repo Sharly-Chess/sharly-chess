@@ -313,6 +313,10 @@ class SharlyChessServerToga(toga.App):
         match sys.platform:
             case 'win32':
                 icon_file_name = 'sharly-chess.ico'
+                # Run on the .NET Framework 4.x built into Windows rather than
+                # the .NET 10 Toga prefers when installed, so that every machine
+                # uses the same runtime.
+                os.environ.setdefault('TOGA_WINFORMS_USE_NETFX', '1')
             case 'darwin':
                 icon_file_name = 'sharly-chess.icns'
             case 'linux':
@@ -339,7 +343,7 @@ class SharlyChessServerToga(toga.App):
         self.profile = profile
         self.port = port
 
-        self.gui_loop = asyncio.get_event_loop()
+        self.gui_loop = self.loop
         self.server_loop = asyncio.SelectorEventLoop()
 
         # reset the locale after having called toga.App.__init__(), needed by Togo 0.5.3+
