@@ -6122,6 +6122,9 @@ msgstr "Des versions plus récentes de ces listes sont disponibles : %(lists)s.
 msgid "Next round"
 msgstr "Ronde suivante"
 
+msgid "Next tournament"
+msgstr "Tournoi suivant"
+
 msgid "Nicaragua"
 msgstr "Nicaragua"
 
@@ -7916,6 +7919,9 @@ msgstr "Prévisualisez le chevalet avec différentes données d’exemple."
 
 msgid "Previous round"
 msgstr "Ronde précédente"
+
+msgid "Previous tournament"
+msgstr "Tournoi précédent"
 
 msgid "Primary score:"
 msgstr "Score principal :"

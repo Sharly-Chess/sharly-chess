@@ -468,7 +468,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                                 ).format(
                                     url=background_image, code=response.status_code
                                 )
-                        except requests.ConnectionError as ce:
+                        except requests.RequestException as ce:
                             errors[field] = _(
                                 'URL [{url}] did not respond (error: [{error}]).'
                             ).format(url=background_image, error=str(ce))
