@@ -1,6 +1,7 @@
 """Every print document builds, for an individual event and a team one."""
 
 import inspect
+import math
 from collections.abc import Iterator
 from datetime import timedelta
 
@@ -30,7 +31,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import EventType, Result
+from utils.enum import EventType, PlayerRatingType, Result
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.base_controller import WebContext
 
@@ -335,3 +336,55 @@ def test_place_cards_date_the_tournament_from_its_start(
     assert place_card_tournament.start.day == tournament.start_date.day
     assert place_card_tournament.start.month == tournament.start_date.month
     assert place_card_tournament.start.year == tournament.start_date.year
+
+
+@pytest.mark.unit
+def test_rating_certificate_stops_at_the_peak_rating(event: Event):
+    """The certificate states the highest intermediate rating the player
+    reached, after the earliest round it was reached, adding K times the
+    difference between the score and the expected score of the rated games
+    played until then."""
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    certified = 0
+    for tournament_player in tournament.tournament_players:
+        if tournament_player.rating_used_by_fide.type != PlayerRatingType.FIDE:
+            continue
+        k_factor, _estimated = tournament_player.fide_rating_coefficient
+        starting_rating = tournament_player.rating_used_by_fide.value
+        ratings_by_round: dict[int, int] = {}
+        performance_diff = 0.0
+        for round_, pairing in tournament_player.pairings_by_round.items():
+            if round_ > tournament.max_ranking_round or not pairing.played:
+                continue
+            rating_change = pairing.fide_rating_change(k_factor)
+            if rating_change.delta is None:
+                continue
+            performance_diff += pairing.result.point_value - rating_change.expected
+            ratings_by_round[round_] = starting_rating + math.floor(
+                round(k_factor * performance_diff, 2) + 0.5
+            )
+        if not ratings_by_round:
+            continue
+        peak_rating = max(ratings_by_round.values())
+        peak_round = min(
+            round_
+            for round_, rating in ratings_by_round.items()
+            if rating == peak_rating
+        )
+        document = _build(
+            event,
+            documents.RatingAchievementCertificatePrintDocument,
+            {
+                'tournament': str(tournament.id),
+                'mandatory-player': str(tournament_player.id),
+            },
+        )
+        document.validate_options()
+        context = document.template_context
+        assert context['at_round'] == peak_round
+        assert context['intermediate_rating'] == peak_rating
+        assert {round_ for round_, _pairing, _change in context['games']} <= set(
+            range(1, peak_round + 1)
+        )
+        certified += 1
+    assert certified

@@ -1085,6 +1085,9 @@ msgstr ""
 msgid "All the tables"
 msgstr ""
 
+msgid "All the text of the certificate may be modified by the arbiter before printing."
+msgstr ""
+
 msgid "All the tournaments"
 msgstr ""
 
@@ -8278,6 +8281,9 @@ msgstr ""
 msgid "Rating"
 msgstr ""
 
+msgid "Rating Achievement Certificate"
+msgstr ""
+
 msgid "Rating change"
 msgstr ""
 
@@ -10200,6 +10206,10 @@ msgstr ""
 msgid "The change will be recorded in the TRF of the tournament."
 msgstr ""
 
+#, python-format
+msgid "The coefficient (k) of the player is unknown, %(k)d is assumed."
+msgstr ""
+
 msgid "The coefficient can be used to weight this tournament’s points and tie-break values in the championship ranking."
 msgstr ""
 
@@ -11237,6 +11247,12 @@ msgstr ""
 msgid "This player has already been paired; their team cannot be changed."
 msgstr ""
 
+msgid "This player has no FIDE rating."
+msgstr ""
+
+msgid "This player has not played any rated game yet."
+msgstr ""
+
 msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the lineup first)."
 msgstr ""
 
@@ -11366,6 +11382,9 @@ msgid "This tie-break uses a legacy way to compute values."
 msgstr ""
 
 msgid "This tournament has already been paired; teams can no longer be added."
+msgstr ""
+
+msgid "This tournament has no FIDE-rated players."
 msgstr ""
 
 msgid "This tournament has no bracket to show."

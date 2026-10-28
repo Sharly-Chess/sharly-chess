@@ -1005,6 +1005,23 @@ class PlayerTitle(StrEnum):
                 raise ValueError(f'Unknown title: {self}')
 
     @property
+    def rating_requirement(self) -> int | None:
+        """The standard rating, published or interim, that gains the title
+        on its own (FIDE Title Regulations 1.3), or None for the titles that
+        also require norms."""
+        match self:
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return 2000
+            case PlayerTitle.WOMAN_FIDE_MASTER:
+                return 2100
+            case PlayerTitle.CANDIDATE_MASTER:
+                return 2200
+            case PlayerTitle.FIDE_MASTER:
+                return 2300
+            case _:
+                return None
+
+    @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:

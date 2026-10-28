@@ -1,5 +1,7 @@
 import itertools
 import logging
+import math
+from datetime import date
 from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -37,6 +39,7 @@ from data.pairings.systems import (
     SwissPairingSystem,
     TeamRoundRobinPairingSystem,
 )
+from data.pairing import Pairing, RatingChange
 from data.player import TournamentPlayer
 from utils.enum import Cadence
 from data.print_documents.options import (
@@ -91,6 +94,7 @@ from utils.enum import (
     Result,
     TitleNorm,
     PlayerGender,
+    PlayerRatingType,
     ScoreType,
 )
 from utils.option import Option, OptionHandler
@@ -2670,6 +2674,160 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             'rounded_percent': rounded_percent,
             'dp': dp,
             'rp': norm_result.average_rating + dp,
+        }
+
+
+class RatingAchievementCertificatePrintDocument(PrintDocument):
+    """Certificate of the highest intermediate FIDE rating a player reached
+    during the tournament, for the titles gained by a rating achieved at any
+    time."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'rating-achievement-certificate'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Rating Achievement Certificate')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+        ]
+
+    @property
+    def title(self) -> str:
+        return 'Certificate of FIDE Rating Achievement'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            cls._has_fide_rated_players(tournament)
+            for tournament in allowed_tournaments
+        )
+
+    @staticmethod
+    def _has_fide_rated_players(tournament: Tournament) -> bool:
+        return tournament.uses_fide_ratings and any(
+            tournament_player.rating_used_by_fide.type == PlayerRatingType.FIDE
+            for tournament_player in tournament.tournament_players
+        )
+
+    @staticmethod
+    def _rating_gain(k_factor: int, performance_diff: float) -> int:
+        return math.floor(round(k_factor * performance_diff, 2) + 0.5)
+
+    def _games_to_peak(
+        self, tournament_player: TournamentPlayer, k_factor: int
+    ) -> list[tuple[int, Pairing, RatingChange]]:
+        """The games of the finished rounds, up to the earliest round after
+        which the intermediate rating is at its highest. Empty when no game
+        counts for the rating."""
+        games = [
+            (round_, pairing, pairing.fide_rating_change(k_factor))
+            for round_, pairing in tournament_player.pairings_by_round.items()
+            if round_ <= self.tournament.max_ranking_round
+            and pairing.played
+            and pairing.opponent is not None
+        ]
+        peak_count = 0
+        peak_gain: int | None = None
+        performance_diff = 0.0
+        for count, (_round, pairing, rating_change) in enumerate(games, start=1):
+            if rating_change.delta is None:
+                continue
+            performance_diff += pairing.result.point_value - rating_change.expected
+            gain = self._rating_gain(k_factor, performance_diff)
+            if peak_gain is None or gain > peak_gain:
+                peak_count, peak_gain = count, gain
+        return games[:peak_count]
+
+    @override
+    def validate_options(self) -> None:
+        super().validate_options()
+        if not self._has_fide_rated_players(self.tournament):
+            raise OptionError(
+                _('This tournament has no FIDE-rated players.'),
+                self._get_option(TournamentPrintOption),
+            )
+        player_option = self._get_option(MandatoryPlayerPrintOption)
+        tournament_player = self.tournament.tournament_players_by_id.get(
+            cast(int, player_option.value)
+        )
+        if (
+            tournament_player is None
+            or tournament_player.rating_used_by_fide.type != PlayerRatingType.FIDE
+        ):
+            raise OptionError(_('This player has no FIDE rating.'), player_option)
+        k_factor, _is_estimated = tournament_player.fide_rating_coefficient
+        if not self._games_to_peak(tournament_player, k_factor):
+            raise OptionError(
+                _('This player has not played any rated game yet.'), player_option
+            )
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/rating_achievement_certificate.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
+        assert player_id is not None
+        tournament_player = self.tournament.tournament_players_by_id[player_id]
+        k_factor, k_factor_is_estimated = tournament_player.fide_rating_coefficient
+        games = self._games_to_peak(tournament_player, k_factor)
+        rated_games = [
+            (pairing, rating_change)
+            for _round, pairing, rating_change in games
+            if rating_change.delta is not None
+        ]
+        score = sum(pairing.result.point_value for pairing, _change in rated_games)
+        expected_score = sum(
+            rating_change.expected for _p, rating_change in rated_games
+        )
+        performance_diff = score - expected_score
+        rating_gain = self._rating_gain(k_factor, performance_diff)
+        starting_rating = tournament_player.rating_used_by_fide.value
+        intermediate_rating = starting_rating + rating_gain
+        titles_reached = (
+            [
+                title
+                for title in PlayerTitle
+                if (requirement := title.rating_requirement) is not None
+                and starting_rating < requirement <= intermediate_rating
+                and (
+                    not title.is_women or tournament_player.gender == PlayerGender.WOMAN
+                )
+                and title not in tournament_player.held_titles
+            ]
+            if self.tournament.cadence == Cadence.STANDARD
+            else []
+        )
+        chief_arbiter = self.tournament.chief_arbiter
+        return {
+            'event': self.get_event(),
+            'tournament': self.tournament,
+            'tournament_player': tournament_player,
+            'at_round': games[-1][0],
+            'games': games,
+            'rated_games_count': len(rated_games),
+            'k_factor': k_factor,
+            'k_factor_is_estimated': k_factor_is_estimated,
+            'score': score,
+            'expected_score': expected_score,
+            'performance_diff': performance_diff,
+            'rating_gain': rating_gain,
+            'starting_rating': starting_rating,
+            'intermediate_rating': intermediate_rating,
+            'titles_reached': sorted(
+                titles_reached, key=lambda title: -title.sort_index
+            ),
+            'chief_arbiter': chief_arbiter,
+            'issued_on': date.today(),
         }
 
 

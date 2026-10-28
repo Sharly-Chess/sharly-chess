@@ -1085,6 +1085,9 @@ msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·
 msgid "All the tables"
 msgstr "Toutes les tables"
 
+msgid "All the text of the certificate may be modified by the arbiter before printing."
+msgstr "Tout le texte de l'attestation peut être modifié par l'arbitre avant impression."
+
 msgid "All the tournaments"
 msgstr "Tous les tournois"
 
@@ -8280,6 +8283,9 @@ msgstr "Classement rapide"
 msgid "Rating"
 msgstr "Elo"
 
+msgid "Rating Achievement Certificate"
+msgstr "Attestation de performance Elo"
+
 msgid "Rating change"
 msgstr "Variation Elo"
 
@@ -10202,6 +10208,10 @@ msgstr "La catégorie a été renommée."
 msgid "The change will be recorded in the TRF of the tournament."
 msgstr "La modification sera consignée dans le TRF du tournoi."
 
+#, python-format
+msgid "The coefficient (k) of the player is unknown, %(k)d is assumed."
+msgstr "Le coefficient (k) du·de la joueur·euse est inconnu, %(k)d est utilisé."
+
 msgid "The coefficient can be used to weight this tournament’s points and tie-break values in the championship ranking."
 msgstr "Le coefficient permet de pondérer les points et les valeurs de départage de ce tournoi dans le classement du Grand Prix."
 
@@ -11239,6 +11249,12 @@ msgstr "Ce·tte joueur·euse existe déjà dans le tournoi [{tournament}]."
 msgid "This player has already been paired; their team cannot be changed."
 msgstr "Ce·tte joueur·euse a déjà été apparié·e, son équipe ne peut être modifiée."
 
+msgid "This player has no FIDE rating."
+msgstr "Ce·tte joueur·euse n'a pas de classement FIDE."
+
+msgid "This player has not played any rated game yet."
+msgstr "Ce·tte joueur·euse n'a encore joué aucune partie classée."
+
 msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the lineup first)."
 msgstr "Ce·tte joueur·euse est apparié·e pour au moins une ronde et ne peut être supprimé·e de l'effectif (doit d'abord être supprimé·e de la composition de la ronde)."
 
@@ -11369,6 +11385,9 @@ msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
 msgid "This tournament has already been paired; teams can no longer be added."
 msgstr "Ce tournoi a déjà été apparié, il n'est plus possible d'y ajouter des équipes."
+
+msgid "This tournament has no FIDE-rated players."
+msgstr "Ce tournoi n'a pas de joueur·euse classé·e FIDE."
 
 msgid "This tournament has no bracket to show."
 msgstr "Ce tournoi n'a pas de tableau à afficher."
