@@ -2666,7 +2666,7 @@ msgstr "Liste des critères"
 
 #, python-brace-format
 msgid "Criteria selecting individual players only apply to their own tournament and have not been copied (categories: {categories})."
-msgstr "Les critères désignant des joueur·euses précis·es ne s'appliquent qu'à leur propre tournoi et n'ont pas été copiés (catégories : {categories})."
+msgstr "Les critères désignant des joueur·euses précis·es ne s'appliquent qu'à leur propre tournoi et n'ont pas été copiés (catégories : {categories})."
 
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
@@ -7975,7 +7975,7 @@ msgstr "Groupe non cumulable"
 
 #, python-brace-format
 msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
-msgstr "Le groupe non cumulable [{prize_group}] a été copié vers : {tournaments}."
+msgstr "Le groupe non cumulable [{prize_group}] a été copié vers : {tournaments}."
 
 #, python-brace-format
 msgid "Prize category [{prize_category}] has been copied to [{tournament} / {prize_group}]."
