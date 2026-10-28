@@ -1000,7 +1000,7 @@ class PrizeAdminController(BaseEventAdminController):
                     f'{tournament.name} / {prize_group.name}'
                 )
             options[f'{tournament.id}-{cls.NEW_PRIZE_GROUP_TARGET}'] = (
-                f'{tournament.name} / {_("New prize bracket")}'
+                f'{tournament.name} ({_("new prize bracket")})'
             )
         return options
 

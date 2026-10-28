@@ -6122,9 +6122,6 @@ msgstr ""
 msgid "New place card template"
 msgstr ""
 
-msgid "New prize bracket"
-msgstr ""
-
 msgid "New results are in, refresh your browser"
 msgstr ""
 
@@ -13038,6 +13035,9 @@ msgstr ""
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "national {cadences}"
+msgstr ""
+
+msgid "new prize bracket"
 msgstr ""
 
 msgid "no"

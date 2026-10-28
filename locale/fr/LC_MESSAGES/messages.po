@@ -6122,9 +6122,6 @@ msgstr "Le nouveau mot de passe. Laisser vide pour ne pas changer."
 msgid "New place card template"
 msgstr "Nouveau modèle de chevalet"
 
-msgid "New prize bracket"
-msgstr "Nouveau groupe non cumulable"
-
 msgid "New results are in, refresh your browser"
 msgstr "De nouveaux résultats ont été enregistrés, actualisez la page"
 
@@ -13041,6 +13038,9 @@ msgstr "mon-ecran"
 msgctxt "rating sequence"
 msgid "national {cadences}"
 msgstr "national {cadences}"
+
+msgid "new prize bracket"
+msgstr "nouveau groupe non cumulable"
 
 msgid "no"
 msgstr "non"
