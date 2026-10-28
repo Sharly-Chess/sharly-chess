@@ -142,15 +142,10 @@ class DataRecovery:
             try:
                 version_str = version_dir.name[1:]
                 version = Version(version_str)
-                if version.major < 5:
-                    logger.warning(
-                        'version dir [%s] is a legacy version (ignored)',
-                        version_dir.absolute(),
-                    )
-                elif version_str != str(version):
+                if version_str != str(version):
                     # Only reversible version names are taken into account
                     raise InvalidVersion()
-                elif version != SHARLY_CHESS_VERSION:
+                if version != SHARLY_CHESS_VERSION:
                     versions.append(version)
             except InvalidVersion:
                 logger.warning('invalid version dir [%s]', version_dir.absolute())
