@@ -1,5 +1,6 @@
 import itertools
 import re
+from collections.abc import Awaitable, Callable
 from contextlib import suppress
 from datetime import datetime, date
 from logging import Logger
@@ -26,8 +27,13 @@ from plugins.ffe.papi_mappers import (
 from plugins.ffe.utils import (
     FfePlayerPluginData,
     PlayerFFELicence,
+    FFE_ABBREVIATED_NAME_MIN_LENGTH,
+    FFE_ABBREVIATION_MIN_LENGTH,
+    FFE_NAME_LENGTH,
     FfeNameKey,
     ffe_database_name_keys,
+    ffe_name_key_matches,
+    get_data,
     ffe_list_ratings,
 )
 from utils.enum import Cadence, PlayerRatingType
@@ -113,6 +119,18 @@ class FFESqlServer(SqlServer):
     )
 
     @staticmethod
+    def _read_name(name: str) -> str:
+        # A few names hold their apostrophes doubled
+        return name.replace("''", "'").rstrip()
+
+    @staticmethod
+    def _held_names(name: str) -> list[str]:
+        """The ways the server may hold the name."""
+        if "'" in name:
+            return [name, name.replace("'", "''")]
+        return [name]
+
+    @staticmethod
     def _get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
         date_of_birth: date | None = None
         dob = row['NeLe']
@@ -124,10 +142,10 @@ class FFESqlServer(SqlServer):
         fide_title = PapiPlayerTitle.get_core_object(row['FideTitre'] or '')
         return StoredPlayer(
             id=None,
-            first_name=row['Prenom'] or '',
-            last_name=row['Nom'],
+            first_name=FFESqlServer._read_name(row['Prenom'] or ''),
+            last_name=FFESqlServer._read_name(row['Nom']),
             date_of_birth=date_of_birth,
-            gender=PapiPlayerGender.get_core_object(row['Sexe']),
+            gender=PapiPlayerGender.get_core_object(row['Sexe'] or ''),
             title=fide_title.open_value,
             women_title=fide_title.women_value,
             ratings=ffe_list_ratings(
@@ -171,6 +189,48 @@ class FFESqlServer(SqlServer):
 
     RATING_TYPE_CONDITION: str = f'joueur.Fide IN ({", ".join(f"'{s}'" for s in [PlayerRatingType.ESTIMATED, PlayerRatingType.NATIONAL, PlayerRatingType.FIDE])})'
 
+    # Strings are sent as NVARCHAR, which the server compares to the VARCHAR
+    # columns by converting them row by row instead of seeking their indexes
+    VARCHAR: str = 'CAST(%s AS VARCHAR(100))'
+
+    @classmethod
+    def varchars(cls, count: int) -> str:
+        return ', '.join([cls.VARCHAR] * count)
+
+    @classmethod
+    def _cut_name_matches(cls, start: str, min_tail_length: int) -> str:
+        tails: list[str] = [
+            f"RIGHT({start}, NULLIF(CHARINDEX('{separator}', REVERSE({start})), 0) - 1)"
+            for separator in (' ', '-')
+        ]
+        matches: list[str] = [
+            f"(LEN({part}) >= {min_tail_length} AND {cls.VARCHAR} LIKE {part} + '%%')"
+            for part in (*tails, start)
+        ]
+        return f'CASE WHEN {" OR ".join(matches)} THEN 1 END'
+
+    @classmethod
+    def _cut_name_condition(
+        cls, field: str, min_tail_length: int, at_length: bool, abbreviated: bool
+    ) -> str:
+        """The condition under which a word, given as each of its parameters,
+        runs past the end of a name the server cut, as `ffe_cut_name_matches()`
+        tells."""
+        # The guards spare the other names the cost of the matches
+        branches: list[str] = []
+        if at_length:
+            branches.append(
+                f'WHEN LEN({field}) = {FFE_NAME_LENGTH} '
+                f'THEN {cls._cut_name_matches(field, min_tail_length)}'
+            )
+        if abbreviated:
+            abbreviation = f'LEFT({field}, LEN({field}) - 1)'
+            branches.append(
+                f"WHEN RIGHT({field}, 1) = '.' "
+                f'THEN {cls._cut_name_matches(abbreviation, FFE_ABBREVIATION_MIN_LENGTH)}'
+            )
+        return f'(CASE {" ".join(branches)} END = 1)'
+
     @staticmethod
     def string_matches_fide_id(string: str) -> int | None:
         return int(string) if string.isdecimal() else None
@@ -203,27 +263,38 @@ class FFESqlServer(SqlServer):
         tokens: list[str] = [
             unicode_normalize(token) for token in re.split(r'\s+', string)
         ]
-        str_fields: tuple[tuple[str, str, str], ...] = (
-            ('joueur.Nom', '%', '%'),
-            ('joueur.Prenom', '%', '%'),
-            ('joueur.NrFFE', '', ''),
-        )
-        filter_conditions, filter_params = self._process_filters(filters or {})
-        conditions: list[str] = [
-            self.RATING_TYPE_CONDITION,
-            *filter_conditions,
-        ]
-        params: list[Any] = list(filter_params)
+        name_fields: tuple[str, ...] = ('joueur.Nom', 'joueur.Prenom')
+        # The other words of the search tell apart the players a single letter
+        # left of a cut word would not
+        min_tail_length: int = 1 if len(tokens) > 1 else 2
+        # Only a search longer than the names can run past the end of a name
+        # cut at their length or abbreviated, the cost of the matches is not
+        # paid otherwise
+        search_length: int = len(' '.join(tokens))
+        at_length: bool = search_length > FFE_NAME_LENGTH
+        abbreviated: bool = search_length >= FFE_ABBREVIATED_NAME_MIN_LENGTH
+        conditions, params = self._process_filters(filters or {})
         for token in tokens:
-            token_expressions: list[str] = [
-                f'(UPPER({field[0]}) LIKE %s)' for field in str_fields
-            ]
-            token_params: list[str | int] = [
-                f'{field[1]}{token}{field[2]}' for field in str_fields
-            ]
+            token_expressions: list[str] = []
+            token_params: list[str | int] = []
+            for name in self._held_names(token):
+                for field in name_fields:
+                    token_expressions.append(f'({field} LIKE {self.VARCHAR})')
+                    token_params.append(f'%{name}%')
+            # A word no longer than the shortest abbreviation tail matches it
+            # as a whole
+            if at_length or (abbreviated and len(token) > FFE_ABBREVIATION_MIN_LENGTH):
+                for field in name_fields:
+                    cut_name_condition = self._cut_name_condition(
+                        field, min_tail_length, at_length, abbreviated
+                    )
+                    token_expressions.append(cut_name_condition)
+                    token_params += [token] * cut_name_condition.count('%s')
+            token_expressions.append(f'(joueur.NrFFE LIKE {self.VARCHAR})')
+            token_params.append(token)
             with suppress(ValueError):
                 int_value = int(token.strip())
-                token_expressions.append('(joueur.FideCode IN (%s, %s))')
+                token_expressions.append(f'(joueur.FideCode IN ({self.varchars(2)}))')
                 token_params += [
                     self.remote_fide_id_format_1(int_value),
                     self.remote_fide_id_format_2(int_value),
@@ -236,13 +307,14 @@ class FFESqlServer(SqlServer):
 
         # We build one CASE block that sorts best → worst
         order_clauses = []
+        v = self.VARCHAR
         for token in tokens:
-            order_clauses.append("""
+            order_clauses.append(f"""
                 CASE
-                    WHEN UPPER(joueur.Nom) LIKE %s AND federation = %s THEN 0
-                    WHEN UPPER(joueur.Prenom) LIKE %s AND federation = %s THEN 1
-                    WHEN UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s THEN 2
-                    WHEN federation = %s THEN 3
+                    WHEN joueur.Nom LIKE {v} AND joueur.Federation = {v} THEN 0
+                    WHEN joueur.Prenom LIKE {v} AND joueur.Federation = {v} THEN 1
+                    WHEN joueur.Nom LIKE {v} OR joueur.Prenom LIKE {v} THEN 2
+                    WHEN joueur.Federation = {v} THEN 3
                     ELSE 4
                 END
             """)
@@ -262,9 +334,12 @@ class FFESqlServer(SqlServer):
         return await self._get_stored_players_by_condition(
             condition,
             params,
-            order_by=f'{order_expr}, Joueur.Nom, Joueur.Prenom',
+            order_by=f'{order_expr}, joueur.Nom, joueur.Prenom, joueur.Ref',
             limit=limit,
             offset=page * limit if limit else None,
+            # A short token matches far more players than a long one, a plan
+            # cached for one of them can be many times slower for the other
+            recompile=True,
         )
 
     async def _get_stored_player_by_condition(
@@ -287,6 +362,7 @@ class FFESqlServer(SqlServer):
         order_by: str | None = None,
         offset: int | None = None,
         limit: int | None = None,
+        recompile: bool = False,
     ) -> list[StoredPlayer]:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
@@ -301,6 +377,8 @@ class FFESqlServer(SqlServer):
             if limit:
                 query += ' FETCH NEXT %s ROWS ONLY'
                 params.append(limit)
+        if recompile:
+            query += ' OPTION (RECOMPILE)'
         await self.execute(query, tuple(params))
         return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
 
@@ -317,7 +395,7 @@ class FFESqlServer(SqlServer):
         player_fide_id: int,
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
-            'joueur.FideCode IN (%s, %s)',
+            f'joueur.FideCode IN ({self.varchars(2)})',
             [
                 self.remote_fide_id_format_1(player_fide_id),
                 self.remote_fide_id_format_2(player_fide_id),
@@ -328,7 +406,7 @@ class FFESqlServer(SqlServer):
         self, licence_numbers: list[str]
     ) -> list[StoredPlayer]:
         return await self._get_stored_players_by_condition(
-            f'joueur.NrFFE IN ({", ".join(["%s"] * len(licence_numbers))})',
+            f'joueur.NrFFE IN ({self.varchars(len(licence_numbers))})',
             licence_numbers,
         )
 
@@ -336,7 +414,7 @@ class FFESqlServer(SqlServer):
         self, fide_ids: list[int]
     ) -> list[StoredPlayer]:
         return await self._get_stored_players_by_condition(
-            f'joueur.FideCode IN ({", ".join(["%s"] * len(fide_ids) * 2)})',
+            f'joueur.FideCode IN ({self.varchars(len(fide_ids) * 2)})',
             list(
                 itertools.chain.from_iterable(
                     [
@@ -348,19 +426,28 @@ class FFESqlServer(SqlServer):
             ),
         )
 
-    # The query scales fast, so it is required to paginate the results
-    # A page of 30 is about a 5 seconds query (half the timeout)
-    NAME_KEYS_PAGE_SIZE = 30
+    # Pages of 50 names take about 50 ms each, from about 150 the server
+    # scans the whole table instead and a page takes more than 10 seconds
+    NAME_KEYS_PAGE_SIZE = 50
 
     async def _get_stored_players_by_name_keys_page(
         self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
-        name_str_keys = list({'|'.join(name_key[:2]) for name_key in name_keys})
-        name_query = "UPPER(joueur.Nom) + '|' + UPPER(Joueur.Prenom)"
-        query_array = ', '.join('%s' for _ in name_str_keys)
+        names = list(
+            {
+                held_names
+                for name_key in name_keys
+                for held_names in itertools.product(
+                    self._held_names(name_key[0]), self._held_names(name_key[1])
+                )
+            }
+        )
+        name_condition = (
+            f'(joueur.Nom = {self.VARCHAR} AND joueur.Prenom = {self.VARCHAR})'
+        )
         stored_players = await self._get_stored_players_by_condition(
-            f'{name_query} IN ({query_array})',
-            name_str_keys,
+            ' OR '.join([name_condition] * len(names)),
+            list(itertools.chain.from_iterable(names)),
         )
         # DOB formatting is too expensive in SQL Server, we have to do the
         # matching only on the name, and match the DOB in python
@@ -371,16 +458,69 @@ class FFESqlServer(SqlServer):
             if keys & ffe_database_name_keys(stored_player)
         ]
 
+    async def _get_stored_players_by_abbreviated_name_keys_page(
+        self, name_keys: list[FfeNameKey]
+    ) -> list[StoredPlayer]:
+        """The players whose last or first name the server abbreviated with a
+        dot, found by the start of the last name the abbreviation keeps."""
+        conditions: list[str] = []
+        params: list[str] = []
+        for last_name in {name_key[0] for name_key in name_keys}:
+            conditions.append(
+                f"(joueur.Nom = {self.VARCHAR} AND RIGHT(joueur.Prenom, 1) = '.')"
+            )
+            params.append(last_name)
+            if len(last_name) > FFE_ABBREVIATION_MIN_LENGTH:
+                conditions.append(
+                    f"(joueur.Nom LIKE {self.VARCHAR} AND RIGHT(joueur.Nom, 1) = '.')"
+                )
+                params.append(f'{last_name[:FFE_ABBREVIATION_MIN_LENGTH]}%')
+        stored_players = await self._get_stored_players_by_condition(
+            ' OR '.join(conditions), params
+        )
+        return [
+            stored_player
+            for stored_player in stored_players
+            if any(ffe_name_key_matches(key, stored_player) for key in name_keys)
+        ]
+
+    # Each key brings two conditions
+    ABBREVIATED_NAME_KEYS_PAGE_SIZE = NAME_KEYS_PAGE_SIZE // 2
+
     async def get_stored_players_by_name_keys(
         self, name_keys: list[FfeNameKey]
     ) -> list[StoredPlayer]:
-        stored_players: list[StoredPlayer] = []
-        while name_keys:
-            stored_players += await self._get_stored_players_by_name_keys_page(
-                name_keys[: self.NAME_KEYS_PAGE_SIZE]
-            )
-            name_keys = name_keys[self.NAME_KEYS_PAGE_SIZE :]
-        return stored_players
+        # A player matching the keys of several pages is found by each of them
+        stored_players: dict[int, StoredPlayer] = {}
+
+        async def add_pages(
+            read_page: Callable[[list[FfeNameKey]], Awaitable[list[StoredPlayer]]],
+            keys: list[FfeNameKey],
+            page_size: int,
+        ) -> None:
+            while keys:
+                for stored_player in await read_page(keys[:page_size]):
+                    stored_players[get_data(stored_player.plugin_data, 'ffe_id')] = (
+                        stored_player
+                    )
+                keys = keys[page_size:]
+
+        await add_pages(
+            self._get_stored_players_by_name_keys_page,
+            name_keys,
+            self.NAME_KEYS_PAGE_SIZE,
+        )
+        found_keys = {
+            key
+            for stored_player in stored_players.values()
+            for key in ffe_database_name_keys(stored_player)
+        }
+        await add_pages(
+            self._get_stored_players_by_abbreviated_name_keys_page,
+            [name_key for name_key in name_keys if name_key not in found_keys],
+            self.ABBREVIATED_NAME_KEYS_PAGE_SIZE,
+        )
+        return list(stored_players.values())
 
     async def get_players_by_fide_id(
         self,
@@ -393,12 +533,12 @@ class FFESqlServer(SqlServer):
                 self.remote_fide_id_format_2(player_fide_id),
             ]
         return await self._get_stored_players_by_condition(
-            f'joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))})',
+            f'joueur.FideCode IN ({self.varchars(2 * len(player_fide_ids))})',
             params,
         )
 
-    @staticmethod
-    def _process_filters(filters: dict) -> tuple[list[str], list[Any]]:
+    @classmethod
+    def _process_filters(cls, filters: dict) -> tuple[list[str], list[Any]]:
         conditions: list[str] = []
         params: list[Any] = []
         if 'ffe_licence_filter' in filters:
@@ -409,17 +549,17 @@ class FFESqlServer(SqlServer):
             elif filters['ffe_licence_filter'] == 'A':
                 conditions.append("(joueur.AffType='A' OR joueur.Federation !='fra')")
         if 'federation_filter' in filters:
-            conditions.append('joueur.Federation = %s')
+            conditions.append(f'joueur.Federation = {cls.VARCHAR}')
             params.append(filters['federation_filter'])
         if 'gender_filter' in filters:
-            conditions.append('joueur.Sexe = %s')
+            conditions.append(f'joueur.Sexe = {cls.VARCHAR}')
             params.append(filters['gender_filter'])
         if 'ffe_league_filter' in filters:
-            conditions.append('club.Ligue = %s')
+            conditions.append(f'club.Ligue = {cls.VARCHAR}')
             params.append(filters['ffe_league_filter'])
         if 'club_filter' in filters:
             club: str = filters['club_filter']
-            conditions.append('LOWER(club.Nom) LIKE LOWER(%s)')
+            conditions.append(f'club.Nom LIKE {cls.VARCHAR}')
             params.append(f'%{club}%')
         if filters.get('year_of_birth_filter'):
             age_conditions = []
@@ -428,14 +568,14 @@ class FFESqlServer(SqlServer):
                     case None, None:
                         continue
                     case None, _:
-                        age_conditions.append('YEAR(joueur.NeLe) <= %s')
-                        params.append(max_year)
+                        age_conditions.append('joueur.NeLe < %s')
+                        params.append(date(max_year + 1, 1, 1))
                     case _, None:
-                        age_conditions.append('YEAR(joueur.NeLe) >= %s')
-                        params.append(min_year)
+                        age_conditions.append('joueur.NeLe >= %s')
+                        params.append(date(min_year, 1, 1))
                     case _, _:
-                        age_conditions.append('YEAR(joueur.NeLe) BETWEEN %s AND %s')
-                        params += [min_year, max_year]
+                        age_conditions.append('joueur.NeLe >= %s AND joueur.NeLe < %s')
+                        params += [date(min_year, 1, 1), date(max_year + 1, 1, 1)]
             if age_conditions:
                 conditions.append(f'({" OR ".join(age_conditions)})')
         return conditions, params

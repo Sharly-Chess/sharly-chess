@@ -3,6 +3,8 @@ parameter, so `_process_filters()` must bind them rather than write them
 into the SQL. The remote _FFE_ SQL Server has no other coverage: its
 queries cannot be run against an in-memory database."""
 
+from datetime import date
+
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -53,7 +55,16 @@ def test_ffe_online_filters_are_bound():
     sql = ' AND '.join(conditions)
     assert sql.count('%s') == len(params)
     assert CLUB not in sql
-    assert params == ['FRA', 'F', 'BFC', f'%{CLUB}%', 1990, 2000, 1980, 2010]
+    assert params == [
+        'FRA',
+        'F',
+        'BFC',
+        f'%{CLUB}%',
+        date(1990, 1, 1),
+        date(2001, 1, 1),
+        date(1981, 1, 1),
+        date(2010, 1, 1),
+    ]
 
 
 def test_the_licence_filter_holds_no_value():
