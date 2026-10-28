@@ -3,7 +3,7 @@ import re
 from collections import Counter, defaultdict
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Optional, cast
-from collections.abc import Hashable, Iterable
+from collections.abc import Iterable
 
 from packaging.version import Version
 
@@ -469,16 +469,6 @@ class FfePlugin(Plugin):
             errors[field] = _(
                 'Invalid FFE licence number [{ffe_licence_number}].'
             ).format(ffe_licence_number=ffe_licence_number)
-
-    @hookimpl
-    def get_player_duplicate_key(
-        self, stored_player: StoredPlayer
-    ) -> tuple[str, Hashable] | None:
-        if stored_player.national_source not in (None, NATIONAL_SOURCE_ID):
-            return None
-        if licence_number := stored_player.national_id:
-            return self.id, licence_number
-        return None
 
     @hookimpl
     async def augment_player_after_search(
