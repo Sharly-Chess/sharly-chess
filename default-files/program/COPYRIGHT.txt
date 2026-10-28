@@ -1,7 +1,7 @@
 Sharly Chess Copyright
 ======================
 
-Sharly Chess - © Sharly Chess Project 2013-2025 - https://sharly-chess.com
+Sharly Chess - © Sharly Chess Project 2013-2025 - https://thp.sharly-chess.com
 
 License
 -------

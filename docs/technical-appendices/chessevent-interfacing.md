@@ -1,8 +1,6 @@
 # _Sharly Chess_ - Interfacing with _ChessEvent_
 
-_Sharly Chess_ can retrieve registrations made on the _ChessEvent_ platform by activating the _ChessEvent_ plugin:
-
-- [The _ChessEvent_ plugin](https://sharly-chess.com/chessevent-plugin) (user documentation)
+_Sharly Chess_ can retrieve registrations made on the _ChessEvent_ platform by activating the _ChessEvent_ plugin.
 
 This page describes the technical aspects of _Sharly Chess_'s interfacing with the _ChessEvent_ platform.
 

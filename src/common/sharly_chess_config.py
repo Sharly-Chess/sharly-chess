@@ -416,7 +416,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_pairing_variation_id = 'SWISS_STANDARD'
 
     """ The URL of the project. """
-    web_url: str = 'https://sharly-chess.com'
+    web_url: str = 'https://thp.sharly-chess.com'
 
     """ The URL of the donation website. """
     donate_url: str = 'https://donations.sharly-chess.com'

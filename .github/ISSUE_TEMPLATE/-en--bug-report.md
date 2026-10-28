@@ -3,7 +3,7 @@ name: "[EN] Bug report"
 about: Thank you to use this template to send a bug
 title: "[BUG] "
 labels: bug
-assignees: Amaras
+assignees: ""
 
 ---
 
