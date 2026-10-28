@@ -6122,6 +6122,9 @@ msgstr ""
 msgid "Next round"
 msgstr ""
 
+msgid "Next tournament"
+msgstr ""
+
 msgid "Nicaragua"
 msgstr ""
 
@@ -7913,6 +7916,9 @@ msgid "Preview the card with different sample data."
 msgstr ""
 
 msgid "Previous round"
+msgstr ""
+
+msgid "Previous tournament"
 msgstr ""
 
 msgid "Primary score:"
