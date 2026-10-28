@@ -69,7 +69,8 @@ dependencies = [
 lint = [
   "djlint ~= 1.46.2",
   "mypy >= 2.3.0",
-  "pipdeptree",
+  # 4.2.10 ships no abi3 wheel for arm64 macOS: https://github.com/tox-dev/pipdeptree/issues/757
+  "pipdeptree != 4.2.10",
   "pre-commit",
   "ruff ~= 0.15.21",
   "validate-pyproject",
