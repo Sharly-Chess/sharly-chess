@@ -4000,6 +4000,10 @@ msgstr ""
 msgid "FIDE arbiter title"
 msgstr ""
 
+#, python-format
+msgid "FIDE classifies this time control as %(cadence)s."
+msgstr ""
+
 msgid "FIDE column"
 msgstr ""
 
@@ -9592,6 +9596,9 @@ msgstr ""
 msgid "Special points for an absence"
 msgstr ""
 
+msgid "Specify the time control"
+msgstr ""
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -10828,9 +10835,6 @@ msgid "The threshold can't be greater than the value of the last prize of the ca
 msgstr ""
 
 msgid "The tie-break computed from each stage’s games and aggregated across the counted stages."
-msgstr ""
-
-msgid "The time control whose ratings the tournament is played on."
 msgstr ""
 
 msgid "The timer displayed on the screen."

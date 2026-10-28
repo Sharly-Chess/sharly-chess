@@ -1,4 +1,5 @@
 {% import "/admin/common/warning_macros.j2" as warning_macros with context %}
+{% import "/admin/tournaments/time_control_editor.html" as time_control_editor with context %}
 <div class="modal-dialog modal-dialog-scrollable admin-tournament-edit-modal">
     <div class="modal-content">
         {# Required for time pickers #}
@@ -113,10 +114,10 @@
                         {{ admin_macros.select_input(
                             name='cadence',
                             label=_('Time control:'),
-                            tooltip_text=_('The time control whose ratings the tournament is played on.'),
                             select_options=rating_options,
                             data=data, errors=errors
                         ) }}
+                        {{ time_control_editor.display() }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
@@ -133,6 +134,7 @@
                         ) }}
                     </div>
                 </div>
+                {{ time_control_editor.panel() }}
                 <div class="row gy-2 gx-3">
                     <div class="col-12">
                         {{ admin_macros.select_input(
@@ -188,7 +190,6 @@
                         ) }}
                     </div>
                 </div>
-                {% include '/admin/tournaments/time_control_editor.html' %}
 
                 {% if rule_sets %}
                     <div class="row gy-2 gx-3">
