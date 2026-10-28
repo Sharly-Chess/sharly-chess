@@ -71,7 +71,7 @@ lint = [
   "mypy >= 2.3.0",
   "pipdeptree",
   "pre-commit",
-  "ruff ~= 0.17.3",
+  "ruff ~= 0.15.21",
   "validate-pyproject",
   # Stubs for the dependencies typeshed carries. Without them mypy knows
   # nothing about these APIs and checks none of the calls into them.
