@@ -50,8 +50,11 @@ class RoundRobinParticipationRuleTestCase(TestCase):
         self._event: Event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_ID]
 
-    def _forfeit_leaver_rounds(self, rounds: list[int]) -> None:
-        """Record a forfeit loss for player ``LEAVER_ID`` in each given round."""
+    def _forfeit_leaver_rounds(
+        self, rounds: list[int], leaver_result: Result = Result.FORFEIT_LOSS
+    ) -> None:
+        """Record *leaver_result* for player ``LEAVER_ID`` in each given
+        round."""
         tournament = self.tournament
         for round_ in rounds:
             board = next(
@@ -67,12 +70,16 @@ class RoundRobinParticipationRuleTestCase(TestCase):
                 board.optional_white_tournament_player is not None
                 and board.optional_white_tournament_player.id == LEAVER_ID
             )
-            # add_result stores the white result and the opposite for black;
-            # FORFEIT_WIN and FORFEIT_LOSS are opposites.
+            # add_result stores the white result and the opposite for black.
             tournament.add_result(
                 board,
-                Result.FORFEIT_LOSS if leaver_is_white else Result.FORFEIT_WIN,
+                leaver_result if leaver_is_white else leaver_result.opposite_result,
             )
+
+    def _leaver_excluded(self) -> bool:
+        return self.tournament.tournament_players_by_id[
+            LEAVER_ID
+        ].is_excluded_from_standings
 
     def test_leaver_excluded_and_ranked_last(self) -> None:
         self._forfeit_leaver_rounds([3, 4, 5])
@@ -92,6 +99,23 @@ class RoundRobinParticipationRuleTestCase(TestCase):
             player.id: rank for rank, player in ranks.items() if player.id != LEAVER_ID
         }
         self.assertEqual(sorted(competitor_ranks.values()), [1, 2, 3, 4, 5])
+
+    def test_leaver_excluded_before_the_last_round_is_played(self) -> None:
+        # Forfeits in rounds 2-4 with round 5 still to play: the leaver can
+        # no longer complete half of their games.
+        self._forfeit_leaver_rounds([2, 3, 4])
+        self._forfeit_leaver_rounds([5], Result.NO_RESULT)
+        self.assertTrue(self._leaver_excluded())
+
+    def test_leaver_kept_while_half_the_games_can_still_be_completed(self) -> None:
+        self._forfeit_leaver_rounds([3, 4])
+        self._forfeit_leaver_rounds([5], Result.NO_RESULT)
+        self.assertFalse(self._leaver_excluded())
+
+    def test_leaver_kept_after_playing_the_latest_round(self) -> None:
+        self._forfeit_leaver_rounds([2, 3, 4])
+        self._forfeit_leaver_rounds([5], Result.DRAW)
+        self.assertFalse(self._leaver_excluded())
 
     def test_leaver_dropped_from_opponents_sonneborn_berger(self) -> None:
         self._forfeit_leaver_rounds([3, 4, 5])
@@ -449,6 +473,23 @@ class TeamRoundRobinParticipationRuleTestCase(TestCase):
         self.assertTrue(
             any(off_mp[tid] > on_mp[tid] for tid in on_mp if tid != leaver_id)
         )
+
+    def test_leaving_team_excluded_before_the_last_round_is_played(self) -> None:
+        self._create()
+        leaver_id = self.team_ids[-1]
+        # Forfeits in rounds 1 and 2, round 3 paired but not played yet.
+        for round_ in (1, 2, 3):
+            tournament = self._load()
+            tournament.pairing_variation.engine.generate_pairings(tournament, round_)
+            if round_ < 3:
+                self._play_round(round_, leaver_id, forfeit_leaver=True)
+
+        tournament = self._load()
+        excluded = {
+            team.id: team.is_excluded_from_standings for team in tournament.teams
+        }
+        self.assertTrue(excluded[leaver_id])
+        self.assertFalse(any(v for k, v in excluded.items() if k != leaver_id))
 
     def _pair_and_play_with_leaver(self) -> int:
         """Pair the three Berger rounds; the last team plays round 1 then

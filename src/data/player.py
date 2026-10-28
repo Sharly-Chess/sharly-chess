@@ -1679,12 +1679,13 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         unplayed game — a forfeit loss or a requested bye. Two conditions,
         both required:
 
-        - The player did not play their *last* scheduled game. Withdrawing
+        - The player did not play their last game with a result. Withdrawing
           or being expelled means they were gone by the end; a player who
           played their final round was present at the end and therefore did
-          not leave, however many earlier games they missed.
-        - More than half of their scheduled games are voluntarily unplayed
-          (equivalently, they completed fewer than half).
+          not leave, however many earlier games they missed. Before the
+          final round, the latest result stands for the player's presence.
+        - More than half of their scheduled games are voluntarily unplayed,
+          so they can no longer complete half of them.
 
         A forfeit *win* or a game still to be played counts as completed.
         """
@@ -1704,10 +1705,13 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             for pairing in self.pairings.values()
             if pairing.opponent_id is not None
         ]
-        if not scheduled:
+        decided = [
+            pairing for pairing in scheduled if pairing.result != Result.NO_RESULT
+        ]
+        if not decided:
             return False
-        last_scheduled = max(scheduled, key=lambda pairing: pairing.round)
-        if not last_scheduled.voluntary_unplayed:
+        last_decided = max(decided, key=lambda pairing: pairing.round)
+        if not last_decided.voluntary_unplayed:
             return False
         voluntarily_unplayed = sum(
             1 for pairing in scheduled if pairing.voluntary_unplayed
