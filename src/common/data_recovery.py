@@ -192,7 +192,7 @@ class DataRecovery:
             )
             if last_major_minor is not None:
                 sup_minor_count = max(2 - current.minor, 0)
-                last_sup_minor = min(last_major_minor - sup_minor_count, 0)
+                last_sup_minor = max(last_major_minor - sup_minor_count, 0)
                 min_version = get_min_version(current.major - 1, last_sup_minor)
         if max_previous > min_version:
             min_version = max_previous
@@ -200,8 +200,16 @@ class DataRecovery:
         for version in versions:
             if version >= min_version:
                 continue
-            shutil.rmtree(cls._get_version_dir(version), onexc=shutil_delete_onexc)
-            logger.info('Data of version [%s] removed (no longer supported)', version)
+            try:
+                shutil.rmtree(cls._get_version_dir(version), onexc=shutil_delete_onexc)
+            except OSError as error:
+                logger.warning(
+                    'Data of version [%s] could not be removed: %s', version, error
+                )
+            else:
+                logger.info(
+                    'Data of version [%s] removed (no longer supported)', version
+                )
 
     @classmethod
     def _recover_version(cls, version: Version) -> bool:
