@@ -31,14 +31,14 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           # NOTE(pascalaubry): on Windows self-hosted runners, the first install fails:
           # https://github.com/actions/setup-python/issues/969
-          python-version: 3.13
+          python-version: 3.14
       - name: Install dependencies
         shell: cmd  # pwsh is not found on Windows self-hosted runners (https://github.com/actions/runner/issues/3415)
         run: |
@@ -131,7 +131,7 @@ jobs:
           & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `$f" windows-setup.iss
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
@@ -156,7 +156,7 @@ jobs:
       XDG_RUNTIME_DIR: /tmp/flatpak-runtime
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           # The full history is only needed for the annotated tag objects read
           # by sync_appdata_releases.py. tree:0 fetches the commits and those
@@ -174,8 +174,8 @@ jobs:
         run: |
           mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
-          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//49
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//51
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//51
       - name: Set version variable
         id: version
         shell: bash
@@ -249,7 +249,7 @@ jobs:
             com.sharlychess.SharlyChess \
             --arch=${{ matrix.flatpak_arch }}
       - name: Upload .flatpak bundle artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}
           path: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}.flatpak
@@ -258,7 +258,7 @@ jobs:
         shell: bash
         run: tar -czf repo-${{ matrix.arch }}.tar.gz repo-staging
       - name: Upload OSTree artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ostree-${{ matrix.arch }}
           path: repo-${{ matrix.arch }}.tar.gz
@@ -298,18 +298,18 @@ jobs:
           fi
       - name: Checkout gh-pages
         if: env.SHOULD_PUBLISH == 'true'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: gh-pages
           path: flatpak-repo-publish
       - name: Download x86_64 OSTree
         if: env.SHOULD_PUBLISH == 'true'
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ostree-x86_64
       - name: Download arm64 OSTree
         if: env.SHOULD_PUBLISH == 'true'
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ostree-arm64
       - name: Install OSTree tools
@@ -440,12 +440,12 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
-          python-version: 3.13
+          python-version: 3.14
       - name: Install dependencies
         shell: bash
         run: |
@@ -537,7 +537,7 @@ jobs:
           rm -rf build/
           rm -f *.spec
       - name: Upload unstapled DMG + submission id
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           # Intermediate artifact consumed by the notarize-macos job. Signed and
           # submitted but not yet stapled; not attached to the release.
@@ -557,7 +557,7 @@ jobs:
     timeout-minutes: 350
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Set version variable
         id: version
         shell: bash
@@ -570,7 +570,7 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
       - name: Download unstapled DMG + submission id
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos-unstapled
           path: export/
@@ -663,7 +663,7 @@ jobs:
             sparkle-feed/
           cp sparkle-feed/appcast.xml export/appcast.xml
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
@@ -691,19 +691,19 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: export-windows/
       - name: Download macOS artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
       - name: Download Linux Flatpak artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: sharly-chess-${{ steps.version.outputs.version }}-linux-*
           path: export-linux/

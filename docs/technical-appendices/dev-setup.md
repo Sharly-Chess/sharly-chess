@@ -6,7 +6,7 @@ Clone the _GitHub_ repository https://github.com/sharly-chess/sharly-chess and s
 
 ## Python version
 
-Use Python 3.13 or newer (the project requires >=3.13). Verify your interpreter with:
+Use Python 3.14. The code still runs on 3.13 (the project requires >=3.13), but the builds and the CI use 3.14. Verify your interpreter with:
 
 ```
 python --version
