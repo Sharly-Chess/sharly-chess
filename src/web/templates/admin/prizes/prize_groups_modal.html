@@ -1,10 +1,10 @@
 <div
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 450px);"
+    style="--bs-modal-width: min(90vw, 520px);"
 >
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
+            <h2 class="modal-title text-nowrap">
                 {{ _('Prize Brackets') }}
                 <i
                     class="bi-info-circle-fill ps-1"
@@ -92,6 +92,51 @@
                                 >
                                     <i class="bi-pencil-fill"></i>
                                 </button>
+                                <div class="btn-group">
+                                    <button
+                                        class="btn btn-sm btn-outline-primary text-nowrap"
+                                        hx-post="{{ url_for(
+                                            'admin-prize-group-duplicate',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            prize_group_id=prize_group.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        hx-disabled-elt="this"
+                                        {{ macros.tooltip_attributes('info', _('Duplicate'), 'top') }}
+                                    >
+                                        <i class="bi-copy"></i>
+                                    </button>
+                                    {% if copy_target_tournaments %}
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            aria-label="{{ _('More copy options') }}"
+                                        ></button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <button
+                                                    class="dropdown-item text-start cursor-pointer"
+                                                    hx-get="{{ url_for(
+                                                        'admin-prize-group-copy-modal',
+                                                        event_uniq_id=admin_event.uniq_id,
+                                                        tournament_id=admin_tournament.id,
+                                                        prize_group_id=prize_group.id,
+                                                    ) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    data-bs-target="#modal-wrapper"
+                                                >
+                                                    <i class="bi-box-arrow-right pe-1"></i>
+                                                    {{ _('Copy to other tournaments…') }}
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    {% endif %}
+                                </div>
                                 <button
                                     class="btn btn-sm btn-outline-danger text-nowrap"
                                     hx-get="{{ url_for(

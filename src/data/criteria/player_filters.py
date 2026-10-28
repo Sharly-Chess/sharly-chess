@@ -43,6 +43,12 @@ class PlayerFilter(OptionHandler[PlayerFilterOption], ABC):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         """Return a function checking if a player is included in the filter or not."""
 
+    @staticmethod
+    def is_tournament_bound() -> bool:
+        """Whether the filter refers to the players of one tournament, and so
+        is meaningless once copied to another tournament."""
+        return False
+
 
 class GenderPlayerFilter(PlayerFilter):
     @staticmethod
@@ -326,6 +332,10 @@ class PlayerIdPlayerFilter(PlayerFilter):
             PlayersFilterOption,
             ExcludeFilterOption,
         ]
+
+    @staticmethod
+    def is_tournament_bound() -> bool:
+        return True
 
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:

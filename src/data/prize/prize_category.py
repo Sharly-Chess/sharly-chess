@@ -186,6 +186,14 @@ class PrizeCategory:
         return sorted(self.tournament_players, key=sort_key)
 
     @property
+    def tournament_bound_criteria(self) -> list[PrizeCriterion]:
+        return [
+            criterion
+            for criterion in self.criteria
+            if criterion.player_filter.is_tournament_bound()
+        ]
+
+    @property
     def criteria_string(self) -> str:
         return ', '.join(criterion.name for criterion in self.criteria)
 

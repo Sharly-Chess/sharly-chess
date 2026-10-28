@@ -48,6 +48,10 @@
 - In round robins and fixed-table tournaments (Molter, Scheveningen), whose pairings are known in advance, the online services receive the pairings of every round as soon as they are made; publishing a round moves the screens on to it and makes its results public. Publishing replaces the End round button of round robins (5.2.0)
 - When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
 
+## Prizes
+
+- Prize brackets can be duplicated, prize brackets can be copied to the other tournaments of the event, and categories to any prize bracket of the event, the copy of a main category being a regular category when its tournament already has one; criteria selecting individual players stay with their own tournament. Cloning a tournament now keeps the ranking basis of the prize categories and the complementary value of the prizes (5.2.0)
+
 ## Documents
 
 - The FFE T2 minutes open with the events logged for the chosen tournaments (5.2.0)

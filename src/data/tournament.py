@@ -1598,6 +1598,20 @@ class Tournament:
             (group.name for group in self.prize_groups),
         )
 
+    def copy_prize_group(self, source: PrizeGroup) -> PrizeGroup:
+        """Add a copy of a prize group of this tournament or of another one,
+        with its categories."""
+        prize_group = self.add_prize_group(
+            StoredPrizeGroup(
+                id=None,
+                tournament_id=self.id,
+                name=self.get_unused_prize_group_name(source.name),
+            )
+        )
+        for category in source.sorted_categories:
+            prize_group.copy_category(category)
+        return prize_group
+
     @property
     def total_monetary_prize_value(self) -> float:
         return sum(group.total_monetary_value for group in self.prize_groups)

@@ -2453,6 +2453,21 @@ msgid_plural "Continue with %(num)d rounds?"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Copy"
+msgstr ""
+
+msgid "Copy the category"
+msgstr ""
+
+msgid "Copy the prize bracket"
+msgstr ""
+
+msgid "Copy to another prize bracket…"
+msgstr ""
+
+msgid "Copy to other tournaments…"
+msgstr ""
+
 msgid "Corners"
 msgstr ""
 
@@ -2647,6 +2662,10 @@ msgid "Criteria"
 msgstr ""
 
 msgid "Criteria list"
+msgstr ""
+
+#, python-brace-format
+msgid "Criteria selecting individual players only apply to their own tournament and have not been copied (categories: {categories})."
 msgstr ""
 
 #, python-format
@@ -3347,6 +3366,9 @@ msgid "Duplicate the account."
 msgstr ""
 
 msgid "Duplicate the category and its criteria and prizes."
+msgstr ""
+
+msgid "Duplicate the category and its prizes as a regular category."
 msgstr ""
 
 msgid "Duplicate the event."
@@ -5827,6 +5849,9 @@ msgstr ""
 msgid "More"
 msgstr ""
 
+msgid "More copy options"
+msgstr ""
+
 msgid "Morocco"
 msgstr ""
 
@@ -7949,6 +7974,17 @@ msgstr ""
 msgid "Prize assignment"
 msgstr ""
 
+msgid "Prize bracket"
+msgstr ""
+
+#, python-brace-format
+msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
+msgstr ""
+
+#, python-brace-format
+msgid "Prize category [{prize_category}] has been copied to [{tournament} / {prize_group}]."
+msgstr ""
+
 #, python-brace-format
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr ""
@@ -9180,6 +9216,9 @@ msgstr ""
 msgid "Select a plugin on the left to read what it brings and install it."
 msgstr ""
 
+msgid "Select a prize bracket."
+msgstr ""
+
 msgid "Select a tournament"
 msgstr ""
 
@@ -9209,6 +9248,9 @@ msgid "Select an event…"
 msgstr ""
 
 msgid "Select and add another"
+msgstr ""
+
+msgid "Select at least one tournament."
 msgstr ""
 
 msgid "Select at least two members."
@@ -10139,6 +10181,10 @@ msgstr ""
 msgid "The captain must belong to the team roster."
 msgstr ""
 
+#, python-format
+msgid "The category [%(prize_category)s] is added, with its criteria and prizes, to the selected prize bracket."
+msgstr ""
+
 msgid "The category contains non-monetary prizes which can not be shared."
 msgstr ""
 
@@ -10604,6 +10650,10 @@ msgid_plural "The points the file gives {count} players do not match this scorin
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-format
+msgid "The prize bracket [%(prize_group)s] and its categories are added to each selected tournament."
+msgstr ""
+
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr ""
 
@@ -10937,9 +10987,6 @@ msgid "There are no pairings for this round (last round with pairings: #{round})
 msgstr ""
 
 msgid "There are no public screens available for this event."
-msgstr ""
-
-msgid "There can only be one main category."
 msgstr ""
 
 msgid "There needs to be at least one screen or multi-screen defined for the rotator to be accessible."
@@ -11557,6 +11604,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
+msgstr ""
+
+#, python-brace-format
+msgid "Tournament [{tournament}] already has a main category, the copy of the main category is a regular category."
 msgstr ""
 
 #, python-brace-format
@@ -12990,6 +13041,9 @@ msgstr ""
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "national {cadences}"
+msgstr ""
+
+msgid "new prize bracket"
 msgstr ""
 
 msgid "no"

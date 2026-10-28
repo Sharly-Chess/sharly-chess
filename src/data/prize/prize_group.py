@@ -1,4 +1,6 @@
 from collections import deque
+import copy
+from dataclasses import replace
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
@@ -11,6 +13,7 @@ from data.player import TournamentPlayer
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
+from data.prize.prize_sharing import NoPrizeSharing
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeGroup, StoredPrizeCategory
 from utils import Utils
@@ -96,6 +99,44 @@ class PrizeGroup:
             category_ids.remove(object_id)
             category_ids.insert(0, object_id)
             self.reorder_categories(category_ids)
+        return category
+
+    def copy_category(self, source: PrizeCategory) -> PrizeCategory:
+        """Add a copy of a category of this group or of another one, with its
+        criteria and prizes. The copy is the main category only if the
+        tournament has none yet; otherwise it is a regular category, which
+        does not share prizes. Criteria bound to the players of another
+        tournament are not copied."""
+        stored_category = replace(
+            source.stored_prize_category,
+            id=None,
+            prize_group_id=self.id,
+            name=self.get_unused_category_name(source.name),
+            stored_prize_criteria=[],
+            stored_prizes=[],
+        )
+        if source.is_main and self.tournament.main_prize_category is not None:
+            stored_category.is_main = False
+            stored_category.prize_sharing = NoPrizeSharing.static_id()
+            stored_category.sharing_threshold = None
+        category = self.add_category(stored_category)
+        for prize in source.prizes:
+            category.add_prize(
+                replace(prize.stored_prize, id=None, prize_category_id=category.id)
+            )
+        same_tournament = source.prize_group.tournament.id == self.tournament.id
+        for criterion in source.criteria:
+            if not same_tournament and criterion.player_filter.is_tournament_bound():
+                continue
+            stored_criterion = criterion.stored_prize_criterion
+            category.add_criterion(
+                replace(
+                    stored_criterion,
+                    id=None,
+                    prize_category_id=category.id,
+                    options=copy.deepcopy(stored_criterion.options),
+                )
+            )
         return category
 
     def delete_category(self, category_id: int) -> None:

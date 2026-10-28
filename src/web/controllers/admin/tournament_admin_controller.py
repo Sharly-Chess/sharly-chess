@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from dataclasses import replace
 import json
 import random
 from collections import defaultdict, Counter
@@ -101,9 +102,6 @@ from database.sqlite.event.event_store import (
     StoredScreen,
     StoredPairing,
     StoredPrizeGroup,
-    StoredPrizeCategory,
-    StoredPrizeCriterion,
-    StoredPrize,
 )
 from plugins.manager import plugin_manager
 from plugins.utils import TournamentConnectionField
@@ -2081,9 +2079,7 @@ class TournamentAdminController(BaseEventAdminController):
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id
                         database.add_stored_tie_break(stored_tie_break)
-                    for (
-                        base_group
-                    ) in base_tournament.stored_tournament.stored_prize_groups:
+                    for base_group in base_tournament.prize_groups:
                         group_id = database.add_stored_prize_group(
                             StoredPrizeGroup(
                                 id=None,
@@ -2091,35 +2087,32 @@ class TournamentAdminController(BaseEventAdminController):
                                 name=base_group.name,
                             )
                         )
-                        for base_category in base_group.stored_prize_categories:
+                        for base_category in base_group.categories:
                             category_id = database.add_stored_prize_category(
-                                StoredPrizeCategory(
+                                replace(
+                                    base_category.stored_prize_category,
                                     id=None,
                                     prize_group_id=group_id,
-                                    name=base_category.name,
-                                    prize_sharing=base_category.prize_sharing,
-                                    sharing_threshold=base_category.sharing_threshold,
-                                    is_main=base_category.is_main,
-                                    index=base_category.index,
+                                    stored_prize_criteria=[],
+                                    stored_prizes=[],
                                 )
                             )
-                            for base_criterion in base_category.stored_prize_criteria:
+                            for base_criterion in base_category.criteria:
+                                if base_criterion.player_filter.is_tournament_bound():
+                                    continue
                                 database.add_stored_prize_criterion(
-                                    StoredPrizeCriterion(
+                                    replace(
+                                        base_criterion.stored_prize_criterion,
                                         id=None,
                                         prize_category_id=category_id,
-                                        type=base_criterion.type,
-                                        options=base_criterion.options,
                                     )
                                 )
-                            for base_prize in base_category.stored_prizes:
+                            for base_prize in base_category.prizes:
                                 database.add_stored_prize(
-                                    StoredPrize(
+                                    replace(
+                                        base_prize.stored_prize,
                                         id=None,
                                         prize_category_id=category_id,
-                                        type=base_prize.type,
-                                        value=base_prize.value,
-                                        description=base_prize.description,
                                     )
                                 )
                 self._apply_rule_set_tie_breaks(database, event, stored_tournament)

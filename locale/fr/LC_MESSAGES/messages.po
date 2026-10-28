@@ -2453,6 +2453,21 @@ msgid_plural "Continue with %(num)d rounds?"
 msgstr[0] "Continuer avec %(num)d ronde ?"
 msgstr[1] "Continuer avec %(num)d rondes ?"
 
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Copy the category"
+msgstr "Copier la catégorie"
+
+msgid "Copy the prize bracket"
+msgstr "Copier le groupe non cumulable"
+
+msgid "Copy to another prize bracket…"
+msgstr "Copier vers un autre groupe non cumulable…"
+
+msgid "Copy to other tournaments…"
+msgstr "Copier vers d'autres tournois…"
+
 msgid "Corners"
 msgstr "Coins"
 
@@ -2648,6 +2663,10 @@ msgstr "Critères"
 
 msgid "Criteria list"
 msgstr "Liste des critères"
+
+#, python-brace-format
+msgid "Criteria selecting individual players only apply to their own tournament and have not been copied (categories: {categories})."
+msgstr "Les critères désignant des joueur·euses précis·es ne s'appliquent qu'à leur propre tournoi et n'ont pas été copiés (catégories : {categories})."
 
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
@@ -3348,6 +3367,9 @@ msgstr "Dupliquer le compte."
 
 msgid "Duplicate the category and its criteria and prizes."
 msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
+
+msgid "Duplicate the category and its prizes as a regular category."
+msgstr "Dupliquer la catégorie et ses prix en catégorie ordinaire."
 
 msgid "Duplicate the event."
 msgstr "Dupliquer l'évènement."
@@ -5827,6 +5849,9 @@ msgstr "Monténégro"
 msgid "More"
 msgstr "Plus"
 
+msgid "More copy options"
+msgstr "Plus d'options de copie"
+
 msgid "Morocco"
 msgstr "Maroc"
 
@@ -7951,6 +7976,17 @@ msgstr "Groupes non cumulables"
 msgid "Prize assignment"
 msgstr "Attribution des prix"
 
+msgid "Prize bracket"
+msgstr "Groupe non cumulable"
+
+#, python-brace-format
+msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
+msgstr "Le groupe non cumulable [{prize_group}] a été copié vers : {tournaments}."
+
+#, python-brace-format
+msgid "Prize category [{prize_category}] has been copied to [{tournament} / {prize_group}]."
+msgstr "La catégorie [{prize_category}] a été copiée vers [{tournament} / {prize_group}]."
+
 #, python-brace-format
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
@@ -9182,6 +9218,9 @@ msgstr "Tout sélectionner"
 msgid "Select a plugin on the left to read what it brings and install it."
 msgstr "Sélectionnez un plug-in à gauche pour découvrir ce qu’il apporte et l’installer."
 
+msgid "Select a prize bracket."
+msgstr "Sélectionnez un groupe non cumulable."
+
 msgid "Select a tournament"
 msgstr "Choisir un tournoi"
 
@@ -9212,6 +9251,9 @@ msgstr "Sélectionner un événement…"
 
 msgid "Select and add another"
 msgstr "Sélectionner et en ajouter un autre"
+
+msgid "Select at least one tournament."
+msgstr "Sélectionnez au moins un tournoi."
 
 msgid "Select at least two members."
 msgstr "Sélectionnez au moins deux membres."
@@ -10141,6 +10183,10 @@ msgstr "Le bonus du premier, en pourcentage de ses points de classement. Les pla
 msgid "The captain must belong to the team roster."
 msgstr "Le ou la capitaine doit faire partie de l'effectif de l'équipe."
 
+#, python-format
+msgid "The category [%(prize_category)s] is added, with its criteria and prizes, to the selected prize bracket."
+msgstr "La catégorie [%(prize_category)s] est ajoutée, avec ses critères et ses prix, au groupe non cumulable sélectionné."
+
 msgid "The category contains non-monetary prizes which can not be shared."
 msgstr "La catégorie contient des prix non monétaires qui ne peuvent être partagés."
 
@@ -10606,6 +10652,10 @@ msgid_plural "The points the file gives {count} players do not match this scorin
 msgstr[0] "Les points que le fichier donne au·à la joueur·euse {players} ne correspondent pas à ce barème."
 msgstr[1] "Les points que le fichier donne à {count} joueur·euses ne correspondent pas à ce barème (joueur·euses {players})."
 
+#, python-format
+msgid "The prize bracket [%(prize_group)s] and its categories are added to each selected tournament."
+msgstr "Le groupe non cumulable [%(prize_group)s] et ses catégories sont ajoutés à chaque tournoi sélectionné."
+
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr "Les protections d'appariement ne peuvent pas être satisfaites pour cette ronde."
 
@@ -10940,9 +10990,6 @@ msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée 
 
 msgid "There are no public screens available for this event."
 msgstr "Aucun écran public n’est disponible pour cet évènement."
-
-msgid "There can only be one main category."
-msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 
 msgid "There needs to be at least one screen or multi-screen defined for the rotator to be accessible."
 msgstr "Il doit y avoir au moins un écran ou un écran multiple défini pour que l'écran rotatif soit accessible."
@@ -11560,6 +11607,10 @@ msgstr "Le tournoi [%(tournament)s] quittera définitivement le mode FIDE : il 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
+
+#, python-brace-format
+msgid "Tournament [{tournament}] already has a main category, the copy of the main category is a regular category."
+msgstr "Le tournoi [{tournament}] a déjà une catégorie générale, la copie de la catégorie générale est une catégorie ordinaire."
 
 #, python-brace-format
 msgid "Tournament [{tournament}] has been created and default screens have been added."
@@ -12993,6 +13044,9 @@ msgstr "mon-ecran"
 msgctxt "rating sequence"
 msgid "national {cadences}"
 msgstr "national {cadences}"
+
+msgid "new prize bracket"
+msgstr "nouveau groupe non cumulable"
 
 msgid "no"
 msgstr "non"

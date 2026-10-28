@@ -206,7 +206,7 @@
         {% elif prize_category.criteria %}
             {{ prize_category.criteria_string }}
         {% else %}
-            <span class="text-secondary"><i>{{ pgettext('said of several things', 'Undefined') }}</i></span>
+            <span class="text-secondary"><i>{{ _('All the players') }}</i></span>
         {% endif %}
     {% endset %}
     {% if view == 'card' %}
@@ -332,34 +332,66 @@
                     <i class="bi-pencil-fill"></i>
                 </button>
             </span>
-            <span
-                {% if not client.can_manage_prizes %}
-                    {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-                {% elif prize_category.is_main %}
-                    {{ macros.tooltip_attributes('info', _('There can only be one main category.'), 'top') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('info', _('Duplicate the category and its criteria and prizes.'), 'top') }}
-                {% endif %}
-            >
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    {% if prize_category.is_main or not client.can_manage_prizes %}
-                        disabled
+                        <div class="btn-group">
+                <span
+                    {% if not client.can_manage_prizes %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+                    {% elif prize_category.is_main %}
+                        {{ macros.tooltip_attributes('info', _('Duplicate the category and its prizes as a regular category.'), 'top') }}
                     {% else %}
-                        hx-post="{{ url_for(
-                            'admin-prize-category-duplicate',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            prize_group_id=admin_prize_group.id,
-                            prize_category_id=prize_category.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
+                        {{ macros.tooltip_attributes('info', _('Duplicate the category and its criteria and prizes.'), 'top') }}
                     {% endif %}
                 >
-                    <i class="bi-copy"></i>
-                </button>
-            </span>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        {% if not client.can_manage_prizes %}
+                            disabled
+                        {% else %}
+                            hx-post="{{ url_for(
+                                'admin-prize-category-duplicate',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id,
+                                prize_category_id=prize_category.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% endif %}
+                    >
+                        <i class="bi-copy"></i>
+                    </button>
+                </span>
+                {% if client.can_manage_prizes %}
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="{{ _('More copy options') }}"
+                    ></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <button
+                                class="dropdown-item text-start cursor-pointer"
+                                hx-get="{{ url_for(
+                                    'admin-prize-category-copy-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    prize_group_id=admin_prize_group.id,
+                                    prize_category_id=prize_category.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            >
+                                <i class="bi-box-arrow-right pe-1"></i>
+                                {{ _('Copy to another prize bracket…') }}
+                            </button>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
             <span
                 {% if not client.can_manage_prizes %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
