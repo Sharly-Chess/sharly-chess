@@ -1,0 +1,181 @@
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-player-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Add multiple players') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if 'alert' in errors %}
+                {% with type='error', message=errors['alert'] %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <h4>
+                {{ pgettext('player search section title', 'Search') }}
+            </h4>
+            {% with usage = 'bulk-add' %}
+                {% include '/admin/common/search_filter_form.html' %}
+                {% include '/admin/common/player_search.html' %}
+            {% endwith %}
+
+            <div class="row gy-2 gx-3 py-3">
+                <div class="col-12 col-sm-6">
+                    {{ admin_macros.select_input(
+                        name='tournament_id',
+                        label=_('Tournament:'),
+                        select_options=tournament_options,
+                        onchange="reloadTable()",
+                    ) }}
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div id="page-controls" class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end">
+                        <div class="d-inline-flex gap-1">
+                            <span {{ macros.tooltip_attributes('info', _('First page'), 'bottom') }}>
+                                <button class="btn btn-outline-primary text-nowrap" onclick="reloadTable(1, false)">
+                                    <i class="bi bi-skip-backward-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                            <span {{ macros.tooltip_attributes('info', _('Previous page'), 'bottom') }}>
+                                <button class="btn btn-outline-primary text-nowrap" style="transform: scaleX(-1);" onclick="reloadTable(currentPage - 1, false)">
+                                    <i class="bi bi-play-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                            <div style="width:150px">
+                                {{ admin_macros.number_input(
+                                    name='page_number',
+                                    label=_('Page:'),
+                                    min=1, max=1,
+                                    onchange="reloadTable(this.value, false)"
+                                ) }}
+                            </div>/ <span id="page-count">1</span>
+                            <span {{ macros.tooltip_attributes('info', _('Next page'), 'bottom') }}>
+                                <button class="btn btn-outline-primary text-nowrap" onclick="reloadTable(currentPage + 1, false)">
+                                    <i class="bi-play-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                            <span {{ macros.tooltip_attributes('info', _('Last page'), 'bottom') }}>
+                                <button class="btn btn-outline-primary text-nowrap" onclick="reloadTable(pageCount, false)">
+                                    <i class="bi bi-fast-forward-fill position-relative round-control-icon"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="bulk-search-result-container" hx-on::after-swap="restoreRowSelection()">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <span id="submit-button-container">
+                <button
+                    class="text-nowrap white btn btn-primary"
+                    hx-post="{{ url_for('admin-player-bulk-add', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-trigger="click, SC_Ctrl_Shift_ArrowRight from:body"
+                    hx-vals='js:{
+                        players_added: playersAdded,
+                        players_removed: playersRemoved,
+                        data_source: $("#bulk-add-table").data("datasource"),
+                        tournament_id: $("#tournament-id").val(),
+                    }'
+                    hx-target="body"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Add selection') }}
+                </button>
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+var currentPage;
+var pageCount;
+var playersAdded = [];
+var playersRemoved = [];
+var storedChanges = {playersAdded:[], playersRemoved:[]}
+
+function updatePageDisplay(current, count) {
+    currentPage = current;
+    pageCount = count;
+
+    $("#page-number").val(currentPage || 1)
+    $("#page-number").prop("max", pageCount || 1)
+    $("#page-count").html(pageCount || 1)
+}
+
+function reloadTable(page=1, resetChanges=true) {
+    if (!resetChanges) {
+        storedChanges.playersAdded = [...playersAdded];
+        storedChanges.playersRemoved = [...playersRemoved];
+    }
+
+    $('#search-input')[0].dispatchEvent(
+        new CustomEvent(
+            'refresh_search_query',
+            {
+                bubbles: true,
+                cancelable: true,
+                detail: {
+                    page: page,
+                }
+            }
+        )
+    );
+}
+
+function onRowClick(row, event) {
+    let checkbox = $(row).find("input[type=checkbox]");
+    checkbox.prop("checked", !checkbox.prop("checked"));
+
+    if (row.dataset.inTournament) {
+        if (checkbox.is(":checked")) {
+            $(row).removeClass("red");
+            playersRemoved = playersRemoved.filter(x => x != row.dataset.inTournament);
+        } else {
+            $(row).addClass("red");
+            if (!playersRemoved.includes(row.dataset.inTournament)) {
+                playersRemoved.push(row.dataset.inTournament);
+            }
+        }
+    } else {
+        if (checkbox.is(":checked")) {
+            $(row).addClass("green");
+            if (!playersAdded.includes(row.dataset.id)) {
+                playersAdded.push(row.dataset.id);
+            }
+        } else {
+            $(row).removeClass("green");
+            playersAdded = playersAdded.filter(x => x != row.dataset.id)
+        }
+    }
+}
+
+function restoreRowSelection() {
+    playersAdded = storedChanges.playersAdded;
+    playersRemoved = storedChanges.playersRemoved;
+
+    for (let id of storedChanges.playersAdded) {
+        row = $(`#bulk-add-table tr[data-id=${id}]`);
+        if (row.length) {
+            row.click();
+        }
+    }
+    for (let id of storedChanges.playersRemoved) {
+        row = $(`#bulk-add-table tr[data-in-tournament=${id}]`);
+        if (row.length) {
+            row.click();
+        }
+    }
+    storedChanges.playersAdded = [];
+    storedChanges.playersRemoved = [];
+}
+</script>

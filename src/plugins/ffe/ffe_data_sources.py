@@ -405,6 +405,18 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
         with FfeDatabase() as database:
             return database.get_stored_player_by_ffe_id(int(player_source_id))
 
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> list[StoredPlayer]:
+        with FfeDatabase() as database:
+            return database.get_stored_players_by_ffe_ids(
+                [
+                    int(player_source_id)
+                    for player_source_id in player_source_ids
+                    if player_source_id.isdigit()
+                ]
+            )
+
     @property
     def import_identifier_column(self) -> DatasheetColumn:
         return self._import_identifier_column
@@ -520,6 +532,18 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
                 int(player_source_id)
             )
 
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> list[StoredPlayer]:
+        async with FFESqlServer() as ffe_sql_server:
+            return await ffe_sql_server.get_stored_players_by_ffe_ids(
+                [
+                    int(player_source_id)
+                    for player_source_id in player_source_ids
+                    if player_source_id.isdigit()
+                ]
+            )
+
     async def _search_player(
         self,
         string: str,
@@ -532,6 +556,22 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
             return await ffe_sql_server.search_player(
                 unicode_normalize(string), federation, page, limit, filters
             )
+
+    async def _get_result_count(
+        self,
+        string: str,
+        limit: int | None = None,
+        filters: dict | None = None,
+    ) -> int:
+        async with FFESqlServer() as ffe_sql_server:
+            result_count = await ffe_sql_server.get_result_count(string, limit, filters)
+            if result_count >= limit:
+                raise SharlyChessException(
+                    _('Too many results (>={limit}). Try adding filters.').format(
+                        limit=limit
+                    )
+                )
+            return result_count
 
     @property
     def import_identifier_column(self) -> DatasheetColumn:

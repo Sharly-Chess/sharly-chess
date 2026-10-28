@@ -215,6 +215,56 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
 
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
+    def get_result_count(
+        self,
+        string: str,
+        limit: int,
+        filters: dict | None = None,
+    ) -> int:
+        tokens: list[str] = [
+            unicode_normalize(token) for token in re.split(r'\s+', string)
+        ]
+        str_fields: tuple[tuple[str, str, str], ...] = (
+            ('last_name', '%', '%'),
+            ('first_name', '%', '%'),
+            ('ffe_licence_number', '', ''),
+        )
+        int_fields: tuple[str, ...] = ('fide_id',)
+        filter_conditions, filter_params = self._process_filters(filters or {})
+        token_conditions: dict[str, str] = {}
+        params: list[Any] = list(filter_params)
+        for token in tokens:
+            expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
+            params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
+            with suppress(ValueError):
+                int_value = int(token.strip())
+                expressions += [f'({field} = ?)' for field in int_fields]
+                params += [
+                    int_value,
+                ] * len(int_fields)
+            token_conditions[token] = ' OR '.join(expressions)
+        conditions: str = ' AND '.join(
+            filter_conditions
+            + [f'({condition})' for condition in token_conditions.values()]
+        )
+
+        query: str = f"""
+            SELECT COUNT(*) as result_count
+            FROM (
+                SELECT 1
+                FROM player
+                WHERE {conditions}
+                LIMIT ?
+            );"""
+
+        params.append(limit)
+        self.execute(
+            query,
+            tuple(params),
+        )
+
+        return self.fetchone().get('result_count')
+
     def _get_stored_player_by_id(self, field: str, id_: int) -> StoredPlayer | None:
         self.execute(f'SELECT * FROM `player` WHERE {field} = ?', (id_,))
         if row := self.fetchone():
@@ -240,6 +290,14 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
         self.execute(
             f'SELECT * FROM `player` WHERE `ffe_licence_number` IN ({query_array})',
             tuple(licence_numbers),
+        )
+        return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+
+    def get_stored_players_by_ffe_ids(self, ffe_ids: list[int]) -> list[StoredPlayer]:
+        query_array = ','.join('?' for _ in ffe_ids)
+        self.execute(
+            f'SELECT * FROM `player` WHERE `ffe_id` IN ({query_array})',
+            ffe_ids,
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 

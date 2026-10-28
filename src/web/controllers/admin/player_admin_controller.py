@@ -25,7 +25,7 @@ from common.i18n.utils import normalized_key
 from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body, FromPath, FromQuery
+from litestar.params import Body, FromPath, FromQuery, URLEncodedBody
 from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -1229,6 +1229,36 @@ class PlayerAdminController(BaseEventAdminController):
         return self._render_players_form_modal(
             PlayerAdminWebContext(request), FormAction.CREATE
         )
+
+    @get(
+        path='/player-modal/bulk-add/{event_uniq_id:str}',
+        name='admin-player-bulk-add-modal',
+    )
+    async def htmx_admin_player_bulk_add_modal(self, request: HTMXRequest) -> Template:
+        web_context = PlayerAdminWebContext(request)
+        template_context = web_context.template_context
+
+        tournaments = web_context.player_addable_tournaments
+        tournament_options: dict[str, str] = web_context.get_tournament_options(
+            tournaments
+        )
+
+        search_filter_manager = SearchFilterManager(web_context.get_admin_event())
+        template_context |= {
+            'tournament_options': tournament_options,
+            'search_filters': search_filter_manager.get_filters(),
+            'filters_by_tournament': json.dumps(
+                search_filter_manager.get_filters_by_tournament()
+            ),
+            'enabled_filters_by_datasource': json.dumps(
+                search_filter_manager.get_filters_by_datasource()
+            ),
+            'selected_data_source': SessionPlayersActiveDataSource(request).get(),
+            'data_sources': DataSourceManager().objects(),
+            'modal': 'player_bulk_add',
+        }
+
+        return self._admin_base_event_render(template_context)
 
     @staticmethod
     async def get_search_stored_player(
@@ -3592,6 +3622,147 @@ class PlayerAdminController(BaseEventAdminController):
                 'connection_error': connection_error,
             },
         )
+
+    @get(
+        path=[
+            '/bulk-search-player/{event_uniq_id:str}',
+            '/bulk-search-player-bulk/{event_uniq_id:str}/{page:int}',
+        ],
+        name='admin-bulk-search-player',
+    )
+    async def htmx_admin_bulk_search_player(
+        self,
+        request: HTMXRequest,
+        data_source_id: FromQuery[str],
+        search: FromQuery[str],
+        tournament_id: FromQuery[int],
+        page: FromQuery[int] = 1,
+        filters: FromQuery[str] = '{}',
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
+        event = web_context.get_admin_event()
+        tournament: Tournament = event.tournaments_by_id.get(tournament_id)
+        assert tournament is not None
+
+        data_source = web_context.get_admin_data_source()
+        players: list[Player] = []
+        result_count: int = 0
+        stored_players: list[StoredPlayer] = []
+        connection_error: str | None = None
+        search = search.strip()
+        try:
+            result_count, stored_players = await asyncio.gather(
+                data_source.get_result_count(
+                    search,
+                    2000,
+                    self._convert_filters(web_context.get_admin_event(), filters),
+                ),
+                data_source.search_player(
+                    search,
+                    web_context.get_admin_event().federation,
+                    page - 1,
+                    DataSource.SEARCH_LIMIT,
+                    self._convert_filters(web_context.get_admin_event(), filters),
+                ),
+            )
+
+            for stored_player in stored_players:
+                stored_player.id = 0
+                player = Player(web_context.get_admin_event(), stored_player)
+                player.datasource_id = data_source.get_player_source_id(stored_player)
+                for tournament_player in tournament.players:
+                    if event._are_player_duplicates(stored_player, tournament_player):
+                        # inefficient and potentially slow, may need refactoring
+                        player.in_tournament = tournament_player.id
+                        break
+                players.append(player)
+        except SharlyChessException as e:
+            connection_error = str(e)
+        SessionPlayersActiveDataSource(request).set(data_source.id)
+
+        used_columns = [
+            (_('Last name'), 'last_name'),
+            (_('First name'), 'first_name'),
+            (_('Gender'), 'gender'),
+            (_('Club'), 'club'),
+            (_('Federation'), 'federation'),
+            (_('Category'), 'category_name'),
+        ]
+        return HTMXTemplate(
+            template_name='/admin/players/table/bulk_add_table.html',
+            context=web_context.template_context
+            | {
+                'used_columns': used_columns,
+                'search_results': players,
+                'page': page,
+                'pages': result_count // 30 + (result_count % 30 > 0),
+                'row_count': len(players),
+                'data_source': data_source,
+                'connection_error': connection_error,
+            },
+        )
+
+    @post(
+        path='/player-bulk-add/{event_uniq_id:str}',
+        name='admin-player-bulk-add',
+        guard=[
+            TournamentActionGuard(AuthAction.ADD_PLAYERS),
+            TournamentActionGuard(AuthAction.DELETE_PLAYERS),
+        ],
+    )
+    async def htmx_admin_player_bulk_add(
+        self,
+        request: HTMXRequest,
+        data: URLEncodedBody[dict[str, list[str] | str]],
+    ) -> Template:
+
+        players_added: list[str] = []
+        if isinstance(param := data.get('players_added'), list):
+            players_added.extend(param)
+        elif isinstance(param, str):
+            players_added.append(param)
+
+        players_removed: list[str] = []
+        if isinstance(param := data.get('players_removed'), list):
+            players_removed.extend(param)
+        elif isinstance(param, str):
+            players_removed.append(param)
+
+        data_source_id = data.get('data_source')
+        tournament_id = data.get('tournament_id')
+
+        web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
+        event = web_context.get_admin_event()
+
+        data_source = web_context.get_admin_data_source()
+        tournament = event.tournaments_by_id.get(int(tournament_id))
+        assert data_source is not None and tournament is not None
+
+        for id_to_remove in players_removed:
+            player = event.players_by_id.get(int(id_to_remove))
+            if player:
+                event.delete_player(player)
+
+        new_players = await data_source.get_stored_players_by_source_ids(players_added)
+        for player in new_players:
+            event.add_player(player, tournaments=[tournament])
+
+        if len(players_added) or len(players_removed):
+            Message.success(
+                request,
+                ngettext(
+                    '{added_count} player added and ',
+                    '{added_count} players added and ',
+                    len(players_added),
+                ).format(added_count=len(new_players))
+                + ngettext(
+                    '{removed_count} player removed.',
+                    '{removed_count} players removed.',
+                    len(players_removed),
+                ).format(removed_count=len(players_removed)),
+            )
+
+        return self._render_players_tab(web_context)
 
     @staticmethod
     def _convert_filters(event: Event, json_filters: str) -> dict:

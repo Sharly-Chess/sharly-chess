@@ -823,6 +823,9 @@ with_indicator: display a loading indicator, optional
                         {% if onkeyup %}
                             onkeyup="{{ onkeyup }}"
                         {% endif %}
+                        {% if onchange %}
+                            onchange="{{onchange}}"
+                        {% endif %}
                         {% if disabled or (default_checkbox and data[default_checkbox_name] == 'on') %}disabled{% endif %}
                         {% if hx_get %}
                             hx-get="{{ hx_get }}"
@@ -1111,6 +1114,7 @@ with_indicator: display a loading indicator, optional
     disabled=false,
     with_indicator=false,
     autocomplete='',
+    onchange='',
     hx_get='',
     hx_post='',
     hx_trigger='',
@@ -1143,6 +1147,7 @@ with_indicator: display a loading indicator, optional
         disabled=disabled,
         with_indicator=with_indicator,
         autocomplete=autocomplete,
+        onchange=onchange,
         hx_get=hx_get,
         hx_post=hx_post,
         hx_trigger=hx_trigger,
