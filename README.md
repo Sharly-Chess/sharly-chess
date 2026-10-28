@@ -4,7 +4,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 
 ## User documentation
 
-**Please visit [sharly-chess.com](https://sharly-chess.com)** (installation guide [here](https://sharly-chess.com/installation)).
+**Please visit [sharly-chess.com](https://thp.sharly-chess.com)**.
 
 ## Developer documentation
 
@@ -14,8 +14,8 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Translation guide](docs/contributing/translation-guide.md)
 - [Internationalization](docs/contributing/i18n.md)
 - [Maintainers, contributors and translators](/docs/contributing/contributors.md)
-- [Copyright](https://sharly-chess.com/copyright)
-- [License](https://sharly-chess.com/license)
+- [Copyright](https://thp.sharly-chess.com/copyright)
+- [License](https://thp.sharly-chess.com/license)
 
 ### Technical appendices
 

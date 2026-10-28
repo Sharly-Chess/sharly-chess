@@ -46,5 +46,5 @@ See also:
 Thanks to Dominique RUHLMANN for adapting the _ChessEvent_ platform to allow the import from ChessEvent into _Sharly Chess_ and to all the beta testers!
 
 See also:
-- [Copyright](https://sharly-chess.com/copyright)
-- [License AGPL](https://sharly-chess.com/license)
+- [Copyright](https://thp.sharly-chess.com/copyright)
+- [License AGPL](https://thp.sharly-chess.com/license)

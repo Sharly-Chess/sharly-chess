@@ -4,9 +4,9 @@ Thank you for investing your time in our project.
 
 ## New contributor guide
 
-To get an overview of the project, read the [user documentation](https://sharly-chess.com).
+To get an overview of the project, read the [user documentation](https://thp.sharly-chess.com).
 
-Please note that this project is licenced under the [GNU Affero Public Licence version 3.0](https://sharly-chess.com/license).
+Please note that this project is licenced under the [GNU Affero Public Licence version 3.0](https://thp.sharly-chess.com/license).
 
 ## Start contributing
 

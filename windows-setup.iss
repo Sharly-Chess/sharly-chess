@@ -3,7 +3,7 @@
 
 #define AppName "Sharly Chess"
 #define AppPublisher "Sharly Chess"
-#define AppURL "https://sharly-chess.com"
+#define AppURL "https://thp.sharly-chess.com"
 #define AppExeName "sharly-chess.exe"
 #define ImagesDir "src\web\static\images"
 #define RegKey "Software\Sharly Chess\Sharly Chess"

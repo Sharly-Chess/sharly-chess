@@ -12891,11 +12891,11 @@ msgstr "depuis le 1er coup"
 msgid "game points"
 msgstr "les points de partie"
 
-msgid "https://sharly-chess.com/changelog/"
-msgstr "https://sharly-chess.com/fr/changelog/"
+msgid "https://thp.sharly-chess.com/changelog/"
+msgstr "https://thp.sharly-chess.com/fr/changelog/"
 
-msgid "https://sharly-chess.com/getting-started/"
-msgstr "https://sharly-chess.com/fr/bien-demarrer/"
+msgid "https://thp.sharly-chess.com/getting-started/"
+msgstr "https://thp.sharly-chess.com/fr/bien-demarrer/"
 
 msgid "in"
 msgstr "po"
