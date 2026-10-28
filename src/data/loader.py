@@ -8,6 +8,7 @@ from datetime import date, datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
+from threading import RLock
 from typing import Literal, Self, cast, ClassVar
 from urllib.parse import quote
 
@@ -55,6 +56,9 @@ class EventLoader:
     # Last metadata successfully read for each event, reused to display an event
     # that has become inaccessible with its real name and dates.
     _last_known_metadata: ClassVar[dict[str, EventMetadata]] = {}
+    # The sets above are shared by the request threads and the background
+    # uploaders, which scan the events concurrently.
+    _ids_lock: ClassVar[RLock] = RLock()
 
     @classmethod
     def get(cls, request: HTMXRequest | None) -> Self:
@@ -75,14 +79,20 @@ class EventLoader:
         replaced — deleted, or restored from a snapshot — is checked again,
         whichever of them it was in.
         """
-        cls._valid_event_ids.discard(uniq_id)
-        cls._invalid_uniq_ids.discard(uniq_id)
-        cls._inaccessible_uniq_ids.discard(uniq_id)
-        cls._corrupted_uniq_ids.discard(uniq_id)
-        cls.load_event_ids()
+        with cls._ids_lock:
+            cls._valid_event_ids.discard(uniq_id)
+            cls._invalid_uniq_ids.discard(uniq_id)
+            cls._inaccessible_uniq_ids.discard(uniq_id)
+            cls._corrupted_uniq_ids.discard(uniq_id)
+            cls.load_event_ids()
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None) -> dict[str, EventMetadata]:
+        with cls._ids_lock:
+            return cls._load_event_ids(uniq_id)
+
+    @classmethod
+    def _load_event_ids(cls, uniq_id: str | None) -> dict[str, EventMetadata]:
         event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
@@ -118,8 +128,9 @@ class EventLoader:
         """The events whose file is there but which could not be read: locked
         by another program, or holding something that is not a database any
         more. They are the ones a snapshot is restored over."""
-        cls.load_event_ids()
-        return cls._corrupted_uniq_ids | cls._inaccessible_uniq_ids
+        with cls._ids_lock:
+            cls.load_event_ids()
+            return cls._corrupted_uniq_ids | cls._inaccessible_uniq_ids
 
     @classmethod
     def inaccessible_events_metadata(cls) -> list[EventMetadata]:
@@ -220,8 +231,9 @@ class EventLoader:
 
     @cached_property
     def event_uniq_ids(self) -> list[str]:
-        self.load_event_ids()
-        return list(self._valid_event_ids)
+        with self._ids_lock:
+            self.load_event_ids()
+            return list(self._valid_event_ids)
 
     @classmethod
     def format_uniq_id(cls, uniq_id: str) -> str:
@@ -346,37 +358,38 @@ class EventLoader:
     def _filter_events_metadata(
         cls, conditions: list[Callable[[EventMetadata], bool]]
     ) -> list[EventMetadata]:
-        metadata_by_event_id = cls.load_event_ids()
-        events_metadata: list[EventMetadata] = []
-        # sorted() copies the set so it can be mutated while iterating below.
-        for uniq_id in sorted(cls._valid_event_ids):
-            metadata = metadata_by_event_id.get(uniq_id)
-            if metadata is None:
-                try:
-                    metadata = cls.load_event_metadata(uniq_id)
-                except DatabaseInaccessibleException as e:
-                    # An event that was valid but has since become unreadable
-                    # (locked, file sync…) is demoted so it is listed as
-                    # inaccessible rather than crashing the page.
-                    logger.debug('Event [%s] could not be opened: %s', uniq_id, e)
-                    cls._valid_event_ids.discard(uniq_id)
-                    cls._inaccessible_uniq_ids.add(uniq_id)
-                    continue
-                except DatabaseCorruptedException as e:
-                    # An event that was valid and whose file has since been
-                    # damaged is demoted so it is listed with the way back to
-                    # its snapshots rather than dropped from the page.
-                    logger.debug('Event [%s] could not be read: %s', uniq_id, e)
-                    cls._valid_event_ids.discard(uniq_id)
-                    cls._corrupted_uniq_ids.add(uniq_id)
-                    continue
-                except SharlyChessException as e:
-                    logger.debug('Event [%s] could not be loaded: %s', uniq_id, e)
-                    cls._valid_event_ids.discard(uniq_id)
-                    cls._invalid_uniq_ids.add(uniq_id)
-                    continue
-            cls._last_known_metadata[uniq_id] = metadata
-            events_metadata.append(metadata)
+        with cls._ids_lock:
+            metadata_by_event_id = cls.load_event_ids()
+            events_metadata: list[EventMetadata] = []
+            # sorted() copies the set so it can be mutated while iterating below.
+            for uniq_id in sorted(cls._valid_event_ids):
+                metadata = metadata_by_event_id.get(uniq_id)
+                if metadata is None:
+                    try:
+                        metadata = cls.load_event_metadata(uniq_id)
+                    except DatabaseInaccessibleException as e:
+                        # An event that was valid but has since become unreadable
+                        # (locked, file sync…) is demoted so it is listed as
+                        # inaccessible rather than crashing the page.
+                        logger.debug('Event [%s] could not be opened: %s', uniq_id, e)
+                        cls._valid_event_ids.discard(uniq_id)
+                        cls._inaccessible_uniq_ids.add(uniq_id)
+                        continue
+                    except DatabaseCorruptedException as e:
+                        # An event that was valid and whose file has since been
+                        # damaged is demoted so it is listed with the way back to
+                        # its snapshots rather than dropped from the page.
+                        logger.debug('Event [%s] could not be read: %s', uniq_id, e)
+                        cls._valid_event_ids.discard(uniq_id)
+                        cls._corrupted_uniq_ids.add(uniq_id)
+                        continue
+                    except SharlyChessException as e:
+                        logger.debug('Event [%s] could not be loaded: %s', uniq_id, e)
+                        cls._valid_event_ids.discard(uniq_id)
+                        cls._invalid_uniq_ids.add(uniq_id)
+                        continue
+                cls._last_known_metadata[uniq_id] = metadata
+                events_metadata.append(metadata)
         return [
             event_metadata
             for event_metadata in events_metadata
