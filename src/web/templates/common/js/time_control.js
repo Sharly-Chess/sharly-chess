@@ -134,6 +134,31 @@ function humanizeTrf25Short(trf) {
     }
 }
 
+// TRF25 → compact notation of the FFE reports (90'+30", 100'x40+30" → 15'+30")
+function compactTrf25(trf) {
+    const fmtSeconds = (total) => {
+        const m = Math.floor(total / 60);
+        const s = total % 60;
+        if (m && s) return `${m}'${s}"`;
+        if (m) return `${m}'`;
+        return `${s}"`;
+    };
+    const fmtSide = (periods) => periods.map(p => {
+        const inc = p.increment ? `+${p.increment}"` : '';
+        const moves = p.moves != null ? `x${p.moves}` : '';
+        return fmtSeconds(p.seconds || 0) + moves + inc;
+    }).join(' → ');
+
+    const tc = parseTrf25(trf);
+    const w = fmtSide(tc.white || []);
+    if (!tc.black) return w;
+    const b = fmtSide(tc.black);
+    if (w === b) return w;
+    const ws = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.white'), text: w });
+    const bs = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.black'), text: b });
+    return `${ws} / ${bs}`;
+}
+
 function renderHumanizedTimeControls(root = document) {
     const elements = [];
     if (root instanceof Element && root.matches('.tc-human')) {

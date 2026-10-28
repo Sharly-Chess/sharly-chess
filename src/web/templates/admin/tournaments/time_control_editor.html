@@ -245,7 +245,9 @@
         function updateDisplay($root) {
             const trf = $('#time-control-trf25').val().trim();
             const $label = $root.find('.tc-edit-label');
-            $root.find('.tc-readable-inline').text(trf ? humanizeTrf25Short(trf) : '');
+            let compact = '';
+            try { compact = trf ? compactTrf25(trf) : ''; } catch {}
+            $root.find('.tc-readable-inline').text(compact);
             $root.find('.tc-clock').prop('hidden', !trf);
             $label.text(trf ? {{ _('Edit')|tojson }} : {{ _('Specify the time control')|tojson }});
 
