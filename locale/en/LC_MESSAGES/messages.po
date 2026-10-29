@@ -2128,6 +2128,9 @@ msgstr ""
 msgid "Chief arbiter"
 msgstr ""
 
+msgid "Chief arbiter of the tournament"
+msgstr "Chief arbiter of the tournament"
+
 msgid "Chile"
 msgstr ""
 

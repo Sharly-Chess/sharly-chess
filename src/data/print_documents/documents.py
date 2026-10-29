@@ -14,6 +14,7 @@ from common.i18n import _, ngettext, pgettext
 from common.i18n.utils import ordinal_integer, unicode_normalize
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
+from data.account import Account
 from data.access_levels.client import Client
 from data.board import Board
 from data.pairings.fixed_table import FixedPairingTable
@@ -56,6 +57,7 @@ from data.print_documents.options import (
     RoundPrintOption,
     MatchSheetSelectionPrintOption,
     MatchSheetArbiterPrintOption,
+    ChiefArbiterPrintOption,
     TeamBergerGridPlayersPrintOption,
     GridPlayerSortPrintOption,
     TeamGridSortPrintOption,
@@ -2679,8 +2681,7 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
 
 class RatingAchievementCertificatePrintDocument(PrintDocument):
     """Certificate of the highest intermediate FIDE rating a player reached
-    during the tournament, for the titles gained by a rating achieved at any
-    time."""
+    during the tournament."""
 
     @staticmethod
     def static_id() -> str:
@@ -2695,6 +2696,7 @@ class RatingAchievementCertificatePrintDocument(PrintDocument):
         return [
             TournamentPrintOption,
             MandatoryPlayerPrintOption,
+            ChiefArbiterPrintOption,
         ]
 
     @property
@@ -2792,22 +2794,6 @@ class RatingAchievementCertificatePrintDocument(PrintDocument):
         performance_diff = score - expected_score
         rating_gain = self._rating_gain(k_factor, performance_diff)
         starting_rating = tournament_player.rating_used_by_fide.value
-        intermediate_rating = starting_rating + rating_gain
-        titles_reached = (
-            [
-                title
-                for title in PlayerTitle
-                if (requirement := title.rating_requirement) is not None
-                and starting_rating < requirement <= intermediate_rating
-                and (
-                    not title.is_women or tournament_player.gender == PlayerGender.WOMAN
-                )
-                and title not in tournament_player.held_titles
-            ]
-            if self.tournament.cadence == Cadence.STANDARD
-            else []
-        )
-        chief_arbiter = self.tournament.chief_arbiter
         return {
             'event': self.get_event(),
             'tournament': self.tournament,
@@ -2822,13 +2808,19 @@ class RatingAchievementCertificatePrintDocument(PrintDocument):
             'performance_diff': performance_diff,
             'rating_gain': rating_gain,
             'starting_rating': starting_rating,
-            'intermediate_rating': intermediate_rating,
-            'titles_reached': sorted(
-                titles_reached, key=lambda title: -title.sort_index
-            ),
-            'chief_arbiter': chief_arbiter,
+            'intermediate_rating': starting_rating + rating_gain,
+            'chief_arbiter': self.chief_arbiter,
             'issued_on': date.today(),
         }
+
+    @property
+    def chief_arbiter(self) -> Account | None:
+        account_id = self._get_option(ChiefArbiterPrintOption).value
+        if account_id is not None:
+            account = self.tournament.event.accounts_by_id.get(account_id)
+            if account is not None:
+                return account
+        return self.tournament.chief_arbiter
 
 
 class TournamentNormsSummaryPrintDocument(PrintDocument):
