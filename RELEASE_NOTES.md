@@ -61,6 +61,7 @@
 - Pairing place cards are not generated anymore for Pairing Allocated Byes (5.2.0)
 - The text of the FFE forms, the FFE pairing sheet and the Chess960 positions can be selected and copied in the PDFs saved from Firefox (5.2.0)
 - Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the FFE forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
+- A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
 
 ## Sharly-Chess.com
 

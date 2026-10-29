@@ -66,6 +66,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.TournamentNormsSummaryPrintDocument,
             documents.NormReportPrintDocument,
             documents.NormCalculationDetailsPrintDocument,
+            documents.RatingAchievementCertificatePrintDocument,
             documents.QRCodePrintDocument,
             documents.PlaceCardPrintDocument,
         ]
@@ -92,6 +93,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.RoundPrintOption,
             options.MatchSheetSelectionPrintOption,
             options.MatchSheetArbiterPrintOption,
+            options.ChiefArbiterPrintOption,
             options.TeamBergerGridPlayersPrintOption,
             options.PlayerSplitPrintOption,
             options.GridPlayerSortPrintOption,
