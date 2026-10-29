@@ -78,6 +78,7 @@ class SqlServer:
         self.database: pytds.Connection | None = None
         self.cursor: pytds.Cursor | None = None
         self.error: str | None = None
+        self.cancelled: bool = False
 
     async def __aenter__(self) -> Self:
         """Opens the database connection, raises SharlyChessException on error."""
@@ -143,13 +144,23 @@ class SqlServer:
         try:
             await asyncio.to_thread(self.cursor.execute, query, params)
         except (pytds.Error, TimeoutError) as e:
-            self._handle_database_error(e)
+            if not self.cancelled:
+                self._handle_database_error(e)
+
+    def cancel(self) -> None:
+        """Asks the server to stop the query another thread is waiting for,
+        whose answer that thread reads."""
+        self.cancelled = True
+        if self.cursor and self.cursor._session:
+            self.cursor._session.put_cancel()
 
     async def fetchall(self) -> AsyncIterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
         self._check_cursor()
         assert self.cursor is not None
+        if self.cancelled:
+            return
 
         try:
             # Get column names

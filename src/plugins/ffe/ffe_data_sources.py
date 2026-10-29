@@ -560,6 +560,19 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
                 unicode_normalize(string), federation, page, limit, filters
             )
 
+    async def _search_first_players(
+        self,
+        string: str,
+        federation: str,
+        page: int,
+        limit: int,
+        filters: dict | None = None,
+    ) -> list[StoredPlayer] | None:
+        async with FFESqlServer() as ffe_sql_server:
+            return await ffe_sql_server.search_first_players(
+                unicode_normalize(string), federation, page, limit, filters
+            )
+
     @property
     def import_identifier_column(self) -> DatasheetColumn:
         return self._import_identifier_column

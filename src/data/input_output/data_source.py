@@ -377,6 +377,19 @@ class DataSource(IdentifiableEntity, ABC):
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
 
+    async def search_first_players(
+        self,
+        string: str,
+        federation: str,
+        page: int,
+        limit: int,
+        filters: dict | None = None,
+    ) -> list[StoredPlayer] | None:
+        """The first results of the page of `search_player()`, when the data
+        source finds them much sooner than the whole page, None otherwise.
+        The page holds others when they do not fill it."""
+        return None
+
     @abstractmethod
     async def get_stored_player_by_source_id(
         self,
@@ -748,17 +761,34 @@ class OnlineDataSource(DataSource, ABC):
         limit: int | None = None,
         filters: dict | None = None,
     ) -> list[StoredPlayer]:
+        return await self._search_online(
+            partial(self._search_player, string, federation, page, limit, filters)
+        )
+
+    async def search_first_players(
+        self,
+        string: str,
+        federation: str,
+        page: int,
+        limit: int,
+        filters: dict | None = None,
+    ) -> list[StoredPlayer] | None:
+        return await self._search_online(
+            partial(
+                self._search_first_players, string, federation, page, limit, filters
+            )
+        )
+
+    async def _search_online[T](self, search: Callable[[], Awaitable[T]]) -> T:
         cls = self.__class__
         cls._connection_last_checked_at = datetime.now()
         if not NetworkMonitor.connected():
             cls.connection_status = None
             raise SharlyChessException(_('No internet connection'))
         try:
-            players = await self._search_player(
-                string, federation, page, limit, filters
-            )
+            result = await search()
             cls.connection_status = True
-            return players
+            return result
         except SharlyChessException as exception:
             cls.connection_status = False
             raise exception
@@ -774,6 +804,17 @@ class OnlineDataSource(DataSource, ABC):
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
+
+    async def _search_first_players(
+        self,
+        string: str,
+        federation: str,
+        page: int,
+        limit: int,
+        filters: dict | None = None,
+    ) -> list[StoredPlayer] | None:
+        """See `search_first_players()`."""
+        return None
 
 
 class FideDataSource(LocalDataSource):
