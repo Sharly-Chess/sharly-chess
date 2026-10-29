@@ -533,7 +533,7 @@
     // image, in a cell that draws them.
     function boxed(element, blocks) {
         if (element.tagName === 'TABLE') {
-            return blocks;
+            return spacedAbove(element, blocks);
         }
         const boxBorders = borders(element);
         const fill = fillColor(element);
@@ -573,11 +573,15 @@
         } else {
             table = {type: 'table', columns: [1], rows: 1, cells: [cell]};
         }
-        // The space above the box is an empty paragraph, a table having none.
+        return spacedAbove(element, [table]);
+    }
+
+    // The space above a table is an empty paragraph, a table having none.
+    function spacedAbove(element, blocks) {
         const spaceBefore = marginTop(element);
         return spaceBefore >= 8
-            ? [{type: 'paragraph', runs: [], space_before: spaceBefore}, table]
-            : [table];
+            ? [{type: 'paragraph', runs: [], space_before: spaceBefore}, ...blocks]
+            : blocks;
     }
 
     // ---------- Tables ----------
@@ -1084,7 +1088,7 @@
         const wordUrl = toolbar.dataset.wordExportUrl;
         const hasFields = [...document.body.querySelectorAll('input, textarea, select')]
             .some(field => !toolbar.contains(field));
-        if (wordUrl && hasFields) {
+        if (wordUrl && (hasFields || 'wordExport' in document.body.dataset)) {
             wordButton.hidden = false;
             wordButton.addEventListener('click', () => exportFile(
                 wordButton, wordUrl, wordLayout,

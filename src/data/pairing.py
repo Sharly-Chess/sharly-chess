@@ -22,7 +22,9 @@ if TYPE_CHECKING:
 logger: Logger = get_logger()
 
 
-RatingChange = namedtuple('RatingChange', ['delta', 'new_rating', 'comment'])
+RatingChange = namedtuple(
+    'RatingChange', ['delta', 'new_rating', 'comment', 'expected'], defaults=[None]
+)
 
 
 class Pairing:
@@ -381,7 +383,7 @@ class Pairing:
                 "The FIDE will use the player's standard rating for this game ({rating})."
             ).format(rating=tournament_player.rating_used_by_fide)
 
-        return RatingChange(delta, new_rating, comment)
+        return RatingChange(delta, new_rating, comment, expected)
 
     @property
     def opponent_id(self) -> int | None:

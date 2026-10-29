@@ -342,6 +342,31 @@ class MatchSheetArbiterPrintOption(PrintOption[int | None]):
         return result
 
 
+class ChiefArbiterPrintOption(PrintOption[int | None]):
+    """Account named as the chief arbiter of the document. Empty falls back
+    to the tournament's chief arbiter."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'chief-arbiter'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> int | None:
+        return None
+
+    @property
+    def label(self) -> str:
+        return _('{string}:').format(string=_('Chief arbiter'))
+
+    @property
+    def default_text(self) -> str:
+        return _('Chief arbiter of the tournament')
+
+
 class TeamBergerGridPlayersPrintOption(PrintOption[bool]):
     """If on, the team Berger grid details down to the players: one row
     per player (grouped by team), individual game results in the

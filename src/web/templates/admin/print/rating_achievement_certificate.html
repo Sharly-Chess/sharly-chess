@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Certificate of FIDE Rating Achievement</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 900px;
+                margin: 1rem auto;
+                line-height: 1.3;
+                font-size: 0.85rem;
+            }
+            h1 {
+                text-align: center;
+                font-size: 1.5rem;
+                line-height: 1.2;
+                margin: 0 0 1rem 0;
+            }
+            p {
+                margin: 0.6rem 0;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 0.6rem 0;
+            }
+            th,
+            td {
+                border: 1px solid #555;
+                padding: 0.15rem 0.5rem;
+                text-align: left;
+            }
+            th {
+                background: #ddd;
+            }
+            td.number {
+                text-align: right;
+            }
+            tr.unrated {
+                color: #666;
+                font-style: italic;
+            }
+            .info {
+                text-align: center;
+                font-style: italic;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            .warning {
+                color: red;
+            }
+            .tooltip {
+                position: relative;
+                cursor: help;
+            }
+            .tooltip-info {
+                display: none;
+                color: black;
+            }
+            .tooltip:hover .tooltip-info {
+                display: block;
+                position: absolute;
+                z-index: 10;
+                width: 300px;
+                background-color: white;
+                border: 1px solid #000;
+                top: 1.5rem;
+                left: 1rem;
+                padding: 0.5rem;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            }
+            .signature {
+                margin-top: 2rem;
+            }
+            [contenteditable]:focus {
+                outline: 1px dashed #888;
+            }
+            @media print {
+                .no-print {
+                    display: none !important;
+                }
+                body {
+                    margin: 0;
+                    padding: 0;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .warning {
+                    color: black;
+                }
+                .tooltip:hover .tooltip-info {
+                    display: none;
+                }
+                @page {
+                    size: A4 portrait;
+                    margin: 10mm;
+                }
+            }
+        </style>
+    </head>
+    <body data-word-export>
+        {% set document_notes %}
+            {{ _('All the text of the certificate may be modified by the arbiter before printing.') }}
+            {% if k_factor_is_estimated %}
+                <br />
+                <span class="warning">{{ _('The coefficient (k) of the player is unknown, %(k)d is assumed.', k=k_factor) }}</span>
+            {% endif %}
+        {% endset %}
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% else %}
+            <div class="info no-print">{{ document_notes }}</div>
+        {% endif %}
+        {% set cadence_name = {1: 'Standard', 2: 'Rapid', 3: 'Blitz'}.get(tournament.cadence.value, '') %}
+        <div contenteditable="true">
+            <h1>
+                CERTIFICATE OF FIDE RATING ACHIEVEMENT
+            </h1>
+
+            <p>I hereby certify that the player:</p>
+
+            <p>
+                <b>Name:</b> {{ tournament_player.full_name }}<br />
+                <b>FIDE ID:</b> {{ tournament_player.fide_id or '' }}<br />
+                <b>Federation:</b> {{ tournament_player.federation }}
+            </p>
+
+            <p>
+                <b>Tournament:</b> {{ tournament.name }}<br />
+                {% if tournament.name != event.name %}
+                    <b>Event:</b> {{ event.name }}<br />
+                {% endif %}
+                <b>Location:</b> {{ tournament.location or '' }}<br />
+                <b>Dates:</b> {{ tournament.start_date.strftime('%d.%m.%Y') }} – {{ tournament.stop_date.strftime('%d.%m.%Y') }}<br />
+                <b>Time control:</b> {{ cadence_name }}{% if tournament.time_control_trf25 %}, {{ tournament.time_control_trf25 }}{% endif %}<br />
+                <b>Chief Arbiter:</b> {{ chief_arbiter.full_name if chief_arbiter else '' }}
+            </p>
+
+            <p>
+                had a published FIDE {{ cadence_name }} rating of <b>{{ starting_rating }}</b> at the start of the tournament,
+                and reached the highest intermediate rating of the tournament after round {{ at_round }}, with the following results:
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rd</th>
+                        <th>Opponent</th>
+                        <th>Fed</th>
+                        <th>Rating</th>
+                        <th>Result</th>
+                        <th>Expected</th>
+                        <th>Diff.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for round_, pairing, rating_change in games %}
+                        {% set opponent = pairing.opponent %}
+                        <tr class="{{ 'unrated' if rating_change.delta is none }}">
+                            <td class="number">{{ round_ }}</td>
+                            <td>{{ opponent.full_name }}</td>
+                            <td>{{ opponent.federation }}</td>
+                            <td class="number">{{ opponent.rating_used_by_fide.value if opponent.rating_used_by_fide.type == 3 else '-' }}</td>
+                            <td class="number">{{ '%.1f' | format(pairing.result.point_value) }}</td>
+                            {% if rating_change.delta is none %}
+                                <td colspan="2">Not rated</td>
+                            {% else %}
+                                <td class="number">{{ '%.2f' | format(rating_change.expected) }}</td>
+                                <td class="number">{{ '%+.2f' | format(pairing.result.point_value - rating_change.expected) }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p>
+                <b>Total score achieved:</b> {{ '%.1f' | format(score) }} / {{ rated_games_count }}<br />
+                <b>Total expected score:</b> {{ '%.2f' | format(expected_score) }} / {{ rated_games_count }}<br />
+                <b>Performance difference:</b> {{ '%+.2f' | format(performance_diff) }}
+            </p>
+
+            <p>
+                <b>Rating change calculation:</b><br />
+                {% if k_factor_is_estimated %}
+                    <span class="warning tooltip">{{ '%+.2f' | format(performance_diff) }} × {{ k_factor }} (K) = {{ '%+.2f' | format(performance_diff * k_factor) }}<span class="tooltip-info" contenteditable="false">{{ _('The coefficient (k) of the player is unknown, %(k)d is assumed.', k=k_factor) }}</span></span>
+                {% else %}
+                    {{ '%+.2f' | format(performance_diff) }} × {{ k_factor }} (K) = {{ '%+.2f' | format(performance_diff * k_factor) }}
+                {% endif %}
+            </p>
+
+            <p>
+                <b>Intermediate FIDE {{ cadence_name }} rating after round {{ at_round }}:</b><br />
+                {{ starting_rating }} {{ '+' if rating_gain >= 0 else '−' }} {{ rating_gain | abs }} = <b>{{ intermediate_rating }}</b>
+            </p>
+
+            <p>
+                Therefore, the player achieved an intermediate FIDE {{ cadence_name }} rating of {{ intermediate_rating }}
+                after round {{ at_round }} of the tournament.
+            </p>
+
+            <p>
+                This certificate is issued for whatever purpose it may serve, subject to official rating processing by FIDE.
+            </p>
+
+            <p>
+                <b>Issued on:</b> {{ issued_on.strftime('%d.%m.%Y') }}<br />
+                <b>Place:</b> {{ tournament.location or '' }}
+            </p>
+
+            <p class="signature">
+                <b>Certified by:</b><br />
+                {% if chief_arbiter %}
+                    {{ chief_arbiter.full_name }}<br />
+                    Chief Arbiter<br />
+                    {% if chief_arbiter.fide_arbiter_title.value %}
+                        {{ {'IA': 'International Arbiter', 'FA': 'FIDE Arbiter', 'NA': 'National Arbiter'}[chief_arbiter.fide_arbiter_title.value] }} ({{ chief_arbiter.fide_arbiter_title.value }})<br />
+                    {% endif %}
+                    {% if chief_arbiter.fide_id %}
+                        FIDE ID: {{ chief_arbiter.fide_id }}<br />
+                    {% endif %}
+                {% else %}
+                    Chief Arbiter
+                {% endif %}
+            </p>
+        </div>
+    </body>
+</html>

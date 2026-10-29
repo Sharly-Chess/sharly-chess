@@ -70,3 +70,24 @@ def test_the_place_cards_remind_the_arbiter_to_update_the_players(
     named = re.search(r'const playerDataTypes = (\[.*?\]);', response.text)
     assert named is not None
     assert set(json.loads(named.group(1))) == {'player', 'pairing', 'team'}
+
+
+@pytest.mark.unit
+def test_the_rating_certificate_states_the_intermediate_rating(
+    http: TestClient, tournament_id: int
+):
+    tournament = EVENT.tournament()
+    tournament_player = max(
+        tournament.tournament_players,
+        key=lambda tournament_player: tournament_player.rating_used_by_fide.value,
+    )
+    response = http.get(
+        f'/document-view/{EVENT_ID}/rating-achievement-certificate',
+        params={
+            'options': f'tournament={tournament_id}'
+            f'|mandatory-player={tournament_player.id}'
+        },
+    )
+    assert response.status_code == 200
+    assert 'CERTIFICATE OF FIDE RATING ACHIEVEMENT' in response.text
+    assert 'Intermediate FIDE Standard rating after round' in response.text
