@@ -2,6 +2,7 @@
 in-memory database: these tests check what they are built from."""
 
 import asyncio
+import re
 from collections.abc import Coroutine
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
@@ -13,8 +14,23 @@ from plugins.ffe.ffe_sql_server import FFESqlServer
 
 
 class _QueryCapture(FFESqlServer):
+    # The queries of all the connections, the searches opening a second one
+    queries: list[tuple[str, list[Any]]]
+    first_players: list[Any]
+    cancellations: int
+
     def __init__(self) -> None:
-        self.queries: list[tuple[str, list[Any]]] = []
+        self.cancelled = False
+
+    async def __aenter__(self) -> '_QueryCapture':
+        return self
+
+    async def __aexit__(self, *args: Any) -> None:
+        pass
+
+    def cancel(self) -> None:
+        self.cancelled = True
+        _QueryCapture.cancellations += 1
 
     async def _get_stored_players_by_condition(
         self,
@@ -26,7 +42,19 @@ class _QueryCapture(FFESqlServer):
         recompile: bool = False,
     ) -> list:
         self.queries.append((f'{condition} ORDER BY {order_by}', params))
-        return []
+        return self.first_players if _ranked_below_the_words(condition) else []
+
+
+def _ranked_below_the_words(condition: str) -> bool:
+    return re.search(r'END\s*< \d+(?= ORDER BY|$)', condition) is not None
+
+
+@pytest.fixture(autouse=True)
+def _reset_capture() -> None:
+    _QueryCapture.queries = []
+    _QueryCapture.first_players = []
+    _QueryCapture.cancellations = 0
+    FFESqlServer._first_players_counts.clear()
 
 
 def _run(coroutine: Coroutine[Any, Any, Any]) -> None:
@@ -41,9 +69,10 @@ def _run(coroutine: Coroutine[Any, Any, Any]) -> None:
 def test_search_binds_every_parameter(search: str) -> None:
     server = _QueryCapture()
     _run(server.search_player(search, 'FRA', 0, 20, {'gender_filter': 'F'}))
-    [(query, params)] = server.queries
-    # The driver formats the query with the % operator
-    assert query % tuple(f'@P{i}' for i in range(len(params)))
+    assert len(server.queries) == 2
+    for query, params in server.queries:
+        # The driver formats the query with the % operator
+        assert query % tuple(f'@P{i}' for i in range(len(params)))
 
 
 @pytest.mark.parametrize(
@@ -63,10 +92,56 @@ def test_only_searches_longer_than_the_names_match_cut_names(
 ) -> None:
     server = _QueryCapture()
     _run(server.search_player(search, 'FRA', 0, 20))
+    for query, _params in server.queries:
+        for field in ('joueur.Nom', 'joueur.Prenom'):
+            assert query.count(f'WHEN LEN({field}) = 20') == words_cut_at_length
+            assert query.count(f"WHEN RIGHT({field}, 1) = '.'") == abbreviated_words
+
+
+def test_the_players_whose_last_name_a_word_starts_fill_the_page_alone() -> None:
+    _QueryCapture.first_players = ['DUPONT Jean'] * 20
+    server = _QueryCapture()
+    players: list[Any] = []
+
+    async def search() -> None:
+        players.extend(await server.search_player('DUPONT JEAN', 'FRA', 0, 20))
+        await asyncio.gather(*FFESqlServer._background_scans)
+
+    _run(search())
+    assert players == _QueryCapture.first_players
+    [first_players_query] = [
+        query for query, _params in server.queries if _ranked_below_the_words(query)
+    ]
+    assert first_players_query.count('< 2 ORDER BY') == 1
+    assert _QueryCapture.cancellations == 1
+
+
+def test_the_scan_gives_the_page_the_first_players_do_not_fill() -> None:
+    _QueryCapture.first_players = ['DUPONT Jean'] * 19
+    server = _QueryCapture()
+    players: list[Any] = []
+
+    async def search() -> None:
+        players.extend(await server.search_player('DUPONT JEAN', 'FRA', 0, 20))
+
+    _run(search())
+    assert players == []
+    assert len(server.queries) == 2
+    assert _QueryCapture.cancellations == 0
+
+
+def test_the_pages_past_the_first_players_are_only_scanned() -> None:
+    _QueryCapture.first_players = ['DUPONT Jean'] * 5
+    server = _QueryCapture()
+    _run(server.search_player('DUPONT JEAN', 'FRA', 0, 20))
+    assert len(server.queries) == 2
+    _QueryCapture.queries = []
+    _run(server.search_player('DUPONT JEAN', 'FRA', 1, 20))
     [(query, _params)] = server.queries
-    for field in ('joueur.Nom', 'joueur.Prenom'):
-        assert query.count(f'WHEN LEN({field}) = 20') == words_cut_at_length
-        assert query.count(f"WHEN RIGHT({field}, 1) = '.'") == abbreviated_words
+    assert not _ranked_below_the_words(query)
+    _QueryCapture.queries = []
+    _run(server.search_player('DUPONT JEAN', 'FRA', 1, 20, {'gender_filter': 'F'}))
+    assert len(server.queries) == 2
 
 
 def test_names_are_read_without_doubled_apostrophes_and_trailing_spaces() -> None:

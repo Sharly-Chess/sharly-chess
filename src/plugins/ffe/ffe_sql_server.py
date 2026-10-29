@@ -1,11 +1,14 @@
+import asyncio
 import itertools
 import re
+from collections import OrderedDict
 from collections.abc import Awaitable, Callable
 from contextlib import suppress
+from dataclasses import dataclass
 from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 
 from common.exception import SharlyChessException
@@ -39,6 +42,25 @@ from plugins.ffe.utils import (
 from utils.enum import Cadence, PlayerRatingType
 
 logger: Logger = get_logger()
+
+# The words, federation and filters of a search
+_SearchKey = tuple[tuple[str, ...], str, str]
+
+
+@dataclass(frozen=True)
+class _NameSearch:
+    key: _SearchKey
+    tokens: list[str]
+    # Every word matches the player
+    condition: str
+    params: list[Any]
+    # The number of points of the player, the lower the better
+    rank: str
+    rank_params: list[str]
+
+    @property
+    def order_by(self) -> str:
+        return f'{self.rank}, joueur.Nom, joueur.Prenom, joueur.Ref'
 
 
 class FFESqlServer(SqlServer):
@@ -260,6 +282,133 @@ class FFESqlServer(SqlServer):
                 return await self.get_stored_players_by_licence_numbers([string])
             if fide_id := self.string_matches_fide_id(string):
                 return await self.get_players_by_fide_id([fide_id])
+        search = self._name_search(string, federation, filters)
+        if not limit:
+            return await self._scan(search)
+        offset = page * limit
+        # The whole search scans the 1.3 million players, which takes about a
+        # second. Only a word that starts the last name ranks 0, the others
+        # rank 1 or more: the players ranked below the number of words, which
+        # come first, have their last name started by some word and are found
+        # in about 100 ms by seeking the (Nom, Prenom) index. When they fill
+        # the page, the scan running alongside is cancelled. The scan is read
+        # at the same offset, leaving them out of it would cost its conditions
+        # on every player.
+        first_players_count = self._first_players_count(search)
+        if first_players_count is not None and offset + limit > first_players_count:
+            # Looking for first players that cannot fill the page would slow
+            # the scan down by about a third
+            return await self._scan(search, offset, limit)
+        scan_server = type(self)()
+        scan = asyncio.create_task(
+            scan_server._scan_in_own_connection(search, offset, limit)
+        )
+        self._background_scans.add(scan)
+        scan.add_done_callback(self._end_background_scan)
+        try:
+            first_players = await self._get_first_players(search, offset, limit)
+        except BaseException:
+            scan_server.cancel()
+            raise
+        if len(first_players) == limit:
+            scan_server.cancel()
+            return first_players
+        return await scan
+
+    async def search_first_players(
+        self,
+        string: str,
+        federation: str,
+        page: int,
+        limit: int,
+        filters: dict | None = None,
+    ) -> list[StoredPlayer] | None:
+        """The first players of the page of `search_player()`, found without
+        its scan, or None for the searches it does not split. The page holds
+        others when they do not fill it."""
+        string = string.upper().strip()
+        if not filters and (
+            PlayerFFELicence.validate(string) or self.string_matches_fide_id(string)
+        ):
+            return None
+        search = self._name_search(string, federation, filters)
+        offset = page * limit
+        first_players_count = self._first_players_count(search)
+        if first_players_count is not None and offset >= first_players_count:
+            return []
+        return await self._get_first_players(search, offset, limit)
+
+    async def _scan(
+        self, search: _NameSearch, offset: int | None = None, limit: int | None = None
+    ) -> list[StoredPlayer]:
+        # A short token matches far more players than a long one, a plan
+        # cached for one of them can be many times slower for the other, so
+        # each search recompiles it
+        return await self._get_stored_players_by_condition(
+            search.condition,
+            search.params + search.rank_params,
+            order_by=search.order_by,
+            offset=offset,
+            limit=limit,
+            recompile=True,
+        )
+
+    async def _scan_in_own_connection(
+        self, search: _NameSearch, offset: int, limit: int
+    ) -> list[StoredPlayer]:
+        async with self:
+            if self.cancelled:
+                return []
+            return await self._scan(search, offset, limit)
+
+    async def _get_first_players(
+        self, search: _NameSearch, offset: int, limit: int
+    ) -> list[StoredPlayer]:
+        v = self.VARCHAR
+        starts = ' OR '.join([f'(joueur.Nom LIKE {v})'] * len(search.tokens))
+        first_players = await self._get_stored_players_by_condition(
+            f'{search.condition} AND ({starts}) AND {search.rank} < {len(search.tokens)}',
+            search.params
+            + [f'{token}%' for token in search.tokens]
+            + search.rank_params * 2,
+            order_by=search.order_by,
+            offset=offset,
+            limit=limit,
+            recompile=True,
+        )
+        if len(first_players) < limit:
+            # The number of first players, or more than it when the page
+            # holds none of them
+            counts = self._first_players_counts
+            counts[search.key] = offset + len(first_players)
+            while len(counts) > self.FIRST_PLAYERS_COUNTS_SIZE:
+                counts.popitem(last=False)
+        return first_players
+
+    # The counts are only used to skip the first players, a stale one only
+    # costs time
+    FIRST_PLAYERS_COUNTS_SIZE = 100
+    _first_players_counts: ClassVar[OrderedDict[_SearchKey, int]] = OrderedDict()
+
+    @classmethod
+    def _first_players_count(cls, search: _NameSearch) -> int | None:
+        count = cls._first_players_counts.get(search.key)
+        if count is not None:
+            cls._first_players_counts.move_to_end(search.key)
+        return count
+
+    # The scans keep running until the server answers their cancellation
+    _background_scans: ClassVar[set[asyncio.Task[list[StoredPlayer]]]] = set()
+
+    @classmethod
+    def _end_background_scan(cls, scan: asyncio.Task[list[StoredPlayer]]) -> None:
+        cls._background_scans.discard(scan)
+        if not scan.cancelled():
+            scan.exception()
+
+    def _name_search(
+        self, string: str, federation: str, filters: dict | None
+    ) -> _NameSearch:
         tokens: list[str] = [
             unicode_normalize(token) for token in re.split(r'\s+', string)
         ]
@@ -307,6 +456,7 @@ class FFESqlServer(SqlServer):
 
         # We build one CASE block that sorts best → worst
         order_clauses = []
+        rank_params: list[str] = []
         v = self.VARCHAR
         for token in tokens:
             order_clauses.append(f"""
@@ -320,7 +470,7 @@ class FFESqlServer(SqlServer):
             """)
 
             # Params for this token in the same order
-            params += [
+            rank_params += [
                 f'{token}%',
                 federation,
                 f'{token}%',
@@ -330,16 +480,13 @@ class FFESqlServer(SqlServer):
                 federation,
             ]
 
-        order_expr = ' + '.join(order_clauses)
-        return await self._get_stored_players_by_condition(
-            condition,
-            params,
-            order_by=f'{order_expr}, joueur.Nom, joueur.Prenom, joueur.Ref',
-            limit=limit,
-            offset=page * limit if limit else None,
-            # A short token matches far more players than a long one, a plan
-            # cached for one of them can be many times slower for the other
-            recompile=True,
+        return _NameSearch(
+            key=(tuple(tokens), federation, repr(sorted((filters or {}).items()))),
+            tokens=tokens,
+            condition=condition,
+            params=params,
+            rank=' + '.join(order_clauses),
+            rank_params=rank_params,
         )
 
     async def _get_stored_player_by_condition(

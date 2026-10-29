@@ -32,7 +32,12 @@ function handleInitialQuery(event) {
 function handleListExtension(event) {
     event.target.remove();
 
+    let hadResults = resultList.length > 0;
     resultList = $('#search-results>li.btn');
+    if (!hadResults) {
+        refreshStyle(resultList, selectedIndex);
+        return;
+    }
 
     let element = resultList[selectedIndex];
     let parent = element.parentElement;
