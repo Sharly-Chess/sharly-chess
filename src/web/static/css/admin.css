@@ -510,6 +510,11 @@
     border-bottom-right-radius: 0;
 }
 
+/* Solid split buttons otherwise read as a single button. */
+.btn-group > .dropdown-toggle.dropdown-toggle-split:not([class*="btn-outline-"]) {
+    margin-left: 2px;
+}
+
 .search-results-dropdown {
     max-height: 400px;
     width: fit-content;
