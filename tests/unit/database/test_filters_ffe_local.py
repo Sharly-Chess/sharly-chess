@@ -313,3 +313,38 @@ def test_club_filter(init_mock_FFE_database):
             'dupont', 'FRA', 1, None, {'club_filter': club_filter}
         )
         assert len(result) == expected_result_count
+
+
+def test_search_matches_the_names_cut_or_abbreviated(init_mock_FFE_database):
+    database = init_mock_FFE_database
+    database.database.executemany(
+        'INSERT INTO player (fide_id, federation, first_name, last_name, gender, date_of_birth, fide_title, standard_rating_type, rapid_rating_type, blitz_rating_type, ffe_licence) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+            (fide_id, 'FRA', first_name, last_name, 'M', '1990-01-01', '', 3, 3, 3, 'A')
+            for fide_id, last_name, first_name in [
+                ('0000011', 'LOUSTALOT-BARBE SERG', 'Noa'),
+                ('0000012', 'MERCIER-PIQUEM.', 'Mathieu'),
+                ('0000013', 'MERCIER', 'Clemens Dr.'),
+            ]
+        ],
+    )
+    database.database.commit()
+
+    for search, expected_last_names in [
+        ('loustalot barbe sergent', ['LOUSTALOT-BARBE SERG']),
+        ('sergent loustalot barbe', ['LOUSTALOT-BARBE SERG']),
+        ('mercier piquemal', ['MERCIER-PIQUEM.']),
+        ('mercier-piquemal', ['MERCIER-PIQUEM.']),
+        # Too short to run past the abbreviation
+        ('piquemal', []),
+        # A title is no abbreviation of the word
+        ('mercier dreyfus', []),
+    ]:
+        result = database.search_player(search, 'FRA', 0, None, {})
+        assert [player.last_name for player in result] == expected_last_names
+
+
+def test_search_repeating_a_word(init_mock_FFE_database):
+    database = init_mock_FFE_database
+
+    assert len(database.search_player('dupont dupont', 'FRA', 0, None, {})) == 10

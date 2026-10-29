@@ -182,10 +182,12 @@ class Team:
         its boards (:meth:`TeamBoard.team_all_forfeit`). Two conditions, both
         required:
 
-        - The team did not play its *last* scheduled match (it forfeited
+        - The team did not play its last match with a result (it forfeited
           every board). A team present for its final round was there at the
-          end and so did not withdraw, whatever it missed earlier.
-        - More than half of its scheduled matches were forfeited this way.
+          end and so did not withdraw, whatever it missed earlier. Before the
+          final round, the latest result stands for the team's presence.
+        - More than half of its scheduled matches were forfeited this way,
+          so it can no longer complete half of them.
 
         A match still being played, or a bye, is not counted.
         """
@@ -206,10 +208,15 @@ class Team:
                 team_board.stored_team_board.team_b_id,
             )
         ]
-        if not scheduled:
+        decided = [
+            team_board
+            for team_board in scheduled
+            if team_board.team_all_forfeit(self.id) or not team_board.no_games_played
+        ]
+        if not decided:
             return False
-        last_scheduled = max(scheduled, key=lambda team_board: team_board.round)
-        if not last_scheduled.team_all_forfeit(self.id):
+        last_decided = max(decided, key=lambda team_board: team_board.round)
+        if not last_decided.team_all_forfeit(self.id):
             return False
         abandoned = sum(
             1 for team_board in scheduled if team_board.team_all_forfeit(self.id)

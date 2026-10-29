@@ -30,6 +30,7 @@
 - Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 - The fees and payments of the registrations on _Sharly-Chess.com_ are imported into the players' owed and paid amounts when synchronising; payments recorded in _Sharly Chess_ are kept until they change on _Sharly-Chess.com_ (5.2.0)
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
+- Improved player search in the _FFE_ database: online searches are faster, and players whose names the _FFE_ database cut or abbreviated (such as `MERCIER-PIQUEM.` for Mercier-Piquemal) are found from their full names, both by searches and when matching imported players (5.2.0)
 
 ## Pairings
 
@@ -47,6 +48,7 @@
 - The arbiter now publishes each round: until then, the screens and the online services (Sharly-Chess.com, Chess-Results, FFE, custom uploads) stay on the previous round, while the new pairings can be checked and printed. A round can be published once the rounds before it are finished, and unpublished as long as it has no results (5.2.0)
 - In round robins and fixed-table tournaments (Molter, Scheveningen), whose pairings are known in advance, the online services receive the pairings of every round as soon as they are made; publishing a round moves the screens on to it and makes its results public. Publishing replaces the End round button of round robins (5.2.0)
 - When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
+- In round robins, a player or team that withdrew is dropped from the standings, and their games annulled, as soon as they can no longer complete half of their games, instead of only once the last round has a result (5.2.0)
 
 ## Prizes
 
@@ -59,6 +61,7 @@
 - Pairing place cards are not generated anymore for Pairing Allocated Byes (5.2.0)
 - The text of the FFE forms, the FFE pairing sheet and the Chess960 positions can be selected and copied in the PDFs saved from Firefox (5.2.0)
 - Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the FFE forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
+- A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
 
 ## Sharly-Chess.com
 

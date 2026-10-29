@@ -7,7 +7,7 @@
     </li>
 {% elif search %}
     {% with message, is_warning = data_source.info_or_warning_message %}
-        {% if message and page == 0 %}
+        {% if message and page == 0 and players_before is none %}
             <li class="dropdown-item no-hover text-nowrap">
                 <i class="{% if is_warning %}
                         bi-exclamation-triangle-fill text-warning
@@ -18,7 +18,7 @@
             </li>
         {% endif %}
     {% endwith %}
-    {% if search_results %}
+    {% if search_results or rest_from is not none %}
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
                 hx-post="{{ url_for(
@@ -64,7 +64,32 @@
                 </li>
             {% endif %}
         {% endfor %}
-    {% else %}
+        {% if rest_from is not none %}
+            <li
+                class="dropdown-item no-hover text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-search-player',
+                    event_uniq_id=admin_event.uniq_id,
+                    page=page,
+                    usage=usage,
+                ) }}"
+                hx-vals='js:{
+                    "data_source_id": "{{ data_source.id }}",
+                    "search": {{ search|tojson }},
+                    "filters": getFilters(),
+                    "players_before": {{ rest_from }},
+                    {% if admin_player %}"player_id": {{ admin_player.id }},{% endif %}
+                }'
+                hx-target="this"
+                hx-swap="afterend"
+                hx-trigger="load"
+                hx-indicator="#player-search-indicator"
+                hx-on::after-request="handleListExtension(event);"
+            >
+                <span class="fst-italic">{{ _('Searching…') }}</span>
+            </li>
+        {% endif %}
+    {% elif not players_before %}
         <li class="dropdown-item no-hover text-nowrap">
             <span class="fst-italic">{{ _('No results.') }}</span>
         </li>

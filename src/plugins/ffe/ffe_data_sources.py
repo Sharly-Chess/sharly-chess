@@ -37,7 +37,10 @@ from plugins.ffe.utils import (
     FfePlayerPluginData,
     FfeNameKey,
     ffe_database_name_keys,
+    ffe_name,
+    ffe_name_abbreviation,
     ffe_name_key,
+    ffe_name_key_matches,
     get_data,
 )
 from utils.enum import Cadence
@@ -203,13 +206,32 @@ class _FfeDataSource(ABC):
             keys.add(fide_id)
         return keys
 
+    @staticmethod
+    def _abbreviation_finds(
+        keys: list[str | int | FfeNameKey], ffe_stored_player: StoredPlayer
+    ) -> bool:
+        """Whether a name key finds the player of the FFE database by a name
+        it abbreviated with a dot, which has no key to compare."""
+        if not any(
+            ffe_name_abbreviation(ffe_name(name or ''))
+            for name in (ffe_stored_player.last_name, ffe_stored_player.first_name)
+        ):
+            return False
+        return any(
+            isinstance(key, tuple) and ffe_name_key_matches(key, ffe_stored_player)
+            for key in keys
+        )
+
     @classmethod
     def _check_player_match(
         cls,
         player1: StoredPlayer,
         player2: StoredPlayer,
     ) -> bool:
-        return not cls._get_ffe_keys(player2).isdisjoint(cls._get_match_keys(player1))
+        match_keys = cls._get_match_keys(player1)
+        return not cls._get_ffe_keys(player2).isdisjoint(
+            match_keys
+        ) or cls._abbreviation_finds(match_keys, player2)
 
     @classmethod
     def _expects_match(cls, stored_player: StoredPlayer) -> bool:
@@ -252,7 +274,12 @@ class _FfeDataSource(ABC):
             pending_keys = [
                 keys[1:]
                 for keys in pending_keys
-                if keys[0] not in found_keys and len(keys) > 1
+                if len(keys) > 1
+                and keys[0] not in found_keys
+                and not any(
+                    self._abbreviation_finds(keys[:1], stored_player)
+                    for stored_player in stored_players
+                )
             ]
         return match_stored_players
 
@@ -530,6 +557,19 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
             return await ffe_sql_server.search_player(
+                unicode_normalize(string), federation, page, limit, filters
+            )
+
+    async def _search_first_players(
+        self,
+        string: str,
+        federation: str,
+        page: int,
+        limit: int,
+        filters: dict | None = None,
+    ) -> list[StoredPlayer] | None:
+        async with FFESqlServer() as ffe_sql_server:
+            return await ffe_sql_server.search_first_players(
                 unicode_normalize(string), federation, page, limit, filters
             )
 

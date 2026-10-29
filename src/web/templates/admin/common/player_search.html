@@ -24,7 +24,7 @@
                 name="search"
                 class="dropdown form-control"
                 type="search"
-                hx-trigger="keyup changed delay:400ms, data_source_change, filter_change"
+                hx-trigger="keyup changed delay:250ms, data_source_change, filter_change"
                 hx-target="#search-results"
                 hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='js:{
@@ -43,7 +43,7 @@
         </div>
         <ul
             id="search-results"
-            class="dropdown-menu position-absolute me-3 end-0 search-results-dropdown"
+            class="dropdown-menu position-absolute ms-3 me-3 start-0 end-0 search-results-dropdown"
             hx-on::after-settle="refreshSearchResultsVisibility(); handleInitialQuery(event);"
         >
         </ul>

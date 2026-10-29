@@ -8,7 +8,7 @@ from data.player import Player
 from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe import NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_data_sources import _FfeDataSource
-from plugins.ffe.utils import FfeNameKey, ffe_database_name_keys
+from plugins.ffe.utils import FfeNameKey, ffe_name_key_matches
 
 
 def _stored_player(
@@ -49,7 +49,7 @@ class _FakeFfeDataSource(_FfeDataSource):
             for stored_player in self.database
             if self._get_licence_number(stored_player) in ffe_licence_numbers
             or stored_player.fide_id in fide_ids
-            or not ffe_database_name_keys(stored_player).isdisjoint(name_keys)
+            or any(ffe_name_key_matches(key, stored_player) for key in name_keys)
         ]
 
 
@@ -93,6 +93,45 @@ def test_name_match_ignores_case_and_accents() -> None:
     data_source = _FakeFfeDataSource([ffe_player])
     player = _stored_player(last_name='Dupont', first_name='HÉLÈNE')
     assert _match(data_source, player) is ffe_player
+
+
+def test_name_match_compares_the_names_as_cut_by_the_ffe_database() -> None:
+    ffe_player = _stored_player(
+        last_name='LOUSTALOT-BARBE SERG', first_name='Nathan Christian Cla'
+    )
+    data_source = _FakeFfeDataSource([ffe_player])
+    player = _stored_player(
+        last_name='Loustalot-Barbe Sergent', first_name='Nathan Christian Claude'
+    )
+    assert _match(data_source, player) is ffe_player
+
+
+def test_name_cut_after_a_space_matches() -> None:
+    ffe_player = _stored_player(last_name='DE LA FOURNIERE DE S')
+    data_source = _FakeFfeDataSource([ffe_player])
+    player = _stored_player(last_name='De La Fourniere De Saint-Pern')
+    assert _match(data_source, player) is ffe_player
+
+
+def test_name_match_compares_the_names_abbreviated_by_the_ffe_database() -> None:
+    ffe_player = _stored_player(
+        licence_number='Z81840', last_name='MERCIER-PIQUEM.', first_name='Odalric-Amb.'
+    )
+    data_source = _FakeFfeDataSource([ffe_player])
+    player = _stored_player(
+        licence_number='Z81841',
+        last_name='Mercier-Piquemal',
+        first_name='Odalric-Ambroise',
+    )
+    assert _match(data_source, player) is ffe_player
+    # The name key found the player, no other key is looked up
+    assert len(data_source.queries) == 2
+
+
+def test_name_match_ignores_surrounding_spaces() -> None:
+    ffe_player = _stored_player(last_name='DUPONT ')
+    data_source = _FakeFfeDataSource([ffe_player])
+    assert _match(data_source, _stored_player(last_name=' Dupont')) is ffe_player
 
 
 def test_different_date_of_birth_does_not_match() -> None:

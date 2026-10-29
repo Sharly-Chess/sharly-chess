@@ -3556,23 +3556,42 @@ class PlayerAdminController(BaseEventAdminController):
         page: FromPath[int] = 0,
         usage: FromQuery[str] = 'player',
         filters: FromQuery[str] = '{}',
+        players_before: FromQuery[int | None] = None,
     ) -> Template:
+        """With *players_before*, the rest of the page whose first players
+        were shown."""
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
         )
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
+        has_more_results: bool = False
+        rest_from: int | None = None
         connection_error: str | None = None
         search = search.strip()
         if search:
             try:
-                stored_players = await data_source.search_player(
+                search_args = (
                     search,
                     web_context.get_admin_event().federation,
                     page,
                     DataSource.SEARCH_LIMIT,
                     self._convert_filters(web_context.get_admin_event(), filters),
                 )
+                stored_players: list[StoredPlayer] | None = None
+                if players_before is None:
+                    stored_players = await data_source.search_first_players(
+                        *search_args
+                    )
+                if stored_players is not None:
+                    has_more_results = len(stored_players) == DataSource.SEARCH_LIMIT
+                    # The rest of the page is asked for once they are shown
+                    if not has_more_results:
+                        rest_from = len(stored_players)
+                else:
+                    stored_players = await data_source.search_player(*search_args)
+                    has_more_results = len(stored_players) == DataSource.SEARCH_LIMIT
+                    stored_players = stored_players[players_before or 0 :]
                 for stored_player in stored_players:
                     stored_player.id = 0
                     players.append(Player(web_context.get_admin_event(), stored_player))
@@ -3586,7 +3605,9 @@ class PlayerAdminController(BaseEventAdminController):
                 'usage': usage,
                 'search': search,
                 'search_results': players,
-                'has_more_results': len(players) == DataSource.SEARCH_LIMIT,
+                'has_more_results': has_more_results,
+                'rest_from': rest_from,
+                'players_before': players_before,
                 'page': page,
                 'data_source': data_source,
                 'connection_error': connection_error,

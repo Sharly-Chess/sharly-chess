@@ -1,6 +1,7 @@
 import re
+from collections import defaultdict
 from contextlib import suppress
-from datetime import datetime
+from datetime import date, datetime
 from logging import Logger
 from pathlib import Path
 from typing import Any, override
@@ -20,9 +21,14 @@ from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.utils import (
     PlayerFFELicence,
     FfePlayerPluginData,
+    FFE_ABBREVIATED_NAME_MIN_LENGTH,
+    FFE_ABBREVIATION_MIN_LENGTH,
+    FFE_NAME_LENGTH,
     FfeNameKey,
+    ffe_cut_name_matches,
     ffe_database_name_keys,
     ffe_list_ratings,
+    ffe_name_key_matches,
 )
 from utils.enum import (
     Cadence,
@@ -146,22 +152,40 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
             ('ffe_licence_number', '', ''),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
+        # The rules of `FFESqlServer.search_player()` for the cut names
+        min_tail_length: int = 1 if len(tokens) > 1 else 2
+        search_length: int = len(' '.join(tokens))
+        at_length: bool = search_length > FFE_NAME_LENGTH
+        abbreviated: bool = search_length >= FFE_ABBREVIATED_NAME_MIN_LENGTH
+        assert self.database is not None
+        self.database.create_function(
+            'ffe_cut_name_matches', 5, ffe_cut_name_matches, deterministic=True
+        )
         filter_conditions, filter_params = self._process_filters(filters or {})
-        token_conditions: dict[str, str] = {}
+        # A word searched twice binds its parameters twice
+        token_conditions: list[str] = []
         params: list[Any] = list(filter_params)
         for token in tokens:
             expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
             params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
+            if at_length or (abbreviated and len(token) > FFE_ABBREVIATION_MIN_LENGTH):
+                for field in ('last_name', 'first_name'):
+                    # The guard spares the other names the call
+                    expressions.append(
+                        f'((length({field}) = {FFE_NAME_LENGTH} '
+                        f"OR {field} LIKE '%.') "
+                        f'AND ffe_cut_name_matches({field}, ?, ?, ?, ?))'
+                    )
+                    params += [token, min_tail_length, at_length, abbreviated]
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
                 params += [
                     int_value,
                 ] * len(int_fields)
-            token_conditions[token] = ' OR '.join(expressions)
+            token_conditions.append(' OR '.join(expressions))
         conditions: str = ' AND '.join(
-            filter_conditions
-            + [f'({condition})' for condition in token_conditions.values()]
+            filter_conditions + [f'({condition})' for condition in token_conditions]
         )
 
         # We build one CASE block that sorts best → worst
@@ -263,7 +287,7 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
             (*last_names, *first_names),
         )
         keys = set(name_keys)
-        return [
+        stored_players = [
             stored_player
             for row in self.fetchall()
             if keys
@@ -271,6 +295,40 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
                 stored_player := self.get_stored_player_from_row(row)
             )
         ]
+        found_keys = {
+            key
+            for stored_player in stored_players
+            for key in ffe_database_name_keys(stored_player)
+        }
+        if pending_keys := keys - found_keys:
+            stored_players += self._get_stored_players_by_abbreviated_name_keys(
+                pending_keys
+            )
+        return stored_players
+
+    def _get_stored_players_by_abbreviated_name_keys(
+        self, name_keys: set[FfeNameKey]
+    ) -> list[StoredPlayer]:
+        """The players whose last or first name the database abbreviated with
+        a dot, which have no key to compare."""
+        keys_by_birth: dict[date | int, list[FfeNameKey]] = defaultdict(list)
+        for name_key in name_keys:
+            keys_by_birth[name_key[2]].append(name_key)
+        self.execute(
+            "SELECT * FROM player WHERE last_name LIKE '%.' OR first_name LIKE '%.'"
+        )
+        stored_players: list[StoredPlayer] = []
+        for row in self.fetchall():
+            stored_player = self.get_stored_player_from_row(row)
+            date_of_birth = stored_player.date_of_birth
+            assert date_of_birth is not None
+            if any(
+                ffe_name_key_matches(name_key, stored_player)
+                for birth in (date_of_birth, date_of_birth.year)
+                for name_key in keys_by_birth.get(birth, [])
+            ):
+                stored_players.append(stored_player)
+        return stored_players
 
     @classmethod
     def _process_filters(cls, filters: dict) -> tuple[list[str], list[Any]]:
