@@ -300,6 +300,8 @@ class SCEPlayerSyncData:
         frozenset({'rating', 'rating_type'}),
         frozenset({'phone', 'phone_number'}),
         frozenset({'fra_school_code', 'fra_school_label'}),
+        # The source names the list of the id: it is only sent with the id.
+        frozenset({'national_id', 'national_source'}),
     )
 
     tournament_id: str
@@ -319,6 +321,11 @@ class SCEPlayerSyncData:
 
     # Plugin fields
     national_id: str | None = None
+    #: The list `national_id` belongs to (`DataSource.national_source_id`).
+    #: It travels with the id and is left out of the sync comparisons: a
+    #: Sharly-Chess.com that does not know it sends none, which must not read
+    #: as a change on either side.
+    national_source: str | None = field(default=None, compare=False)
     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
     ffe_league: str | None = None
     fra_school: SCEFraSchoolSyncData | None = None
@@ -385,11 +392,14 @@ class SCEPlayerSyncData:
             last_name=data['last_name'],
             first_name=data['first_name'],
             federation=data['federation'],
-            # As SC.com YOB are mandatory, consider 1900 as an
-            # empty field to avoid setting it in the THP
-            year_of_birth=yob if yob > MIN_YOB else None,
+            # SC.com may send no YOB (a player picked from a list without
+            # one, such as the ECF's), or 1900 for an empty field
+            year_of_birth=yob if yob and yob > MIN_YOB else None,
             fide_id=data['fide_id'],
             national_id=data['national_id'] or None,
+            national_source=(data.get('national_source') or None)
+            if data['national_id']
+            else None,
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
             club=data['club'] or '',
             rating=data['rating'],
@@ -427,6 +437,7 @@ class SCEPlayerSyncData:
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=player.fide_id or None,
             national_id=player.national_id,
+            national_source=player.national_source,
             title=player.strongest_title,
             club=player.club.name,
             federation=player.federation.name,
@@ -452,6 +463,7 @@ class SCEPlayerSyncData:
             year_of_birth=stored_value.get('year_of_birth'),
             fide_id=stored_value.get('fide_id'),
             national_id=stored_value.get('national_id'),
+            national_source=stored_value.get('national_source'),
             title=PlayerTitle(stored_value.get('title', PlayerTitle.NONE)),
             federation=stored_value.get('federation'),
             club=stored_value.get('club', ''),
@@ -482,6 +494,7 @@ class SCEPlayerSyncData:
             'year_of_birth': self.year_of_birth,
             'fide_id': self.fide_id,
             'national_id': self.national_id,
+            'national_source': self.national_source,
             'title': self.title.value,
             'federation': self.federation,
             'club': self.club,
@@ -510,6 +523,7 @@ class SCEPlayerSyncData:
             'year_of_birth': self.year_of_birth or MIN_YOB,
             'fide_id': self.fide_id,
             'national_id': self.national_id,
+            'national_source': self.national_source,
             'title': self.title.value,
             'federation': self.federation,
             'club': self.club,
@@ -538,7 +552,12 @@ class SCEPlayerSyncData:
         """
         data = self.to_sce_data()
         reference_data = reference.to_sce_data()
-        changed = {key for key, value in data.items() if value != reference_data[key]}
+        changed = {
+            key
+            for key, value in data.items()
+            # Sent with the id only (see `national_source`)
+            if key != 'national_source' and value != reference_data[key]
+        }
         for group in self.FIELD_GROUPS:
             if changed & group:
                 changed |= group
@@ -551,9 +570,16 @@ class SCEPlayerSyncData:
             self.to_stored_value(),
             other_data.to_stored_value(),
             ref_data.to_stored_value(),
-            avoid_keys=['owed', 'paid'],
+            avoid_keys=['owed', 'paid', 'national_source'],
         )
-        return self.from_stored_value(merged_stored_value)
+        merged = self.from_stored_value(merged_stored_value)
+        # The source of the id the merge kept
+        merged.national_source = (
+            self.national_source
+            if merged.national_id == self.national_id
+            else other_data.national_source
+        )
+        return merged
 
     def augment_stored_player(
         self,
@@ -575,7 +601,11 @@ class SCEPlayerSyncData:
         stored_player.fide_id = self.fide_id
         if self.national_id != stored_player.national_id:
             stored_player.national_id = self.national_id
-            stored_player.national_source = None
+            stored_player.national_source = self.national_source
+        elif self.national_id and self.national_source:
+            # Never cleared for the same id: a Sharly-Chess.com that does not
+            # know the source sends none.
+            stored_player.national_source = self.national_source
         stored_player.title = self.title.open_value
         stored_player.women_title = self.title.women_value
         stored_player.federation = self.federation or event.federation

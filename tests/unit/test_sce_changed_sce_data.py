@@ -52,7 +52,7 @@ class TestChangedSCEData:
             ({'club': 'Club B'}, {'club': 'Club B'}),
             ({'club': ''}, {'club': ''}),
             ({'fide_id': None}, {'fide_id': None}),
-            ({'national_id': 'B999'}, {'national_id': 'B999'}),
+            ({'national_id': 'B999'}, {'national_id': 'B999', 'national_source': None}),
             ({'federation': 'GER'}, {'federation': 'GER'}),
             ({'comment': None}, {'comment': None}),
             ({'check_in': True}, {'checked_in': True}),
