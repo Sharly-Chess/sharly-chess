@@ -869,7 +869,7 @@
     align-items: center;
     gap: .6rem;
     margin: .5rem 0 .65rem;
-    color: var(--bs-emphasis-color);
+    color: #c9ccd2;
     font-size: 1.2rem;
     font-weight: 600;
 }
