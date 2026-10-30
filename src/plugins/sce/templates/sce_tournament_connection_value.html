@@ -11,7 +11,7 @@
             {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
         ><i class="bi bi-gear-fill"></i></a>
     </span>
-    {% set auto_upload = sce_utils.resolve_tournament_auto_upload(tournament) %}
+    {% set auto_upload = sce_utils.get_tournament_plugin_data(tournament).auto_upload %}
     <i
         class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"
         style="transform: scale(1.1)"

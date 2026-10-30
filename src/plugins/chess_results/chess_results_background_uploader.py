@@ -24,7 +24,6 @@ from plugins.chess_results.utils import (
     ChessResultsTournamentPluginData,
     CRUtils,
     CHESS_RESULTS_UPLOAD_DELAY,
-    ChessResultsEventPluginData,
 )
 from plugins.utils import PluginUtils
 from utils import Utils
@@ -187,13 +186,6 @@ class CRBackgroundUploader:
         stored_event: StoredEvent,
         stored_tournament: StoredTournament,
     ) -> bool:
-        # Check if the auto upload is enabled
-        event_plugin_data = ChessResultsEventPluginData.from_stored_value(
-            stored_event.plugin_data.get(PLUGIN_NAME, {})
-        )
-        if not event_plugin_data.auto_upload:
-            return False
-
         tournament_plugin_data = ChessResultsTournamentPluginData.from_stored_value(
             stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )

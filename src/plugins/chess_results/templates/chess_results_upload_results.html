@@ -1,80 +1,124 @@
 {% import '/common/macros.j2' as macros with context %}
 
-{% set event_plugin_data = admin_event.plugin_data.chess_results %}
+{% set auto_upload_count = allowed_tournaments | selectattr('plugin_data.chess_results.auto_upload') | list | length %}
 
-<tbody
+<table
     id="upload-results"
+    class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
     hx-get="{{ url_for('chess-results-upload-results', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
     hx-swap="outerHTML"
 >
-    {% for tournament in allowed_tournaments %}
-        {% set plugin_data = tournament.plugin_data.chess_results %}
-        <tr>
-            <td class="text-nowrap text-center">
-                <div class="form-check form-switch d-inline-block pe-3">
-                    <input
-                        name="tournament_auto_upload_{{ tournament.id }}"
-                        class="form-check-input blue-checkbox mt-2"
-                        type="checkbox"
-                        hx-patch="{{ url_for(
-                            'chess-results-update-tournament-auto-upload',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=tournament.id,
-                        ) }}"
-                        value="on"
-                        {% if not event_plugin_data.auto_upload %}
-                            disabled
-                        {% endif %}
-                        {% if plugin_data.auto_upload %}
-                            checked
-                        {% endif %}
-                    />
-                </div>
-            </td>
-            <td style="width: 0;" class="text-nowrap">
-                {{ tournament.name }}
-            </td>
-            <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
-                {% include '/chess_results_tournament_statuses.html' %}
-            </td>
-            <td class="text-center text-nowrap">
-                {{ plugin_data.last_upload_at_str }}
-            </td>
-            <td class="d-flex gap-2 align-items-center">
-                <div class="flex-grow-1"></div>
-                {% if plugin_data.tnr %}
-                    <a
-                        href="{{ cr_utils.tournament_public_url(tournament) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
-                    ><i class="bi bi-box-arrow-up-right"></i></a>
-                    <a
-                        href="{{ cr_utils.tournament_private_url(tournament) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
-                    ><i class="bi bi-gear-fill"></i></a>
-                {% endif %}
-                <span {{ macros.tooltip_attributes('', _('Upload')) }}>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                        hx-post="{{ url_for(
-                            'chess-results-upload-tournament',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=tournament.id
-                        ) }}"
-                        hx-target="#upload-results"
-                        hx-swap="outerHTML"
-                        hx-indicator="#please-wait"
-                        {% if actions_unavailable_message %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                    </button>
-                </span>
-            </td>
-        </tr>
-    {% endfor %}
-</tbody>
+    <thead>
+        <th>
+            <div
+                class="form-check blue-checkbox form-switch d-inline-flex align-items-center gap-1 mb-0"
+                {{ macros.tooltip_attributes('', _(
+                    'Upload automatically every %(delay)d minutes.',
+                    delay=CHESS_RESULTS_UPLOAD_DELAY,
+                )) }}
+            >
+                <input
+                    id="chess-results-auto-upload-all"
+                    name="auto_upload"
+                    class="form-check-input blue-checkbox mt-0"
+                    type="checkbox"
+                    hx-patch="{{ url_for(
+                        'chess-results-update-event-auto-upload',
+                        event_uniq_id=admin_event.uniq_id
+                    ) }}"
+                    value="on"
+                    {% if not allowed_tournaments %}
+                        disabled
+                    {% elif auto_upload_count == allowed_tournaments | length %}
+                        checked
+                    {% endif %}
+                />
+                <i class="bi-arrow-repeat"></i>
+            </div>
+            {% if 0 < auto_upload_count < allowed_tournaments | length %}
+                <script>
+                    document.getElementById('chess-results-auto-upload-all').indeterminate = true;
+                </script>
+            {% endif %}
+        </th>
+        <th>
+            {{ _('Tournament') }}
+        </th>
+        <th class="text-center">
+            {{ _('Statuses') }}
+        </th>
+        <th class="text-center text-nowrap">
+            {{ _('Last upload') }}
+        </th>
+        <th></th>
+    </thead>
+    <tbody>
+        {% for tournament in allowed_tournaments %}
+            {% set plugin_data = tournament.plugin_data.chess_results %}
+            <tr>
+                <td class="text-nowrap text-center">
+                    <div class="form-check form-switch d-inline-block pe-3">
+                        <input
+                            name="tournament_auto_upload_{{ tournament.id }}"
+                            class="form-check-input blue-checkbox mt-2"
+                            type="checkbox"
+                            hx-patch="{{ url_for(
+                                'chess-results-update-tournament-auto-upload',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=tournament.id,
+                            ) }}"
+                            value="on"
+                            {% if plugin_data.auto_upload %}
+                                checked
+                            {% endif %}
+                        />
+                    </div>
+                </td>
+                <td style="width: 0;" class="text-nowrap">
+                    {{ tournament.name }}
+                </td>
+                <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
+                    {% include '/chess_results_tournament_statuses.html' %}
+                </td>
+                <td class="text-center text-nowrap">
+                    {{ plugin_data.last_upload_at_str }}
+                </td>
+                <td class="d-flex gap-2 align-items-center">
+                    <div class="flex-grow-1"></div>
+                    {% if plugin_data.tnr %}
+                        <a
+                            href="{{ cr_utils.tournament_public_url(tournament) }}"
+                            target="_blank"
+                            {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
+                        ><i class="bi bi-box-arrow-up-right"></i></a>
+                        <a
+                            href="{{ cr_utils.tournament_private_url(tournament) }}"
+                            target="_blank"
+                            {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
+                        ><i class="bi bi-gear-fill"></i></a>
+                    {% endif %}
+                    <span {{ macros.tooltip_attributes('', _('Upload')) }}>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                            hx-post="{{ url_for(
+                                'chess-results-upload-tournament',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=tournament.id
+                            ) }}"
+                            hx-target="#upload-results"
+                            hx-swap="outerHTML"
+                            hx-indicator="#please-wait"
+                            {% if actions_unavailable_message %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi-cloud-arrow-up-fill lh-1"></i>
+                        </button>
+                    </span>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

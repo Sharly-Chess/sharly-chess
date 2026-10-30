@@ -24,7 +24,6 @@ from plugins.ffe.ffe_upload_status import (
 )
 from plugins.ffe.utils import (
     FFEUtils,
-    FfeEventPluginData,
     FfeTournamentPluginData,
     FFE_UPLOAD_DELAY,
 )
@@ -345,13 +344,6 @@ class FfeBackgroundUploader:
         stored_tournament: StoredTournament,
     ) -> bool:
         if stored_event.federation != 'FRA':
-            return False
-
-        # Check if the auto upload is enabled
-        event_plugin_data = FfeEventPluginData.from_stored_value(
-            stored_event.plugin_data.get(PLUGIN_NAME, {})
-        )
-        if not event_plugin_data.auto_upload:
             return False
 
         tournament_plugin_data = FfeTournamentPluginData.from_stored_value(

@@ -1,3 +1,4 @@
+from types import ModuleType
 from typing import Any, TYPE_CHECKING
 from collections.abc import Iterable
 
@@ -6,7 +7,7 @@ from packaging.version import Version
 from common.i18n import _
 from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
-from plugins.chess_results import MAX_TIE_BREAKS, PLUGIN_NAME
+from plugins.chess_results import migrations, MAX_TIE_BREAKS, PLUGIN_NAME
 from plugins.chess_results.chess_results_background_uploader import CRBackgroundUploader
 from data.loader import EventLoader
 from plugins.chess_results.chess_results_controller import (
@@ -21,6 +22,7 @@ from plugins.chess_results.utils import (
     CRUtils,
 )
 from plugins.hookspec import hookimpl
+from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     NavDataTransferItem,
     Plugin,
@@ -78,6 +80,16 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     @property
     def version(self) -> Version:
         return Version('1.0.0')
+
+    @property
+    def base_migration_module(self) -> ModuleType:
+        return migrations
+
+    @hookimpl
+    def get_event_migration_manager(
+        self, event_database: EventDatabase
+    ) -> PluginMigrationManager:
+        return self.get_migration_manager(event_database)
 
     @property
     def event_form_fields_template(self) -> str:

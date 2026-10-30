@@ -131,9 +131,12 @@ def cmd_login(args: Namespace) -> None:
     tokens = SCESession.get_tokens_from_code(received['code'], verifier, redirect_uri)
     event = SCEAdminController._import_event(received['event_id'], tokens)
     plugin_data = SCEUtils.get_event_plugin_data(event)
-    plugin_data.auto_upload = False
     plugin_data.auto_player_sync = False
     SCEUtils.update_event_plugin_data(event, plugin_data)
+    for tournament in event.tournaments:
+        tournament_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        tournament_plugin_data.auto_upload = False
+        SCEUtils.update_tournament_plugin_data(tournament, tournament_plugin_data)
     if args.keep is not None:
         with EventDatabase(event.uniq_id, write=True) as database:
             for tournament in event.tournaments:

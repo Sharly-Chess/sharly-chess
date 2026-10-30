@@ -166,9 +166,6 @@ def should_schedule_auto_upload(
     stored_event: StoredEvent,
     stored_tournament: StoredTournament,
 ) -> bool:
-    # Check if the auto upload is enabled
-    if not get_data(stored_event.plugin_data, 'auto_upload'):
-        return False
     if not get_data(stored_tournament.plugin_data, 'auto_upload'):
         return False
 

@@ -296,12 +296,6 @@ class FFEUtils:
         pd = cls.get_tournament_plugin_data(tournament)
         return bool(pd.ffe_id and pd.password)
 
-    @classmethod
-    def resolve_auto_upload(cls, tournament: Tournament) -> bool:
-        if not cls.get_event_plugin_data(tournament.event).auto_upload:
-            return False
-        return cls.get_tournament_plugin_data(tournament).auto_upload
-
     @staticmethod
     def get_event_plugin_data(event: Event) -> 'FfeEventPluginData':
         plugin_data = event.plugin_data[PLUGIN_NAME]
@@ -661,19 +655,16 @@ class FFEArbiterTitle(StrEnum):
 
 @dataclass
 class FfeEventPluginData(PluginData):
-    auto_upload: bool = True
     leave_fixed_board_holes: bool = True
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            auto_upload=stored_value.get('auto_upload', False),
             leave_fixed_board_holes=stored_value.get('leave_fixed_board_holes', True),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'auto_upload': self.auto_upload,
             'leave_fixed_board_holes': self.leave_fixed_board_holes,
         }
 
@@ -692,10 +683,7 @@ class FfeEventPluginData(PluginData):
             leave_fixed_board_holes = previous_object.leave_fixed_board_holes
         else:
             leave_fixed_board_holes = True
-        plugin_data = cls(leave_fixed_board_holes=leave_fixed_board_holes)
-        if previous_object:
-            plugin_data.auto_upload = previous_object.auto_upload
-        return plugin_data
+        return cls(leave_fixed_board_holes=leave_fixed_board_holes)
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
@@ -719,7 +707,7 @@ class FfeTournamentPluginData(PluginData):
     team_division_name: str | None = None
     team_group_id: int | None = None
     team_group_name: str | None = None
-    auto_upload: bool = False
+    auto_upload: bool = True
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
@@ -745,7 +733,7 @@ class FfeTournamentPluginData(PluginData):
             team_division_name=stored_value.get('team_division_name'),
             team_group_id=stored_value.get('team_group_id'),
             team_group_name=stored_value.get('team_group_name'),
-            auto_upload=stored_value.get('auto_upload', False),
+            auto_upload=stored_value.get('auto_upload', True),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
             ),

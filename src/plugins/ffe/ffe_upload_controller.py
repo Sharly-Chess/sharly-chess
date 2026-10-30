@@ -36,8 +36,9 @@ class FfeWebContext(AdminWebContext):
         self,
         request: HTMXRequest,
         tournament_id: int | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(request)
+        super().__init__(request, reload_event=reload_event)
         event = self.get_admin_event()
         self.tournament: Tournament | None = None
         if tournament_id:
@@ -359,6 +360,16 @@ class FfeUploadController(BaseEventAdminController):
         rules_file.unlink(missing_ok=True)
         return self._render_ffe_upload_modal(web_context, message, message_type)
 
+    @staticmethod
+    def _set_tournament_auto_upload(tournament: Tournament, auto_upload: bool) -> None:
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        plugin_data.auto_upload = auto_upload
+        FFEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        if not auto_upload:
+            FfeBackgroundUploader.remove_scheduled_upload(tournament)
+        elif FfeBackgroundUploader.ffe_upload_needed(tournament):
+            FfeBackgroundUploader.schedule_upload(tournament)
+
     @patch(
         path='/ffe/update-event-auto-upload/{event_uniq_id:str}',
         name='ffe-update-event-auto-upload',
@@ -372,19 +383,10 @@ class FfeUploadController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = FfeWebContext(request)
-        event = web_context.get_admin_event()
-        plugin_data = FFEUtils.get_event_plugin_data(event)
-        plugin_data.auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
-        FFEUtils.update_event_plugin_data(event, plugin_data)
-        for tournament in event.tournaments:
-            if not FFEUtils.get_tournament_plugin_data(tournament).auto_upload:
-                continue
-            if plugin_data.auto_upload:
-                if FfeBackgroundUploader.ffe_upload_needed(tournament):
-                    FfeBackgroundUploader.schedule_upload(tournament)
-            else:
-                FfeBackgroundUploader.remove_scheduled_upload(tournament)
-        return self._render_upload_results(web_context)
+        auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
+        for tournament in web_context.allowed_tournaments:
+            self._set_tournament_auto_upload(tournament, auto_upload)
+        return self._render_upload_results(FfeWebContext(request, reload_event=True))
 
     @patch(
         path='/ffe/update-tournament-auto-upload/{event_uniq_id:str}/{tournament_id:int}',
@@ -401,20 +403,10 @@ class FfeUploadController(BaseEventAdminController):
     ) -> HTMXTemplate:
         web_context = FfeWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
-
-        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
-        plugin_data.auto_upload = WebContext.form_data_to_bool(
-            data, f'tournament_auto_upload_{tournament.id}'
+        self._set_tournament_auto_upload(
+            tournament,
+            WebContext.form_data_to_bool(
+                data, f'tournament_auto_upload_{tournament.id}'
+            ),
         )
-        FFEUtils.update_tournament_plugin_data(tournament, plugin_data)
-        if plugin_data.auto_upload:
-            if FfeBackgroundUploader.ffe_upload_needed(tournament):
-                FfeBackgroundUploader.schedule_upload(tournament)
-        else:
-            FfeBackgroundUploader.remove_scheduled_upload(tournament)
-        return HTMXTemplate(
-            template_name='/ffe_tournament_statuses.html',
-            context=web_context.template_context,
-            re_target=f'#tournament-upload-statuses-{tournament.id}',
-            re_swap='innerHTML',
-        )
+        return self._render_upload_results(FfeWebContext(request, reload_event=True))

@@ -486,6 +486,16 @@ class SCEAdminController(BaseAdminController):
             re_swap='outerHTML',
         )
 
+    @staticmethod
+    def _set_tournament_auto_upload(tournament: Tournament, auto_upload: bool) -> None:
+        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        plugin_data.auto_upload = auto_upload
+        SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        if not auto_upload:
+            remove_scheduled_upload(tournament)
+        elif SCEUtils.tournament_modified_since_last_upload(tournament):
+            schedule_upload(tournament)
+
     @patch(
         path='/sce/update-event-auto-player-sync/{event_uniq_id:str}',
         name='sce-update-event-auto-player-sync',
@@ -526,19 +536,10 @@ class SCEAdminController(BaseAdminController):
         ],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        event = web_context.get_admin_event()
-        plugin_data = SCEUtils.get_event_plugin_data(event)
-        plugin_data.auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
-        SCEUtils.update_event_plugin_data(event, plugin_data)
-        for tournament in web_context.sce_tournaments:
-            if not SCEUtils.get_tournament_plugin_data(tournament).auto_upload:
-                continue
-            if plugin_data.auto_upload:
-                if SCEUtils.tournament_modified_since_last_upload(tournament):
-                    schedule_upload(tournament)
-            else:
-                remove_scheduled_upload(tournament)
-        return self._render_upload_table(web_context)
+        auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
+        for tournament in web_context.sce_allowed_tournaments:
+            self._set_tournament_auto_upload(tournament, auto_upload)
+        return self._render_upload_table(SCEWebContext(request, reload_event=True))
 
     @patch(
         path='/sce/update-tournament-auto-upload/{event_uniq_id:str}/{tournament_id:int}',
@@ -556,23 +557,13 @@ class SCEAdminController(BaseAdminController):
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
-
-        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
-        plugin_data.auto_upload = WebContext.form_data_to_bool(
-            data, f'tournament_auto_upload_{tournament.id}'
+        self._set_tournament_auto_upload(
+            tournament,
+            WebContext.form_data_to_bool(
+                data, f'tournament_auto_upload_{tournament.id}'
+            ),
         )
-        SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
-        if plugin_data.auto_upload:
-            if SCEUtils.tournament_modified_since_last_upload(tournament):
-                schedule_upload(tournament)
-        else:
-            remove_scheduled_upload(tournament)
-        return HTMXTemplate(
-            template_name='/sce_tournament_statuses.html',
-            context=web_context.table_context,
-            re_target=f'#tournament-upload-statuses-{tournament.id}',
-            re_swap='innerHTML',
-        )
+        return self._render_upload_table(SCEWebContext(request, reload_event=True))
 
     @post(
         path='/sce/upload-tournament-results/{event_uniq_id:str}/{tournament_id:int}',

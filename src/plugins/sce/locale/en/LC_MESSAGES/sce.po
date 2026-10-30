@@ -48,9 +48,6 @@ msgstr ""
 msgid "Authorization failed, possible CSRF attack!"
 msgstr ""
 
-msgid "Auto-synchronisation"
-msgstr ""
-
 msgid "Auto-upload disabled"
 msgstr ""
 
@@ -58,6 +55,9 @@ msgid "Auto-upload enabled"
 msgstr ""
 
 msgid "Back"
+msgstr ""
+
+msgid "Changes made here or on Sharly-Chess.com are merged both ways."
 msgstr ""
 
 msgid "Choose"
@@ -95,9 +95,6 @@ msgstr ""
 
 #, python-format
 msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
-msgstr ""
-
-msgid "Data synchronisation"
 msgstr ""
 
 msgid "Delete"
@@ -232,9 +229,6 @@ msgstr ""
 msgid "No internet connection."
 msgstr ""
 
-msgid "No player to synchronize yet, import or upload tournaments first."
-msgstr ""
-
 msgid "No tournament has started yet, no results to upload."
 msgstr ""
 
@@ -244,10 +238,16 @@ msgstr ""
 msgid "Not started"
 msgstr ""
 
+msgid "Nothing to synchronize yet, import or upload tournaments first."
+msgstr ""
+
 msgid "Ongoing"
 msgstr ""
 
 msgid "Opening"
+msgstr ""
+
+msgid "Pairings and results"
 msgstr ""
 
 msgid "Pending"
@@ -307,7 +307,13 @@ msgstr ""
 msgid "Public page of the tournament."
 msgstr ""
 
+msgid "Published from this computer to Sharly-Chess.com."
+msgstr ""
+
 msgid "Rating"
+msgstr ""
+
+msgid "Registrations and tournament settings"
 msgstr ""
 
 msgid "Remaining conflicts"
@@ -323,9 +329,6 @@ msgstr ""
 
 #, python-format
 msgid "Resolve tournament conflicts (%(count)d)"
-msgstr ""
-
-msgid "Results upload"
 msgstr ""
 
 msgid "Retry"
@@ -386,11 +389,14 @@ msgstr ""
 msgid "Synchronisation ongoing"
 msgstr ""
 
+msgid "Synchronize automatically"
+msgstr ""
+
 #, python-format
 msgid "Synchronize automatically every %(delay)d minutes."
 msgstr ""
 
-msgid "Synchronize players"
+msgid "Synchronize now"
 msgstr ""
 
 msgid "The new event is not linked to Sharly-Chess.com: it is a copy to look at, and nothing of it is uploaded or synchronised. The event it was taken from keeps the link."
