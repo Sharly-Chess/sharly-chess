@@ -175,6 +175,7 @@ TIE_BREAK_FIXTURES = [
         'json/tec-round-robin',
         'json/pl-swiss',
         'json/manual-koya',
+        'json/manual-koya-odd',
     )
 ]
 

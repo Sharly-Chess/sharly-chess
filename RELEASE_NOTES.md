@@ -44,6 +44,8 @@
 - The previous and next tournament buttons are back beside the tournament selector of the pairings tab (5.2.0)
 - Buchholz tie-breaks can no longer be selected for team round robins, as for individual round robins (5.2.0)
 - The rating-based tie-breaks (ARO, TPR, APRO, PTP, APPO and RTNG) can give players without a FIDE or national rating a fixed rating, 1400 by default, instead of their estimated rating (5.2.0)
+- In round robins with an odd number of players, the free round is not counted as a game: the Koya limit is half of the games each player can play, Rounds one Elected to Play leaves the free round out, and the Sonneborn-Berger cut applies to the games only (5.2.0)
+- The Berger grid gives the tie-breaks of the standings, after the last finished round, when the later rounds are already paired (5.2.0)
 - Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the FFE T2 minutes (5.2.0)
 - The arbiter now publishes each round: until then, the screens and the online services (Sharly-Chess.com, Chess-Results, FFE, custom uploads) stay on the previous round, while the new pairings can be checked and printed. A round can be published once the rounds before it are finished, and unpublished as long as it has no results (5.2.0)
 - In round robins and fixed-table tournaments (Molter, Scheveningen), whose pairings are known in advance, the online services receive the pairings of every round as soon as they are made; publishing a round moves the screens on to it and makes its results public. Publishing replaces the End round button of round robins (5.2.0)

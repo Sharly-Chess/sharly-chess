@@ -865,6 +865,7 @@ class RoundsElectedToPlayTieBreak(PlayerRecordTieBreak):
                 Result.DOUBLE_FORFEIT,
                 Result.ZERO_POINT_BYE,
                 Result.HALF_POINT_BYE,
+                Result.REST_GAME,
             )
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
@@ -1794,10 +1795,8 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
         cut = self.cutter.bottom_cut
         if cut >= after_round:
             return 0
-        played_modifier = (
-            self.played_modifier
-            or tournament.pairing_system == RoundRobinPairingSystem()
-        )
+        round_robin = tournament.pairing_system == RoundRobinPairingSystem()
+        played_modifier = self.played_modifier or round_robin
         pairings: dict[int, Pairing] = {
             round_index: pairing
             for round_index, pairing in player.pairings.items()
@@ -1806,6 +1805,10 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
         contributions: list[WeightedContribution] = []
         for pairing in pairings.values():
             if not player.game_counts_for_tie_breaks(pairing):
+                continue
+            # The rest round of an odd round-robin field is not a game, nor
+            # an unplayed round to cut (Art. 15.2).
+            if round_robin and pairing.opponent_id is None:
                 continue
             # The played modifier only turns a forfeit into a game against
             # the scheduled opponent: a bye has no opponent to count and
@@ -1927,12 +1930,27 @@ class KoyaTieBreak(OpponentRecordTieBreak):
             'who have scored at least L points (L = {equation}).'
         ).format(equation=equation + self.equation_suffix)
 
+    @staticmethod
+    def possible_games(rounds: int, round_robin_field: int | None) -> int:
+        """The games a participant can have played after *rounds* rounds.
+        A round-robin of an odd number of participants gives each of them
+        a free round per cycle, which is not a game."""
+        if round_robin_field is None or round_robin_field % 2 == 0:
+            return rounds
+        return rounds - rounds // round_robin_field
+
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:
         tournament: Tournament = player.tournament
         win_points = tournament.win_points
-        score_limit = 0.5 * win_points * after_round
+        games = self.possible_games(
+            after_round,
+            tournament.player_count
+            if tournament.pairing_system == RoundRobinPairingSystem()
+            else None,
+        )
+        score_limit = 0.5 * win_points * games
         if self.limit:
             draw_points = tournament.draw_points
             score_limit += draw_points * self.limit
@@ -1976,7 +1994,8 @@ class KoyaTieBreak(OpponentRecordTieBreak):
             half_step = tournament_context.draw_gp / max(
                 tournament_context.team_player_count, 1
             )
-        score_limit = 0.5 * max_per_round * after_round
+        games = self.possible_games(after_round, tournament_context.round_robin_field)
+        score_limit = 0.5 * max_per_round * games
         if self.limit:
             score_limit += half_step * self.limit
         score = 0.0
