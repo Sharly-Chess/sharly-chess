@@ -2351,21 +2351,43 @@ body[data-bs-theme=light] .btn-primary {
     --bs-nav-link-hover-color: #fff;
 }
 
+/* The main action is tonal: a translucent wash of the accent with an outline
+   and text in the accent, which marks it without a light block standing out
+   of the dark page. */
 [data-bs-theme=dark] .btn-primary {
-    --bs-btn-color: var(--pw-contrast-text);
-    --bs-btn-bg: var(--bs-primary);
-    --bs-btn-border-color: #d7c9aa;
-    --bs-btn-hover-color: var(--pw-contrast-text);
-    --bs-btn-hover-bg: var(--bs-link-hover-color);
-    --bs-btn-hover-border-color: var(--bs-link-hover-color);
+    --bs-btn-color: #efe3c6;
+    --bs-btn-bg: rgba(var(--bs-primary-rgb), 0.16);
+    --bs-btn-border-color: rgba(var(--bs-primary-rgb), 0.5);
+    --bs-btn-hover-color: #f6ecd4;
+    --bs-btn-hover-bg: rgba(var(--bs-primary-rgb), 0.26);
+    --bs-btn-hover-border-color: rgba(var(--bs-primary-rgb), 0.7);
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
-    --bs-btn-active-color: var(--pw-contrast-text);;
-    --bs-btn-active-bg: var(--bs-link-hover-color);
-    --bs-btn-active-border-color: var(--bs-link-hover-color);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: rgba(var(--bs-primary-rgb), 0.75);
-    --bs-btn-disabled-bg: rgba(var(--bs-primary-rgb), 0.12);
+    --bs-btn-active-color: #f6ecd4;
+    --bs-btn-active-bg: rgba(var(--bs-primary-rgb), 0.32);
+    --bs-btn-active-border-color: rgba(var(--bs-primary-rgb), 0.75);
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: rgba(var(--bs-primary-rgb), 0.6);
+    --bs-btn-disabled-bg: rgba(var(--bs-primary-rgb), 0.06);
     --bs-btn-disabled-border-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+/* The arrow of a split button stands alone in its half, centred both
+   ways rather than set on a line of text. */
+[data-bs-theme=dark] .btn.dropdown-toggle-split {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-bs-theme=dark] .btn.dropdown-toggle-split::after {
+    margin: 0;
+    vertical-align: 0;
+}
+
+/* The halves of a main split button share their outline, which is line
+   enough between them. */
+[data-bs-theme=dark] .btn-group > .btn-primary.dropdown-toggle-split {
+    margin-left: calc(-1 * var(--bs-btn-border-width)) !important;
 }
 
 /* Secondary buttons (Cancel and the like) step back behind the main one. */
@@ -2487,11 +2509,27 @@ body[data-bs-theme=light] .btn-primary {
     --bs-dropdown-link-hover-bg: var(--bs-dropdown-bg);
 }
 
+/* A modal has the ground of the page, set apart by its border and shadow,
+   so that its controls look as they do on the page. */
 [data-bs-theme=dark] .modal {
-    --bs-modal-bg: var(--pw-surface-bg);
+    --bs-modal-bg: #22252b;
     --bs-modal-border-color: var(--pw-control-border-color);
     --bs-modal-header-border-color: var(--bs-border-color);
     --bs-modal-footer-border-color: var(--bs-border-color);
+    --bs-modal-box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.6);
+}
+
+[data-bs-theme=dark] .modal-content {
+    border-color: #535863;
+    box-shadow: var(--bs-modal-box-shadow);
+}
+
+/* The page behind an open modal recedes: on a dark page, Bootstrap's
+   half-dimming barely shows. */
+[data-bs-theme=dark] .modal-backdrop {
+    --bs-backdrop-bg: #000;
+    --bs-backdrop-opacity: 0.8;
+    backdrop-filter: blur(2px);
 }
 
 /* Section headings in forms are quiet, leaving the accent to the main
