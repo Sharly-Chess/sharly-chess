@@ -298,6 +298,8 @@ class TeamTieBreakContext:
     # Teams dropped from the final standings (FIDE 6.6 round-robin rule):
     # their matches don't count towards any other team's tie-breaks.
     excluded_team_ids: frozenset[int] = frozenset()
+    # The number of teams of a round-robin, None for any other system.
+    round_robin_field: int | None = None
 
     def match_counts_for_tie_breaks(self, match: 'TeamMatchRecord') -> bool:
         """False when *match* is against a team excluded from the final

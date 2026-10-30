@@ -10,6 +10,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Literal
 
+from data.pairings.systems import TeamRoundRobinPairingSystem
 from data.teams.team_board import TeamBoard
 from data.tie_breaks import TeamTieBreak, TieBreak
 from data.tie_breaks.team_records import TeamMatchRecord, TeamMatchType, TeamRecord
@@ -439,6 +440,9 @@ class TeamScoring:
             draw_gp=team_size * tournament.draw_points,
             predetermined_pairings=tournament.pairing_system.predetermined_pairings,
             excluded_team_ids=frozenset(self._excluded_team_ids()),
+            round_robin_field=tournament.team_count
+            if tournament.pairing_system == TeamRoundRobinPairingSystem()
+            else None,
         )
 
     def records(self, *, after_round: int | None = None) -> list[TeamRecord]:
