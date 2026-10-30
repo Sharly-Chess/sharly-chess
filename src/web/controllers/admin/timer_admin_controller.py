@@ -392,10 +392,7 @@ class TimerAdminController(BaseEventAdminController):
         web_context.admin_timer = timer
         message = _('Timer [{timer}] has been created.').format(timer=timer.name)
         return self._admin_event_timers_render(
-            web_context,
-            self._timer_hour_form_modal_context(
-                web_context, FormAction.CREATE, success_message=message
-            ),
+            web_context, self._timer_hours_modal_context(message)
         )
 
     @post(
@@ -427,10 +424,11 @@ class TimerAdminController(BaseEventAdminController):
         stored_timer.stored_timer_hours = copy(
             cloned_timer.stored_timer.stored_timer_hours
         )
-        web_context.admin_timer = event.create_timer(stored_timer)
+        timer = event.create_timer(stored_timer)
+        web_context.admin_timer = timer
+        message = _('Timer [{timer}] has been created.').format(timer=timer.name)
         return self._admin_event_timers_render(
-            web_context,
-            self._timer_hours_modal_context(_('Timer [{timer}] has been created.')),
+            web_context, self._timer_hours_modal_context(message)
         )
 
     @patch(
