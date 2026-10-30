@@ -10,6 +10,7 @@ from common.i18n import _
 from data.screens.screen import Screen
 from data.screens.screen_set import format_range
 
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
@@ -194,6 +195,11 @@ class Family:
     @property
     def timer(self) -> Optional['Timer']:
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
+
+    def set_timer(self, timer_id: int | None) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_stored_family_timer_id(self.id, timer_id)
+        self.stored_family.timer_id = timer_id
 
     @property
     def input_exit_button(self) -> bool:

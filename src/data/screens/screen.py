@@ -14,6 +14,7 @@ from data.screens.timer import Timer
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
@@ -310,6 +311,12 @@ class Screen:
             timer_id = self.family.timer_id
 
         return self.event.timers_by_id[timer_id] if timer_id else None
+
+    def set_timer(self, timer_id: int | None) -> None:
+        assert self.stored_screen is not None
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_stored_screen_timer_id(self.id, timer_id)
+        self.stored_screen.timer_id = timer_id
 
     @cached_property
     def screen_sets_by_uniq_id(self) -> dict[str, ScreenSet]:

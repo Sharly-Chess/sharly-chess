@@ -16,6 +16,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
         summary=(
             ComponentPlacement('hours_count'),
             ComponentPlacement('next_hour'),
+            ComponentPlacement('usage'),
         ),
         body=(ComponentPlacement('thresholds'),),
         details=(ComponentPlacement('details'),),
@@ -29,6 +30,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
                 width='minmax(min-content, 1.2fr)',
             ),
             ListColumn('hours_count', label=_('Number of times')),
+            ListColumn('usage', label=_('Displayed on')),
             ListColumn(
                 'thresholds',
                 label=_('Colour thresholds'),

@@ -69,6 +69,7 @@
 ## Screens
 
 - The screens of the Screens tab, of the menus and of the display controllers are sorted by their displayed name (5.2.0)
+- A timer can be put on several screens, multi-screens and rotators at once from the timers tab, which lists the screens displaying each timer; a screen showing another timer is moved to the chosen one (5.2.0)
 
 ## Sharly-Chess.com
 
