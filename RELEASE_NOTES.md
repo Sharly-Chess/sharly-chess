@@ -65,6 +65,10 @@
 - Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the FFE forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
 - A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
 
+## Screens
+
+- The screens of the Screens tab, of the menus and of the display controllers are sorted by their displayed name (5.2.0)
+
 ## Sharly-Chess.com
 
 - Several computers can synchronise the same event with Sharly-Chess.com: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)
