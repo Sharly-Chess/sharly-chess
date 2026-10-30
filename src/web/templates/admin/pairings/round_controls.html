@@ -1,5 +1,5 @@
 <div id="round-controls" class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end">
-    <div class="d-inline-flex gap-1">
+    <div class="d-inline-flex gap-1 round-controls-group">
         <span {{ macros.tooltip_attributes('info', _('First round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
@@ -150,7 +150,7 @@
         </span>
     </div>
 
-    <div class="d-inline-flex gap-1 {{ 'd-none' if tournament_options|length <= 1 else '' }}">
+    <div class="d-inline-flex gap-1 round-controls-group {{ 'd-none' if tournament_options|length <= 1 else '' }}">
         <span {{ macros.tooltip_attributes('info', _('Previous tournament') ~ ' <span class="text-nowrap"><i class="bi bi-shift pe-1"></i>+<i class="bi bi-arrow-up-square ps-1"></i></span>', 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"

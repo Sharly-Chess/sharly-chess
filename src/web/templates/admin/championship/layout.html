@@ -38,6 +38,9 @@
         >
             <i class="{{ nav_tab.icon_class }}"></i>
             <span class="expanded-only">{{ nav_tab.title|safe }}</span>
+            {% if nav_tab.count is defined %}
+                <span class="nav-count expanded-only">{{ nav_tab.count }}</span>
+            {% endif %}
             {% if nav_id == 'sources' and championship.broken_sources %}
                 <span class="badge rounded-pill text-bg-warning ms-auto expanded-only">{{ championship.broken_sources|length }}</span>
             {% endif %}

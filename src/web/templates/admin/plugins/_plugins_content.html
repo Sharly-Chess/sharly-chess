@@ -88,6 +88,13 @@
     .plugin-doc h3, .plugin-doc h4 { font-size: 1.05rem; margin-top: 1rem; }
     .plugin-doc table { width: auto; }
     .plugin-doc table th, .plugin-doc table td { padding: .15rem .6rem .15rem 0; }
+    /* On a narrow screen the button of the sidebar drawer is pinned over the
+       top left corner of the page, where the search would otherwise start. */
+    @media (max-width: 991.98px) {
+        #main-wrapper:not(.app-window):has(> .admin-sidebar) .plugin-section {
+            padding-top: 4rem !important;
+        }
+    }
 </style>
 {% if embedded %}
     <style>

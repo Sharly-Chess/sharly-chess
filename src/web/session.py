@@ -376,20 +376,13 @@ class SessionPairingsBoardSort(SessionVariable[str]):
         return 'board'
 
 
-class SessionScreensScreenTypes(SessionVariable[set[str]]):
+class SessionScreensTypeFilter(StrSessionVariable):
+    """The id of the screen type the single screens are filtered on. Empty
+    shows every type."""
+
     @property
     def key(self) -> str:
-        return 'screens_screen_types'
-
-    @property
-    def default_value(self) -> set[str]:
-        return set()
-
-    def get(self) -> set[str]:
-        return set(super().get())
-
-    def set(self, value: set[str]) -> None:
-        self.request.session[self.key] = list(value)
+        return 'screens_type_filter'
 
 
 class SessionEventsTags(SessionVariable[set[int]]):

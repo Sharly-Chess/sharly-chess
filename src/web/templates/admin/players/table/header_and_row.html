@@ -11,9 +11,7 @@
     {% include '/common/messages.html' %}
 </div>
 <template>
-    <button id="nav-admin-event-players-tab-tab-title" hx-swap-oob="innerHTML">
-        {{ nav_tab_title }}
-    </button>
+    <span id="nav-admin-event-players-tab-tab-count" hx-swap-oob="innerHTML">{{ nav_tab_count }}</span>
 </template>
 {% if updated_player or after_check_in %}
     {% with swap_oob=True, player=admin_player, index=index or '' %}

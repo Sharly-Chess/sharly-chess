@@ -53,7 +53,7 @@
         {% include '/admin/common/collection.html' %}
     {% endwith %}
     {% if not admin_display_controllers and client.can_manage_screens %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <p>{{ _('Display controllers allow you to control screens at your event from your server (or any allowed device).') }}</p>
             <p>{{ _('Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator.') }}</p>
             <p>

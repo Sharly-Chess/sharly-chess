@@ -88,6 +88,7 @@ from utils.enum import EventOrigin, EventType, Extension, FormAction
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
+    nav_count,
 )
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard
@@ -181,7 +182,7 @@ class IndexAdminController(BaseAdminController):
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
-                'icon_class': 'bi-house-fill',
+                'icon_class': 'bi-house',
                 'disabled': False,
                 'events': sorted(lan_events, key=by('name')),
                 'experimental_features_warning': True,
@@ -190,9 +191,8 @@ class IndexAdminController(BaseAdminController):
         if web_context.client.can_view_passed_events:
             event_submenu: dict[str, dict[str, Any]] = {
                 'current_events': {
-                    'title': _('Current ({num})').format(
-                        num=len(current_events) or '-'
-                    ),
+                    'title': _('Current'),
+                    'count': nav_count(len(current_events)),
                     'template': 'index/events_tab.html',
                     'events': current_events,
                     'tag_counts': current_tag_counts,
@@ -204,9 +204,8 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Current events'),
                 },
                 'coming_events': {
-                    'title': _('Upcoming ({num})').format(
-                        num=len(coming_events) or '-'
-                    ),
+                    'title': _('Upcoming'),
+                    'count': nav_count(len(coming_events)),
                     'template': 'index/events_tab.html',
                     'events': coming_events,
                     'tag_counts': coming_tag_counts,
@@ -218,7 +217,8 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Upcoming events'),
                 },
                 'passed_events': {
-                    'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
+                    'title': _('Passed'),
+                    'count': nav_count(len(passed_events)),
                     'template': 'index/events_tab.html',
                     'events': passed_events,
                     'tag_counts': passed_tag_counts,
@@ -230,9 +230,8 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Passed events'),
                 },
                 'archives': {
-                    'title': _('Archived ({num})').format(
-                        num=len(sorted_archives) or '-'
-                    ),
+                    'title': _('Archived'),
+                    'count': nav_count(len(sorted_archives)),
                     'template': 'index/archives_tab.html',
                     'archives': sorted_archives,
                     'disabled': not sorted_archives,
@@ -251,7 +250,7 @@ class IndexAdminController(BaseAdminController):
             nav_tabs |= {
                 'events-group': {
                     'title': _('Events'),
-                    'icon_class': 'bi-calendar-event-fill',
+                    'icon_class': 'bi-calendar-event',
                     'disabled': not create_event_modal_url
                     and all(tab['disabled'] for tab in event_submenu.values()),
                     'divider': True,
@@ -263,12 +262,13 @@ class IndexAdminController(BaseAdminController):
         else:
             nav_tabs |= {
                 'home': {
-                    'title': _('Events ({num})').format(num=len(lan_events) or '-'),
+                    'title': _('Events'),
+                    'count': nav_count(len(lan_events)),
                     'template': 'index/home_tab.html',
                     'events': lan_events,
                     'disabled': False,
                     'empty_str': _('No events.'),
-                    'icon_class': 'bi-house-fill',
+                    'icon_class': 'bi-house',
                     'page_title': _('Events'),
                     'divider': True,
                 },
@@ -324,9 +324,8 @@ class IndexAdminController(BaseAdminController):
             )
             championship_submenu: dict[str, dict[str, Any]] = {
                 'championships': {
-                    'title': _('Current ({num})').format(
-                        num=len(current_championships) or '-'
-                    ),
+                    'title': _('Current'),
+                    'count': nav_count(len(current_championships)),
                     'template': 'index/championships_tab.html',
                     'championships': current_championships,
                     'disabled': not current_championships,
@@ -335,9 +334,8 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Current championships'),
                 },
                 'coming_championships': {
-                    'title': _('Upcoming ({num})').format(
-                        num=len(coming_championships) or '-'
-                    ),
+                    'title': _('Upcoming'),
+                    'count': nav_count(len(coming_championships)),
                     'template': 'index/championships_tab.html',
                     'championships': coming_championships,
                     'disabled': not coming_championships,
@@ -346,9 +344,8 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Upcoming championships'),
                 },
                 'passed_championships': {
-                    'title': _('Passed ({num})').format(
-                        num=len(passed_championships) or '-'
-                    ),
+                    'title': _('Passed'),
+                    'count': nav_count(len(passed_championships)),
                     'template': 'index/championships_tab.html',
                     'championships': passed_championships,
                     'disabled': not passed_championships,
@@ -357,9 +354,8 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Passed championships'),
                 },
                 'championship_archives': {
-                    'title': _('Archived ({num})').format(
-                        num=len(championship_archives) or '-'
-                    ),
+                    'title': _('Archived'),
+                    'count': nav_count(len(championship_archives)),
                     'template': 'index/championship_archives_tab.html',
                     'championship_archives': championship_archives,
                     'disabled': not championship_archives,
@@ -371,7 +367,7 @@ class IndexAdminController(BaseAdminController):
             nav_tabs |= {
                 'championships-group': {
                     'title': _('Championships'),
-                    'icon_class': 'bi-trophy-fill',
+                    'icon_class': 'bi-trophy',
                     'disabled': False,
                     'divider': True,
                     'create_modal_url': web_context.request.app.route_reverse(

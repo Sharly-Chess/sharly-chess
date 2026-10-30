@@ -4,7 +4,7 @@
 
 {% macro identity(source, view, placement) %}
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
-        <i class="bi-diagram-3-fill text-primary flex-shrink-0"></i>
+        <i class="bi-diagram-3 text-primary flex-shrink-0"></i>
         <span class="fw-bold {% if view == 'list' %}text-truncate{% else %}collection-card-title{% endif %}">
             {{ source.tournament_name }}
         </span>
@@ -15,7 +15,7 @@
     <span class="d-inline-flex align-items-center gap-1 min-width-0">
         {% if view == 'card' %}
             <span class="text-nowrap">
-                <i class="bi-calendar-event-fill text-secondary pe-1"></i>{{ source.event_name }}
+                <i class="bi-calendar-event text-secondary pe-1"></i>{{ source.event_name }}
             </span>
         {% else %}
             <span class="text-truncate" title="{{ source.event_name }}">{{ source.event_name }}</span>
@@ -112,7 +112,7 @@
                 data-bs-target="#modal-wrapper"
                 aria-label="{{ _('Set the coefficient') }}"
                 {{ macros.tooltip_attributes('info', _('Set the coefficient applied to this tournament’s scores.'), 'top') }}
-            ><i class="bi-pencil-fill"></i></button>
+            ><i class="bi-pencil"></i></button>
         {% endif %}
         <button
             class="btn btn-sm btn-outline-danger"
@@ -127,6 +127,6 @@
             data-bs-target="#modal-wrapper"
             aria-label="{{ _('Remove') }}"
             {{ macros.tooltip_attributes('warning', _('Remove this tournament.'), 'top') }}
-        ><i class="bi-trash-fill"></i></button>
+        ><i class="bi-trash"></i></button>
     </div>
 {% endmacro %}

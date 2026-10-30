@@ -1241,8 +1241,7 @@ msgstr ""
 msgid "Archive the event."
 msgstr ""
 
-#, python-brace-format
-msgid "Archived ({num})"
+msgid "Archived"
 msgstr ""
 
 msgid "Archived championship"
@@ -2708,8 +2707,7 @@ msgstr ""
 msgid "Curacao"
 msgstr ""
 
-#, python-brace-format
-msgid "Current ({num})"
+msgid "Current"
 msgstr ""
 
 msgid "Current championships"
@@ -3153,14 +3151,9 @@ msgstr ""
 msgid "Display controllers"
 msgstr ""
 
-#, python-brace-format
-msgid "Display controllers ({num})"
-msgstr ""
-
-#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Display controllers ({num})"
-msgstr "D<u>i</u>splay controllers ({num})"
+msgid "Display controllers"
+msgstr "D<u>i</u>splay controllers"
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
@@ -3883,10 +3876,6 @@ msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}].
 msgstr ""
 
 msgid "Events"
-msgstr ""
-
-#, python-brace-format
-msgid "Events ({num})"
 msgstr ""
 
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
@@ -5759,10 +5748,6 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-#, python-brace-format
-msgid "Menus ({num})"
-msgstr ""
-
 msgid "Menus group screens together so users can navigate between them."
 msgstr ""
 
@@ -5917,10 +5902,9 @@ msgstr ""
 msgid "Multi-Screens"
 msgstr ""
 
-#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Multi-Screens ({num})"
-msgstr "<u>M</u>ulti-Screens ({num})"
+msgid "Multi-Screens"
+msgstr "<u>M</u>ulti-Screens"
 
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
 msgstr ""
@@ -7346,8 +7330,7 @@ msgstr ""
 msgid "Participation Statistics"
 msgstr ""
 
-#, python-brace-format
-msgid "Passed ({num})"
+msgid "Passed"
 msgstr ""
 
 msgid "Passed championships"
@@ -7601,17 +7584,12 @@ msgstr ""
 msgid "Players"
 msgstr ""
 
+msgctxt "with shortcut indication"
+msgid "Players"
+msgstr "<u>P</u>layers"
+
 msgid "Players (none now)"
 msgstr ""
-
-#, python-brace-format
-msgid "Players ({num})"
-msgstr ""
-
-#, python-brace-format
-msgctxt "with shortcut indication"
-msgid "Players ({num})"
-msgstr "<u>P</u>layers ({num})"
 
 msgid "Players can't be overwritten once a tournament has started."
 msgstr ""
@@ -8706,14 +8684,9 @@ msgstr ""
 msgid "Rotators"
 msgstr ""
 
-#, python-brace-format
-msgid "Rotators ({num})"
-msgstr ""
-
-#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Rotators ({num})"
-msgstr "<u>R</u>otators ({num})"
+msgid "Rotators"
+msgstr "<u>R</u>otators"
 
 msgid "Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event."
 msgstr ""
@@ -9518,10 +9491,9 @@ msgstr ""
 msgid "Single Screens"
 msgstr ""
 
-#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Single Screens ({num})"
-msgstr "<u>S</u>ingle Screens ({num})"
+msgid "Single Screens"
+msgstr "<u>S</u>ingle Screens"
 
 msgid "Single elimination"
 msgstr ""
@@ -9627,10 +9599,9 @@ msgstr ""
 msgid "Sources"
 msgstr ""
 
-#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Sources ({num})"
-msgstr "<u>S</u>ources ({num})"
+msgid "Sources"
+msgstr "<u>S</u>ources"
 
 msgid "South Africa"
 msgstr ""
@@ -9678,10 +9649,6 @@ msgid "Stacking"
 msgstr ""
 
 msgid "Staff"
-msgstr ""
-
-#, python-brace-format
-msgid "Staff ({num})"
 msgstr ""
 
 msgid "Staff default configuration"
@@ -10011,10 +9978,6 @@ msgid "Teams"
 msgstr ""
 
 msgid "Teams (none now)"
-msgstr ""
-
-#, python-brace-format
-msgid "Teams ({num})"
 msgstr ""
 
 msgid "Teams can be created without a tournament assignment and assigned later."
@@ -11494,10 +11457,6 @@ msgstr ""
 msgid "Timers"
 msgstr ""
 
-#, python-brace-format
-msgid "Timers ({num})"
-msgstr ""
-
 msgid "Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event."
 msgstr ""
 
@@ -11710,10 +11669,9 @@ msgstr ""
 msgid "Tournaments"
 msgstr ""
 
-#, python-brace-format
 msgctxt "with shortcut indication"
-msgid "Tournaments ({num})"
-msgstr "<u>T</u>ournaments ({num})"
+msgid "Tournaments"
+msgstr "<u>T</u>ournaments"
 
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr ""
@@ -12019,8 +11977,7 @@ msgstr ""
 msgid "Up to the third-to-last round (round {round}), each player starts with {a} virtual points in group A, {b} in group B and none in group C, and gets {draw} more virtual points for every {step} points scored in the previous rounds, up to {max} virtual points."
 msgstr ""
 
-#, python-brace-format
-msgid "Upcoming ({num})"
+msgid "Upcoming"
 msgstr ""
 
 msgid "Upcoming championships"

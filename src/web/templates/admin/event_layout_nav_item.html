@@ -84,6 +84,9 @@
                                 {% else %}
                                     {{ sub_nav_tab.title|safe }}
                                 {% endif %}
+                                {% if sub_nav_tab.count is defined %}
+                                    <span class="nav-count">{{ sub_nav_tab.count }}</span>
+                                {% endif %}
 
                                 {% if sub_nav_tab.has_error %}
                                     <span
@@ -172,6 +175,9 @@
                         {% else %}
                             {{ sub_nav.title|safe }}
                         {% endif %}
+                        {% if sub_nav.count is defined %}
+                            <span class="nav-count">{{ sub_nav.count }}</span>
+                        {% endif %}
                         {% if sub_nav.has_error %}
                             <span
                                 class="nav-icon-badge rounded-circle bg-danger ms-1"
@@ -230,6 +236,9 @@
                         <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
                     <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title|safe }}</span>
+                    {% if nav_tab.count is defined %}
+                        <span id="nav-{{ nav_id }}-tab-count" class="nav-count expanded-only">{{ nav_tab.count }}</span>
+                    {% endif %}
                 </button>
             </span>
         {% endwith %}

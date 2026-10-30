@@ -20,28 +20,28 @@
             and (not tournament_player or not tournament_player.has_real_pairings)
         ) %}
         {% if can_update or can_update_history or can_delete %}
+            <span class="players-table-row-actions">
+            {% if can_update %}
+                <span {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'right') }}>
+                    <button
+                        type="button"
+                        class="btn players-table-row-action"
+                        aria-label="{{ _('Edit') }}"
+                        hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-pencil"></i>
+                    </button>
+                </span>
+            {% endif %}
             <span class="dropdown">
-                <button class="btn btn-secondary compact-y-padding dropdown-toggle mx-0 px-1" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
+                <button class="btn players-table-row-action" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="{{ _('Actions') }}">
                     <i class="bi-three-dots"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-start table-dropdown-menu p-0" >
-                    {% if can_update %}
-                        <li {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'right') }}>
-                            <div
-                                class="dropdown-item btn text-start"
-                                hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                hx-trigger="click, keyup[key=='Enter']"
-                                tabindex="0"
-                            >
-                                <i class="bi-pencil-fill pe-1"></i>
-                                {{ _('Edit') }}
-                            </div>
-                        </li>
-                    {% endif %}
                     {% if can_update_history %}
                         <li {{ macros.tooltip_attributes('info', _('Edit the player\'s tournament record.'), 'right') }}>
                             <div
@@ -100,6 +100,7 @@
                         </li>
                     {% endif %}
                 </ul>
+            </span>
             </span>
         {% endif %}
     </td>

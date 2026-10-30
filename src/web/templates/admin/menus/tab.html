@@ -40,7 +40,7 @@
         {% include '/admin/common/collection.html' %}
     {% endwith %}
     {% if not admin_menus and client.can_manage_screens %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <p>{{ _('Menus group screens together so users can navigate between them.') }}</p>
             <p>{{ _('Add screens, multi-screens or whole screen types to a menu, then reorder them as you like.') }}</p>
             <p>{{ _('Create a menu now to get started.') }}</p>

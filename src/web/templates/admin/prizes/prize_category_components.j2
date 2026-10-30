@@ -73,7 +73,7 @@
                 data-bs-target="#modal-wrapper"
             {% endif %}
         >
-            <i class="bi-trophy-fill{% if show_label %} pe-1{% endif %}"></i>
+            <i class="bi-trophy{% if show_label %} pe-1{% endif %}"></i>
             {% if show_label %}{{ _('Prizes') }}{% endif %}
         </button>
     </span>
@@ -135,7 +135,7 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            <i class="bi-people-fill"></i>
+            <i class="bi-people"></i>
         </button>
     </span>
 {% endmacro %}
@@ -145,7 +145,7 @@
         class="text-nowrap"
         {{ macros.tooltip_attributes('info', _('Number of players'), 'top') }}
     >
-        <i class="bi-people-fill pe-1"></i>
+        <i class="bi-people pe-1"></i>
         {{ prize_category.tournament_players|length }}
     </span>
 {% endmacro %}
@@ -170,7 +170,7 @@
             'collection-inline-edit-label-group',
         ) %}
             <span class="text-nowrap">
-                <i class="bi-trophy-fill collection-prize-count-icon me-1"></i>{{ prize_category.prizes|length }}
+                <i class="bi-trophy collection-prize-count-icon me-1"></i>{{ prize_category.prizes|length }}
             </span>
         {% endcall %}
     {% else %}
@@ -178,7 +178,7 @@
             class="text-nowrap"
             {{ macros.tooltip_attributes('info', _('Number of prizes'), 'top') }}
         >
-            <i class="bi-trophy-fill pe-1"></i>
+            <i class="bi-trophy pe-1"></i>
             {{ prize_category.prizes|length }}
         </span>
     {% endif %}
@@ -329,7 +329,7 @@
                         data-bs-target="#modal-wrapper"
                     {% endif %}
                 >
-                    <i class="bi-pencil-fill"></i>
+                    <i class="bi-pencil"></i>
                 </button>
             </span>
                         <div class="btn-group">
@@ -417,7 +417,7 @@
                         data-bs-target="#modal-wrapper"
                     {% endif %}
                 >
-                    <i class="bi-trash-fill"></i>
+                    <i class="bi-trash"></i>
                 </button>
             </span>
         </div>

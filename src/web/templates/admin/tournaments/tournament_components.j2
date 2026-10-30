@@ -47,7 +47,26 @@
             {{ admin_macros.not_in_fide_mode_badge([item] if item.left_fide_mode else []) }}
         </span>
     {% else %}
-        <span class="fw-bold text-truncate d-block">{{ item.name }}</span>
+        {% if not item.started %}
+            {% set status_class = 'text-warning' %}
+            {% set status_text = _('The tournament has not yet started.') %}
+        {% elif item.playing %}
+            {% set status_class = 'text-primary' %}
+            {% set status_text = _('Round #%(round)d is running.', round=item.current_round) %}
+        {% elif not item.finished %}
+            {% set status_class = 'text-secondary' %}
+            {% set status_text = _('Round #%(round)d is finished.', round=item.current_round) %}
+        {% else %}
+            {% set status_class = 'text-success' %}
+            {% set status_text = _('The tournament is finished.') %}
+        {% endif %}
+        <span class="collection-card-title d-block">{{ item.name }}</span>
+        <span class="collection-card-status-line">
+            <span class="collection-card-status {{ status_class }}">
+                <span class="collection-card-status-dot" aria-hidden="true"></span>{{ status_text }}
+            </span>
+            {{ round_progress(item, view, none) }}
+        </span>
     {% endif %}
 {% endmacro %}
 
@@ -72,6 +91,30 @@
 {% endmacro %}
 
 {% macro participants(item, view, placement) %}
+    {% if view == 'card' %}
+        <div
+            class="collection-stat"
+            {{ macros.tooltip_attributes(
+                'info',
+                ngettext(
+                    '%(num)d player',
+                    '%(num)d players',
+                    item.tournament_players_by_id|length,
+                ),
+                'top',
+            ) }}
+        >
+            <span class="collection-stat-label">{{ _('Players') }}</span>
+            <span class="collection-stat-value">
+                {{ item.tournament_players_by_id|length }}
+                {% if item.is_team_tournament %}
+                    <span class="collection-stat-secondary">/ {{ item.teams|length }}
+                        <i class="bi-flag" aria-hidden="true"></i>
+                    </span>
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
     <span
         class="d-inline-flex align-items-center gap-1 text-nowrap"
         {{ macros.tooltip_attributes(
@@ -84,14 +127,15 @@
             'top',
         ) }}
     >
-        <i class="bi-people-fill text-secondary"></i>
+        <i class="bi-people text-secondary"></i>
         <span class="num">{{ item.tournament_players_by_id|length }}</span>
         {% if item.is_team_tournament %}
             <span class="text-secondary">/</span>
-            <i class="bi-flag-fill text-secondary"></i>
+            <i class="bi-flag text-secondary"></i>
             <span class="num">{{ item.teams|length }}</span>
         {% endif %}
     </span>
+    {% endif %}
 {% endmacro %}
 
 {% macro round_progress(item, view, placement) %}
@@ -119,6 +163,30 @@
 {% endmacro %}
 
 {% macro rating(item, view, placement) %}
+    {% if view == 'card' %}
+        <div
+            class="collection-stat"
+            {{ macros.tooltip_attributes(
+                'info',
+                _('%(rating)s (%(rating_type)s)', rating=item.cadence, rating_type=item.rating_preference),
+                'top',
+            ) }}
+        >
+            <span class="collection-stat-label">{{ _('Rating') }}</span>
+            <span class="collection-stat-value">
+                {% if item.tournament_players %}
+                    {{ item.min_player_rating }}<span class="collection-stat-secondary px-1">–</span>{{ item.max_player_rating }}
+                {% else %}
+                    {{ item.cadence }}
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
+        {{ rating_content(item) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro rating_content(item) %}
     <span
         class="text-nowrap"
         {{ macros.tooltip_attributes(
@@ -163,7 +231,7 @@
     {% if tournament.time_control_trf25 %}
         <div class="collection-fact">
             <span class="collection-fact-label">
-                <i class="bi-clock-fill"></i>{{ _('Time control') }}
+                <i class="bi-clock"></i>{{ _('Time control') }}
             </span>
             <span>
                 {% include tournament_card_time_control_template %}
@@ -194,7 +262,7 @@
     {% else %}
         <div class="collection-fact">
             <span class="collection-fact-label">
-                <i class="bi-diagram-3-fill"></i>{{ _('Pairing system') }}
+                <i class="bi-diagram-3"></i>{{ _('Pairing system') }}
             </span>
             <span>
                 <span>{{ pairing_name }}</span>
@@ -244,7 +312,7 @@
             aria-label="{{ configure_label }}"
             {% if not client.can_update_tournaments %}disabled{% endif %}
         >
-            <i class="bi-gear-fill"></i>
+            <i class="bi-gear"></i>
         </button>
     </span>
 {% endmacro %}
@@ -373,7 +441,7 @@
         {% set tournament = item %}
         <div class="collection-fact">
             <span class="collection-fact-label">
-                <i class="bi-funnel-fill"></i>{{ _('Criteria') }}
+                <i class="bi-funnel"></i>{{ _('Criteria') }}
             </span>
             <span>{{ criteria_content(tournament) }}</span>
         </div>
@@ -436,7 +504,7 @@
         <section class="collection-detail-section">
             <h6>{{ _('Schedule') }}</h6>
             <div>
-                <i class="bi-calendar2-week-fill pe-1"></i>
+                <i class="bi-calendar2-week pe-1"></i>
                 {{ tournament.date_range_str }}
                 {% if tournament.has_schedule %}
                     <i
@@ -599,7 +667,7 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-wrapper"
                             >
-                                <i class="bi-file-earmark-text-fill pe-1"></i>{{ _('Documents') }}
+                                <i class="bi-file-earmark-text pe-1"></i>{{ _('Documents') }}
                             </button>
                         </span>
                     </li>
@@ -734,7 +802,7 @@
                                 hx-indicator="#please-wait"
                             {% endif %}
                         >
-                            <i class="bi-trash-fill pe-1"></i>{{ _('Delete unpaired players') }}
+                            <i class="bi-trash pe-1"></i>{{ _('Delete unpaired players') }}
                         </button>
                     </li>
                     <li>
@@ -755,7 +823,7 @@
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             >
-                                <i class="bi-dice-3-fill pe-1"></i>{{ _('Choose a random player') }}
+                                <i class="bi-dice-3 pe-1"></i>{{ _('Choose a random player') }}
                             </button>
                         </span>
                     </li>
@@ -766,7 +834,7 @@
                 </ul>
             </div>
             <a
-                class="btn btn-sm btn-outline-primary"
+                class="btn btn-sm btn-outline-primary {% if view == 'card' %}collection-card-main-action{% endif %}"
                 href="{{ url_for(
                     'admin-event-pairings-tab',
                     event_uniq_id=admin_event.uniq_id,
@@ -775,6 +843,7 @@
                 {{ macros.tooltip_attributes('info', _('Go to the pairings.'), 'top') }}
             >
                 <i class="bi-arrow-left-right"></i>
+                {% if view == 'card' %}<span class="ps-1">{{ _('Pairings') }}</span>{% endif %}
             </a>
         </div>
         <div class="d-flex align-items-center gap-1">
@@ -799,7 +868,7 @@
                     data-bs-target="#modal-wrapper"
                     {% if not client.can_update_tournaments %}disabled{% endif %}
                 >
-                    <i class="bi-pencil-fill"></i>
+                    <i class="bi-pencil"></i>
                 </button>
             {% endcall %}
             {% call macros.action_tooltip(
@@ -846,7 +915,7 @@
                     data-bs-target="#modal-wrapper"
                     {% if not client.can_delete_tournaments %}disabled{% endif %}
                 >
-                    <i class="bi-trash-fill"></i>
+                    <i class="bi-trash"></i>
                 </button>
             {% endcall %}
         </div>

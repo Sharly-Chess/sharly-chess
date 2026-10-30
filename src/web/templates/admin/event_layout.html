@@ -18,7 +18,7 @@
             hx-push-url="true"
             hx-indicator="#please-wait"
         >
-            <i class="back-icon bi-arrow-left-circle-fill"></i>
+            <i class="back-icon bi-arrow-left"></i>
             <span class="expanded-only">
                 {{ _('All Events') }}
             </span>
@@ -92,7 +92,7 @@
         {% endif %}
     {% endfor %}
     {% if not admin_event_tab %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             {% if client.can_view_public_screens %}
                 <h5 class="my-5 text-center">
                     {{ _('No public screens') }}
