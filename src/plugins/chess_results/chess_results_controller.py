@@ -37,8 +37,9 @@ class CRWebContext(AdminWebContext):
         self,
         request: HTMXRequest,
         tournament_id: int | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(request)
+        super().__init__(request, reload_event=reload_event)
         event = self.get_admin_event()
         self.tournament: Tournament | None = None
         if tournament_id:
@@ -133,6 +134,16 @@ class ChessResultsController(BaseEventAdminController):
 
         return self._render_upload_results(web_context)
 
+    @staticmethod
+    def _set_tournament_auto_upload(tournament: Tournament, auto_upload: bool) -> None:
+        plugin_data = CRUtils.get_tournament_plugin_data(tournament)
+        plugin_data.auto_upload = auto_upload
+        CRUtils.update_tournament_plugin_data(tournament, plugin_data)
+        if not auto_upload:
+            CRBackgroundUploader.remove_scheduled_upload(tournament)
+        elif CRBackgroundUploader.chess_results_upload_needed(tournament):
+            CRBackgroundUploader.schedule_upload(tournament)
+
     @patch(
         path='/chess_results/update-event-auto-upload/{event_uniq_id:str}',
         name='chess-results-update-event-auto-upload',
@@ -146,19 +157,10 @@ class ChessResultsController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = CRWebContext(request)
-        event = web_context.get_admin_event()
-        plugin_data = CRUtils.get_event_plugin_data(event)
-        plugin_data.auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
-        CRUtils.update_event_plugin_data(event, plugin_data)
-        for tournament in event.tournaments:
-            if not CRUtils.get_tournament_plugin_data(tournament).auto_upload:
-                continue
-            if plugin_data.auto_upload:
-                if CRBackgroundUploader.chess_results_upload_needed(tournament):
-                    CRBackgroundUploader.schedule_upload(tournament)
-            else:
-                CRBackgroundUploader.remove_scheduled_upload(tournament)
-        return self._render_upload_results(web_context)
+        auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
+        for tournament in web_context.allowed_tournaments:
+            self._set_tournament_auto_upload(tournament, auto_upload)
+        return self._render_upload_results(CRWebContext(request, reload_event=True))
 
     @patch(
         path='/chess_results/update-tournament-auto-upload/{event_uniq_id:str}/{tournament_id:int}',
@@ -172,26 +174,16 @@ class ChessResultsController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> HTMXTemplate:
+    ) -> Template:
         web_context = CRWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
-
-        plugin_data = CRUtils.get_tournament_plugin_data(tournament)
-        plugin_data.auto_upload = WebContext.form_data_to_bool(
-            data, f'tournament_auto_upload_{tournament.id}'
+        self._set_tournament_auto_upload(
+            tournament,
+            WebContext.form_data_to_bool(
+                data, f'tournament_auto_upload_{tournament.id}'
+            ),
         )
-        CRUtils.update_tournament_plugin_data(tournament, plugin_data)
-        if plugin_data.auto_upload:
-            if CRBackgroundUploader.chess_results_upload_needed(tournament):
-                CRBackgroundUploader.schedule_upload(tournament)
-        else:
-            CRBackgroundUploader.remove_scheduled_upload(tournament)
-        return HTMXTemplate(
-            template_name='/chess_results_tournament_statuses.html',
-            context=web_context.template_context,
-            re_target=f'#tournament-upload-statuses-{tournament.id}',
-            re_swap='innerHTML',
-        )
+        return self._render_upload_results(CRWebContext(request, reload_event=True))
 
     @post(
         path='/chess-results/upload-tournament-from-card/{event_uniq_id:str}/{tournament_id:int}',

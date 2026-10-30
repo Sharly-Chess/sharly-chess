@@ -1,3 +1,4 @@
+from types import ModuleType
 from typing import TYPE_CHECKING, Any
 from collections.abc import Callable, Iterable
 
@@ -13,7 +14,8 @@ from data.loader import EventLoader
 from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.hookspec import hookimpl, hookspec
-from plugins.sce import PLUGIN_NAME
+from plugins.migration import PluginMigrationManager
+from plugins.sce import migrations, PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
 from plugins.sce.sce_background_uploader import (
     should_schedule_auto_upload,
@@ -118,6 +120,16 @@ class SCEPlugin(Plugin):
     @property
     def version(self) -> Version:
         return Version('1.0.0')
+
+    @property
+    def base_migration_module(self) -> ModuleType:
+        return migrations
+
+    @hookimpl
+    def get_event_migration_manager(
+        self, event_database: EventDatabase
+    ) -> PluginMigrationManager:
+        return self.get_migration_manager(event_database)
 
     @property
     def description(self) -> str:

@@ -63,7 +63,7 @@ def _install_event_plugin_data(
 
 def _install_tournament_plugin_data(uniq_id: str, tournament_name: str) -> int:
     """Stamp SCETournamentPluginData onto the tournament and return its id."""
-    tpd = SCETournamentPluginData(id=SCE_TOURNAMENT_ID)
+    tpd = SCETournamentPluginData(id=SCE_TOURNAMENT_ID, auto_upload=False)
     with EventDatabase(uniq_id, write=True) as db:
         stored_tournaments = db.load_stored_tournaments()
         stored_t = next(t for t in stored_tournaments if t.name == tournament_name)
@@ -340,7 +340,7 @@ class TestSyncEventLocalMove(TestCase):
             for stored_t in stored_ts:
                 sce_tid = 'SCE-T1' if stored_t.name == 'T1' else 'SCE-T2'
                 stored_t.plugin_data[PLUGIN_NAME] = SCETournamentPluginData(
-                    id=sce_tid
+                    id=sce_tid, auto_upload=False
                 ).to_stored_value()
                 db.execute(
                     'UPDATE `tournament` SET `plugin_data` = ? WHERE `id` = ?',

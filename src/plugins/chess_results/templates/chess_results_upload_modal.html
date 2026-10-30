@@ -1,8 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-{% set event_plugin_data = admin_event.plugin_data.chess_results %}
-
 <div
     class="modal-dialog modal-dialog-scrollable"
     style="--bs-modal-width: min(90vw, 800px);"
@@ -14,47 +12,7 @@
             </h2>
         </div>
         <div class="modal-body">
-            <table
-                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
-            >
-                <thead>
-                    <th>
-                        <div
-                            class="form-check blue-checkbox form-switch d-inline-block"
-                            {{ macros.tooltip_attributes('', _(
-                                'Upload automatically every %(delay)d minutes.',
-                                delay=CHESS_RESULTS_UPLOAD_DELAY,
-                            )) }}
-                        >
-                            <input
-                                name="auto_upload"
-                                class="form-check-input blue-checkbox"
-                                type="checkbox"
-                                hx-patch="{{ url_for(
-                                    'chess-results-update-event-auto-upload',
-                                    event_uniq_id=admin_event.uniq_id
-                                ) }}"
-                                value="on"
-                                {% if event_plugin_data.auto_upload %}
-                                    checked
-                                {% endif %}
-                            />
-                            <i class="bi-arrow-repeat"></i>
-                        </div>
-                    </th>
-                    <th>
-                        {{ _('Tournament') }}
-                    </th>
-                    <th class="text-center">
-                        {{ _('Statuses') }}
-                    </th>
-                    <th class="text-center text-nowrap">
-                        {{ _('Last upload') }}
-                    </th>
-                    <th></th>
-                </thead>
-                {% include 'chess_results_upload_results.html' %}
-            </table>
+            {% include 'chess_results_upload_results.html' %}
 
             <div class="text-center mt-3 mb-1">
                 <button

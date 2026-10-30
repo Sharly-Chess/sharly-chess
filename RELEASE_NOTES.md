@@ -72,3 +72,4 @@
 ## Sharly-Chess.com
 
 - Several computers can synchronise the same event with Sharly-Chess.com: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)
+- The Sharly-Chess.com window says what each part covers: the registrations and the tournament settings, merged both ways when synchronising, and the pairings and results, published from the computer. Automatic publication is set per tournament for Sharly-Chess.com, the FFE and Chess-Results, the header switch turning it on or off for every tournament; new tournaments publish automatically to Sharly-Chess.com and the FFE (5.2.0)

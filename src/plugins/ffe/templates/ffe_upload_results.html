@@ -1,9 +1,10 @@
 {% import '/common/macros.j2' as macros with context %}
 
-{% set event_plugin_data = admin_event.plugin_data.ffe %}
+{% set auto_upload_count = allowed_tournaments | selectattr('plugin_data.ffe.auto_upload') | list | length %}
 
-<tbody
+<table
     id="upload-results"
+    class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
     hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
     {# The swap replaces this table, so a second refresh started while one
@@ -12,202 +13,245 @@
     hx-sync="this:replace"
     hx-swap="outerHTML"
 >
-    {% for tournament in allowed_tournaments %}
-        {% set actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
-        {% set plugin_data = tournament.plugin_data.ffe %}
-        {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
-        <tr>
-            <td class="text-nowrap text-center">
-                <div class="form-check form-switch d-inline-block pe-3">
-                    <input
-                        name="tournament_auto_upload_{{ tournament.id }}"
-                        class="form-check-input blue-checkbox mt-2"
-                        type="checkbox"
-                        hx-patch="{{ url_for(
-                            'ffe-update-tournament-auto-upload',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=tournament.id,
-                        ) }}"
-                        value="on"
-                        {% if not event_plugin_data.auto_upload %}
-                            disabled
-                        {% endif %}
-                        {% if plugin_data.auto_upload %}
-                            checked
-                        {% endif %}
-                    />
-                </div>
-            </td>
-            <td style="width: 0;" class="text-nowrap">
-                {{ tournament.name }}
-            </td>
-            <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
-                {% include '/ffe_tournament_statuses.html' %}
-            </td>
-            <td class="text-center text-nowrap">
-                {{ plugin_data.last_upload_at_str }}
-            </td>
-            <td class="d-flex gap-2 align-items-center">
-                <div class="flex-grow-1"></div>
-                {% set team_transfer = ffe_utils.supports_team_transfer(tournament) %}
-                {% if team_transfer %}
-                    {% set group_url = ffe_utils.team_group_url(tournament) %}
-                    {% if group_url %}
-                        <a
-                            href="{{ group_url }}"
-                            target="_blank"
-                            {{ macros.tooltip_attributes('', _('Page of the group on the FFE website (group account required).')) }}
-                        ><i class="bi bi-box-arrow-up-right"></i></a>
+    <thead>
+        <th>
+            <div
+                class="form-check blue-checkbox form-switch d-inline-flex align-items-center gap-1 mb-0"
+                {{ macros.tooltip_attributes('', _(
+                    'Upload automatically every %(delay)d minutes.',
+                    delay=FFE_UPLOAD_DELAY,
+                )) }}
+            >
+                <input
+                    id="ffe-auto-upload-all"
+                    name="auto_upload"
+                    class="form-check-input blue-checkbox mt-0"
+                    type="checkbox"
+                    hx-patch="{{ url_for(
+                        'ffe-update-event-auto-upload',
+                        event_uniq_id=admin_event.uniq_id
+                    ) }}"
+                    value="on"
+                    {% if not allowed_tournaments %}
+                        disabled
+                    {% elif auto_upload_count == allowed_tournaments | length %}
+                        checked
                     {% endif %}
-                {% elif plugin_data.ffe_id %}
-                    <a
-                        href="{{ ffe_utils.tournament_url(plugin_data.ffe_id) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
-                    ><i class="bi bi-box-arrow-up-right"></i></a>
-                {% endif %}
-                {% if not ffe_utils.is_configured(tournament) %}
-                    <span {{ macros.tooltip_attributes('', _('Edit the properties of the tournament.')) }}>
-                        <button
-                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                            hx-get="{{ url_for(
-                                'admin-tournament-modal',
-                                action='update',
+                />
+                <i class="bi-arrow-repeat"></i>
+            </div>
+            {% if 0 < auto_upload_count < allowed_tournaments | length %}
+                <script>
+                    document.getElementById('ffe-auto-upload-all').indeterminate = true;
+                </script>
+            {% endif %}
+        </th>
+        <th>
+            {{ _('Tournament') }}
+        </th>
+        <th class="text-center">
+            {{ _('Statuses') }}
+        </th>
+        <th class="text-center text-nowrap">
+            {{ _('Last upload') }}
+        </th>
+        <th></th>
+    </thead>
+    <tbody>
+        {% for tournament in allowed_tournaments %}
+            {% set actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
+            {% set plugin_data = tournament.plugin_data.ffe %}
+            {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
+            <tr>
+                <td class="text-nowrap text-center">
+                    <div class="form-check form-switch d-inline-block pe-3">
+                        <input
+                            name="tournament_auto_upload_{{ tournament.id }}"
+                            class="form-check-input blue-checkbox mt-2"
+                            type="checkbox"
+                            hx-patch="{{ url_for(
+                                'ffe-update-tournament-auto-upload',
                                 event_uniq_id=admin_event.uniq_id,
-                                tournament_id=tournament.id
-                            ) }}?redirect_to={{ url_for(
-                                'ffe-upload-modal', event_uniq_id=admin_event.uniq_id
+                                tournament_id=tournament.id,
                             ) }}"
-                        >
-                            <i class="bi-pencil-fill lh-1"></i>
-                        </button>
-                    </span>
-                {% else %}
-                    {% if not team_transfer %}
-                    <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                            hx-post="{{ url_for(
-                                'ffe-modal-make-visible',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=tournament.id
-                            ) }}"
-                            hx-target="#upload-results"
-                            hx-swap="outerHTML"
-                            hx-indicator="#please-wait"
-                            {% if actions_unavailable_message %}
-                                disabled
+                            value="on"
+                            {% if plugin_data.auto_upload %}
+                                checked
                             {% endif %}
-                        >
-                            <i class="bi-eye lh-1"></i>
-                        </button>
-                    </span>
-                    {% endif %}
-                    <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                            hx-post="{{ url_for(
-                                'ffe-modal-upload-tournament',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=tournament.id
-                            ) }}"
-                            hx-target="#upload-results"
-                            hx-swap="outerHTML"
-                            hx-indicator="#please-wait"
-                            {% if actions_unavailable_message %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                        </button>
-                    </span>
-                {% endif %}
-            </td>
-        </tr>
-        {# A tournament reported in periods is submitted once per period,
-           each under its own registration — so each answers for its own
-           upload. #}
-        {% for period in tournament.periods %}
-            {% if period.first_round > 1 %}
-                {% set period_plugin_data = ffe_utils.get_period_own_plugin_data(period) %}
-                <tr class="small">
-                    <td></td>
-                    <td class="text-nowrap ps-4">
-                        <i class="bi-arrow-return-right pe-1"></i>
-                        {{ _('Period %(index)d', index=loop.index) }} · {{ period.rounds_str }}
-                    </td>
-                    <td class="text-center">
-                        {% for period_status in ffe_utils.resolve_period_upload_statuses(period) %}
-                            {% set tooltip_message = period_status.tooltip_message(tournament) %}
-                            <span
-                                class="badge rounded-pill {{ period_status.css_classes }}"
-                                {% if tooltip_message %}
-                                    {{ macros.tooltip_attributes('', tooltip_message) }}
-                                {% endif %}
-                            >{{ period_status.name }}</span>
-                        {% endfor %}
-                    </td>
-                    <td class="text-center text-nowrap">
-                        {{ period_plugin_data.last_upload_at_str }}
-                    </td>
-                    <td class="d-flex gap-2 align-items-center">
-                        <div class="flex-grow-1"></div>
-                        {% if period_plugin_data.ffe_id %}
+                        />
+                    </div>
+                </td>
+                <td style="width: 0;" class="text-nowrap">
+                    {{ tournament.name }}
+                </td>
+                <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
+                    {% include '/ffe_tournament_statuses.html' %}
+                </td>
+                <td class="text-center text-nowrap">
+                    {{ plugin_data.last_upload_at_str }}
+                </td>
+                <td class="d-flex gap-2 align-items-center">
+                    <div class="flex-grow-1"></div>
+                    {% set team_transfer = ffe_utils.supports_team_transfer(tournament) %}
+                    {% if team_transfer %}
+                        {% set group_url = ffe_utils.team_group_url(tournament) %}
+                        {% if group_url %}
                             <a
-                                href="{{ ffe_utils.tournament_url(period_plugin_data.ffe_id) }}"
+                                href="{{ group_url }}"
                                 target="_blank"
-                                {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
+                                {{ macros.tooltip_attributes('', _('Page of the group on the FFE website (group account required).')) }}
                             ><i class="bi bi-box-arrow-up-right"></i></a>
                         {% endif %}
-                        {% if period_plugin_data.ffe_id and period_plugin_data.password %}
-                            <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                    hx-post="{{ url_for(
-                                        'ffe-modal-make-period-visible',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=tournament.id,
-                                        period_id=period.id,
-                                    ) }}"
-                                    hx-target="#upload-results"
-                                    hx-swap="outerHTML"
-                                    hx-indicator="#please-wait"
-                                    hx-disabled-elt="this"
-                                    {% if actions_unavailable_message %}
-                                        disabled
-                                    {% endif %}
-                                >
-                                    <i class="bi-eye lh-1"></i>
-                                </button>
-                            </span>
-                            <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                    hx-post="{{ url_for(
-                                        'ffe-modal-upload-period',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=tournament.id,
-                                        period_id=period.id,
-                                    ) }}"
-                                    hx-target="#upload-results"
-                                    hx-swap="outerHTML"
-                                    hx-indicator="#please-wait"
-                                    hx-disabled-elt="this"
-                                    {% if actions_unavailable_message %}
-                                        disabled
-                                    {% endif %}
-                                >
-                                    <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                                </button>
-                            </span>
+                    {% elif plugin_data.ffe_id %}
+                        <a
+                            href="{{ ffe_utils.tournament_url(plugin_data.ffe_id) }}"
+                            target="_blank"
+                            {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
+                        ><i class="bi bi-box-arrow-up-right"></i></a>
+                    {% endif %}
+                    {% if not ffe_utils.is_configured(tournament) %}
+                        <span {{ macros.tooltip_attributes('', _('Edit the properties of the tournament.')) }}>
+                            <button
+                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                hx-get="{{ url_for(
+                                    'admin-tournament-modal',
+                                    action='update',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id
+                                ) }}?redirect_to={{ url_for(
+                                    'ffe-upload-modal', event_uniq_id=admin_event.uniq_id
+                                ) }}"
+                            >
+                                <i class="bi-pencil-fill lh-1"></i>
+                            </button>
+                        </span>
+                    {% else %}
+                        {% if not team_transfer %}
+                        <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                hx-post="{{ url_for(
+                                    'ffe-modal-make-visible',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id
+                                ) }}"
+                                hx-target="#upload-results"
+                                hx-swap="outerHTML"
+                                hx-indicator="#please-wait"
+                                {% if actions_unavailable_message %}
+                                    disabled
+                                {% endif %}
+                            >
+                                <i class="bi-eye lh-1"></i>
+                            </button>
+                        </span>
                         {% endif %}
-                    </td>
-                </tr>
-            {% endif %}
+                        <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                hx-post="{{ url_for(
+                                    'ffe-modal-upload-tournament',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id
+                                ) }}"
+                                hx-target="#upload-results"
+                                hx-swap="outerHTML"
+                                hx-indicator="#please-wait"
+                                {% if actions_unavailable_message %}
+                                    disabled
+                                {% endif %}
+                            >
+                                <i class="bi-cloud-arrow-up-fill lh-1"></i>
+                            </button>
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {# A tournament reported in periods is submitted once per period,
+               each under its own registration — so each answers for its own
+               upload. #}
+            {% for period in tournament.periods %}
+                {% if period.first_round > 1 %}
+                    {% set period_plugin_data = ffe_utils.get_period_own_plugin_data(period) %}
+                    <tr class="small">
+                        <td></td>
+                        <td class="text-nowrap ps-4">
+                            <i class="bi-arrow-return-right pe-1"></i>
+                            {{ _('Period %(index)d', index=loop.index) }} · {{ period.rounds_str }}
+                        </td>
+                        <td class="text-center">
+                            {% for period_status in ffe_utils.resolve_period_upload_statuses(period) %}
+                                {% set tooltip_message = period_status.tooltip_message(tournament) %}
+                                <span
+                                    class="badge rounded-pill {{ period_status.css_classes }}"
+                                    {% if tooltip_message %}
+                                        {{ macros.tooltip_attributes('', tooltip_message) }}
+                                    {% endif %}
+                                >{{ period_status.name }}</span>
+                            {% endfor %}
+                        </td>
+                        <td class="text-center text-nowrap">
+                            {{ period_plugin_data.last_upload_at_str }}
+                        </td>
+                        <td class="d-flex gap-2 align-items-center">
+                            <div class="flex-grow-1"></div>
+                            {% if period_plugin_data.ffe_id %}
+                                <a
+                                    href="{{ ffe_utils.tournament_url(period_plugin_data.ffe_id) }}"
+                                    target="_blank"
+                                    {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
+                                ><i class="bi bi-box-arrow-up-right"></i></a>
+                            {% endif %}
+                            {% if period_plugin_data.ffe_id and period_plugin_data.password %}
+                                <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                        hx-post="{{ url_for(
+                                            'ffe-modal-make-period-visible',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            period_id=period.id,
+                                        ) }}"
+                                        hx-target="#upload-results"
+                                        hx-swap="outerHTML"
+                                        hx-indicator="#please-wait"
+                                        hx-disabled-elt="this"
+                                        {% if actions_unavailable_message %}
+                                            disabled
+                                        {% endif %}
+                                    >
+                                        <i class="bi-eye lh-1"></i>
+                                    </button>
+                                </span>
+                                <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                        hx-post="{{ url_for(
+                                            'ffe-modal-upload-period',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            period_id=period.id,
+                                        ) }}"
+                                        hx-target="#upload-results"
+                                        hx-swap="outerHTML"
+                                        hx-indicator="#please-wait"
+                                        hx-disabled-elt="this"
+                                        {% if actions_unavailable_message %}
+                                            disabled
+                                        {% endif %}
+                                    >
+                                        <i class="bi-cloud-arrow-up-fill lh-1"></i>
+                                    </button>
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
-</tbody>
+    </tbody>
+</table>

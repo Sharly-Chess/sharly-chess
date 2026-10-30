@@ -307,12 +307,6 @@ class SCEUtils:
                 cls.update_tournament_plugin_data(tournament, tournament_plugin_data)
 
     @classmethod
-    def resolve_tournament_auto_upload(cls, tournament: Tournament) -> bool:
-        if not cls.get_event_plugin_data(tournament.event).auto_upload:
-            return False
-        return cls.get_tournament_plugin_data(tournament).auto_upload
-
-    @classmethod
     def tournament_modified_since_last_upload(
         cls, tournament: Tournament | StoredTournament
     ) -> bool:

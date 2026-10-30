@@ -51,9 +51,6 @@ msgstr "Autorisation échouée, consultez les logs pour plus de détails."
 msgid "Authorization failed, possible CSRF attack!"
 msgstr "Autorisation échouée, possible attaque CSRF !"
 
-msgid "Auto-synchronisation"
-msgstr "Synchronisation automatique"
-
 msgid "Auto-upload disabled"
 msgstr "Mise en ligne automatique désactivée"
 
@@ -62,6 +59,9 @@ msgstr "Mise en ligne automatique activée"
 
 msgid "Back"
 msgstr "Retour"
+
+msgid "Changes made here or on Sharly-Chess.com are merged both ways."
+msgstr "Les modifications faites ici ou sur Sharly-Chess.com sont fusionnées dans les deux sens."
 
 msgid "Choose"
 msgstr "Choisir"
@@ -99,9 +99,6 @@ msgstr "Les données actuelles sur l'application Sharly Chess locale."
 #, python-format
 msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
 msgstr "Les données telles qu'elle étaient lors de la dernière synchronisation (%(last_sync_str)s)."
-
-msgid "Data synchronisation"
-msgstr "Synchronisation des données"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -235,9 +232,6 @@ msgstr "Aucune modification détectée depuis la dernière mise en ligne."
 msgid "No internet connection."
 msgstr "Pas de connection à internet."
 
-msgid "No player to synchronize yet, import or upload tournaments first."
-msgstr "Aucun·e joueur·euse à synchroniser pour le moment, vous devez d'abord importer ou mettre en ligne un tournoi."
-
 msgid "No tournament has started yet, no results to upload."
 msgstr "Aucun tournoi n'a encore démarré, aucun résultat à mettre en ligne."
 
@@ -247,11 +241,17 @@ msgstr "Non programmé"
 msgid "Not started"
 msgstr "Non démarré"
 
+msgid "Nothing to synchronize yet, import or upload tournaments first."
+msgstr "Rien à synchroniser pour le moment, vous devez d'abord importer ou mettre en ligne un tournoi."
+
 msgid "Ongoing"
 msgstr "En cours"
 
 msgid "Opening"
 msgstr "Ouverture"
+
+msgid "Pairings and results"
+msgstr "Appariements et résultats"
 
 msgid "Pending"
 msgstr "En attente"
@@ -310,8 +310,14 @@ msgstr "Page publique de l'évènement."
 msgid "Public page of the tournament."
 msgstr "Page publique du tournoi."
 
+msgid "Published from this computer to Sharly-Chess.com."
+msgstr "Publiés depuis cet ordinateur vers Sharly-Chess.com."
+
 msgid "Rating"
 msgstr "Classement"
+
+msgid "Registrations and tournament settings"
+msgstr "Inscriptions et paramètres des tournois"
 
 msgid "Remaining conflicts"
 msgstr "Conflits restants"
@@ -327,9 +333,6 @@ msgstr "Résoudre les conflits de joueur·euses (%(count)d)"
 #, python-format
 msgid "Resolve tournament conflicts (%(count)d)"
 msgstr "Résoudre les conflits de tournois (%(count)d)"
-
-msgid "Results upload"
-msgstr "Mise en ligne des résultats"
 
 msgid "Retry"
 msgstr "Ré-essayer"
@@ -389,12 +392,15 @@ msgstr "Les conflits de synchronisation se produisent lorsque les mêmes donnée
 msgid "Synchronisation ongoing"
 msgstr "Synchronisation en cours"
 
+msgid "Synchronize automatically"
+msgstr "Synchroniser automatiquement"
+
 #, python-format
 msgid "Synchronize automatically every %(delay)d minutes."
 msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 
-msgid "Synchronize players"
-msgstr "Synchroniser les joueur·euses"
+msgid "Synchronize now"
+msgstr "Synchroniser maintenant"
 
 msgid "The new event is not linked to Sharly-Chess.com: it is a copy to look at, and nothing of it is uploaded or synchronised. The event it was taken from keeps the link."
 msgstr "Le nouvel évènement n'est pas lié à Sharly-Chess.com : c'est une copie à consulter, dont rien n'est envoyé ni synchronisé. L'évènement dont elle est issue conserve le lien."
