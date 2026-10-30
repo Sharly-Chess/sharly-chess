@@ -1153,7 +1153,7 @@ class Event:
         for screen_type in self.basic_screens_by_screen_type_by_id:
             sorted_basic_screens_by_screen_type[screen_type] = sorted(
                 self.basic_screens_by_screen_type_by_id[screen_type].values(),
-                key=by('uniq_id'),
+                key=by('name'),
             )
         return sorted_basic_screens_by_screen_type
 
