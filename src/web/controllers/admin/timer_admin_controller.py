@@ -1,4 +1,5 @@
 from copy import copy
+from dataclasses import dataclass
 from datetime import datetime, date
 from typing import Annotated, Any
 
@@ -12,8 +13,15 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.exception import FormError
 from common.i18n import _, ngettext
+from common.i18n.utils import by
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.event import Event
+from data.screens.family import Family
+from data.screens.manager import ScreenTypeManager
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
+from data.screens.screen_types import ScreenType
 from data.screens.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
@@ -27,6 +35,15 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 from web.session import SessionTimersAddOtherActive
+
+
+@dataclass
+class TimerUsageItem:
+    field: str
+    label: str
+    screen_type: ScreenType | None
+    other_timer: str | None
+    checked: bool
 
 
 class TimerAdminWebContext(BaseEventAdminWebContext):
@@ -480,6 +497,132 @@ class TimerAdminController(BaseEventAdminController):
             _('Timer [{timer}] has been deleted.').format(timer=timer.name),
         )
         return self._admin_event_timers_render(web_context)
+
+    # -------------------------------------------------------------------------
+    # Timer usage
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def _timer_usage_items(
+        event: Event,
+    ) -> list[tuple[str, Screen | Family | Rotator]]:
+        return (
+            [(f'screen_{screen.id}', screen) for screen in event.timer_screens]
+            + [
+                (f'family_{family.id}', family)
+                for family in event.sorted_families
+                if family.screen_type.has_config_fields
+            ]
+            + [(f'rotator_{rotator.id}', rotator) for rotator in event.sorted_rotators]
+        )
+
+    @classmethod
+    def _timer_usage_modal_context(
+        cls, web_context: TimerAdminWebContext
+    ) -> dict[str, Any]:
+        event = web_context.get_admin_event()
+        timer = web_context.get_admin_timer()
+        items_by_kind: dict[str, list[TimerUsageItem]] = {
+            'screen': [],
+            'family': [],
+            'rotator': [],
+        }
+        for field, item in cls._timer_usage_items(event):
+            kind = field.split('_')[0]
+            items_by_kind[kind].append(
+                TimerUsageItem(
+                    field=field,
+                    label=item.display_name if isinstance(item, Family) else item.name,
+                    screen_type=None if isinstance(item, Rotator) else item.screen_type,
+                    other_timer=(
+                        item.timer.name
+                        if item.timer and item.timer.id != timer.id
+                        else None
+                    ),
+                    checked=item.timer is not None and item.timer.id == timer.id,
+                )
+            )
+        screen_types = ScreenTypeManager(event).objects()
+        sections = [
+            (
+                title,
+                [
+                    (
+                        screen_type,
+                        sorted(
+                            [
+                                item
+                                for item in items_by_kind[kind]
+                                if item.screen_type == screen_type
+                            ],
+                            key=by('label'),
+                        ),
+                    )
+                    for screen_type in screen_types
+                ],
+            )
+            for title, kind in [
+                (_('Screens'), 'screen'),
+                (_('Multi-screens'), 'family'),
+            ]
+        ] + [(_('Rotators'), [(None, items_by_kind['rotator'])])]
+        return {
+            'modal': 'timer_usage',
+            'usage_sections': [
+                (
+                    title,
+                    [(screen_type, items) for screen_type, items in groups if items],
+                )
+                for title, groups in sections
+                if any(items for _screen_type, items in groups)
+            ],
+        }
+
+    @get(
+        path='/timer-usage-modal/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-usage-modal',
+    )
+    async def htmx_admin_timer_usage_modal(
+        self,
+        request: HTMXRequest,
+        timer_id: FromPath[int],
+    ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
+        return self._admin_event_timers_render(
+            web_context, self._timer_usage_modal_context(web_context)
+        )
+
+    @patch(
+        path='/timer-usage-update/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-usage-update',
+    )
+    async def htmx_admin_timer_usage_update(
+        self,
+        request: HTMXRequest,
+        timer_id: FromPath[int],
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
+        timer = web_context.get_admin_timer()
+        for field, item in self._timer_usage_items(web_context.get_admin_event()):
+            on_timer = item.timer is not None and item.timer.id == timer.id
+            if WebContext.form_data_to_bool(data, field):
+                if not on_timer:
+                    item.set_timer(timer.id)
+            elif on_timer:
+                item.set_timer(None)
+        Message.success(
+            request,
+            _('The screens of timer [{timer}] have been updated.').format(
+                timer=timer.name
+            ),
+        )
+        return self._admin_event_timers_render(
+            TimerAdminWebContext(request, reload_event=True)
+        )
 
     # -------------------------------------------------------------------------
     # Timer Hour
