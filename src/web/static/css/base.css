@@ -2490,11 +2490,11 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent thead th,
 [data-bs-theme=dark] table.prominent tr.header td {
-    background-color: var(--pw-surface-raised-bg);
-    color: var(--bs-secondary-color);
-    font-weight: 500;
+    background-color: #353a43;
+    color: var(--bs-emphasis-color);
+    font-weight: 600;
     padding: 5px;
-    border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid #4a4f59;
     vertical-align: middle;
 }
 
