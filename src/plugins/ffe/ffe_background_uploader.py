@@ -351,6 +351,11 @@ class FfeBackgroundUploader:
         )
         if not tournament_plugin_data.auto_upload:
             return False
+        if not (
+            (tournament_plugin_data.ffe_id and tournament_plugin_data.password)
+            or tournament_plugin_data.team_place_configured
+        ):
+            return False
 
         assert stored_tournament.id is not None
         result_id = cls.result_id(stored_event.uniq_id, stored_tournament.id)

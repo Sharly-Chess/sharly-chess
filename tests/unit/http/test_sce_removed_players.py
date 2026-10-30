@@ -94,7 +94,7 @@ def removed_player_id() -> Iterator[int]:
                 json.dumps(
                     {
                         PLUGIN_NAME: SCETournamentPluginData(
-                            id='SCE-T1'
+                            id='SCE-T1', auto_upload=False
                         ).to_stored_value()
                     }
                 ),

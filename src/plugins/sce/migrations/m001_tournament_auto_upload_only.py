@@ -4,7 +4,9 @@ from plugins.migration import BasePluginMigration
 class Migration(BasePluginMigration):
     """The automatic upload of the results is set per tournament only: the
     tournaments of an event whose automatic upload was turned off stop
-    uploading automatically, and the event setting is dropped."""
+    uploading automatically, and the event setting is dropped. The
+    tournaments that never stored the setting keep not uploading, now
+    that new tournaments upload by default."""
 
     def forward(self) -> None:
         self.database.execute(
@@ -13,11 +15,13 @@ class Migration(BasePluginMigration):
         info = self.database.fetchone()
         if not info:
             return
-        if info['auto_upload'] == 0:
-            self.database.execute(
-                "UPDATE `tournament` SET plugin_data = JSON_SET(plugin_data, '$.sce.auto_upload', JSON('false')) "
-                "WHERE JSON_TYPE(plugin_data, '$.sce') IS NOT NULL",
-            )
+        condition = "JSON_TYPE(plugin_data, '$.sce') IS NOT NULL"
+        if info['auto_upload'] != 0:
+            condition += " AND JSON_TYPE(plugin_data, '$.sce.auto_upload') IS NULL"
+        self.database.execute(
+            "UPDATE `tournament` SET plugin_data = JSON_SET(plugin_data, '$.sce.auto_upload', JSON('false')) "
+            f'WHERE {condition}',
+        )
         self.database.execute(
             "UPDATE `info` SET plugin_data = JSON_REMOVE(plugin_data, '$.sce.auto_upload')"
         )

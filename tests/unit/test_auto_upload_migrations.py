@@ -23,9 +23,9 @@ from plugins.sce.migrations import m001_tournament_auto_upload_only as sce_migra
 @pytest.mark.parametrize(
     'event_auto_upload, expected',
     [
-        (True, [True, False, None]),
-        (False, [False, False, None]),
-        (None, [True, False, None]),
+        (True, [True, False, False, None]),
+        (False, [False, False, False, None]),
+        (None, [True, False, False, None]),
     ],
 )
 def test_the_migration_moves_the_event_auto_upload_to_the_tournaments(
@@ -46,6 +46,7 @@ def test_the_migration_moves_the_event_auto_upload_to_the_tournaments(
     tournament_plugin_data = [
         {plugin_id: {'auto_upload': True}},
         {plugin_id: {'auto_upload': False}},
+        {plugin_id: {}},
         {},
     ]
     with SQLiteDatabase(file, write=True) as database:

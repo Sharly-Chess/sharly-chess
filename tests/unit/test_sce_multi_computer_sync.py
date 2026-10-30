@@ -178,7 +178,7 @@ class MultiComputerSyncTestCase(TestCase):
                 t for t in database.load_stored_tournaments() if t.name == name
             )
             stored_tournament.plugin_data[PLUGIN_NAME] = SCETournamentPluginData(
-                id=sce_tournament_id
+                id=sce_tournament_id, auto_upload=False
             ).to_stored_value()
             database.execute(
                 'UPDATE `tournament` SET `plugin_data` = ? WHERE `id` = ?',
