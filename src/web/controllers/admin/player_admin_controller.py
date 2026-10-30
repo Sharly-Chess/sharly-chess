@@ -97,6 +97,7 @@ from utils.enum import (
     CheckInStatus,
 )
 from plugins.manager import plugin_manager
+from web.controllers.admin.base_admin_controller import nav_count
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -415,7 +416,7 @@ class PlayerAdminController(BaseEventAdminController):
         search_results = cls.get_search_results(web_context)
         allowed_players = list(web_context.client.allowed_players)
         return {
-            'nav_tab_title': _('Players ({num})').format(num=len(allowed_players)),
+            'nav_tab_count': nav_count(len(allowed_players)),
             'allowed_players': allowed_players,
             'filtered_player_count': len(search_results),
             'sort_column': sort_column,

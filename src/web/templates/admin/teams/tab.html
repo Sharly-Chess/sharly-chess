@@ -103,7 +103,7 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            <i class="bi-plus-square pe-1"></i>
+            <i class="bi-plus-lg pe-1"></i>
             {{ _('Create a team') }}
         </button>
     {% endif %}
@@ -323,7 +323,7 @@
             </script>
         {% endif %}
     {% else %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <h5 class="mt-2 my-5 text-center">{{ _('No teams') }}</h5>
             {% if client.can_update_tournaments %}
                 <p>

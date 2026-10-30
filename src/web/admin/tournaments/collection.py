@@ -18,18 +18,15 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     default_view_mode=AdminCollectionViewMode.CARDS,
     card=CardLayout(
         header=(
-            ComponentPlacement('status'),
             ComponentPlacement('identity', 'flex-grow-1 min-width-0'),
+            ComponentPlacement('fide_mode'),
+            ComponentPlacement('illegal_moves'),
             ComponentPlacement('drag_handle'),
         ),
         summary=(
             ComponentPlacement('participants'),
-            ComponentPlacement('round_progress'),
-            ComponentPlacement('illegal_moves'),
             ComponentPlacement('rating'),
-            ComponentPlacement('fide_mode'),
         ),
-        summary_class='justify-content-center',
         body=(
             ComponentPlacement('transfer'),
             ComponentPlacement('time_control'),

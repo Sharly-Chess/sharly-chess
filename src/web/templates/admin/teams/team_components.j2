@@ -21,7 +21,7 @@
                 >{{ team.pairing_label }}</span>
                 <span class="text-muted px-1">–</span>
             {% else %}
-                <i class="bi-flag-fill pe-1"></i>
+                <i class="bi-flag pe-1"></i>
             {% endif %}
             {{ team.name }}
             {# The card shows this in its body; the list has no body, so
@@ -38,7 +38,7 @@
                 class="small text-muted text-truncate"
                 {{ macros.tooltip_attributes('info', _('Affiliation.'), 'top') }}
             >
-                <i class="bi-collection-fill pe-1"></i>{{ team.group.name }}
+                <i class="bi-collection pe-1"></i>{{ team.group.name }}
             </div>
         {% elif view == 'card' and team.affiliation_warning_message %}
             <div
@@ -85,7 +85,7 @@
 {% macro players_count(team, view, placement) %}
     {% set count %}
         <span class="text-nowrap">
-            <i class="bi-people-fill pe-1"></i>{{ team.players|length }}
+            <i class="bi-people pe-1"></i>{{ team.players|length }}
         </span>
     {% endset %}
     {% if view == 'list' %}
@@ -141,7 +141,7 @@
     {% if view == 'card' %}
         <div class="collection-fact">
             <span class="collection-fact-label">
-                <i class="bi-collection-fill"></i>{{ _('Affiliation') }}
+                <i class="bi-collection"></i>{{ _('Affiliation') }}
             </span>
             <span>
     {% endif %}
@@ -183,7 +183,7 @@
             data-bs-target="#modal-wrapper"
             {% if not client.can_update_tournaments %}disabled{% endif %}
         >
-            <i class="bi-people-fill"></i>
+            <i class="bi-people"></i>
         </button>
     </span>
 {% endmacro %}
@@ -457,7 +457,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         >
-                            <i class="bi-pencil-fill"></i>
+                            <i class="bi-pencil"></i>
                         </button>
                     </span>
                     <span {{ macros.tooltip_attributes('info', _('Delete the team.'), 'top') }}>
@@ -473,7 +473,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         >
-                            <i class="bi-trash-fill"></i>
+                            <i class="bi-trash"></i>
                         </button>
                     </span>
                 </div>

@@ -257,6 +257,16 @@
                     <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                         <i class="bi-chevron-down text-body"></i>
                         {{ _('Age categories') }}
+                        {% set selected_categories = data.get('age_categories') or [] %}
+                        {% set category_names = [] %}
+                        {% for options in (player_category_options|default({})).values() %}
+                            {% for key, name in options.items() if key in selected_categories %}
+                                {% set _ = category_names.append(name) %}
+                            {% endfor %}
+                        {% endfor %}
+                        <span class="collapse-button-summary">
+                            {{ category_names|join(', ') if category_names else sharly_chess_config.default_player_category_set.name }}
+                        </span>
                     </h4>
                 </button>
                 <div id="categories-section" class="{% if not force_categories_open %}collapse{% endif %}">
@@ -305,6 +315,9 @@
                     <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                         <i class="bi-chevron-down text-body"></i>
                         {{ _('Organiser') }}
+                        {% if data.get('organiser_name') %}
+                            <span class="collapse-button-summary">{{ data.get('organiser_name') }}</span>
+                        {% endif %}
                     </h4>
                 </button>
 

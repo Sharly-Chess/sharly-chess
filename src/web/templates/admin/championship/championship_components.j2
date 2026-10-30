@@ -12,7 +12,7 @@
 
 {% macro identity(item, view, placement) %}
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
-        <i class="bi-trophy-fill text-primary flex-shrink-0"></i>
+        <i class="bi-trophy text-primary flex-shrink-0"></i>
         <span class="fw-bold {% if view == 'list' %}text-truncate{% else %}collection-card-title{% endif %}">
             {{ item.name }}
         </span>
@@ -22,9 +22,9 @@
 {% macro competitor_type(item, view, placement) %}
     <span class="text-nowrap">
         {% if item.competitor_type.value == 'TEAM' %}
-            <i class="bi-flag-fill text-secondary pe-1"></i>{{ _('Teams') }}
+            <i class="bi-flag text-secondary pe-1"></i>{{ _('Teams') }}
         {% else %}
-            <i class="bi-person-fill text-secondary pe-1"></i>{{ _('Players') }}
+            <i class="bi-person text-secondary pe-1"></i>{{ _('Players') }}
         {% endif %}
     </span>
 {% endmacro %}
@@ -48,7 +48,7 @@
 
 {% macro sources_count(item, view, placement) %}
     <span class="text-nowrap {% if not item.sources %}text-secondary{% endif %}">
-        <i class="bi-diagram-3-fill pe-1"></i>{{ item.sources|length }}
+        <i class="bi-diagram-3 pe-1"></i>{{ item.sources|length }}
     </span>
 {% endmacro %}
 
@@ -78,6 +78,6 @@
             data-bs-target="#modal-wrapper"
             aria-label="{{ _('Delete') }}"
             {{ macros.tooltip_attributes('warning', _('Delete this championship.'), 'top') }}
-        ><i class="bi-trash-fill"></i></button>
+        ><i class="bi-trash"></i></button>
     </div>
 {% endmacro %}

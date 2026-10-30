@@ -20,6 +20,11 @@ from web.controllers.base_controller import BaseController, WebContext
 from web.utils import RequestUtils
 
 
+def nav_count(num: int) -> str:
+    """The count shown next to a sidebar entry, empty when there is none."""
+    return str(num) if num else ''
+
+
 class AdminWebContext(WebContext):
     """
     The basic admin web context.

@@ -6,8 +6,39 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: "InterVariable";
+    src: url("/static/fonts/InterVariable.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "InterVariable";
+    src: url("/static/fonts/InterVariable-Italic.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: italic;
+}
+
 * {
 	font-family: AtkinsonHyperlegibleNextVF, sans-serif;
+}
+
+/* The admin view uses a denser typeface; the screens keep the more legible
+   one, which is read from a distance. */
+[data-bs-theme=dark], [data-bs-theme=dark] * {
+    font-family: InterVariable, system-ui, sans-serif;
+    font-feature-settings: "cv11";
+}
+
+[data-bs-theme=dark] table {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Every rem of the admin view scales from this, so its density is set here
+   once. */
+html:has(> body[data-bs-theme=dark]) {
+    font-size: 14px;
 }
 
 body {
@@ -16,6 +47,21 @@ body {
 	background-size: contain;
 	background-attachment: fixed;
 	overflow: auto !important;
+}
+
+/* Safari shows the page scrolling under its translucent toolbar unless a
+   fixed bar spans the top edge of the page, whose colour it then extends
+   into the toolbar. This hairline is that bar, in the page's own colour. */
+body[data-bs-theme=dark]::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--bs-body-bg);
+    pointer-events: none;
+    z-index: 2001;
 }
 
 a:focus, a:active {
@@ -126,6 +172,158 @@ body[data-bs-theme="light"] #main-wrapper {
 .sidebar .nav-link.active, .sidebar .nav-link.active:hover {
     background-color: var(--bs-primary);
     color: var(--bs-body-bg);
+}
+
+[data-bs-theme=dark] .sidebar .nav-link:hover, [data-bs-theme=dark] .sidebar .btn-link:hover {
+    background-color: var(--pw-surface-raised-bg);
+}
+
+[data-bs-theme=dark] .sidebar .nav-link.active, [data-bs-theme=dark] .sidebar .nav-link.active:hover {
+    background-color: var(--pw-nav-active-bg);
+    color: var(--pw-nav-active-color);
+    font-weight: 500;
+}
+
+[data-bs-theme=dark] .admin-sidebar h4 {
+    margin: .75rem 0 .75rem !important;
+    padding: 0 .75rem !important;
+    color: var(--bs-emphasis-color);
+    font-size: 1rem !important;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: start !important;
+    white-space: normal;
+}
+
+/* One right padding for every entry, sub-entries included, so the counts
+   and chevrons line up in a single column. */
+[data-bs-theme=dark] .admin-sidebar .nav-link {
+    border-radius: var(--bs-border-radius);
+    color: #c9ccd2;
+    padding-right: .75rem !important;
+}
+
+/* The compact sidebar is a narrow column of icons, which the padding of
+   the expanded one would crowd. */
+[data-bs-theme=dark].compact-sidebar .admin-sidebar #sidebar-nav {
+    padding: 0;
+}
+
+[data-bs-theme=dark].compact-sidebar .admin-sidebar .nav-link {
+    padding-right: var(--bs-nav-link-padding-x) !important;
+    border-radius: 0;
+}
+
+[data-bs-theme=dark] .admin-sidebar .sidebar-section-heading {
+    padding-right: 0 !important;
+}
+
+[data-bs-theme=dark] .admin-sidebar .nav-link .dropdown-arrow {
+    width: auto;
+    /* The glyph has side bearings; this puts its ink on the count column. */
+    margin-right: -.2rem;
+    margin-left: auto;
+    text-align: end;
+}
+
+[data-bs-theme=dark] .admin-sidebar .nav-link > i,
+[data-bs-theme=dark] .admin-sidebar .nav-link > div > i {
+    color: var(--bs-secondary-color);
+}
+
+[data-bs-theme=dark] .admin-sidebar .nav-link.active > i {
+    color: inherit;
+}
+
+.nav-count {
+    margin-left: auto;
+    padding-left: .75rem;
+    color: var(--bs-secondary-color);
+    font-size: .85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.nav-link.active .nav-count {
+    color: inherit;
+}
+
+.sidebar .nav-link:has(> .nav-count) {
+    align-items: center;
+}
+
+.sidebar .nav-link > .nav-count,
+.sidebar .nav-link > span:has(+ .nav-count) {
+    flex-shrink: 0;
+}
+
+.sidebar .sidebar-tooltip:has(.nav-count) .nav-link,
+.sidebar .sidebar-tooltip:has(.nav-count) {
+    width: 100%;
+}
+
+[data-bs-theme=dark] .admin-sidebar #sidebar-nav {
+    padding: 0 .5rem;
+    gap: 2px;
+}
+
+[data-bs-theme=dark] .admin-tab-title {
+    color: var(--bs-emphasis-color) !important;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+[data-bs-theme=dark] .admin-tab-title .bi {
+    color: var(--bs-tertiary-color);
+    font-size: 1rem !important;
+}
+
+@media (min-width: 992px) {
+    [data-bs-theme=dark] #top-nav-wrapper:has(+ .admin-cards-section) {
+        padding: 1.5rem 0 .75rem;
+    }
+
+    [data-bs-theme=dark] #top-nav-wrapper:has(+ .admin-cards-section) #top-nav-content {
+        padding: 0 2.25rem;
+    }
+
+    [data-bs-theme=dark] .admin-cards-section {
+        padding: 1rem 2.25rem 2.5rem !important;
+    }
+}
+
+[data-bs-theme=dark] .collection-view-toggle {
+    padding: 3px;
+    gap: 2px;
+    border-radius: var(--bs-border-radius);
+    background: var(--pw-surface-bg);
+}
+
+[data-bs-theme=dark] .collection-view-toggle .btn {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-hover-bg: var(--pw-surface-raised-bg);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: #353941;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-active-color: var(--bs-emphasis-color);
+    border-radius: var(--bs-border-radius-sm) !important;
+    padding: .3rem .6rem;
+}
+
+[data-bs-theme=dark] .collection-view-toggle .btn[aria-pressed="true"] {
+    background: #353941;
+    color: var(--bs-emphasis-color);
+}
+
+/* The letters of the keyboard shortcuts stay marked, without competing with
+   the labels. */
+[data-bs-theme=dark] .sidebar u {
+    text-decoration-color: rgba(var(--bs-body-color-rgb), 0.35);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
 }
 
 .sidebar .sidebar-chevron {
@@ -523,7 +721,7 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
 [data-bs-theme=dark] .input-group:has(.select2-container--open) {
     box-shadow: none;
     outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
-    outline-offset: 4px;
+    outline-offset: 0;
     border-radius: var(--bs-border-radius)
 }
 
@@ -652,6 +850,33 @@ body[data-bs-theme="dark"] .htmx-indicator {
   --bs-tooltip-color: #900000;
 }
 
+/* Admin tooltips: a raised dark bubble; warnings and errors keep their own
+   text colour. */
+[data-bs-theme=dark] :is(.sharly-chess-tooltip-info, .sharly-chess-tooltip-warning, .sharly-chess-tooltip-error) {
+    --bs-tooltip-bg: #3a3e46;
+    --bs-tooltip-color: #f2f0eb;
+    --bs-tooltip-padding-x: .6rem;
+    --bs-tooltip-padding-y: .4rem;
+    --bs-tooltip-border-radius: var(--bs-border-radius-sm);
+    --bs-tooltip-font-size: .85rem;
+}
+
+[data-bs-theme=dark] .sharly-chess-tooltip-info .tooltip-inner > i:first-child {
+    color: var(--bs-secondary-color);
+}
+
+[data-bs-theme=dark] .sharly-chess-tooltip-warning {
+    --bs-tooltip-color: #f3cf74;
+}
+
+[data-bs-theme=dark] .sharly-chess-tooltip-error {
+    --bs-tooltip-color: #f5a3ab;
+}
+
+[data-bs-theme=dark] .tooltip-inner {
+    box-shadow: 0 .4rem 1rem rgba(0, 0, 0, 0.35);
+}
+
 .tooltip-danger {
     color: #af2e3b;
 }
@@ -757,6 +982,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
+    .admin-collection-cards.admin-collection-cards-wide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .home-event-collection-count-1 {
         grid-template-columns: minmax(0, 1fr);
         width: calc(33.333333% - .666667rem);
@@ -792,8 +1021,36 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-card {
     border: 1px solid var(--bs-border-color);
-    border-top: 4px solid var(--collection-status-color, var(--bs-primary));
+    border-top: 3px solid var(--collection-status-color, var(--bs-primary));
     overflow: visible;
+}
+
+/* Admin: an item's status is a dot in its colour before the name, the same
+   on cards and on rows, rather than a stripe along one edge. A card whose
+   name already carries a status line with its own dot shows only that. */
+[data-bs-theme=dark] .collection-card {
+    border-top: 1px solid var(--bs-border-color);
+}
+
+[data-bs-theme=dark] .collection-list-item,
+[data-bs-theme=dark] .collection-list-header {
+    border-left: 0;
+    border-right: 0;
+}
+
+[data-bs-theme=dark] .collection-item[class*="collection-status-"] :is(.collection-card-header, .collection-list-cell-identity) > :is(.collection-component-identity, .collection-component-card_identity):not(:has(.collection-card-status, .bi-eye-fill, .bi-eye-slash-fill)) {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+}
+
+[data-bs-theme=dark] .collection-item[class*="collection-status-"] :is(.collection-card-header, .collection-list-cell-identity) > :is(.collection-component-identity, .collection-component-card_identity):not(:has(.collection-card-status, .bi-eye-fill, .bi-eye-slash-fill))::before {
+    content: '';
+    flex-shrink: 0;
+    width: .55rem;
+    height: .55rem;
+    border-radius: 50%;
+    background: var(--collection-status-color);
 }
 
 .collection-status-success {
@@ -854,11 +1111,12 @@ body[data-bs-theme="dark"] .htmx-indicator {
 }
 
 .collection-card-header {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+    align-items: flex-start !important;
+    gap: .75rem !important;
     min-height: 3rem;
+    padding: 1rem 1.25rem .25rem;
     background: var(--bs-card-cap-bg);
-    border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 0;
     color: var(--bs-body-color);
     font-size: 1.15rem;
     overflow-wrap: anywhere;
@@ -866,36 +1124,50 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-card-header .collection-component-identity,
 .collection-card-header .collection-component-card_identity {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: center;
+    flex: 1 1 auto;
     color: var(--bs-emphasis-color);
-    font-weight: 400;
-    text-align: center;
+    font-weight: 600;
 }
 
 .collection-card-header .collection-component-identity > *,
 .collection-card-header .collection-component-card_identity > * {
-    justify-content: center;
-    font-weight: 400 !important;
+    font-weight: 600 !important;
 }
 
-.collection-card-header > .collection-component:first-child:not(
-    .collection-component-identity,
-    .collection-component-card_identity
-) {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
+.collection-card-title {
+    font-size: 1.3rem;
+    line-height: 1.3;
 }
 
-.collection-card-header > .collection-component:last-child:not(
-    .collection-component-identity,
-    .collection-component-card_identity
-) {
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: end;
+.collection-card-status-line {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin-top: .3rem;
+    font-size: .85rem;
+}
+
+.collection-card-status-line > * {
+    font-weight: 500 !important;
+}
+
+.collection-card-status-line .collection-progress .num {
+    color: var(--bs-secondary-color);
+}
+
+.collection-card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.collection-card-status-dot {
+    width: .45rem;
+    height: .45rem;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
 }
 
 .collection-card-header .collection-component,
@@ -916,7 +1188,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
 }
 
 .collection-card-summary {
-    padding: .65rem 1rem;
+    padding: .75rem 1.25rem;
     border-bottom: 0;
     font-variant-numeric: tabular-nums;
 }
@@ -926,15 +1198,54 @@ body[data-bs-theme="dark"] .htmx-indicator {
     align-items: center;
 }
 
-.collection-card-body {
-    min-width: 0;
-    padding: .8rem 1rem;
-    overflow-wrap: anywhere;
-    container-type: inline-size;
+.collection-card-summary:has(.collection-stat) {
+    align-items: stretch !important;
 }
 
-.collection-card-summary + .collection-card-body {
-    border-top: 1px solid var(--bs-border-color);
+.collection-card-summary .collection-component:has(> .collection-stat) {
+    flex: 1 1 0;
+    align-items: stretch;
+    min-width: 0;
+}
+
+.collection-stat {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    width: 100%;
+    padding: .6rem .8rem;
+    border-radius: var(--bs-border-radius);
+    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
+}
+
+.collection-stat-label {
+    color: var(--bs-secondary-color);
+    font-size: .85rem;
+}
+
+.collection-stat-value {
+    color: var(--bs-emphasis-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.collection-stat-value .bi-arrow-right {
+    font-size: .8rem;
+}
+
+.collection-stat-secondary {
+    color: var(--bs-secondary-color);
+    font-weight: 400;
+}
+
+.collection-card-body {
+    min-width: 0;
+    padding: .5rem 1.25rem 1.1rem;
+    overflow-wrap: anywhere;
+    container-type: inline-size;
+    gap: .6rem !important;
 }
 
 .collection-card-details {
@@ -944,9 +1255,48 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-card-footer {
     margin-top: auto;
-    padding: .55rem .75rem;
+    padding: .75rem 1rem;
     background: transparent;
     border-top: 1px solid var(--bs-border-color);
+}
+
+/* The icon buttons of a card or a row are soft: a faint fill and no outline,
+   brightening on hover. Each half of a split button is one of them, so the
+   gap between the halves shows that they are two buttons. The menu and the
+   main action keep their own shape. */
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) :is(.btn-outline-primary, .btn-outline-danger) {
+    --bs-btn-bg: rgba(255, 255, 255, 0.045);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.1);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.12);
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-active-color: var(--bs-emphasis-color);
+    --bs-btn-disabled-bg: rgba(255, 255, 255, 0.02);
+    --bs-btn-disabled-border-color: transparent;
+}
+
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-outline-primary {
+    --bs-btn-color: var(--bs-secondary-color);
+}
+
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-outline-primary.collection-card-main-action {
+    --bs-btn-bg: rgba(255, 255, 255, 0.08);
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.14);
+}
+
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-outline-danger {
+    --bs-btn-color: #e5737e;
+    --bs-btn-hover-bg: rgba(var(--bs-danger-rgb), 0.2);
+    --bs-btn-hover-color: #f3a3ab;
+    --bs-btn-active-bg: rgba(var(--bs-danger-rgb), 0.28);
+    --bs-btn-active-color: #f3a3ab;
+}
+
+.collection-card-main-action {
+    font-weight: 500;
 }
 
 .collection-card-header + .collection-card-footer {
@@ -970,10 +1320,11 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-fact {
     display: grid;
-    grid-template-columns: minmax(min-content, 2fr) minmax(0, 3fr);
-    gap: .75rem;
+    grid-template-columns: minmax(min-content, 7.5rem) minmax(0, 1fr);
+    gap: 1rem;
     align-items: baseline;
-    line-height: 1.3;
+    line-height: 1.45;
+    font-size: .95rem;
 }
 
 .collection-fact > * {
@@ -987,6 +1338,36 @@ body[data-bs-theme="dark"] .htmx-indicator {
     color: var(--bs-secondary-color);
     font-size: .85rem;
     overflow-wrap: normal;
+}
+
+.collection-fact-label > i {
+    display: none;
+}
+
+.collection-fact .bi-info-circle-fill,
+.collection-fact .bi-printer,
+.collection-fact .bi-printer-fill,
+.collection-fact .bi-box-arrow-up-right,
+.collection-card-header .handle,
+.collection-card-header .collection-component-illegal_moves {
+    color: var(--bs-tertiary-color) !important;
+}
+
+.collection-card-header .collection-component-illegal_moves,
+.collection-card-header .handle {
+    font-size: .95rem;
+}
+
+[data-bs-theme=dark] .collection-fact .btn-outline-primary {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--bs-secondary-color);
+}
+
+.collection-fact .badge.text-bg-secondary {
+    background-color: var(--pw-surface-raised-bg, var(--bs-secondary-bg)) !important;
+    color: var(--bs-body-color) !important;
+    font-weight: 500;
 }
 
 .collection-fact .text-start {
@@ -1392,6 +1773,58 @@ body[data-bs-theme="dark"] .htmx-indicator {
     padding: .85rem 1rem 1rem 3rem;
 }
 
+/* The list reads as one table: a single surface with the rows divided by
+   rules, each row keeping its status colour on the left edge. */
+[data-bs-theme=dark] .admin-collection-list {
+    overflow: hidden;
+    background: var(--pw-surface-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+}
+
+[data-bs-theme=dark] .collection-list-header {
+    padding: .6rem .75rem;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+[data-bs-theme=dark] .collection-list-header-cell {
+    font-size: .8rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+[data-bs-theme=dark] .collection-list-items {
+    row-gap: 0;
+}
+
+[data-bs-theme=dark] .collection-list-item {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--bs-border-color);
+    border-radius: 0;
+}
+
+[data-bs-theme=dark] .collection-list-item:last-child {
+    border-bottom: 0;
+}
+
+[data-bs-theme=dark] .collection-list-row,
+[data-bs-theme=dark] .collection-list-item:has(.collection-list-details.show) .collection-list-row,
+[data-bs-theme=dark] .collection-list-details {
+    border-radius: 0;
+}
+
+[data-bs-theme=dark] .collection-list-item-actionable:hover,
+[data-bs-theme=dark] .collection-list-row-actionable:hover,
+[data-bs-theme=dark] .collection-list-row-actionable:focus-visible,
+[data-bs-theme=dark] .collection-list-details-actionable:hover,
+[data-bs-theme=dark] .collection-list-details-actionable:focus-visible,
+[data-bs-theme=dark] .collection-card-actionable:hover,
+[data-bs-theme=dark] .collection-card-actionable:focus-visible {
+    background: var(--pw-surface-raised-bg);
+}
+
 .collection-drag-column {
     color: var(--bs-secondary-color);
 }
@@ -1473,6 +1906,191 @@ body[data-bs-theme="dark"] .htmx-indicator {
     height: 1em;
 }
 
+/* Admin: the licence badges are small rounded tags with their letter
+   centred, each type keeping its own colour. */
+[data-bs-theme=dark] .player-ffe-lic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 1.5rem;
+    height: 1.35rem;
+    padding: 0 .35rem !important;
+    border-radius: .3rem;
+    font-size: .78rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+[data-bs-theme=dark] .player-ffe-lic.ffe-lic-A {
+    background-color: #2f4fc4;
+}
+
+[data-bs-theme=dark] .player-ffe-lic.ffe-lic-B {
+    background-color: #7d95ff;
+    color: #10183a;
+}
+
+[data-bs-theme=dark] .player-ffe-lic.ffe-lic-N {
+    background-color: #4d525a;
+    color: #e4e2dd;
+}
+
+[data-bs-theme=dark] .player-ffe-lic.ffe-lic-- {
+    background-color: #f08ab3;
+    color: #3d0b20;
+}
+
+/* Admin: what a page shows before anything has been created is one framed
+   panel, its heading followed by the explanation, which some pages render as
+   a second block right after the first. */
+[data-bs-theme=dark] .admin-empty-state {
+    max-width: 34rem !important;
+    margin-top: 1.5rem;
+    padding: 1.75rem 2rem;
+    border: 1px dashed var(--pw-control-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    background: var(--pw-surface-bg);
+    color: var(--bs-secondary-color);
+    text-align: center;
+    line-height: 1.55;
+}
+
+[data-bs-theme=dark] .admin-empty-state:has(+ .admin-empty-state) {
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-bottom: .25rem;
+}
+
+[data-bs-theme=dark] .admin-empty-state + .admin-empty-state {
+    margin-top: 0;
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding-top: .25rem;
+}
+
+[data-bs-theme=dark] .admin-empty-state h5 {
+    margin: 0 0 .85rem !important;
+    color: var(--bs-emphasis-color);
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+[data-bs-theme=dark] .admin-empty-state p:last-child {
+    margin-bottom: 0;
+    color: var(--bs-body-color);
+    font-weight: 500;
+}
+
+/* The actions of a player row: editing, the most frequent, as a button of
+   its own, the others behind a menu. */
+.players-table-row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+}
+
+.players-table-row-action {
+    --bs-btn-padding-x: 0;
+    --bs-btn-padding-y: 0;
+    --bs-btn-bg: rgba(255, 255, 255, 0.045);
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.1);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.12);
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-active-color: var(--bs-emphasis-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--bs-border-radius-sm);
+}
+
+/* Admin players table: denser rows, so more players fit on screen, and
+   contact icons that step back; a known address or number stays clearly
+   brighter than a missing one. */
+[data-bs-theme=dark] #players-table > tbody > tr > td {
+    height: 2.2rem;
+    padding-top: .15rem;
+    padding-bottom: .15rem;
+}
+
+/* The tournament of a player who can still move reads like the plain names
+   above and below it, its text on the same edge; the arrow and a hover show
+   that it can be changed. */
+[data-bs-theme=dark] #players-table td > .dropdown > .btn-secondary.dropdown-toggle {
+    --bs-btn-color: var(--bs-body-color);
+    gap: .35rem;
+    width: auto !important;
+    margin-left: calc(-.4rem - var(--bs-btn-border-width)) !important;
+    padding-left: .4rem !important;
+    padding-right: .4rem !important;
+}
+
+[data-bs-theme=dark] #players-table td > .dropdown > .btn-secondary.dropdown-toggle::after {
+    color: var(--bs-secondary-color);
+}
+
+[data-bs-theme=dark] #players-table :is(.bi-envelope-check, .bi-telephone).text-body {
+    color: var(--bs-secondary-color) !important;
+}
+
+[data-bs-theme=dark] #players-table :is(.bi-envelope-check, .bi-telephone).text-body:hover {
+    color: var(--bs-emphasis-color) !important;
+}
+
+[data-bs-theme=dark] #players-table :is(.bi-envelope, .bi-telephone).text-secondary {
+    opacity: .3;
+}
+
+[data-bs-theme=dark] #players-table img[alt="FIDE"] {
+    height: 1.05rem !important;
+    filter: grayscale(1) brightness(1.5);
+    opacity: .75;
+}
+
+[data-bs-theme=dark] #players-table img[alt="FIDE"]:hover {
+    opacity: 1;
+}
+
+[data-bs-theme=dark] #players-table img[alt="FIDE"].fide-id-none {
+    opacity: .2;
+}
+
+/* Admin: the game results are rounded tags in the colour played, their
+   character centred by the box rather than nudged. */
+[data-bs-theme=dark] .player-record {
+    width: 1.45rem !important;
+    height: 1.45rem !important;
+    border-radius: .3rem;
+    font-size: .8rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+[data-bs-theme=dark] .player-record > span {
+    position: static !important;
+    line-height: 1 !important;
+}
+
+[data-bs-theme=dark] .player-record.bg-white {
+    background-color: #e8e6e1 !important;
+    border-color: #e8e6e1 !important;
+    color: #17191c !important;
+}
+
+[data-bs-theme=dark] .player-record.bg-dark {
+    background-color: #0d0e10 !important;
+    border-color: #5a5f68 !important;
+    color: #e8e6e1 !important;
+}
+
 .modal {
     --bs-modal-width: min(90vw, 1000px);
 }
@@ -1490,6 +2108,15 @@ body[data-bs-theme="dark"] .htmx-indicator {
 }
 .modal .row + .row {
     margin-top: 0.001rem;
+}
+
+/* The admin's smaller type would otherwise pack the form rows together. */
+[data-bs-theme=dark] .modal .row:not(.g-0, .gy-0) {
+    --bs-gutter-y: .9rem;
+}
+
+[data-bs-theme=dark] .modal-body {
+    padding: 1.25rem 1.5rem;
 }
 
 /* Colour themes */
@@ -1631,28 +2258,36 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] {
-    --side-bar-width: 230px;
+    --side-bar-width: 260px;
     --bs-primary: #d7c9aa;
     --bs-primary-rgb: 215, 201, 170;
-    --pw-contrast-text: #212529;
-    --pw-nav-bg: #313334;
+    --pw-contrast-text: #1a1712;
+    --pw-nav-bg: #1a1c20;
+    --pw-surface-bg: #1e2126;
+    --pw-surface-raised-bg: #2b2f36;
+    --pw-control-border-color: #42464f;
+    --pw-nav-active-bg: #2e2a22;
+    --pw-nav-active-color: #efe3c6;
+    --bs-border-radius: 0.5rem;
+    --bs-border-radius-sm: 0.375rem;
+    --bs-border-radius-lg: 0.75rem;
 
     /* Copy/pasted from the BS docs for easier editing */
     color-scheme: dark;
-    --bs-body-color: #dee2e6;
-    --bs-body-color-rgb: 222, 226, 230;
-    --bs-body-bg: #212529;
-    --bs-body-bg-rgb: 33, 37, 41;
+    --bs-body-color: #ebe9e4;
+    --bs-body-color-rgb: 235, 233, 228;
+    --bs-body-bg: #111215;
+    --bs-body-bg-rgb: 17, 18, 21;
     --bs-emphasis-color: #fff;
     --bs-emphasis-color-rgb: 255, 255, 255;
-    --bs-secondary-color: rgba(222, 226, 230, 0.75);
-    --bs-secondary-color-rgb: 222, 226, 230;
-    --bs-secondary-bg: #343a40;
-    --bs-secondary-bg-rgb: 52, 58, 64;
-    --bs-tertiary-color: rgba(222, 226, 230, 0.5);
-    --bs-tertiary-color-rgb: 222, 226, 230;
-    --bs-tertiary-bg: #2b3035;
-    --bs-tertiary-bg-rgb: 43, 48, 53;
+    --bs-secondary-color: #aaaeb6;
+    --bs-secondary-color-rgb: 170, 174, 182;
+    --bs-secondary-bg: #2c3036;
+    --bs-secondary-bg-rgb: 44, 48, 54;
+    --bs-tertiary-color: #8b909a;
+    --bs-tertiary-color-rgb: 139, 144, 154;
+    --bs-tertiary-bg: #23262b;
+    --bs-tertiary-bg-rgb: 35, 38, 43;
     --bs-primary-text-emphasis: #6ea8fe;
     --bs-secondary-text-emphasis: #a7acb1;
     --bs-success-rgb: 36, 194, 121;
@@ -1686,8 +2321,8 @@ body[data-bs-theme=light] .btn-primary {
     --bs-code-color: #e685b5;
     --bs-highlight-color: #dee2e6;
     --bs-highlight-bg: #664d03;
-    --bs-border-color: #495057;
-    --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+    --bs-border-color: #2e3239;
+    --bs-border-color-translucent: rgba(255, 255, 255, 0.1);
     --bs-form-valid-color: #75b798;
     --bs-form-valid-border-color: #75b798;
     --bs-form-invalid-color: #ea868f;
@@ -1700,6 +2335,12 @@ body[data-bs-theme=light] .btn-primary {
     outline-offset: 4px;
 }
 
+/* In the admin, a field's ring sits on its border, so it never reaches the
+   labels and fields packed around it. */
+[data-bs-theme=dark] :is(.form-control, .form-select, textarea, select, input:not([type=checkbox], [type=radio])):focus {
+    outline-offset: 0;
+}
+
 .dropdown-item:focus {
     outline: 0;
     box-shadow: none;
@@ -1710,50 +2351,122 @@ body[data-bs-theme=light] .btn-primary {
     --bs-nav-link-hover-color: #fff;
 }
 
+/* The main action is tonal: a translucent wash of the accent with an outline
+   and text in the accent, which marks it without a light block standing out
+   of the dark page. */
 [data-bs-theme=dark] .btn-primary {
-    --bs-btn-color: var(--pw-contrast-text);
-    --bs-btn-bg: var(--bs-primary);
-    --bs-btn-border-color: #d7c9aa;
-    --bs-btn-hover-color: var(--pw-contrast-text);
-    --bs-btn-hover-bg: var(--bs-link-hover-color);
-    --bs-btn-hover-border-color: var(--bs-link-hover-color);
+    --bs-btn-color: #efe3c6;
+    --bs-btn-bg: rgba(var(--bs-primary-rgb), 0.16);
+    --bs-btn-border-color: rgba(var(--bs-primary-rgb), 0.5);
+    --bs-btn-hover-color: #f6ecd4;
+    --bs-btn-hover-bg: rgba(var(--bs-primary-rgb), 0.26);
+    --bs-btn-hover-border-color: rgba(var(--bs-primary-rgb), 0.7);
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
-    --bs-btn-active-color: var(--pw-contrast-text);;
-    --bs-btn-active-bg: var(--bs-link-hover-color);
-    --bs-btn-active-border-color: var(--bs-link-hover-color);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--pw-contrast-text);
-    --bs-btn-disabled-bg: #9d9e98;
-    --bs-btn-disabled-border-color: #9d9e98;
+    --bs-btn-active-color: #f6ecd4;
+    --bs-btn-active-bg: rgba(var(--bs-primary-rgb), 0.32);
+    --bs-btn-active-border-color: rgba(var(--bs-primary-rgb), 0.75);
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: rgba(var(--bs-primary-rgb), 0.6);
+    --bs-btn-disabled-bg: rgba(var(--bs-primary-rgb), 0.06);
+    --bs-btn-disabled-border-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+/* The arrow of a split button stands alone in its half, centred both
+   ways rather than set on a line of text. */
+[data-bs-theme=dark] .btn.dropdown-toggle-split {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-bs-theme=dark] .btn.dropdown-toggle-split::after {
+    margin: 0;
+    vertical-align: 0;
+}
+
+/* The halves of a main split button share their outline, which is line
+   enough between them. */
+[data-bs-theme=dark] .btn-group > .btn-primary.dropdown-toggle-split {
+    margin-left: calc(-1 * var(--bs-btn-border-width)) !important;
+}
+
+/* Secondary buttons (Cancel and the like) step back behind the main one. */
+[data-bs-theme=dark] .btn-secondary {
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-bg: var(--pw-surface-raised-bg);
+    --bs-btn-border-color: var(--pw-control-border-color);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: #31353c;
+    --bs-btn-hover-border-color: #4a4f58;
+    --bs-btn-active-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: #31353c;
+    --bs-btn-active-border-color: #4a4f58;
+    --bs-btn-disabled-color: #6f747c;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #33373e;
+}
+
+[data-bs-theme=dark] #copyright {
+    color: var(--bs-tertiary-color);
+    font-size: .8rem;
+    font-style: normal !important;
+}
+
+[data-bs-theme=dark] #copyright a {
+    color: inherit;
+    text-decoration: none;
+}
+
+[data-bs-theme=dark] #copyright a:hover {
+    color: var(--bs-secondary-color);
+    text-decoration: underline;
+}
+
+/* Bootstrap's red is too dark to read as text on the admin's background: the
+   outline danger button takes a lighter red until it fills on hover. */
+[data-bs-theme=dark] .btn-outline-danger {
+    --bs-btn-color: #f08a94;
+    --bs-btn-border-color: #f08a94;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #c83343;
+    --bs-btn-hover-border-color: #c83343;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #b02a37;
+    --bs-btn-active-border-color: #b02a37;
 }
 
 [data-bs-theme=dark] .btn-outline-primary {
-    --bs-btn-color: var(--bs-link-color);
-    --bs-btn-border-color: var(--bs-primary);
-    --bs-btn-hover-color: var(--pw-contrast-text);
-    --bs-btn-hover-bg: var(--bs-primary);
-    --bs-btn-hover-border-color: var(--bs-primary);
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--pw-control-border-color);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: var(--pw-surface-raised-bg);
+    --bs-btn-hover-border-color: #4a4f58;
     --bs-btn-focus-shadow-rgb: 13, 110, 253;
-    --bs-btn-active-color: var(--pw-contrast-text);;
-    --bs-btn-active-bg: var(--bs-link-hover-color);
-    --bs-btn-active-border-color: var(--bs-link-hover-color);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #9d9e98;
+    --bs-btn-active-color: var(--pw-nav-active-color);
+    --bs-btn-active-bg: var(--pw-nav-active-bg);
+    --bs-btn-active-border-color: #5a5140;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #6f747c;
     --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: #9d9e98;
+    --bs-btn-disabled-border-color: #33373e;
     --bs-gradient: none;
 }
 
 [data-bs-theme=dark] .card {
-    --bs-card-bg: #313334;
+    --bs-card-bg: var(--pw-surface-bg);
+    --bs-card-border-color: var(--bs-border-color);
+    --bs-card-cap-bg: transparent;
+    --bs-card-border-radius: var(--bs-border-radius-lg);
+    --bs-card-inner-border-radius: calc(var(--bs-border-radius-lg) - 1px);
 }
 
 [data-bs-theme=dark] .card-disabled {
-    --bs-card-bg: #4a4c4d;
+    --bs-card-bg: #2c2f34;
 }
 
 [data-bs-theme=dark] .card.btn:hover {
-    --bs-btn-hover-bg: #36393d;
+    --bs-btn-hover-bg: var(--pw-surface-raised-bg);
 }
 
 [data-bs-theme=dark] .card:has(button:focus), [data-bs-theme=dark] .card:has(button:active) {
@@ -1761,25 +2474,70 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] .dropdown-menu {
-    --bs-dropdown-bg: #515b5c;
+    --bs-dropdown-bg: #2a2d33;
+    --bs-dropdown-border-color: var(--pw-control-border-color);
+    --bs-dropdown-box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
     --bs-dropdown-link-color: var(--bs-body-color);
-    --bs-dropdown-link-hover-color: var(--bs-body-color);
-    --bs-dropdown-link-hover-bg: var(--bs-secondary);
+    --bs-dropdown-link-hover-color: var(--bs-emphasis-color);
+    --bs-dropdown-link-hover-bg: rgba(255, 255, 255, 0.07);
     --bs-dropdown-link-active-color: var(--pw-contrast-text);
     --bs-dropdown-link-active-bg: var(--bs-primary);
     --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
+    --bs-dropdown-padding-x: .25rem;
+    --bs-dropdown-padding-y: .25rem;
+    --bs-dropdown-item-padding-x: .65rem;
+    --bs-dropdown-item-padding-y: .4rem;
+    --bs-dropdown-divider-bg: var(--bs-border-color);
+    --bs-dropdown-border-radius: var(--bs-border-radius);
+}
+
+[data-bs-theme=dark] .dropdown-menu .dropdown-item {
+    border-radius: var(--bs-border-radius-sm);
+}
+
+[data-bs-theme=dark] .dropdown-menu .dropdown-item > i:first-child,
+[data-bs-theme=dark] .dropdown-menu .dropdown-item > span > i:first-child {
+    color: var(--bs-secondary-color);
+}
+
+[data-bs-theme=dark] .dropdown-menu .dropdown-item:hover > i:first-child,
+[data-bs-theme=dark] .dropdown-menu .dropdown-item.active > i:first-child {
+    color: inherit;
 }
 
 [data-bs-theme=dark] .dropdown-menu .dropdown-item.no-hover {
     --bs-dropdown-link-hover-bg: var(--bs-dropdown-bg);
 }
 
+/* A modal has the ground of the page, set apart by its border and shadow,
+   so that its controls look as they do on the page. */
 [data-bs-theme=dark] .modal {
-    --bs-modal-bg: #313334;
+    --bs-modal-bg: #22252b;
+    --bs-modal-border-color: var(--pw-control-border-color);
+    --bs-modal-header-border-color: var(--bs-border-color);
+    --bs-modal-footer-border-color: var(--bs-border-color);
+    --bs-modal-box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.6);
 }
 
+[data-bs-theme=dark] .modal-content {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: var(--bs-modal-box-shadow);
+}
+
+/* The page behind an open modal recedes: on a dark page, Bootstrap's
+   half-dimming barely shows. */
+[data-bs-theme=dark] .modal-backdrop {
+    --bs-backdrop-bg: #000;
+    --bs-backdrop-opacity: 0.8;
+    backdrop-filter: blur(2px);
+}
+
+/* Section headings in forms are quiet, leaving the accent to the main
+   button. */
 [data-bs-theme=dark] .modal-dialog h4 {
-    color: var(--bs-primary);
+    color: var(--bs-emphasis-color);
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
 [data-bs-theme=dark] .form-check-input:checked,
@@ -1801,11 +2559,29 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent thead th,
 [data-bs-theme=dark] table.prominent tr.header td {
-    background-color: var(--bs-primary);
-    color: var(--pw-contrast-text);
+    background-color: #353a43;
+    color: var(--bs-emphasis-color);
+    font-weight: 600;
     padding: 5px;
-    border-bottom: 7px solid var(--bs-body-bg);
+    border-bottom: 1px solid #4a4f59;
     vertical-align: middle;
+}
+
+[data-bs-theme=dark] table.prominent:not(.table-danger-warning, .table-danger-header) thead .text-dark,
+[data-bs-theme=dark] table.prominent tr.header .text-dark {
+    color: var(--bs-secondary-color) !important;
+}
+
+[data-bs-theme=dark] table.prominent .header .player-link {
+    color: var(--bs-emphasis-color);
+}
+
+[data-bs-theme=dark] table.prominent > tbody > tr > td {
+    border-bottom: 1px solid #23262b;
+}
+
+[data-bs-theme=dark] table.prominent.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-bg-type: rgba(255, 255, 255, 0.025);
 }
 
 [data-bs-theme=dark] table.prominent.table-danger-header thead th {
@@ -1818,6 +2594,7 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent.table-danger-warning thead th {
     background-color: rgb(var(--bs-warning-rgb));
+    color: var(--pw-contrast-text);
     padding: 5px;
     border-bottom: 7px solid var(--bs-body-bg);
     vertical-align: middle;
@@ -1829,8 +2606,34 @@ body[data-bs-theme=light] .btn-primary {
     padding: 5px;
 }
 
+/* A header control shows a single tight ring, and only when reached with the
+   keyboard; a click leaves no ring behind. */
 [data-bs-theme=dark] table.prominent thead th *:focus {
-    outline: 0.15rem solid rgba(var(--bs-body-bg-rgb), 0.70);
+    outline: none;
+    box-shadow: none;
+}
+
+[data-bs-theme=dark] table.prominent thead th *:focus-visible {
+    outline: none;
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: var(--bs-border-radius-sm);
+}
+
+[data-bs-theme=dark] .form-check-input:not(:checked) {
+    border-color: #5a5f68;
+}
+
+[data-bs-theme=dark] table.prominent thead th .btn {
+    --bs-btn-active-border-color: transparent;
+    border-color: transparent;
+}
+
+[data-bs-theme=dark] .table-dropdown-menu.p-0 {
+    padding: var(--bs-dropdown-padding-y) var(--bs-dropdown-padding-x) !important;
+}
+
+[data-bs-theme=dark] .collection-list-cell-identity :is(.fw-bold, .fw-semibold) {
+    font-weight: 500 !important;
 }
 
 [data-bs-theme=dark] table.prominent th,
@@ -1844,9 +2647,47 @@ body[data-bs-theme=light] .btn-primary {
     color: black;
 }
 
+/* Admin: the selected row is tinted with the accent and marked on its left
+   edge, its text keeping its own colours. */
+[data-bs-theme=dark] table.prominent tr.highlight > td,
+[data-bs-theme=dark] table.prominent tr.highlight > th {
+    --bs-table-bg-type: transparent;
+    background-color: rgba(var(--bs-primary-rgb), 0.16) !important;
+    color: var(--bs-emphasis-color);
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight > :first-child {
+    box-shadow: inset 3px 0 0 var(--bs-primary);
+}
+
 [data-bs-theme=dark] table.prominent tr.highlight-warning td, table.prominent tr.highlight-warning th {
     background-color: var(--bs-form-invalid-color);
     color: black;
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight-warning > td,
+[data-bs-theme=dark] table.prominent tr.highlight-warning > th {
+    --bs-table-bg-type: transparent;
+    background-color: rgba(var(--bs-danger-rgb), 0.18) !important;
+    color: var(--bs-emphasis-color);
+}
+
+[data-bs-theme=dark] table.prominent tr.highlight-warning > :first-child {
+    box-shadow: inset 3px 0 0 #f08a94;
+}
+
+/* Admin: the result of a game is a soft button, its score in full white. */
+[data-bs-theme=dark] table.prominent td.pairing-cell-result .btn-outline-primary {
+    --bs-btn-bg: rgba(255, 255, 255, 0.05);
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.14);
+    --bs-btn-active-border-color: transparent;
+    font-weight: 600;
+    min-width: 3.25rem;
 }
 
 /* Molter manual pairing: the first-picked entry's row is highlighted while
@@ -1856,13 +2697,72 @@ table.prominent tr.flat-pair-selected > th {
     background-color: rgba(var(--bs-primary-rgb), 0.30) !important;
 }
 
-[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary, [data-bs-theme=dark] table.prominent .header td .btn-outline-primary {
-    --bs-btn-color: var(--bs-body-bg);
-    --bs-btn-border-color: var(--bs-body-bg);
-    --bs-btn-hover-color: var(--bs-primary);
-    --bs-btn-hover-bg: var(--bs-body-bg);
-    --bs-btn-hover-border-color: var(--bs-body-bg);
+/* The per-row menu stays where it is, as a quiet icon until hovered. */
+[data-bs-theme=dark] table.prominent td .btn-secondary.dropdown-toggle {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-hover-bg: var(--pw-surface-raised-bg);
+    --bs-btn-hover-border-color: var(--pw-control-border-color);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: var(--pw-surface-raised-bg);
+    --bs-btn-active-border-color: var(--pw-control-border-color);
+    --bs-btn-active-color: var(--bs-emphasis-color);
 }
+
+/* A warning about the rows of a table, shown as a status line along the
+   table's top edge rather than as a separate banner. */
+/* The status bar stays in view above the table's pinned header; on a phone,
+   where it wraps over several lines, it scrolls away with the page. */
+@media (min-width: 768px) {
+    .table-status-bar-wrapper {
+        position: sticky;
+        top: var(--header-height);
+        z-index: 3;
+    }
+}
+
+.table-status-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-height: 2.6rem;
+    padding: .35rem .75rem;
+    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
+    border-top: 1px solid var(--bs-border-color);
+    color: var(--bs-emphasis-color);
+    font-weight: 500;
+}
+
+.table-status-bar-dot {
+    flex-shrink: 0;
+    width: .55rem;
+    height: .55rem;
+    border-radius: 50%;
+    background: var(--bs-warning);
+    box-shadow: 0 0 0 .3rem rgba(var(--bs-warning-rgb), 0.18);
+}
+
+.table-status-bar-action {
+    --bs-btn-color: var(--bs-warning);
+    --bs-btn-hover-color: var(--bs-warning);
+    --bs-btn-hover-bg: rgba(var(--bs-warning-rgb), 0.12);
+    --bs-btn-active-color: var(--bs-warning);
+    --bs-btn-active-bg: rgba(var(--bs-warning-rgb), 0.18);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-border-color: transparent;
+    font-weight: 600;
+}
+
+[data-bs-theme=dark] .table-status-bar .btn-close {
+    filter: var(--bs-btn-close-white-filter, invert(1) grayscale(100%) brightness(200%));
+    opacity: .6;
+}
+
+[data-bs-theme=dark] .table-status-bar .btn-close:hover {
+    opacity: 1;
+}
+
 
 [data-bs-theme=dark] table.prominent tr.sortable-chosen,
 [data-bs-theme=dark] table.prominent tr.sortable-ghost {
@@ -1901,6 +2801,78 @@ button.collapse-button .bi-chevron-down {
 
 button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     transform: rotate(-90deg);
+}
+
+/* Admin modals: a folding section is a full-width row, its title followed by
+   a summary of what it holds and a chevron at its end that points right
+   while closed and down while open. */
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn) {
+    display: flex;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: .65rem .85rem;
+    border: 1px solid var(--pw-control-border-color);
+    border-radius: var(--bs-border-radius);
+    background: #32363e;
+    cursor: pointer;
+    text-align: start;
+}
+
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn):hover {
+    border-color: #575c66;
+    background: #393e47;
+}
+
+/* Open, the row and what it holds are one panel: the fields sit in a frame
+   joined to the bottom of the row. */
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn):not(.collapsed) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn) + div {
+    padding: .9rem .85rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-top: 0;
+    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+}
+
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn) + div > .row:first-child {
+    margin-top: 0;
+}
+
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn) > h4 {
+    display: flex !important;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    color: var(--bs-emphasis-color);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+[data-bs-theme=dark] .modal button.collapse-button:not(.btn) > h4 > .bi-chevron-down {
+    order: 3;
+    margin-left: auto;
+    color: var(--bs-emphasis-color) !important;
+    font-size: 1.05rem;
+    transform: none;
+}
+
+[data-bs-theme=dark] .modal button.collapse-button.collapsed:not(.btn) > h4 > .bi-chevron-down {
+    transform: rotate(-90deg);
+}
+
+.collapse-button-summary {
+    overflow: hidden;
+    min-width: 0;
+    color: var(--bs-secondary-color);
+    font-size: .88rem;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .team-block-chevron {
@@ -2044,6 +3016,39 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 
 .alert .btn-close {
     filter: var(--bs-btn-close-white-filter);
+}
+
+/* Admin messages: a raised dark panel, the kind of message carried by a dot
+   in its colour. */
+[data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) {
+    padding: .7rem .85rem !important;
+    border: 1px solid var(--pw-control-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    background-color: #24272d;
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, 0.45);
+    color: var(--bs-emphasis-color);
+}
+
+[data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error)::before {
+    content: '';
+    flex-shrink: 0;
+    align-self: center;
+    width: .6rem;
+    height: .6rem;
+    border-radius: 50%;
+    background: var(--message-color);
+    box-shadow: 0 0 0 .3rem color-mix(in srgb, var(--message-color) 22%, transparent);
+}
+
+[data-bs-theme=dark] .alert.message-debug { --message-color: var(--bs-secondary-color); }
+[data-bs-theme=dark] .alert.message-info { --message-color: #6ab0f3; }
+[data-bs-theme=dark] .alert.message-success { --message-color: #4cb975; }
+[data-bs-theme=dark] .alert.message-warning { --message-color: var(--bs-warning); }
+[data-bs-theme=dark] .alert.message-error { --message-color: #f08a94; }
+
+[data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: .6;
 }
 
 .error-page-container {

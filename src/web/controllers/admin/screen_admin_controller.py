@@ -34,7 +34,7 @@ from web.messages import Message
 from web.session import (
     SessionScreensShowFamilyScreens,
     SessionScreensShowDetails,
-    SessionScreensScreenTypes,
+    SessionScreensTypeFilter,
 )
 from web.urls import admin_event_url
 
@@ -155,15 +155,19 @@ class ScreenAdminRenderer(BaseEventAdminController):
                     screen_type_.has_screen_sets
                 )
                 admin_screen_types_data[screen_type_]['screens'] = screens
-                admin_screen_types_data[screen_type_]['title'] = (
-                    f'{screen_type_.name} ({len(screens) or "-"})'
-                )
+                admin_screen_types_data[screen_type_]['title'] = screen_type_.name
+            type_filter = SessionScreensTypeFilter(request).get()
+            if not any(
+                screen_type_.id == type_filter and data['screens']
+                for screen_type_, data in admin_screen_types_data.items()
+            ):
+                type_filter = ''
             template_context |= {
                 'admin_event_tab': 'admin-event-screens-tab',
                 'admin_screen_types_data': admin_screen_types_data,
                 'show_family_screens': show_family_screens,
                 'show_details': SessionScreensShowDetails(request).get(),
-                'admin_screens_screen_types': SessionScreensScreenTypes(request).get(),
+                'admin_screens_type_filter': type_filter,
                 'admin_screens_count': sum(
                     len(data) for data in admin_screen_types_data.values()
                 ),
@@ -619,28 +623,14 @@ class ScreenAdminController(ScreenAdminRenderer):
         request: HTMXRequest,
         show_family_screens: FromQuery[bool | None],
         show_details: FromQuery[bool | None],
+        screen_type_filter: FromQuery[str | None],
     ) -> Template | Redirect:
         if show_family_screens is not None:
             SessionScreensShowFamilyScreens(request).set(show_family_screens)
         if show_details is not None:
             SessionScreensShowDetails(request).set(show_details)
-        # The expand/collapse of each type's section is posted as
-        # ``admin_screens_show_<type_id>`` — read generically so any screen
-        # type (including plugin-defined ones) is handled.
-        prefix = 'admin_screens_show_'
-        screen_types = SessionScreensScreenTypes(request).get()
-        changed = False
-        for key, raw in request.query_params.items():
-            if not key.startswith(prefix):
-                continue
-            type_id = key[len(prefix) :]
-            if raw in ('true', 'on', '1'):
-                screen_types.add(type_id)
-            else:
-                screen_types.discard(type_id)
-            changed = True
-        if changed:
-            SessionScreensScreenTypes(request).set(screen_types)
+        if screen_type_filter is not None:
+            SessionScreensTypeFilter(request).set(screen_type_filter)
         return self._admin_event_screens_render(request)
 
     @get(
@@ -678,10 +668,12 @@ class ScreenAdminController(ScreenAdminRenderer):
         )
 
     @staticmethod
-    def _expand_screen_type_section(request: HTMXRequest, screen_type: str) -> None:
-        screen_types = SessionScreensScreenTypes(request).get()
-        screen_types.add(screen_type)
-        SessionScreensScreenTypes(request).set(screen_types)
+    def _show_screen_type(request: HTMXRequest, screen_type: str) -> None:
+        """Keeps a screen just created or duplicated in view: the filter on
+        another type gives way to the screen's own."""
+        type_filter = SessionScreensTypeFilter(request)
+        if type_filter.get() not in ('', screen_type):
+            type_filter.set(screen_type)
 
     def _admin_screen_update(
         self,
@@ -733,7 +725,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                     )
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
-                    self._expand_screen_type_section(request, stored_screen.type)
+                    self._show_screen_type(request, stored_screen.type)
                     scroll_to_screen_id = stored_screen.id
                     if (
                         ScreenTypeManager(event)
@@ -757,7 +749,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                     screen = web_context.get_admin_screen()
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
-                    self._expand_screen_type_section(request, stored_screen.type)
+                    self._show_screen_type(request, stored_screen.type)
                     scroll_to_screen_id = stored_screen.id
                     if (
                         ScreenTypeManager(event)

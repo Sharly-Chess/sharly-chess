@@ -89,13 +89,13 @@
 
 {% macro tournaments_count(item, view, placement) %}
     <span class="{% if not item.tournament_count %}text-secondary{% endif %} text-nowrap">
-        <i class="bi-diagram-3-fill pe-1"></i>{{ item.tournament_count }}
+        <i class="bi-diagram-3 pe-1"></i>{{ item.tournament_count }}
     </span>
 {% endmacro %}
 
 {% macro players_count(item, view, placement) %}
     <span class="{% if not item.player_count %}text-secondary{% endif %} text-nowrap">
-        <i class="bi-people-fill pe-1"></i>{{ item.player_count }}
+        <i class="bi-people pe-1"></i>{{ item.player_count }}
     </span>
 {% endmacro %}
 
@@ -105,7 +105,7 @@
             class="{% if not item.team_count %}text-secondary{% endif %} text-nowrap"
             {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
         >
-            <i class="bi-flag-fill pe-1"></i>{{ item.team_count }}
+            <i class="bi-flag pe-1"></i>{{ item.team_count }}
         </span>
     {% endif %}
 {% endmacro %}
@@ -116,12 +116,12 @@
             class="text-nowrap"
             {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
         >
-            <i class="bi-flag-fill pe-1"></i>{{ _('Team') }}
+            <i class="bi-flag pe-1"></i>{{ _('Team') }}
             <span class="{% if not item.team_count %}text-secondary{% endif %}">({{ item.team_count }})</span>
         </span>
     {% else %}
         <span class="text-nowrap">
-            <i class="bi-person-fill pe-1"></i>{{ _('Individual') }}
+            <i class="bi-person pe-1"></i>{{ _('Individual') }}
         </span>
     {% endif %}
 {% endmacro %}
@@ -130,7 +130,7 @@
     {% if view == 'card' %}
         {% if item.tags %}
             <div class="collection-fact">
-                <span class="collection-fact-label"><i class="bi-tags-fill"></i>{{ _('Tags') }}</span>
+                <span class="collection-fact-label"><i class="bi-tags"></i>{{ _('Tags') }}</span>
                 {{ tag_macros.tag_badges(item.tags) }}
             </div>
         {% endif %}
@@ -167,13 +167,13 @@
         <section class="collection-detail-section">
             <h6>{{ _('Organisation') }}</h6>
             <div class="{% if not item.organiser_name %}text-secondary{% endif %}">
-                <i class="bi-building-fill pe-1"></i>{{ item.organiser_name or _('No organiser') }}
+                <i class="bi-building pe-1"></i>{{ item.organiser_name or _('No organiser') }}
             </div>
             <div class="{% if not item.organiser_director %}text-secondary{% endif %}">
                 <i class="bi-person-bounding-box pe-1"></i>{{ item.organiser_director or _('No director') }}
             </div>
             <div class="{% if not item.organiser_email %}text-secondary{% endif %}">
-                <i class="bi-envelope-fill pe-1"></i>
+                <i class="bi-envelope pe-1"></i>
                 {% if item.organiser_email %}
                     <a href="mailto:{{ item.organiser_email }}">{{ item.organiser_email }}</a>
                 {% else %}
@@ -191,8 +191,8 @@
         </section>
         <section class="collection-detail-section">
             <h6>{{ _('Event content') }}</h6>
-            {% if item.is_team_event %}<div><i class="bi-flag-fill pe-1"></i>{{ _('Teams: %(num)d', num=item.team_count) }}</div>{% endif %}
-            <div><i class="bi-clock-fill pe-1"></i>{{ _('Timers: %(num)d', num=item.timer_count) }}</div>
+            {% if item.is_team_event %}<div><i class="bi-flag pe-1"></i>{{ _('Teams: %(num)d', num=item.team_count) }}</div>{% endif %}
+            <div><i class="bi-clock pe-1"></i>{{ _('Timers: %(num)d', num=item.timer_count) }}</div>
             <div><i class="bi-fullscreen pe-1"></i>{{ _('Screens: %(num)d', num=item.screen_count) }}</div>
             <div><i class="bi-arrows-fullscreen pe-1"></i>{{ _('Multi-screens: %(num)d', num=item.family_count) }}</div>
             <div><i class="bi-repeat pe-1"></i>{{ _('Rotators: %(num)d', num=item.rotator_count) }}</div>
@@ -261,7 +261,7 @@
                     hx-indicator="#please-wait"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
-                ><i class="bi-archive-fill"></i></button>
+                ><i class="bi-archive"></i></button>
             {% endcall %}
         </div>
     {% elif event.accessible and event.are_all_plugins_enabled and (client.can_manage_events or client.can_create_events) %}
@@ -305,7 +305,7 @@
                             hx-indicator="#please-wait"
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
-                        ><i class="bi-pencil-fill"></i></button>
+                        ><i class="bi-pencil"></i></button>
                     {% endcall %}
                 {% endif %}
                 {% if client.can_create_events %}
@@ -340,7 +340,7 @@
                             hx-indicator="#please-wait"
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
-                        ><i class="bi-archive-fill"></i></button>
+                        ><i class="bi-archive"></i></button>
                     {% endcall %}
                 {% endif %}
             </div>

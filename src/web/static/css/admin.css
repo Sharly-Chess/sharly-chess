@@ -62,6 +62,11 @@
     color: black;
 }
 
+[data-bs-theme=dark] .highlight .player-link,
+[data-bs-theme=dark] .highlight .player-link:hover {
+    color: var(--bs-emphasis-color);
+}
+
 .table-sticky-border {
     border-right: 2px solid var(--bs-body-bg);
     left: var(--side-bar-width);
@@ -477,6 +482,65 @@
     }
 }
 
+/* Admin: each group of pairings navigation (rounds, tournaments) is one
+   segmented control, its arrows and list divided by rules inside a single
+   frame. */
+[data-bs-theme=dark] .round-controls-group {
+    gap: 0 !important;
+    align-items: stretch;
+    border: 1px solid var(--pw-control-border-color);
+    border-radius: var(--bs-border-radius);
+    background: var(--pw-surface-bg);
+}
+
+[data-bs-theme=dark] .round-controls-group > :not(select) + :not(select),
+[data-bs-theme=dark] .round-controls-group > select + *,
+[data-bs-theme=dark] .round-controls-group > * + select {
+    border-left: 1px solid var(--pw-control-border-color) !important;
+}
+
+[data-bs-theme=dark] .round-controls-group > span:not(.select2) {
+    display: inline-flex;
+}
+
+[data-bs-theme=dark] .round-controls-group .btn {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-hover-bg: var(--pw-surface-raised-bg);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-disabled-border-color: transparent;
+    --bs-btn-disabled-bg: transparent;
+    border-radius: 0;
+}
+
+[data-bs-theme=dark] .round-controls-group > :first-child .btn {
+    border-top-left-radius: calc(var(--bs-border-radius) - 1px);
+    border-bottom-left-radius: calc(var(--bs-border-radius) - 1px);
+}
+
+[data-bs-theme=dark] .round-controls-group > :last-child .btn {
+    border-top-right-radius: calc(var(--bs-border-radius) - 1px);
+    border-bottom-right-radius: calc(var(--bs-border-radius) - 1px);
+}
+
+[data-bs-theme=dark] .round-controls-group .select2-selection {
+    border: 0 !important;
+}
+
+[data-bs-theme=dark] .round-controls-group .form-select {
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+}
+
+[data-bs-theme=dark] .round-controls-group :is(.form-select, .select2-selection) {
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
 /* Championship rule rows: a shared grid template so the handle, order, acronym,
    name, details and actions line up across every (independent) row card. */
 .championship-rule-grid {
@@ -513,6 +577,40 @@
 /* Solid split buttons otherwise read as a single button. */
 .btn-group > .dropdown-toggle.dropdown-toggle-split:not([class*="btn-outline-"]) {
     margin-left: 2px;
+}
+
+/* The admin's outline buttons have quiet borders, which no longer mark the
+   join between the two halves of a split button. */
+[data-bs-theme=dark] .btn-group > .dropdown-toggle.dropdown-toggle-split[class*="btn-outline-"] {
+    margin-left: 2px;
+    border-top-left-radius: var(--bs-border-radius-sm);
+    border-bottom-left-radius: var(--bs-border-radius-sm);
+}
+
+[data-bs-theme=dark] .btn-group > :has(+ .dropdown-toggle-split[class*="btn-outline-"]) > .btn,
+[data-bs-theme=dark] .btn-group > .btn:has(+ .dropdown-toggle-split[class*="btn-outline-"]) {
+    border-top-right-radius: var(--bs-border-radius-sm);
+    border-bottom-right-radius: var(--bs-border-radius-sm);
+}
+
+/* Among the soft buttons of a card or a row, the two halves of a split
+   button keep their small gap but join with square corners. */
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .dropdown-toggle.dropdown-toggle-split {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > :has(+ .dropdown-toggle-split) > .btn,
+[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .btn:has(+ .dropdown-toggle-split) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* A badge inside a list's value or options keeps clear of the list's border. */
+.select2-container .select2-selection__rendered .badge,
+.select2-results__option .badge {
+    --bs-badge-padding-y: .3em;
+    --bs-badge-padding-x: .5em;
 }
 
 /* The results coming in do not change the width of the list */
@@ -573,7 +671,7 @@
     box-shadow: none;
     border-color: var(--bs-border-color);
     outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
-    outline-offset: 4px;
+    outline-offset: 0;
 }
 [data-bs-theme=dark] .input-group .select2-container--bootstrap-5.select2-container--focus .select2-selection,
 [data-bs-theme=dark] .input-group .select2-container--bootstrap-5.select2-container--open .select2-selection {
@@ -609,9 +707,31 @@
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove:hover {
     filter: invert(1);
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true] {
-    background-color: var(--bs-secondary-bg) !important;
+/* A field that cannot be changed looks like the others, its value muted and
+   a lock in place of the arrow of a list. */
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true],
+[data-bs-theme=dark] .form-select:disabled,
+[data-bs-theme=dark] .form-control:disabled {
+    border-color: var(--bs-border-color) !important;
+    background-color: var(--bs-body-bg) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238b909a'%3e%3cpath d='M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right .75rem center !important;
+    background-size: .8rem .8rem !important;
+    color: var(--bs-secondary-color) !important;
     opacity: 1;
+}
+
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true] .select2-selection__rendered {
+    color: var(--bs-secondary-color) !important;
+}
+
+[data-bs-theme=dark] .form-control:disabled {
+    padding-right: 2.25rem;
+}
+
+[data-bs-theme=dark] .form-control:disabled::placeholder {
+    color: var(--bs-secondary-color);
 }
 .input-group .select2-container--bootstrap-5 {
     height: 100%;
@@ -698,9 +818,67 @@
     min-width: min-content;
 }
 
+.screens-type-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-bottom: 1.25rem;
+}
+
+.screens-type-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    min-height: 2.15rem;
+    padding: .25rem .85rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--bs-body-color);
+    font-size: .9rem;
+}
+
+.screens-type-filter-chip:hover {
+    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
+}
+
+.screens-type-filter-chip.active {
+    border-color: rgba(var(--bs-primary-rgb), 0.45);
+    background: var(--pw-nav-active-bg, var(--bs-tertiary-bg));
+    color: var(--pw-nav-active-color, var(--bs-emphasis-color));
+    font-weight: 500;
+}
+
+.screens-type-filter-chip .fw-bold {
+    font-weight: inherit !important;
+}
+
+.screens-type-filter-count {
+    color: var(--bs-secondary-color);
+    font-size: .8rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+}
+
+.screens-type-filter-chip.active .screens-type-filter-count {
+    color: inherit;
+}
+
+.screens-collection-section-heading {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: .5rem 0 .65rem;
+    color: #c9ccd2;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.screens-collection-section-heading .screens-type-filter-count {
+    font-size: .9rem;
+}
+
 .screens-collection-list-section,
-.screens-collection-list-section > .collapse.show,
-.screens-collection-list-section > .collapsing,
 .screens-collection-section-content {
     display: grid;
     grid-template-columns: subgrid;
@@ -725,22 +903,24 @@
    off the side. Hold it to the screen and let it wrap, and keep it there
    while the cards beneath it are scrolled sideways. */
 @media (max-width: 767.98px) {
+    /* On a phone the chips stay on one line and scroll, so they take a single
+       row above the screens. */
+    .screens-type-filter {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        max-width: calc(var(--vw, 100vw) - 2rem);
+        scrollbar-width: none;
+    }
+
+    .screens-type-filter-chip {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
     .screens-collection-section-heading {
         position: sticky;
         left: 0;
         max-width: calc(var(--vw, 100vw) - 2rem);
-    }
-
-    /* The title is held on one line for the table-shaped layout, where the
-       row is as wide as it needs to be. */
-    .screens-collection-section-heading .text-nowrap {
-        white-space: normal !important;
-    }
-
-    .screens-collection-section-heading .collapse-button,
-    .screens-collection-section-heading .form-check-label {
-        min-width: 0;
-        text-align: start;
     }
 }
 

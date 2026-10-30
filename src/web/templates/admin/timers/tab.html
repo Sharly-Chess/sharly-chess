@@ -40,7 +40,7 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            <i class="bi-plus-square pe-1"></i>
+            <i class="bi-plus-lg pe-1"></i>
             {{ _('Create a timer') }}
         </button>
     </span>
@@ -56,7 +56,7 @@
         {% include '/admin/common/collection.html' %}
     {% endwith %}
     {% if not admin_event.timers_by_name %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <p>
                 {{ _('Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event.') }}
             </p>

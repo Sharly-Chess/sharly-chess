@@ -22,6 +22,9 @@
                         {{ nav_tab.title }}
                     </span>
                 </span>
+                {% if nav_tab.count is defined %}
+                    <span class="nav-count expanded-only">{{ nav_tab.count }}</span>
+                {% endif %}
                 {% if nav_tab.experimental_features_warning %}
                     {{ macros.experimental_warning(sharly_chess_config.experimental) }}
                 {% endif %}
@@ -93,6 +96,9 @@
                                     <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
                                 {% endif %}
                                 {{ sub_nav_tab.title }}
+                                {% if sub_nav_tab.count is defined %}
+                                    <span class="nav-count">{{ sub_nav_tab.count }}</span>
+                                {% endif %}
                             </button>
                         </li>
                     {% endfor %}
@@ -102,7 +108,7 @@
 
         {# Expanded mode: the section heading and its tabs, spelled out. #}
         <div class="expanded-only w-100">
-            <div class="d-flex w-100 align-items-center pe-3 mt-3 mb-2">
+            <div class="d-flex w-100 align-items-center pe-3 mt-3 mb-2 sidebar-section-heading">
                 <h4 class="ps-3 mb-0 fs-5 min-width-0">{{ nav_tab.title }}</h4>
                 {% if nav_tab.create_modal_url %}
                     <button

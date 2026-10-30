@@ -13,7 +13,7 @@
 {% macro identity(item, view, placement) %}
     {% if item.administrator %}
         <span class="d-inline-flex align-items-center gap-2 fw-bold">
-            <i class="bi-person-fill-gear"></i>{{ item.full_name }}
+            <i class="bi-person-gear"></i>{{ item.full_name }}
         </span>
     {% elif item.anonymous %}
         <span class="d-inline-flex align-items-center gap-2 fst-italic">
@@ -27,7 +27,7 @@
 {% macro card_identity(item, view, placement) %}
     {% if item.administrator %}
         <i
-            class="bi-person-fill-gear pe-1"
+            class="bi-person-gear pe-1"
             {{ macros.tooltip_attributes(
                 'info', _('The account of the user accessing Sharly Chess directly from the server.'), 'top'
             ) }}
@@ -44,14 +44,14 @@
     {% else %}
         {% if item.active %}
             <i
-                class="bi-person-fill-check text-success pe-1"
+                class="bi-person-check text-success pe-1"
                 {{ macros.tooltip_attributes(
                     'info', _('This account is active, anonymous users can log in to it.'), 'right'
                 ) }}
             ></i>
         {% else %}
             <i
-                class="bi-person-fill-x text-danger pe-1"
+                class="bi-person-x text-danger pe-1"
                 {{ macros.tooltip_attributes(
                     'info', _('This account is not active, anonymous users can not log in to it.'), 'right'
                 ) }}
@@ -70,12 +70,12 @@
         <span
             class="text-success text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is active, anonymous users can log in to it.'), 'top') }}
-        ><i class="bi-person-fill-check pe-1"></i>{{ pgettext('active account', 'Active') }}</span>
+        ><i class="bi-person-check pe-1"></i>{{ pgettext('active account', 'Active') }}</span>
     {% else %}
         <span
             class="text-danger text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is not active, anonymous users can not log in to it.'), 'top') }}
-        ><i class="bi-person-fill-x pe-1"></i>{{ pgettext('inactive account', 'Inactive') }}</span>
+        ><i class="bi-person-x pe-1"></i>{{ pgettext('inactive account', 'Inactive') }}</span>
     {% endif %}
 {% endmacro %}
 
@@ -341,7 +341,7 @@
                     {% else %}
                         disabled
                     {% endif %}
-                ><i class="bi-pencil-fill"></i></button>
+                ><i class="bi-pencil"></i></button>
             {% endcall %}
             {% call macros.action_tooltip(
                 'info' if account.edit_properties and client_can_manage_account else 'warning',
@@ -385,7 +385,7 @@
                     {% else %}
                         disabled
                     {% endif %}
-                ><i class="bi-trash-fill"></i></button>
+                ><i class="bi-trash"></i></button>
             {% endcall %}
         </div>
     </div>

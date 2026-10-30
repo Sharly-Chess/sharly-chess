@@ -489,15 +489,21 @@ class ProjectBuilder(ABC):  # noqa: B024
 
         # 3. --- Copy the licence of the bundled fonts ---
 
-        font_licence_file = packages_dir / 'Atkinson_Hyperlegible_Next.txt'
-        with open(font_licence_file, 'w', encoding='utf-8') as f:
-            f.write('Font: Atkinson Hyperlegible Next\n')
-            f.write('Licence Type: SIL Open Font License 1.1\n')
-            f.write('=' * 50 + '\n\n')
-            f.write(
-                (BASE_DIR / 'src/web/static/fonts/OFL.txt').read_text(encoding='utf-8')
-            )
-        logger.info('Created font licence file: %s', font_licence_file.name)
+        for font_name, licence_file_name in (
+            ('Atkinson Hyperlegible Next', 'OFL.txt'),
+            ('Inter', 'Inter-OFL.txt'),
+        ):
+            font_licence_file = packages_dir / f'{font_name.replace(" ", "_")}.txt'
+            with open(font_licence_file, 'w', encoding='utf-8') as f:
+                f.write(f'Font: {font_name}\n')
+                f.write('Licence Type: SIL Open Font License 1.1\n')
+                f.write('=' * 50 + '\n\n')
+                f.write(
+                    (BASE_DIR / 'src/web/static/fonts' / licence_file_name).read_text(
+                        encoding='utf-8'
+                    )
+                )
+            logger.info('Created font licence file: %s', font_licence_file.name)
 
         # 4. --- Generate extra licence information notices ---
 

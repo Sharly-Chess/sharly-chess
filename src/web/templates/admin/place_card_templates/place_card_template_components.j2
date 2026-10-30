@@ -34,7 +34,7 @@
                         class="btn btn-sm btn-outline-primary"
                         hx-get="{{ url_for('place-card-visual-editor', template_id=item.id) }}"
                         hx-target="body" hx-push-url="true" hx-indicator="#please-wait"
-                    ><i class="bi-pencil-fill"></i></button>
+                    ><i class="bi-pencil"></i></button>
                 {% endcall %}
             {% endif %}
             {% call macros.action_tooltip('info', _('Duplicate'), 'top') %}
@@ -52,7 +52,7 @@
                         hx-get="{{ url_for('place-card-template-delete-modal', template_id=item.id) }}"
                         hx-target="body" hx-indicator="#please-wait"
                         data-bs-toggle="modal" data-bs-target="#modal-wrapper"
-                    ><i class="bi-trash-fill"></i></button>
+                    ><i class="bi-trash"></i></button>
                 {% endcall %}
             {% endif %}
         </div>

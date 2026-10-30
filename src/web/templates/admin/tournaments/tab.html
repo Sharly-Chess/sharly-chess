@@ -118,7 +118,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
                 >
-                    <i class="bi-plus-square pe-1"></i>
+                    <i class="bi-plus-lg pe-1"></i>
                     {{ _('Create a tournament') }}
                 </button>
                 {% if DEVEL_ENV %}
@@ -164,6 +164,7 @@
     >
         {% with
             items=allowed_tournaments,
+            collection_items_class='admin-collection-cards-wide',
             empty_message=_('No tournaments.'),
             sortable=sortable,
             show_details=collection_show_details

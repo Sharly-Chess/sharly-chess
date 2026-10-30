@@ -61,7 +61,7 @@
                     aria-expanded="false"
                 {% endif %}
             >
-                <i class="bi-plus-square pe-1"></i>
+                <i class="bi-plus-lg pe-1"></i>
                 {{ _('Create a category') }}
             </button>
             {% if admin_prize_group and client.can_manage_prizes %}
@@ -80,7 +80,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         >
-                            <i class="bi-plus-square pe-1"></i>
+                            <i class="bi-plus-lg pe-1"></i>
                             {{ _('Create a category') }}
                         </button>
                     </li>
@@ -246,7 +246,7 @@
                             hx-indicator="#please-wait"
                         {% endif %}
                     >
-                        <i class="bi-plus-square pe-1"></i>
+                        <i class="bi-plus-lg pe-1"></i>
                         {{ _('Create a Prize Bracket') }}
                     </button>
                 </form>
@@ -276,7 +276,7 @@
 {% block cards_container_cards %}
     {% set sortable = admin_prize_group and admin_prize_group.categories|length > 1 %}
     {% if not admin_prize_group %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <h5 class="mt-2 my-5 text-center">{{ _('No Prize Bracket') }}</h5>
             <p>
                 {{ _(
@@ -295,7 +295,7 @@
             <p>{{ _('Create a Prize Bracket now to get started.') }}</p>
         </div>
     {% elif not admin_prize_group.categories %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <h5 class="mt-2 my-5 text-center">{{ _('No Prize Category') }}</h5>
             <p>
                 {{ _(

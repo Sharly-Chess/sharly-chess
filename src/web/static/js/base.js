@@ -47,6 +47,13 @@ function setSize() {
     // We store the (dynamic) header height, useful for sticking things under it
     let headerHeight = document.getElementById('top-nav-wrapper')?.offsetHeight ?? 0;
     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+
+    // A status bar pinned along the top of a table pushes the table's own
+    // pinned header down by its height
+    const statusBar = document.querySelector('.table-status-bar-wrapper');
+    const statusBarHeight = statusBar && getComputedStyle(statusBar).position === 'sticky'
+        ? statusBar.offsetHeight : 0;
+    document.documentElement.style.setProperty('--table-status-bar-height', `${statusBarHeight}px`);
 }
 
 setSize();

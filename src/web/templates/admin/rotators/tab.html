@@ -41,7 +41,7 @@
                     hx-trigger="click, SC_Plus from:body"
                 {% endif %}
             >
-                <i class="bi-plus-square pe-1"></i>
+                <i class="bi-plus-lg pe-1"></i>
                 {{ _('Create a rotator') }}
             </button>
         </span>
@@ -59,7 +59,7 @@
         {% include '/admin/common/collection.html' %}
     {% endwith %}
     {% if not admin_rotators and client.can_manage_screens %}
-        <div class="mx-auto" style="max-width: 500px;">
+        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
             <p>{{ _('Too much information to display on a single projector?') }}</p>
             <p>{{ _('Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event.') }}</p>
             <p>{{ _("Input screens can't be part of rotators.") }}</p>

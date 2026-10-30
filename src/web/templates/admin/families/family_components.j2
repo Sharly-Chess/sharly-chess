@@ -42,7 +42,7 @@
         <span
             class="text-truncate"
             {{ macros.tooltip_attributes('info', _('Timer'), 'top') }}
-        ><i class="bi-clock-fill pe-1 text-secondary"></i>{{ item.timer.name }}</span>
+        ><i class="bi-clock pe-1 text-secondary"></i>{{ item.timer.name }}</span>
     {% else %}
         <span class="text-secondary fst-italic">{{ _('No timer') }}</span>
     {% endif %}
@@ -92,7 +92,7 @@
                 {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}
             </div>
             <div class="{% if not family.timer %}text-secondary{% endif %}">
-                <i class="bi-clock-fill pe-1"></i>
+                <i class="bi-clock pe-1"></i>
                 {{
                     _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name)
                     if family.timer
@@ -162,7 +162,7 @@
                     hx-indicator="#please-wait"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
-                ><i class="bi-pencil-fill"></i></button>
+                ><i class="bi-pencil"></i></button>
             {% endcall %}
             {% call macros.action_tooltip('info', _('Duplicate the multi-screen.'), 'top') %}
                 <button
@@ -192,7 +192,7 @@
                     hx-indicator="#please-wait"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
-                ><i class="bi-trash-fill"></i></button>
+                ><i class="bi-trash"></i></button>
             {% endcall %}
         </div>
     </div>

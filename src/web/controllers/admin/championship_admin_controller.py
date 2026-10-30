@@ -80,6 +80,7 @@ from utils.date_time import format_date
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
+    nav_count,
 )
 from web.controllers.admin.event_documents_controller import export_toolbar_context
 from web.controllers.admin.index_admin_controller import IndexAdminController
@@ -906,37 +907,36 @@ class ChampionshipAdminController(BaseAdminController):
             raise NotFoundException(f'Invalid Championship tab [{championship_tab}]')
         web_context = AdminWebContext(request)
         is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
-        competitor_count = len(championship.competitors) or '-'
+        competitor_count = len(championship.competitors)
         if is_team:
             competitor_nav = {
-                'title': _('Teams ({num})').format(num=competitor_count),
-                'icon_class': 'bi-people-fill',
+                'title': _('Teams'),
+                'count': nav_count(competitor_count),
+                'icon_class': 'bi-people',
             }
         else:
             competitor_nav = {
-                'title': pgettext('with shortcut indication', 'Players ({num})').format(
-                    num=competitor_count
-                ),
-                'icon_class': 'bi-people-fill',
+                'title': pgettext('with shortcut indication', 'Players'),
+                'count': nav_count(competitor_count),
+                'icon_class': 'bi-people',
                 'shortcut': f'{pgettext("keyboard shortcut for the players tab", "SC_P")} from:body',
             }
         nav_tabs = {
             'configuration': {
                 'title': pgettext('with shortcut indication', 'Configuration'),
-                'icon_class': 'bi-gear-fill',
+                'icon_class': 'bi-gear',
                 'shortcut': f'{pgettext("keyboard shortcut for the configuration tab", "SC_C")} from:body',
             },
             'sources': {
-                'title': pgettext('with shortcut indication', 'Sources ({num})').format(
-                    num=len(championship.sources) or '-'
-                ),
-                'icon_class': 'bi-diagram-3-fill',
+                'title': pgettext('with shortcut indication', 'Sources'),
+                'count': nav_count(len(championship.sources)),
+                'icon_class': 'bi-diagram-3',
                 'shortcut': f'{pgettext("keyboard shortcut for the sources tab", "SC_S")} from:body',
             },
             'competitors': competitor_nav,
             'results': {
                 'title': pgettext('with shortcut indication', 'Rankings'),
-                'icon_class': 'bi-trophy-fill',
+                'icon_class': 'bi-trophy',
                 'shortcut': f'{pgettext("keyboard shortcut for the rankings tab", "SC_R")} from:body',
             },
         }

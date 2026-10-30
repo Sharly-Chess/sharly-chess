@@ -43,12 +43,12 @@ def parse(response) -> AdvancedHTMLParser:
 
 
 def section(parser: AdvancedHTMLParser, screen_type: ScreenType) -> str:
-    """One accordion section of the screens tab. It is in the page whether
-    or not it is open, which is a matter for the browser."""
+    """The section of one screen type on the screens tab, all types being
+    shown while no type filter is set."""
     found = [
         element.getHTML()
         for element in parser.getElementsByTagName('div')
-        if element.getAttribute('id') == f'admin-screens-show-{screen_type.value}'
+        if element.getAttribute('id') == f'admin-screens-section-{screen_type.value}'
     ]
     assert found, screen_type
     return found[0]

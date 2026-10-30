@@ -23,6 +23,7 @@ from utils.enum import (
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
+    nav_count,
 )
 from web.guards import EventGuard
 from web.messages import Message
@@ -104,7 +105,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'title': pgettext('with shortcut indication', 'Configuration'),
                     'modal': 'admin-event-modal',
                     'action': FormAction.UPDATE,
-                    'icon_class': 'bi-gear-fill',
+                    'icon_class': 'bi-gear',
                     'shortcut': f'{pgettext("keyboard shortcut for the configuration tab", "SC_C")} from:body',
                 },
             }
@@ -114,33 +115,30 @@ class BaseEventAdminWebContext(AdminWebContext):
             )
             nav_tabs |= {
                 'admin-event-tournaments-tab': {
-                    'title': pgettext(
-                        'with shortcut indication', 'Tournaments ({num})'
-                    ).format(num=len(tournaments) or '-'),
+                    'title': pgettext('with shortcut indication', 'Tournaments'),
+                    'count': nav_count(len(tournaments)),
                     'template': 'tournaments/tab.html',
-                    'icon_class': 'bi-diagram-3-fill',
+                    'icon_class': 'bi-diagram-3',
                     'shortcut': f'{pgettext("keyboard shortcut for the tournaments tab", "SC_T")} from:body',
                 },
             }
         if self.client.can_view_players_tab:
             nav_tabs |= {
                 'admin-event-players-tab': {
-                    'title': pgettext(
-                        'with shortcut indication', 'Players ({num})'
-                    ).format(num=len(self.client.allowed_players_by_id) or '-'),
+                    'title': pgettext('with shortcut indication', 'Players'),
+                    'count': nav_count(len(self.client.allowed_players_by_id)),
                     'template': 'players/tab.html',
-                    'icon_class': 'bi-people-fill',
+                    'icon_class': 'bi-people',
                     'shortcut': f'{pgettext("keyboard shortcut for the players tab", "SC_P")} from:body',
                 },
             }
         if event.is_team_event and self.client.can_view_tournaments_tab:
             nav_tabs |= {
                 'admin-event-teams-tab': {
-                    'title': _('Teams ({num})').format(
-                        num=len(event.teams_by_id) or '-'
-                    ),
+                    'title': _('Teams'),
+                    'count': nav_count(len(event.teams_by_id)),
                     'template': 'teams/tab.html',
-                    'icon_class': 'bi-flag-fill',
+                    'icon_class': 'bi-flag',
                 },
             }
         if self.client.can_view_pairings_tab:
@@ -157,7 +155,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                 'admin-event-prizes-tab': {
                     'title': pgettext('with shortcut indication', 'Prizes'),
                     'template': 'prizes/tab.html',
-                    'icon_class': 'bi-trophy-fill',
+                    'icon_class': 'bi-trophy',
                     'shortcut': f'{pgettext("keyboard shortcut for the prizes tab", "SC_Z")} from:body',
                 },
             }
@@ -165,46 +163,45 @@ class BaseEventAdminWebContext(AdminWebContext):
             nav_tabs |= {
                 'admin-event-views': {
                     'title': _('Screens'),
-                    'icon_class': 'bi-display-fill',
+                    'icon_class': 'bi-display',
                     'submenu': {
                         'admin-event-screens-tab': {
                             'title': pgettext(
-                                'with shortcut indication', 'Single Screens ({num})'
-                            ).format(num=len(event.basic_screens_by_id) or '-'),
+                                'with shortcut indication', 'Single Screens'
+                            ),
+                            'count': nav_count(len(event.basic_screens_by_id)),
                             'template': 'screens/tab.html',
                             'shortcut': f'{pgettext("keyboard shortcut for the single screens tab", "SC_S")} from:body',
                         },
                         'admin-event-families-tab': {
                             'title': pgettext(
-                                'with shortcut indication', 'Multi-Screens ({num})'
-                            ).format(num=len(event.families_by_id) or '-'),
+                                'with shortcut indication', 'Multi-Screens'
+                            ),
+                            'count': nav_count(len(event.families_by_id)),
                             'template': 'families/tab.html',
                             'shortcut': f'{pgettext("keyboard shortcut for the multi-screens tab", "SC_M")} from:body',
                         },
                         'admin-event-menus-tab': {
-                            'title': _('Menus ({num})').format(
-                                num=len(event.menus_by_id) or '-'
-                            ),
+                            'title': _('Menus'),
+                            'count': nav_count(len(event.menus_by_id)),
                             'template': 'menus/tab.html',
                         },
                         'admin-event-rotators-tab': {
-                            'title': pgettext(
-                                'with shortcut indication', 'Rotators ({num})'
-                            ).format(num=len(event.rotators_by_id) or '-'),
+                            'title': pgettext('with shortcut indication', 'Rotators'),
+                            'count': nav_count(len(event.rotators_by_id)),
                             'template': 'rotators/tab.html',
                             'shortcut': f'{pgettext("keyboard shortcut for the rotators tab", "SC_R")} from:body',
                         },
                         'admin-event-timers-tab': {
-                            'title': _('Timers ({num})').format(
-                                num=len(event.timers_by_id) or '-'
-                            ),
+                            'title': _('Timers'),
+                            'count': nav_count(len(event.timers_by_id)),
                             'template': 'timers/tab.html',
                         },
                         'admin-event-display-controllers-tab': {
                             'title': pgettext(
-                                'with shortcut indication',
-                                'Display controllers ({num})',
-                            ).format(num=len(event.display_controllers_by_id) or '-'),
+                                'with shortcut indication', 'Display controllers'
+                            ),
+                            'count': nav_count(len(event.display_controllers_by_id)),
                             'template': 'display_controllers/tab.html',
                             'shortcut': f'{pgettext("keyboard shortcut for the display controllers tab", "SC_I")} from:body',
                         },
@@ -228,7 +225,8 @@ class BaseEventAdminWebContext(AdminWebContext):
             for screen_type in ScreenTypeManager(event).objects():
                 screens = sorted_screens_by_screen_type[screen_type.id]
                 nav_tabs[f'admin-event-{screen_type.id}-screens-tab'] = {
-                    'title': f'{screen_type.name} ({len(screens) or "-"})',
+                    'title': screen_type.name,
+                    'count': nav_count(len(screens)),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
                     'icon_class': screen_type.icon_str,
@@ -239,7 +237,8 @@ class BaseEventAdminWebContext(AdminWebContext):
                 menus = event.sorted_menus
                 nav_tabs |= {
                     'admin-event-menus-tab': {
-                        'title': _('Menus ({num})').format(num=len(menus) or '-'),
+                        'title': _('Menus'),
+                        'count': nav_count(len(menus)),
                         'template': 'menus/tab.html',
                         'disabled': not menus,
                         'icon_class': 'bi-list-nested',
@@ -247,7 +246,8 @@ class BaseEventAdminWebContext(AdminWebContext):
                 }
             nav_tabs |= {
                 'admin-event-rotators-tab': {
-                    'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
+                    'title': _('Rotators'),
+                    'count': nav_count(len(rotators)),
                     'template': 'rotators/tab.html',
                     'disabled': not rotators,
                     'icon_class': 'bi-repeat',
@@ -255,9 +255,8 @@ class BaseEventAdminWebContext(AdminWebContext):
             }
             nav_tabs |= {
                 'admin-event-display-controllers-tab': {
-                    'title': _('Display controllers ({num})').format(
-                        num=len(display_controllers) or '-'
-                    ),
+                    'title': _('Display controllers'),
+                    'count': nav_count(len(display_controllers)),
                     'template': 'display_controllers/tab.html',
                     'disabled': not display_controllers,
                     'icon_class': 'bi-box-arrow-in-right',
@@ -266,13 +265,14 @@ class BaseEventAdminWebContext(AdminWebContext):
         if self.client.can_manage_accounts:
             nav_tabs |= {
                 'admin-event-accounts-tab': {
-                    'title': (
-                        _('Staff')
+                    'title': _('Staff'),
+                    'count': (
+                        ''
                         if event.predefined_accounts
-                        else _('Staff ({num})').format(num=len(event.accounts_by_id))
+                        else nav_count(len(event.accounts_by_id))
                     ),
                     'template': 'accounts/tab.html',
-                    'icon_class': 'bi-person-fill-lock',
+                    'icon_class': 'bi-person-lock',
                 },
             }
         if self.client.can_publish_results:
@@ -289,7 +289,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                 nav_tabs |= {
                     'admin-data-transfer-item': {
                         'title': _('Data transfer'),
-                        'icon_class': 'bi-share-fill',
+                        'icon_class': 'bi-share',
                         'has_error': has_error,
                         'refresh_trigger_event': 'ws:upload-event from:body',
                         'refresh_url': data_transfer_item_url(

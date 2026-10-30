@@ -844,6 +844,9 @@
                         <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                             <i class="bi-chevron-down text-body"></i>
                             {{ _('Point attribution') }}
+                            <span class="collapse-button-summary">
+                                {{ data.get('gp_win') or '1' }} · {{ data.get('gp_draw') or '0.5' }} · {{ data.get('gp_loss') or '0' }}
+                            </span>
                         </h4>
                     </button>
                     <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
@@ -1110,6 +1113,11 @@
                         <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                             <i class="bi-chevron-down text-body"></i>
                             {{ _('Criteria') }}
+                            {% if admin_tournament is defined and admin_tournament and not errors|default({}) %}
+                                <span class="collapse-button-summary">
+                                    {{ admin_tournament.criteria_string if admin_tournament.criteria else pgettext('said of several things', 'Undefined') }}
+                                </span>
+                            {% endif %}
                         </h4>
                     </button>
                     <div id="criteria-collapse" class="{% if not force_criteria_open %}collapse{% endif %}">
