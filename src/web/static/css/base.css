@@ -2643,6 +2643,16 @@ table.prominent tr.flat-pair-selected > th {
 
 /* A warning about the rows of a table, shown as a status line along the
    table's top edge rather than as a separate banner. */
+/* The status bar stays in view above the table's pinned header; on a phone,
+   where it wraps over several lines, it scrolls away with the page. */
+@media (min-width: 768px) {
+    .table-status-bar-wrapper {
+        position: sticky;
+        top: var(--header-height);
+        z-index: 3;
+    }
+}
+
 .table-status-bar {
     display: flex;
     align-items: center;
