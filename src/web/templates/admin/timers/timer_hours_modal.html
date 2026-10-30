@@ -33,6 +33,19 @@
                     </button>
                 {% endif %}
                 <button
+                    class="btn btn-sm btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for(
+                        'admin-timer-usage-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Choose the screens that display the timer'), 'top') }}
+                >
+                    <i class="bi-window pe-1"></i>
+                    {{ _('Screens') }}
+                </button>
+                <button
                     class="btn btn-primary text-nowrap"
                     hx-get="{{ url_for(
                         'admin-timer-hour-create-modal',

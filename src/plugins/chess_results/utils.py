@@ -104,12 +104,6 @@ class ChessResultsCredentials:
 
 class CRUtils:
     @classmethod
-    def resolve_auto_upload(cls, tournament: Tournament) -> bool:
-        if not cls.get_event_plugin_data(tournament.event).auto_upload:
-            return False
-        return cls.get_tournament_plugin_data(tournament).auto_upload
-
-    @classmethod
     def resolve_remark(cls, tournament: Tournament) -> str | None:
         tournament_plugin_data = cls.get_tournament_plugin_data(tournament)
         if not tournament_plugin_data.remark_default:
@@ -310,21 +304,18 @@ class ChessResultsConfigPluginData(PluginData):
 
 @dataclass
 class ChessResultsEventPluginData(PluginData):
-    auto_upload: bool = True
     remark: str | None = None
     state: int | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            auto_upload=stored_value.get('auto_upload', True),
             remark=stored_value.get('remark'),
             state=stored_value.get('state'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'auto_upload': self.auto_upload,
             'remark': self.remark,
             'state': self.state,
         }
@@ -336,13 +327,10 @@ class ChessResultsEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        plugin_data = cls(
+        return cls(
             remark=WebContext.form_data_to_str(data, 'chess_results_remark'),
             state=WebContext.form_data_to_int(data, 'chess_results_state'),
         )
-        if previous_object:
-            plugin_data.auto_upload = previous_object.auto_upload
-        return plugin_data
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
@@ -425,7 +413,7 @@ class ChessResultsTournamentPluginData(PluginData):
                     previous_object.last_upload_attempt_at
                 )
                 plugin_data.upload_failure_id = previous_object.upload_failure_id
-            plugin_data.auto_upload = plugin_data.auto_upload
+            plugin_data.auto_upload = previous_object.auto_upload
         return plugin_data
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:

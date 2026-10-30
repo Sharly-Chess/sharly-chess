@@ -123,6 +123,11 @@ class Rotator:
     def timer(self) -> Optional['Timer']:
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
+    def set_timer(self, timer_id: int | None) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_stored_rotator_timer_id(self.id, timer_id)
+        self.stored_rotator.timer_id = timer_id
+
     @property
     def stored_rotating_screens(self) -> list[StoredRotatingScreen]:
         return self.stored_rotator.stored_rotating_screens

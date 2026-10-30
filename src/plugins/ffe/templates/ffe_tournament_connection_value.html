@@ -19,7 +19,7 @@
             ><i class="bi bi-box-arrow-up-right"></i></a>
         </span>
     {% endif %}
-    {% set auto_upload = ffe_utils.resolve_auto_upload(tournament) %}
+    {% set auto_upload = ffe_utils.get_tournament_plugin_data(tournament).auto_upload %}
     <i
         class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"
         style="transform: scale(1.1)"

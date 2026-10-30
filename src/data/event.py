@@ -587,6 +587,15 @@ class Event:
             del self.timers_by_id[timer.id]
 
     @property
+    def timer_screens(self) -> list[Screen]:
+        """The basic screens that can display a timer."""
+        return [
+            screen
+            for screen in self.sorted_basic_screens
+            if screen.screen_type.has_config_fields
+        ]
+
+    @property
     def tournaments(self) -> Collection[Tournament]:
         return self.tournaments_by_id.values()
 
@@ -1153,7 +1162,7 @@ class Event:
         for screen_type in self.basic_screens_by_screen_type_by_id:
             sorted_basic_screens_by_screen_type[screen_type] = sorted(
                 self.basic_screens_by_screen_type_by_id[screen_type].values(),
-                key=by('uniq_id'),
+                key=by('name'),
             )
         return sorted_basic_screens_by_screen_type
 

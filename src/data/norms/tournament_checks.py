@@ -47,17 +47,36 @@ class HighLevelRoundCounts:
 
 
 def _is_present_at_round(player: TournamentPlayer, round_: int) -> bool:
-    """A player counts as present this round if they played a real game
-    OR received a Pairing-Allocated Bye / Rest Game. PAB is excluded from
-    "missing a round" by the spec, so it's included here for consistency.
+    """A player counts as present this round if they played a real game,
+    are paired in a game whose result is still pending, OR received a
+    Pairing-Allocated Bye / Rest Game. PAB is excluded from "missing a
+    round" by the spec, so it's included here for consistency.
     """
     pairing = player.pairings_by_round.get(round_)
     if pairing is None:
         return False
+    if pairing.result == Result.NO_RESULT:
+        return pairing.opponent_id is not None
     return pairing.played or pairing.result in (
         Result.PAIRING_ALLOCATED_BYE,
         Result.REST_GAME,
     )
+
+
+def _rounds_with_results(tournament: Tournament) -> list[int]:
+    """The rounds in which at least one result has been entered. A round
+    that is unpaired, or paired with every result still pending, has no
+    one present yet; counting it would bring every per-round minimum down
+    to zero until the round is played."""
+    return [
+        rnd
+        for rnd in range(1, tournament.rounds + 1)
+        if any(
+            (pairing := p.pairings_by_round.get(rnd)) is not None
+            and pairing.result != Result.NO_RESULT
+            for p in tournament.tournament_players_by_id.values()
+        )
+    ]
 
 
 def _missed_rounds(player: TournamentPlayer) -> int:
@@ -160,11 +179,10 @@ def compute_big_tournament_exemption(
     decide whether the 1.4.3d exemption from 1.4.3 (and 1.4.4) applies.
     """
     eligible = _eligible_for_143d(tournament)
-    if not eligible or tournament.rounds < 1:
+    rounds = _rounds_with_results(tournament)
+    if not eligible or not rounds:
         return BigTournamentExemption(0, 0, 0)
-    per_round = [
-        _round_counts_143d(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
-    ]
+    per_round = [_round_counts_143d(eligible, rnd) for rnd in rounds]
     return BigTournamentExemption(
         federations=min(r.federations for r in per_round),
         foreigners=min(r.foreigners for r in per_round),
@@ -177,12 +195,12 @@ def compute_big_tournament_exemption_trail(
 ) -> list[BigTournamentRoundCounts]:
     """Per-round 1.4.3d breakdown for the calculation-details view.
 
-    Returns one entry per round of the tournament. Used by the IT1
+    Returns one entry per round with results. Used by the IT1
     detail mode to prove the exemption — the bottleneck round (whichever
     is smallest in each column) determines whether 1.4.3d applies."""
     eligible = _eligible_for_143d(tournament)
     return [
-        _round_counts_143d(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
+        _round_counts_143d(eligible, rnd) for rnd in _rounds_with_results(tournament)
     ]
 
 
@@ -206,7 +224,10 @@ def compute_high_level_tournament(tournament: Tournament) -> bool:
         return False
 
     eligible = _eligible_for_156a(tournament)
-    for rnd in range(1, tournament.rounds + 1):
+    rounds = _rounds_with_results(tournament)
+    if not rounds:
+        return False
+    for rnd in rounds:
         counts = _round_counts_156a(eligible, rnd)
         if counts.fide_rated_present < 40 or counts.top_40_average < 2000:
             return False
@@ -218,13 +239,13 @@ def compute_high_level_tournament_trail(
 ) -> list[HighLevelRoundCounts]:
     """Per-round 1.5.6a breakdown for the calculation-details view.
 
-    Returns one entry per round, regardless of pairing system — the
+    Returns one entry per round with results, regardless of pairing system — the
     template can decide whether to render. Non-Swiss tournaments don't
     qualify for 1.5.6a, but seeing the actual figures is still useful
     audit context."""
     eligible = _eligible_for_156a(tournament)
     return [
-        _round_counts_156a(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
+        _round_counts_156a(eligible, rnd) for rnd in _rounds_with_results(tournament)
     ]
 
 

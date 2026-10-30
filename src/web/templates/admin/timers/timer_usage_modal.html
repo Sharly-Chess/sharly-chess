@@ -1,0 +1,84 @@
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Screens of timer [%(timer)s]', timer=admin_timer.name) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if not usage_sections %}
+                <p class="text-secondary fst-italic">{{ _('The event has no screens.') }}</p>
+            {% else %}
+                <p>{{ _('Choose the screens, multi-screens and rotators that display this timer.') }}</p>
+            {% endif %}
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-patch="{{ url_for(
+                    'admin-timer-usage-update',
+                    event_uniq_id=admin_event.uniq_id,
+                    timer_id=admin_timer.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% for title, groups in usage_sections %}
+                    <h4 class="mt-3">{{ title }}</h4>
+                    {% for screen_type, items in groups %}
+                        <div class="mb-3">
+                            {% if screen_type %}
+                                <h5 class="d-flex align-items-center gap-2 mb-2">
+                                    {{ macros.screen_type_icon(screen_type, true) }}
+                                    {{ screen_type.name }}
+                                </h5>
+                            {% endif %}
+                            {% for item in items %}
+                                {% set id = item.field|replace('_', '-') %}
+                                <div class="form-check">
+                                    <span>
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="{{ item.field }}"
+                                            id="{{ id }}"
+                                            data-testid="{{ id }}"
+                                            value="on"
+                                            {% if item.checked %}checked{% endif %}
+                                        />
+                                        <label class="form-check-label" for="{{ id }}">
+                                            {% if not screen_type %}<i class="bi-window-stack pe-1"></i>{% endif %}
+                                            {{ item.label }}
+                                            {% if item.other_timer %}
+                                                <span class="text-secondary small ps-1" data-testid="{{ id }}-other-timer">
+                                                    <i class="bi-clock-fill pe-1"></i>{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=item.other_timer) }}
+                                                </span>
+                                            {% endif %}
+                                        </label>
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') }}
+            </button>
+        </div>
+    </div>
+</div>

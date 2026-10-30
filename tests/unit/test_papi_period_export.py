@@ -45,7 +45,13 @@ class TestPeriodPapi:
                     round_nb: datetime.now() + timedelta(days=14 * (round_nb - 4))
                     for round_nb in range(1, 5)
                 },
-                'plugin_data': {'ffe': {'ffe_id': 49943, 'password': 'AAAAAAAAAA'}},
+                'plugin_data': {
+                    'ffe': {
+                        'ffe_id': 49943,
+                        'password': 'AAAAAAAAAA',
+                        'auto_upload': False,
+                    }
+                },
             },
         )
         with EventDatabase(EVENT_ID, write=True) as database:

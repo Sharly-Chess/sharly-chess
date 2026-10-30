@@ -191,6 +191,12 @@ msgstr[0] "%(num)d obligatoire"
 msgstr[1] "%(num)d obligatoires"
 
 #, python-format
+msgid "%(num)d rotator"
+msgid_plural "%(num)d rotators"
+msgstr[0] "%(num)d écran rotatif"
+msgstr[1] "%(num)d écrans rotatifs"
+
+#, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] "%(num)d écran"
@@ -2181,6 +2187,12 @@ msgstr "Choisir des écrans à ajouter"
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
+msgid "Choose the screens that display the timer"
+msgstr "Choisir les écrans qui affichent le chronomètre"
+
+msgid "Choose the screens, multi-screens and rotators that display this timer."
+msgstr "Choisir les écrans, multi-écrans et écrans rotatifs qui affichent ce chronomètre."
+
 msgid "Clear"
 msgstr "Vider"
 
@@ -3172,6 +3184,9 @@ msgstr "Afficher uniquement les matchs"
 
 msgid "Display the unpaired players"
 msgstr "Afficher les joueur·euses non apparié·es"
+
+msgid "Displayed on"
+msgstr "Affiché sur"
 
 #, python-format
 msgid "Displayed round: %(round)d"
@@ -6676,6 +6691,9 @@ msgstr "Non compté·e au classement final : forfait ou exclusion avec moins de
 msgid "Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the matches (FIDE 6.6). The result stays in the crosstable."
 msgstr "Non comptée au classement final : forfait ou exclusion avec moins de 50 %% des matchs disputés (FIDE 6.6). Le résultat reste dans la grille."
 
+msgid "Not displayed"
+msgstr "Non affiché"
+
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
 
@@ -6869,8 +6887,8 @@ msgstr "Oman"
 msgid "On this computer"
 msgstr "Sur cet ordinateur"
 
-msgid "Once created, you can select the timer to display in the settings of each screen, multi-screen or rotator."
-msgstr "Une fois créé, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, écran multiple ou écran rotatif."
+msgid "Once created, choose the screens, multi-screens and rotators that display the timer with its Screens button, or select the timer in the settings of each of them."
+msgstr "Une fois le chronomètre créé, choisissez les écrans, écrans multiples et écrans rotatifs qui l'affichent avec son bouton Écrans, ou sélectionnez-le dans les paramètres de chacun d'eux."
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
@@ -9125,6 +9143,10 @@ msgid "Screens may display information about your event, such as player listings
 msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
 
 #, python-format
+msgid "Screens of timer [%(timer)s]"
+msgstr "Écrans du chronomètre [%(timer)s]"
+
+#, python-format
 msgid "Screens: %(num)d"
 msgstr "Écrans : %(num)d"
 
@@ -10223,6 +10245,9 @@ msgstr "Cet évènement a déjà des joueur·euses multi-tournois."
 msgid "The event could not be opened"
 msgstr "L'événement n'a pas pu être ouvert"
 
+msgid "The event has no screens."
+msgstr "L'événement n'a pas d'écrans."
+
 msgid "The event is present on the server but could not be opened. It may be temporarily locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait a moment and try again. If it keeps happening, move the data folder out of any synchronised location (Console > Parameters > Data folder < Move)."
 msgstr "L'événement existe sur le serveur mais n'a pas pu être ouvert. Il est peut-être temporairement verrouillé par un autre programme, par une synchronisation de fichiers (OneDrive, Google Drive, DropBox...) ou par un antivirus. Patientez un instant et réessayez. Si le problème persiste, déplacez le dossier de données hors de tout emplacement synchronisé (Console > Paramètres > Dossier des données < Déplacer)."
 
@@ -10797,6 +10822,10 @@ msgstr "Le critère de score appliqué pour classer les compétiteurs."
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheur sont désignés par l'administrateur·ice."
+
+#, python-brace-format
+msgid "The screens of timer [{timer}] have been updated."
+msgstr "Les écrans du chronomètre [{timer}] ont été mis à jour."
 
 #, python-brace-format
 msgid "The selected {competitors} have been merged."

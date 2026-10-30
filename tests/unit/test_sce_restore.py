@@ -86,7 +86,7 @@ class TestWhatIsCarriedAcrossARestoration(TestCase):
         stored_event.enabled_plugins = [PLUGIN_NAME]
         for stored_tournament in stored_event.stored_tournaments:
             stored_tournament.plugin_data[PLUGIN_NAME] = SCETournamentPluginData(
-                id=tournament_sce_id
+                id=tournament_sce_id, auto_upload=False
             ).to_stored_value()
         for stored_player in stored_event.stored_players:
             stored_player.plugin_data[PLUGIN_NAME] = SCEPlayerPluginData(
@@ -145,7 +145,7 @@ class TestWhatIsCarriedAcrossARestoration(TestCase):
         with EventDatabase(EVENT_UNIQ_ID, write=True) as database:
             stored_tournament = database.load_stored_tournaments()[0]
             stored_tournament.plugin_data[PLUGIN_NAME] = SCETournamentPluginData(
-                id='SCE-FROM-THE-BACKUP'
+                id='SCE-FROM-THE-BACKUP', auto_upload=False
             ).to_stored_value()
             database.update_stored_tournament(stored_tournament)
 

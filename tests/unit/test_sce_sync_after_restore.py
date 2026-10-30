@@ -94,7 +94,7 @@ class TestSynchronisingARestoredEvent(TestCase):
             database.update_stored_event(stored_event)
             stored_tournament = database.load_stored_tournaments()[0]
             stored_tournament.plugin_data[PLUGIN_NAME] = SCETournamentPluginData(
-                id=SCE_TOURNAMENT_ID
+                id=SCE_TOURNAMENT_ID, auto_upload=False
             ).to_stored_value()
             database.update_stored_tournament(stored_tournament)
             assert stored_tournament.id is not None

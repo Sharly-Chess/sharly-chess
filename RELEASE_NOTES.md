@@ -66,7 +66,14 @@
 - The text of the FFE forms, the FFE pairing sheet and the Chess960 positions can be selected and copied in the PDFs saved from Firefox (5.2.0)
 - Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the FFE forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
 - A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
+- The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
+
+## Screens
+
+- The screens of the Screens tab, of the menus and of the display controllers are sorted by their displayed name (5.2.0)
+- A timer can be put on several screens, multi-screens and rotators at once from the timers tab, which lists the screens displaying each timer; a screen showing another timer is moved to the chosen one (5.2.0)
 
 ## Sharly-Chess.com
 
 - Several computers can synchronise the same event with Sharly-Chess.com: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)
+- The Sharly-Chess.com window says what each part covers: the registrations and the tournament settings, merged both ways when synchronising, and the pairings and results, published from the computer. Automatic publication is set per tournament for Sharly-Chess.com, the FFE and Chess-Results, the header switch turning it on or off for every tournament; new tournaments publish automatically to Sharly-Chess.com and the FFE (5.2.0)

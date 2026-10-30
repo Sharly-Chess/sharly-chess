@@ -2806,6 +2806,12 @@ class EventDatabase(MigrationDatabase):
         assert stored_family.id is not None
         return self._write_stored_family(stored_family)
 
+    def set_stored_family_timer_id(self, family_id: int, timer_id: int | None) -> None:
+        self.execute(
+            'UPDATE `family` SET `timer_id` = ?, `last_update` = ? WHERE `id` = ?',
+            (timer_id, self.now_as_database_timestamp(), family_id),
+        )
+
     def delete_stored_family(self, family_id: int) -> None:
         self.execute('DELETE FROM `family` WHERE `id` = ?;', (family_id,))
 
@@ -3018,6 +3024,12 @@ class EventDatabase(MigrationDatabase):
     ) -> StoredScreen:
         assert stored_screen.id is not None
         return self._write_stored_screen(stored_screen)
+
+    def set_stored_screen_timer_id(self, screen_id: int, timer_id: int | None) -> None:
+        self.execute(
+            'UPDATE `screen` SET `timer_id` = ?, `last_update` = ? WHERE `id` = ?',
+            (timer_id, self.now_as_database_timestamp(), screen_id),
+        )
 
     def delete_stored_screen(self, screen_id: int) -> None:
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
@@ -3258,6 +3270,14 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             f'UPDATE `rotator` SET {field_sets} WHERE `id` = ?',
             (*tuple(fields.values()), stored_rotator.id),
+        )
+
+    def set_stored_rotator_timer_id(
+        self, rotator_id: int, timer_id: int | None
+    ) -> None:
+        self.execute(
+            'UPDATE `rotator` SET `timer_id` = ? WHERE `id` = ?',
+            (timer_id, rotator_id),
         )
 
     def delete_stored_rotator(self, rotator_id: int) -> None:

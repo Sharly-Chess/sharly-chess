@@ -126,11 +126,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
         sorted_screens: list[Screen] = sorted(
-            event.basic_screens_by_id.values(),
-            key=lambda screen: (
-                screen.stored_screen.type if screen.stored_screen else '',
-                screen.stored_screen.uniq_id if screen.stored_screen else '',
-            ),
+            event.sorted_basic_screens, key=lambda screen: screen.type
         )
 
         admin_sorted_display_controllers: list[DisplayController]

@@ -191,6 +191,12 @@ msgstr[0] "%(num)d required"
 msgstr[1] "%(num)d required"
 
 #, python-format
+msgid "%(num)d rotator"
+msgid_plural "%(num)d rotators"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] ""
@@ -2181,6 +2187,12 @@ msgstr ""
 msgid "Choose the columns displayed."
 msgstr ""
 
+msgid "Choose the screens that display the timer"
+msgstr ""
+
+msgid "Choose the screens, multi-screens and rotators that display this timer."
+msgstr ""
+
 msgid "Clear"
 msgstr ""
 
@@ -3171,6 +3183,9 @@ msgid "Display the matches only"
 msgstr ""
 
 msgid "Display the unpaired players"
+msgstr ""
+
+msgid "Displayed on"
 msgstr ""
 
 #, python-format
@@ -6676,6 +6691,9 @@ msgstr ""
 msgid "Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the matches (FIDE 6.6). The result stays in the crosstable."
 msgstr ""
 
+msgid "Not displayed"
+msgstr ""
+
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr ""
 
@@ -6867,7 +6885,7 @@ msgstr ""
 msgid "On this computer"
 msgstr ""
 
-msgid "Once created, you can select the timer to display in the settings of each screen, multi-screen or rotator."
+msgid "Once created, choose the screens, multi-screens and rotators that display the timer with its Screens button, or select the timer in the settings of each of them."
 msgstr ""
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
@@ -9123,6 +9141,10 @@ msgid "Screens may display information about your event, such as player listings
 msgstr ""
 
 #, python-format
+msgid "Screens of timer [%(timer)s]"
+msgstr ""
+
+#, python-format
 msgid "Screens: %(num)d"
 msgstr ""
 
@@ -10221,6 +10243,9 @@ msgstr ""
 msgid "The event could not be opened"
 msgstr ""
 
+msgid "The event has no screens."
+msgstr ""
+
 msgid "The event is present on the server but could not be opened. It may be temporarily locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait a moment and try again. If it keeps happening, move the data folder out of any synchronised location (Console > Parameters > Data folder < Move)."
 msgstr ""
 
@@ -10794,6 +10819,10 @@ msgid "The scoring criterion applied to rank the competitors."
 msgstr ""
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
+msgstr ""
+
+#, python-brace-format
+msgid "The screens of timer [{timer}] have been updated."
 msgstr ""
 
 #, python-brace-format
