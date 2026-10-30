@@ -1357,6 +1357,7 @@ class BergerGridPrintDocument(PrintDocument):
         return {
             'document': self,
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'result_grid': self.build_result_grid(),
             'grid_id_by_player_id': self.grid_id_by_player_id,
             'excluded_grid_ids': self.excluded_grid_ids,
