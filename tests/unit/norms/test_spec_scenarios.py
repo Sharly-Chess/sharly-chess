@@ -1358,7 +1358,7 @@ class TestRule_1_5_6a:
         assert present_by_round[1] == 40
         assert present_by_round[8] == 40
         assert present_by_round[3] == 39
-        assert present_by_round[9] == 0
+        assert 9 not in present_by_round
 
     def test_not_high_level_for_round_robin(self):
         """1.5.6a is Swiss-only. A 40-player Round-Robin that would pass
@@ -1621,7 +1621,46 @@ class TestRule_1_4_3d_eligibility:
         assert foreigners_by_round[1] == 12
         assert foreigners_by_round[8] == 12
         assert foreigners_by_round[3] == 11  # bye player absent that round
-        assert foreigners_by_round[9] == 0
+        assert 9 not in foreigners_by_round
+
+    def test_round_without_results_does_not_zero_the_minimum(self):
+        """A paired round with no result entered yet is left out, and in a
+        round being played the players at a pending board count as present,
+        so the minimum reflects the rounds actually under way."""
+        from data.norms import compute_big_tournament_exemption
+
+        def _pairing(result, opponent_id=None):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                opponent_id=opponent_id,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        def _player(federation, pending_round_8: bool):
+            pairings = {r: _pairing(Result.DRAW) for r in range(1, 8)}
+            pairings[8] = (
+                _pairing(Result.NO_RESULT, opponent_id=1)
+                if pending_round_8
+                else _pairing(Result.DRAW)
+            )
+            pairings[9] = _pairing(Result.NO_RESULT, opponent_id=1)
+            return _player_ns(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation(federation),
+                title=PlayerTitle.GRANDMASTER,
+                rating=2500,
+                pairings_by_round=pairings,
+            )
+
+        players = [_player('USA', pending_round_8=True) for _ in range(4)]
+        players += [_player('GER', pending_round_8=False) for _ in range(4)]
+        players += [_player('ESP', pending_round_8=False) for _ in range(4)]
+        exemption = compute_big_tournament_exemption(self._tournament(players))
+        assert exemption.foreigners == 12
+        assert exemption.federations == 3
+        assert exemption.titled_foreigners == 12
 
     def test_pab_does_not_count_as_missed_round(self):
         """Spec: "players will be counted only if they miss at most one
