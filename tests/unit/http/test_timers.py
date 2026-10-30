@@ -47,6 +47,15 @@ def test_a_timer_is_created_renamed_and_deleted(http: TestClient, event: str):
 
 
 @pytest.mark.unit
+def test_a_new_timer_opens_its_hours(http: TestClient, event: str):
+    """A new timer has no hours yet, so its creation leads to the list of
+    hours, from which they can be added one by one or from a tournament."""
+    response = create_timer(http)
+    assert 'Timer [Round one] has been created.' in response.text
+    assert 'No hours.' in response.text
+
+
+@pytest.mark.unit
 def test_a_timer_needs_a_name(http: TestClient, event: str):
     response = create_timer(http, name='')
     assert response.status_code == 200
@@ -71,6 +80,7 @@ def test_a_cloned_timer_stands_beside_the_first(http: TestClient, event: str):
         f'/timer-clone/{EVENT_ID}/{timer_id}', data={'name': 'Round one (copy)'}
     )
     assert response.status_code == 200
+    assert 'Timer [Round one (copy)] has been created.' in response.text
     assert sorted(timer_names()) == ['Round one', 'Round one (copy)']
 
 
