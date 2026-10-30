@@ -16,6 +16,9 @@ from utils.date_time import format_date, format_time, format_datetime
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.family import Family
+    from data.screens.rotator import Rotator
+    from data.screens.screen import Screen
 
 
 class TimerHour:
@@ -192,6 +195,30 @@ class Timer:
         return {
             i: stored_delays.get(i) or self.event.timer_delays[i] for i in range(1, 4)
         }
+
+    @property
+    def screens(self) -> list['Screen']:
+        return [
+            screen
+            for screen in self.event.timer_screens
+            if screen.stored_screen and screen.stored_screen.timer_id == self.id
+        ]
+
+    @property
+    def families(self) -> list['Family']:
+        return [
+            family
+            for family in self.event.sorted_families
+            if family.timer_id == self.id
+        ]
+
+    @property
+    def rotators(self) -> list['Rotator']:
+        return [
+            rotator
+            for rotator in self.event.sorted_rotators
+            if rotator.timer_id == self.id
+        ]
 
     @property
     def has_available_date(self) -> bool:
