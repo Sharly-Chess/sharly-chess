@@ -222,8 +222,12 @@ class BaseEventAdminWebContext(AdminWebContext):
                 )
                 rotators = event.public_sorted_rotators
                 display_controllers = event.sorted_public_display_controllers
+            rotators = self.client.reachable(rotators)
+            display_controllers = self.client.reachable(display_controllers)
             for screen_type in ScreenTypeManager(event).objects():
-                screens = sorted_screens_by_screen_type[screen_type.id]
+                screens = self.client.reachable(
+                    sorted_screens_by_screen_type[screen_type.id]
+                )
                 nav_tabs[f'admin-event-{screen_type.id}-screens-tab'] = {
                     'title': screen_type.name,
                     'count': nav_count(len(screens)),
