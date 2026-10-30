@@ -1124,3 +1124,50 @@
 .wrapping-form-check .switch-placeholder {
     line-height: 1.25;
 }
+
+.modal h4.timer-usage-section-title {
+    margin: 1.75rem 0 .75rem;
+    font-size: 1.2rem;
+}
+
+.timer-usage-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+    gap: .75rem;
+}
+
+.timer-usage-group {
+    padding: .85rem 1rem;
+    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+}
+
+.timer-usage-type-title {
+    margin-bottom: .75rem;
+    color: var(--bs-secondary-color);
+    font-size: .9rem;
+    font-weight: 500;
+}
+
+.timer-usage-group .form-check,
+.timer-usage-group .form-check * {
+    text-box-trim: none;
+}
+
+.timer-usage-group .form-check > span {
+    align-items: flex-start;
+}
+
+.timer-usage-group .form-check-input {
+    margin-top: .2rem;
+}
+
+[data-bs-theme=dark] .timer-usage-group .form-check-input[type=checkbox]:indeterminate {
+    background-color: rgba(var(--bs-primary-rgb), .25);
+    border-color: rgba(var(--bs-primary-rgb), .5);
+}
+
+.timer-usage-group .form-check-label {
+    line-height: 1.4;
+}

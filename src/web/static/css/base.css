@@ -1776,7 +1776,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
 /* The list reads as one table: a single surface with the rows divided by
    rules, each row keeping its status colour on the left edge. */
 [data-bs-theme=dark] .admin-collection-list {
-    overflow: hidden;
     background: var(--pw-surface-bg);
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius-lg);
@@ -1812,6 +1811,17 @@ body[data-bs-theme="dark"] .htmx-indicator {
 [data-bs-theme=dark] .collection-list-row,
 [data-bs-theme=dark] .collection-list-item:has(.collection-list-details.show) .collection-list-row,
 [data-bs-theme=dark] .collection-list-details {
+    border-radius: 0;
+}
+
+[data-bs-theme=dark] .collection-list-item:last-child,
+[data-bs-theme=dark] .collection-list-item:last-child .collection-list-row:last-child,
+[data-bs-theme=dark] .collection-list-item:last-child .collection-list-details {
+    border-bottom-left-radius: calc(var(--bs-border-radius-lg) - 1px);
+    border-bottom-right-radius: calc(var(--bs-border-radius-lg) - 1px);
+}
+
+[data-bs-theme=dark] .collection-list-item:last-child:has(.collection-list-details.show) .collection-list-row {
     border-radius: 0;
 }
 

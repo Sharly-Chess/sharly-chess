@@ -191,12 +191,6 @@ msgstr[0] "%(num)d obligatoire"
 msgstr[1] "%(num)d obligatoires"
 
 #, python-format
-msgid "%(num)d rotator"
-msgid_plural "%(num)d rotators"
-msgstr[0] "%(num)d écran rotatif"
-msgstr[1] "%(num)d écrans rotatifs"
-
-#, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] "%(num)d écran"
@@ -6691,9 +6685,6 @@ msgstr "Non compté·e au classement final : forfait ou exclusion avec moins de
 msgid "Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the matches (FIDE 6.6). The result stays in the crosstable."
 msgstr "Non comptée au classement final : forfait ou exclusion avec moins de 50 %% des matchs disputés (FIDE 6.6). Le résultat reste dans la grille."
 
-msgid "Not displayed"
-msgstr "Non affiché"
-
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
 
@@ -6814,6 +6805,9 @@ msgstr "Nombre de places primées"
 
 msgid "Number of prizes"
 msgstr "Nombre de prix"
+
+msgid "Number of rotators"
+msgstr "Nombre d'écrans rotatifs"
 
 msgid "Number of rounds"
 msgstr "Nombre de rondes"
