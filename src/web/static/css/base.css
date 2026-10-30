@@ -2520,7 +2520,7 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] .modal-content {
-    border-color: #535863;
+    border-color: rgba(255, 255, 255, 0.08);
     box-shadow: var(--bs-modal-box-shadow);
 }
 
