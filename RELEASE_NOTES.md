@@ -11,6 +11,7 @@
 - Events are backed up as they change, and a backup can be restored over an event or beside it. The backups are kept beside the data folder rather than inside it, so that either folder can be moved without the other, and a folder of the user's own can be named for them (5.2.0)
 - A refreshed admin view: a calmer and denser look set in Inter, cards and lists that show the status of each item as a coloured dot, the counts of the sidebar beside its entries, an edit button on each row of the players tab, the folding sections of the forms summarising their content, and fields that cannot be changed shown with a lock. The screens shown to players and spectators are unchanged (5.2.0)
 - The single screens are filtered by type with a row of chips instead of being folded away by type (5.2.0)
+- The administration pages have been reworked with a more modern look (5.2.0)
 
 ## Tournaments
 
