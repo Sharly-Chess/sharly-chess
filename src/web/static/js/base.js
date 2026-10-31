@@ -588,6 +588,10 @@ function initInlineSelect2(root) {
 }
 
 htmx.onLoad(initInlineSelect2);
+// htmx announces new content only once it has settled, after the browser may
+// have painted it: set the selects up as soon as they are swapped in, so that
+// the page is never drawn without them.
+document.addEventListener('htmx:afterSwap', () => initInlineSelect2(document.body));
 
 async function downloadFile(el, formId) {
     const url = new URL(el.dataset.exportUrl, window.location.origin);
