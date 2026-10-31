@@ -82,9 +82,14 @@
         {% if timer %}
             <script>{% include 'screen/timer.js' %}</script>
         {% endif %}
-        {{ macros.copyright_script(show=screen.screen_type.shows_copyright) }}
     </div>
 {% endblock %}
+
+{% block copyright %}
+    {% if screen.screen_type.shows_copyright %}
+        {{ super() }}
+    {% endif %}
+{% endblock copyright %}
 
 {% block content %}
     <div id="top-nav-wrapper" class="pt-0">

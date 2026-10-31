@@ -136,14 +136,15 @@
                     <div
                         id="copyright-wrapper"
                     >
-                        {# copyright may be hidden by the macros.copyright_script #}
-                        <div
-                            id="copyright"
-                            class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
-                        >
-                            Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} -
-                            <a class="ps-1" href="https://sharly-chess.com">sharly-chess.com</a>
-                        </div>
+                        {% block copyright %}
+                            <div
+                                id="copyright"
+                                class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
+                            >
+                                Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} -
+                                <a class="ps-1" href="https://sharly-chess.com">sharly-chess.com</a>
+                            </div>
+                        {% endblock copyright %}
                     </div>
                 </main>
                 <div id="please-wait-wrapper">

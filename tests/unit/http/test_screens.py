@@ -21,6 +21,10 @@ from tests.unit.http.client import ApiClient
 EVENT_ID = 'test-screens-http'
 TOURNAMENT_NAME = 'test-screens-http-tournament'
 FAMILY_ID = 'test-screens-http-family'
+ONE_PIXEL_PNG = (
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4'
+    '2mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=='
+)
 
 
 @pytest.fixture
@@ -340,3 +344,34 @@ def test_the_link_to_a_multi_screen_follows_its_renaming(
     assert (
         http.get(f'/view/screen/{EVENT_ID}/{FAMILY_ID}-renamed:001').status_code == 200
     )
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ('screen_type', 'shown'), [(ScreenType.IMAGE, False), (ScreenType.BOARDS, True)]
+)
+@pytest.mark.parametrize('headers', [{}, {'HX-Request': 'true'}])
+def test_the_footer_is_left_out_of_image_screens(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    screen_type: ScreenType,
+    shown: bool,
+    headers: dict[str, str],
+):
+    """The footer is left out of an image screen when it is opened and
+    when it is refreshed."""
+    stored_screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Footer screen',
+        screen_type,
+        {'background_image_upload': ONE_PIXEL_PNG}
+        if screen_type == ScreenType.IMAGE
+        else {'init_set_tournament_id': tournament.id},
+    )
+    response = http.get(
+        f'/view/screen/{EVENT_ID}/{stored_screen.uniq_id}', headers=headers
+    )
+    assert response.status_code == 200
+    assert ('id="copyright"' in response.text) == shown
