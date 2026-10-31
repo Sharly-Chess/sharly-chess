@@ -7,10 +7,15 @@
         w-100 bg-light mx-auto justify-content-center
         {% if is_search_active %}table-danger-warning{% endif %}"
     hx-swap="outerHTML"
+    {% if table_partial %}data-live-partial{% endif %}
 >
     {% include '/admin/players/table/header.html' %}
-    {% include '/admin/players/table/page.html' %}
-    <tbody>
+    {% for table_page in table_pages | default([{'players_by_index': players_by_index, 'page': page}]) %}
+        {% with players_by_index=table_page.players_by_index, page=table_page.page, last_loaded_page=loop.last and not table_partial %}
+            {% include '/admin/players/table/page.html' %}
+        {% endwith %}
+    {% endfor %}
+    <tbody id="players-table-empty-body">
         <tr id="players-table-empty-row">
             {% if not players_by_index %}
                 <td colspan="100%" class="px-3 text-center">

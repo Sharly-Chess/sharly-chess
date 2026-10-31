@@ -5,14 +5,9 @@
     </div>
 {% endmacro %}
 
-{% macro tooltip_attributes(tooltip_type, tooltip_text, tooltip_placement='top') %}
-    data-bs-toggle="tooltip"
-    data-bs-placement="{{ tooltip_placement or 'top' }}"
-    data-bs-html="true"
-    data-bs-custom-class="{% if tooltip_type == 'error' %}sharly-chess-tooltip-error{% elif tooltip_type == 'warning' %}sharly-chess-tooltip-warning{% else %}sharly-chess-tooltip-info{% endif %}"
-    data-bs-title="<i class='{% if tooltip_type == 'error' %}bi-exclamation-triangle-fill{% elif tooltip_type == 'warning' %}bi-exclamation-triangle{% elif tooltip_type == 'info' %}bi-info-circle-fill{% endif %}'></i> {{ tooltip_text }}"
-    hx-on::before-send="$('body .tooltip').remove(); $('body .tooltip-inner').remove(); $('body .tooltip-arrow').remove();"
-{% endmacro %}
+{# Written in Python (web/settings.py), being called thousands of times on a
+   large table. #}
+{% set tooltip_attributes = tooltip_attributes_markup %}
 
 {% macro action_tooltip(tooltip_type, tooltip_text, tooltip_placement='top') %}
     {% if tooltip_text %}

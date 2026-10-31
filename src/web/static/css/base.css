@@ -2073,6 +2073,24 @@ body[data-bs-theme="dark"] .htmx-indicator {
     opacity: .2;
 }
 
+.player-record {
+    display: inline-flex;
+    width: 1.5em;
+    height: 1.5em;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-record > span {
+    line-height: 0;
+}
+
+.player-record > span.raised {
+    position: relative;
+    top: 0.1em;
+    line-height: normal;
+}
+
 /* Admin: the game results are rounded tags in the colour played, their
    character centred by the box rather than nudged. */
 [data-bs-theme=dark] .player-record {

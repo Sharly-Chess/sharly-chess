@@ -45,6 +45,7 @@
         });
         circle.set(1);
         circle.animate(0);
+        window.checkInCountdownEnd = Math.max(window.checkInCountdownEnd || 0, Date.now() + {{ delay }}000);
         {% if deleted_player_id %}
             if (!({{ admin_player.id }} in debouncedReplaceFunctionByPlayerId)) {
                 debouncedReplaceFunctionByPlayerId[{{ admin_player.id }}] = debounce(() => {

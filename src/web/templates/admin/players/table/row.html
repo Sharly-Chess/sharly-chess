@@ -1,5 +1,10 @@
+{# A row is sent once per player, hundreds of times on a large event: its
+   spacing is collapsed, and its fingerprint lets a live update skip it
+   when it has not changed. #}
+{% filter fingerprinted_row %}
 <tr
     id="player-{{ player.id }}"
+    data-live-flash
     {% if swap_oob %}
         hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id }}"
     {% endif %}
@@ -104,7 +109,7 @@
             </span>
         {% endif %}
     </td>
-    <td class="text-nowrap text-end compact-col index">
+    <td class="text-nowrap text-end compact-col index" data-live-flash-ignore>
         {{ index }}
     </td>
     <td class="text-end compact-col">
@@ -123,3 +128,4 @@
         </td>
     {% endfor %}
 </tr>
+{% endfilter %}

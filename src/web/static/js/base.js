@@ -136,6 +136,14 @@ window.addEventListener('htmx:beforeRequest', function (evt) {
 
 const tooltipSelector = '[data-bs-toggle="tooltip"]';
 
+// A request sent from under a tooltip takes the open tooltips away, before
+// the content they point at is swapped.
+document.addEventListener('htmx:beforeSend', (event) => {
+    if (event.target instanceof Element && event.target.closest(tooltipSelector)) {
+        $('body .tooltip').remove();
+    }
+});
+
 function closeTooltips () {
     if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
         document.querySelectorAll(tooltipSelector).forEach((element) => {
@@ -790,6 +798,7 @@ function getIsNextRefreshMessageIgnored() {
 // #live-refresh is fetched again and merged into the one on screen. While the
 // arbiter is in the middle of something, the update waits until they are done.
 const LIVE_REFRESH_DELAY = 1000;
+const LIVE_REFRESH_FLASH_DURATION = 2400;
 const LIVE_REFRESH_KEPT_CLASSES = ['highlight', 'highlight-warning'];
 // The fields the arbiter types into keep what they typed; the others follow
 // the server.
@@ -814,7 +823,8 @@ function arbiterIsBusy() {
         || window.getSelection().toString() !== ''
         || (window.keyQueue && window.keyQueue.length > 0)
         || window.requestInFlight === true
-        || document.querySelector('tr.highlight-warning') !== null;
+        || document.querySelector('tr.highlight-warning') !== null
+        || Date.now() < (window.checkInCountdownEnd || 0);
 }
 
 function scheduleLiveRefresh() {
@@ -827,13 +837,25 @@ async function runLiveRefresh() {
     if (!source) {
         return;
     }
+    // A hidden page is updated once it is seen again, so that what changed
+    // lights up in front of the arbiter.
+    if (document.visibilityState !== 'visible') {
+        document.addEventListener('visibilitychange', scheduleLiveRefresh, {once: true});
+        return;
+    }
     if (liveRefreshRunning || arbiterIsBusy()) {
         scheduleLiveRefresh();
         return;
     }
     liveRefreshRunning = true;
     try {
-        const response = await fetch(source.dataset.url, {headers: {'HX-Request': 'true'}});
+        const url = new URL(source.dataset.url, window.location.origin);
+        if (source.dataset.loadedPages) {
+            url.searchParams.set(
+                'loaded_pages', document.querySelectorAll(source.dataset.loadedPages).length || 1
+            );
+        }
+        const response = await fetch(url, {headers: {'HX-Request': 'true'}});
         if (!response.ok || !source.isConnected) {
             return;
         }
@@ -867,8 +889,22 @@ function disposeTooltips(node) {
     });
 }
 
+// The first row at the top of the window, and where it stands, so that the
+// rows added or removed above it do not move it.
+function scrollAnchor() {
+    const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+    const row = [...document.querySelectorAll('#main-wrapper tr[id]')]
+        .find((element) => element.getBoundingClientRect().bottom > top);
+    return row ? {row: row, top: row.getBoundingClientRect().top} : null;
+}
+
 function mergeLiveRefresh(current, next, messages) {
     const updatedCells = [];
+    const anchor = scrollAnchor();
+    // A partial table (only its first pages rendered again) may have rows
+    // moving past the pages left as they are: the arbiter is asked to refresh
+    // when rows came or went.
+    let rowsCameOrWent = false;
     morphdom(current, next, {
         onBeforeElUpdated: function (fromEl, toEl) {
             if (
@@ -877,6 +913,14 @@ function mergeLiveRefresh(current, next, messages) {
                 || fromEl.hasAttribute('hx-preserve')
                 || fromEl.classList.contains('select2-hidden-accessible')
                 || fromEl === document.activeElement
+            ) {
+                return false;
+            }
+            // A part loaded after the page stays as loaded rather than being
+            // put back to the placeholder that loads it.
+            if (
+                toEl.getAttribute('hx-trigger') === 'load'
+                && fromEl.getAttribute('hx-trigger') !== 'load'
             ) {
                 return false;
             }
@@ -898,13 +942,48 @@ function mergeLiveRefresh(current, next, messages) {
                 fromEl.matches('td.pairing-cell-result')
                 && fromEl.textContent.trim() !== toEl.textContent.trim()
             ) {
-                updatedCells.push(fromEl);
+                updatedCells.push(fromEl.querySelector('.btn') || fromEl);
+            }
+            // A row stamped with the fingerprint of what it shows is left
+            // alone while the fingerprint holds, but for the parts not worth
+            // flagging (its number); otherwise it is merged and flagged.
+            if (fromEl.dataset.fingerprint) {
+                if (fromEl.dataset.fingerprint === toEl.dataset.fingerprint) {
+                    const parts = fromEl.querySelectorAll('[data-live-flash-ignore]');
+                    const nextParts = toEl.querySelectorAll('[data-live-flash-ignore]');
+                    parts.forEach((part, index) => {
+                        if (nextParts[index] && part.textContent !== nextParts[index].textContent) {
+                            part.textContent = nextParts[index].textContent;
+                        }
+                    });
+                    return false;
+                }
+                if (fromEl.hasAttribute('data-live-flash')) {
+                    updatedCells.push(fromEl);
+                }
             }
             return true;
         },
+        onNodeAdded: function (node) {
+            if (node.nodeType === Node.ELEMENT_NODE && node.hasAttribute('data-live-flash')) {
+                updatedCells.push(node);
+                rowsCameOrWent = true;
+            }
+            return node;
+        },
         onBeforeNodeDiscarded: function (node) {
-            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.select2-container, .tooltip')) {
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return true;
+            }
+            if (node.matches('.select2-container, .tooltip')) {
                 return false;
+            }
+            // The pages a partial table leaves as they are.
+            if (node.matches('[data-page]') && node.parentElement?.hasAttribute('data-live-partial')) {
+                return false;
+            }
+            if (node.hasAttribute('data-live-flash')) {
+                rowsCameOrWent = true;
             }
             disposeTooltips(node);
             return true;
@@ -915,16 +994,27 @@ function mergeLiveRefresh(current, next, messages) {
         messageStack.append(...messages.childNodes);
         htmx.process(messageStack);
     }
+    if (anchor && anchor.row.isConnected) {
+        window.scrollBy(0, anchor.row.getBoundingClientRect().top - anchor.top);
+    }
     htmx.process(current);
     initInlineSelect2(current);
     activateTooltips(current);
     setSize();
-    updatedCells.forEach((cell) => {
-        const button = cell.querySelector('.btn') || cell;
-        button.classList.remove('live-updated');
-        void button.offsetWidth;
-        button.classList.add('live-updated');
+    updatedCells.forEach((element) => {
+        element.classList.add('live-updated');
+        setTimeout(() => element.classList.remove('live-updated'), LIVE_REFRESH_FLASH_DURATION);
     });
+    const partialMessage = document.getElementById('live-refresh-partial-message');
+    const refreshMessage = document.getElementById('refresh-message');
+    if (
+        rowsCameOrWent && partialMessage && refreshMessage
+        && current.querySelector('[data-live-partial]')
+        && !refreshMessage.hasChildNodes()
+    ) {
+        refreshMessage.append(partialMessage.content.cloneNode(true));
+        htmx.process(refreshMessage);
+    }
     document.dispatchEvent(new CustomEvent('live-refresh'));
 }
 

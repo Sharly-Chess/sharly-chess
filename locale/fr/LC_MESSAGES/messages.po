@@ -7642,6 +7642,9 @@ msgstr "Joueur·euses de %(first)d à %(last)d"
 msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
+msgid "Players further down the table may have changed, refresh to see them."
+msgstr "Les joueur·euses plus bas dans le tableau ont peut-être changé, actualisez pour les voir."
+
 msgid "Players import"
 msgstr "Import de joueur·euses"
 

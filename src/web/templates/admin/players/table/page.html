@@ -2,7 +2,9 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
 <tbody
-    {% if page < pages %}
+    id="players-table-page-{{ page }}"
+    data-page="{{ page }}"
+    {% if page < pages and last_loaded_page | default(true) %}
         hx-get="{{ url_for(
             'admin-event-players-page',
             event_uniq_id=admin_event.uniq_id,

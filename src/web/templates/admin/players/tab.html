@@ -1,19 +1,14 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
     <div
-        hx-get="{{ url_for('players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
-        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
-    <div
-        hx-get="{{ url_for('players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
-        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
-        hx-target="#refresh-message"
-        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
-        hx-swap="innerHTML"
-    >
-    </div>
+        id="live-refresh"
+        hidden
+        data-url="{{ url }}"
+        data-events="ws:new-user-results|{{ admin_event.uniq_id }} ws:new-checkins|{{ admin_event.uniq_id }}"
+        data-loaded-pages="#players-table > tbody[data-page]"
+    ></div>
+    <template id="live-refresh-partial-message">
+        {% include '/admin/players/partial_refresh_message.html' %}
+    </template>
 
     <div id="top-nav-wrapper">
         <div id="top-nav-content">
@@ -215,6 +210,7 @@
 
     {% if client.can_update_players and admin_event.check_ratings %}
         <div
+            id="ratings-check-banner"
             hx-get="{{ url_for('admin-event-ratings-check-banner', event_uniq_id=admin_event.uniq_id) }}"
             hx-trigger="load"
             hx-swap="outerHTML"

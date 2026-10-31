@@ -251,7 +251,7 @@ def test_the_ratings_check_banner_can_be_dismissed(
     dismissed = http.patch(f'/event-ratings-check-dismiss/{EVENT_ID}')
     assert dismissed.status_code == 200
     assert (
-        'ratings-check-banner'
+        'table-status-bar'
         not in http.get(f'/event-ratings-check-banner/{EVENT_ID}').text
     )
 

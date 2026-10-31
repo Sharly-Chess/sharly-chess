@@ -1,0 +1,20 @@
+{% extends '/common/alert.html' %}
+
+{% block type %}warning{% endblock %}
+
+{% block alert_content %}
+    <div class="flex-grow-1 align-self-center">
+        {{ _('Players further down the table may have changed, refresh to see them.') }}
+    </div>
+    <div class="align-self-center">
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-primary text-nowrap"
+            hx-get="{{ url }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {{ _('Refresh') }}
+        </button>
+    </div>
+{% endblock %}

@@ -259,6 +259,9 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
 class PlayerAdminController(BaseEventAdminController):
     PAGE_SIZE = 25
+    # The pages a live update renders again at most: an arbiter who has
+    # scrolled further keeps the pages below as they are.
+    LIVE_UPDATE_PAGES = 4
     search_results_by_session: ClassVar[dict[int, list[int]]] = {}
 
     # Litestar declares `guards` on `Controller` as an instance variable, so
@@ -456,7 +459,38 @@ class PlayerAdminController(BaseEventAdminController):
         }
 
     @classmethod
-    def _render_players_tab(cls, web_context: PlayerAdminWebContext) -> HTMXTemplate:
+    def _player_table_pages_context(
+        cls, web_context: PlayerAdminWebContext, loaded_pages: int
+    ) -> dict[str, Any]:
+        """The first pages of the table at once, each in a body of its own as
+        the scrolling adds them, so that a page already scrolled through can be
+        rendered again as it stands. Past LIVE_UPDATE_PAGES, only those are
+        rendered, and the table is marked partial: the pages below stay as the
+        page has them."""
+        first_page_context = cls._player_table_page_context(web_context)
+        partial = loaded_pages > cls.LIVE_UPDATE_PAGES
+        last_page = max(
+            1, min(loaded_pages, cls.LIVE_UPDATE_PAGES, first_page_context['pages'])
+        )
+        page_contexts = [first_page_context] + [
+            cls._player_table_page_context(web_context, page)
+            for page in range(2, last_page + 1)
+        ]
+        return first_page_context | {
+            'table_pages': [
+                {
+                    'players_by_index': context['players_by_index'],
+                    'page': context['page'],
+                }
+                for context in page_contexts
+            ],
+            'table_partial': partial,
+        }
+
+    @classmethod
+    def _render_players_tab(
+        cls, web_context: PlayerAdminWebContext, loaded_pages: int = 1
+    ) -> HTMXTemplate:
         request = web_context.request
         event = web_context.get_admin_event()
         cls.set_disabled_columns(web_context)
@@ -464,7 +498,7 @@ class PlayerAdminController(BaseEventAdminController):
         template_context = (
             web_context.template_context
             | cls._player_table_header_context(web_context)
-            | cls._player_table_page_context(web_context)
+            | cls._player_table_pages_context(web_context, loaded_pages)
         )
         searchable_column_names = [
             column.name for column in web_context.column_handler.searchable_columns
@@ -547,8 +581,10 @@ class PlayerAdminController(BaseEventAdminController):
         path='/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
     )
-    async def htmx_admin_event_players_tab(self, request: HTMXRequest) -> Template:
-        return self._render_players_tab(PlayerAdminWebContext(request))
+    async def htmx_admin_event_players_tab(
+        self, request: HTMXRequest, loaded_pages: FromQuery[int] = 1
+    ) -> Template:
+        return self._render_players_tab(PlayerAdminWebContext(request), loaded_pages)
 
     @get(
         path='/event/{event_uniq_id:str}/players/columns',
@@ -3326,13 +3362,12 @@ class PlayerAdminController(BaseEventAdminController):
         until the arbiter dismisses them, and again once a list changes."""
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
-        if (
-            not event.check_ratings
+        count = (
+            0
+            if not event.check_ratings
             or list_versions() == event.stored_event.ratings_check_dismissed
-        ):
-            return HTMXTemplate(template_name='/common/empty.html')
-        if not (count := await automatic_check(event)):
-            return HTMXTemplate(template_name='/common/empty.html')
+            else await automatic_check(event)
+        )
         return HTMXTemplate(
             template_name='/admin/players/ratings_check_banner.html',
             context=web_context.template_context | {'count': count},
@@ -3516,30 +3551,6 @@ class PlayerAdminController(BaseEventAdminController):
             'tab': tab,
         }
         return self._admin_base_event_render(template_context)
-
-    @get(
-        path='/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
-        name='players-needs-refresh-message',
-    )
-    async def htmx_admin_players_refresh_message(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: FromPath[str],
-        reason: FromPath[str],
-        ignore: FromQuery[bool] = False,
-    ) -> Template:
-        if ignore:
-            return HTMXTemplate(template_name='/common/empty.html')
-        return HTMXTemplate(
-            template_name='/admin/common/needs_refresh.html',
-            context={
-                'url': request.app.route_reverse(
-                    'admin-event-players-tab', event_uniq_id=event_uniq_id
-                ),
-                'event_uniq_id': event_uniq_id,
-                'reason': reason,
-            },
-        )
 
     @get(
         path=[

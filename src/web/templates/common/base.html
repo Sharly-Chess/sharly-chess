@@ -184,6 +184,12 @@
     {% if not request.htmx %}
         <script src="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ sharly_chess_config.bootstrap_version ~ '-dist/js/bootstrap.bundle.min.js') }}"></script>
         <script>
+            // The tooltips of the pages show markup in the info style unless
+            // told otherwise, which spares writing it on each of them.
+            if (typeof bootstrap !== 'undefined') {
+                bootstrap.Tooltip.Default.html = true;
+                bootstrap.Tooltip.Default.customClass = 'sharly-chess-tooltip-info';
+            }
             closeTooltips();
             activateTooltips();
 

@@ -1,6 +1,7 @@
 from contextvars import ContextVar
 from functools import lru_cache, partial
 import os
+import hashlib
 import re
 import posixpath
 import sqlite3
@@ -226,7 +227,9 @@ class ReleasableJinjaContext(JinjaContext):
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         contexts = _render_contexts.get()
-        if contexts is not None and set(self.parent).difference(self.globals_keys):
+        if contexts is not None and any(
+            key not in self.globals_keys for key in self.parent
+        ):
             # Global-only contexts belong to cached macro modules.
             contexts.append(self)
 
@@ -303,6 +306,135 @@ def raise_ordinal_suffix_svg(value: str) -> Markup:
     return Markup(raised + '</tspan>' * count)
 
 
+def fingerprinted_row(html: str) -> Markup:
+    """A table row with its spacing collapsed, stamped with a fingerprint of
+    what it shows, the cell marked data-live-flash-ignore left out: a page
+    merging a fresh copy of the table skips the rows whose fingerprint has
+    not changed."""
+    row = ' '.join(str(html).split())
+    shown = row
+    if (marker := row.find(' data-live-flash-ignore')) != -1:
+        start = row.find('>', marker) + 1
+        shown = row[:start] + row[row.find('</td>', start) :]
+    fingerprint = hashlib.blake2b(shown.encode(), digest_size=8).hexdigest()
+    return Markup(row.replace('<tr ', f'<tr data-fingerprint="{fingerprint}" ', 1))
+
+
+_TOOLTIP_ICONS = {
+    'error': 'bi-exclamation-triangle-fill',
+    'warning': 'bi-exclamation-triangle',
+    'info': 'bi-info-circle-fill',
+}
+
+
+def tooltip_attributes(
+    tooltip_type: str, tooltip_text: str, tooltip_placement: str = 'top'
+) -> Markup:
+    """The attributes of an element showing a tooltip, written in Python rather
+    than as a macro since a large table calls it thousands of times. The
+    placement on top, the markup and the info style are the defaults set in
+    base.html: only what differs from them is written."""
+    attributes = ['data-bs-toggle="tooltip"']
+    if tooltip_placement and tooltip_placement != 'top':
+        attributes.append(f'data-bs-placement="{escape(tooltip_placement)}"')
+    if tooltip_type in ('error', 'warning'):
+        attributes.append(f'data-bs-custom-class="sharly-chess-tooltip-{tooltip_type}"')
+    icon = _TOOLTIP_ICONS.get(tooltip_type, '')
+    attributes.append(
+        f'data-bs-title="<i class=\'{icon}\'></i> {escape(tooltip_text)}"'
+    )
+    return Markup(' '.join(attributes))
+
+
+class RecordMark(t.NamedTuple):
+    """One square of a player's record: what it shows, its colours, whether its
+    character sits a little lower, and its tooltip."""
+
+    text: str
+    css_class: str = ''
+    raised: bool = False
+    tooltip: str | None = None
+
+
+def player_record_marks(player: t.Any) -> list[RecordMark]:
+    """The squares of a player's record, one per round, worked out in Python
+    rather than in the template since a large table shows hundreds of them."""
+    marks: list[RecordMark] = []
+    for pairing in player.single_tournament_player.pairings.values():
+        box = (
+            'bg-white border border-white text-dark'
+            if pairing.color == 'W'
+            else 'bg-dark border border-white text-white'
+        )
+        if pairing.zero_point_bye:
+            mark = RecordMark(
+                Markup('<i class="bi bi-0-circle-fill"></i>'),
+                'text-secondary',
+                tooltip=gettext('Zero-Point Bye'),
+            )
+        elif pairing.needs_pairing:
+            mark = RecordMark('', 'text-secondary')
+        elif pairing.paired_no_result:
+            mark = RecordMark(Markup('&nbsp;'), box)
+        elif pairing.exempt:
+            mark = RecordMark(
+                '+', raised=True, tooltip=gettext('Pairing Allocated Bye')
+            )
+        elif pairing.loss:
+            mark = RecordMark(
+                'L' if pairing.unrated_loss else '0',
+                box,
+                raised=True,
+                tooltip=gettext('Unrated Loss')
+                if pairing.unrated_loss
+                else gettext('Loss'),
+            )
+        elif pairing.draw:
+            mark = RecordMark(
+                'D' if pairing.unrated_draw else '=',
+                box,
+                tooltip=gettext('Unrated Draw')
+                if pairing.unrated_draw
+                else gettext('Draw'),
+            )
+        elif pairing.win:
+            mark = RecordMark(
+                'W' if pairing.unrated_gain else '1',
+                box,
+                raised=True,
+                tooltip=gettext('Unrated Win')
+                if pairing.unrated_gain
+                else gettext('Win'),
+            )
+        elif pairing.half_point_bye:
+            mark = RecordMark(
+                Markup('<i class="bi bi-circle-half"></i>'),
+                'text-secondary',
+                tooltip=gettext('Half-Point Bye'),
+            )
+        elif pairing.full_point_bye:
+            mark = RecordMark(
+                Markup('<i class="bi bi-1-circle-fill"></i>'),
+                'text-secondary',
+                tooltip=gettext('Full-Point Bye'),
+            )
+        elif pairing.forfeit_loss or pairing.double_forfeit:
+            mark = RecordMark('-', box, tooltip=gettext('Forfeit Loss'))
+        elif pairing.forfeit_gain:
+            mark = RecordMark('+', box, tooltip=gettext('Forfeit Win'))
+        else:
+            mark = RecordMark('?', 'bg-danger text-white')
+        marks.append(mark)
+    return marks
+
+
+@lru_cache(maxsize=4096)
+def _joined_template_path(template: str, parent: str) -> str:
+    """The path of a template included by another, looked up once: a table
+    row includes a template per cell."""
+    return str(PurePosixPath(parent).parent / template)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -320,6 +452,7 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
+            lstrip_blocks=True,
             auto_reload=DEVEL_ENV,
         )
         self.context_class = ReleasableJinjaContext
@@ -335,9 +468,12 @@ class SharlyChessEnvironment(Environment):
         self.add_extension('jinja2.ext.do')
         self.filters['raise_ordinal_suffix'] = raise_ordinal_suffix
         self.filters['raise_ordinal_suffix_svg'] = raise_ordinal_suffix_svg
+        self.filters['fingerprinted_row'] = fingerprinted_row
+        self.globals['tooltip_attributes_markup'] = tooltip_attributes
+        self.globals['player_record_marks'] = player_record_marks
 
     def join_path(self, template: str, parent: str) -> str:
-        return str(PurePosixPath(parent).parent / template)
+        return _joined_template_path(template, parent)
 
 
 template_dirs: list[Path] = [

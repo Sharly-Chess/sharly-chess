@@ -1,31 +1,37 @@
-<div id="ratings-check-banner" class="window-width table-status-bar-wrapper">
-    <div class="table-status-bar" role="status">
-        <span class="table-status-bar-dot" aria-hidden="true"></span>
-        <span class="flex-grow-1">
-            {{ ngettext(
-                'The rating lists give %(num)d player a different rating.',
-                'The rating lists give %(num)d players a different rating.',
-                count,
-            ) }}
-        </span>
-        <button
-            type="button"
-            class="btn btn-sm table-status-bar-action text-nowrap"
-            hx-get="{{ url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab='players') }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            {{ _('Review') }}<i class="bi-arrow-right ps-1" aria-hidden="true"></i>
-        </button>
-        <button
-            type="button"
-            class="btn-close"
-            aria-label="{{ _('Dismiss') }}"
-            hx-patch="{{ url_for('admin-event-ratings-check-dismiss', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="#ratings-check-banner"
-            hx-swap="innerHTML"
-        ></button>
+{# Without findings, the banner is an empty element rather than nothing, so
+   that the page keeps it as loaded. #}
+{% if count %}
+    <div id="ratings-check-banner" class="window-width table-status-bar-wrapper">
+        <div class="table-status-bar" role="status">
+            <span class="table-status-bar-dot" aria-hidden="true"></span>
+            <span class="flex-grow-1">
+                {{ ngettext(
+                    'The rating lists give %(num)d player a different rating.',
+                    'The rating lists give %(num)d players a different rating.',
+                    count,
+                ) }}
+            </span>
+            <button
+                type="button"
+                class="btn btn-sm table-status-bar-action text-nowrap"
+                hx-get="{{ url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab='players') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                {{ _('Review') }}<i class="bi-arrow-right ps-1" aria-hidden="true"></i>
+            </button>
+            <button
+                type="button"
+                class="btn-close"
+                aria-label="{{ _('Dismiss') }}"
+                hx-patch="{{ url_for('admin-event-ratings-check-dismiss', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="#ratings-check-banner"
+                hx-swap="innerHTML"
+            ></button>
+        </div>
     </div>
-</div>
+{% else %}
+    <div id="ratings-check-banner"></div>
+{% endif %}

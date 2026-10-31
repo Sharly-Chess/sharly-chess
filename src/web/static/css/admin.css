@@ -1199,12 +1199,21 @@
     from { background-color: rgba(var(--bs-primary-rgb), 0.55); }
 }
 
-.live-updated {
+@keyframes live-updated-row {
+    from { box-shadow: inset 0 0 0 9999px rgba(var(--bs-primary-rgb), 0.22); }
+}
+
+.btn.live-updated {
     animation: live-updated 2.4s ease-out;
 }
 
+tr.live-updated > td {
+    animation: live-updated-row 2.4s ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .live-updated {
+    .btn.live-updated,
+    tr.live-updated > td {
         animation: none;
     }
 }

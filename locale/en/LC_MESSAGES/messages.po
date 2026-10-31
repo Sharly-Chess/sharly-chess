@@ -7640,6 +7640,9 @@ msgstr ""
 msgid "Players from %(first)s to %(last)s"
 msgstr ""
 
+msgid "Players further down the table may have changed, refresh to see them."
+msgstr ""
+
 msgid "Players import"
 msgstr ""
 
