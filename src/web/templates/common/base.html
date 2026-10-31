@@ -40,7 +40,7 @@
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/css/bootstrap5-toggle.min.css') }}" />
             <script src="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/js/bootstrap5-toggle.jquery.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/progressbar.js/progressbar.js-' ~ sharly_chess_config.progressbar_js_version ~ '/dist/progressbar.min.js') }}"></script>
-            <script>window.SC_I18N = { selectPlayer: "{{ _('Select player') }}" };</script>
+            <script>window.SC_I18N = { selectPlayer: "{{ _('Select player') }}", noResults: "{{ _('No results.') }}" };</script>
             <script src="{{ url_for('static', file_path='/js/base.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script src="{{ url_for('static', file_path='/js/modals.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script>
