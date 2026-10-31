@@ -2738,8 +2738,11 @@ table.prominent tr.flat-pair-selected > th {
     gap: .75rem;
     min-height: 2.6rem;
     padding: .35rem .75rem;
-    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
-    border-top: 1px solid var(--bs-border-color);
+    background:
+        linear-gradient(rgba(var(--bs-warning-rgb), .06), rgba(var(--bs-warning-rgb), .06)),
+        var(--bs-body-bg);
+    border-top: 1px solid rgba(var(--bs-warning-rgb), .55);
+    border-bottom: 1px solid rgba(var(--bs-warning-rgb), .55);
     color: var(--bs-emphasis-color);
     font-weight: 500;
 }
@@ -2747,8 +2750,8 @@ table.prominent tr.flat-pair-selected > th {
 .table-status-bar-dot {
     position: relative;
     flex-shrink: 0;
-    width: .55rem;
-    height: .55rem;
+    width: .7rem;
+    height: .7rem;
     border-radius: 50%;
     background: var(--bs-warning);
 }
@@ -2772,18 +2775,20 @@ table.prominent tr.flat-pair-selected > th {
     font-weight: 600;
 }
 
-/* The same line under the page header, for a warning about the whole page. */
+/* Under the page header, the bar leaves as much room below as the header
+   leaves above. */
 .page-status-bar {
-    border-bottom: 1px solid var(--bs-border-color);
+    margin-bottom: .55rem;
 }
 
+/* On a phone, the buttons of a warning go below its text. */
 @media (max-width: 575.98px) {
-    .page-status-bar {
+    .table-status-bar {
         flex-wrap: wrap;
     }
 
-    .page-status-bar > .flex-grow-1 {
-        flex-basis: calc(100% - 1.3rem);
+    .table-status-bar > .flex-grow-1 {
+        flex-basis: calc(100% - 1.45rem);
     }
 }
 

@@ -1,4 +1,4 @@
-{% macro confirm_button(id, action, icon, label, button_class='btn-outline-warning') %}
+{% macro confirm_button(id, action, icon, label, button_class='table-status-bar-action') %}
     <button
         id="{{ id }}"
         class="btn btn-sm {{ button_class }} text-nowrap text-start"
@@ -85,7 +85,7 @@
         {% endif %}
         {% if not schedule_editor.must_edit %}
             <button
-                class="btn btn-sm btn-outline-warning text-nowrap text-start"
+                class="btn btn-sm table-status-bar-action text-nowrap text-start"
                 hx-post="{{ url_for('admin-pairings-schedule-cancel', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -99,7 +99,7 @@
         {% if schedule_editor.draft_empty %}
             <button
                 id="schedule-fill-berger"
-                class="btn btn-sm btn-outline-warning text-nowrap text-start"
+                class="btn btn-sm table-status-bar-action text-nowrap text-start"
                 hx-post="{{ url_for('admin-pairings-schedule-fill-berger', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
