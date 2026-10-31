@@ -3,7 +3,6 @@
 {% block type %}warning{% endblock %}
 
 {% block alert_content %}
-    <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <div class="flex-grow-1 align-self-center">
         {% if reason == "result" %}
             {{ _('New results are in, refresh your browser') }}
@@ -14,7 +13,7 @@
     <div class="align-self-center">
         <button
             type="button"
-            class="btn btn-sm btn-outline-dark"
+            class="btn btn-sm btn-outline-primary"
             hx-get="{{ url }}"
             hx-target="body"
             hx-indicator="#please-wait"
