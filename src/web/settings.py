@@ -452,7 +452,6 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
-            lstrip_blocks=True,
             auto_reload=DEVEL_ENV,
         )
         self.context_class = ReleasableJinjaContext
