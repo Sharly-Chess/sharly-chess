@@ -81,6 +81,8 @@ class SnapshotReason(StrEnum):
     BEFORE_RENUMBERING = 'before_renumbering'
     BEFORE_ROUNDS_CHANGE = 'before_rounds_change'
     BEFORE_TIE_BREAKS_CHANGE = 'before_tie_breaks_change'
+    BEFORE_TOURNAMENT_DELETION = 'before_tournament_deletion'
+    BEFORE_TEAM_DELETION = 'before_team_deletion'
     BEFORE_RESTORE = 'before_restore'
     BEFORE_UPGRADE = 'before_upgrade'
 
@@ -205,6 +207,18 @@ class SnapshotReason(StrEnum):
                         'Before the tie-breaks of [{tournament}] were changed'
                     ).format(tournament=tournament)
                 return _('Before the tie-breaks were changed')
+            case SnapshotReason.BEFORE_TOURNAMENT_DELETION:
+                if tournament:
+                    return _('Before [{tournament}] was deleted').format(
+                        tournament=tournament
+                    )
+                return _('Before a tournament was deleted')
+            case SnapshotReason.BEFORE_TEAM_DELETION:
+                if tournament:
+                    return _('Before a team of [{tournament}] was deleted').format(
+                        tournament=tournament
+                    )
+                return _('Before a team was deleted')
             case SnapshotReason.BEFORE_RESTORE:
                 return _('Before a restoration')
             case SnapshotReason.BEFORE_UPGRADE:
