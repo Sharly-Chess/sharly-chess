@@ -86,3 +86,34 @@ def test_a_closed_check_in_takes_the_modal_off_the_rows(
     response = http.post(f'/check-in/tournament-toggle-open/{EVENT_ID}/{tournament.id}')
     assert response.status_code == 200
     assert 'checkin-modal' not in row_for('AMOS', http)
+
+
+@pytest.fixture
+def paired_tournament(api: ApiClient) -> Iterator[Tournament]:
+    EVENT.create(json_file='test-screens')
+    tournament = EVENT.tournament()
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        SCREEN_ID,
+        ScreenType.CHECK_IN,
+        {'init_set_tournament_id': tournament.id},
+    )
+    yield tournament
+    EVENT.delete()
+
+
+@pytest.mark.unit
+def test_a_closed_check_in_lists_the_players_of_a_paired_round(
+    http: TestClient, paired_tournament: Tournament
+):
+    assert paired_tournament.current_round
+    response = http.post(
+        f'/check-in/tournament-toggle-open/{EVENT_ID}/{paired_tournament.id}'
+    )
+    assert response.status_code == 200
+    rows = [row.textContent for row in player_rows(http)]
+    players = paired_tournament.tournament_players
+    assert len(rows) == len(players)
+    for player in players:
+        assert sum(player.full_name in row for row in rows) == 1
