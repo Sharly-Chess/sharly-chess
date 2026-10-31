@@ -1,3 +1,5 @@
+const htmxRequestAttributes = ['hx-get', 'hx-post', 'hx-put', 'hx-patch', 'hx-delete', 'hx-trigger'];
+
 htmx.defineExtension('morphdom-swap', {
     isInlineSwap: function(swapStyle) {
         return swapStyle === 'morphdom' || swapStyle === 'morphdom-innerHTML' || swapStyle === 'morphdom-outerHTML'
@@ -17,6 +19,12 @@ htmx.defineExtension('morphdom-swap', {
                     [...toEl.attributes].forEach( attr => { script.setAttribute(attr.nodeName, attr.nodeValue) })
                     script.innerHTML = toEl.innerHTML;
                     fromEl.replaceWith(script)
+                    return false;
+                }
+                // htmx binds its request when it processes an element, so a
+                // node whose request changed is replaced to be bound anew.
+                if (htmxRequestAttributes.some(name => fromEl.getAttribute(name) !== toEl.getAttribute(name))) {
+                    fromEl.replaceWith(toEl)
                     return false;
                 }
                 return true;
