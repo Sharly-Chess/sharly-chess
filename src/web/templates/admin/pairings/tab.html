@@ -21,22 +21,34 @@
 </div>
 
 {% if admin_tournament %}
-    <div
-        hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
-        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
-        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
-    <div
-        hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
-        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
-        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
+    {# While the pairings or the schedule are edited by hand, the arbiter is
+       told about new results and check-ins rather than having them merged. #}
+    {% if schedule_editing or unsafe_editing %}
+        <div
+            hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
+            hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
+            hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+        <div
+            hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
+            hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
+            hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+    {% else %}
+        <div
+            id="live-refresh"
+            hidden
+            data-url="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+            data-events="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}"
+            data-round-locked="{{ 'true' if admin_tournament.round_is_locked(admin_round) else 'false' }}"
+        ></div>
+    {% endif %}
     {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
     {% set is_flat_team_mode = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
     {# A locked round is read-only (the pairing system decides — e.g. a
@@ -917,6 +929,16 @@
             });
             $(document).on("input.search", "#search-player", searchPlayerHandler);
             syncTeamBlockChevrons();
+
+            $(document).off("live-refresh.pairings");
+            $(document).on("live-refresh.pairings", function () {
+                window.roundLocked = $("#live-refresh").attr("data-round-locked") === "true";
+                restoreLineupEditState();
+                syncTeamBlockChevrons();
+                if ($("#search-player").val()) {
+                    searchPlayerHandler();
+                }
+            });
 
             $(document).off("click.team-block-collapse");
             $(document).on("click.team-block-collapse", "tr.team-block-header", function(e) {

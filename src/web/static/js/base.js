@@ -785,3 +785,158 @@ function getIsNextRefreshMessageIgnored() {
     }
     return false;
 }
+
+// Live updates: when results or check-ins come in, the page named by
+// #live-refresh is fetched again and merged into the one on screen. While the
+// arbiter is in the middle of something, the update waits until they are done.
+const LIVE_REFRESH_DELAY = 1000;
+const LIVE_REFRESH_KEPT_CLASSES = ['highlight', 'highlight-warning'];
+// The fields the arbiter types into keep what they typed; the others follow
+// the server.
+const LIVE_REFRESH_KEPT_FIELDS = 'input[type=search], input[type=text], textarea';
+let liveRefreshTimer = null;
+let liveRefreshRunning = false;
+let liveRefreshEvents = [];
+let pointerIsDown = false;
+
+window.addEventListener('pointerdown', () => { pointerIsDown = true; }, true);
+window.addEventListener('pointerup', () => { pointerIsDown = false; }, true);
+window.addEventListener('pointercancel', () => { pointerIsDown = false; }, true);
+
+function arbiterIsBusy() {
+    const focused = document.activeElement;
+    return !modalIsClosed()
+        || pointerIsDown
+        || document.querySelector(
+            '.dropdown-menu.show, .select2-container--open, .popover, .sortable-chosen, .htmx-request'
+        ) !== null
+        || (focused && focused.matches('textarea, select, [contenteditable], input:not([type=search])'))
+        || window.getSelection().toString() !== ''
+        || (window.keyQueue && window.keyQueue.length > 0)
+        || window.requestInFlight === true
+        || document.querySelector('tr.highlight-warning') !== null;
+}
+
+function scheduleLiveRefresh() {
+    clearTimeout(liveRefreshTimer);
+    liveRefreshTimer = setTimeout(runLiveRefresh, LIVE_REFRESH_DELAY);
+}
+
+async function runLiveRefresh() {
+    const source = document.getElementById('live-refresh');
+    if (!source) {
+        return;
+    }
+    if (liveRefreshRunning || arbiterIsBusy()) {
+        scheduleLiveRefresh();
+        return;
+    }
+    liveRefreshRunning = true;
+    try {
+        const response = await fetch(source.dataset.url, {headers: {'HX-Request': 'true'}});
+        if (!response.ok || !source.isConnected) {
+            return;
+        }
+        const html = await response.text();
+        if (!source.isConnected) {
+            return;
+        }
+        if (arbiterIsBusy()) {
+            scheduleLiveRefresh();
+            return;
+        }
+        const fresh = new DOMParser().parseFromString(html, 'text/html');
+        const next = fresh.getElementById('main-wrapper');
+        const current = document.getElementById('main-wrapper');
+        if (next && current) {
+            mergeLiveRefresh(current, next, fresh.querySelector('#messages[hx-swap-oob]'));
+        }
+    } catch (error) {
+        console.warn('Live update failed', error);
+    } finally {
+        liveRefreshRunning = false;
+    }
+}
+
+function disposeTooltips(node) {
+    if (node.nodeType !== Node.ELEMENT_NODE || typeof bootstrap === 'undefined') {
+        return;
+    }
+    [node, ...node.querySelectorAll(tooltipSelector)].forEach((element) => {
+        bootstrap.Tooltip.getInstance(element)?.dispose();
+    });
+}
+
+function mergeLiveRefresh(current, next, messages) {
+    const updatedCells = [];
+    morphdom(current, next, {
+        onBeforeElUpdated: function (fromEl, toEl) {
+            if (
+                fromEl.id === 'modal-wrapper'
+                || fromEl.id === 'refresh-message'
+                || fromEl.hasAttribute('hx-preserve')
+                || fromEl.classList.contains('select2-hidden-accessible')
+                || fromEl === document.activeElement
+            ) {
+                return false;
+            }
+            if (fromEl.matches(LIVE_REFRESH_KEPT_FIELDS)) {
+                toEl.value = fromEl.value;
+            }
+            LIVE_REFRESH_KEPT_CLASSES.forEach((name) => {
+                if (fromEl.classList.contains(name)) {
+                    toEl.classList.add(name);
+                }
+            });
+            if (
+                fromEl.matches(tooltipSelector)
+                && fromEl.getAttribute('data-bs-title') !== toEl.getAttribute('data-bs-title')
+            ) {
+                bootstrap.Tooltip.getInstance(fromEl)?.dispose();
+            }
+            if (
+                fromEl.matches('td.pairing-cell-result')
+                && fromEl.textContent.trim() !== toEl.textContent.trim()
+            ) {
+                updatedCells.push(fromEl);
+            }
+            return true;
+        },
+        onBeforeNodeDiscarded: function (node) {
+            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.select2-container, .tooltip')) {
+                return false;
+            }
+            disposeTooltips(node);
+            return true;
+        },
+    });
+    const messageStack = document.getElementById('messages');
+    if (messages && messageStack) {
+        messageStack.append(...messages.childNodes);
+        htmx.process(messageStack);
+    }
+    htmx.process(current);
+    initInlineSelect2(current);
+    activateTooltips(current);
+    setSize();
+    updatedCells.forEach((cell) => {
+        const button = cell.querySelector('.btn') || cell;
+        button.classList.remove('live-updated');
+        void button.offsetWidth;
+        button.classList.add('live-updated');
+    });
+    document.dispatchEvent(new CustomEvent('live-refresh'));
+}
+
+function onLiveRefreshEvent() {
+    if (!getIsNextRefreshMessageIgnored()) {
+        scheduleLiveRefresh();
+    }
+}
+
+htmx.onLoad(function () {
+    liveRefreshEvents.forEach((name) => document.body.removeEventListener(name, onLiveRefreshEvent));
+    const source = document.getElementById('live-refresh');
+    liveRefreshEvents = source ? source.dataset.events.split(' ') : [];
+    liveRefreshEvents.forEach((name) => document.body.addEventListener(name, onLiveRefreshEvent));
+});

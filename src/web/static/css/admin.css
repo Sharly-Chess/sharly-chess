@@ -1193,3 +1193,18 @@
 [data-bs-theme=dark] table.prominent tr.team-block-header :is(.team-header-name-a, .team-header-name-b) {
     font-weight: 500;
 }
+
+/* A result that came in while the page was open lights up for a moment. */
+@keyframes live-updated {
+    from { background-color: rgba(var(--bs-primary-rgb), 0.55); }
+}
+
+.live-updated {
+    animation: live-updated 2.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .live-updated {
+        animation: none;
+    }
+}
