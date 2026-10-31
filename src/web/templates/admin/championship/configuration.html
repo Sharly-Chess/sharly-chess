@@ -50,7 +50,7 @@
             </div>
             <div class="collapse show" id="gp-config-team-score">
                 <form class="d-flex flex-column flex-lg-row gap-2" hx-post="{{ url_for('admin-championship-team-score-basis-update', championship_uniq_id=championship.uniq_id) }}" hx-target="body" hx-indicator="#please-wait">
-                    <select class="form-select" name="team_score_basis">
+                    <select class="form-select sharly-chess-select2 inline-select2" name="team_score_basis">
                         <option value="SOURCE_PRIMARY" {% if championship.team_score_basis.value == 'SOURCE_PRIMARY' %}selected{% endif %}>{{ _('Use each source tournament’s primary score') }}</option>
                         <option value="MATCH_POINTS" {% if championship.team_score_basis.value == 'MATCH_POINTS' %}selected{% endif %}>{{ _('Match points') }}</option>
                         <option value="GAME_POINTS" {% if championship.team_score_basis.value == 'GAME_POINTS' %}selected{% endif %}>{{ _('Game points') }}</option>

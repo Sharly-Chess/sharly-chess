@@ -1,4 +1,4 @@
-{% macro confirm_button(id, action, icon, label, button_class='btn-outline-warning') %}
+{% macro confirm_button(id, action, icon, label, button_class='table-status-bar-action') %}
     <button
         id="{{ id }}"
         class="btn btn-sm {{ button_class }} text-nowrap text-start"
@@ -13,32 +13,30 @@
         {{ label }}
     </button>
 {% endmacro %}
-<div id="schedule-banner" class="alert alert-warning py-2 px-2 mx-3 my-2 d-flex gap-3">
+<div id="schedule-banner" class="table-status-bar page-status-bar align-items-start py-2" role="status">
+    <span class="table-status-bar-dot mt-2" aria-hidden="true"></span>
     <div class="flex-grow-1">
-        <div class="d-flex align-items-start gap-2">
-            <i class="bi-calendar3"></i>
-            <div>
-                {% if schedule_editor.is_team %}
-                    {{ _('The schedule of the tournament is being edited. Save it to pair the matches of each round from it.') }}
-                {% else %}
-                    {{ _('The schedule of the tournament is being edited. Save it to pair every round from it.') }}
-                {% endif %}
-            </div>
+        <div>
+            {% if schedule_editor.is_team %}
+                {{ _('The schedule of the tournament is being edited. Save it to pair the matches of each round from it.') }}
+            {% else %}
+                {{ _('The schedule of the tournament is being edited. Save it to pair every round from it.') }}
+            {% endif %}
         </div>
         {% if schedule_editor.paired_team_rounds %}
-            <div id="schedule-paired-rounds" class="small mt-2">
+            <div id="schedule-paired-rounds" class="small fw-normal mt-2">
                 <i class="bi-lock pe-1"></i>
                 {{ _('The matches of the rounds already paired (%(rounds)s) cannot change: unpair a round to change its matches.', rounds=schedule_editor.paired_team_rounds|join(', ')) }}
             </div>
         {% endif %}
         {% if schedule_editor.played_games_unlocked %}
-            <div class="small mt-2">
+            <div class="small fw-normal mt-2">
                 <i class="bi-unlock pe-1"></i>
                 {{ _('The games already played can be changed, to set them as they were really played. Their results are kept when they agree.') }}
             </div>
         {% endif %}
         {% if schedule_violations %}
-            <ul id="schedule-violations" class="small mb-0 mt-2">
+            <ul id="schedule-violations" class="small fw-normal mb-0 mt-2">
                 {% for violation in schedule_violations[:20] %}
                     <li>
                         {% if violation.round %}
@@ -87,7 +85,7 @@
         {% endif %}
         {% if not schedule_editor.must_edit %}
             <button
-                class="btn btn-sm btn-outline-warning text-nowrap text-start"
+                class="btn btn-sm table-status-bar-action text-nowrap text-start"
                 hx-post="{{ url_for('admin-pairings-schedule-cancel', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -101,7 +99,7 @@
         {% if schedule_editor.draft_empty %}
             <button
                 id="schedule-fill-berger"
-                class="btn btn-sm btn-outline-warning text-nowrap text-start"
+                class="btn btn-sm table-status-bar-action text-nowrap text-start"
                 hx-post="{{ url_for('admin-pairings-schedule-fill-berger', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"

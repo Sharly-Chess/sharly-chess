@@ -3,7 +3,6 @@
 {% block type %}warning{% endblock %}
 
 {% block alert_content %}
-    <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <div class="flex-grow-1 align-self-center">
         {{ _(
             'New check-ins are in, %(absents)d players now absent',
@@ -13,7 +12,7 @@
     <div class="align-self-center">
         <button
             type="button"
-            class="btn btn-sm btn-outline-dark"
+            class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for(
                 'pairings-absents-modal',
                 event_uniq_id=admin_event.uniq_id,

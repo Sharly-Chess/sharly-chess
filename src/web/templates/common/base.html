@@ -40,7 +40,7 @@
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/css/bootstrap5-toggle.min.css') }}" />
             <script src="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/js/bootstrap5-toggle.jquery.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/progressbar.js/progressbar.js-' ~ sharly_chess_config.progressbar_js_version ~ '/dist/progressbar.min.js') }}"></script>
-            <script>window.SC_I18N = { selectPlayer: "{{ _('Select player') }}" };</script>
+            <script>window.SC_I18N = { selectPlayer: "{{ _('Select player') }}", noResults: "{{ _('No results.') }}" };</script>
             <script src="{{ url_for('static', file_path='/js/base.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script src="{{ url_for('static', file_path='/js/modals.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script>
@@ -59,6 +59,7 @@
             class="d-none"
         {% endif %}
     >
+        <div class="toolbar-edge" aria-hidden="true"></div>
         {% set redirect_url = '' %}
         {% if request.url.path == '/' %}
             {% set redirect_url = '/home' %}
@@ -70,7 +71,7 @@
             </script>
         {% else %}
             <div id="main-wrapper" class="{% block wrapper_class %}{% endblock wrapper_class %}" {% block ws %}{% endblock ws %}>
-                <div class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
+                <div class="toast-stack position-fixed bottom-0 end-0" style="z-index: 100">
                     {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
                         {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
                         To prevent this the client should also set the HX-Swap-Mode header to 'none' so that the server
@@ -136,14 +137,15 @@
                     <div
                         id="copyright-wrapper"
                     >
-                        {# copyright may be hidden by the macros.copyright_script #}
-                        <div
-                            id="copyright"
-                            class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
-                        >
-                            Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} -
-                            <a class="ps-1" href="{{ sharly_chess_config.web_url }}">{{ sharly_chess_config.web_url }}</a>
-                        </div>
+                        {% block copyright %}
+                            <div
+                                id="copyright"
+                                class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
+                            >
+                                Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} -
+                                <a class="ps-1" href="https://sharly-chess.com">sharly-chess.com</a>
+                            </div>
+                        {% endblock copyright %}
                     </div>
                 </main>
                 <div id="please-wait-wrapper">

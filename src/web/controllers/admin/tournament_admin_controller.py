@@ -2281,6 +2281,11 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
+        await SnapshotScheduler.snapshot_before_async(
+            event_uniq_id,
+            SnapshotReason.BEFORE_TOURNAMENT_DELETION,
+            tournament_id=tournament_id,
+        )
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
         Message.success(

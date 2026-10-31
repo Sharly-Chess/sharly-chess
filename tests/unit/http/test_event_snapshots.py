@@ -13,6 +13,7 @@ from data.loader import ArchiveLoader, EventLoader
 from data.snapshot import Snapshot, SnapshotLoader, SnapshotReason, snapshots_dir
 from data.snapshot import write_snapshot
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTeam
 from plugins.manager import plugin_manager
 from tests.test_config import TestUtils
 from tests.unit.http.events import EventUnderTest
@@ -304,3 +305,49 @@ def test_the_panel_points_at_the_documentation(http: TestClient, event: str):
     """The panel carries the icon the other windows do, which the help page
     of the documentation answers."""
     assert '/h/backups' in panel(http, event)
+
+
+def milestones(uniq_id: str, reason: SnapshotReason) -> list[Snapshot]:
+    return [
+        snapshot
+        for snapshot in SnapshotLoader.snapshots(uniq_id)
+        if snapshot.reason == reason
+    ]
+
+
+@pytest.mark.unit
+def test_deleting_a_tournament_backs_the_event_up_first(http: TestClient, event: str):
+    """The backup holds the tournament the deletion takes away."""
+    stored_tournament = TestUtils.create_tournament(event, 'Main')
+    assert stored_tournament.id is not None
+
+    response = http.delete(f'/tournament-delete/{event}/{stored_tournament.id}')
+
+    assert response.status_code == 200
+    (snapshot,) = milestones(event, SnapshotReason.BEFORE_TOURNAMENT_DELETION)
+    assert [tournament.name for tournament in snapshot.tournaments or []] == ['Main']
+    assert snapshot.label == 'Before [Main] was deleted'
+
+
+@pytest.mark.unit
+def test_deleting_a_team_backs_the_event_up_first(http: TestClient, event: str):
+    stored_tournament = TestUtils.create_tournament(event, 'Main')
+    assert stored_tournament.id is not None
+    with EventDatabase(event, write=True) as database:
+        team_id = database.add_stored_team(
+            StoredTeam(
+                id=None,
+                name='Rooks',
+                tournament_id=stored_tournament.id,
+                pairing_number=1,
+            )
+        )
+    EventLoader.unload_event(event)
+
+    response = http.delete(f'/team-delete/{event}/{team_id}')
+
+    assert response.status_code == 200
+    (snapshot,) = milestones(event, SnapshotReason.BEFORE_TEAM_DELETION)
+    with EventDatabase(file_path=snapshot.file) as database:
+        assert [team.name for team in database.load_stored_teams()] == ['Rooks']
+    assert snapshot.label == 'Before a team of [Main] was deleted'

@@ -216,17 +216,6 @@
     <!-- end theme_script() -->
 {% endmacro %}
 
-{% macro copyright_script(show) %}
-    <!-- copyright_script() -->
-    <script>
-        {# this macro allows us to show copyright on all pages but image screens #}
-        $(document).ready(function() {
-            $('#copyright').toggleClass('d-none', {{ "false" if show else "true" }});
-        });
-    </script>
-    <!-- end copyright_script() -->
-{% endmacro %}
-
 {% macro experimental_warning(
     show
 ) %}
