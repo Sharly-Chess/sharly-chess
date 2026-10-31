@@ -59,6 +59,7 @@
             class="d-none"
         {% endif %}
     >
+        <div class="toolbar-edge" aria-hidden="true"></div>
         {% set redirect_url = '' %}
         {% if request.url.path == '/' %}
             {% set redirect_url = '/home' %}

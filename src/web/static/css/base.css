@@ -51,9 +51,9 @@ body {
 
 /* Safari shows the page scrolling under its translucent toolbar unless a
    fixed bar spans the top edge of the page, whose colour it then extends
-   into the toolbar. This hairline is that bar, in the page's own colour. */
-body[data-bs-theme=dark]::before {
-    content: '';
+   into the toolbar. This hairline is that bar, in the page's own colour: an
+   element of its own, since Safari does not look at pseudo-elements. */
+body[data-bs-theme=dark] > .toolbar-edge {
     position: fixed;
     top: 0;
     left: 0;
