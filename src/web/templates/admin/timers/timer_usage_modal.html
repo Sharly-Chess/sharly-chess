@@ -23,14 +23,15 @@
                 hx-indicator="#please-wait"
             >
                 {% for title, groups in usage_sections %}
-                    <h4 class="mt-3">{{ title }}</h4>
+                    <h4 class="timer-usage-section-title">{{ title }}</h4>
+                    <div class="timer-usage-groups">
                     {% for screen_type, items in groups %}
-                        <div class="mb-3">
+                        <div class="timer-usage-group wrapping-form-check">
                             {% if screen_type %}
-                                <h5 class="d-flex align-items-center gap-2 mb-2">
+                                <h6 class="timer-usage-type-title d-flex align-items-center gap-2">
                                     {{ macros.screen_type_icon(screen_type, true) }}
                                     {{ screen_type.name }}
-                                </h5>
+                                </h6>
                             {% endif %}
                             {% for item in items %}
                                 {% set id = item.field|replace('_', '-') %}
@@ -43,15 +44,17 @@
                                             id="{{ id }}"
                                             data-testid="{{ id }}"
                                             value="on"
-                                            {% if item.checked %}checked{% endif %}
+                                            {% if item.checked %}checked{% elif item.other_timer %}data-other-timer{% endif %}
                                         />
                                         <label class="form-check-label" for="{{ id }}">
                                             {% if not screen_type %}<i class="bi-window-stack pe-1"></i>{% endif %}
                                             {{ item.label }}
                                             {% if item.other_timer %}
-                                                <span class="text-secondary small ps-1" data-testid="{{ id }}-other-timer">
-                                                    <i class="bi-clock-fill pe-1"></i>{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=item.other_timer) }}
-                                                </span>
+                                                <i
+                                                    class="bi-clock-fill text-secondary small ps-1"
+                                                    data-testid="{{ id }}-other-timer"
+                                                    {{ macros.tooltip_attributes('info', _('Timer: %(timer_uniq_id)s', timer_uniq_id=item.other_timer), 'top') }}
+                                                ></i>
                                             {% endif %}
                                         </label>
                                     </span>
@@ -59,8 +62,14 @@
                             {% endfor %}
                         </div>
                     {% endfor %}
+                    </div>
                 {% endfor %}
             </form>
+            <script>
+                document.querySelectorAll('.timer-usage-group [data-other-timer]').forEach((input) => {
+                    input.indeterminate = true;
+                });
+            </script>
         </div>
         <div class="modal-footer">
             <button

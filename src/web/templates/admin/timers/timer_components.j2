@@ -34,23 +34,17 @@
 {% endmacro %}
 
 {% macro usage(item, view, placement) %}
-    {% set screens = item.screens %}
-    {% set families = item.families %}
-    {% set rotators = item.rotators %}
     {% set content %}
-        <span class="d-inline-flex align-items-center gap-2 text-nowrap">
-            {% if screens %}
-                <span><i class="bi-window pe-1 text-secondary"></i>{{ ngettext('%(num)d screen', '%(num)d screens', screens|length) }}</span>
-            {% endif %}
-            {% if families %}
-                <span><i class="bi-window-split pe-1 text-secondary"></i>{{ ngettext('%(num)d multi-screen', '%(num)d multi-screens', families|length) }}</span>
-            {% endif %}
-            {% if rotators %}
-                <span><i class="bi-window-stack pe-1 text-secondary"></i>{{ ngettext('%(num)d rotator', '%(num)d rotators', rotators|length) }}</span>
-            {% endif %}
-            {% if not screens and not families and not rotators %}
-                <span class="text-secondary fst-italic">{{ _('Not displayed') }}</span>
-            {% endif %}
+        <span class="d-inline-flex align-items-center gap-3 text-nowrap">
+            <span {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}>
+                <i class="bi-window pe-1 text-secondary"></i>{{ item.screens|length }}
+            </span>
+            <span {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}>
+                <i class="bi-window-split pe-1 text-secondary"></i>{{ item.families|length }}
+            </span>
+            <span {{ macros.tooltip_attributes('info', _('Number of rotators'), 'top') }}>
+                <i class="bi-window-stack pe-1 text-secondary"></i>{{ item.rotators|length }}
+            </span>
         </span>
     {% endset %}
     {% if view == 'list' %}
@@ -62,8 +56,10 @@
                 timer_id=item.id,
             ),
             'info',
-            _('Choose the screens that display the timer'),
+            '',
             'collection-inline-edit-label-group',
+            false,
+            aria_label=_('Choose the screens that display the timer'),
         ) %}
             {{ content }}
         {% endcall %}

@@ -191,12 +191,6 @@ msgstr[0] "%(num)d required"
 msgstr[1] "%(num)d required"
 
 #, python-format
-msgid "%(num)d rotator"
-msgid_plural "%(num)d rotators"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] ""
@@ -6691,9 +6685,6 @@ msgstr ""
 msgid "Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the matches (FIDE 6.6). The result stays in the crosstable."
 msgstr ""
 
-msgid "Not displayed"
-msgstr ""
-
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr ""
 
@@ -6813,6 +6804,9 @@ msgid "Number of prize places"
 msgstr ""
 
 msgid "Number of prizes"
+msgstr ""
+
+msgid "Number of rotators"
 msgstr ""
 
 msgid "Number of rounds"
