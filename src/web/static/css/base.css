@@ -2577,7 +2577,7 @@ body[data-bs-theme=light] .btn-primary {
     vertical-align: middle;
 }
 
-[data-bs-theme=dark] table.prominent:not(.table-danger-warning, .table-danger-header) thead .text-dark,
+[data-bs-theme=dark] table.prominent thead .text-dark,
 [data-bs-theme=dark] table.prominent tr.header .text-dark {
     color: var(--bs-secondary-color) !important;
 }
@@ -2594,20 +2594,22 @@ body[data-bs-theme=light] .btn-primary {
     --bs-table-bg-type: rgba(255, 255, 255, 0.025);
 }
 
+/* A table shown in part (filtered, searched) or edited at the arbiter's own
+   risk keeps its header, faintly warmed in the colour of the warning and
+   underlined by it. */
 [data-bs-theme=dark] table.prominent.table-danger-header thead th {
-    background-color: var(--bs-danger);
-    color: white;
-    padding: 5px;
-    border-bottom: 7px solid var(--bs-body-bg);
-    vertical-align: middle;
+    background-color: color-mix(in srgb, var(--bs-danger) 8%, #353a43);
+    border-bottom: 2px solid var(--bs-danger);
 }
 
 [data-bs-theme=dark] table.prominent.table-danger-warning thead th {
-    background-color: rgb(var(--bs-warning-rgb));
-    color: var(--pw-contrast-text);
-    padding: 5px;
-    border-bottom: 7px solid var(--bs-body-bg);
-    vertical-align: middle;
+    background-color: color-mix(in srgb, rgb(var(--bs-warning-rgb)) 8%, #353a43);
+    border-bottom: 2px solid rgb(var(--bs-warning-rgb));
+}
+
+[data-bs-theme=dark] table.prominent.table-danger-warning #players-table-counters {
+    color: var(--bs-warning);
+    font-weight: 700;
 }
 
 

@@ -19,7 +19,7 @@
             aria-expanded="false"
             data-bs-auto-close="outside"
         >
-            <i class="bi-funnel {% if is_active %}text-danger{% endif %}"></i>
+            <i class="{{ 'bi-funnel-fill text-warning' if is_active else 'bi-funnel' }}"></i>
         </button>
         <ul
             id="column-{{ column.id }}-filter-dropdown"
