@@ -2772,6 +2772,21 @@ table.prominent tr.flat-pair-selected > th {
     font-weight: 600;
 }
 
+/* The same line under the page header, for a warning about the whole page. */
+.page-status-bar {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+@media (max-width: 575.98px) {
+    .page-status-bar {
+        flex-wrap: wrap;
+    }
+
+    .page-status-bar > .flex-grow-1 {
+        flex-basis: calc(100% - 1.3rem);
+    }
+}
+
 [data-bs-theme=dark] .table-status-bar .btn-close {
     filter: var(--bs-btn-close-white-filter, invert(1) grayscale(100%) brightness(200%));
     opacity: .6;
@@ -3096,6 +3111,23 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 [data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
     opacity: .6;
+}
+
+/* The notes inside modals and forms: a raised panel, the icon in the colour
+   of the note. */
+[data-bs-theme=dark] .alert:is(.alert-info, .alert-warning, .alert-danger, .alert-secondary) {
+    --bs-alert-bg: var(--pw-surface-raised-bg);
+    --bs-alert-border-color: var(--pw-control-border-color);
+    --bs-alert-color: var(--bs-emphasis-color);
+    --bs-alert-link-color: var(--bs-emphasis-color);
+}
+
+[data-bs-theme=dark] .alert-info :is(.bi, [class^="bi-"]) { color: #6ab0f3; }
+[data-bs-theme=dark] .alert-warning :is(.bi, [class^="bi-"]) { color: var(--bs-warning); }
+[data-bs-theme=dark] .alert-danger :is(.bi, [class^="bi-"]) { color: #f08a94; }
+
+[data-bs-theme=dark] .alert .btn :is(.bi, [class^="bi-"]) {
+    color: inherit;
 }
 
 .error-page-container {

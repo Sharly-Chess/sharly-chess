@@ -72,39 +72,21 @@
     {% endif %}
 
     {% if admin_tournament.manual_pairing_round %}
-        <div class="alert alert-warning py-2 px-2 mx-3 my-2">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi-pencil-square"></i>
-                <div class="flex-grow-1">
-                    {{ _(
-                        'The pairings of round %(round)d are being edited by hand. '
-                        'Validate them to check them against the pairing engine: until then, '
-                        'the next round cannot be paired.',
-                        round=admin_tournament.manual_pairing_round,
-                    ) }}
-                </div>
-                {% if admin_tournament.can_restore_manual_pairing %}
-                    <button
-                        class="btn btn-sm btn-outline-warning text-nowrap"
-                        hx-post="{{ url_for(
-                            'admin-pairings-cancel-manual-pairing',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_tournament.manual_pairing_round,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        hx-disabled-elt="this"
-                        {{ macros.tooltip_attributes('info', _('Put the pairings back as they were before editing.'), 'top') }}
-                    >
-                        <i class="bi-arrow-counterclockwise pe-1"></i>
-                        {{ _('Cancel editing') }}
-                    </button>
-                {% endif %}
+        <div class="table-status-bar page-status-bar" role="status">
+            <span class="table-status-bar-dot" aria-hidden="true"></span>
+            <div class="flex-grow-1">
+                {{ _(
+                    'The pairings of round %(round)d are being edited by hand. '
+                    'Validate them to check them against the pairing engine: until then, '
+                    'the next round cannot be paired.',
+                    round=admin_tournament.manual_pairing_round,
+                ) }}
+            </div>
+            {% if admin_tournament.can_restore_manual_pairing %}
                 <button
-                    class="btn btn-sm btn-outline-warning text-nowrap"
+                    class="btn btn-sm table-status-bar-action text-nowrap"
                     hx-post="{{ url_for(
-                        'admin-pairings-validate-manual-pairing',
+                        'admin-pairings-cancel-manual-pairing',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_tournament.manual_pairing_round,
@@ -112,11 +94,27 @@
                     hx-target="body"
                     hx-indicator="#please-wait"
                     hx-disabled-elt="this"
+                    {{ macros.tooltip_attributes('info', _('Put the pairings back as they were before editing.'), 'top') }}
                 >
-                    <i class="bi-check2-square pe-1"></i>
-                    {{ _('Validate the pairings') }}
+                    <i class="bi-arrow-counterclockwise pe-1"></i>
+                    {{ _('Cancel editing') }}
                 </button>
-            </div>
+            {% endif %}
+            <button
+                class="btn btn-sm table-status-bar-action text-nowrap"
+                hx-post="{{ url_for(
+                    'admin-pairings-validate-manual-pairing',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_tournament.manual_pairing_round,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-disabled-elt="this"
+            >
+                <i class="bi-check2-square pe-1"></i>
+                {{ _('Validate the pairings') }}
+            </button>
         </div>
     {% endif %}
     {% if schedule_editing %}
@@ -133,52 +131,50 @@
     %}
         {% set unfinished_round = admin_tournament.unfinished_round_before(admin_round) %}
         {% set predetermined_pairings = admin_tournament.pairing_system.predetermined_pairings %}
-        <div class="alert alert-warning py-2 px-2 mx-3 my-2">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi-{{ 'hourglass-split' if unfinished_round else 'eye-slash' }}"></i>
-                <div class="flex-grow-1">
-                    {% if predetermined_pairings and admin_tournament.shown_on_screens and admin_tournament.uploaded_online %}
-                        {{ _(
-                            'Round %(round)d is not published: the screens do not show it yet '
-                            'and its results are not sent to the online services.',
-                            round=admin_round,
-                        ) }}
-                    {% elif predetermined_pairings and admin_tournament.uploaded_online %}
-                        {{ _(
-                            'Round %(round)d is not published: its results are not sent to the online services.',
-                            round=admin_round,
-                        ) }}
-                    {% elif predetermined_pairings %}
-                        {{ _(
-                            'Round %(round)d is not published: the screens do not show it yet.',
-                            round=admin_round,
-                        ) }}
-                    {% elif unfinished_round %}
-                        {{ _(
-                            'Round %(unfinished)d is not finished: the pairings of round '
-                            '%(round)d cannot be published until it is.',
-                            unfinished=unfinished_round, round=admin_round,
-                        ) }}
-                    {% elif admin_tournament.shown_on_screens and admin_tournament.uploaded_online %}
-                        {{ _(
-                            'The pairings of round %(round)d are not published: '
-                            'they are neither shown on the screens nor sent to the online services.',
-                            round=admin_round,
-                        ) }}
-                    {% elif admin_tournament.uploaded_online %}
-                        {{ _(
-                            'The pairings of round %(round)d are not published: '
-                            'they are not sent to the online services.',
-                            round=admin_round,
-                        ) }}
-                    {% else %}
-                        {{ _(
-                            'The pairings of round %(round)d are not published: '
-                            'they are not shown on the screens.',
-                            round=admin_round,
-                        ) }}
-                    {% endif %}
-                </div>
+        <div class="table-status-bar page-status-bar" role="status">
+            <span class="table-status-bar-dot" aria-hidden="true"></span>
+            <div class="flex-grow-1">
+                {% if predetermined_pairings and admin_tournament.shown_on_screens and admin_tournament.uploaded_online %}
+                    {{ _(
+                        'Round %(round)d is not published: the screens do not show it yet '
+                        'and its results are not sent to the online services.',
+                        round=admin_round,
+                    ) }}
+                {% elif predetermined_pairings and admin_tournament.uploaded_online %}
+                    {{ _(
+                        'Round %(round)d is not published: its results are not sent to the online services.',
+                        round=admin_round,
+                    ) }}
+                {% elif predetermined_pairings %}
+                    {{ _(
+                        'Round %(round)d is not published: the screens do not show it yet.',
+                        round=admin_round,
+                    ) }}
+                {% elif unfinished_round %}
+                    {{ _(
+                        'Round %(unfinished)d is not finished: the pairings of round '
+                        '%(round)d cannot be published until it is.',
+                        unfinished=unfinished_round, round=admin_round,
+                    ) }}
+                {% elif admin_tournament.shown_on_screens and admin_tournament.uploaded_online %}
+                    {{ _(
+                        'The pairings of round %(round)d are not published: '
+                        'they are neither shown on the screens nor sent to the online services.',
+                        round=admin_round,
+                    ) }}
+                {% elif admin_tournament.uploaded_online %}
+                    {{ _(
+                        'The pairings of round %(round)d are not published: '
+                        'they are not sent to the online services.',
+                        round=admin_round,
+                    ) }}
+                {% else %}
+                    {{ _(
+                        'The pairings of round %(round)d are not published: '
+                        'they are not shown on the screens.',
+                        round=admin_round,
+                    ) }}
+                {% endif %}
             </div>
         </div>
     {% endif %}
