@@ -25,7 +25,7 @@
             aria-label="{{ _('Dismiss') }}"
             hx-patch="{{ url_for('admin-event-ratings-check-dismiss', event_uniq_id=admin_event.uniq_id) }}"
             hx-target="#ratings-check-banner"
-            hx-swap="outerHTML"
+            hx-swap="innerHTML"
         ></button>
     </div>
 </div>

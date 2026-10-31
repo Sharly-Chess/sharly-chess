@@ -1171,3 +1171,30 @@
 .timer-usage-group .form-check-label {
     line-height: 1.4;
 }
+
+/* A match header shares the grey of the table header, stacked as a card on
+   a phone too: its standing scores and buttons, made for a light header,
+   are lifted to stand out on it. */
+[data-bs-theme=dark] .pairings-table > tbody > tr.team-block-header {
+    background-color: #353a43;
+    color: var(--bs-emphasis-color);
+}
+
+[data-bs-theme=dark] table.prominent tr.team-block-header .text-contrast {
+    color: var(--bs-secondary-color);
+}
+
+[data-bs-theme=dark] table.prominent tr.team-block-header .btn-outline-primary {
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-bg: rgba(255, 255, 255, 0.06);
+    --bs-btn-border-color: rgba(255, 255, 255, 0.22);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
+    --bs-btn-hover-border-color: rgba(255, 255, 255, 0.35);
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.16);
+    --bs-btn-active-border-color: rgba(255, 255, 255, 0.4);
+}
+
+[data-bs-theme=dark] table.prominent tr.team-block-header :is(.team-header-name-a, .team-header-name-b) {
+    font-weight: 500;
+}

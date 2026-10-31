@@ -51,7 +51,7 @@ function setSize() {
     // A status bar pinned along the top of a table pushes the table's own
     // pinned header down by its height
     const statusBar = document.querySelector('.table-status-bar-wrapper');
-    const statusBarHeight = statusBar && getComputedStyle(statusBar).position === 'sticky'
+    const statusBarHeight = statusBar && getComputedStyle(statusBar).top !== 'auto'
         ? statusBar.offsetHeight : 0;
     document.documentElement.style.setProperty('--table-status-bar-height', `${statusBarHeight}px`);
 }
@@ -561,6 +561,33 @@ $(document).on('select2:unselect', '.sharly-chess-select2', function (e) {
         select2OpenCloseDisabled = false;
     }, 100);
 });
+
+// Selects that sit in the page rather than in a form field, set up wherever
+// they appear. A native list would open in the system's colours.
+function initInlineSelect2(root) {
+    $(root).find('select.inline-select2').addBack('select.inline-select2')
+        .not('.select2-hidden-accessible')
+        .each(function () {
+            const select = $(this);
+            const modal = select.closest('.modal');
+            select.select2({
+                theme: 'bootstrap-5',
+                width: 'auto',
+                minimumResultsForSearch: 10,
+                dropdownParent: modal.length ? modal : $(document.body),
+                language: {
+                    noResults: () => window.SC_I18N.noResults,
+                },
+            });
+            // select2 announces a pick with a jQuery event, which htmx and
+            // native listeners never hear.
+            select.on('select2:select', function () {
+                this.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+        });
+}
+
+htmx.onLoad(initInlineSelect2);
 
 async function downloadFile(el, formId) {
     const url = new URL(el.dataset.exportUrl, window.location.origin);

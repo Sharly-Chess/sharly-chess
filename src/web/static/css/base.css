@@ -2745,12 +2745,20 @@ table.prominent tr.flat-pair-selected > th {
 }
 
 .table-status-bar-dot {
+    position: relative;
     flex-shrink: 0;
     width: .55rem;
     height: .55rem;
     border-radius: 50%;
     background: var(--bs-warning);
-    box-shadow: 0 0 0 .3rem rgba(var(--bs-warning-rgb), 0.18);
+}
+
+.table-status-bar-dot::after {
+    content: '';
+    position: absolute;
+    inset: -.3rem;
+    border-radius: 50%;
+    background: rgba(var(--bs-warning-rgb), 0.22);
 }
 
 .table-status-bar-action {
@@ -3055,6 +3063,35 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 [data-bs-theme=dark] .alert.message-success { --message-color: #4cb975; }
 [data-bs-theme=dark] .alert.message-warning { --message-color: var(--bs-warning); }
 [data-bs-theme=dark] .alert.message-error { --message-color: #f08a94; }
+
+/* A warning's dot breathes slowly, to draw the eye without nagging. */
+@keyframes warning-dot-halo {
+    0%, 100% { box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--message-color) 28%, transparent); }
+    50% { box-shadow: 0 0 0 .4rem color-mix(in srgb, var(--message-color) 8%, transparent); }
+}
+
+/* Inside a pinned bar the halo is its own layer, only scaled and faded, so
+   that the bar is not repainted while the page scrolls. */
+@keyframes warning-dot-halo-layer {
+    0%, 100% { transform: scale(.8); opacity: 1; }
+    50% { transform: scale(1.15); opacity: .35; }
+}
+
+[data-bs-theme=dark] .alert.message-warning::before {
+    animation: warning-dot-halo 2.8s ease-in-out infinite;
+}
+
+.table-status-bar-dot::after {
+    animation: warning-dot-halo-layer 2.8s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-bs-theme=dark] .alert.message-warning::before,
+    .table-status-bar-dot::after {
+        animation: none;
+    }
+}
 
 [data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);

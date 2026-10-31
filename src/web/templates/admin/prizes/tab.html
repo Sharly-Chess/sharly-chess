@@ -164,7 +164,7 @@
             <div class="d-flex align-items-end">
                 <select
                     name="prize_group_id"
-                    class="form-select prize-group-controls"
+                    class="form-select sharly-chess-select2 inline-select2 prize-group-controls"
                     style="width: fit-content;"
                     hx-trigger="change"
                     hx-get="{{ url_for(
@@ -256,7 +256,7 @@
     {% if tournament_options|length > 1 %}
         <select
             name="tournament_id"
-            class="form-select"
+            class="form-select sharly-chess-select2 inline-select2"
             style="width: fit-content;"
             hx-trigger="change"
             hx-get="{{ url_for('admin-event-prizes-tab', event_uniq_id=admin_event.uniq_id) }}"

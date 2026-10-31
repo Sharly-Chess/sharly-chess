@@ -1492,6 +1492,10 @@ msgid "Before [{tournament}] moved to round {round}"
 msgstr ""
 
 #, python-brace-format
+msgid "Before [{tournament}] was deleted"
+msgstr ""
+
+#, python-brace-format
 msgid "Before [{tournament}] was paired"
 msgstr ""
 
@@ -1522,6 +1526,16 @@ msgid "Before a result of round {round} was changed"
 msgstr ""
 
 msgid "Before a result was changed"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a team of [{tournament}] was deleted"
+msgstr ""
+
+msgid "Before a team was deleted"
+msgstr ""
+
+msgid "Before a tournament was deleted"
 msgstr ""
 
 msgid "Before an upgrade"

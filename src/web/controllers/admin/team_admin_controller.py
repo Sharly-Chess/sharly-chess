@@ -16,6 +16,8 @@ from data.access_levels.client import Client
 from data.board import Board
 from data.event import Event
 from data.player import Player
+from data.snapshot import SnapshotReason
+from data.snapshot_worker import SnapshotScheduler
 from data.teams.team import RosterFullError, Team, TeamGroup
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -1779,6 +1781,11 @@ class TeamAdminController(BaseEventAdminController):
         team = web_context.get_admin_team()
         team_name = team.name
         tournament = team.tournament
+        await SnapshotScheduler.snapshot_before_async(
+            event.uniq_id,
+            SnapshotReason.BEFORE_TEAM_DELETION,
+            tournament_id=tournament.id if tournament is not None else None,
+        )
         event.delete_team(team)
         # Close the gap left in the pairing numbers of the old tournament.
         if tournament is not None:
