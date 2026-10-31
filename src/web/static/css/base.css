@@ -2689,13 +2689,13 @@ body[data-bs-theme=light] .btn-primary {
 /* Admin: the result of a game is a soft button, its score in full white. */
 [data-bs-theme=dark] table.prominent td.pairing-cell-result .btn-outline-primary {
     --bs-btn-bg: rgba(255, 255, 255, 0.05);
-    --bs-btn-border-color: transparent;
+    --bs-btn-border-color: rgba(255, 255, 255, 0.22);
     --bs-btn-color: var(--bs-emphasis-color);
     --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
-    --bs-btn-hover-border-color: transparent;
+    --bs-btn-hover-border-color: rgba(255, 255, 255, 0.35);
     --bs-btn-hover-color: var(--bs-emphasis-color);
     --bs-btn-active-bg: rgba(255, 255, 255, 0.14);
-    --bs-btn-active-border-color: transparent;
+    --bs-btn-active-border-color: rgba(255, 255, 255, 0.4);
     font-weight: 600;
     min-width: 3.25rem;
 }
@@ -3052,6 +3052,19 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     --bs-success-rgb: 25, 135, 84;
 }
 
+.toast-stack {
+    width: 50%;
+    margin-right: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .toast-stack {
+        left: 0;
+        width: auto;
+        margin: 0 1rem;
+    }
+}
+
 .alert .btn-close {
     filter: var(--bs-btn-close-white-filter);
 }
@@ -3059,20 +3072,21 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 /* Admin messages: a raised dark panel, the kind of message carried by a dot
    in its colour. */
 [data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) {
-    padding: .7rem .85rem !important;
-    border: 1px solid var(--pw-control-border-color);
+    padding: .75rem .9rem !important;
+    border: 1px solid color-mix(in srgb, var(--message-color) 60%, transparent);
     border-radius: var(--bs-border-radius-lg);
-    background-color: #24272d;
-    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, 0.45);
+    background-color: color-mix(in srgb, var(--message-color) 12%, #1e2126);
+    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, 0.6);
     color: var(--bs-emphasis-color);
+    font-weight: 500;
 }
 
 [data-bs-theme=dark] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error)::before {
     content: '';
     flex-shrink: 0;
     align-self: center;
-    width: .6rem;
-    height: .6rem;
+    width: .7rem;
+    height: .7rem;
     border-radius: 50%;
     background: var(--message-color);
     box-shadow: 0 0 0 .3rem color-mix(in srgb, var(--message-color) 22%, transparent);

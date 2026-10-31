@@ -354,13 +354,10 @@
                     <div class="col-12 col-lg-3 d-none d-lg-block"></div>
                 {% endif %}
                 <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
-                    {% with type='warning',
-                        message=pairings_generation_disabled_message,
-                        hide_remove_button=true,
-                        icon='bi-exclamation-triangle-fill',
-                        alert_classes='mb-2' %}
-                        {% include '/common/alert.html' %}
-                    {% endwith %}
+                    <div class="table-status-bar mb-2" role="status">
+                        <span class="table-status-bar-dot" aria-hidden="true"></span>
+                        <div class="flex-grow-1">{{ pairings_generation_disabled_message | safe }}</div>
+                    </div>
                 </div>
             {% endif %}
 
