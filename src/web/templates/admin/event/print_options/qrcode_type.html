@@ -33,5 +33,9 @@
 
         $('.modal #{{ option.id }}').on('change', handleOptionsChange);
         $('.modal #document').on('change', handleOptionsChange);
+        setTimeout(() => {
+            $('.modal #tournament').on('change', handleOptionsChange);
+            handleOptionsChange();
+        }, 0);
     })();
 </script>

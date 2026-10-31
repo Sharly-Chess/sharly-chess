@@ -34,6 +34,7 @@
         const $modal = $('.modal');
         $modal.find('#{{ option.id }}').on('change', handleOptionsChange);
         $modal.find('#document').on('change', handleOptionsChange);
+        setTimeout(() => $modal.find('#tournament').on('change', handleOptionsChange), 0);
     })();
     setTimeout(() => $('#{{ option.id }}').trigger('change'), 100);
 </script>

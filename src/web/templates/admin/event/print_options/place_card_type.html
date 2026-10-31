@@ -54,6 +54,9 @@
         const $modal = $('.modal');
         $modal.find('#{{ option.id }}').on('change', handleOptionsChange);
         $modal.find('#document').on('change', handleOptionsChange);
-        refreshUpdatePlayersAlert();
+        setTimeout(() => {
+            $modal.find('#tournament').on('change', handleOptionsChange);
+            handleOptionsChange();
+        }, 0);
     })();
 </script>
