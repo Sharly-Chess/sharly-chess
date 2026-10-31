@@ -44,15 +44,17 @@ function setSize() {
     document.documentElement.style.setProperty('--vw', `${vw}px`);
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 
-    // We store the (dynamic) header height, useful for sticking things under it
-    let headerHeight = document.getElementById('top-nav-wrapper')?.offsetHeight ?? 0;
+    // We store the (dynamic) header height, useful for sticking things under it.
+    // Measured to the fraction: rounded, it leaves a sliver between the header
+    // and what sticks under it, through which the rows scrolling by show.
+    let headerHeight = document.getElementById('top-nav-wrapper')?.getBoundingClientRect().height ?? 0;
     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
 
     // A status bar pinned along the top of a table pushes the table's own
     // pinned header down by its height
     const statusBar = document.querySelector('.table-status-bar-wrapper');
     const statusBarHeight = statusBar && getComputedStyle(statusBar).top !== 'auto'
-        ? statusBar.offsetHeight : 0;
+        ? statusBar.getBoundingClientRect().height : 0;
     document.documentElement.style.setProperty('--table-status-bar-height', `${statusBarHeight}px`);
 }
 
