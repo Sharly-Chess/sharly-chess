@@ -51,7 +51,7 @@ function setSize() {
     // A status bar pinned along the top of a table pushes the table's own
     // pinned header down by its height
     const statusBar = document.querySelector('.table-status-bar-wrapper');
-    const statusBarHeight = statusBar && getComputedStyle(statusBar).position === 'sticky'
+    const statusBarHeight = statusBar && getComputedStyle(statusBar).top !== 'auto'
         ? statusBar.offsetHeight : 0;
     document.documentElement.style.setProperty('--table-status-bar-height', `${statusBarHeight}px`);
 }
