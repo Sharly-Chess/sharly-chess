@@ -785,3 +785,62 @@ function getIsNextRefreshMessageIgnored() {
     }
     return false;
 }
+
+// A screen whose requests are slow cannot say so to anyone on site: the
+// browser times each of them, and those that took long are written to the
+// server's log, phase by phase, so that the log tells whether the time went
+// in the browser, on the network or in the server.
+const SLOW_REQUEST_MS = 3000;
+
+// The timing of a page's own load can be delivered more than once.
+const reportedSlowRequests = new Set();
+
+function reportSlowRequest(entry) {
+    const url = new URL(entry.name, window.location.origin);
+    if (url.origin !== window.location.origin || !url.pathname.startsWith('/view/')) {
+        return;
+    }
+    const key = `${entry.entryType} ${entry.name} ${entry.startTime}`;
+    if (reportedSlowRequests.has(key)) {
+        return;
+    }
+    reportedSlowRequests.add(key);
+    const requestStart = entry.requestStart || entry.fetchStart;
+    const responseStart = entry.responseStart || requestStart;
+    const phase = (end, start) => Math.max(0, end - start);
+    fetch('/slow-request', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            url: url.pathname,
+            kind: entry.initiatorType || entry.entryType,
+            total: entry.duration,
+            queued: phase(entry.fetchStart, entry.startTime),
+            before_request: phase(requestStart, entry.fetchStart),
+            connect: phase(entry.connectEnd, entry.connectStart),
+            server: phase(responseStart, requestStart),
+            download: phase(entry.responseEnd, responseStart),
+            transfer_size: entry.transferSize || 0,
+        }),
+    }).catch(() => {});
+}
+
+if (window.PerformanceObserver && !window.slowRequestObserver) {
+    const reportSlowEntries = (entries) => entries
+        .filter((entry) => entry.duration >= SLOW_REQUEST_MS)
+        .forEach(reportSlowRequest);
+    window.slowRequestObserver = new PerformanceObserver((list) => {
+        reportSlowEntries(list.getEntries());
+    });
+    try {
+        window.slowRequestObserver.observe({type: 'resource', buffered: true});
+        window.slowRequestObserver.observe({type: 'navigation', buffered: true});
+    } catch (e) {
+        window.slowRequestObserver.observe({entryTypes: ['resource', 'navigation']});
+    }
+    // Safari does not hand the timing of the page's own load to an observer
+    // started while the page loads.
+    window.addEventListener('load', () => setTimeout(() => {
+        reportSlowEntries(performance.getEntriesByType('navigation'));
+    }));
+}

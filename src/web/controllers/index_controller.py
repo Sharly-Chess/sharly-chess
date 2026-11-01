@@ -1,23 +1,53 @@
-from typing import ClassVar
+from dataclasses import dataclass
+from logging import Logger
+from typing import Annotated, ClassVar
 import json
 from collections.abc import AsyncGenerator
 
-from litestar import Response, get, route, HttpMethod, status_codes, websocket_stream
+from litestar import (
+    Response,
+    get,
+    post,
+    route,
+    HttpMethod,
+    status_codes,
+    websocket_stream,
+)
 from litestar.channels import ChannelsPlugin
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.di import NamedDependency
 from litestar.exceptions import HTTPException
-from litestar.params import FromPath, FromQuery
+from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 from litestar.status_codes import HTTP_204_NO_CONTENT
 
 from common.i18n import _
+from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
 from web.session import SessionEventsShowDetails
+
+
+logger: Logger = get_logger()
+
+
+@dataclass
+class SlowRequestReport:
+    """The phases of a request a page found slow, in milliseconds, as the
+    browser timed them."""
+
+    url: str
+    kind: str
+    total: float
+    queued: float
+    before_request: float
+    connect: float
+    server: float
+    download: float
+    transfer_size: int
 
 
 class IndexController(BaseController):
@@ -188,6 +218,31 @@ class IndexController(BaseController):
                     else raw_event
                 )
                 yield event
+
+    @post(
+        path='/slow-request',
+        name='slow-request',
+        status_code=HTTP_204_NO_CONTENT,
+    )
+    async def slow_request(
+        self, request: HTMXRequest, data: Annotated[SlowRequestReport, Body()]
+    ) -> None:
+        client = request.client.host if request.client else '?'
+        logger.warning(
+            'SLOW client=%s kind=%s url=%s total=%.0fms queued=%.0fms '
+            'before_request=%.0fms connect=%.0fms server=%.0fms download=%.0fms '
+            'transfer_size=%d',
+            client,
+            data.kind[:40].encode('unicode_escape').decode(),
+            data.url[:300].encode('unicode_escape').decode(),
+            data.total,
+            data.queued,
+            data.before_request,
+            data.connect,
+            data.server,
+            data.download,
+            data.transfer_size,
+        )
 
     @get('/.well-known/appspecific/com.chrome.devtools.json')
     async def chrome_devtools_placeholder(self) -> Response:
