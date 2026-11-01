@@ -74,15 +74,28 @@
 .input-screen-result-modal .result-button.draw {
     color: #000080;
 }
-.input-screen-result-modal .result-button:hover,
- .input-screen-result-modal .admin-result-button:hover {
+.input-screen-result-modal .result-button,
+.input-screen-result-modal .admin-result-button {
+    touch-action: manipulation;
+}
+/* A touch screen keeps a tapped button in its hover state, which would read
+   as the result being sent; it shows the press instead. */
+@media (hover: hover) {
+    .input-screen-result-modal .result-button:hover,
+    .input-screen-result-modal .admin-result-button:hover {
+        color: #000080 !important;
+    }
+    .input-screen-result-modal .result-button:hover {
+        background-color: yellow !important;
+    }
+    .input-screen-result-modal .admin-result-button:hover {
+        background-color: #ffc500 !important;
+    }
+}
+.input-screen-result-modal .result-button:active,
+.input-screen-result-modal .admin-result-button:active {
     color: #000080 !important;
-}
-.input-screen-result-modal .result-button:hover {
     background-color: yellow !important;
-}
- .input-screen-result-modal .admin-result-button:hover {
-    background-color: #ffc500 !important;
 }
 /*
 ###########################################################

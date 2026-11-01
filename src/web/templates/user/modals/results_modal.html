@@ -84,7 +84,10 @@
         hx-indicator="#please-wait"
     >{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>{{ '1 - F' if side == 'white' else 'F - 1' }}</button>
 {% endmacro %}
-<div class="modal-dialog input-screen-result-modal">
+<div
+    class="modal-dialog input-screen-result-modal"
+    hx-disabled-elt=".input-screen-result-modal button"
+>
     <div class="modal-content bg-secondary-subtle">
         <div class="modal-header">
         <div class="modal-title fs-4 fw-bold">{{ _('Enter the result') }}</div>
@@ -146,9 +149,4 @@
             </button>
         </div>
     </div>
-    <script>
-        $('.result-button,.admin-result-button').click(function(e) {
-            e.target.disabled = true;
-        });
-    </script>
 </div>
