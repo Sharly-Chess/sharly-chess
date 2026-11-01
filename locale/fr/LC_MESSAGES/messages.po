@@ -251,34 +251,14 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr "%(rating)s (%(rating_type)s)"
 
 #, python-format
+msgid "%(remaining)d game in progress"
+msgid_plural "%(remaining)d games in progress"
+msgstr[0] "%(remaining)d partie en cours"
+msgstr[1] "%(remaining)d parties en cours"
+
+#, python-format
 msgid "%(seconds)d sec."
 msgstr "%(seconds)d sec."
-
-#, python-format
-msgid "%(set_name)s (check-in)"
-msgstr "%(set_name)s (pointage)"
-
-#, python-format
-msgid "%(set_name)s (registered players)"
-msgstr "%(set_name)s (joueur·euses inscrit·es)"
-
-#, python-format
-msgid "%(set_name)s (registered teams)"
-msgstr "%(set_name)s (équipes inscrites)"
-
-#, python-format
-msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
-msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
-msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d partie en cours)"
-msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d parties en cours)"
-
-#, python-format
-msgid "%(set_name)s (round #%(round)d, finished)"
-msgstr "%(set_name)s (ronde n°%(round)d, terminée)"
-
-#, python-format
-msgid "%(set_name)s (round %(round)d)"
-msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
 msgid "%(string)s:"
@@ -988,6 +968,10 @@ msgstr "Afghanistan"
 #, python-brace-format
 msgid "After round #{round}"
 msgstr "Après la ronde n°{round}"
+
+#, python-format
+msgid "After round %(round)d"
+msgstr "Après la ronde %(round)d"
 
 msgid "After the change to the number of rounds, pairings that differ from those of the pairing engine"
 msgstr "Après le changement du nombre de rondes, appariements différents de ceux du moteur d'appariement"
@@ -8398,6 +8382,12 @@ msgstr "Actualiser les réseaux"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Registered players"
+msgstr "Joueur·euses inscrit·es"
+
+msgid "Registered teams"
+msgstr "Équipes inscrites"
+
 msgid "Regular event"
 msgstr "Évènement régulier"
 
@@ -12955,6 +12945,9 @@ msgstr "exemple"
 
 msgid "federations other than the applicant's"
 msgstr "fédérations autres que celle du·de la candidat·e"
+
+msgid "finished"
+msgstr "terminée"
 
 msgid "forfeits played"
 msgstr "forfaits joués"

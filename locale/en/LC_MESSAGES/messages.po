@@ -251,33 +251,13 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr ""
 
 #, python-format
-msgid "%(seconds)d sec."
-msgstr ""
-
-#, python-format
-msgid "%(set_name)s (check-in)"
-msgstr ""
-
-#, python-format
-msgid "%(set_name)s (registered players)"
-msgstr ""
-
-#, python-format
-msgid "%(set_name)s (registered teams)"
-msgstr ""
-
-#, python-format
-msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
-msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
+msgid "%(remaining)d game in progress"
+msgid_plural "%(remaining)d games in progress"
 msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(set_name)s (round #%(round)d, finished)"
-msgstr ""
-
-#, python-format
-msgid "%(set_name)s (round %(round)d)"
+msgid "%(seconds)d sec."
 msgstr ""
 
 #, python-format
@@ -987,6 +967,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "After round #{round}"
+msgstr ""
+
+#, python-format
+msgid "After round %(round)d"
 msgstr ""
 
 msgid "After the change to the number of rounds, pairings that differ from those of the pairing engine"
@@ -8396,6 +8380,12 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
+msgid "Registered players"
+msgstr ""
+
+msgid "Registered teams"
+msgstr ""
+
 msgid "Regular event"
 msgstr ""
 
@@ -12952,6 +12942,9 @@ msgid "example"
 msgstr ""
 
 msgid "federations other than the applicant's"
+msgstr ""
+
+msgid "finished"
 msgstr ""
 
 msgid "forfeits played"

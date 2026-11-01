@@ -25,13 +25,10 @@
     }
 </style>
 <div class="screen chess960-screen d-flex flex-column">
-    <h2 class="set-title text-center">
-        {% if data.chess960_number %}
-            {{ _('Position #%(number)d', number=data.chess960_number) }}
-        {% else %}
-            {{ _('Position not set yet, please wait…') }}
-        {% endif %}
-    </h2>
+    {{ screen_macros.set_title(
+        _('Position #%(number)d', number=data.chess960_number)
+        if data.chess960_number else _('Position not set yet, please wait…')
+    ) }}
     {% if data.board_svg %}
         <div class="chess960-board-area">
             {{ data.board_svg | safe }}

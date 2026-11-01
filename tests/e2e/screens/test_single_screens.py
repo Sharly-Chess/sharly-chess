@@ -61,7 +61,7 @@ class TestSingleScreensFunctionality:
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.player-row')
         row = rows.filter(has_text='AMOS')
-        expect(row.locator('i.bi-square')).to_be_visible()
+        expect(row.locator('i.bi-circle')).to_be_visible()
         row.click()
         modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
@@ -69,7 +69,7 @@ class TestSingleScreensFunctionality:
         expect(button).to_contain_text('AMOS')
         button.click()
 
-        expect(row.locator('i.bi-check-square-fill')).to_be_visible()
+        expect(row.locator('i.bi-check-circle-fill')).to_be_visible()
 
         with EventDatabase(EVENT_ID) as database:
             event = Event(database.load_stored_event())
@@ -86,7 +86,7 @@ class TestSingleScreensFunctionality:
         )
 
         row = rows.filter(has_text='BARBARA')
-        expect(row.locator('i.bi-check-square-fill')).to_be_visible()
+        expect(row.locator('i.bi-check-circle-fill')).to_be_visible()
 
         # Test that the page is updated after a player is checked in on an admin screen
         api_request_context.patch(
@@ -94,7 +94,7 @@ class TestSingleScreensFunctionality:
         )
 
         row = rows.filter(has_text='MARMITE')
-        expect(row.locator('i.bi-check-square-fill')).to_be_visible()
+        expect(row.locator('i.bi-check-circle-fill')).to_be_visible()
 
         TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
 
