@@ -1210,6 +1210,14 @@ class PairingsAdminController(BaseEventAdminController):
                     board_id, web_context.admin_filtered_boards
                 )
         else:
+            if tournament.awaits_publication(round_):
+                Message.warning(
+                    request,
+                    _('Publish round {round} to enter its results.').format(
+                        round=round_
+                    ),
+                )
+                return self._admin_event_pairings_render(web_context)
             r = Result(result)
             breaches_adjournment = tournament.breaches_adjournment(board, r)
             if breaches_adjournment and not request.query_params.get('confirmed'):

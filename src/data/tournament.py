@@ -2003,6 +2003,13 @@ class Tournament:
             and self.unfinished_round_before(round_) is None
         )
 
+    def awaits_publication(self, round_: int) -> bool:
+        """Whether ``round_`` has to be published before its results are
+        entered, the screens or the online services showing the tournament."""
+        return round_ > self.published_round and (
+            self.shown_on_screens or self.uploaded_online
+        )
+
     def can_unpublish_round(self, round_: int) -> bool:
         return (
             round_ > 0
