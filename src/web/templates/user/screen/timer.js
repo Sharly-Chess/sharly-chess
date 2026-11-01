@@ -21,12 +21,32 @@ var polyglot = new Polyglot({
     },
 });
 
+// Black or white, whichever reads better on the timer colour.
+function timer_ink(color) {
+    const channels = color.match(/\d+/g).slice(0, 3).map(function(value) {
+        value /= 255;
+        return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    });
+    const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    return 1.05 / (luminance + 0.05) >= (luminance + 0.05) / 0.05 ? '#ffffff' : '#101418';
+}
+
+// The first title of the screen sits beside the timer, keeps clear of it and is
+// at least as tall.
+function update_timer_width() {
+    const wrapper = document.getElementById('timer-wrapper');
+    const shown = wrapper && !wrapper.classList.contains('d-none');
+    document.documentElement.style.setProperty('--timer-width', (shown ? wrapper.offsetWidth : 0) + 'px');
+    document.documentElement.style.setProperty('--timer-height', (shown ? wrapper.offsetHeight : 0) + 'px');
+}
+
 function update_timer_values(clock_html, text_html, color) {
 	$('#timer-wrapper').removeClass('d-none');
     $('#timer-clock').text(clock_html);
     $('#timer-text').text(text_html);
     timerColor = color;
-    $('#timer').css('background-color', color);
+    $('#timer').css({'background-color': color, 'color': timer_ink(color)});
+    update_timer_width();
 }
 
 function two_digits(n) {
@@ -111,6 +131,7 @@ function update_timer(local_delay) {
 	}
 {% endfor %}
     $('#timer-wrapper').addClass('d-none');
+    update_timer_width();
 }
 
 $(document).ready(function(){

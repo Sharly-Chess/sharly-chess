@@ -66,8 +66,8 @@ def test_a_row_opens_the_modal_and_shows_the_arrival(
 ):
     before = row_for('AMOS', http)
     assert 'checkin-modal' in before
-    assert 'bi-square' in before
-    assert 'bi-check-square-fill' not in before
+    assert 'bi-circle' in before
+    assert 'bi-check-circle-fill' not in before
 
     amos = next(
         player for player in tournament.tournament_players if player.last_name == 'AMOS'
@@ -76,7 +76,7 @@ def test_a_row_opens_the_modal_and_shows_the_arrival(
         f'/view/toggle-check-in/1/{EVENT_ID}/{SCREEN_ID}/{tournament.id}/{amos.id}'
     )
     assert response.status_code == 200
-    assert 'bi-check-square-fill' in row_for('AMOS', http)
+    assert 'bi-check-circle-fill' in row_for('AMOS', http)
 
 
 @pytest.mark.unit

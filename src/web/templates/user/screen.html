@@ -64,20 +64,37 @@
         {% endif %}
         {% set message_text = rotator.message_text if rotator and not rotator.message_default else screen.message_text %}
         {% if message_text %}
-            <div class="alert-message-wrapper">
-                <div
-                    id="alert-message"
-                    class="row gy-2 gx-3 alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden z-1"
-                    style="background-color: {{ screen.event.message_background_color }}; color: {{ screen.event.message_color }}"
-                >
-                    <h2
-                        id="alert-message-text"
-                        class="col-12 alert-message-text text-start fw-bold"
-                    >
-                        {{ message_text }}
-                    </h2>
+            <div
+                id="alert-message"
+                class="alert-message"
+                style="--message-background: {{ screen.event.message_background_color }}; --message-color: {{ screen.event.message_color }};"
+            >
+                <div class="alert-message-icon"><i class="bi-megaphone-fill"></i></div>
+                <div class="alert-message-track">
+                    <div id="alert-message-text" class="alert-message-text">{{ message_text }}</div>
                 </div>
             </div>
+            <script>
+                (() => {
+                    // A message that fits stays still; a longer one scrolls at a
+                    // steady reading speed, whatever its length.
+                    const message = document.getElementById('alert-message');
+                    const track = message.querySelector('.alert-message-track');
+                    const text = message.querySelector('.alert-message-text');
+                    const pixelsPerSecond = 120;
+                    const layout = () => {
+                        message.classList.remove('scrolling');
+                        if (text.scrollWidth > track.clientWidth) {
+                            message.classList.add('scrolling');
+                            const distance = text.offsetWidth;
+                            message.style.setProperty('--message-duration', distance / pixelsPerSecond + 's');
+                        }
+                    };
+                    layout();
+                    document.fonts?.ready.then(layout);
+                    window.addEventListener('resize', layout);
+                })();
+            </script>
         {% endif %}
         {% if timer %}
             <script>{% include 'screen/timer.js' %}</script>
@@ -92,64 +109,65 @@
 {% endblock copyright %}
 
 {% block content %}
-    <div id="top-nav-wrapper" class="pt-0">
+    {% set menu_entries = [] %}
+    {% if not rotator and not display_controller %}
+        {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
+    {% endif %}
+    <div id="top-nav-wrapper" class="pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
         {% if timer %}
             {% include 'screen/timer.html' %}
         {% endif %}
         <div id="top-nav-content">
-            {% if not rotator and not display_controller %}
-                {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
-                {% if menu_entries %}
-                    <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
-                        {% for entry in menu_entries %}
-                            {% if entry.is_family and entry.screens|length > 1 %}
-                                {% set ns = namespace(selected=false) %}
-                                {% for sub in entry.screens %}
-                                    {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
-                                {% endfor %}
-                                <span class="screen-menu-group">
-                                    <span
-                                        class="screen-menu-item screen-menu-family cursor-pointer text-nowrap py-0 px-1 my-0 {% if ns.selected %}selected{% endif %}"
-                                        data-submenu-toggle
-                                    >{{ entry.label }} <i class="bi-caret-down-fill" style="font-size: 70%"></i></span>
-                                    <div class="screen-submenu" style="display: none">
-                                        {% for sub in entry.screens %}
-                                            <a
-                                                class="screen-submenu-item cursor-pointer text-nowrap d-block py-1 px-2 {% if sub.uniq_id == screen.uniq_id %}selected{% endif %}"
-                                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=sub.uniq_id) }}"
-                                                hx-target="body"
-                                                hx-push-url="true"
-                                                hx-indicator="#please-wait"
-                                            >{{ sub.menu_range_label }}</a>
-                                        {% endfor %}
-                                    </div>
-                                </span>
-                            {% else %}
-                                <a
-                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
-                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
-                                    hx-target="body"
-                                    hx-push-url="true"
-                                    hx-indicator="#please-wait"
-                                >{{ entry.label }}</a>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <script>
-                        $('#screen-menu [data-submenu-toggle]').off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
-                            e.stopPropagation();
-                            const $submenu = $(this).siblings('.screen-submenu');
-                            const wasOpen = $submenu.is(':visible');
+            {% if menu_entries %}
+                <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
+                    {% for entry in menu_entries %}
+                        {% if entry.is_family and entry.screens|length > 1 %}
+                            {% set ns = namespace(selected=false) %}
+                            {% for sub in entry.screens %}
+                                {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
+                            {% endfor %}
+                            <span class="screen-menu-group">
+                                <span
+                                    class="screen-menu-item screen-menu-family cursor-pointer text-nowrap py-0 px-1 my-0 {% if ns.selected %}selected{% endif %}"
+                                    data-submenu-toggle
+                                >{{ entry.label }} <i class="bi-caret-down-fill" style="font-size: 70%"></i></span>
+                                <div class="screen-submenu" style="display: none">
+                                    {% for sub in entry.screens %}
+                                        <a
+                                            class="screen-submenu-item cursor-pointer text-nowrap d-block py-1 px-2 {% if sub.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                            hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=sub.uniq_id) }}"
+                                            hx-target="body"
+                                            hx-push-url="true"
+                                            hx-indicator="#please-wait"
+                                        >{{ sub.menu_range_label }}</a>
+                                    {% endfor %}
+                                </div>
+                            </span>
+                        {% else %}
+                            <a
+                                class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
+                                hx-target="body"
+                                hx-push-url="true"
+                                hx-indicator="#please-wait"
+                            >{{ entry.label }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <script>
+                    $('#screen-menu [data-submenu-toggle]').off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
+                        e.stopPropagation();
+                        const $submenu = $(this).siblings('.screen-submenu');
+                        const wasOpen = $submenu.is(':visible');
+                        $('#screen-menu .screen-submenu').hide();
+                        if (!wasOpen) $submenu.show();
+                    });
+                    $(document).off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
+                        if (!$(e.target).closest('.screen-menu-group').length) {
                             $('#screen-menu .screen-submenu').hide();
-                            if (!wasOpen) $submenu.show();
-                        });
-                        $(document).off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
-                            if (!$(e.target).closest('.screen-menu-group').length) {
-                                $('#screen-menu .screen-submenu').hide();
-                            }
-                        });
-                    </script>
-                {% endif %}
+                        }
+                    });
+                </script>
             {% endif %}
         </div>
     </div>

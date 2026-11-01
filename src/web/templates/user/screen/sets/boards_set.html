@@ -8,30 +8,19 @@
     </div>
 {% else %}
 <div class="boards-set">
-    <h2 class="set-title text-center">
-        {% if tournament.current_round %}
-            {% set current_round = tournament.current_round %}
-            {% set remaining=tournament.boards_without_result(current_round)|length %}
-            {% if remaining %}
-                {{ ngettext(
-                    "%(set_name)s (round #%(round)d, %(remaining)d game in progress)",
-                    "%(set_name)s (round #%(round)d, %(remaining)d games in progress)",
-                    remaining,
-                    set_name=screen_set.name_for_boards,
-                    round=current_round,
-                    remaining=remaining
-                ) }}
-            {% else %}
-                {{ _(
-                    "%(set_name)s (round #%(round)d, finished)",
-                    set_name=screen_set.name_for_boards,
-                    round=current_round,
-                ) }}
-            {% endif %}
-        {% else %}
-            {{ screen_set.name_for_boards }}
-        {% endif %}
-    </h2>
+    {% set details %}
+        {%- if tournament.current_round -%}
+            {%- set current_round = tournament.current_round -%}
+            {%- set remaining = tournament.boards_without_result(current_round)|length -%}
+            {{ _('Round %(round)d', round=current_round) }} ·
+            {% if remaining -%}
+                {{ ngettext('%(remaining)d game in progress', '%(remaining)d games in progress', remaining, remaining=remaining) }}
+            {%- else -%}
+                {{ _('finished') }}
+            {%- endif -%}
+        {%- endif -%}
+    {% endset %}
+    {{ screen_macros.set_title(screen_set.name_for_boards, details) }}
     {% set board_columns = columns_by_tournament_id[tournament.id] %}
     {# Match blocks only exist for team-vs-team pairing systems; flat
        fixed-table systems (e.g. Molter) render the individual board

@@ -1,0 +1,9 @@
+{% macro set_title(name, details='') %}
+    <div class="set-title">
+        <h2 class="set-title-name">{{ name }}</h2>
+        {% if details %}
+            <span class="set-title-details">{{ details }}</span>
+        {% endif %}
+        {% if caller %}{{ caller() }}{% endif %}
+    </div>
+{% endmacro %}
