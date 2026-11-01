@@ -3,6 +3,7 @@ from functools import cached_property
 from logging import Logger
 from typing import Any
 
+from litestar.datastructures import CacheControlHeader
 from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
@@ -133,6 +134,10 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
 
 
 class BaseScreenUserController(BaseUserController):
+    # A screen asks the server for its updates itself, so a copy kept by the
+    # browser could only show a page out of date or hold its requests back.
+    cache_control = CacheControlHeader(no_store=True)
+
     @classmethod
     def _user_screen_render(
         cls,
