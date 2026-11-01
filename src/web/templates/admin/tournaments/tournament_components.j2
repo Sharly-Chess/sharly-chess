@@ -347,18 +347,17 @@
 {% endmacro %}
 
 {% macro tie_break_section_warning(item, extra_class='') %}
-    {# A knock-out ranks by the round reached — there is no standings
-       tie-break to be missing, so the recommendation does not apply. #}
+    {% set lacks_tie_breaks = item.tie_break_configuration.lacks_tie_breaks %}
     {% set section_warning = None if item.pairing_system.eliminates_participants else (
         _('It is highly recommended to set at least one tie-break.')
-        if item.tie_break_configuration.only_points else
+        if lacks_tie_breaks else
         item.tie_break_configuration.warning_message
     ) %}
     {% if section_warning %}
         <i
             class="bi-exclamation-triangle-fill text-warning flex-shrink-0 {{ extra_class }}"
             {{ macros.tooltip_attributes(
-                'warning' if item.tie_break_configuration.only_points else '',
+                'warning' if lacks_tie_breaks else '',
                 section_warning,
                 'top',
             ) }}

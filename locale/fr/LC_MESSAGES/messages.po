@@ -1551,6 +1551,9 @@ msgstr "Avant le passage à une autre ronde"
 msgid "Before moving to round {round}"
 msgstr "Avant le passage à la ronde {round}"
 
+msgid "Before pairing"
+msgstr "Avant l'appariement"
+
 msgid "Before players were distributed"
 msgstr "Avant la répartition des joueur·euses"
 
@@ -6529,6 +6532,12 @@ msgstr "Aucun départage ne tranche cette partie nulle. Ajoutez le départage «
 msgid "No tie-break decides this tied match. Add the \"Manual\" tie-break to hold a play-off."
 msgstr "Aucun départage ne tranche ce match à égalité. Ajoutez le départage « Manuel » pour organiser un barrage."
 
+msgid "No tie-break is set for this tournament: players on the same score will not be separated in the standings."
+msgstr "Aucun départage n'est défini pour ce tournoi : les joueur·euses à égalité de points ne seront pas départagé·es dans le classement."
+
+msgid "No tie-break is set for this tournament: teams on the same score will not be separated in the standings."
+msgstr "Aucun départage n'est défini pour ce tournoi : les équipes à égalité de points ne seront pas départagées dans le classement."
+
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
 
@@ -9392,6 +9401,9 @@ msgstr "Définir le coefficient appliqué aux scores de ce tournoi."
 
 msgid "Set the number of rounds to lay out a schedule."
 msgstr "Indiquez le nombre de rondes pour établir un calendrier."
+
+msgid "Set the tie-breaks"
+msgstr "Définir les départages"
 
 #, python-brace-format
 msgid "Set to <b>{value}</b>"

@@ -7,15 +7,44 @@
 {% set show_settings_modal = (
     admin_round == 1 and admin_tournament.pairing_variation.settings
 ) %}
+{% set lacks_tie_breaks = (
+    admin_round == 1 and admin_tournament.tie_break_configuration.lacks_tie_breaks
+) %}
 
 <div class="modal-dialog" style="--bs-modal-width: min(90vw, 500px);">
     <div class="modal-content bg-secondary-subtle">
         <div class="modal-header">
             <div class="modal-title fs-4 fw-bold">
-                {{ _('Ratings update') }}
+                {{ _('Before pairing') if lacks_tie_breaks else _('Ratings update') }}
             </div>
         </div>
         <div class="modal-body">
+            {% if lacks_tie_breaks %}
+                <div class="alert alert-warning d-flex align-items-start gap-2">
+                    <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
+                    <div>
+                        <div>
+                            {% if admin_tournament.is_team_tournament %}
+                                {{ _('No tie-break is set for this tournament: teams on the same score will not be separated in the standings.') }}
+                            {% else %}
+                                {{ _('No tie-break is set for this tournament: players on the same score will not be separated in the standings.') }}
+                            {% endif %}
+                        </div>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary mt-2"
+                            hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-push-url="true"
+                            hx-indicator="#please-wait"
+                            data-bs-dismiss="modal"
+                        >
+                            <i class="bi-sliders pe-1"></i>
+                            {{ _('Set the tie-breaks') }}
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
             <h5 class="text-warning">
                 {% if admin_round == 1 %}
                     {{ _('Reminder: you might have to update the players\' ratings before pairing.') }}

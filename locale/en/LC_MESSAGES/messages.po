@@ -1551,6 +1551,9 @@ msgstr ""
 msgid "Before moving to round {round}"
 msgstr ""
 
+msgid "Before pairing"
+msgstr ""
+
 msgid "Before players were distributed"
 msgstr ""
 
@@ -6529,6 +6532,12 @@ msgstr ""
 msgid "No tie-break decides this tied match. Add the \"Manual\" tie-break to hold a play-off."
 msgstr ""
 
+msgid "No tie-break is set for this tournament: players on the same score will not be separated in the standings."
+msgstr ""
+
+msgid "No tie-break is set for this tournament: teams on the same score will not be separated in the standings."
+msgstr ""
+
 msgid "No tie-breaks defined other than points."
 msgstr ""
 
@@ -9389,6 +9398,9 @@ msgid "Set the coefficient applied to this tournament’s scores."
 msgstr ""
 
 msgid "Set the number of rounds to lay out a schedule."
+msgstr ""
+
+msgid "Set the tie-breaks"
 msgstr ""
 
 #, python-brace-format
