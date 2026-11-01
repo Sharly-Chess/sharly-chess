@@ -1,13 +1,10 @@
 <div
     class="players-screen-set"
 >
-    <h2 class="set-title text-center">
-        {% if tournament.current_round %}
-            {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_players, round=tournament.current_round) }}
-        {% else %}
-            {{ screen_set.name_for_players }}
-        {% endif %}
-    </h2>
+    {{ screen_macros.set_title(
+        screen_set.name_for_players,
+        _('Round %(round)d', round=tournament.current_round) if tournament.current_round else '',
+    ) }}
     <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
         {% for tournament_players in screen_set.tournament_players_by_name_lists %}
             <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
@@ -55,7 +52,7 @@
                                         {% elif not opponent_id %}
                                             {{ tournament_player.not_paired_str }}
                                         {% else %}
-                                            {{ data.board_format.format(tournament_player) }}
+                                            <span class="board-color-chip {% if tournament_player.color == 'B' %}black{% endif %}"></span>{{ data.board_format.format(tournament_player) }}
                                         {% endif %}
                                     </div>
                                     {% if data.opponent_format != 1 %}
@@ -80,10 +77,11 @@
                                     style="text-overflow: ellipsis;"
                                 >
                                     <i class="
+                                        check-in-mark
                                         {% if tournament_player.check_in %}
-                                            bi-check-square-fill player-check-out
+                                            bi-check-circle-fill player-check-out
                                         {% else %}
-                                            bi-square player-check-in
+                                            bi-circle player-check-in
                                         {% endif %}
                                         player-{{ tournament.id }}-{{ tournament_player.id }}"></i>
                                     {{ data.player_format.format(tournament_player) }}

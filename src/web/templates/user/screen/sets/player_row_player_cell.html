@@ -1,6 +1,7 @@
 <div
     class="
         player-cell
+        {% if player.check_in %}checked-in{% endif %}
         {% if (
             screen.screen_type.allows_check_in and
             last_check_in_updated and
@@ -34,6 +35,6 @@
         data-bs-target="#modal-wrapper"
     {% endif %}
 >
-    <i class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"></i>
-    {% if player.display_title %}{{ player.display_title }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
+    <i class="check-in-mark {% if player.check_in %}bi-check-circle-fill{% else %}bi-circle{% endif %}"></i>
+    {% if player.display_title %}<span class="player-title">{{ player.display_title }}</span>&nbsp;{% endif %}{{ player.full_name }} <span class="player-rating">{{ player.rating_str }}</span>
 </div>

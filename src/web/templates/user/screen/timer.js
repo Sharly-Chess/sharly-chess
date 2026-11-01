@@ -21,12 +21,52 @@ var polyglot = new Polyglot({
     },
 });
 
+// Black or white, whichever reads better on the timer colour.
+function timer_ink(color) {
+    const channels = color.match(/\d+/g).slice(0, 3).map(function(value) {
+        value /= 255;
+        return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+    });
+    const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    return 1.05 / (luminance + 0.05) >= (luminance + 0.05) / 0.05 ? '#ffffff' : '#101418';
+}
+
+// The first title of the screen sits beside the timer, keeps clear of it and is
+// at least as tall; the timer is centred on that title line.
+function update_timer_width() {
+    const wrapper = document.getElementById('timer-wrapper');
+    const shown = wrapper && !wrapper.classList.contains('d-none');
+    const root = document.documentElement;
+    root.style.setProperty('--timer-width', (shown ? wrapper.offsetWidth : 0) + 'px');
+    if (!shown) {
+        root.style.setProperty('--timer-height', '0px');
+        return;
+    }
+    const pill = document.getElementById('timer');
+    const clock = document.getElementById('timer-clock');
+    root.style.setProperty('--timer-height', Math.max(pill.offsetHeight, clock.offsetHeight) + 'px');
+    const title = document.querySelector(
+        '#user-screen-content .screen > .set-title:first-child, '
+        + '#user-screen-content .screen > :first-child > .set-title:first-child'
+    );
+    if (title && getComputedStyle(wrapper).position === 'absolute') {
+        const titleBox = title.getBoundingClientRect();
+        const top = titleBox.top - wrapper.offsetParent.getBoundingClientRect().top;
+        wrapper.style.top = top + 'px';
+        wrapper.style.height = titleBox.height - parseFloat(getComputedStyle(title).borderBottomWidth) + 'px';
+    } else {
+        wrapper.style.top = '';
+        wrapper.style.height = '';
+    }
+}
+
 function update_timer_values(clock_html, text_html, color) {
 	$('#timer-wrapper').removeClass('d-none');
     $('#timer-clock').text(clock_html);
     $('#timer-text').text(text_html);
     timerColor = color;
-    $('#timer').css('background-color', color);
+    $('#timer').css({'background-color': color, 'color': timer_ink(color)});
+    update_timer_width();
 }
 
 function two_digits(n) {
@@ -111,6 +151,7 @@ function update_timer(local_delay) {
 	}
 {% endfor %}
     $('#timer-wrapper').addClass('d-none');
+    update_timer_width();
 }
 
 $(document).ready(function(){

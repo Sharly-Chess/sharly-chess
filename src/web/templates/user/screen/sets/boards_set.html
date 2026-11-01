@@ -8,30 +8,19 @@
     </div>
 {% else %}
 <div class="boards-set">
-    <h2 class="set-title text-center">
-        {% if tournament.current_round %}
-            {% set current_round = tournament.current_round %}
-            {% set remaining=tournament.boards_without_result(current_round)|length %}
-            {% if remaining %}
-                {{ ngettext(
-                    "%(set_name)s (round #%(round)d, %(remaining)d game in progress)",
-                    "%(set_name)s (round #%(round)d, %(remaining)d games in progress)",
-                    remaining,
-                    set_name=screen_set.name_for_boards,
-                    round=current_round,
-                    remaining=remaining
-                ) }}
-            {% else %}
-                {{ _(
-                    "%(set_name)s (round #%(round)d, finished)",
-                    set_name=screen_set.name_for_boards,
-                    round=current_round,
-                ) }}
-            {% endif %}
-        {% else %}
-            {{ screen_set.name_for_boards }}
-        {% endif %}
-    </h2>
+    {% set details %}
+        {%- if tournament.current_round -%}
+            {%- set current_round = tournament.current_round -%}
+            {%- set remaining = tournament.boards_without_result(current_round)|length -%}
+            {{ _('Round %(round)d', round=current_round) }} ·
+            {% if remaining -%}
+                {{ ngettext('%(remaining)d game in progress', '%(remaining)d games in progress', remaining, remaining=remaining) }}
+            {%- else -%}
+                {{ _('finished') }}
+            {%- endif -%}
+        {%- endif -%}
+    {% endset %}
+    {{ screen_macros.set_title(screen_set.name_for_boards, details) }}
     {% set board_columns = columns_by_tournament_id[tournament.id] %}
     {# Match blocks only exist for team-vs-team pairing systems; flat
        fixed-table systems (e.g. Molter) render the individual board
@@ -39,7 +28,7 @@
     {% if tournament.is_team_tournament and tournament.pairing_system.paired_by_team %}
         {% include '/user/screen/sets/team_matches_set.html' %}
     {% else %}
-    <div class="row gy-2 gx-3 screen-set-row mx-0">
+    <div class="row gy-2 gx-3 screen-set-row mx-0 {% if screen.screen_type.allows_result_input %}input-rows{% endif %}">
         {% for boards in screen_set.boards_lists %}
             <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
@@ -96,9 +85,19 @@
                             {% endif %}
                         >
                             {% for column in board_columns %}
-                                <div class="{{ column.get_cell_classes(board) }}">
+                                {% set cell_classes = column.get_cell_classes(board) %}
+                                <div class="{{ cell_classes }}">
                                     {% if column.cell_template %}
                                         {% include column.cell_template %}
+                                    {% elif screen.screen_type.allows_result_input and 'score' in cell_classes.split() %}
+                                        {% if board.result_str %}
+                                            <i class="bi-check-lg result-entered-mark"></i>{{ macros.column_cell(column, board) }}
+                                        {% elif editable %}
+                                            <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
+                                            <span class="visually-hidden">{{ macros.column_cell(column, board) }}</span>
+                                        {% else %}
+                                            {{ macros.column_cell(column, board) }}
+                                        {% endif %}
                                     {% else %}
                                         {{ macros.column_cell(column, board) }}
                                     {% endif %}
@@ -111,6 +110,9 @@
             </div>
         {% endfor %}
     </div>
+    {% if screen.screen_type.allows_result_input %}
+        {% include '/user/screen/sets/input_cards.html' %}
+    {% endif %}
     {% endif %}
 </div>
 {% endif %}

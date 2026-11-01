@@ -64,20 +64,66 @@
         {% endif %}
         {% set message_text = rotator.message_text if rotator and not rotator.message_default else screen.message_text %}
         {% if message_text %}
-            <div class="alert-message-wrapper">
-                <div
-                    id="alert-message"
-                    class="row gy-2 gx-3 alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden z-1"
-                    style="background-color: {{ screen.event.message_background_color }}; color: {{ screen.event.message_color }}"
-                >
-                    <h2
-                        id="alert-message-text"
-                        class="col-12 alert-message-text text-start fw-bold"
-                    >
-                        {{ message_text }}
-                    </h2>
+            <div
+                id="alert-message"
+                class="alert-message"
+                style="--message-background: {{ screen.event.message_background_color }}; --message-color: {{ screen.event.message_color }};"
+            >
+                <div class="alert-message-icon"><i class="bi-megaphone-fill"></i></div>
+                <div class="alert-message-track">
+                    <div id="alert-message-text" class="alert-message-text">{{ message_text }}</div>
                 </div>
             </div>
+            <script>
+                // A message that fits stays still; a longer one scrolls at a
+                // steady reading speed, whatever its length. The state lives on
+                // the document element, which the screen refreshes leave alone.
+                function layoutAlertMessage() {
+                    const root = document.documentElement;
+                    const track = document.querySelector('#alert-message .alert-message-track');
+                    const text = document.getElementById('alert-message-text');
+                    if (!track || !text) {
+                        root.classList.remove('alert-message-scrolling');
+                        return;
+                    }
+                    // Measured without the lead-in padding that scrolling adds,
+                    // and left alone while unchanged so the scroll never restarts.
+                    const textWidth = text.offsetWidth - parseFloat(getComputedStyle(text).paddingLeft);
+                    const room = track.parentElement.clientWidth - track.offsetLeft;
+                    const scrolling = textWidth > room - 48;
+                    root.classList.toggle('alert-message-scrolling', scrolling);
+                    if (!scrolling) {
+                        return;
+                    }
+                    // A refresh replaces the band: the scroll carries on from where
+                    // it was, unless the message has changed.
+                    if (window.alertMessageStart?.text !== text.textContent) {
+                        window.alertMessageStart = {text: text.textContent, time: performance.now()};
+                    }
+                    const pixelsPerSecond = 120;
+                    const duration = Math.round((room + textWidth) / pixelsPerSecond);
+                    const elapsed = (performance.now() - window.alertMessageStart.time) / 1000;
+                    root.style.setProperty('--message-duration', duration + 's');
+                    root.style.setProperty('--message-delay', -(elapsed % duration) + 's');
+                }
+                // Measured again whenever the text or the band changes size: once
+                // the font is loaded, on a resize, after a refresh.
+                function observeAlertMessage() {
+                    window.alertMessageObserver ??= new ResizeObserver(layoutAlertMessage);
+                    window.alertMessageObserver.disconnect();
+                    const message = document.getElementById('alert-message');
+                    if (message) {
+                        window.alertMessageObserver.observe(message);
+                        window.alertMessageObserver.observe(document.getElementById('alert-message-text'));
+                    }
+                    layoutAlertMessage();
+                }
+                if (!window.alertMessageListening) {
+                    window.alertMessageListening = true;
+                    document.addEventListener('htmx:afterSettle', observeAlertMessage);
+                }
+                observeAlertMessage();
+            </script>
         {% endif %}
         {% if timer %}
             <script>{% include 'screen/timer.js' %}</script>
@@ -92,64 +138,65 @@
 {% endblock copyright %}
 
 {% block content %}
-    <div id="top-nav-wrapper" class="pt-0">
+    {% set menu_entries = [] %}
+    {% if not rotator and not display_controller %}
+        {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
+    {% endif %}
+    <div id="top-nav-wrapper" class="screen-top-nav pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
         {% if timer %}
             {% include 'screen/timer.html' %}
         {% endif %}
         <div id="top-nav-content">
-            {% if not rotator and not display_controller %}
-                {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
-                {% if menu_entries %}
-                    <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
-                        {% for entry in menu_entries %}
-                            {% if entry.is_family and entry.screens|length > 1 %}
-                                {% set ns = namespace(selected=false) %}
-                                {% for sub in entry.screens %}
-                                    {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
-                                {% endfor %}
-                                <span class="screen-menu-group">
-                                    <span
-                                        class="screen-menu-item screen-menu-family cursor-pointer text-nowrap py-0 px-1 my-0 {% if ns.selected %}selected{% endif %}"
-                                        data-submenu-toggle
-                                    >{{ entry.label }} <i class="bi-caret-down-fill" style="font-size: 70%"></i></span>
-                                    <div class="screen-submenu" style="display: none">
-                                        {% for sub in entry.screens %}
-                                            <a
-                                                class="screen-submenu-item cursor-pointer text-nowrap d-block py-1 px-2 {% if sub.uniq_id == screen.uniq_id %}selected{% endif %}"
-                                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=sub.uniq_id) }}"
-                                                hx-target="body"
-                                                hx-push-url="true"
-                                                hx-indicator="#please-wait"
-                                            >{{ sub.menu_range_label }}</a>
-                                        {% endfor %}
-                                    </div>
-                                </span>
-                            {% else %}
-                                <a
-                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
-                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
-                                    hx-target="body"
-                                    hx-push-url="true"
-                                    hx-indicator="#please-wait"
-                                >{{ entry.label }}</a>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <script>
-                        $('#screen-menu [data-submenu-toggle]').off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
-                            e.stopPropagation();
-                            const $submenu = $(this).siblings('.screen-submenu');
-                            const wasOpen = $submenu.is(':visible');
+            {% if menu_entries %}
+                <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
+                    {% for entry in menu_entries %}
+                        {% if entry.is_family and entry.screens|length > 1 %}
+                            {% set ns = namespace(selected=false) %}
+                            {% for sub in entry.screens %}
+                                {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
+                            {% endfor %}
+                            <span class="screen-menu-group">
+                                <span
+                                    class="screen-menu-item screen-menu-family cursor-pointer text-nowrap py-0 px-1 my-0 {% if ns.selected %}selected{% endif %}"
+                                    data-submenu-toggle
+                                >{{ entry.label }} <i class="bi-caret-down-fill" style="font-size: 70%"></i></span>
+                                <div class="screen-submenu" style="display: none">
+                                    {% for sub in entry.screens %}
+                                        <a
+                                            class="screen-submenu-item cursor-pointer text-nowrap d-block py-1 px-2 {% if sub.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                            hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=sub.uniq_id) }}"
+                                            hx-target="body"
+                                            hx-push-url="true"
+                                            hx-indicator="#please-wait"
+                                        >{{ sub.menu_range_label }}</a>
+                                    {% endfor %}
+                                </div>
+                            </span>
+                        {% else %}
+                            <a
+                                class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
+                                hx-target="body"
+                                hx-push-url="true"
+                                hx-indicator="#please-wait"
+                            >{{ entry.label }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <script>
+                    $('#screen-menu [data-submenu-toggle]').off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
+                        e.stopPropagation();
+                        const $submenu = $(this).siblings('.screen-submenu');
+                        const wasOpen = $submenu.is(':visible');
+                        $('#screen-menu .screen-submenu').hide();
+                        if (!wasOpen) $submenu.show();
+                    });
+                    $(document).off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
+                        if (!$(e.target).closest('.screen-menu-group').length) {
                             $('#screen-menu .screen-submenu').hide();
-                            if (!wasOpen) $submenu.show();
-                        });
-                        $(document).off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
-                            if (!$(e.target).closest('.screen-menu-group').length) {
-                                $('#screen-menu .screen-submenu').hide();
-                            }
-                        });
-                    </script>
-                {% endif %}
+                        }
+                    });
+                </script>
             {% endif %}
         </div>
     </div>
