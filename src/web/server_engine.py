@@ -256,8 +256,7 @@ class ServerEngine:
         app: Litestar = self.build_app(logging_config)
         self.__class__.app = app
         asgi_app: ASGIApp = RequestGarbageCollectionMiddleware(app)
-        if self.profile:
-            asgi_app = PerformanceMiddleware(asgi_app)
+        asgi_app = PerformanceMiddleware(asgi_app, log_all=self.profile)
 
         config = uvicorn.Config(
             app=asgi_app,

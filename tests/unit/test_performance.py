@@ -19,7 +19,7 @@ class TemplatePayload:
 def test_performance_middleware_collects_request_scoped_timings(monkeypatch):
     log_calls: list[tuple[Any, ...]] = []
     monkeypatch.setattr(
-        performance.logger, 'info', lambda *args: log_calls.append(args)
+        performance.logger, 'log', lambda level, *args: log_calls.append(args)
     )
 
     @get('/event/example', name='example-route')
@@ -33,7 +33,7 @@ def test_performance_middleware_collects_request_scoped_timings(monkeypatch):
 
     app = Litestar(
         route_handlers=[handler],
-        middleware=[DefineMiddleware(performance.PerformanceMiddleware)],
+        middleware=[DefineMiddleware(performance.PerformanceMiddleware, log_all=True)],
     )
     with TestClient(app) as client:
         response = client.get('/event/example')
@@ -41,8 +41,8 @@ def test_performance_middleware_collects_request_scoped_timings(monkeypatch):
     assert response.content == b'hello'
     assert performance.current_request_performance() is None
     assert len(log_calls) == 1
-    assert log_calls[0][0].startswith('PERF route=')
-    assert log_calls[0][1:5] == ('example-route', 'GET', '/event/example', 200)
+    assert log_calls[0][0].startswith('PERF client=')
+    assert log_calls[0][2:6] == ('example-route', 'GET', '/event/example', 200)
     assert 'template_hot=event.html:4.0ms' in log_calls[0][-1]
     assert 'sql_hot=1x/3.0ms/3.0ms:SELECT * FROM player' in log_calls[0][-1]
     assert log_calls[0][0].find('gc=%d/%.1fms/%dobj') != -1
@@ -55,7 +55,7 @@ def test_performance_middleware_collects_request_scoped_timings(monkeypatch):
 def test_performance_middleware_ignores_static_requests(monkeypatch):
     monkeypatch.setattr(
         performance.logger,
-        'info',
+        'log',
         lambda *args: pytest.fail('static requests must not be profiled'),
     )
 
@@ -66,7 +66,7 @@ def test_performance_middleware_ignores_static_requests(monkeypatch):
 
     app = Litestar(
         route_handlers=[handler],
-        middleware=[DefineMiddleware(performance.PerformanceMiddleware)],
+        middleware=[DefineMiddleware(performance.PerformanceMiddleware, log_all=True)],
     )
     with TestClient(app) as client:
         response = client.get('/static/app.css')

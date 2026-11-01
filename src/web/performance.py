@@ -2,6 +2,7 @@
 
 from contextvars import ContextVar
 from dataclasses import dataclass, field
+from logging import INFO, WARNING
 from time import perf_counter, process_time
 from typing import TYPE_CHECKING, Any
 
@@ -89,10 +90,14 @@ def record_gc(collected: int, seconds: float) -> None:
 
 
 class PerformanceMiddleware:
-    """Log one timing breakdown for every non-static HTTP request."""
+    """Log a timing breakdown of the non-static HTTP requests: every one of
+    them when profiling, the slow ones otherwise."""
 
-    def __init__(self, app: 'ASGIApp') -> None:
+    SLOW_REQUEST_SECONDS: float = 3.0
+
+    def __init__(self, app: 'ASGIApp', log_all: bool = False) -> None:
         self.app = app
+        self.log_all = log_all
 
     async def __call__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
         if scope['type'] != ScopeType.HTTP or scope.get('path', '').startswith(
@@ -128,7 +133,15 @@ class PerformanceMiddleware:
             wall_seconds = perf_counter() - start_wall
             cpu_seconds = process_time() - start_cpu
             _current_request.reset(token)
-            self._log_profile(scope, profile, status_code, wall_seconds, cpu_seconds)
+            if self.log_all or wall_seconds >= self.SLOW_REQUEST_SECONDS:
+                self._log_profile(
+                    scope,
+                    profile,
+                    status_code,
+                    wall_seconds,
+                    cpu_seconds,
+                    level=INFO if self.log_all else WARNING,
+                )
 
     @staticmethod
     def _log_profile(
@@ -137,6 +150,7 @@ class PerformanceMiddleware:
         status_code: int,
         wall_seconds: float,
         cpu_seconds: float,
+        level: int,
     ) -> None:
         route_handler: Any = scope.get('route_handler')
         route_name = getattr(route_handler, 'name', None) or '<unmatched>'
@@ -147,11 +161,14 @@ class PerformanceMiddleware:
             0.0,
             response_seconds - profile.event_load_seconds - profile.template_seconds,
         )
-        logger.info(
-            'PERF route=%s method=%s path=%s status=%d total=%.1fms '
+        client = scope.get('client')
+        logger.log(
+            level,
+            'PERF client=%s route=%s method=%s path=%s status=%d total=%.1fms '
             'response=%.1fms post_response=%.1fms cpu=%.1fms '
             'event_load=%d/%.1fms sql=%d/%.1fms template=%d/%.1fms '
             'gc=%d/%.1fms/%dobj other=%.1fms bytes=%d%s',
+            client[0] if client else '?',
             route_name,
             scope.get('method', '?'),
             scope.get('path', '?'),
