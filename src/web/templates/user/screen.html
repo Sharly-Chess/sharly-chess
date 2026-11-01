@@ -75,25 +75,54 @@
                 </div>
             </div>
             <script>
-                (() => {
-                    // A message that fits stays still; a longer one scrolls at a
-                    // steady reading speed, whatever its length.
-                    const message = document.getElementById('alert-message');
-                    const track = message.querySelector('.alert-message-track');
-                    const text = message.querySelector('.alert-message-text');
+                // A message that fits stays still; a longer one scrolls at a
+                // steady reading speed, whatever its length. The state lives on
+                // the document element, which the screen refreshes leave alone.
+                function layoutAlertMessage() {
+                    const root = document.documentElement;
+                    const track = document.querySelector('#alert-message .alert-message-track');
+                    const text = document.getElementById('alert-message-text');
+                    if (!track || !text) {
+                        root.classList.remove('alert-message-scrolling');
+                        return;
+                    }
+                    // Measured without the lead-in padding that scrolling adds,
+                    // and left alone while unchanged so the scroll never restarts.
+                    const textWidth = text.offsetWidth - parseFloat(getComputedStyle(text).paddingLeft);
+                    const room = track.parentElement.clientWidth - track.offsetLeft;
+                    const scrolling = textWidth > room - 48;
+                    root.classList.toggle('alert-message-scrolling', scrolling);
+                    if (!scrolling) {
+                        return;
+                    }
+                    // A refresh replaces the band: the scroll carries on from where
+                    // it was, unless the message has changed.
+                    if (window.alertMessageStart?.text !== text.textContent) {
+                        window.alertMessageStart = {text: text.textContent, time: performance.now()};
+                    }
                     const pixelsPerSecond = 120;
-                    const layout = () => {
-                        message.classList.remove('scrolling');
-                        if (text.scrollWidth > track.clientWidth) {
-                            message.classList.add('scrolling');
-                            const distance = text.offsetWidth;
-                            message.style.setProperty('--message-duration', distance / pixelsPerSecond + 's');
-                        }
-                    };
-                    layout();
-                    document.fonts?.ready.then(layout);
-                    window.addEventListener('resize', layout);
-                })();
+                    const duration = Math.round((room + textWidth) / pixelsPerSecond);
+                    const elapsed = (performance.now() - window.alertMessageStart.time) / 1000;
+                    root.style.setProperty('--message-duration', duration + 's');
+                    root.style.setProperty('--message-delay', -(elapsed % duration) + 's');
+                }
+                // Measured again whenever the text or the band changes size: once
+                // the font is loaded, on a resize, after a refresh.
+                function observeAlertMessage() {
+                    window.alertMessageObserver ??= new ResizeObserver(layoutAlertMessage);
+                    window.alertMessageObserver.disconnect();
+                    const message = document.getElementById('alert-message');
+                    if (message) {
+                        window.alertMessageObserver.observe(message);
+                        window.alertMessageObserver.observe(document.getElementById('alert-message-text'));
+                    }
+                    layoutAlertMessage();
+                }
+                if (!window.alertMessageListening) {
+                    window.alertMessageListening = true;
+                    document.addEventListener('htmx:afterSettle', observeAlertMessage);
+                }
+                observeAlertMessage();
             </script>
         {% endif %}
         {% if timer %}
@@ -113,7 +142,7 @@
     {% if not rotator and not display_controller %}
         {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
     {% endif %}
-    <div id="top-nav-wrapper" class="pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
+    <div id="top-nav-wrapper" class="screen-top-nav pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
         {% if timer %}
             {% include 'screen/timer.html' %}
         {% endif %}

@@ -28,7 +28,7 @@
     {% if tournament.is_team_tournament and tournament.pairing_system.paired_by_team %}
         {% include '/user/screen/sets/team_matches_set.html' %}
     {% else %}
-    <div class="row gy-2 gx-3 screen-set-row mx-0">
+    <div class="row gy-2 gx-3 screen-set-row mx-0 {% if screen.screen_type.allows_result_input %}input-rows{% endif %}">
         {% for boards in screen_set.boards_lists %}
             <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
@@ -85,9 +85,19 @@
                             {% endif %}
                         >
                             {% for column in board_columns %}
-                                <div class="{{ column.get_cell_classes(board) }}">
+                                {% set cell_classes = column.get_cell_classes(board) %}
+                                <div class="{{ cell_classes }}">
                                     {% if column.cell_template %}
                                         {% include column.cell_template %}
+                                    {% elif screen.screen_type.allows_result_input and 'score' in cell_classes.split() %}
+                                        {% if board.result_str %}
+                                            <i class="bi-check-lg result-entered-mark"></i>{{ macros.column_cell(column, board) }}
+                                        {% elif editable %}
+                                            <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
+                                            <span class="visually-hidden">{{ macros.column_cell(column, board) }}</span>
+                                        {% else %}
+                                            {{ macros.column_cell(column, board) }}
+                                        {% endif %}
                                     {% else %}
                                         {{ macros.column_cell(column, board) }}
                                     {% endif %}
@@ -100,6 +110,9 @@
             </div>
         {% endfor %}
     </div>
+    {% if screen.screen_type.allows_result_input %}
+        {% include '/user/screen/sets/input_cards.html' %}
+    {% endif %}
     {% endif %}
 </div>
 {% endif %}
