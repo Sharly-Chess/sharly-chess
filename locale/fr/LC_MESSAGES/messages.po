@@ -23,6 +23,12 @@ msgid "%(bye)s at round %(round)d"
 msgstr "%(bye)s à la ronde %(round)d"
 
 #, python-format
+msgid "%(count)d player"
+msgid_plural "%(count)d players"
+msgstr[0] "%(count)d joueur·euse"
+msgstr[1] "%(count)d joueur·euses"
+
+#, python-format
 msgid "%(count)s automatic group"
 msgid_plural "%(count)s automatic groups"
 msgstr[0] "%(count)s groupe automatique"
@@ -1396,15 +1402,9 @@ msgstr "Champs BB"
 msgid "BLACK PLAYER"
 msgstr "JOUEUR·EUSE NOIRS"
 
-msgid "BLACK WINS"
-msgstr "VICTOIRE NOIRS"
-
 msgctxt "blitz rating marker"
 msgid "BTZ"
 msgstr "BTZ"
-
-msgid "BY FORFEIT"
-msgstr "PAR FORFAIT"
 
 msgid "Back"
 msgstr "Retour"
@@ -1653,6 +1653,9 @@ msgstr "Joueur·euse Noirs"
 
 msgid "Black wins"
 msgstr "Victoire Noirs"
+
+msgid "Black wins by forfeit"
+msgstr "Victoire Noirs par forfait"
 
 msgid "Blitz"
 msgstr "Blitz"
@@ -1904,15 +1907,6 @@ msgstr "ARB"
 msgid "CHE"
 msgstr "POI"
 
-msgid "CHECK-IN"
-msgstr "Pointer"
-
-msgid "CHECK-OUT"
-msgstr "Dépointer"
-
-msgid "CLEAR THE RESULT"
-msgstr "EFFACER LE RÉSULTAT"
-
 msgctxt "short name for Candidate Master"
 msgid "CM"
 msgstr "CM"
@@ -1960,6 +1954,10 @@ msgstr "Annuler « %(bye)s » à la ronde n°%(round)s for [%(player)s]?"
 
 msgid "Cancel editing"
 msgstr "Annuler la modification"
+
+msgctxt "check-in button"
+msgid "Cancel the check-in"
+msgstr "Annuler le pointage"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -2098,6 +2096,10 @@ msgstr "Modifier les départages une fois le tournoi commencé n'est pas conform
 msgid "Check connection"
 msgstr "Vérifier la connexion"
 
+msgctxt "check-in button"
+msgid "Check in"
+msgstr "Pointer"
+
 msgid "Check the ratings against the lists"
 msgstr "Vérifier les classements avec les listes"
 
@@ -2112,6 +2114,9 @@ msgstr "Les écrans de pointage permettent aux joueur·euses de se pointer."
 
 msgid "Check-in via public screens"
 msgstr "Pointage sur écrans publics"
+
+msgid "Checked in"
+msgstr "Pointé·e"
 
 msgid "Cheque"
 msgstr "Chèque"
@@ -2204,6 +2209,9 @@ msgid "Clear logs"
 msgstr "Effacer les logs"
 
 msgid "Clear result"
+msgstr "Effacer le résultat"
+
+msgid "Clear the result"
 msgstr "Effacer le résultat"
 
 msgid "Clear the schedule"
@@ -2799,12 +2807,6 @@ msgctxt "date-of-birth column header"
 msgid "DOB"
 msgstr "DdN"
 
-msgid "DOUBLE"
-msgstr "DOUBLE"
-
-msgid "DRAW"
-msgstr "NULLE"
-
 msgid "Daily"
 msgstr "Un jour"
 
@@ -3277,6 +3279,9 @@ msgstr "Double élimination"
 
 msgid "Double elimination — two-game matches"
 msgstr "Double élimination — aller-retour"
+
+msgid "Double forfeit"
+msgstr "Double forfait"
 
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
@@ -3791,11 +3796,12 @@ msgstr "Année de fin"
 msgid "England"
 msgstr "Angleterre"
 
+msgctxt "result entry button"
+msgid "Enter"
+msgstr "Saisir"
+
 msgid "Enter results"
 msgstr "Entrer des résultats"
-
-msgid "Enter the result"
-msgstr "Saisir le résultat"
 
 #, python-format
 msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
@@ -4074,9 +4080,6 @@ msgstr "Joueur·euses classé·es FIDE présent·es"
 msgctxt "short name for Fide Master"
 msgid "FM"
 msgstr "MF"
-
-msgid "FORFEIT"
-msgstr "FORFAIT"
 
 msgid "Faroe Islands"
 msgstr "Îles Féroé"
@@ -6671,6 +6674,9 @@ msgstr "Numéros qui ne sont pas des identifiants FIDE ({values}), laissés vide
 
 msgid "Not assigned"
 msgstr "Non attribué"
+
+msgid "Not checked in yet"
+msgstr "Pas encore pointé·e"
 
 msgid "Not counted as a federation (1.4.2a)"
 msgstr "Non comptée comme une fédération (1.4.2a)"
@@ -12325,9 +12331,6 @@ msgstr "GMF"
 msgid "WHITE PLAYER"
 msgstr "JOUEUR·EUSE BLANCS"
 
-msgid "WHITE WINS"
-msgstr "VICTOIRE BLANCS"
-
 msgctxt "short name for Woman International Master"
 msgid "WIM"
 msgstr "MIF"
@@ -12392,6 +12395,9 @@ msgstr "Bienvenue dans Sharly Chess !"
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr "Ce qui a été inscrit dans le TRF : atteintes à l'intégrité des appariements, modifications des paramètres et parties corrigées pour le rapport Elo."
 
+msgid "What is the result?"
+msgstr "Quel est le résultat ?"
+
 msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
 msgstr "Ce qui départage les deux dernières équipes lorsqu'elles sont à égalité à la fois aux points de match et aux points de parties, en se fondant sur les échiquiers de leur confrontation."
 
@@ -12446,6 +12452,9 @@ msgstr "Joueur·euse Blancs"
 
 msgid "White wins"
 msgstr "Victoire Blancs"
+
+msgid "White wins by forfeit"
+msgstr "Victoire Blancs par forfait"
 
 msgid "Who advances"
 msgstr "Qui se qualifie"

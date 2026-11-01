@@ -142,6 +142,10 @@ class WhiteTitleColumn(BoardColumn):
     def header_content(self) -> str:
         return ''
 
+    @property
+    def shared_classes(self) -> str:
+        return 'player-title-cell'
+
     def get_cell_content(self, board: Board) -> Any:
         wtp = board.optional_white_tournament_player
         return wtp.display_title if wtp else ''
@@ -254,6 +258,10 @@ class BlackTitleColumn(BoardColumn):
     @property
     def header_content(self) -> str:
         return ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'player-title-cell'
 
     def get_cell_content(self, board: Board) -> Any:
         tournament_player = board.black_tournament_player

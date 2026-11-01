@@ -65,9 +65,8 @@ class TestSingleScreensFunctionality:
         row.click()
         modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        button = TestUtils.button_by_text(modal, 'CHECK-IN')
-        expect(button).to_contain_text('AMOS')
-        button.click()
+        expect(modal).to_contain_text('AMOS')
+        TestUtils.button_by_text(modal, 'Check in').click()
 
         expect(row.locator('i.bi-check-circle-fill')).to_be_visible()
 

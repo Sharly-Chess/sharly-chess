@@ -32,12 +32,32 @@ function timer_ink(color) {
 }
 
 // The first title of the screen sits beside the timer, keeps clear of it and is
-// at least as tall.
+// at least as tall; the timer is centred on that title line.
 function update_timer_width() {
     const wrapper = document.getElementById('timer-wrapper');
     const shown = wrapper && !wrapper.classList.contains('d-none');
-    document.documentElement.style.setProperty('--timer-width', (shown ? wrapper.offsetWidth : 0) + 'px');
-    document.documentElement.style.setProperty('--timer-height', (shown ? wrapper.offsetHeight : 0) + 'px');
+    const root = document.documentElement;
+    root.style.setProperty('--timer-width', (shown ? wrapper.offsetWidth : 0) + 'px');
+    if (!shown) {
+        root.style.setProperty('--timer-height', '0px');
+        return;
+    }
+    const pill = document.getElementById('timer');
+    const clock = document.getElementById('timer-clock');
+    root.style.setProperty('--timer-height', Math.max(pill.offsetHeight, clock.offsetHeight) + 'px');
+    const title = document.querySelector(
+        '#user-screen-content .screen > .set-title:first-child, '
+        + '#user-screen-content .screen > :first-child > .set-title:first-child'
+    );
+    if (title && getComputedStyle(wrapper).position === 'absolute') {
+        const titleBox = title.getBoundingClientRect();
+        const top = titleBox.top - wrapper.offsetParent.getBoundingClientRect().top;
+        wrapper.style.top = top + 'px';
+        wrapper.style.height = titleBox.height - parseFloat(getComputedStyle(title).borderBottomWidth) + 'px';
+    } else {
+        wrapper.style.top = '';
+        wrapper.style.height = '';
+    }
 }
 
 function update_timer_values(clock_html, text_html, color) {

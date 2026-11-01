@@ -72,7 +72,7 @@
 }
 #top-nav-wrapper:not(.with-menu) + #user-screen-content .screen > .set-title:first-child,
 #top-nav-wrapper:not(.with-menu) + #user-screen-content .screen > :first-child > .set-title:first-child {
-    min-height: max(var(--title-line-height), var(--timer-height, 0px));
+    min-height: max(var(--title-line-height), calc(var(--timer-height, 0px) + 0.7rem));
     margin-top: 0;
     padding-right: calc(var(--timer-width, 0px) + 1.5rem);
 }
@@ -116,15 +116,15 @@
     margin: 0 auto;
     white-space: nowrap;
 }
-.alert-message.scrolling .alert-message-track {
+html.alert-message-scrolling .alert-message-track {
     padding: 0;
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
     mask-image: linear-gradient(90deg, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%);
 }
-.alert-message.scrolling .alert-message-text {
+html.alert-message-scrolling .alert-message-text {
     margin: 0;
     padding-left: 100%;
-    animation: scroll-rtl var(--message-duration, 20s) linear infinite;
+    animation: scroll-rtl var(--message-duration, 20s) linear var(--message-delay, 0s) infinite;
 }
 body:has(.alert-message) #user-screen-content {
     padding-bottom: 5rem;
@@ -147,37 +147,257 @@ body:has(#screen-exit-button) .alert-message {
 # INPUT SCREENS - RESULT MODAL
 ###########################################################
 */
-.input-screen-result-modal .result-button {
-    border: 3px #000080 solid;
+.result-entry-modal {
+    --bs-modal-width: 60rem;
+    --result-ink: #101418;
+    --result-ink-secondary: #3a4250;
+    padding: 0 0.5rem;
 }
-.input-screen-result-modal .admin-result-button {
-    border: 3px #800000 solid;
+.result-entry-modal .modal-content {
+    gap: 1.25rem;
+    padding: 1.5rem 1.75rem;
+    border: none;
+    border-radius: 1.25rem;
+    color: var(--result-ink);
 }
-.input-screen-result-modal .result-button.draw {
-    color: #000080;
-}
-.input-screen-result-modal .result-button,
-.input-screen-result-modal .admin-result-button {
+.result-entry-modal button {
     touch-action: manipulation;
+    font-family: inherit;
+}
+.result-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+.result-modal-board {
+    min-width: 3rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 0.6rem;
+    background-color: var(--result-ink);
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 800;
+    text-align: center;
+}
+.result-modal-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+.result-modal-subtitle {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--result-ink-secondary);
+}
+.result-modal-choices {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+.result-choice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 12rem;
+    padding: 1.25rem 1rem;
+    border: 3px solid var(--result-ink);
+    border-radius: 1.1rem;
+    background-color: white;
+    color: var(--result-ink);
+    text-align: center;
+}
+.result-choice.black {
+    background-color: var(--result-ink);
+    color: white;
+}
+.result-choice.draw {
+    border-color: #8a93a1;
+    background-color: #eef1f5;
+}
+.result-choice .board-color-chip {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin: 0;
+    border: 3px solid var(--result-ink);
+    border-radius: 0.35rem;
+}
+.result-choice.black .board-color-chip {
+    border-color: white;
+}
+.result-choice-label {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+.result-choice-score {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+.result-choice-player {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.15rem;
+}
+.result-choice-rating,
+.result-choice-team {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+.result-modal-arbiter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1.1rem;
+    border-top: 2px solid #e3e7ec;
+}
+.result-modal-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--result-ink-secondary);
+}
+.result-modal-arbiter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+.result-arbiter-button,
+.result-cancel-button {
+    min-height: 3.25rem;
+    padding: 0 1.1rem;
+    border: 2px solid #8a93a1;
+    border-radius: 0.75rem;
+    background-color: white;
+    color: var(--result-ink);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.result-cancel-button {
+    margin-left: auto;
+    touch-action: manipulation;
+    padding: 0 1.75rem;
+    border-color: var(--result-ink);
+}
+.result-modal-footer {
+    display: flex;
+    align-items: center;
+}
+.result-clear-button {
+    min-height: 3.25rem;
+    padding: 0 0.4rem;
+    border: none;
+    background: transparent;
+    color: #b3261e;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.check-in-modal {
+    --bs-modal-width: 36rem;
+}
+.check-in-modal-entrant {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border: 2px solid #d5dae1;
+    border-radius: 1rem;
+}
+.check-in-modal-entrant.checked-in {
+    border-color: #0f6e3a;
+    background-color: #e2f2e8;
+}
+.check-in-modal-entrant .check-in-mark {
+    margin: 0;
+    font-size: 2.2rem;
+}
+.check-in-modal-identity {
+    min-width: 0;
+}
+.check-in-modal-name {
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+.check-in-modal-name .player-title {
+    margin-right: 0.3em;
+    font-weight: 800;
+    color: var(--result-ink-secondary);
+}
+.check-in-modal-details {
+    font-size: 1.1rem;
+    color: var(--result-ink-secondary);
+}
+.check-in-modal-button {
+    min-height: 3.75rem;
+    margin-left: auto;
+    padding: 0 2rem;
+    border: none;
+    border-radius: 0.85rem;
+    background-color: #0f6e3a;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+.check-in-modal-button.undo {
+    border: 2px solid #b3261e;
+    background-color: white;
+    color: #b3261e;
+}
+@media (hover: hover) {
+    .check-in-modal-button:not(:disabled):hover {
+        box-shadow: 0 0 0 4px #f5c400;
+    }
+}
+.check-in-modal-button:not(:disabled):active {
+    box-shadow: 0 0 0 4px #f5c400;
+    transform: scale(0.98);
+}
+.result-entry-modal button:disabled {
+    opacity: 0.45;
 }
 /* A touch screen keeps a tapped button in its hover state, which would read
    as the result being sent; it shows the press instead. */
 @media (hover: hover) {
-    .input-screen-result-modal .result-button:hover,
-    .input-screen-result-modal .admin-result-button:hover {
-        color: #000080 !important;
+    .result-choice:not(:disabled):hover,
+    .result-arbiter-button:not(:disabled):hover,
+    .result-cancel-button:hover {
+        box-shadow: 0 0 0 4px #f5c400;
     }
-    .input-screen-result-modal .result-button:hover {
-        background-color: yellow !important;
-    }
-    .input-screen-result-modal .admin-result-button:hover {
-        background-color: #ffc500 !important;
+    .result-clear-button:not(:disabled):hover {
+        text-decoration: underline;
     }
 }
-.input-screen-result-modal .result-button:active,
-.input-screen-result-modal .admin-result-button:active {
-    color: #000080 !important;
-    background-color: yellow !important;
+.result-choice:not(:disabled):active,
+.result-arbiter-button:not(:disabled):active,
+.result-cancel-button:active {
+    box-shadow: 0 0 0 4px #f5c400;
+    transform: scale(0.98);
+}
+@media (max-width: 640px) {
+    .result-entry-modal .modal-content {
+        padding: 1.1rem;
+    }
+    .result-modal-choices {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+    .result-choice {
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-height: 0;
+        justify-content: flex-start;
+        text-align: start;
+        column-gap: 0.75rem;
+    }
+    .result-choice-score {
+        margin-left: auto;
+        font-size: 1.8rem;
+    }
+    .result-choice-player {
+        flex-basis: 100%;
+    }
 }
 /*
 ###########################################################
@@ -252,29 +472,191 @@ body:has(#screen-exit-button) .alert-message {
 .input-screen .board-row.editable {
     cursor: pointer;
 }
-.input-screen .board-row.result-not-set:hover, .input-screen .grid-striped>.board-row.result-not-set:hover > div {
-    background-color: yellow;
-}
-.input-screen .board-row.result-set:hover, .input-screen .grid-striped>.board-row.result-set:hover > div {
-    background-color: #ffffcc;
-}
-.input-screen .board-row.special-results-allowed.result-not-set:hover, .input-screen .grid-striped>.board-row.special-results-allowed.result-not-set:hover > div {
-    background-color: #ffc500;
-}
-.input-screen .board-row.special-results-allowed.result-set:hover .input-screen .grid-striped>.board-row.special-results-allowed.result-set:hover > div {
-    background-color: #fff2cd;
+/* A touch screen keeps a tapped row in its hover state, so only a mouse gets
+   the hover colours. */
+@media (hover: hover) {
+    .input-screen .board-row.result-not-set:hover, .input-screen .grid-striped>.board-row.result-not-set:hover > div {
+        background-color: yellow;
+    }
+    .input-screen .board-row.result-set:hover, .input-screen .grid-striped>.board-row.result-set:hover > div {
+        background-color: #ffffcc;
+    }
+    .input-screen .board-row.special-results-allowed.result-not-set:hover, .input-screen .grid-striped>.board-row.special-results-allowed.result-not-set:hover > div {
+        background-color: #ffc500;
+    }
+    .input-screen .board-row.special-results-allowed.result-set:hover .input-screen .grid-striped>.board-row.special-results-allowed.result-set:hover > div {
+        background-color: #fff2cd;
+    }
 }
 .time-control-modified .minutes,
 .time-control-modified .seconds {
     color: red;
 }
-.player-cell.last_check_in_updated, .player-cell.last_illegal_move_updated,
-.illegal-moves-cell.last_check_in_updated, .illegal-moves-cell.last_illegal_move_updated {
-    color: red !important;
+/* The last entry made on a screen stays highlighted for a while, so whoever
+   made it can see it went through. */
+.grid-striped > .player-row > .player-cell.last_check_in_updated,
+.grid-striped > .board-row.last_result_updated > * {
+    background-color: #d4edde !important;
+    color: var(--screen-ink) !important;
 }
-.board-row.last_result_updated > *,
-.board-row.last_result_updated .text-muted {
-    color: red !important;
+.grid-striped > .board-row.last_result_updated > :first-child {
+    box-shadow: inset 5px 0 0 #0f6e3a;
+}
+.player-cell.last_illegal_move_updated,
+.illegal-moves-cell.last_check_in_updated, .illegal-moves-cell.last_illegal_move_updated {
+    color: #0f6e3a !important;
+}
+/* A title column without any title takes no room, so the result sits midway
+   between the two players. */
+#user-screen-content .grid-striped .player-title-cell {
+    padding-left: 0;
+    padding-right: 0;
+}
+/*
+###########################################################
+# INPUT SCREENS - ROWS
+###########################################################
+*/
+/* Rows a little taller than on the pairings screens, to tap on a tablet
+   without losing too many games below the fold. The games still to enter
+   stand out with an "Enter" button; the others step back. */
+.input-screen .grid-striped .board-row > div {
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+}
+.input-screen .board-row.editable {
+    touch-action: manipulation;
+}
+.input-screen .board-row.editable:active > div {
+    background-color: yellow;
+}
+.input-screen .grid-striped .board-row.result-set > div {
+    color: #5b6370;
+}
+.input-screen .grid-striped .board-row.result-set > .score {
+    color: var(--screen-ink);
+    font-weight: 800;
+}
+.enter-result-button {
+    display: inline-block;
+    padding: 0.1em 0.75em;
+    border-radius: 0.45rem;
+    background-color: var(--screen-ink);
+    color: white;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.result-entered-mark {
+    margin-right: 0.25em;
+    color: #0f6e3a;
+    -webkit-text-stroke: 0.5px;
+}
+/* On a phone the white and black columns do not fit side by side: each game
+   becomes a card instead. */
+.input-cards {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+    gap: 0.75rem;
+    padding: 0 0.5rem 1rem;
+    font-size: calc(var(--font-size) / 100 * 1.15rem);
+}
+.input-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+    padding: 0.75rem 0.9rem;
+    border: 2px solid #d5dae1;
+    border-radius: 0.9rem;
+    background-color: white;
+    color: var(--screen-ink);
+    touch-action: manipulation;
+}
+.input-card.editable {
+    cursor: pointer;
+}
+.input-card.result-not-set {
+    border-color: var(--screen-ink);
+}
+.input-card.editable:active {
+    background-color: #f3f5f8;
+}
+@media (hover: hover) {
+    .input-card.editable:hover {
+        background-color: #fff8d6;
+    }
+}
+.input-card.last_result_updated {
+    border-color: #0f6e3a;
+    background-color: #e2f2e8;
+}
+.input-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.input-card-board {
+    min-width: 2.6em;
+    padding: 0.05em 0.5em;
+    border-radius: 0.5rem;
+    background-color: var(--screen-ink);
+    color: white;
+    font-weight: 800;
+    text-align: center;
+}
+.input-card-result {
+    font-weight: 800;
+}
+.input-card-enter {
+    display: inline-block;
+    padding: 0.2em 0.9em;
+    border-radius: 0.5rem;
+    background-color: var(--screen-ink);
+    color: white;
+    font-weight: 800;
+}
+.input-card-player {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+}
+.input-card-player .board-color-chip {
+    flex: none;
+    margin: 0;
+    width: 0.9em;
+    height: 0.9em;
+    border: 2px solid var(--screen-ink);
+    border-radius: 0.2em;
+}
+.input-card-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.input-card-name .player-title {
+    margin-right: 0.3em;
+    font-weight: 800;
+    color: var(--screen-ink-secondary);
+}
+.input-card-last-name,
+.input-card-player.winner .input-card-name {
+    font-weight: 800;
+}
+.input-card-details {
+    flex: none;
+    font-size: 0.85em;
+    color: var(--screen-ink-secondary);
+}
+@media (max-width: 640px) {
+    .screen-set-row.input-rows {
+        display: none;
+    }
+    .input-cards {
+        display: grid;
+    }
 }
 /*
 ###########################################################
@@ -345,8 +727,13 @@ body:has(#screen-exit-button) .alert-message {
 # TIMERS
 ###########################################################
 */
-#top-nav-wrapper {
-    position: relative;
+/* Without a menu, nothing sits above the titles: the timer is laid over the
+   first one. */
+#top-nav-wrapper.screen-top-nav:not(.with-menu) {
+    padding-bottom: 0;
+}
+#top-nav-wrapper.screen-top-nav:not(.with-menu) #top-nav-content {
+    display: none;
 }
 #top-nav-wrapper.with-menu.with-timer {
     display: flex;
@@ -370,8 +757,6 @@ body:has(#screen-exit-button) .alert-message {
     right: 0;
     z-index: 1;
     min-height: var(--title-line-height);
-    padding-top: 0.35rem;
-    padding-bottom: 0.35rem;
 }
 /* On a narrow screen the timer takes its own line above the titles. */
 @media (max-width: 768px) {

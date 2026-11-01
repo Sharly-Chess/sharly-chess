@@ -23,6 +23,12 @@ msgid "%(bye)s at round %(round)d"
 msgstr ""
 
 #, python-format
+msgid "%(count)d player"
+msgid_plural "%(count)d players"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(count)s automatic group"
 msgid_plural "%(count)s automatic groups"
 msgstr[0] ""
@@ -1396,14 +1402,8 @@ msgstr ""
 msgid "BLACK PLAYER"
 msgstr ""
 
-msgid "BLACK WINS"
-msgstr ""
-
 msgctxt "blitz rating marker"
 msgid "BTZ"
-msgstr ""
-
-msgid "BY FORFEIT"
 msgstr ""
 
 msgid "Back"
@@ -1652,6 +1652,9 @@ msgid "Black player"
 msgstr ""
 
 msgid "Black wins"
+msgstr ""
+
+msgid "Black wins by forfeit"
 msgstr ""
 
 msgid "Blitz"
@@ -1904,15 +1907,6 @@ msgstr ""
 msgid "CHE"
 msgstr ""
 
-msgid "CHECK-IN"
-msgstr ""
-
-msgid "CHECK-OUT"
-msgstr ""
-
-msgid "CLEAR THE RESULT"
-msgstr ""
-
 msgctxt "short name for Candidate Master"
 msgid "CM"
 msgstr ""
@@ -1959,6 +1953,10 @@ msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
 msgstr ""
 
 msgid "Cancel editing"
+msgstr ""
+
+msgctxt "check-in button"
+msgid "Cancel the check-in"
 msgstr ""
 
 msgid "Candidate Master"
@@ -2098,6 +2096,10 @@ msgstr ""
 msgid "Check connection"
 msgstr ""
 
+msgctxt "check-in button"
+msgid "Check in"
+msgstr ""
+
 msgid "Check the ratings against the lists"
 msgstr ""
 
@@ -2111,6 +2113,9 @@ msgid "Check-in screens allow players to check-in or out."
 msgstr ""
 
 msgid "Check-in via public screens"
+msgstr ""
+
+msgid "Checked in"
 msgstr ""
 
 msgid "Cheque"
@@ -2204,6 +2209,9 @@ msgid "Clear logs"
 msgstr ""
 
 msgid "Clear result"
+msgstr ""
+
+msgid "Clear the result"
 msgstr ""
 
 msgid "Clear the schedule"
@@ -2799,12 +2807,6 @@ msgctxt "date-of-birth column header"
 msgid "DOB"
 msgstr ""
 
-msgid "DOUBLE"
-msgstr ""
-
-msgid "DRAW"
-msgstr ""
-
 msgid "Daily"
 msgstr ""
 
@@ -3276,6 +3278,9 @@ msgid "Double elimination"
 msgstr ""
 
 msgid "Double elimination — two-game matches"
+msgstr ""
+
+msgid "Double forfeit"
 msgstr ""
 
 msgid "Double-round Berger"
@@ -3791,10 +3796,11 @@ msgstr ""
 msgid "England"
 msgstr ""
 
-msgid "Enter results"
+msgctxt "result entry button"
+msgid "Enter"
 msgstr ""
 
-msgid "Enter the result"
+msgid "Enter results"
 msgstr ""
 
 #, python-format
@@ -4073,9 +4079,6 @@ msgstr ""
 
 msgctxt "short name for Fide Master"
 msgid "FM"
-msgstr ""
-
-msgid "FORFEIT"
 msgstr ""
 
 msgid "Faroe Islands"
@@ -6670,6 +6673,9 @@ msgid "Not FIDE numbers ({values}), left empty"
 msgstr ""
 
 msgid "Not assigned"
+msgstr ""
+
+msgid "Not checked in yet"
 msgstr ""
 
 msgid "Not counted as a federation (1.4.2a)"
@@ -12323,9 +12329,6 @@ msgstr ""
 msgid "WHITE PLAYER"
 msgstr ""
 
-msgid "WHITE WINS"
-msgstr ""
-
 msgctxt "short name for Woman International Master"
 msgid "WIM"
 msgstr ""
@@ -12390,6 +12393,9 @@ msgstr ""
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr ""
 
+msgid "What is the result?"
+msgstr ""
+
 msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
 msgstr ""
 
@@ -12443,6 +12449,9 @@ msgid "White player"
 msgstr ""
 
 msgid "White wins"
+msgstr ""
+
+msgid "White wins by forfeit"
 msgstr ""
 
 msgid "Who advances"

@@ -46,107 +46,100 @@
     {% set white_team = none %}
     {% set black_team = none %}
 {% endif %}
+{% set locked = board.result and not client.can_update_results(tournament.id) %}
+{% macro request_attributes(result) %}
+    hx-put="{{ result_update_url(result) }}"
+    hx-target="#user-screen-content"
+    hx-swap="morphdom"
+    hx-indicator="#please-wait"
+{% endmacro %}
 {% macro win_button(side) %}
     {% set tp = wtp if side == 'white' else btp %}
     {% set team = white_team if side == 'white' else black_team %}
     <button
+        type="button"
         data-testid="{{ side }}-wins-button"
-        class="result-button {{ side }} {% if side == 'white' %}text-black bg-white{% else %}text-white bg-black{% endif %} col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-        {% if board.result and not client.can_update_results(tournament.id) %}
-            disabled
-        {% else %}
-            hx-put="{{ result_update_url(3 if side == 'white' else 1) }}"
-            hx-target="#user-screen-content"
-            hx-swap="morphdom"
-            hx-indicator="#please-wait"
-        {% endif %}
-    ><span class="result-color-chip {{ side }}"></span>{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ '1 - 0' if side == 'white' else '0 - 1' }}<br/><br/>{% if tp %}{{ tp.display_last_name }}<br/>{{ tp.display_first_name }}<br/>{{ tp.rating_str_in_round(board.round) }}{% else %}<span class="fst-italic">{{ _('Forfeit') }}</span><br/><br/>{% endif %}{% if team %}<br/><span class="fs-6 fw-normal {% if side == 'white' %}text-muted{% else %}text-white-50{% endif %}">{{ team.name }}</span>{% endif %}</button>
+        class="result-choice {{ side }}"
+        {% if locked %}disabled{% else %}{{ request_attributes(3 if side == 'white' else 1) }}{% endif %}
+    >
+        <span class="board-color-chip {{ side }}"></span>
+        <span class="result-choice-label">{{ _('White wins') if side == 'white' else _('Black wins') }}</span>
+        <span class="result-choice-score">{{ '1 - 0' if side == 'white' else '0 - 1' }}</span>
+        <span class="result-choice-player">
+            {% if tp %}
+                <span><span class="fw-bold">{{ tp.display_last_name }}</span> {{ tp.display_first_name }}</span>
+                <span class="result-choice-rating">{{ tp.rating_str_in_round(board.round) }}</span>
+            {% else %}
+                <span class="fst-italic">{{ _('Forfeit') }}</span>
+            {% endif %}
+            {% if team %}<span class="result-choice-team">{{ team.name }}</span>{% endif %}
+        </span>
+    </button>
 {% endmacro %}
-<style>
-    .result-color-chip {
-        display: inline-block;
-        width: 0.7em;
-        height: 0.7em;
-        margin-right: 0.4em;
-        vertical-align: baseline;
-        border: 1.5px solid #888;
-    }
-    .result-color-chip.white { background-color: #fff; }
-    .result-color-chip.black { background-color: #000; }
-</style>
 {% macro forfeit_button(side) %}
     <button
+        type="button"
         data-testid="{{ side }}-wins-by-forfeit-button"
-        class="admin-result-button {{ side }} {% if side == 'white' %}text-black bg-white{% else %}text-white bg-black{% endif %} col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-        hx-put="{{ result_update_url(6 if side == 'white' else 4) }}"
-        hx-target="#user-screen-content"
-        hx-swap="morphdom"
-        hx-indicator="#please-wait"
-    >{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>{{ '1 - F' if side == 'white' else 'F - 1' }}</button>
+        class="result-arbiter-button"
+        {{ request_attributes(6 if side == 'white' else 4) }}
+    >{{ _('White wins by forfeit') if side == 'white' else _('Black wins by forfeit') }} · {{ '1 - F' if side == 'white' else 'F - 1' }}</button>
 {% endmacro %}
 <div
-    class="modal-dialog input-screen-result-modal"
-    hx-disabled-elt=".input-screen-result-modal button"
+    class="modal-dialog modal-dialog-centered result-entry-modal"
+    hx-disabled-elt=".result-entry-modal button"
 >
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-        <div class="modal-title fs-4 fw-bold">{{ _('Enter the result') }}</div>
-        </div>
-        <div class="modal-body">
-            <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
-                {{ win_button('white' if white_on_left else 'black') }}
-                <button
-                    data-testid="draw-button"
-                    class="result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                    {% if board.result and not client.can_update_results(tournament.id) %}
-                        disabled
-                    {% else %}
-                        hx-put="{{ result_update_url(2) }}"
-                        hx-target="#user-screen-content"
-                        hx-swap="morphdom"
-                        hx-indicator="#please-wait"
-                    {% endif %}
-                >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
-                {{ win_button('black' if white_on_left else 'white') }}
+    <div class="modal-content">
+        <div class="result-modal-header">
+            <span class="result-modal-board">{{ board.number_str }}</span>
+            <div class="result-modal-heading">
+                <div class="result-modal-title">{{ _('What is the result?') }}</div>
+                <div class="result-modal-subtitle">
+                    {{ tournament.name }} · {{ _('Round %(round)d', round=board.round) }}
+                </div>
             </div>
-            {% if client.can_set_special_results(tournament.id) %}
-                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
+        </div>
+        <div class="result-modal-choices">
+            {{ win_button('white' if white_on_left else 'black') }}
+            <button
+                type="button"
+                data-testid="draw-button"
+                class="result-choice draw"
+                {% if locked %}disabled{% else %}{{ request_attributes(2) }}{% endif %}
+            >
+                <span class="result-choice-label">{{ _('Draw') }}</span>
+                <span class="result-choice-score">½ - ½</span>
+            </button>
+            {{ win_button('black' if white_on_left else 'white') }}
+        </div>
+        {% if client.can_set_special_results(tournament.id) %}
+            <div class="result-modal-arbiter">
+                <div class="result-modal-section-title">{{ _('Arbiter') }}</div>
+                <div class="result-modal-arbiter-buttons">
                     {{ forfeit_button('white' if white_on_left else 'black') }}
                     <button
+                        type="button"
                         data-testid="double-forfeit-button"
-                        class="admin-result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                        hx-put="{{ result_update_url(5) }}"
-                        hx-target="#user-screen-content"
-                        hx-swap="morphdom"
-                        hx-indicator="#please-wait"
-                    >{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</button>
+                        class="result-arbiter-button"
+                        {{ request_attributes(5) }}
+                    >{{ _('Double forfeit') }} · F - F</button>
                     {{ forfeit_button('black' if white_on_left else 'white') }}
                 </div>
-            {% endif %}
-        </div>
-        <div class="modal-footer row d-flex align-items-center justify-content-center">
+            </div>
+        {% endif %}
+        <div class="result-modal-footer">
             {% if client.can_update_results(tournament.id) %}
                 <button
+                    type="button"
                     data-testid="clear-result-button"
-                    class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                    {% if board.no_result %}
-                        disabled
-                    {% else %}
-                        hx-trigger="click"
-                        hx-put="{{ result_update_url(0) }}"
-                        hx-target="#user-screen-content"
-                        hx-swap="morphdom"
-                        hx-indicator="#please-wait"
-                    {% endif %}
-                >{{ _('CLEAR THE RESULT') }}</button>
+                    class="result-clear-button"
+                    {% if board.no_result %}disabled{% else %}{{ request_attributes(0) }}{% endif %}
+                >{{ _('Clear the result') }}</button>
             {% endif %}
             <button
                 type="button"
                 data-bs-dismiss="modal"
-                class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
-            >
-                {{ _('Cancel') }}
-            </button>
+                class="result-cancel-button"
+            >{{ _('Cancel') }}</button>
         </div>
     </div>
 </div>
