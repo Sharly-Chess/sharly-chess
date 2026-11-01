@@ -55,26 +55,78 @@
         if (!fileInput) {
             return;
         }
-        fileInput.addEventListener('change', function () {
+        // The image is stored in the event and read with it on every request,
+        // so a photo is brought down to what a screen can show.
+        const MAX_SIDE = 1920;
+        const JPEG_QUALITY = 0.85;
+        const SMALL_FILE_SIZE = 500 * 1024;
+        const MAX_DATA_URL_LENGTH = 2800000;
+
+        function readAsDataURL(blob) {
+            return new Promise(function (resolve, reject) {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function isTransparent(context, canvas) {
+            const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+            for (let alpha = 3; alpha < pixels.length; alpha += 4) {
+                if (pixels[alpha] < 255) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        async function shrink(file, original) {
+            // Animations and drawings are kept as they are.
+            if (['image/gif', 'image/svg+xml'].includes(file.type)) {
+                return original;
+            }
+            let bitmap;
+            try {
+                bitmap = await createImageBitmap(file);
+            } catch (e) {
+                return original;
+            }
+            const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+            if (scale === 1 && file.size <= SMALL_FILE_SIZE) {
+                bitmap.close();
+                return original;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(bitmap.width * scale);
+            canvas.height = Math.round(bitmap.height * scale);
+            const context = canvas.getContext('2d');
+            context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+            bitmap.close();
+            // A transparent image would lose its transparency as a JPEG.
+            const shrunk = file.type === 'image/png' && isTransparent(context, canvas)
+                ? canvas.toDataURL('image/png')
+                : canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+            return shrunk.length < original.length ? shrunk : original;
+        }
+
+        fileInput.addEventListener('change', async function () {
             const file = fileInput.files && fileInput.files[0];
             if (!file) {
                 return;
             }
-            if (file.size > 2 * 1024 * 1024) {
+            const image = await shrink(file, await readAsDataURL(file));
+            if (image.length > MAX_DATA_URL_LENGTH) {
                 alert({{ _('The image is too large (max 2 MB).') | tojson }});
                 fileInput.value = '';
                 return;
             }
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                hidden.value = event.target.result;
-                if (urlInput) {
-                    urlInput.value = '';
-                }
-                preview.src = event.target.result;
-                preview.classList.remove('d-none');
-            };
-            reader.readAsDataURL(file);
+            hidden.value = image;
+            if (urlInput) {
+                urlInput.value = '';
+            }
+            preview.src = image;
+            preview.classList.remove('d-none');
         });
     })();
 </script>
