@@ -245,7 +245,7 @@
                                 </div>
                             {% endwith %}
 
-                            {% if 'RESULT_UPDATE' in existing_actions and not round_locked %}
+                            {% if 'RESULT_UPDATE' in existing_actions and not round_locked and not admin_tournament.awaits_publication(admin_round) %}
                             {# No keyboard to drive them on a phone. #}
                             <div class="d-none d-md-flex flex-column">
                                 <div style="font-size: 0.8rem;">

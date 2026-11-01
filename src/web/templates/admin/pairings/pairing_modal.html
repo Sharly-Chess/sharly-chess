@@ -144,8 +144,10 @@
     {% set can_enter = client.can_enter_results(admin_tournament.id) %}
     {% set can_update = client.can_update_results(admin_tournament.id) %}
     {% set can_special = client.can_set_special_results(admin_tournament.id) %}
+    {% set awaits_publication = admin_tournament.awaits_publication(admin_round) %}
     {% set base_locked = (
         board.exempt
+        or awaits_publication
         or not can_enter
         or (board.result and not can_update)
     ) %}
@@ -270,6 +272,12 @@
                             {{ result_button(4 if left_is_white else 6, special_locked, 'F – 1', 'btn-outline-primary') }}
                         </div>
                     </div>
+
+                    {% if awaits_publication %}
+                        <p class="small text-muted mt-2 mb-0">
+                            {{ _('Publish round {round} to enter its results.').format(round=admin_round) }}
+                        </p>
+                    {% endif %}
 
                     {% if board.result.is_adjourned %}
                         <p class="small text-muted mt-2 mb-0">

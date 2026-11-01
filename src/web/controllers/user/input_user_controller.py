@@ -8,6 +8,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar.channels import ChannelsPlugin
+from litestar.exceptions import ClientException
 
 from data.access_levels.actions import AuthAction
 from data.board import Board
@@ -289,6 +290,10 @@ class InputUserController(BaseScreenUserController):
         round_ = web_context.round
         board = web_context.board
         result = web_context.result
+        if tournament.awaits_publication(round_):
+            raise ClientException(
+                f'Round [{round_}] of tournament [{tournament.id}] is not published.'
+            )
         if result == Result.NO_RESULT:
             with suppress(ValueError):
                 tournament.delete_result(board)

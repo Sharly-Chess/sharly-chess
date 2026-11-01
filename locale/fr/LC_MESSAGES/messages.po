@@ -8109,6 +8109,10 @@ msgstr "Publier"
 msgid "Publish and unpublish pairings"
 msgstr "Publier et dépublier les appariements"
 
+#, python-brace-format
+msgid "Publish round {round} to enter its results."
+msgstr "Publiez la ronde {round} pour en saisir les résultats."
+
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 

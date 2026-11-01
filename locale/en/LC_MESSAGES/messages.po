@@ -8107,6 +8107,10 @@ msgstr ""
 msgid "Publish and unpublish pairings"
 msgstr ""
 
+#, python-brace-format
+msgid "Publish round {round} to enter its results."
+msgstr ""
+
 msgid "Publish tournament results"
 msgstr ""
 
