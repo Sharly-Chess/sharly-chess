@@ -29,7 +29,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Network](docs/technical-appendices/network.md)
 - [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
 - [Tournaments lasting more than 30 days](docs/technical-appendices/multi-period-tournaments.md)
-- [Designing the client screens](docs/technical-appendices/screen-design.md)
+- [Interface design](docs/technical-appendices/interface-design.md)
 
 ### Sandbox
 

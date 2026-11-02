@@ -626,7 +626,7 @@ with_indicator: display a loading indicator, optional
                             <span class="text-nowrap">{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>
                         {%- endif -%}
                         {%- if tooltip_text -%}
-                            <span class="text-nowrap"></span>
+                            <span class="text-nowrap">
                                 <i
                                     class="bi bi-info-circle-fill ms-2"
                                     {{ macros.tooltip_attributes('', tooltip_text, 'top') }}

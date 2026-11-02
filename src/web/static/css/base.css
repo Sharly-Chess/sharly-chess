@@ -652,13 +652,6 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     align-items: stretch;
 }
 
-/* A field whose label always sits on its own line, so the field keeps its
-   shape whatever the length of the value shown. */
-.input-block-stacked {
-    flex-direction: column;
-    align-items: stretch;
-}
-
 .input-block-stacked .pw-input-group {
     min-width: 0;
 }
@@ -802,10 +795,6 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
 .with-input-group-indicator.htmx-request .htmx-indicator {
     display: flex;
 }
-.input-group-text .htmx-indicator
-.input-group-text .htmx-indicator.htmx-request {
-    display: block;
-}
 body[data-bs-theme="dark"] .htmx-indicator {
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -821,10 +810,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
     transition-delay: 500ms;
 
 }
-@keyframes spin {
-    100% {transform: rotate(1turn)}
-}
-
 #messages {
     z-index: 1;
 }
@@ -833,9 +818,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
 }
 .cursor-pointer {
     cursor: pointer;
-}
-.cursor-grap {
-    cursor: grab;
 }
 .sharly-chess-tooltip-info, .sharly-chess-tooltip-warning, .sharly-chess-tooltip-error {
     --bs-tooltip-bg: #9d9e9e;
@@ -2148,13 +2130,6 @@ body[data-bs-theme=light] .nav {
     h5 {
         text-box-trim: trim-both;
         text-box-edge: cap alphabetic;
-    }
-
-    .btn .btn > * {
-        text-box-trim: trim-both;
-        text-box-edge: cap alphabetic;
-        padding-top: calc(var(--bs-btn-padding-y) + 0.35rem);
-        padding-bottom: calc(var(--bs-btn-padding-y) + 0.35rem);
     }
 
     .btn .d-inline-flex.align-items-center *{
