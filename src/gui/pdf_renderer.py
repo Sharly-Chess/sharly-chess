@@ -6,6 +6,8 @@ the page.
 """
 
 import asyncio
+import base64
+import json
 import tempfile
 from collections.abc import Callable
 from pathlib import Path
@@ -187,32 +189,45 @@ async def _print_cocoa(
 async def _print_winforms(
     web_view: toga.WebView, path: Path, margins: PageMargins
 ) -> None:
-    from System import Action, Boolean  # type: ignore[import-not-found]
+    from System import Action, String  # type: ignore[import-not-found]
     from System.Threading.Tasks import (  # type: ignore[import-not-found]
         Task,
         TaskScheduler,
     )
 
-    core = web_view._impl.native.CoreWebView2
-    settings = core.Environment.CreatePrintSettings()
-    settings.PageWidth = _A4_WIDTH_MM / _MM_PER_INCH
-    settings.PageHeight = _A4_HEIGHT_MM / _MM_PER_INCH
-    settings.MarginTop = margins.top / _POINTS_PER_INCH
-    settings.MarginRight = margins.right / _POINTS_PER_INCH
-    settings.MarginBottom = margins.bottom / _POINTS_PER_INCH
-    settings.MarginLeft = margins.left / _POINTS_PER_INCH
-    settings.ShouldPrintBackgrounds = True
-    settings.ShouldPrintHeaderAndFooter = False
+    # The print of the DevTools protocol returns the PDF file, or the reason
+    # of its failure, where the print to a file of WebView2 tells only that it
+    # failed.
+    parameters = json.dumps(
+        {
+            'paperWidth': _A4_WIDTH_MM / _MM_PER_INCH,
+            'paperHeight': _A4_HEIGHT_MM / _MM_PER_INCH,
+            'marginTop': margins.top / _POINTS_PER_INCH,
+            'marginRight': margins.right / _POINTS_PER_INCH,
+            'marginBottom': margins.bottom / _POINTS_PER_INCH,
+            'marginLeft': margins.left / _POINTS_PER_INCH,
+            'printBackground': True,
+            'displayHeaderFooter': False,
+            'preferCSSPageSize': False,
+        }
+    )
     future, complete = _completion()
 
     def completed(task: Any) -> None:
         if task.IsFaulted:
-            complete(False, str(task.Exception))
+            complete(False, f'The print to PDF failed: {task.Exception}')
+            return
+        try:
+            path.write_bytes(base64.b64decode(json.loads(str(task.Result))['data']))
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            complete(False, f'The PDF file could not be read: {error}')
         else:
-            complete(bool(task.Result), 'The print to PDF failed.')
+            complete(True, '')
 
-    core.PrintToPdfAsync(str(path), settings).ContinueWith(
-        Action[Task[Boolean]](completed),
+    web_view._impl.native.CoreWebView2.CallDevToolsProtocolMethodAsync(
+        'Page.printToPDF', parameters
+    ).ContinueWith(
+        Action[Task[String]](completed),
         TaskScheduler.FromCurrentSynchronizationContext(),
     )
     await future
