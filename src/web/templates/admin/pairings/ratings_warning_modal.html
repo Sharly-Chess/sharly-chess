@@ -30,43 +30,52 @@
                                 {{ _('No tie-break is set for this tournament: players on the same score will not be separated in the standings.') }}
                             {% endif %}
                         </div>
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-outline-primary mt-2"
-                            hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-push-url="true"
-                            hx-indicator="#please-wait"
-                            data-bs-dismiss="modal"
-                        >
-                            <i class="bi-sliders pe-1"></i>
-                            {{ _('Set the tie-breaks') }}
-                        </button>
+                        {% if client.can_update_tournaments %}
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary mt-2"
+                                hx-get="{{ url_for(
+                                    'admin-tie-breaks-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                <i class="bi-sliders pe-1"></i>
+                                {{ _('Set the tie-breaks') }}
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}
-            <h5 class="text-warning">
-                {% if admin_round == 1 %}
-                    {{ _('Reminder: you might have to update the players\' ratings before pairing.') }}
-                {% else %}
-                    {{ _('This round opens a new period of the tournament, which FIDE rates on the ratings in force when it starts: you might have to update them before pairing.') }}
-                {% endif %}
-            </h5>
-            <div class="d-flex justify-content-center dropdown d-inline mt-3">
-                <button
-                    class="btn btn-outline-primary dropdown-toggle mx-auto"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    <i class="bi-arrow-repeat pe-1"></i>
-                    {{ _('Update') }}
-                </button>
-                <ul class="dropdown-menu">
-                    {% with from_modal=true, tournament=admin_tournament, tab='pairings' %}
-                        {% include '../players/players_diff.html' %}
-                    {% endwith %}
-                </ul>
+            <div class="alert alert-warning d-flex align-items-start gap-2 mb-0">
+                <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <div>
+                    <div>
+                        {% if admin_round == 1 %}
+                            {{ _('Reminder: you might have to update the players\' ratings before pairing.') }}
+                        {% else %}
+                            {{ _('This round opens a new period of the tournament, which FIDE rates on the ratings in force when it starts: you might have to update them before pairing.') }}
+                        {% endif %}
+                    </div>
+                    <div class="dropdown mt-2">
+                        <button
+                            class="btn btn-sm btn-outline-primary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <i class="bi-arrow-repeat pe-1"></i>
+                            {{ _('Update') }}
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% with from_modal=true, tournament=admin_tournament, tab='pairings' %}
+                                {% include '../players/players_diff.html' %}
+                            {% endwith %}
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
