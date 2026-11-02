@@ -722,6 +722,44 @@ body:has(#screen-exit-button) .alert-message {
 .screen-submenu-item {
     border-radius: 0.5rem;
 }
+/* The pills are trimmed to the capitals so that their text sits in the
+   middle, as on the administration's buttons and badges. */
+@supports (text-box-trim: trim-both) {
+    .screen-menu-item,
+    .screen-submenu-item,
+    .enter-result-button,
+    .input-card-enter,
+    .input-card-board,
+    .result-modal-board {
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+    }
+    /* The trimmed line is 0.83em shorter: the padding makes up for it. */
+    .screen-menu-item {
+        padding-top: calc(0.3rem + 0.415em) !important;
+        padding-bottom: calc(0.3rem + 0.415em) !important;
+    }
+    .screen-submenu-item {
+        padding-top: calc(0.25rem + 0.415em) !important;
+        padding-bottom: calc(0.25rem + 0.415em) !important;
+    }
+    .enter-result-button {
+        padding-top: 0.515em;
+        padding-bottom: 0.515em;
+    }
+    .input-card-enter {
+        padding-top: 0.615em;
+        padding-bottom: 0.615em;
+    }
+    .input-card-board {
+        padding-top: 0.465em;
+        padding-bottom: 0.465em;
+    }
+    .result-modal-board {
+        padding-top: calc(0.15rem + 0.415em);
+        padding-bottom: calc(0.15rem + 0.415em);
+    }
+}
 /*
 ###########################################################
 # TIMERS
