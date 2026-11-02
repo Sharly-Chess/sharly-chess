@@ -81,8 +81,28 @@
                         {% endif %}
                     </div>
 
+                    {% set timer_field %}
+                        {% if admin_event.timers_by_id %}
+                            <div class="col-12 col-md-6">
+                                {{ admin_macros.select_input(
+                                    name='timer_id',
+                                    label=_('%(string)s:', string=_('Timer')),
+                                    tooltip_text=_('The timer displayed on the screen.'),
+                                    select_options=timer_options,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
+                    {% endset %}
+
                     {% if screen_type.form_template %}
                         {% include screen_type.form_template %}
+                    {% endif %}
+
+                    {% if not screen_type.has_config_fields and admin_event.timers_by_id %}
+                        <div class="row gy-2 gx-3 mt-0">
+                            {{ timer_field }}
+                        </div>
                     {% endif %}
 
                     {% if screen_type.has_config_fields %}
@@ -97,17 +117,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            {% if admin_event.timers_by_id %}
-                                <div class="col-12 col-md-6">
-                                    {{ admin_macros.select_input(
-                                        name='timer_id',
-                                        label=_('%(string)s:', string=_('Timer')),
-                                        tooltip_text=_('The timer displayed on the screen.'),
-                                        select_options=timer_options,
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                            {% endif %}
+                            {{ timer_field }}
                             {% if screen_type.multi_column_allowed %}
                                 <div class="col-12 col-md-6">
                                     {{ admin_macros.number_input(

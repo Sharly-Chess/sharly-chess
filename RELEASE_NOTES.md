@@ -78,6 +78,7 @@
 - The screens shown to players and spectators have a cleaner look that keeps their density: each set opens with its name and what it shows on one line ("Round 3 · 5 games in progress"), the timer is a pill on that line, the alert message runs in a band along the bottom and scrolls only when it is too long to fit, and the menu between screens is a row of tabs (5.2.0)
 - On the result entry screens, the games still to enter show an Enter button and the games entered step back, the last entry staying highlighted in green; on a phone, each game is a card. The result and check-in windows have large buttons, with the arbiter's forfeits set apart, and the buttons respond reliably on tablets (5.2.0)
 - The timers and the alert message have fixed colours, a timer turning from green to orange then red and the message showing in a yellow band; the colours can no longer be chosen in the timer and screen settings (5.2.0)
+- Image screens can show a timer, the image then starting below it (5.2.0)
 
 ## Sharly-Chess.com
 

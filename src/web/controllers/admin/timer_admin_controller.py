@@ -473,12 +473,8 @@ class TimerAdminController(BaseEventAdminController):
         event: Event,
     ) -> list[tuple[str, Screen | Family | Rotator]]:
         return (
-            [(f'screen_{screen.id}', screen) for screen in event.timer_screens]
-            + [
-                (f'family_{family.id}', family)
-                for family in event.sorted_families
-                if family.screen_type.has_config_fields
-            ]
+            [(f'screen_{screen.id}', screen) for screen in event.sorted_basic_screens]
+            + [(f'family_{family.id}', family) for family in event.sorted_families]
             + [(f'rotator_{rotator.id}', rotator) for rotator in event.sorted_rotators]
         )
 

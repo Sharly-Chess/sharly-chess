@@ -1,3 +1,7 @@
+<div class="{% if not screen.timer %}text-secondary{% endif %}">
+    <i class="bi-clock-fill pe-1"></i>
+    {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+</div>
 <div>
     {% if data.image %}
         {% if not data.image.startswith('data:') %}

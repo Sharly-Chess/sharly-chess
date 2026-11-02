@@ -197,7 +197,7 @@ class Timer:
     def screens(self) -> list['Screen']:
         return [
             screen
-            for screen in self.event.timer_screens
+            for screen in self.event.sorted_basic_screens
             if screen.stored_screen and screen.stored_screen.timer_id == self.id
         ]
 

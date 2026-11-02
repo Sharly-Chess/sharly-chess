@@ -796,6 +796,9 @@ body:has(#screen-exit-button) .alert-message {
     z-index: 1;
     min-height: var(--title-line-height);
 }
+.image-screen {
+    top: var(--timer-height, 0px);
+}
 /* On a narrow screen the timer takes its own line above the titles. */
 @media (max-width: 768px) {
     #top-nav-wrapper:not(.with-menu) .timer-wrapper {
