@@ -1,15 +1,22 @@
 import csv
+import json
+import re
 from collections.abc import Iterator
+from logging import Logger
 from pathlib import Path
-from typing import override
+from typing import Any, override
 
 from packaging.version import Version
+
+from common.logger import get_logger
 
 from database.sqlite.national.national_database import (
     NationalPlayerDatabase,
     NationalPlayerRow,
 )
 from utils.enum import PlayerGender
+
+logger: Logger = get_logger()
 
 
 class KnsbDatabase(NationalPlayerDatabase):
@@ -22,12 +29,8 @@ class KnsbDatabase(NationalPlayerDatabase):
     federation = 'NED'
     acronym = 'KNSB'
 
-    _DOWNLOADS_URL = 'https://schaakbond.nl/wp-content/uploads/'
-    _LISTS: tuple[tuple[str, str], ...] = (
-        ('KLASSIEK', '2024/12/KLASSIEK.zip'),
-        ('RAPID', '2024/10/RAPID.zip'),
-        ('SNEL', '2024/10/SNEL.zip'),
-    )
+    _MEDIA_URL = 'https://schaakbond.nl/wp-json/wp/v2/media'
+    _LISTS: tuple[str, ...] = ('KLASSIEK', 'RAPID', 'SNEL')
 
     @staticmethod
     def static_id() -> str:
@@ -41,11 +44,58 @@ class KnsbDatabase(NationalPlayerDatabase):
     def _source_file_name(self) -> str:
         return 'KLASSIEK.csv'
 
-    def _download_source_file(self, source_file_dir: Path) -> bool:
-        return all(
-            self._download_and_unzip(self._DOWNLOADS_URL + path, source_file_dir)
-            for _, path in self._LISTS
+    @staticmethod
+    def _latest_list_url(media: Any, name: str) -> str | None:
+        """The address of the latest upload of the list *name* among the
+        *media* of the federation's site, given most recently modified
+        first: the list is uploaded each month into the folder of the month
+        of its upload, as NAME.zip and as YYYY-MM-NAME.zip."""
+        pattern = re.compile(rf'/(?:\d{{4}}-\d{{2}}-)?{name}\.zip$')
+        if not isinstance(media, list):
+            return None
+        return next(
+            (
+                url
+                for item in media
+                if isinstance(item, dict)
+                and isinstance(url := item.get('source_url'), str)
+                and pattern.search(url)
+            ),
+            None,
         )
+
+    def _download_list(self, name: str, source_file_dir: Path) -> bool:
+        """Downloads the list *name* to NAME.csv in *source_file_dir*,
+        returns False on failure."""
+        page = self._fetch_page(
+            f'{self._MEDIA_URL}?search={name}&mime_type=application/zip'
+            '&orderby=modified&order=desc&per_page=100&_fields=source_url'
+        )
+        if page is None:
+            return False
+        try:
+            media = json.loads(page)
+        except ValueError:
+            logger.error(self.log_prefix + 'Unreadable list of the uploads.')
+            return False
+        url = self._latest_list_url(media, name)
+        if url is None:
+            logger.error(self.log_prefix + 'No upload of [%s] found.', name)
+            return False
+        list_dir = source_file_dir / name
+        list_dir.mkdir()
+        if not self._download_and_unzip(url, list_dir):
+            return False
+        csv_files = list(list_dir.glob('*.csv'))
+        if len(csv_files) != 1:
+            logger.error(self.log_prefix + 'No single CSV file in [%s].', url)
+            return False
+        csv_files[0].replace(source_file_dir / f'{name}.csv')
+        list_dir.rmdir()
+        return True
+
+    def _download_source_file(self, source_file_dir: Path) -> bool:
+        return all(self._download_list(name, source_file_dir) for name in self._LISTS)
 
     @classmethod
     def _read_ratings(cls, file: Path) -> dict[str, int | None]:

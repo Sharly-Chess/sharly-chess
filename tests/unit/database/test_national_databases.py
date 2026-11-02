@@ -66,6 +66,23 @@ def test_knsb_reads_the_three_rate_of_play_lists(tmp_path: Path) -> None:
 
 
 @pytest.mark.unit
+def test_knsb_takes_the_latest_upload_of_each_list() -> None:
+    uploads = 'https://schaakbond.nl/wp-content/uploads/'
+    media = [
+        {'source_url': uploads + '2026/10/NK-Snelschaak.jpg'},
+        {'source_url': uploads + '2026/10/SNEL-uitslagen.zip'},
+        {'source_url': uploads + '2026/10/2026-10-SNEL.zip'},
+        {'source_url': uploads + '2026/10/SNEL.zip'},
+        {'source_url': uploads + '2026/09/2026-09-SNEL.zip'},
+    ]
+    latest = KnsbDatabase._latest_list_url
+    assert latest(media, 'SNEL') == uploads + '2026/10/2026-10-SNEL.zip'
+    assert latest(media[4:], 'SNEL') == uploads + '2026/09/2026-09-SNEL.zip'
+    assert latest(media, 'RAPID') is None
+    assert latest({'code': 'rest_error'}, 'SNEL') is None
+
+
+@pytest.mark.unit
 def test_fsi_reads_the_allin_export(tmp_path: Path) -> None:
     header = (
         'Nominativo;Elo;Categoria;K Italia;Federazione;Anno Nascita;ID FSI;Sex;FIN;'
