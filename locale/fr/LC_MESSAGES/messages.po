@@ -944,6 +944,9 @@ msgstr "Admin"
 msgid "Administration"
 msgstr "Administration"
 
+msgid "Administration theme:"
+msgstr "Thème de l'administration :"
+
 msgid "Administrator"
 msgstr "Administrateur·ice"
 
@@ -2790,6 +2793,9 @@ msgstr "DdN"
 
 msgid "Daily"
 msgstr "Un jour"
+
+msgid "Dark"
+msgstr "Sombre"
 
 msgid "Dashed border"
 msgstr "Bordure pointillée"
@@ -5316,6 +5322,9 @@ msgstr "Libye"
 
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
+
+msgid "Light"
+msgstr "Clair"
 
 msgid "Limit adjustment"
 msgstr "Ajustement de la limite"

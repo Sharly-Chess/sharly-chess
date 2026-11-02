@@ -91,6 +91,12 @@ class WebContext:
         """
         return 'light'
 
+    @property
+    def interface(self) -> str:
+        """The interface the page belongs to (`admin`, `client` or `app`), which
+        the styles key on, the theme being a choice of colours only."""
+        return 'client'
+
     @staticmethod
     def flatten_list_data(data: Mapping[str, str | list[str]]) -> dict[str, str]:
         return {
@@ -439,6 +445,7 @@ class WebContext:
             'sharly_chess_config': sharly_chess_config,
             'background_info': self.background_info,
             'theme': self.theme,
+            'interface': self.interface,
             'locale_infos': locale_infos,
             'locale_options': locale_options,
             'locale': SessionLocale(self.request).get(),

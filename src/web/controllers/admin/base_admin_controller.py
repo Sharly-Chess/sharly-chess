@@ -73,7 +73,11 @@ class AdminWebContext(WebContext):
 
     @property
     def theme(self) -> str:
-        return 'dark'
+        return SharlyChessConfig().stored_config.admin_theme
+
+    @property
+    def interface(self) -> str:
+        return 'admin'
 
     def get_admin_collection_spec(self, collection_key: str) -> AdminCollectionSpec:
         collection_spec = get_admin_collection_spec(collection_key)

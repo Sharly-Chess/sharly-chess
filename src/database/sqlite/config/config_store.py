@@ -53,6 +53,9 @@ class StoredConfig:
     snapshot_max_age_days: int
     #: Where the snapshots are written, None for the default directory.
     snapshot_dir: str | None = None
+    #: The theme of the administration: `auto` (the appearance of the
+    #: system), `dark` or `light`.
+    admin_theme: str = 'auto'
     federation: str | None = None
     locale: str | None = None
     stored_player_category_sets: list[StoredPlayerCategorySet] = field(

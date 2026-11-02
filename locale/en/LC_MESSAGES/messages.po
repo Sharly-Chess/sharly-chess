@@ -944,6 +944,9 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
+msgid "Administration theme:"
+msgstr ""
+
 msgid "Administrator"
 msgstr ""
 
@@ -2789,6 +2792,9 @@ msgid "DOB"
 msgstr ""
 
 msgid "Daily"
+msgstr ""
+
+msgid "Dark"
 msgstr ""
 
 msgid "Dashed border"
@@ -5315,6 +5321,9 @@ msgid "Libya"
 msgstr ""
 
 msgid "Liechtenstein"
+msgstr ""
+
+msgid "Light"
 msgstr ""
 
 msgid "Limit adjustment"

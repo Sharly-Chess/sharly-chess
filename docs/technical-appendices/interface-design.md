@@ -8,8 +8,8 @@ _Sharly Chess_ has two interfaces with different jobs:
   playing hall, and on the PCs, tablets and phones that players and arbiters use to check
   in and enter results.
 
-They share a few principles but not a look: the administration is dense and dark, the
-screens are light and legible from a distance. This guide describes both as they are in
+They share a few principles but not a look: the administration is dense, in a dark or
+light theme, the screens are light and legible from a distance. This guide describes both as they are in
 the code, so that new pages, screens and modals look like the rest. The code stays the
 reference: when a pull request changes the look, it updates this guide too.
 
@@ -43,36 +43,49 @@ reference: when a pull request changes the look, it updates this guide too.
 | Toasts | `src/web/messages.py`, `common/messages.html`, `common/alert.html` |
 | Client screens | `src/web/templates/user/` |
 
-All three stylesheets are loaded on every page. Scope administration rules to
-`[data-bs-theme=dark]` and client screen rules to the screens (`#user-screen-content`,
-`.screen-top-nav`, `.input-screen`, or an element only they have), or they will leak into
-the other interface.
+All three stylesheets are loaded on every page. The body says which interface it shows
+with `data-sc-interface` (`admin`, `client`, or `app` for the pages embedded in the
+application window), and which theme with `data-bs-theme`. Scope administration rules to
+`[data-sc-interface=admin]`, never to a theme, and client screen rules to the screens
+(`#user-screen-content`, `.screen-top-nav`, `.input-screen`, or an element only they
+have), or they will leak into the other interface.
 
 ## Administration
 
 ### Theme and typography
 
-The administration uses Bootstrap's **dark** theme. Its controllers set `theme` to
-`dark`, and `macros.theme_script` puts it on `<body>` (htmx cannot change the attributes
-of the body itself).
+The administration follows the appearance of the system by default, or is forced
+**dark** or **light** in the settings of the application window (`admin_theme` in the
+configuration: `auto`, `dark` or `light`). Its controllers set `theme` from that setting
+and `interface` to `admin`, and `macros.theme_script` puts both on `<body>` (htmx cannot
+change the attributes of the body itself), resolving `auto` with `prefers-color-scheme`
+and switching when the system does.
+
+Both themes share every rule; only the tokens differ, defined in
+`[data-sc-interface=admin][data-bs-theme=dark]` and `…[data-bs-theme=light]` in
+`base.css`. A rule never writes a colour of its own: it uses a token, and a new colour is
+added to both blocks, so that it works in both themes.
 
 The typeface is _Inter_ (`InterVariable`, with the `cv11` alternate), denser than the
 screens' one, with tabular figures in tables. The root font size is 14px: every rem of the
 administration scales from it, so density is set in one place.
 
-| Token | Value | Use |
-|---|---|---|
-| `--bs-primary` | `#d7c9aa` | The accent, a warm beige |
-| `--bs-body-bg` | `#111215` | Page |
-| `--pw-surface-bg` | `#1e2126` | Cards, the list surface |
-| `--pw-surface-raised-bg` | `#2b2f36` | Hover, notes |
-| `--pw-nav-bg` | `#1a1c20` | Sidebar |
-| `--bs-body-color` | `#ebe9e4` | Text |
-| `--bs-secondary-color`, `--bs-tertiary-color` | `#aaaeb6`, `#8b909a` | Secondary and tertiary text |
-| `--bs-border-color` | `#2e3239` | Borders and rules |
-| `--bs-border-radius` | `.5rem` (`.375rem` small, `.75rem` large) | Corners |
+| Token | Dark | Light | Use |
+|---|---|---|---|
+| `--bs-primary` | `#d7c9aa` | `#7d683a` | The accent, warm beige or bronze |
+| `--bs-body-bg` | `#111215` | `#fbfbf9` | Page |
+| `--pw-surface-bg` | `#1e2126` | `#ffffff` | Cards, the list surface |
+| `--pw-surface-raised-bg` | `#2b2f36` | `#f3f1ec` | Hover, notes |
+| `--pw-nav-bg` | `#1a1c20` | `#efede8` | Sidebar |
+| `--bs-body-color` | `#ebe9e4` | `#1c1e22` | Text |
+| `--bs-secondary-color`, `--bs-tertiary-color` | `#aaaeb6`, `#8b909a` | `#5c616a`, `#7c818a` | Secondary and tertiary text |
+| `--bs-border-color` | `#2e3239` | `#e1ded6` | Borders and rules |
+| `--pw-overlay-rgb` | `255, 255, 255` | `0, 0, 0` | Washes over a surface, as `rgba(var(--pw-overlay-rgb), .1)` |
+| `--bs-border-radius` | `.5rem` | `.5rem` | Corners (`.375rem` small, `.75rem` large) |
 
-Use these variables rather than raw colours. Public and private visibility have their own
+The components have tokens of their own in the same blocks (`--pw-modal-bg`,
+`--pw-table-header-bg`, `--pw-danger-text`, …). Use these variables rather than raw
+colours. Public and private visibility have their own
 variables, `--pw-visibility-public-color` and `--pw-visibility-private-color`.
 
 ### Layout

@@ -19,6 +19,7 @@
 }
 
 .nav-icon-badge {
+    color: #fff;
     bottom: 4px;
     display: flex;
     right: 12px;
@@ -62,8 +63,8 @@
     color: black;
 }
 
-[data-bs-theme=dark] .highlight .player-link,
-[data-bs-theme=dark] .highlight .player-link:hover {
+[data-sc-interface=admin] .highlight .player-link,
+[data-sc-interface=admin] .highlight .player-link:hover {
     color: var(--bs-emphasis-color);
 }
 
@@ -485,7 +486,7 @@
 /* Admin: each group of pairings navigation (rounds, tournaments) is one
    segmented control, its arrows and list divided by rules inside a single
    frame. */
-[data-bs-theme=dark] .round-controls-group {
+[data-sc-interface=admin] .round-controls-group {
     gap: 0 !important;
     align-items: stretch;
     border: 1px solid var(--pw-control-border-color);
@@ -493,17 +494,17 @@
     background: var(--pw-surface-bg);
 }
 
-[data-bs-theme=dark] .round-controls-group > :not(select) + :not(select),
-[data-bs-theme=dark] .round-controls-group > select + *,
-[data-bs-theme=dark] .round-controls-group > * + select {
+[data-sc-interface=admin] .round-controls-group > :not(select) + :not(select),
+[data-sc-interface=admin] .round-controls-group > select + *,
+[data-sc-interface=admin] .round-controls-group > * + select {
     border-left: 1px solid var(--pw-control-border-color) !important;
 }
 
-[data-bs-theme=dark] .round-controls-group > span:not(.select2) {
+[data-sc-interface=admin] .round-controls-group > span:not(.select2) {
     display: inline-flex;
 }
 
-[data-bs-theme=dark] .round-controls-group .btn {
+[data-sc-interface=admin] .round-controls-group .btn {
     --bs-btn-bg: transparent;
     --bs-btn-border-color: transparent;
     --bs-btn-color: var(--bs-secondary-color);
@@ -515,27 +516,27 @@
     border-radius: 0;
 }
 
-[data-bs-theme=dark] .round-controls-group > :first-child .btn {
+[data-sc-interface=admin] .round-controls-group > :first-child .btn {
     border-top-left-radius: calc(var(--bs-border-radius) - 1px);
     border-bottom-left-radius: calc(var(--bs-border-radius) - 1px);
 }
 
-[data-bs-theme=dark] .round-controls-group > :last-child .btn {
+[data-sc-interface=admin] .round-controls-group > :last-child .btn {
     border-top-right-radius: calc(var(--bs-border-radius) - 1px);
     border-bottom-right-radius: calc(var(--bs-border-radius) - 1px);
 }
 
-[data-bs-theme=dark] .round-controls-group .select2-selection {
+[data-sc-interface=admin] .round-controls-group .select2-selection {
     border: 0 !important;
 }
 
-[data-bs-theme=dark] .round-controls-group .form-select {
+[data-sc-interface=admin] .round-controls-group .form-select {
     border-top: 0 !important;
     border-right: 0 !important;
     border-bottom: 0 !important;
 }
 
-[data-bs-theme=dark] .round-controls-group :is(.form-select, .select2-selection) {
+[data-sc-interface=admin] .round-controls-group :is(.form-select, .select2-selection) {
     border-radius: 0 !important;
     background-color: transparent !important;
     box-shadow: none !important;
@@ -581,27 +582,27 @@
 
 /* The admin's outline buttons have quiet borders, which no longer mark the
    join between the two halves of a split button. */
-[data-bs-theme=dark] .btn-group > .dropdown-toggle.dropdown-toggle-split[class*="btn-outline-"] {
+[data-sc-interface=admin] .btn-group > .dropdown-toggle.dropdown-toggle-split[class*="btn-outline-"] {
     margin-left: 2px;
     border-top-left-radius: var(--bs-border-radius-sm);
     border-bottom-left-radius: var(--bs-border-radius-sm);
 }
 
-[data-bs-theme=dark] .btn-group > :has(+ .dropdown-toggle-split[class*="btn-outline-"]) > .btn,
-[data-bs-theme=dark] .btn-group > .btn:has(+ .dropdown-toggle-split[class*="btn-outline-"]) {
+[data-sc-interface=admin] .btn-group > :has(+ .dropdown-toggle-split[class*="btn-outline-"]) > .btn,
+[data-sc-interface=admin] .btn-group > .btn:has(+ .dropdown-toggle-split[class*="btn-outline-"]) {
     border-top-right-radius: var(--bs-border-radius-sm);
     border-bottom-right-radius: var(--bs-border-radius-sm);
 }
 
 /* Among the soft buttons of a card or a row, the two halves of a split
    button keep their small gap but join with square corners. */
-[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .dropdown-toggle.dropdown-toggle-split {
+[data-sc-interface=admin] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .dropdown-toggle.dropdown-toggle-split {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
 
-[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > :has(+ .dropdown-toggle-split) > .btn,
-[data-bs-theme=dark] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .btn:has(+ .dropdown-toggle-split) {
+[data-sc-interface=admin] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > :has(+ .dropdown-toggle-split) > .btn,
+[data-sc-interface=admin] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .btn:has(+ .dropdown-toggle-split) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
@@ -652,66 +653,66 @@
     padding-left: .75rem;
 }
 
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
     color: white;
     background-color: var(--pw-nav-bg);
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected,
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true]:not(.select2-results__option--highlighted) {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected,
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true]:not(.select2-results__option--highlighted) {
     color: var(--bs-body-bg);
     background-color: var(--bs-primary);
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true] {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true] {
     color: var(--pw-contrast-text);
     background-color: var(--bs-link-hover-color);
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--focus .select2-selection,
-[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--open .select2-selection,
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field:focus {
+[data-sc-interface=admin] .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+[data-sc-interface=admin] .select2-container--bootstrap-5.select2-container--open .select2-selection,
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field:focus {
     box-shadow: none;
     border-color: var(--bs-border-color);
     outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
     outline-offset: 0;
 }
-[data-bs-theme=dark] .input-group .select2-container--bootstrap-5.select2-container--focus .select2-selection,
-[data-bs-theme=dark] .input-group .select2-container--bootstrap-5.select2-container--open .select2-selection {
+[data-sc-interface=admin] .input-group .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+[data-sc-interface=admin] .input-group .select2-container--bootstrap-5.select2-container--open .select2-selection {
     outline: none;
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-search {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-search {
     padding: 0.8rem .75rem;
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--open.select2-container--below .select2-selection {
+[data-sc-interface=admin] .select2-container--bootstrap-5.select2-container--open.select2-container--below .select2-selection {
     border-bottom: 0 solid transparent;
     border-bottom-right-radius: 0.25rem;
     border-bottom-left-radius:  0.25rem;
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
     padding: 0 0.5em;
     margin-right: 0;
     margin-bottom: 0;
     background-color: var(--bs-modal-bg);
     display: inline-flex;
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection {
     border-radius: var(--bs-border-radius);
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection--multiple {
     padding: .375rem .375rem;
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
     display: inline-flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: .375rem;
 }
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove:hover {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove:hover {
     filter: invert(1);
 }
 /* A field that cannot be changed looks like the others, its value muted and
    a lock in place of the arrow of a list. */
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true],
-[data-bs-theme=dark] .form-select:disabled,
-[data-bs-theme=dark] .form-control:disabled {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true],
+[data-sc-interface=admin] .form-select:disabled,
+[data-sc-interface=admin] .form-control:disabled {
     border-color: var(--bs-border-color) !important;
     background-color: var(--bs-body-bg) !important;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238b909a'%3e%3cpath d='M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1'/%3e%3c/svg%3e") !important;
@@ -722,15 +723,15 @@
     opacity: 1;
 }
 
-[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true] .select2-selection__rendered {
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true] .select2-selection__rendered {
     color: var(--bs-secondary-color) !important;
 }
 
-[data-bs-theme=dark] .form-control:disabled {
+[data-sc-interface=admin] .form-control:disabled {
     padding-right: 2.25rem;
 }
 
-[data-bs-theme=dark] .form-control:disabled::placeholder {
+[data-sc-interface=admin] .form-control:disabled::placeholder {
     color: var(--bs-secondary-color);
 }
 .input-group .select2-container--bootstrap-5 {
@@ -746,7 +747,7 @@
 }
 /* this ugly piece of style here allows us to hide the search bar (empty row) if we have no focus on the select, but still allow tab on it, while preserving the placeholder if no choices are selected */
 /* NOTE (Molrn) the width / height = 0 prevents options from being deselected when the select is not focused
-[data-bs-theme=dark] .select2-container--bootstrap-5:not(.select2-container--focus) .select2-selection--multiple .select2-selection__rendered:has(.select2-selection__choice) .select2-search {
+[data-sc-interface=admin] .select2-container--bootstrap-5:not(.select2-container--focus) .select2-selection--multiple .select2-selection__rendered:has(.select2-selection__choice) .select2-search {
 	display: inline-block;
 	width: 0;
 	height: 0;
@@ -869,7 +870,7 @@
     align-items: center;
     gap: .6rem;
     margin: .5rem 0 .65rem;
-    color: #c9ccd2;
+    color: var(--pw-nav-link-color, #c9ccd2);
     font-size: 1.2rem;
     font-weight: 600;
 }
@@ -1158,7 +1159,7 @@
     margin-top: .2rem;
 }
 
-[data-bs-theme=dark] .timer-usage-group .form-check-input[type=checkbox]:indeterminate {
+[data-sc-interface=admin] .timer-usage-group .form-check-input[type=checkbox]:indeterminate {
     background-color: rgba(var(--bs-primary-rgb), .25);
     border-color: rgba(var(--bs-primary-rgb), .5);
 }
@@ -1170,26 +1171,26 @@
 /* A match header shares the grey of the table header, stacked as a card on
    a phone too: its standing scores and buttons, made for a light header,
    are lifted to stand out on it. */
-[data-bs-theme=dark] .pairings-table > tbody > tr.team-block-header {
-    background-color: #353a43;
+[data-sc-interface=admin] .pairings-table > tbody > tr.team-block-header {
+    background-color: var(--pw-table-header-bg);
     color: var(--bs-emphasis-color);
 }
 
-[data-bs-theme=dark] table.prominent tr.team-block-header .text-contrast {
+[data-sc-interface=admin] table.prominent tr.team-block-header .text-contrast {
     color: var(--bs-secondary-color);
 }
 
-[data-bs-theme=dark] table.prominent tr.team-block-header .btn-outline-primary {
+[data-sc-interface=admin] table.prominent tr.team-block-header .btn-outline-primary {
     --bs-btn-color: var(--bs-emphasis-color);
-    --bs-btn-bg: rgba(255, 255, 255, 0.06);
-    --bs-btn-border-color: rgba(255, 255, 255, 0.22);
+    --bs-btn-bg: rgba(var(--pw-overlay-rgb), 0.06);
+    --bs-btn-border-color: rgba(var(--pw-overlay-rgb), 0.22);
     --bs-btn-hover-color: var(--bs-emphasis-color);
-    --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
-    --bs-btn-hover-border-color: rgba(255, 255, 255, 0.35);
-    --bs-btn-active-bg: rgba(255, 255, 255, 0.16);
-    --bs-btn-active-border-color: rgba(255, 255, 255, 0.4);
+    --bs-btn-hover-bg: rgba(var(--pw-overlay-rgb), 0.12);
+    --bs-btn-hover-border-color: rgba(var(--pw-overlay-rgb), 0.35);
+    --bs-btn-active-bg: rgba(var(--pw-overlay-rgb), 0.16);
+    --bs-btn-active-border-color: rgba(var(--pw-overlay-rgb), 0.4);
 }
 
-[data-bs-theme=dark] table.prominent tr.team-block-header :is(.team-header-name-a, .team-header-name-b) {
+[data-sc-interface=admin] table.prominent tr.team-block-header :is(.team-header-name-a, .team-header-name-b) {
     font-weight: 500;
 }

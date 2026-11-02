@@ -203,15 +203,26 @@
     <!-- end background_script() -->
 {% endmacro %}
 
-{% macro theme_script(theme) %}
+{% macro theme_script(theme, interface) %}
     <!-- theme_script() -->
     <!-- This is needed since it's not possible to change body attributes using HTMX -->
     <script>
-        var new_theme = "{{ theme }}";
-        var current_theme = $('body').attr('data-bs-theme');
-        if (current_theme != new_theme) {
-            $('body').attr('data-bs-theme', new_theme);
+        // `auto` follows the appearance of the system, and changes with it.
+        window.scRequestedTheme = "{{ theme }}";
+        window.scApplyTheme ??= function() {
+            var new_theme = window.scRequestedTheme === 'auto'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : window.scRequestedTheme;
+            if ($('body').attr('data-bs-theme') != new_theme) {
+                $('body').attr('data-bs-theme', new_theme);
+            }
+        };
+        if (!window.scThemeListening) {
+            window.scThemeListening = true;
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', window.scApplyTheme);
         }
+        window.scApplyTheme();
+        $('body').attr('data-sc-interface', "{{ interface }}");
     </script>
     <!-- end theme_script() -->
 {% endmacro %}
