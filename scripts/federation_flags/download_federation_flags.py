@@ -41,15 +41,16 @@ defined_flag_url_by_federation_id = {
     'FID': 'https://upload.wikimedia.org/wikipedia/de/2/26/Logo_FIDE.svg',
     'TGA': 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Tonga.svg',
     'CAF': 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Flag_of_the_Central_African_Republic.svg',
-    # Heavy FIDE flags, replaced by less heavy files or simplified versions (ex: civil ensign)
-    'DOM': 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Civil_Ensign_of_the_Dominican_Republic.svg',
+    # Heavy FIDE flags, replaced by less heavy files
     'SRB': 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Serbia.svg',
-    'BOL': 'https://upload.wikimedia.org/wikipedia/commons/4/48/Flag_of_Bolivia.svg',
     'BIZ': 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Flag_of_Belize.svg',
-    'PER': 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Peru.svg',
-    'ESP': 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Bandera_de_Espa%C3%B1a_%28sin_escudo%29.svg',
-    'GUA': 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Civil_ensign_of_Guatemala.svg',
-    'AND': 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Flag_of_Andorra_%28civil%29.svg',
+    # Heavy FIDE flags, kept with their stripes as vectors and their emblem as an embedded PNG
+    'DOM': None,
+    'BOL': None,
+    'PER': None,
+    'ESP': None,
+    'GUA': None,
+    'AND': None,
     'CUR': 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_Cura%C3%A7ao.svg',
 }
 
