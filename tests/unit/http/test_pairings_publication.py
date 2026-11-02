@@ -258,6 +258,35 @@ def test_unpublished_pairings_seen_by_nobody_are_not_flagged(
 
 
 @pytest.mark.unit
+def test_results_wait_for_the_round_shown_on_screens_to_be_published(
+    http: TestClient, api: ApiClient, tournament: Tournament
+):
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_id': tournament.id},
+    )
+    pair_round(http, tournament, 1)
+    enter_result(http, tournament, 1)
+    assert not EVENT.tournament().round_has_played_result(1)
+    publish(http, tournament, 1)
+    enter_result(http, tournament, 1)
+    assert EVENT.tournament().round_has_played_result(1)
+
+
+@pytest.mark.unit
+def test_results_of_a_round_seen_by_nobody_are_entered_unpublished(
+    http: TestClient, tournament: Tournament
+):
+    pair_round(http, tournament, 1)
+    enter_result(http, tournament, 1)
+    assert EVENT.tournament().published_round == 0
+    assert EVENT.tournament().round_has_played_result(1)
+
+
+@pytest.mark.unit
 def test_unpublished_pairings_of_an_uploaded_tournament_are_flagged(
     http: TestClient, tournament: Tournament
 ):
