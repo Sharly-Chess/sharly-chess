@@ -163,6 +163,16 @@ class TieBreakConfiguration:
         in, and the one a tie-break set may be applied to."""
         return len(self.by_id) == 0 or (len(self.by_id) == 1 and self.leads_on_points)
 
+    @property
+    def lacks_tie_breaks(self) -> bool:
+        """Whether the standings would leave every tie unbroken. A
+        knock-out ranks by the round reached and has no standings
+        tie-break to miss."""
+        return (
+            not self.tournament.pairing_system.eliminates_participants
+            and self.only_points
+        )
+
     def acronym(self, tie_break: TieBreak) -> str:
         """The label for a criterion's column in the standings.
 
