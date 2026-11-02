@@ -60,8 +60,24 @@ function setSize() {
 
 setSize();
 
+// The browser tab names the page and its event, so that several open tabs can
+// be told apart. htmx swaps the body without the head, so the title is set
+// here after each swap.
+function setPageTitle() {
+    // Tab panes that are not shown carry titles of their own.
+    const page = [...document.querySelectorAll('[data-page-title]')]
+        .find(element => element.checkVisibility())?.dataset.pageTitle
+        || document.querySelector('[data-default-page-title]')?.dataset.defaultPageTitle;
+    const context = document.querySelector('[data-page-context]')?.dataset.pageContext;
+    const parts = [page, context, 'Sharly Chess'].map(part => part?.trim()).filter(Boolean);
+    document.title = parts.filter((part, index) => parts.indexOf(part) === index).join(' · ');
+}
+
+window.addEventListener('DOMContentLoaded', setPageTitle);
+window.addEventListener('htmx:historyRestore', setPageTitle);
+
 window.addEventListener('resize', setSize);
-window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); });
+window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); setPageTitle(); });
 
 const collectionInteractiveSelector = [
     'a',

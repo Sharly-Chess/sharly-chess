@@ -80,7 +80,9 @@ variables, `--pw-visibility-public-color` and `--pw-visibility-private-color`.
 - **Sidebar.** The event's sections, with counts right-aligned in `.nav-count`. Below
   992px it becomes a drawer opened from the top bar.
 - **Page header.** `admin_macros.admin_title(title, doc_ref)` gives the title with a link
-  to the documentation before it. On the right, in this order: the **Details** switch and
+  to the documentation before it. It also names the browser tab ("Players · Spring Open ·
+  Sharly Chess"), through its `data-page-title` and the event's `data-page-context`, so a
+  page without it leaves its tab unnamed. On the right, in this order: the **Details** switch and
   the list/card toggle (`collection_controls.html`), a settings button
   (`btn-outline-primary`, `bi-gear-fill`), then the main action (`btn-primary`,
   `bi-plus-lg`, "Create a …"). Each control has a tooltip. Below 768px the controls fold

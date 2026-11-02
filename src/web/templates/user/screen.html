@@ -4,7 +4,12 @@
 {% set timer = rotator.timer if rotator and rotator.timer else screen.timer %}
 
 {% block header %}
-    <div id="user-screen-header" class="header user-header user-screen-header">
+    <div
+        id="user-screen-header"
+        class="header user-header user-screen-header"
+        data-page-title="{{ screen.name }}"
+        data-page-context="{{ user_event.name }}"
+    >
         {% if not screen.screen_type.has_exit_button or screen.input_exit_button %}
             <button
                 id="screen-exit-button"
