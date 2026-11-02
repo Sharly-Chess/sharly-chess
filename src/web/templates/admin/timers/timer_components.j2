@@ -83,15 +83,12 @@
 {% macro thresholds(item, view, placement) %}
     <div class="timer-thresholds d-flex flex-column align-items-start gap-0 lh-sm">
         <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            <span class="timer-colour-swatch" style="background-color: {{ item.colors[1] }}"></span>
             {{ _('%(minutes)d min before', minutes=item.delays[1]) }}
         </span>
         <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            <span class="timer-colour-swatch" style="background-color: {{ item.colors[2] }}"></span>
             {{ _('%(minutes)d min before', minutes=item.delays[2]) }}
         </span>
         <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            <span class="timer-colour-swatch" style="background-color: {{ item.colors[3] }}"></span>
             {{ _('%(minutes)d min after', minutes=item.delays[3]) }}
         </span>
     </div>

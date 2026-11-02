@@ -112,10 +112,7 @@
         <section class="collection-detail-section collection-detail-wide">
             <h6>{{ _('Alert message') }}</h6>
             {% if family.message_text %}
-                <div
-                    class="px-2 alert-message screen-alert-message"
-                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-                >
+                <div class="screen-alert-message">
                     {{ family.message_text }}
                     {% if family.message_default %}<span class="fst-italic">{{ _('(by default)') }}</span>{% endif %}
                 </div>

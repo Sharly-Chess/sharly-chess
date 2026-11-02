@@ -535,10 +535,10 @@ class SharlyChessConfig(metaclass=Singleton):
     }
 
     # The text colour of the alert messages.
-    message_color: str = '#FFFFFF'
+    message_color: str = '#101418'
 
     # The background colour of the alert messages.
-    message_background_color: str = '#101418'
+    message_background_color: str = '#FFC425'
 
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15

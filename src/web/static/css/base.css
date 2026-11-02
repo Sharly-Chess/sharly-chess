@@ -1424,14 +1424,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
     width: 100%;
 }
 
-.timer-colour-swatch {
-    display: inline-block;
-    width: .85rem;
-    height: .85rem;
-    border: 1px solid var(--bs-border-color);
-    border-radius: .2rem;
-}
-
 .collection-list-cell-actions .collection-actions {
     justify-content: flex-end !important;
 }

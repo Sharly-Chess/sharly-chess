@@ -120,10 +120,7 @@
 
 {% macro alert_message_content(rotator) %}
     {% if rotator.message_text %}
-        <div
-            class="px-2 alert-message rotator-alert-message"
-            style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-        >{{ rotator.message_text }}</div>
+        <div class="rotator-alert-message">{{ rotator.message_text }}</div>
     {% else %}
         <span class="text-secondary fst-italic">
             {{ _('Default alert messages') if rotator.message_default else _('No alert message') }}

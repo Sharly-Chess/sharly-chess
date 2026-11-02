@@ -2302,9 +2302,6 @@ msgstr ""
 msgid "Colour rule"
 msgstr ""
 
-msgid "Colour thresholds"
-msgstr ""
-
 msgid "Colours are drawn at random for each match."
 msgstr ""
 

@@ -2302,9 +2302,6 @@ msgstr "Motif des couleurs :"
 msgid "Colour rule"
 msgstr "Règle des couleurs"
 
-msgid "Colour thresholds"
-msgstr "Seuils des couleurs"
-
 msgid "Colours are drawn at random for each match."
 msgstr "Les couleurs sont tirées au sort pour chaque partie."
 
