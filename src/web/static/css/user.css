@@ -124,7 +124,7 @@ html.alert-message-scrolling .alert-message-track {
 html.alert-message-scrolling .alert-message-text {
     margin: 0;
     padding-left: 100%;
-    animation: scroll-rtl var(--message-duration, 20s) linear var(--message-delay, 0s) infinite;
+    animation: scroll-rtl var(--message-duration, 20s) linear infinite;
 }
 body:has(.alert-message) #user-screen-content {
     padding-bottom: 5rem;

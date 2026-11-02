@@ -95,8 +95,8 @@
                     if (!scrolling) {
                         return;
                     }
-                    // A refresh replaces the band: the scroll carries on from where
-                    // it was, unless the message has changed.
+                    // After a refresh the scroll carries on from where it was, unless
+                    // the message has changed.
                     if (window.alertMessageStart?.text !== text.textContent) {
                         window.alertMessageStart = {text: text.textContent, time: performance.now()};
                     }
@@ -104,7 +104,11 @@
                     const duration = Math.round((room + textWidth) / pixelsPerSecond);
                     const elapsed = (performance.now() - window.alertMessageStart.time) / 1000;
                     root.style.setProperty('--message-duration', duration + 's');
-                    root.style.setProperty('--message-delay', -(elapsed % duration) + 's');
+                    // A refresh may keep the band or replace it, so the position
+                    // is set on the animation itself rather than from its start.
+                    for (const animation of text.getAnimations()) {
+                        animation.currentTime = (elapsed % duration) * 1000;
+                    }
                 }
                 // Measured again whenever the text or the band changes size: once
                 // the font is loaded, on a resize, after a refresh.
