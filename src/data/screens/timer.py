@@ -170,12 +170,9 @@ class Timer:
     def name(self) -> str:
         return self.stored_timer.name
 
-    @cached_property
+    @property
     def colors(self) -> dict[int, str]:
-        stored_colors = self.stored_timer.colors or {}
-        return {
-            i: stored_colors.get(i) or self.event.timer_colors[i] for i in range(1, 4)
-        }
+        return self.event.timer_colors
 
     @property
     def color_1_rgb(self) -> RGB:

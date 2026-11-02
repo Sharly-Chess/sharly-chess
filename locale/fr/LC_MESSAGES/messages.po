@@ -2282,22 +2282,6 @@ msgstr "Colombie"
 msgid "Colour"
 msgstr "Couleur"
 
-#, python-format
-msgid "Colour #%(num)d:"
-msgstr "Couleur n°%(num)d :"
-
-#, python-brace-format
-msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the colour then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-msgstr "La couleur n°1 est utilisée jusqu'à {delay_1} minutes avant le début des rondes (délai n°1), la couleur change ensuite progressivement jusqu'à la couleur n°2 ({delay_2} minutes avant le début des rondes)."
-
-#, python-brace-format
-msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the colour then changes gradually until colour #3 (at the start of the rounds)."
-msgstr "La couleur n°2 est utilisée {delay_2} minutes avant le début des rondes (délai n°2), la couleur change ensuite progressivement jusqu'à la couleur n°3 (au début des rondes)."
-
-#, python-brace-format
-msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
-
 #, python-brace-format
 msgid "Colour [{color}] can't be used with an opponent."
 msgstr "La couleur [{color}] ne peut être utilisée avec un adversaire."
@@ -2320,9 +2304,6 @@ msgstr "Règle des couleurs"
 
 msgid "Colour thresholds"
 msgstr "Seuils des couleurs"
-
-msgid "Colours and delays"
-msgstr "Couleurs et délais"
 
 msgid "Colours are drawn at random for each match."
 msgstr "Les couleurs sont tirées au sort pour chaque partie."
@@ -2941,6 +2922,9 @@ msgstr "Délai n°%(num)d :"
 
 msgid "Delay (seconds):"
 msgstr "Délai (secondes) :"
+
+msgid "Delays"
+msgstr "Délais"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -10925,6 +10909,18 @@ msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
 msgid "The timer displayed on the screens of the multi-screen."
 msgstr "Le chronomètre affiché sur les écrans de l'écran multiple."
+
+#, python-brace-format
+msgid "The timer is green until {delay_1} minutes before the start of the rounds, then turns gradually orange until {delay_2} minutes before the start of the rounds."
+msgstr "Le chronomètre est vert jusqu'à {delay_1} minutes avant le début des rondes, puis passe progressivement à l'orange jusqu'à {delay_2} minutes avant le début des rondes."
+
+#, python-brace-format
+msgid "The timer is orange {delay_2} minutes before the start of the rounds, then turns gradually red until the start of the rounds."
+msgstr "Le chronomètre est orange {delay_2} minutes avant le début des rondes, puis passe progressivement au rouge jusqu'au début des rondes."
+
+#, python-brace-format
+msgid "The timer stays red from the start of the rounds and for {delay_3} minutes after."
+msgstr "Le chronomètre reste rouge à partir du début des rondes et pendant les {delay_3} minutes qui suivent."
 
 msgid "The tournament has been added."
 msgstr "Le tournoi a été ajouté."

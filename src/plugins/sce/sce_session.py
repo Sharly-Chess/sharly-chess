@@ -1127,7 +1127,7 @@ class SCESession(Session):
             stored_event.prize_currency = data['currency']
             stored_event.location = data['city']
             stored_event.timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore[assignment]
-            stored_event.timer_colors = SharlyChessConfig.default_timer_colors  # type: ignore[assignment]
+            stored_event.timer_colors = SharlyChessConfig.timer_colors  # type: ignore[assignment]
 
         plugin_data.slug = data['slug']
         plugin_data.organiser_slug = data['organizer']['slug']

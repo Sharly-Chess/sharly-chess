@@ -451,15 +451,9 @@ class Event:
             or SharlyChessConfig.default_background_color
         )
 
-    @cached_property
+    @property
     def timer_colors(self) -> dict[int, str]:
-        colors = SharlyChessConfig.default_timer_colors
-        stored_colors = self.stored_event.timer_colors
-        if stored_colors is not None:
-            for i in range(1, 4):
-                if i in stored_colors and (color := stored_colors[i]) is not None:
-                    colors[i] = color
-        return colors
+        return dict(SharlyChessConfig.timer_colors)
 
     @cached_property
     def timer_delays(self) -> dict[int, int]:
@@ -481,16 +475,11 @@ class Event:
 
     @property
     def message_color(self) -> str:
-        return (
-            self.stored_event.message_color or SharlyChessConfig.default_message_color
-        )
+        return SharlyChessConfig.message_color
 
     @property
     def message_background_color(self) -> str:
-        return (
-            self.stored_event.message_background_color
-            or SharlyChessConfig.default_message_background_color
-        )
+        return SharlyChessConfig.message_background_color
 
     @property
     def screens(self) -> Collection[Screen]:
