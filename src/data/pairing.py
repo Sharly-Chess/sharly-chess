@@ -328,6 +328,13 @@ class Pairing:
         if self.unplayed:
             return RatingChange(None, tournament_player.rating_used_by_fide.value, '')
 
+        if self.result.is_unrated:
+            return RatingChange(
+                None,
+                tournament_player.rating_used_by_fide.value,
+                _('Unrated game.'),
+            )
+
         assert opponent is not None
         if tournament_player.rating_used_by_fide.type != PlayerRatingType.FIDE:
             return RatingChange(

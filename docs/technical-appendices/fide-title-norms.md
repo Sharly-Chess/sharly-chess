@@ -108,7 +108,7 @@ disregarded for every federation-mix rule. Concretely:
 - `1.4.2c`: Games decided by forfeit, adjudication, or anything other than over-the-board play.
 - `1.4.2d`: Tournaments changed to benefit one or more players, including changes to rounds, round order, or opponent assignment.
 
-Started games are included. Under `1.4.2c`, a last-round opponent forfeit can still leave the norm valid if the player needed to play to reach the game count and could afford to lose.
+Started games are included, unless their result is entered as unrated: a game not rated by FIDE is left out under `1.4.2c`, both for the player and when checking whether an unrated opponent scored zero under `1.4.2b`. Under `1.4.2c`, a last-round opponent forfeit can still leave the norm valid if the player needed to play to reach the game count and could afford to lose.
 
 Permitted formats under `1.4.2e`:
 

@@ -401,6 +401,9 @@ msgstr ""
 msgid "1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison."
 msgstr ""
 
+msgid "1.4.2c: game not rated by FIDE — not counted."
+msgstr ""
+
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr ""
 
@@ -12025,6 +12028,9 @@ msgid "Unrated Loss"
 msgstr ""
 
 msgid "Unrated Win"
+msgstr ""
+
+msgid "Unrated game."
 msgstr ""
 
 msgid "Unrated opponent."

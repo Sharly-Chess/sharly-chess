@@ -228,7 +228,85 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         }
 
 
-class FFETrainingCertificateType(FFEDocumentType, ABC):
+class FFETournamentsDocumentType(FFEDocumentType, ABC):
+    @classmethod
+    def get_valid_option_types(cls) -> list[type[PrintOption]]:
+        from data.print_documents.options import TournamentsPrintOption
+        from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
+
+        return [
+            FFEDocumentTypePrintOption,
+            TournamentsPrintOption,
+        ]
+
+    @cached_property
+    def tournaments(self) -> list[Tournament]:
+        return self.ffe_document.tournaments
+
+    @property
+    def tournaments_name(self) -> str:
+        """Returns the name for the tournaments."""
+        tournaments_name: str = self.event_name
+        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
+            tournaments_name += (
+                f' ({", ".join(tournament.name for tournament in self.tournaments)})'
+            )
+        return tournaments_name
+
+    @cached_property
+    def _tournaments_dates(self) -> tuple[date, date]:
+        """Returns the start and stop dates for the tournaments."""
+        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
+            return (
+                min(tournament.start_date for tournament in self.tournaments),
+                max(tournament.stop_date for tournament in self.tournaments),
+            )
+        return (
+            self.event.start_date,
+            self.event.stop_date,
+        )
+
+    @property
+    def tournaments_date(self) -> str:
+        """Returns the date for the tournaments, as a printable string."""
+        start_date, stop_date = self._tournaments_dates
+        tournaments_date: str = start_date.strftime('%d/%m/%Y')
+        if start_date != stop_date:
+            tournaments_date += f' - {stop_date.strftime("%d/%m/%Y")}'
+        return tournaments_date
+
+    @property
+    def tournaments_days(self) -> int:
+        """Returns the number of days for the tournaments."""
+        start_date, stop_date = self._tournaments_dates
+        return (stop_date - start_date).days + 1
+
+    @property
+    def tournaments_location(self) -> str:
+        """Returns the list of the tournaments' location, as a printable string."""
+        return ' '.join(
+            sorted(
+                {
+                    tournament.location
+                    for tournament in self.tournaments
+                    if tournament.location
+                }
+            )
+        )
+
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        return super().template_context(ffe_document) | {
+            'event_name': self.tournaments_name,
+            'event_date': self.tournaments_date,
+            'event_days': self.tournaments_days,
+            'location': self.tournaments_location,
+        }
+
+
+class FFETrainingCertificateType(FFETournamentsDocumentType, ABC):
     @classmethod
     def get_template_stem(cls) -> str:
         return 'ffe_training_certificate'
@@ -236,13 +314,12 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
     @classmethod
     def get_valid_option_types(cls) -> list[type[PrintOption]]:
         from plugins.ffe.print_documents.ffe_options import (
-            FFEDocumentTypePrintOption,
             FFEWriterPrintOption,
             FFETraineePrintOption,
         )
 
         return [
-            FFEDocumentTypePrintOption,
+            *FFETournamentsDocumentType.get_valid_option_types(),
             FFEWriterPrintOption,
             FFETraineePrintOption,
         ]
@@ -376,84 +453,6 @@ class FFETrainingCertificateAFOType(FFETrainingCertificateType):
     @property
     def training_levels(self) -> list[str]:
         return ['Parfait', 'Satisfaisant', 'Fragile', 'Insuffisant', 'Non évalué']
-
-
-class FFETournamentsDocumentType(FFEDocumentType, ABC):
-    @classmethod
-    def get_valid_option_types(cls) -> list[type[PrintOption]]:
-        from data.print_documents.options import TournamentsPrintOption
-        from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
-
-        return [
-            FFEDocumentTypePrintOption,
-            TournamentsPrintOption,
-        ]
-
-    @cached_property
-    def tournaments(self) -> list[Tournament]:
-        return self.ffe_document.tournaments
-
-    @property
-    def tournaments_name(self) -> str:
-        """Returns the name for the tournaments."""
-        tournaments_name: str = self.event_name
-        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
-            tournaments_name += (
-                f' ({", ".join(tournament.name for tournament in self.tournaments)})'
-            )
-        return tournaments_name
-
-    @cached_property
-    def _tournaments_dates(self) -> tuple[date, date]:
-        """Returns the start and stop dates for the tournaments."""
-        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
-            return (
-                min(tournament.start_date for tournament in self.tournaments),
-                max(tournament.stop_date for tournament in self.tournaments),
-            )
-        return (
-            self.event.start_date,
-            self.event.stop_date,
-        )
-
-    @property
-    def tournaments_date(self) -> str:
-        """Returns the date for the tournaments, as a printable string."""
-        start_date, stop_date = self._tournaments_dates
-        tournaments_date: str = start_date.strftime('%d/%m/%Y')
-        if start_date != stop_date:
-            tournaments_date += f' - {stop_date.strftime("%d/%m/%Y")}'
-        return tournaments_date
-
-    @property
-    def tournaments_days(self) -> int:
-        """Returns the number of days for the tournaments."""
-        start_date, stop_date = self._tournaments_dates
-        return (stop_date - start_date).days + 1
-
-    @property
-    def tournaments_location(self) -> str:
-        """Returns the list of the tournaments' location, as a printable string."""
-        return ' '.join(
-            sorted(
-                {
-                    tournament.location
-                    for tournament in self.tournaments
-                    if tournament.location
-                }
-            )
-        )
-
-    def template_context(
-        self,
-        ffe_document: 'FFEPrintDocument',
-    ) -> dict[str, Any]:
-        return super().template_context(ffe_document) | {
-            'event_name': self.tournaments_name,
-            'event_date': self.tournaments_date,
-            'event_days': self.tournaments_days,
-            'location': self.tournaments_location,
-        }
 
 
 class FFET1Type(FFETournamentsDocumentType):

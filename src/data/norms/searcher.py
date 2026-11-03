@@ -250,7 +250,7 @@ class TitleNormSubsetSearcher:
             for rnd, result in zip(
                 inputs.included_rounds, inputs.results_list, strict=True
             )
-            if result in (Result.WIN, Result.UNRATED_WIN)
+            if result == Result.WIN
         }
 
         def drop_score(rnd: int) -> int:
