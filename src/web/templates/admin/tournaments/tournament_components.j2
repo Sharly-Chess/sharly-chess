@@ -177,7 +177,7 @@
                 {% if item.tournament_players %}
                     {{ item.min_player_rating }}<span class="collection-stat-secondary px-1">–</span>{{ item.max_player_rating }}
                 {% else %}
-                    {{ item.cadence }}
+                    {{ item.cadence.short_name }}
                 {% endif %}
             </span>
         </div>
