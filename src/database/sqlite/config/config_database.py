@@ -114,6 +114,7 @@ class ConfigDatabase(MigrationDatabase):
             snapshot_keep_auto=row['snapshot_keep_auto'],
             snapshot_max_total_mb=row['snapshot_max_total_mb'],
             snapshot_max_age_days=row['snapshot_max_age_days'],
+            admin_theme=row['admin_theme'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -153,6 +154,7 @@ class ConfigDatabase(MigrationDatabase):
                 'snapshot_keep_auto',
                 'snapshot_max_total_mb',
                 'snapshot_max_age_days',
+                'admin_theme',
             ],
         )
         field_sets = (f'`{f}` = ?' for f in fields)

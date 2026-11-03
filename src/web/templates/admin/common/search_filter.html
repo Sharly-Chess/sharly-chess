@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <style>
 #search-criteria-collapse-toggle {
     cursor: pointer;
@@ -31,8 +32,9 @@
 >
     <i class="bi bi-funnel funnel-outline"></i>
     <i class="bi bi-funnel-fill funnel-filled"></i>
-    <span
-        id="filter-count"
-        class="badge rounded-pill text-bg-danger position-absolute top-0 start-100 translate-middle d-none"
-    ></span>
+    {{ components.badge(
+        'danger', '', pill=true,
+        class='position-absolute top-0 start-100 translate-middle d-none',
+        attrs={'id': 'filter-count'},
+    ) }}
 </button>

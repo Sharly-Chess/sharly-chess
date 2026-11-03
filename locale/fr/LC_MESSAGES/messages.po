@@ -23,6 +23,12 @@ msgid "%(bye)s at round %(round)d"
 msgstr "%(bye)s à la ronde %(round)d"
 
 #, python-format
+msgid "%(count)d player"
+msgid_plural "%(count)d players"
+msgstr[0] "%(count)d joueur·euse"
+msgstr[1] "%(count)d joueur·euses"
+
+#, python-format
 msgid "%(count)s automatic group"
 msgid_plural "%(count)s automatic groups"
 msgstr[0] "%(count)s groupe automatique"
@@ -251,34 +257,14 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr "%(rating)s (%(rating_type)s)"
 
 #, python-format
+msgid "%(remaining)d game in progress"
+msgid_plural "%(remaining)d games in progress"
+msgstr[0] "%(remaining)d partie en cours"
+msgstr[1] "%(remaining)d parties en cours"
+
+#, python-format
 msgid "%(seconds)d sec."
 msgstr "%(seconds)d sec."
-
-#, python-format
-msgid "%(set_name)s (check-in)"
-msgstr "%(set_name)s (pointage)"
-
-#, python-format
-msgid "%(set_name)s (registered players)"
-msgstr "%(set_name)s (joueur·euses inscrit·es)"
-
-#, python-format
-msgid "%(set_name)s (registered teams)"
-msgstr "%(set_name)s (équipes inscrites)"
-
-#, python-format
-msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
-msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
-msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d partie en cours)"
-msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d parties en cours)"
-
-#, python-format
-msgid "%(set_name)s (round #%(round)d, finished)"
-msgstr "%(set_name)s (ronde n°%(round)d, terminée)"
-
-#, python-format
-msgid "%(set_name)s (round %(round)d)"
-msgstr "%(set_name)s (ronde %(round)d)"
 
 #, python-format
 msgid "%(string)s:"
@@ -961,6 +947,9 @@ msgstr "Admin"
 msgid "Administration"
 msgstr "Administration"
 
+msgid "Administration theme:"
+msgstr "Thème de l'administration :"
+
 msgid "Administrator"
 msgstr "Administrateur·ice"
 
@@ -992,6 +981,10 @@ msgstr "Afghanistan"
 msgid "After round #{round}"
 msgstr "Après la ronde n°{round}"
 
+#, python-format
+msgid "After round %(round)d"
+msgstr "Après la ronde %(round)d"
+
 msgid "After the change to the number of rounds, pairings that differ from those of the pairing engine"
 msgstr "Après le changement du nombre de rondes, appariements différents de ceux du moteur d'appariement"
 
@@ -1019,6 +1012,12 @@ msgstr "Message d'alerte"
 
 msgid "Algeria"
 msgstr "Algérie"
+
+msgid "Align left"
+msgstr "Aligner à gauche"
+
+msgid "Align right"
+msgstr "Aligner à droite"
 
 msgid "All"
 msgstr "Tous"
@@ -1415,15 +1414,9 @@ msgstr "Champs BB"
 msgid "BLACK PLAYER"
 msgstr "JOUEUR·EUSE NOIRS"
 
-msgid "BLACK WINS"
-msgstr "VICTOIRE NOIRS"
-
 msgctxt "blitz rating marker"
 msgid "BTZ"
 msgstr "BTZ"
-
-msgid "BY FORFEIT"
-msgstr "PAR FORFAIT"
 
 msgid "Back"
 msgstr "Retour"
@@ -1676,6 +1669,9 @@ msgstr "Joueur·euse Noirs"
 msgid "Black wins"
 msgstr "Victoire Noirs"
 
+msgid "Black wins by forfeit"
+msgstr "Victoire Noirs par forfait"
+
 msgid "Blitz"
 msgstr "Blitz"
 
@@ -1771,6 +1767,9 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
+
+msgid "Boards shown"
+msgstr "Échiquiers affichés"
 
 msgid "Bold"
 msgstr "Gras"
@@ -1926,15 +1925,6 @@ msgstr "ARB"
 msgid "CHE"
 msgstr "POI"
 
-msgid "CHECK-IN"
-msgstr "Pointer"
-
-msgid "CHECK-OUT"
-msgstr "Dépointer"
-
-msgid "CLEAR THE RESULT"
-msgstr "EFFACER LE RÉSULTAT"
-
 msgctxt "short name for Candidate Master"
 msgid "CM"
 msgstr "CM"
@@ -1982,6 +1972,10 @@ msgstr "Annuler « %(bye)s » à la ronde n°%(round)s for [%(player)s]?"
 
 msgid "Cancel editing"
 msgstr "Annuler la modification"
+
+msgctxt "check-in button"
+msgid "Cancel the check-in"
+msgstr "Annuler le pointage"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -2053,6 +2047,9 @@ msgstr "Îles Caïmanes"
 msgid "Central African Republic"
 msgstr "République centrafricaine"
 
+msgid "Centre"
+msgstr "Centrer"
+
 msgid "Chad"
 msgstr "Tchad"
 
@@ -2120,6 +2117,10 @@ msgstr "Modifier les départages une fois le tournoi commencé n'est pas conform
 msgid "Check connection"
 msgstr "Vérifier la connexion"
 
+msgctxt "check-in button"
+msgid "Check in"
+msgstr "Pointer"
+
 msgid "Check the ratings against the lists"
 msgstr "Vérifier les classements avec les listes"
 
@@ -2134,6 +2135,9 @@ msgstr "Les écrans de pointage permettent aux joueur·euses de se pointer."
 
 msgid "Check-in via public screens"
 msgstr "Pointage sur écrans publics"
+
+msgid "Checked in"
+msgstr "Pointé·e"
 
 msgid "Cheque"
 msgstr "Chèque"
@@ -2228,6 +2232,9 @@ msgstr "Effacer les logs"
 msgid "Clear result"
 msgstr "Effacer le résultat"
 
+msgid "Clear the result"
+msgstr "Effacer le résultat"
+
 msgid "Clear the schedule"
 msgstr "Vider le calendrier"
 
@@ -2293,22 +2300,6 @@ msgstr "Colombie"
 msgid "Colour"
 msgstr "Couleur"
 
-#, python-format
-msgid "Colour #%(num)d:"
-msgstr "Couleur n°%(num)d :"
-
-#, python-brace-format
-msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the colour then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-msgstr "La couleur n°1 est utilisée jusqu'à {delay_1} minutes avant le début des rondes (délai n°1), la couleur change ensuite progressivement jusqu'à la couleur n°2 ({delay_2} minutes avant le début des rondes)."
-
-#, python-brace-format
-msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the colour then changes gradually until colour #3 (at the start of the rounds)."
-msgstr "La couleur n°2 est utilisée {delay_2} minutes avant le début des rondes (délai n°2), la couleur change ensuite progressivement jusqu'à la couleur n°3 (au début des rondes)."
-
-#, python-brace-format
-msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
-
 #, python-brace-format
 msgid "Colour [{color}] can't be used with an opponent."
 msgstr "La couleur [{color}] ne peut être utilisée avec un adversaire."
@@ -2328,12 +2319,6 @@ msgstr "Motif des couleurs :"
 
 msgid "Colour rule"
 msgstr "Règle des couleurs"
-
-msgid "Colour thresholds"
-msgstr "Seuils des couleurs"
-
-msgid "Colours and delays"
-msgstr "Couleurs et délais"
 
 msgid "Colours are drawn at random for each match."
 msgstr "Les couleurs sont tirées au sort pour chaque partie."
@@ -2821,14 +2806,11 @@ msgctxt "date-of-birth column header"
 msgid "DOB"
 msgstr "DdN"
 
-msgid "DOUBLE"
-msgstr "DOUBLE"
-
-msgid "DRAW"
-msgstr "NULLE"
-
 msgid "Daily"
 msgstr "Un jour"
+
+msgid "Dark"
+msgstr "Sombre"
 
 msgid "Dashed border"
 msgstr "Bordure pointillée"
@@ -2958,6 +2940,9 @@ msgstr "Délai n°%(num)d :"
 
 msgid "Delay (seconds):"
 msgstr "Délai (secondes) :"
+
+msgid "Delays"
+msgstr "Délais"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -3299,6 +3284,9 @@ msgstr "Double élimination"
 
 msgid "Double elimination — two-game matches"
 msgstr "Double élimination — aller-retour"
+
+msgid "Double forfeit"
+msgstr "Double forfait"
 
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
@@ -3813,11 +3801,12 @@ msgstr "Année de fin"
 msgid "England"
 msgstr "Angleterre"
 
+msgctxt "result entry button"
+msgid "Enter"
+msgstr "Saisir"
+
 msgid "Enter results"
 msgstr "Entrer des résultats"
-
-msgid "Enter the result"
-msgstr "Saisir le résultat"
 
 #, python-format
 msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
@@ -4097,9 +4086,6 @@ msgctxt "short name for Fide Master"
 msgid "FM"
 msgstr "MF"
 
-msgid "FORFEIT"
-msgstr "FORFAIT"
-
 msgid "Faroe Islands"
 msgstr "Îles Féroé"
 
@@ -4164,6 +4150,9 @@ msgstr "Remplir avec les tables de Berger"
 
 msgid "Fill the schedule with the Berger tables, following the Berger numbers."
 msgstr "Remplir le calendrier avec les tables de Berger, selon les numéros de Berger."
+
+msgid "Filter"
+msgstr "Filtrer"
 
 msgid "Filter out players of higher categories."
 msgstr "Exclure les joueur·euses des catégories supérieures."
@@ -5192,6 +5181,9 @@ msgstr "Keizer"
 msgid "Kenya"
 msgstr "Kenya"
 
+msgid "Keyboard entry mode"
+msgstr "Mode de saisie au clavier"
+
 msgid "Keyboard shortcuts:"
 msgstr "Raccourcis clavier :"
 
@@ -5351,6 +5343,9 @@ msgstr "Libye"
 
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
+
+msgid "Light"
+msgstr "Clair"
 
 msgid "Limit adjustment"
 msgstr "Ajustement de la limite"
@@ -5868,9 +5863,6 @@ msgstr "Monténégro"
 
 msgid "More"
 msgstr "Plus"
-
-msgid "More copy options"
-msgstr "Plus d'options de copie"
 
 msgid "Morocco"
 msgstr "Maroc"
@@ -6699,6 +6691,9 @@ msgstr "Numéros qui ne sont pas des identifiants FIDE ({values}), laissés vide
 
 msgid "Not assigned"
 msgstr "Non attribué"
+
+msgid "Not checked in yet"
+msgstr "Pas encore pointé·e"
 
 msgid "Not counted as a federation (1.4.2a)"
 msgstr "Non comptée comme une fédération (1.4.2a)"
@@ -8414,6 +8409,12 @@ msgstr "Actualiser les réseaux"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Registered players"
+msgstr "Joueur·euses inscrit·es"
+
+msgid "Registered teams"
+msgstr "Équipes inscrites"
+
 msgid "Regular event"
 msgstr "Évènement régulier"
 
@@ -8440,6 +8441,9 @@ msgstr "Retirer de l'équipe"
 
 msgid "Remove the correction"
 msgstr "Supprimer la correction"
+
+msgid "Remove the period"
+msgstr "Supprimer la période"
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
@@ -10607,6 +10611,10 @@ msgid "The pairings of round {round} are being edited: validate or cancel them b
 msgstr "Les appariements de la ronde {round} sont en cours de modification : validez-les ou annulez la modification avant de modifier les appariements d'une autre ronde."
 
 #, python-brace-format
+msgid "The pairings of round {round} are not published yet. Results can be entered once they are, with the Publish button of the pairings page."
+msgstr "Les appariements de la ronde {round} ne sont pas encore publiés. Les résultats pourront être saisis une fois qu'ils le seront, avec le bouton Publier de la page des appariements."
+
+#, python-brace-format
 msgid "The pairings of round {round} cannot be published."
 msgstr "Les appariements de la ronde {round} ne peuvent pas être publiés."
 
@@ -10932,6 +10940,18 @@ msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
 msgid "The timer displayed on the screens of the multi-screen."
 msgstr "Le chronomètre affiché sur les écrans de l'écran multiple."
+
+#, python-brace-format
+msgid "The timer is green until {delay_1} minutes before the start of the rounds, then turns gradually orange until {delay_2} minutes before the start of the rounds."
+msgstr "Le chronomètre est vert jusqu'à {delay_1} minutes avant le début des rondes, puis passe progressivement à l'orange jusqu'à {delay_2} minutes avant le début des rondes."
+
+#, python-brace-format
+msgid "The timer is orange {delay_2} minutes before the start of the rounds, then turns gradually red until the start of the rounds."
+msgstr "Le chronomètre est orange {delay_2} minutes avant le début des rondes, puis passe progressivement au rouge jusqu'au début des rondes."
+
+#, python-brace-format
+msgid "The timer stays red from the start of the rounds and for {delay_3} minutes after."
+msgstr "Le chronomètre reste rouge à partir du début des rondes et pendant les {delay_3} minutes qui suivent."
 
 msgid "The tournament has been added."
 msgstr "Le tournoi a été ajouté."
@@ -12357,9 +12377,6 @@ msgstr "GMF"
 msgid "WHITE PLAYER"
 msgstr "JOUEUR·EUSE BLANCS"
 
-msgid "WHITE WINS"
-msgstr "VICTOIRE BLANCS"
-
 msgctxt "short name for Woman International Master"
 msgid "WIM"
 msgstr "MIF"
@@ -12478,6 +12495,9 @@ msgstr "Joueur·euse Blancs"
 
 msgid "White wins"
 msgstr "Victoire Blancs"
+
+msgid "White wins by forfeit"
+msgstr "Victoire Blancs par forfait"
 
 msgid "Who advances"
 msgstr "Qui se qualifie"
@@ -12977,6 +12997,9 @@ msgstr "exemple"
 
 msgid "federations other than the applicant's"
 msgstr "fédérations autres que celle du·de la candidat·e"
+
+msgid "finished"
+msgstr "terminée"
 
 msgid "forfeits played"
 msgstr "forfaits joués"

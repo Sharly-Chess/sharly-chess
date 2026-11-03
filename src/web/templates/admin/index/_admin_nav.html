@@ -66,11 +66,7 @@
                         <li>
                             <button
                                 class="dropdown-item d-flex align-items-center px-2"
-                                hx-get="{{ nav_tab.create_modal_url }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
+                                {{ components.modal_trigger_attrs(nav_tab.create_modal_url) }}
                                 type="button"
                             >
                                 <i class="bi-plus-lg pe-1"></i>
@@ -114,11 +110,7 @@
                     <button
                         class="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center ms-auto flex-shrink-0 p-0"
                         style="width: 2rem; height: 2rem;"
-                        hx-get="{{ nav_tab.create_modal_url }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        {{ components.modal_trigger_attrs(nav_tab.create_modal_url) }}
                         aria-label="{{ nav_tab.create_label }}"
                         {{ macros.tooltip_attributes('', nav_tab.create_label, 'right') }}
                     ><i class="bi-plus-lg" style="margin-right: 0;"></i></button>

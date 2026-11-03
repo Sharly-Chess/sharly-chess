@@ -19,8 +19,8 @@ class CustomUploadStatus(IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def css_classes(self) -> str:
-        """CSS classes to apply to the status."""
+    def badge_kind(self) -> str:
+        """The kind of the badge showing the status (see components.badge)."""
 
 
 class NeverUploadedCustomUploadStatus(CustomUploadStatus):
@@ -38,8 +38,8 @@ class NeverUploadedCustomUploadStatus(CustomUploadStatus):
         return None
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
 
 class UpToDateCustomUploadStatus(CustomUploadStatus):
@@ -57,8 +57,8 @@ class UpToDateCustomUploadStatus(CustomUploadStatus):
         return _('No changes detected since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-success'
+    def badge_kind(self) -> str:
+        return 'success'
 
 
 class ModifiedCustomUploadStatus(CustomUploadStatus):
@@ -76,8 +76,8 @@ class ModifiedCustomUploadStatus(CustomUploadStatus):
         return _('Data has been modified since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class PendingCustomUploadStatus(CustomUploadStatus):
@@ -95,8 +95,8 @@ class PendingCustomUploadStatus(CustomUploadStatus):
         return _('Document upload has been planned.')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
 
 class OngoingCustomUploadStatus(CustomUploadStatus):
@@ -114,8 +114,8 @@ class OngoingCustomUploadStatus(CustomUploadStatus):
         return _('Document is currently being uploaded.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class NotConfiguredCustomUploadStatus(CustomUploadStatus):
@@ -135,8 +135,8 @@ class NotConfiguredCustomUploadStatus(CustomUploadStatus):
         return CustomUploadUtils.event_connection_message(event)
 
     @property
-    def css_classes(self) -> str:
-        return 'message-warning'
+    def badge_kind(self) -> str:
+        return 'warning'
 
 
 class FailureCustomUploadStatus(CustomUploadStatus, ABC):
@@ -145,8 +145,8 @@ class FailureCustomUploadStatus(CustomUploadStatus, ABC):
         return _('Failure')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-error'
+    def badge_kind(self) -> str:
+        return 'danger'
 
     @property
     @abstractmethod

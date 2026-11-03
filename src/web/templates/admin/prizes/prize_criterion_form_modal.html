@@ -1,29 +1,25 @@
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 450px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit criterion') }}
-                {% else %}
-                     {{ _('Create criterion') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <h4 class="mb-3">
-                {{ _('%(string)s:', string=_('Category')) }}
-                {{ admin_prize_category.name }}
-            </h4>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'sm' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit criterion') }}
+    {% else %}
+        {{ _('Create criterion') }}
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Category')) }}
+    {{ admin_prize_category.name }}
+{% endblock %}
+
+{% block body %}
             {% if previous_criterion %}
-                {% with type='success', message=_(
+                {{ components.banner('success', _(
                     'Criterion [%(criterion)s] successfully created!',
                     criterion=previous_criterion.name
-                ) %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                )) }}
             {% endif %}
 
             <form
@@ -83,39 +79,29 @@
                     });
                 </script>
             </form>
-        </div>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-prize-criteria-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                    prize_category_id=admin_prize_category.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <i class="bi-arrow-left-circle-fill pe-1"></i>
-                {{ _('Back') }}
-            </button>
-            {% if action == 'update' %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    <i class="bi bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                </button>
-            {% else %}
-                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.modal_button(
+        url_for(
+            'admin-prize-criteria-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=admin_prize_category.id,
+        ),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+    {% if action == 'update' %}
+        {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+    {% else %}
+        {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+    {% endif %}
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

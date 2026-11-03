@@ -46,98 +46,62 @@
 {% endmacro %}
 
 {% macro prizes_button(prize_category, show_label=false) %}
-    <span
-        {% if not client.can_manage_prizes %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-        {% else %}
-            {{ macros.tooltip_attributes('info', _('Define the prizes of the category.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            {% if not client.can_manage_prizes %}
-                disabled
-            {% else %}
-                hx-get="{{ url_for(
-                    'admin-prizes-modal'
-                    if prize_category.prizes else
-                    'admin-prize-create-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                    prize_category_id=prize_category.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% endif %}
-        >
-            <i class="bi-trophy{% if show_label %} pe-1{% endif %}"></i>
-            {% if show_label %}{{ _('Prizes') }}{% endif %}
-        </button>
-    </span>
+    {{ components.modal_button(
+        url_for(
+            'admin-prizes-modal'
+            if prize_category.prizes else
+            'admin-prize-create-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=prize_category.id,
+        ),
+        _('Prizes'),
+        icon='bi-trophy',
+        icon_only=not show_label,
+        size='sm',
+        allowed=client.can_manage_prizes,
+        reason=_('You are not allowed to manage prizes.'),
+        tooltip=_('Define the prizes of the category.'),
+    ) }}
 {% endmacro %}
 
 {% macro criteria_button(prize_category, show_label=false) %}
-    <span
-        {% if not client.can_manage_prizes %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-        {% elif prize_category.is_main %}
-            {{ macros.tooltip_attributes('info', _('No criteria for the main category.'), 'top') }}
-        {% else %}
-            {{ macros.tooltip_attributes('info', _('Define the criteria for players to belong to this category.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            {% if prize_category.is_main or not client.can_manage_prizes %}
-                disabled
-            {% else %}
-                hx-get="{{ url_for(
-                    'admin-prize-criteria-modal'
-                    if prize_category.criteria else
-                    'admin-prize-criterion-create-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                    prize_category_id=prize_category.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% endif %}
-        >
-            <i class="bi-filter{% if show_label %} pe-1{% endif %}"></i>
-            {% if show_label %}{{ _('Criteria') }}{% endif %}
-        </button>
-    </span>
+    {{ components.modal_button(
+        url_for(
+            'admin-prize-criteria-modal'
+            if prize_category.criteria else
+            'admin-prize-criterion-create-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=prize_category.id,
+        ),
+        _('Criteria'),
+        icon='bi-filter',
+        icon_only=not show_label,
+        size='sm',
+        allowed=client.can_manage_prizes and not prize_category.is_main,
+        reason=_('You are not allowed to manage prizes.')
+        if not client.can_manage_prizes else _('No criteria for the main category.'),
+        tooltip=_('Define the criteria for players to belong to this category.'),
+    ) }}
 {% endmacro %}
 
 {% macro players_button(prize_category) %}
-    <span
-        {{ macros.tooltip_attributes(
-            'info', _('Consult the players and the prize assignment of this category.'), 'top'
-        ) }}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for(
-                'admin-prize-players-modal',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-                prize_group_id=admin_prize_group.id,
-                prize_category_id=prize_category.id,
-            ) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi-people"></i>
-        </button>
-    </span>
+    {{ components.modal_button(
+        url_for(
+            'admin-prize-players-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=prize_category.id,
+        ),
+        _('Consult the players and the prize assignment of this category.'),
+        icon='bi-people',
+        icon_only=true,
+        size='sm',
+    ) }}
 {% endmacro %}
 
 {% macro players_count(prize_category, view, placement) %}
@@ -145,8 +109,7 @@
         class="text-nowrap"
         {{ macros.tooltip_attributes('info', _('Number of players'), 'top') }}
     >
-        <i class="bi-people pe-1"></i>
-        {{ prize_category.tournament_players|length }}
+        {% call components.icon_text('bi-people') %}{{ prize_category.tournament_players|length }}{% endcall %}
     </span>
 {% endmacro %}
 
@@ -178,8 +141,7 @@
             class="text-nowrap"
             {{ macros.tooltip_attributes('info', _('Number of prizes'), 'top') }}
         >
-            <i class="bi-trophy pe-1"></i>
-            {{ prize_category.prizes|length }}
+            {% call components.icon_text('bi-trophy') %}{{ prize_category.prizes|length }}{% endcall %}
         </span>
     {% endif %}
 {% endmacro %}
@@ -304,122 +266,72 @@
             {{ players_button(prize_category) }}
         </div>
         <div class="d-flex align-items-center gap-1 ms-auto">
-            <span
-                {% if not client.can_manage_prizes %}
-                    {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('info', _('Edit the properties of the category.'), 'top') }}
-                {% endif %}
-            >
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    {% if not client.can_manage_prizes %}
-                        disabled
-                    {% else %}
-                        hx-get="{{ url_for(
-                            'admin-prize-category-update-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            prize_group_id=admin_prize_group.id,
-                            prize_category_id=prize_category.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% endif %}
-                >
-                    <i class="bi-pencil"></i>
-                </button>
-            </span>
-                        <div class="btn-group">
-                <span
-                    {% if not client.can_manage_prizes %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-                    {% elif prize_category.is_main %}
-                        {{ macros.tooltip_attributes('info', _('Duplicate the category and its prizes as a regular category.'), 'top') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Duplicate the category and its criteria and prizes.'), 'top') }}
-                    {% endif %}
-                >
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        {% if not client.can_manage_prizes %}
-                            disabled
-                        {% else %}
-                            hx-post="{{ url_for(
-                                'admin-prize-category-duplicate',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                prize_group_id=admin_prize_group.id,
-                                prize_category_id=prize_category.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <i class="bi-copy"></i>
-                    </button>
-                </span>
-                {% if client.can_manage_prizes %}
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        aria-label="{{ _('More copy options') }}"
-                    ></button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <button
-                                class="dropdown-item text-start cursor-pointer"
-                                hx-get="{{ url_for(
-                                    'admin-prize-category-copy-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    prize_group_id=admin_prize_group.id,
-                                    prize_category_id=prize_category.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                            >
-                                <i class="bi-box-arrow-right pe-1"></i>
-                                {{ _('Copy to another prize bracket…') }}
-                            </button>
-                        </li>
-                    </ul>
-                {% endif %}
-            </div>
-            <span
-                {% if not client.can_manage_prizes %}
-                    {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('info', _('Delete the category.'), 'top') }}
-                {% endif %}
-            >
-                <button
-                    class="btn btn-sm btn-outline-danger"
-                    {% if not client.can_manage_prizes %}
-                        disabled
-                    {% else %}
-                        hx-get="{{ url_for(
-                            'admin-prize-category-delete-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            prize_group_id=admin_prize_group.id,
-                            prize_category_id=prize_category.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% endif %}
-                >
-                    <i class="bi-trash"></i>
-                </button>
-            </span>
+            {{ components.modal_button(
+                url_for(
+                    'admin-prize-category-update-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                    prize_category_id=prize_category.id,
+                ),
+                _('Edit the properties of the category.'),
+                icon='edit',
+                icon_only=true,
+                size='sm',
+                allowed=client.can_manage_prizes,
+                reason=_('You are not allowed to manage prizes.'),
+            ) }}
+            {% call components.split_button(
+                _('Duplicate the category and its prizes as a regular category.')
+                if prize_category.is_main else
+                _('Duplicate the category and its criteria and prizes.'),
+                kind='outline',
+                icon='copy',
+                icon_only=true,
+                size='sm',
+                allowed=client.can_manage_prizes,
+                reason=_('You are not allowed to manage prizes.'),
+                attrs={
+                    'hx-post': url_for(
+                        'admin-prize-category-duplicate',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id,
+                        prize_category_id=prize_category.id,
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) %}
+                {{ components.menu_item(
+                    _('Copy to another prize bracket…'),
+                    icon='bi-box-arrow-right',
+                    url=url_for(
+                        'admin-prize-category-copy-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id,
+                        prize_category_id=prize_category.id,
+                    ),
+                    modal=true,
+                ) }}
+            {% endcall %}
+            {{ components.modal_button(
+                url_for(
+                    'admin-prize-category-delete-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                    prize_category_id=prize_category.id,
+                ),
+                _('Delete the category.'),
+                kind='outline-danger',
+                icon='delete',
+                icon_only=true,
+                size='sm',
+                allowed=client.can_manage_prizes,
+                reason=_('You are not allowed to manage prizes.'),
+            ) }}
         </div>
     </div>
 {% endmacro %}

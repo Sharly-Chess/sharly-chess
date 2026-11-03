@@ -1,50 +1,35 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set modal_id = 'event-configuration-modal' %}
+{% set modal_size = 'wide' %}
 
-<div id="event-configuration-modal" class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                    {{ _('Custom location') }} - {{ _('Connection configuration') }}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-patch="{{ url_for('custom-upload-event-configuration-update', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% include 'custom_upload_auth_fields.html' %}
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap me-auto"
-                hx-get="{{ url_for('custom-upload-modal', event_uniq_id=admin_event.uniq_id) }}"
-            >
-                <i class="bi-arrow-left-circle-fill pe-1"></i>
-                {{ _('Back') }}
-            </button>
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <span id="submit-button-container">
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                </button>
-            </span>
-        </div>
-    </div>
-</div>
+{% block title %}{{ _('Custom location') }} - {{ _('Connection configuration') }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-patch="{{ url_for('custom-upload-event-configuration-update', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {% include 'custom_upload_auth_fields.html' %}
+    </form>
+{% endblock %}
+
+{% block footer_start %}
+    {{ components.modal_button(
+        url_for('custom-upload-modal', event_uniq_id=admin_event.uniq_id),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    <span id="submit-button-container">
+        {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+    </span>
+{% endblock %}

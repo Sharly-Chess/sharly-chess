@@ -1,4 +1,9 @@
+{% extends '/admin/components/modal.html' %}
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+{% set modal_size = 'lg' %}
+{% set modal_close = true %}
 
 {# Admin result-entry modal (opened from the pairings tab): normal
    Bootstrap buttons in a two-column (White / Black) layout. The
@@ -7,39 +12,30 @@
 
 {# Wrap action routing (direct hx call vs warning confirmation) and
    the disabled state once, reused by every button below. #}
-{% macro action_button(action, method, route, disabled, label, btn_class, tooltip='', icon='') %}
-    {% if disabled and tooltip %}
-        <span class="d-grid" {{ macros.tooltip_attributes('info', tooltip, 'top') }}>
+{% macro action_button(action, method, route, disabled, label, kind='outline', tooltip='', icon=none) %}
+    {% if action in allowed_actions %}
+        {% set attrs = {'hx-' ~ method: route} %}
+    {% else %}
+        {% set attrs = {'hx-get': url_for(
+            'admin-pairings-warning-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round,
+            action=action,
+            redirect_method=method | upper,
+            redirect_route=route,
+        )} %}
     {% endif %}
-    <button
-        type="button"
-        class="btn {{ btn_class }} text-nowrap"
-        {% if disabled %}
-            disabled
-        {% else %}
-            {% if action in allowed_actions %}
-                hx-{{ method }}="{{ route }}"
-            {% else %}
-                hx-get="{{ url_for(
-                    'admin-pairings-warning-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    round=admin_round,
-                    action=action,
-                    redirect_method=method | upper,
-                    redirect_route=route,
-                ) }}"
-            {% endif %}
-            hx-trigger="click"
-            hx-target="body"
-            hx-indicator="#please-wait"
-        {% endif %}
-    >
-        {% if icon %}<i class="{{ icon }} pe-1"></i>{% endif %}{{ label }}
-    </button>
-    {% if disabled and tooltip %}
-        </span>
-    {% endif %}
+    {% do attrs.update({'hx-trigger': 'click', 'hx-target': 'body', 'hx-indicator': '#please-wait'}) %}
+    {{ components.button(
+        label,
+        kind=kind,
+        icon=icon,
+        allowed=not disabled,
+        reason=tooltip or none,
+        class='w-100',
+        attrs=attrs,
+    ) }}
 {% endmacro %}
 
 {# Illegal moves are recorded here rather than in the pairings row: the row
@@ -56,39 +52,31 @@
         'player_id': tournament_player.id,
     } %}
     <div class="d-flex align-items-center justify-content-center gap-2">
-        <button
-            type="button"
-            class="btn btn-outline-primary"
-            aria-label="{{ _('Remove') }}"
-            {% if not editable or count < 1 %}
-                disabled
-            {% else %}
-                hx-delete="{{ url_for('admin-tournament-delete-illegal-move', **route_args) }}?board_id={{ board.identifier }}"
-                hx-indicator="#please-wait"
-            {% endif %}
-        >
-            <i class="bi bi-dash-lg"></i>
-        </button>
-        <span class="text-nowrap">
-            <i class="bi-flag pe-1"></i><span class="fw-bold">{{ count }}</span>
-        </span>
-        <button
-            type="button"
-            class="btn btn-outline-primary"
-            aria-label="{{ _('Add') }}"
-            {% if not editable or count >= maximum %}
-                disabled
-            {% else %}
-                hx-put="{{ url_for('admin-tournament-add-illegal-move', **route_args) }}?board_id={{ board.identifier }}"
-                hx-indicator="#please-wait"
-            {% endif %}
-        >
-            <i class="bi bi-plus-lg"></i>
-        </button>
+        {{ components.button(
+            _('Remove'),
+            icon='bi-dash-lg',
+            icon_only=true,
+            allowed=editable and count >= 1,
+            attrs={
+                'hx-delete': url_for('admin-tournament-delete-illegal-move', **route_args) ~ '?board_id=' ~ board.identifier,
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+        {% call components.icon_text('bi-flag', class='fw-bold') %}{{ count }}{% endcall %}
+        {{ components.button(
+            _('Add'),
+            icon='add',
+            icon_only=true,
+            allowed=editable and count < maximum,
+            attrs={
+                'hx-put': url_for('admin-tournament-add-illegal-move', **route_args) ~ '?board_id=' ~ board.identifier,
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
     </div>
 {% endmacro %}
 
-{% macro result_button(result_id, disabled, label, btn_class) %}
+{% macro result_button(result_id, disabled, label) %}
     {{ action_button(
         'RESULT_UPDATE',
         'put',
@@ -102,11 +90,11 @@
         ),
         disabled,
         label,
-        btn_class ~ ' w-100',
     ) }}
 {% endmacro %}
 
-{% with wtp=board.optional_white_tournament_player, btp=board.black_tournament_player %}
+{% set wtp = board.optional_white_tournament_player %}
+{% set btp = board.black_tournament_player %}
     {# In a team match the pairings table shows team A on the left
        whatever the colours — mirror that here: sides, result buttons and
        colour chips all follow the board's colour pattern. #}
@@ -181,23 +169,16 @@
         if (right_tp and right_tp.team)
         else ((_molter_code[1] if left_is_white else _molter_code[0]) if _molter_code else none)
     ) %}
-    <div
-        class="modal-dialog modal-dialog-scrollable"
-        style="--bs-modal-width: min(95vw, 600px);"
-    >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    {{ _('Board %(board_number)s', board_number=board.number) }}
-                </h2>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="{{ _('Close') }}"
-                ></button>
-            </div>
-            <div class="modal-body">
+{% block title %}{{ _('Board %(board_number)s', board_number=board.number) }}{% endblock %}
+
+{% block body %}
+                {% if awaits_publication %}
+                    {{ components.note(
+                        'warning',
+                        _('The pairings of round {round} are not published yet. Results can be entered once they are, with the Publish button of the pairings page.').format(round=admin_round),
+                        class='mb-3',
+                    ) }}
+                {% endif %}
                 {# White / neutral / Black columns. Buttons show just the
                    score; the headers and column position convey the rest. #}
                 <div class="row g-2 mb-1">
@@ -251,33 +232,27 @@
                        placement follows the left/right sides. #}
                     <div class="row g-2">
                         <div class="col-4">
-                            {{ result_button(3 if left_is_white else 1, base_locked, '1 – 0', 'btn-outline-primary') }}
+                            {{ result_button(3 if left_is_white else 1, base_locked, '1 – 0') }}
                         </div>
                         <div class="col-4">
-                            {{ result_button(2, base_locked, '½ – ½', 'btn-outline-primary') }}
+                            {{ result_button(2, base_locked, '½ – ½') }}
                         </div>
                         <div class="col-4">
-                            {{ result_button(1 if left_is_white else 3, base_locked, '0 – 1', 'btn-outline-primary') }}
+                            {{ result_button(1 if left_is_white else 3, base_locked, '0 – 1') }}
                         </div>
                     </div>
 
                     <div class="row g-2 mt-2">
                         <div class="col-4">
-                            {{ result_button(6 if left_is_white else 4, special_locked, '1 – F', 'btn-outline-primary') }}
+                            {{ result_button(6 if left_is_white else 4, special_locked, '1 – F') }}
                         </div>
                         <div class="col-4">
-                            {{ result_button(5, special_locked, 'F – F', 'btn-outline-primary') }}
+                            {{ result_button(5, special_locked, 'F – F') }}
                         </div>
                         <div class="col-4">
-                            {{ result_button(4 if left_is_white else 6, special_locked, 'F – 1', 'btn-outline-primary') }}
+                            {{ result_button(4 if left_is_white else 6, special_locked, 'F – 1') }}
                         </div>
                     </div>
-
-                    {% if awaits_publication %}
-                        <p class="small text-muted mt-2 mb-0">
-                            {{ _('Publish round {round} to enter its results.').format(round=admin_round) }}
-                        </p>
-                    {% endif %}
 
                     {% if board.result.is_adjourned %}
                         <p class="small text-muted mt-2 mb-0">
@@ -308,7 +283,7 @@
                                     or not client.can_unpair_boards(admin_tournament.id)
                                 ),
                                 _('Unpair'),
-                                'btn-outline-primary w-100',
+                                'outline',
                             ) }}
                         </div>
                     </div>
@@ -329,17 +304,18 @@
                             (
                                 board.no_result
                                 or board.exempt
+                                or awaits_publication
                                 or is_team_forfeit_lock
                                 or not can_update
                             ),
                             _('Clear result'),
-                            'btn-outline-danger w-100',
+                            'outline-danger',
                             _(
                                 'This board is recorded as an absence (forfeit) '
                                 'from the lineup. Use the lineup dropdown to put a '
                                 'player back on this slot.'
                             ) if is_team_forfeit_lock else '',
-                            'bi bi-trash',
+                            'delete',
                         ) }}
                     </div>
                     {% if not admin_tournament.event.is_team_event or not admin_tournament.pairing_system.paired_by_team %}
@@ -360,7 +336,7 @@
                                     or not client.can_unpair_boards(admin_tournament.id)
                                 ),
                                 _('Unpair'),
-                                'btn-outline-primary w-100',
+                                'outline',
                             ) }}
                         </div>
                     {% endif %}
@@ -377,7 +353,7 @@
                             ),
                             (board.exempt or not client.can_permute_boards(admin_tournament.id)),
                             _('Permute White/Black'),
-                            'btn-outline-primary w-100',
+                            'outline',
                         ) }}
                     </div>
                 </div>
@@ -385,19 +361,15 @@
 
                 {% if not _flat_hole %}
                 <div class="mt-3">
-                    <button
-                        type="button"
-                        class="collapse-button collapsed btn btn-link p-0 text-decoration-none"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#rare-results-admin"
-                    >
-                        <i class="bi bi-chevron-down pe-1"></i>
-                        {% if admin_tournament.pairing_system.supports_adjourned_games %}
-                            {{ _('Access unrated, penalty and adjourned results.') }}
-                        {% else %}
-                            {{ _('Access unrated and penalty results.') }}
-                        {% endif %}
-                    </button>
+                    {{ components.button(
+                        _('Access unrated, penalty and adjourned results.')
+                            if admin_tournament.pairing_system.supports_adjourned_games
+                            else _('Access unrated and penalty results.'),
+                        kind='link',
+                        icon='bi-chevron-down',
+                        class='collapse-button collapsed p-0 text-decoration-none',
+                        attrs={'data-bs-toggle': 'collapse', 'data-bs-target': '#rare-results-admin'},
+                    ) }}
                     <div class="collapse" id="rare-results-admin">
                         {# Each group is a category header followed by its
                            three results (white win / draw / black win) in
@@ -429,9 +401,8 @@
                                 {% for result_id, label in results %}
                                     <div class="col-4">
                                         {{ result_button(
-                                            result_id, board.exempt,
+                                            result_id, board.exempt or awaits_publication,
                                             label,
-                                            'btn-outline-primary',
                                         ) }}
                                     </div>
                                 {% endfor %}
@@ -444,7 +415,6 @@
                                         21,
                                         special_locked or board.result.is_adjourned,
                                         _('Adjourned'),
-                                        'btn-outline-primary',
                                     ) }}
                                 </div>
                             </div>
@@ -458,7 +428,7 @@
                     {% set rating_white_id = rating_correction.white_player_id if rating_correction else wtp.id %}
                     {% set rating_result = rating_correction.result.value if rating_correction else board.result.value %}
                     <hr class="my-3" />
-                    <h6 class="mb-1">{{ _('Rating report correction') }}</h6>
+                    {{ components.section_heading(_('Rating report correction'), class='mt-0 mb-1') }}
                     <p class="small text-muted mb-2">
                         {{ _(
                             'An error found after the end of the next round is corrected for the '
@@ -475,13 +445,13 @@
                         <div class="row g-2">
                             {% for result_id, label in [(3, '1 – 0'), (2, '½ – ½'), (1, '0 – 1'), (6, '1 – F'), (5, 'F – F'), (4, 'F – 1')] %}
                                 <div class="col-4 col-md-2">
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-primary w-100 text-nowrap {% if white_tp.id == rating_white_id and result_id == rating_result %}active{% endif %}"
-                                        {% if not can_update %}
-                                            disabled
-                                        {% else %}
-                                            hx-put="{{ url_for(
+                                    {{ components.button(
+                                        label,
+                                        size='sm',
+                                        allowed=can_update,
+                                        class='w-100' ~ (' active' if white_tp.id == rating_white_id and result_id == rating_result else ''),
+                                        attrs={
+                                            'hx-put': url_for(
                                                 'admin-pairings-set-rating-correction',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=admin_tournament.id,
@@ -489,38 +459,39 @@
                                                 board_id=board.identifier,
                                                 white_player_id=white_tp.id,
                                                 result=result_id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                        {% endif %}
-                                    >{{ label }}</button>
+                                            ),
+                                            'hx-target': 'body',
+                                            'hx-indicator': '#please-wait',
+                                        },
+                                    ) }}
                                 </div>
                             {% endfor %}
                         </div>
                     {% endfor %}
                     {% if rating_correction %}
-                        <div class="alert alert-warning py-2 mt-3 mb-0 d-flex align-items-center gap-2">
-                            <div class="flex-grow-1 small">{{ rating_correction.summary(admin_tournament) }}</div>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-danger text-nowrap"
-                                {% if not can_update %}
-                                    disabled
-                                {% else %}
-                                    hx-delete="{{ url_for(
-                                        'admin-pairings-delete-rating-correction',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=admin_tournament.id,
-                                        round=admin_round,
-                                        board_id=board.identifier,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                {% endif %}
-                            >
-                                <i class="bi bi-trash pe-1"></i>{{ _('Remove the correction') }}
-                            </button>
-                        </div>
+                        {% call components.note('warning', compact=true, class='mt-3 mb-0') %}
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="flex-grow-1">{{ rating_correction.summary(admin_tournament) }}</div>
+                                {{ components.button(
+                                    _('Remove the correction'),
+                                    kind='outline-danger',
+                                    icon='delete',
+                                    size='sm',
+                                    allowed=can_update,
+                                    attrs={
+                                        'hx-delete': url_for(
+                                            'admin-pairings-delete-rating-correction',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            board_id=board.identifier,
+                                        ),
+                                        'hx-target': 'body',
+                                        'hx-indicator': '#please-wait',
+                                    },
+                                ) }}
+                            </div>
+                        {% endcall %}
                     {% endif %}
                 {% endif %}
 
@@ -531,23 +502,25 @@
                 {% if ko_adv %}
                     <hr class="my-3" />
                     <div class="mb-1">
-                        <h6 class="mb-2">{{ _('Who advances') }}</h6>
+                        {{ components.section_heading(_('Who advances'), class='mt-0 mb-2') }}
                         {% if ko_adv.winner_id %}
                             {% set winner_name = wtp.full_name
                                 if ko_adv.winner_id == wtp.id else btp.full_name %}
                             <div class="mb-2">
-                                <span class="badge rounded-pill bg-primary text-dark lh-1 me-1">1</span>
+                                {{ pairing_components.advance_mark(tooltip=false) }}
                                 <b>{{ winner_name }}</b>
                                 {% if ko_adv.reason %}
                                     <span class="text-secondary">({{ ko_adv.reason }})</span>
                                 {% endif %}
                             </div>
                         {% elif not ko_adv.manual_reached %}
-                            <div class="text-warning mb-2">
-                                <i class="bi-exclamation-triangle-fill pe-1"></i>
-                                {{ _('No tie-break decides this drawn game. Add the '
-                                    '"Manual" tie-break to hold a play-off.') }}
-                            </div>
+                            {{ components.note(
+                                'warning',
+                                _('No tie-break decides this drawn game. Add the '
+                                    '"Manual" tie-break to hold a play-off.'),
+                                compact=true,
+                                class='mb-2',
+                            ) }}
                         {% endif %}
                         {% if ko_adv.breakdown %}
                             <table class="table table-sm">
@@ -565,27 +538,26 @@
                                                 <td class="align-middle">{{ _('Manual') }}</td>
                                                 {% for side in [wtp, btp] %}
                                                     <td class="text-center">
-                                                        <button
-                                                            class="btn btn-sm {{ 'btn-primary'
+                                                        {{ components.button(
+                                                            pgettext('individual knock-out', 'Unmark winner')
                                                                 if ko_adv.winner_id == side.id
-                                                                else 'btn-outline-primary' }}"
-                                                            {% if row.used %}
-                                                                hx-put="{{ url_for(
+                                                                else pgettext('individual knock-out', 'Mark as winner'),
+                                                            kind='primary' if ko_adv.winner_id == side.id else 'outline',
+                                                            size='sm',
+                                                            allowed=row.used,
+                                                            attrs={
+                                                                'hx-put': url_for(
                                                                     'admin-pairings-knockout-player-winner',
                                                                     event_uniq_id=admin_event.uniq_id,
                                                                     tournament_id=admin_tournament.id,
                                                                     round=admin_round,
                                                                     board_id=board.identifier,
                                                                     player_id=(0 if ko_adv.winner_id == side.id else side.id),
-                                                                ) }}"
-                                                                hx-target="body"
-                                                                hx-indicator="#please-wait"
-                                                            {% else %}
-                                                                disabled
-                                                            {% endif %}
-                                                        >{{ pgettext('individual knock-out', 'Unmark winner')
-                                                            if ko_adv.winner_id == side.id
-                                                            else pgettext('individual knock-out', 'Mark as winner') }}</button>
+                                                                ),
+                                                                'hx-target': 'body',
+                                                                'hx-indicator': '#please-wait',
+                                                            },
+                                                        ) }}
                                                     </td>
                                                 {% endfor %}
                                             </tr>
@@ -602,10 +574,12 @@
                         {% endif %}
                     </div>
                 {% endif %}
-            </div>
-        </div>
-    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
     {% if illegal_moves_changed | default(false) %}
         <script>requestRefresh()</script>
     {% endif %}
-{% endwith %}
+{% endblock %}

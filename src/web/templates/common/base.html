@@ -5,7 +5,11 @@
         {% if not request.htmx %}
             <title>{% block title %}Sharly Chess{% endblock %}</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="shortcut icon" type="image/png" href="{{ url_for('static', file_path='/images/sharly-chess.ico') }}?version={{ sharly_chess_config.version }}"/>
+            <link rel="icon" type="image/x-icon" href="{{ url_for('static', file_path='/images/sharly-chess.ico') }}?version={{ sharly_chess_config.version }}"/>
+            <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', file_path='/images/sharly-chess-icon-32.png') }}?version={{ sharly_chess_config.version }}"/>
+            <link rel="apple-touch-icon" href="{{ url_for('static', file_path='/images/sharly-chess-icon-180.png') }}?version={{ sharly_chess_config.version }}"/>
+            {# Without a background, for the browsers that read SVG icons. #}
+            <link rel="icon" type="image/svg+xml" href="{{ url_for('static', file_path='/images/sharly-chess-icon.svg') }}?version={{ sharly_chess_config.version }}"/>
             {# https://github.com/twbs/bootstrap/releases #}
             <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ sharly_chess_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
             {# https://github.com/twbs/icons/releases #}
@@ -70,7 +74,7 @@
                 $(location).attr('href', '{{ redirect_url }}');
             </script>
         {% else %}
-            <div id="main-wrapper" class="{% block wrapper_class %}{% endblock wrapper_class %}" {% block ws %}{% endblock ws %}>
+            <div id="main-wrapper" class="{% block wrapper_class %}{% endblock wrapper_class %}" data-default-page-title="{{ self.title() }}" {% block ws %}{% endblock ws %}>
                 <div class="toast-stack position-fixed bottom-0 end-0" style="z-index: 100">
                     {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
                         {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
@@ -174,7 +178,7 @@
                 activateTooltips();
             </script>
             {{ macros.background_script(background_info) }}
-            {{ macros.theme_script(theme) }}
+            {{ macros.theme_script(theme, interface) }}
             <script>
                 $('body').css('padding-right', '0');
                 init_sidebar();

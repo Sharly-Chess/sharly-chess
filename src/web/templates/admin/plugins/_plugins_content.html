@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% import '/common/macros.j2' as macros with context %}
 
 <style>
@@ -43,17 +44,6 @@
         --bs-list-group-active-border-color: var(--plugin-accent-color);
         --bs-list-group-active-color: var(--plugin-accent-text-color);
     }
-    /* The border of the two buttons stays the same whichever one is selected,
-       otherwise the group looks broken. The classes are repeated to outweigh
-       the rule of the theme. */
-    .plugin-section .btn.plugin-toggle-button {
-        --bs-btn-color: var(--plugin-accent-color);
-        --bs-btn-border-color: var(--plugin-accent-color);
-        --bs-btn-hover-color: var(--plugin-accent-text-color);
-        --bs-btn-hover-bg: var(--plugin-accent-color);
-        --bs-btn-hover-border-color: var(--plugin-accent-color);
-        --bs-btn-active-border-color: var(--plugin-accent-color);
-    }
     /* The primary button of the light theme is the grey of the remote screens:
        the accent is what the section highlights with. The class is repeated to
        outweigh the rule of the theme. */
@@ -68,18 +58,21 @@
         --bs-btn-active-border-color: var(--plugin-accent-color);
         --bs-btn-active-color: var(--plugin-accent-text-color);
     }
+    .plugin-section .sc-segmented .btn.btn-outline-primary {
+        --bs-btn-color: var(--bs-body-color);
+        --bs-btn-border-color: var(--plugin-accent-color);
+        --bs-btn-hover-color: var(--plugin-accent-text-color);
+        --bs-btn-hover-bg: var(--plugin-accent-color);
+        --bs-btn-hover-border-color: var(--plugin-accent-color);
+        --bs-btn-active-color: var(--plugin-accent-text-color);
+        --bs-btn-active-bg: var(--plugin-accent-color);
+        --bs-btn-active-border-color: var(--plugin-accent-color);
+    }
     /* A switch that is on carries the blue of Bootstrap, which only the dark
        theme replaces. */
     .plugin-section .form-check-input:checked {
         background-color: var(--plugin-accent-color);
         border-color: var(--plugin-accent-color);
-    }
-    .plugin-toggle-button.active {
-        --bs-btn-active-bg: var(--plugin-accent-color);
-        --bs-btn-active-border-color: var(--plugin-accent-color);
-        --bs-btn-active-color: var(--plugin-accent-text-color);
-        --bs-btn-hover-bg: var(--plugin-accent-color);
-        --bs-btn-hover-color: var(--plugin-accent-text-color);
     }
     /* What is selected is read on the accent, whatever colour it carries
        otherwise. */
@@ -159,7 +152,7 @@
                             <i class="bi-plugin"></i>
                             <span class="fw-bold">{{ plugin.name }}</span>
                             {% if plugin.federation %}
-                                <span class="badge text-bg-secondary">{{ plugin.federation }}</span>
+                                {{ components.badge('neutral', plugin.federation) }}
                             {% endif %}
                             {% if plugin.is_enabled %}
                                 <i class="bi-check-circle-fill text-success ms-auto"></i>

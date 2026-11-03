@@ -900,7 +900,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                 'oob_eye_link': True,
             },
             re_swap='innerHTML',
-            re_target='.modal-header',
+            re_target='.sc-modal-subtitle',
         )
 
     @delete(

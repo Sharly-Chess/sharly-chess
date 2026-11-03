@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro item_class(item, view) -%}
     collection-status-{{ 'public' if item.public else 'private' }}
 {%- endmacro %}
@@ -19,7 +20,7 @@
         {% endif %}
         <span class="fw-bold text-truncate">{{ item.name }}</span>
         {% if item.family %}
-            <span class="badge text-bg-secondary">{{ _('Multi-Screen') }}</span>
+            {{ components.badge('neutral', _('Multi-Screen')) }}
         {% endif %}
     </span>
 {% endmacro %}
@@ -48,12 +49,11 @@
     {% set screen_sets_content %}
         {% if item.screen_type.has_screen_sets %}
             <span class="text-nowrap">
-                <i class="bi-collection pe-1 text-secondary"></i>
-                {{ ngettext(
+                {% call components.icon_text('bi-collection', icon_class='text-secondary') %}{{ ngettext(
                     '%(num)d set',
                     '%(num)d sets',
                     item.sorted_screen_sets|length,
-                ) }}
+                ) }}{% endcall %}
             </span>
         {% endif %}
     {% endset %}
@@ -135,10 +135,7 @@
             <section class="collection-detail-section collection-detail-wide">
                 <h6>{{ _('Alert message') }}</h6>
                 {% if screen.message_text %}
-                    <div
-                        class="px-2 alert-message screen-alert-message"
-                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-                    >
+                    <div class="screen-alert-message">
                         {{ screen.message_text }}
                         {% if screen.message_default %}
                             <span class="fst-italic">{{ _('(by default)') }}</span>
@@ -168,9 +165,19 @@
                     {% include screen_type.card_action_button_template %}
                 {% endif %}
                 {% if view == 'card' and not screen.family and screen_type.has_screen_sets %}
-                    {% call macros.action_tooltip(
-                        'info',
-                        (
+                    {% set _first_set = screen.sorted_screen_sets | first %}
+                    {{ components.modal_button(
+                        url_for(
+                            'admin-screen-sets-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            screen_id=screen.id,
+                        ),
+                        (_('Matches') if _first_set and _first_set.shows_team_matches else _('Boards'))
+                        if screen_type.board_based else
+                        _('Teams') if admin_event.is_team_event else _('Players'),
+                        icon='bi-collection',
+                        size='sm',
+                        tooltip=(
                             _('Edit the sets of matches displayed on the screen.')
                             if screen_type.board_based else
                             _('Edit the sets of teams displayed on the screen.')
@@ -180,31 +187,7 @@
                             if screen_type.board_based else
                             _('Edit the sets of players displayed on the screen.')
                         ),
-                        'top',
-                    ) %}
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            hx-get="{{ url_for(
-                                'admin-screen-sets-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                screen_id=screen.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-collection pe-1"></i>
-                            {% set _first_set = screen.sorted_screen_sets | first %}
-                            {% if screen_type.board_based %}
-                                {{ _('Matches') if _first_set and _first_set.shows_team_matches else _('Boards') }}
-                            {% elif admin_event.is_team_event %}
-                                {{ _('Teams') }}
-                            {% else %}
-                                {{ _('Players') }}
-                            {% endif %}
-                        </button>
-                    {% endcall %}
+                    ) }}
                 {% endif %}
                 {% if not screen.family %}
                     {{ admin_macros.display_controller_assign_dropdown(
@@ -216,57 +199,28 @@
             </div>
             {% if not screen.family %}
                 <div class="d-flex align-items-center gap-1">
-                    {% call macros.action_tooltip('info', _('Edit the properties of the screen.'), 'top') %}
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            hx-get="{{ url_for(
-                                'admin-screen-modal',
-                                action='update',
-                                event_uniq_id=admin_event.uniq_id,
-                                screen_id=screen.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-pencil"></i>
-                        </button>
-                    {% endcall %}
-                    {% call macros.action_tooltip('info', _('Duplicate the screen.'), 'top') %}
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            hx-get="{{ url_for(
-                                'admin-screen-modal',
-                                action='clone',
-                                event_uniq_id=admin_event.uniq_id,
-                                screen_id=screen.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-copy"></i>
-                        </button>
-                    {% endcall %}
-                    {% call macros.action_tooltip('info', _('Delete the screen.'), 'top') %}
-                        <button
-                            class="btn btn-sm btn-outline-danger"
-                            hx-get="{{ url_for(
-                                'admin-screen-modal',
-                                action='delete',
-                                event_uniq_id=admin_event.uniq_id,
-                                screen_id=screen.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-trash"></i>
-                        </button>
-                    {% endcall %}
+                    {{ components.modal_button(
+                        url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id),
+                        _('Edit the properties of the screen.'),
+                        icon='edit',
+                        icon_only=true,
+                        size='sm',
+                    ) }}
+                    {{ components.modal_button(
+                        url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id),
+                        _('Duplicate the screen.'),
+                        icon='copy',
+                        icon_only=true,
+                        size='sm',
+                    ) }}
+                    {{ components.modal_button(
+                        url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id),
+                        _('Delete the screen.'),
+                        kind='outline-danger',
+                        icon='delete',
+                        icon_only=true,
+                        size='sm',
+                    ) }}
                 </div>
             {% endif %}
         </div>

@@ -1,5 +1,11 @@
+{% extends '/admin/components/modal.html' %}
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set modal_id = 'team-record-modal' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-record-edit-modal' %}
+{% set modal_close = true %}
 {% set tournament = admin_team.tournament %}
 {% set bye_definition_allowed = tournament.pairing_system.allow_bye_definition %}
 {% set can_set_hpb = client.can_set_half_point_bye(tournament.id) %}
@@ -11,11 +17,7 @@
     'FPB': _('Full-Point Bye'),
     'PAB': _('Pairing Allocated Bye'),
 } %}
-<div id="team-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
-    <div class="modal-content" data-team-id="{{ admin_team.id }}">
-        <div class="modal-header d-flex justify-content-between align-items-end">
-            <div class="d-flex flex-column gap-0 align-items-start">
-                <h2 class="modal-title">
+{% block title %}
                     {{ admin_team.name }}
                     {% if client.can_check_in_players(tournament.id) %}
                         {% set status_present = admin_team.check_in %}
@@ -27,7 +29,7 @@
                             ) %}
                             {{ macros.tooltip_attributes('', (
                                 '<div class="fw-bold">' ~ (_('Present') if status_present else _('Absent')) ~ '</div>'
-                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                                '<div class="sc-detail">' ~ click_detail ~ '</div>'
                             ), 'right') }}
                             hx-patch="{{ url_for(
                                 'records-check-in-team',
@@ -37,27 +39,23 @@
                             onclick="refreshMessagesIgnored += 1"
                         ></i>
                     {% endif %}
-                </h2>
-                <div>{{ tournament.name }}</div>
-                <div>
-                    <strong>{{ _('%(string)s:', string=_('Players')) }}</strong>
-                    {% for player in admin_team.players %}
-                        {{ player.full_name }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
-            <h4>{{ _('Tournament record') }}</h4>
+{% endblock %}
+
+{% block subtitle %}
+    <div>{{ tournament.name }}</div>
+    <div>
+        <strong>{{ _('%(string)s:', string=_('Players')) }}</strong>
+        {% for player in admin_team.players %}
+            {{ player.full_name }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block body %}
+            {{ components.section_heading(_('Tournament record')) }}
             <table
                 id="team-record-table"
-                class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
+                class="table prominent table-striped table-sm w-100 mx-auto justify-content-center mt-2"
             >
                 <thead>
                     <tr>
@@ -95,57 +93,29 @@
                             <th class="text-nowrap text-center">{{ round }}</th>
                             <td class="text-nowrap text-center align-middle">
                                 {% if is_paired %}{{ team_board.match_score_display }}{% endif %}
-                                {% set _mp, _gp = tournament.point_adjustments.effective(
-                                    admin_team.id, round
-                                ) %}
-                                {% set _note = tournament.point_adjustments.from_rule_set(admin_team.id, round) %}
-                                {% set _note = _note.explanation if _note else '' %}
-                                {% if _mp or _gp or _note %}
-                                    <span
-                                        class="badge rounded-pill {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else ('text-bg-success' if (_mp or _gp) else 'text-bg-secondary') }}"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            macros.point_adjustment_tooltip(tournament, admin_team.id, round),
-                                            'top'
-                                        ) }}
-                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _mp and not _gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</span>
-                                {% endif %}
+                                {{ pairing_components.team_points_badge(tournament, admin_team.id, round) }}
                                 {% if client.can_update_results(tournament.id) %}
                                     {# There is nothing to adjust until the round
                                        is paired: the adjustment belongs to a game
                                        that has not been arranged yet. #}
                                     {% set _round_paired = tournament.round_has_pairings(round) %}
-                                    <span
-                                        class="d-inline-block"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            _('Bonus / penalty points')
-                                            if _round_paired else
-                                            _('The round must be paired first.'),
-                                            'top',
-                                        ) }}
-                                    >
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm compact-y-padding btn-outline-primary ms-1 px-1"
-                                            {% if _round_paired %}
-                                                hx-get="{{ url_for(
-                                                    'admin-team-point-adjustment-modal',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=tournament.id,
-                                                    round=round,
-                                                    team_id=admin_team.id,
-                                                ) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-target="#modal-wrapper"
-                                            {% else %}
-                                                disabled
-                                            {% endif %}
-                                        >
-                                            <i class="bi-plus-slash-minus"></i>
-                                        </button>
-                                    </span>
+                                    {{ components.modal_button(
+                                        url_for(
+                                            'admin-team-point-adjustment-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            round=round,
+                                            team_id=admin_team.id,
+                                        ),
+                                        _('Bonus / penalty points'),
+                                        icon='bi-plus-slash-minus',
+                                        size='sm',
+                                        icon_only=true,
+                                        allowed=_round_paired,
+                                        reason=_('The round must be paired first.'),
+                                        from_modal=true,
+                                        class='compact-y-padding ms-1 px-1',
+                                    ) }}
                                 {% endif %}
                             </td>
                             {% if bye_modifiable %}
@@ -212,9 +182,12 @@
             <span class="fst-italic">
                 {{ _('Byes for past rounds can be edited from the pairings page for that round.') }}
             </span>
-        </div>
-    </div>
-</div>
-<script>
-    requestRefresh();
-</script>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>
+        requestRefresh();
+    </script>
+{% endblock %}

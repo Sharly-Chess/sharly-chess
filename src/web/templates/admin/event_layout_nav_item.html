@@ -1,4 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
+{% if components is not defined %}
+    {% import '/admin/components/macros.j2' as components with context %}
+{% endif %}
 
 <div
     id="nav-{{ nav_id }}-wrapper"
@@ -33,8 +36,7 @@
                         {% endif %}
                         {% if nav_tab.has_error %}
                             <span
-                                class="nav-icon-badge nav-icon-main-badge rounded-circle bg-danger mb-1"
-                                style="font-size: 15px;"
+                                class="nav-icon-badge nav-icon-main-badge rounded-circle mb-1 nav-icon-badge-danger"
                             >
                                 <i class="bi bi-exclamation"></i>
                             </span>
@@ -51,11 +53,7 @@
                             <button
                                 class="dropdown-item d-flex align-items-center px-2 {% if sub_nav_id == admin_event_tab %}active{% endif %}"
                                 {% if 'modal' in sub_nav_tab %}
-                                    hx-get="{{ url_for(sub_nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
+                                    {{ components.modal_trigger_attrs(url_for(sub_nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id)) }}
                                 {% else %}
                                     hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
                                     hx-target="body"
@@ -90,8 +88,7 @@
 
                                 {% if sub_nav_tab.has_error %}
                                     <span
-                                        class="nav-icon-badge rounded-circle bg-danger ms-2"
-                                        style="font-size: 15px;"
+                                        class="nav-icon-badge rounded-circle ms-2 nav-icon-badge-danger"
                                     >
                                         <i class="bi bi-exclamation"></i>
                                     </span>
@@ -119,8 +116,7 @@
                     <span class="expanded-only flex-grow-1">{{ nav_tab.title|safe }}</span>
                     {% if nav_tab.has_error %}
                         <span
-                            class="nav-icon-badge rounded-circle bg-danger mx-2"
-                            style="font-size: 15px;"
+                            class="nav-icon-badge rounded-circle mx-2 nav-icon-badge-danger"
                         >
                             <i class="bi bi-exclamation"></i>
                         </span>
@@ -139,11 +135,7 @@
                         id="nav-{{ sub_nav_id }}-tab"
                         data-testid="nav-{{ sub_nav_id }}-tab"
                         {% if 'modal' in sub_nav %}
-                            hx-get="{{ url_for(sub_nav.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                            {{ components.modal_trigger_attrs(url_for(sub_nav.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id)) }}
                         {% else %}
                             hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
                             hx-target="body"
@@ -180,8 +172,7 @@
                         {% endif %}
                         {% if sub_nav.has_error %}
                             <span
-                                class="nav-icon-badge rounded-circle bg-danger ms-1"
-                                style="font-size: 15px;"
+                                class="nav-icon-badge rounded-circle ms-1 nav-icon-badge-danger"
                             >
                                 <i class="bi bi-exclamation"></i>
                             </span>
@@ -195,11 +186,7 @@
             id="nav-{{ nav_id }}-tab"
             data-testid="nav-{{ nav_id }}-tab"
             class="nav-link text-start me-1 position-relative align-items-center"
-            hx-get="{{ url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
+            {{ components.modal_trigger_attrs(url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id)) }}
             {% if nav_tab.shortcut %}
                 hx-trigger="click, {{ nav_tab.shortcut }}"
             {% endif %}

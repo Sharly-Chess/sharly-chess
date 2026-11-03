@@ -18,7 +18,11 @@ from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebC
 from web.controllers.base_controller import WebContext, BaseController
 from web.guards import EventGuard
 from web.messages import Message
-from web.session import SessionUserAccountId, SessionUserAccountPasswordHash
+from web.session import (
+    SessionAdminTheme,
+    SessionUserAccountId,
+    SessionUserAccountPasswordHash,
+)
 from web.urls import admin_event_url
 
 
@@ -79,9 +83,12 @@ class ProfileController(BaseController):
         self,
         request: HTMXRequest,
         locale: FromQuery[str | None] = None,
+        theme: FromQuery[str | None] = None,
     ) -> Template:
         web_context = ProfileWebContext(request)
         self.set_locale(request, locale)
+        if theme in SessionAdminTheme.THEMES and not web_context.client.is_local:
+            SessionAdminTheme(request).set(theme)
         return self._render_profile_modal(web_context)
 
     @post(

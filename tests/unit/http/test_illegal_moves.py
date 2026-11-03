@@ -20,7 +20,7 @@ MAXIMUM = 2
 
 EVENT = EventUnderTest(EVENT_ID, TOURNAMENT_NAME)
 
-STEPPER_COUNT = re.compile(r'bi-flag pe-1"></i><span class="fw-bold">(\d+)</span>')
+STEPPER_COUNT = re.compile(r'"bi-flag"[^>]*></i><span>(\d+)</span>')
 
 
 @pytest.fixture

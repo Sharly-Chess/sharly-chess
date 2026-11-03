@@ -1,57 +1,38 @@
-<div
-    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Prize settings') }}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                hx-patch="{{ url_for('admin-prize-update-config', event_uniq_id=admin_event.uniq_id or '') }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <div class="row gy-2 gx-3">
-                    <div class="col-12">
-                        {{ admin_macros.text_input(
-                            name='prize_currency',
-                            label=_('%(string)s:', string=_('Prize currency')),
-                            placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
-                            tooltip_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
-                            disabled=not client.can_update_event,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-            </form>
-        </div>
+{% extends '/admin/components/modal.html' %}
+{% set modal_class = 'admin-event-edit-modal' %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') if client.can_update_event else _('Close') }}
-            </button>
-            {% if client.can_update_event %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                </button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% block title %}{{ _('Prize settings') }}{% endblock %}
 
-<script>requestRefresh()</script>
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-patch="{{ url_for('admin-prize-update-config', event_uniq_id=admin_event.uniq_id or '') }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <div class="row gy-2 gx-3">
+            <div class="col-12">
+                {{ admin_macros.text_input(
+                    name='prize_currency',
+                    label=_('%(string)s:', string=_('Prize currency')),
+                    placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
+                    tooltip_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
+                    disabled=not client.can_update_event,
+                    data=data, errors=errors
+                ) }}
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button(_('Cancel') if client.can_update_event else _('Close')) }}
+    {% if client.can_update_event %}
+        {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+    {% endif %}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

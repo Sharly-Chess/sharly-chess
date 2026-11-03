@@ -9,7 +9,9 @@
 - On Windows, the data is stored in the local application data (`%LOCALAPPDATA%\Sharly Chess\data`) instead of the Documents, which cloud services such as OneDrive can synchronise and so block the events while _Sharly Chess_ writes to them. The data of the former default folder is moved on the first start, the previous folder being deleted once the copy has been checked; a folder chosen in OneDrive, Google Drive, Dropbox or iCloud Drive is moved if the user agrees (5.2.0)
 - The FFE upload, the event clone and the event backup copy the event in one consistent snapshot, even while results are being entered (5.2.0)
 - Events are backed up as they change, and a backup can be restored over an event or beside it. The backups are kept beside the data folder rather than inside it, so that either folder can be moved without the other, and a folder of the user's own can be named for them (5.2.0)
-- A refreshed admin view: a calmer and denser look set in Inter, cards and lists that show the status of each item as a coloured dot, the counts of the sidebar beside its entries, an edit button on each row of the players tab, the folding sections of the forms summarising their content, and fields that cannot be changed shown with a lock. The screens shown to players and spectators are unchanged (5.2.0)
+- A refreshed admin view: a calmer and denser look set in Inter, cards and lists that show the status of each item as a coloured dot, the counts of the sidebar beside its entries, an edit button on each row of the players tab, the folding sections of the forms summarising their content, and fields that cannot be changed shown with a lock (5.2.0)
+- The admin view can be light as well as dark: by default it follows the appearance of the system, and the settings of the application window can force it dark or light (5.2.0)
+- Each browser tab is named after its page and event, such as "Players · Spring Open 2026", so that several open tabs can be told apart (5.2.0)
 - The single screens are filtered by type with a row of chips instead of being folded away by type (5.2.0)
 - The administration pages have been reworked with a more modern look (5.2.0)
 
@@ -73,6 +75,10 @@
 
 - The screens of the Screens tab, of the menus and of the display controllers are sorted by their displayed name (5.2.0)
 - A timer can be put on several screens, multi-screens and rotators at once from the timers tab, which lists the screens displaying each timer; a screen showing another timer is moved to the chosen one (5.2.0)
+- The screens shown to players and spectators have a cleaner look that keeps their density: each set opens with its name and what it shows on one line ("Round 3 · 5 games in progress"), the timer is a pill on that line, the alert message runs in a band along the bottom and scrolls only when it is too long to fit, and the menu between screens is a row of tabs (5.2.0)
+- On the result entry screens, the games still to enter show an Enter button and the games entered step back, the last entry staying highlighted in green; on a phone, each game is a card. The result and check-in windows have large buttons, with the arbiter's forfeits set apart, and the buttons respond reliably on tablets (5.2.0)
+- The timers and the alert message have fixed colours, a timer turning from green to orange then red and the message showing in a yellow band; the colours can no longer be chosen in the timer and screen settings (5.2.0)
+- Image screens can show a timer, the image then starting below it (5.2.0)
 
 ## Sharly-Chess.com
 

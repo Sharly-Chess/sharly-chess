@@ -49,6 +49,9 @@ from plugins.manager import plugin_manager
 from web.controllers.admin.display_controller_admin_controller import (
     DisplayControllerAdminController,
 )
+from web.controllers.admin.component_gallery_admin_controller import (
+    ComponentGalleryAdminController,
+)
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
@@ -129,6 +132,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     DocumentPdfSourceController,
     AccountAdminController,
     ProfileController,
+    *([ComponentGalleryAdminController] if DEVEL_ENV else []),
     static_files_router,
     # Plugin controllers
     *[

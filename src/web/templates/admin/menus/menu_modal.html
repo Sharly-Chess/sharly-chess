@@ -1,18 +1,16 @@
-<div
-    class="modal-dialog modal-dialog-scrollable admin-menu-edit-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit menu') }}
-                {% else %}
-                    {{ _('Create menu') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_class = 'admin-menu-edit-modal' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit menu') }}
+    {% else %}
+        {{ _('Create menu') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -55,24 +53,15 @@
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') if action == 'update' else _('Create') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Save') if action == 'update' else _('Create'),
+        kind='primary',
+        icon='save',
+        type='submit',
+        attrs={'form': 'modal-form'},
+    ) }}
+{% endblock %}

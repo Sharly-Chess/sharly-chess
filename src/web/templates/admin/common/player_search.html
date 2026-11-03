@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% if data_sources %}
 <div class="row gy-2 gx-3" id="player-search-widget">
     <div class="col-12">
@@ -82,7 +83,5 @@
     </script>
 </div>
 {% else %}
-    <div class="alert alert-secondary py-2">
-        {{ _('No data source is active (to add one: Menu > Data sources).') }}
-    </div>
+    {{ components.note('secondary', _('No data source is active (to add one: Menu > Data sources).'), compact=true) }}
 {% endif %}

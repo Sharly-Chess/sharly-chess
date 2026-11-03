@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div class="container-fluid p-4">
     <h2 class="mb-1">{{ _('Configuration') }}</h2>
 
@@ -29,16 +30,11 @@
                 {% endif %}
             </div>
         </div>
-        <button
-            class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-championship-config-modal', championship_uniq_id=championship.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
-        </button>
+        {{ components.modal_button(
+            url_for('admin-championship-config-modal', championship_uniq_id=championship.uniq_id),
+            _('Edit'),
+            icon='edit',
+        ) }}
     </div>
 
     {% if championship.competitor_type == competitor_type_team %}
@@ -55,7 +51,7 @@
                         <option value="MATCH_POINTS" {% if championship.team_score_basis.value == 'MATCH_POINTS' %}selected{% endif %}>{{ _('Match points') }}</option>
                         <option value="GAME_POINTS" {% if championship.team_score_basis.value == 'GAME_POINTS' %}selected{% endif %}>{{ _('Game points') }}</option>
                     </select>
-                    <button class="btn btn-primary text-nowrap" type="submit">{{ _('Save') }}</button>
+                    {{ components.button(_('Save'), kind='primary', type='submit') }}
                 </form>
             </div>
         </div>
@@ -69,17 +65,13 @@
         </div>
         <div class="collapse show" id="gp-config-rules">
             <div class="d-flex justify-content-end mb-3">
-                <button
-                    class="btn btn-primary text-nowrap"
-                    data-testid="championship-add-rule"
-                    hx-get="{{ url_for('admin-championship-rule-modal', championship_uniq_id=championship.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-plus-lg-fill pe-1"></i>{{ _('Add rule') }}
-                </button>
+                {{ components.modal_button(
+                    url_for('admin-championship-rule-modal', championship_uniq_id=championship.uniq_id),
+                    _('Add rule'),
+                    kind='primary',
+                    icon='add',
+                    attrs={'data-testid': 'championship-add-rule'},
+                ) }}
             </div>
             <p class="text-body-secondary">
                 {{ _('Rules are applied in order: each rule only breaks the ties left by the earlier ones.') }}
@@ -110,7 +102,7 @@
                                         {% endif %}
                                     </span>
                                     <span class="championship-rule-order fw-semibold text-end">{{ loop.index }}</span>
-                                    <span class="text-nowrap"><span class="badge text-bg-secondary">{{ rule.acronym }}</span></span>
+                                    <span class="text-nowrap">{{ components.badge('neutral', rule.acronym) }}</span>
                                     <span class="fw-semibold min-width-0 text-truncate">
                                         {{ rule.name }}
                                     </span>
@@ -118,28 +110,24 @@
                                         {{ rule.details }}
                                     </span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <button
-                                            class="btn btn-sm btn-outline-primary"
-                                            type="button"
-                                            hx-get="{{ url_for('admin-championship-rule-edit-modal', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-wrapper"
-                                            aria-label="{{ _('Edit rule') }}"
-                                            {{ macros.tooltip_attributes('', _('Edit this rule.'), 'top') }}
-                                        ><i class="bi-pencil-fill"></i></button>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger"
-                                            type="button"
-                                            hx-get="{{ url_for('admin-championship-rule-delete-modal', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-wrapper"
-                                            aria-label="{{ _('Delete rule') }}"
-                                            {{ macros.tooltip_attributes('warning', _('Delete this rule.'), 'top') }}
-                                        ><i class="bi-trash-fill"></i></button>
+                                        {{ components.modal_button(
+                                            url_for('admin-championship-rule-edit-modal', championship_uniq_id=championship.uniq_id, rule_id=rule.id),
+                                            _('Edit rule'),
+                                            icon='edit',
+                                            size='sm',
+                                            icon_only=true,
+                                            tooltip=_('Edit this rule.'),
+                                        ) }}
+                                        {{ components.button(
+                                            _('Delete rule'),
+                                            kind='outline-danger',
+                                            icon='delete',
+                                            size='sm',
+                                            icon_only=true,
+                                            tooltip=_('Delete this rule.'),
+                                            tooltip_type='warning',
+                                            attrs={'hx-get': url_for('admin-championship-rule-delete-modal', championship_uniq_id=championship.uniq_id, rule_id=rule.id), 'hx-target': 'body', 'hx-indicator': '#please-wait', 'data-bs-toggle': 'modal', 'data-bs-target': '#modal-wrapper'},
+                                        ) }}
                                     </div>
                                 </div>
                             </div>
@@ -161,16 +149,12 @@
             </div>
             <div class="collapse show" id="gp-config-categories">
                 <div class="d-flex justify-content-end mb-3">
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        hx-get="{{ url_for('admin-championship-category-modal', championship_uniq_id=championship.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-plus-lg-fill pe-1"></i>{{ _('Create a category') }}
-                    </button>
+                    {{ components.modal_button(
+                        url_for('admin-championship-category-modal', championship_uniq_id=championship.uniq_id),
+                        _('Create a category'),
+                        kind='primary',
+                        icon='add',
+                    ) }}
                 </div>
                 <p class="text-body-secondary">
                     {{ _('The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category.') }}
@@ -212,48 +196,42 @@
                                             {% endif %}
                                         </span>
                                         <div class="d-flex align-items-center gap-1">
-                                        <button
-                                            class="btn btn-sm btn-outline-primary"
-                                            type="button"
-                                            hx-get="{{ url_for('admin-championship-category-rename-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-wrapper"
-                                            aria-label="{{ _('Rename') }}"
-                                            {{ macros.tooltip_attributes('', _('Rename this category.'), 'top') }}
-                                        ><i class="bi-pencil-fill"></i></button>
-                                        <button
-                                            class="btn btn-sm btn-outline-primary text-nowrap"
-                                            type="button"
-                                            hx-get="{{ url_for('admin-championship-criteria-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-filter pe-1"></i>{{ _('Criteria') }} ({{ category.criteria|length }})
-                                        </button>
-                                        <button
-                                            class="btn btn-sm btn-outline-primary"
-                                            type="button"
-                                            hx-post="{{ url_for('admin-championship-category-duplicate', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            aria-label="{{ _('Duplicate') }}"
-                                            {{ macros.tooltip_attributes('', _('Duplicate this category.'), 'top') }}
-                                        ><i class="bi-files"></i></button>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger"
-                                            type="button"
-                                            hx-get="{{ url_for('admin-championship-category-delete-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-wrapper"
-                                            aria-label="{{ _('Delete') }}"
-                                            {{ macros.tooltip_attributes('warning', _('Delete this category.'), 'top') }}
-                                        ><i class="bi-trash-fill"></i></button>
+                                        {{ components.modal_button(
+                                            url_for('admin-championship-category-rename-modal', championship_uniq_id=championship.uniq_id, category_id=category.id),
+                                            _('Rename'),
+                                            icon='edit',
+                                            size='sm',
+                                            icon_only=true,
+                                            tooltip=_('Rename this category.'),
+                                        ) }}
+                                        {{ components.modal_button(
+                                            url_for('admin-championship-criteria-modal', championship_uniq_id=championship.uniq_id, category_id=category.id),
+                                            _('Criteria') ~ ' (' ~ category.criteria|length ~ ')',
+                                            icon='bi-filter',
+                                            size='sm',
+                                        ) }}
+                                        {{ components.button(
+                                            _('Duplicate'),
+                                            icon='copy',
+                                            size='sm',
+                                            icon_only=true,
+                                            tooltip=_('Duplicate this category.'),
+                                            attrs={
+                                                'hx-post': url_for('admin-championship-category-duplicate', championship_uniq_id=championship.uniq_id, category_id=category.id),
+                                                'hx-target': 'body',
+                                                'hx-indicator': '#please-wait',
+                                            },
+                                        ) }}
+                                        {{ components.button(
+                                            _('Delete'),
+                                            kind='outline-danger',
+                                            icon='delete',
+                                            size='sm',
+                                            icon_only=true,
+                                            tooltip=_('Delete this category.'),
+                                            tooltip_type='warning',
+                                            attrs={'hx-get': url_for('admin-championship-category-delete-modal', championship_uniq_id=championship.uniq_id, category_id=category.id), 'hx-target': 'body', 'hx-indicator': '#please-wait', 'data-bs-toggle': 'modal', 'data-bs-target': '#modal-wrapper'},
+                                        ) }}
                                         </div>
                                     </div>
                                 </div>

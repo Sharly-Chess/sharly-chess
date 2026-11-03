@@ -1,5 +1,6 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div class="auth-fields row gy-2 gx-3">
     <div class="col-12">
@@ -58,18 +59,17 @@
     </div>
     <div class="text-center mt-4 mb-1">
         <span id="test-connection" {{ macros.tooltip_attributes('', _('Host and FTP username are required.')) }}>
-            <button
-                type="button"
-                class="btn btn-outline-primary text-nowrap"
-                hx-post="{{ url_for('custom-upload-test-auth', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="closest .auth-fields"
-                hx-swap="morphdom"
-                hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}'
-                hx-indicator="#please-wait"
-            >
-                <i class="bi bi-wifi pe-1"></i>
-                {{ _('Connection test') }}
-            </button>
+            {{ components.button(
+                _('Connection test'),
+                icon='bi-wifi',
+                attrs={
+                    'hx-post': url_for('custom-upload-test-auth', event_uniq_id=admin_event.uniq_id),
+                    'hx-target': 'closest .auth-fields',
+                    'hx-swap': 'morphdom',
+                    'hx-vals': 'js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         </span>
         <script>
             function isThereEmptyRequiredField() {

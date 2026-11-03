@@ -112,6 +112,7 @@ class PluginAdminController(BaseAdminController):
             accent_color = system_accent_color()
             context |= {
                 'theme': 'light',
+                'interface': 'app',
                 'background_info': {'color': 'transparent'},
                 'accent_color': accent_color,
                 'accent_text_color': readable_text_color(accent_color)

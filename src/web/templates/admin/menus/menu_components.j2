@@ -20,7 +20,7 @@
         data-testid="screens-count"
         {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
     >
-        <i class="bi-window pe-1 text-secondary"></i>{{ item.covered_basic_screens|length }}
+        {% call components.icon_text('bi-window', icon_class='text-secondary') %}{{ item.covered_basic_screens|length }}{% endcall %}
     </span>
 {% endmacro %}
 
@@ -30,7 +30,7 @@
         data-testid="families-count"
         {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
     >
-        <i class="bi-window-split pe-1 text-secondary"></i>{{ item.covered_families|length }}
+        {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.covered_families|length }}{% endcall %}
     </span>
 {% endmacro %}
 
@@ -105,70 +105,60 @@
         <div class="d-flex align-items-center gap-1">
             {% if client.can_manage_screens %}
                 {% if view == 'card' %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for(
-                            'admin-menu-items-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            menu_id=menu.id,
-                        ) }}"
-                        {{ macros.tooltip_attributes('info', _('Define the content of the menu.'), 'top') }}
-                    >
-                        <i class="bi-window-stack"></i>
-                        <span class="ms-1">{{ _('Content') }}</span>
-                    </button>
+                    {{ components.button(
+                        _('Content'),
+                        icon='bi-window-stack',
+                        size='sm',
+                        tooltip=_('Define the content of the menu.'),
+                        attrs={
+                            'hx-get': url_for(
+                                'admin-menu-items-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                menu_id=menu.id,
+                            ),
+                        },
+                    ) }}
                 {% endif %}
                 {% if menu.first_screen %}
-                    <a
-                        class="btn btn-sm btn-outline-primary"
-                        href="{{ url_for(
+                    {{ components.button(
+                        _('View the menu.'),
+                        icon='bi-eye',
+                        icon_only=true,
+                        size='sm',
+                        href=url_for(
                             'user-screen',
                             event_uniq_id=admin_event.uniq_id,
                             screen_uniq_id=menu.first_screen.uniq_id,
-                        ) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('info', _('View the menu.'), 'top') }}
-                    ><i class="bi-eye"></i></a>
+                        ),
+                        attrs={'target': '_blank'},
+                    ) }}
                 {% endif %}
             {% endif %}
         </div>
         {% if client.can_manage_screens %}
             <div class="d-flex align-items-center gap-1">
-                {% call macros.action_tooltip('info', _('Edit the properties of the menu.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for('admin-menu-update-modal', event_uniq_id=admin_event.uniq_id, menu_id=menu.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-pencil"></i></button>
-                {% endcall %}
-                {% call macros.action_tooltip('info', _('Duplicate the menu.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for('admin-menu-clone-modal', event_uniq_id=admin_event.uniq_id, menu_id=menu.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-copy"></i></button>
-                {% endcall %}
-                {% call macros.action_tooltip('info', _('Delete the menu.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-danger"
-                        hx-get="{{ url_for(
-                            'admin-menu-delete-modal',
-                            action='delete',
-                            event_uniq_id=admin_event.uniq_id,
-                            menu_id=menu.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-trash"></i></button>
-                {% endcall %}
+                {{ components.modal_button(
+                    url_for('admin-menu-update-modal', event_uniq_id=admin_event.uniq_id, menu_id=menu.id),
+                    _('Edit the properties of the menu.'),
+                    icon='edit',
+                    icon_only=true,
+                    size='sm',
+                ) }}
+                {{ components.modal_button(
+                    url_for('admin-menu-clone-modal', event_uniq_id=admin_event.uniq_id, menu_id=menu.id),
+                    _('Duplicate the menu.'),
+                    icon='copy',
+                    icon_only=true,
+                    size='sm',
+                ) }}
+                {{ components.modal_button(
+                    url_for('admin-menu-delete-modal', action='delete', event_uniq_id=admin_event.uniq_id, menu_id=menu.id),
+                    _('Delete the menu.'),
+                    kind='outline-danger',
+                    icon='delete',
+                    icon_only=true,
+                    size='sm',
+                ) }}
             </div>
         {% endif %}
     </div>

@@ -1,10 +1,11 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% set auto_upload_count = allowed_tournaments | selectattr('plugin_data.chess_results.auto_upload') | list | length %}
 
 <table
     id="upload-results"
-    class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+    class="table prominent table-sm w-100 mx-auto justify-content-center"
     hx-get="{{ url_for('chess-results-upload-results', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
     hx-swap="outerHTML"
@@ -98,25 +99,24 @@
                             {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
                         ><i class="bi bi-gear-fill"></i></a>
                     {% endif %}
-                    <span {{ macros.tooltip_attributes('', _('Upload')) }}>
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                            hx-post="{{ url_for(
+                    {{ components.button(
+                        _('Upload'),
+                        icon='bi-cloud-arrow-up-fill',
+                        size='sm',
+                        icon_only=true,
+                        allowed=not actions_unavailable_message,
+                        reason=actions_unavailable_message,
+                        attrs={
+                            'hx-post': url_for(
                                 'chess-results-upload-tournament',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=tournament.id
-                            ) }}"
-                            hx-target="#upload-results"
-                            hx-swap="outerHTML"
-                            hx-indicator="#please-wait"
-                            {% if actions_unavailable_message %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                        </button>
-                    </span>
+                            ),
+                            'hx-target': '#upload-results',
+                            'hx-swap': 'outerHTML',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 </td>
             </tr>
         {% endfor %}

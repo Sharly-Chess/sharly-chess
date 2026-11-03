@@ -13,8 +13,8 @@ class SCETournamentStatus(IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def css_classes(self) -> str:
-        """CSS classes to apply to the status."""
+    def badge_kind(self) -> str:
+        """The kind of the badge showing the status (see components.badge)."""
 
 
 class NeverUploadedSCETournamentStatus(SCETournamentStatus):
@@ -27,8 +27,8 @@ class NeverUploadedSCETournamentStatus(SCETournamentStatus):
         return _('Never uploaded')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
     def tooltip_message(self, tournament: Tournament) -> str | None:
         return None
@@ -47,8 +47,8 @@ class NotStartedSCETournamentStatus(SCETournamentStatus):
         return _('Tournament has not started yet, no results to upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-warning'
+    def badge_kind(self) -> str:
+        return 'warning'
 
 
 class UpToDateSCETournamentStatus(SCETournamentStatus):
@@ -64,8 +64,8 @@ class UpToDateSCETournamentStatus(SCETournamentStatus):
         return _('No changes detected since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-success'
+    def badge_kind(self) -> str:
+        return 'success'
 
 
 class ModifiedSCETournamentStatus(SCETournamentStatus):
@@ -81,8 +81,8 @@ class ModifiedSCETournamentStatus(SCETournamentStatus):
         return _('Tournament has been modified since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class PendingSCETournamentStatus(SCETournamentStatus):
@@ -98,8 +98,8 @@ class PendingSCETournamentStatus(SCETournamentStatus):
         return _('Tournament upload has been planned.')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
 
 class OngoingSCETournamentStatus(SCETournamentStatus):
@@ -115,8 +115,8 @@ class OngoingSCETournamentStatus(SCETournamentStatus):
         return _('Tournament is currently being uploaded.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class FailureSCETournamentStatus(SCETournamentStatus, ABC):
@@ -125,8 +125,8 @@ class FailureSCETournamentStatus(SCETournamentStatus, ABC):
         return _('Failure')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-error'
+    def badge_kind(self) -> str:
+        return 'danger'
 
     @property
     @abstractmethod

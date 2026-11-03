@@ -63,19 +63,19 @@
 
 {% macro status(item, view, placement) %}
     {% if item.administrator %}
-        <span class="text-primary text-nowrap"><i class="bi-shield-fill-check pe-1"></i>{{ _('System') }}</span>
+        {% call components.icon_text('bi-shield-fill-check', class='text-primary text-nowrap') %}{{ _('System') }}{% endcall %}
     {% elif item.anonymous %}
-        <span class="text-secondary text-nowrap"><i class="bi-incognito pe-1"></i>{{ _('Anonymous') }}</span>
+        {% call components.icon_text('bi-incognito', class='text-secondary text-nowrap') %}{{ _('Anonymous') }}{% endcall %}
     {% elif item.active %}
         <span
             class="text-success text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is active, anonymous users can log in to it.'), 'top') }}
-        ><i class="bi-person-check pe-1"></i>{{ pgettext('active account', 'Active') }}</span>
+        >{% call components.icon_text('bi-person-check') %}{{ pgettext('active account', 'Active') }}{% endcall %}</span>
     {% else %}
         <span
             class="text-danger text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is not active, anonymous users can not log in to it.'), 'top') }}
-        ><i class="bi-person-x pe-1"></i>{{ pgettext('inactive account', 'Inactive') }}</span>
+        >{% call components.icon_text('bi-person-x') %}{{ pgettext('inactive account', 'Inactive') }}{% endcall %}</span>
     {% endif %}
 {% endmacro %}
 
@@ -93,37 +93,24 @@
 
 {% macro permissions_button(account, show_label=false) %}
     {% set client_can_manage_account = client.can_manage_account(account.id) %}
-    {% call macros.action_tooltip(
-        'info' if account.edit_permissions and client_can_manage_account else 'warning',
-        _('The permissions of this account can not be updated.')
+    {{ components.modal_button(
+        url_for(
+            'admin-account-permissions-modal'
+            if account.permissions
+            else 'admin-account-permission-create-modal',
+            event_uniq_id=admin_event.uniq_id,
+            account_id=account.id,
+        ),
+        _('Permissions'),
+        icon='bi-shield-check',
+        icon_only=not show_label,
+        size='sm',
+        allowed=account.edit_permissions and client_can_manage_account,
+        reason=_('The permissions of this account can not be updated.')
         if not account.edit_permissions
-        else _('You are not allowed to update the permissions of this account.')
-        if not client_can_manage_account
-        else _('Edit the permissions of the account.'),
-        'top',
-    ) %}
-        <button
-            class="btn btn-sm btn-outline-primary"
-            {% if account.edit_permissions and client_can_manage_account %}
-                hx-get="{{ url_for(
-                    'admin-account-permissions-modal'
-                    if account.permissions
-                    else 'admin-account-permission-create-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    account_id=account.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% else %}
-                disabled
-            {% endif %}
-        >
-            <i class="bi-shield-check"></i>
-            {% if show_label %}<span class="ms-1">{{ _('Permissions') }}</span>{% endif %}
-        </button>
-    {% endcall %}
+        else _('You are not allowed to update the permissions of this account.'),
+        tooltip=_('Edit the permissions of the account.'),
+    ) }}
 {% endmacro %}
 
 {% macro permissions_tooltip(account) %}
@@ -154,14 +141,13 @@
             <span
                 class="text-success text-nowrap"
                 {{ macros.tooltip_attributes('', permissions_tooltip(item), 'top') }}
-            ><i class="bi-shield-fill-check pe-1"></i>{{ _('All') }}</span>
+            >{% call components.icon_text('bi-shield-fill-check') %}{{ _('All') }}{% endcall %}</span>
         {% elif item.permissions %}
             <span
                 class="text-nowrap"
                 {{ macros.tooltip_attributes('', permissions_tooltip(item), 'top') }}
             >
-                <i class="bi-shield-check pe-1 text-secondary"></i>
-                {{ item.permissions|length }}
+                {% call components.icon_text('bi-shield-check', icon_class='text-secondary') %}{{ item.permissions|length }}{% endcall %}
             </span>
         {% else %}
             <span
@@ -321,72 +307,40 @@
     <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
         {% if view == 'card' %}{{ permissions_button(account, true) }}{% endif %}
         <div class="d-flex align-items-center gap-1">
-            {% call macros.action_tooltip(
-                'info' if account.edit_properties and client_can_manage_account else 'warning',
-                _('This account can not be updated.')
+            {{ components.modal_button(
+                url_for('admin-account-update-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id),
+                _('Edit the properties of the account.'),
+                icon='edit',
+                icon_only=true,
+                size='sm',
+                allowed=account.edit_properties and client_can_manage_account,
+                reason=_('This account can not be updated.')
                 if not account.edit_properties
-                else _('You are not allowed to update this account.')
-                if not client_can_manage_account
-                else _('Edit the properties of the account.'),
-                'top',
-            ) %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    {% if account.edit_properties and client_can_manage_account %}
-                        hx-get="{{ url_for('admin-account-update-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% else %}
-                        disabled
-                    {% endif %}
-                ><i class="bi-pencil"></i></button>
-            {% endcall %}
-            {% call macros.action_tooltip(
-                'info' if account.edit_properties and client_can_manage_account else 'warning',
-                _('This account can not be duplicated.')
+                else _('You are not allowed to update this account.'),
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-account-clone-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id),
+                _('Duplicate the account.'),
+                icon='copy',
+                icon_only=true,
+                size='sm',
+                allowed=account.edit_properties and client_can_manage_account,
+                reason=_('This account can not be duplicated.')
                 if not account.edit_properties
-                else _('You are not allowed to duplicate this account.')
-                if not client_can_manage_account
-                else _('Duplicate the account.'),
-                'top',
-            ) %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    {% if account.edit_properties and client_can_manage_account %}
-                        hx-get="{{ url_for('admin-account-clone-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% else %}
-                        disabled
-                    {% endif %}
-                ><i class="bi-copy"></i></button>
-            {% endcall %}
-            {% call macros.action_tooltip(
-                'info' if account.edit_properties and client_can_manage_account else 'warning',
-                _('This account can not be deleted.')
+                else _('You are not allowed to duplicate this account.'),
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-account-delete-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id),
+                _('Delete the account.'),
+                kind='outline-danger',
+                icon='delete',
+                icon_only=true,
+                size='sm',
+                allowed=account.edit_properties and client_can_manage_account,
+                reason=_('This account can not be deleted.')
                 if not account.edit_properties
-                else _('You are not allowed to delete this account.')
-                if not client_can_manage_account
-                else _('Delete the account.'),
-                'top',
-            ) %}
-                <button
-                    class="btn btn-sm btn-outline-danger"
-                    {% if account.edit_properties and client_can_manage_account %}
-                        hx-get="{{ url_for('admin-account-delete-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    {% else %}
-                        disabled
-                    {% endif %}
-                ><i class="bi-trash"></i></button>
-            {% endcall %}
+                else _('You are not allowed to delete this account.'),
+            ) }}
         </div>
     </div>
 {% endmacro %}

@@ -25,140 +25,79 @@
         {% include '/admin/common/collection_controls.html' %}
     {% endif %}
     <div class="d-flex align-items-center gap-2">
-        <span {{ macros.tooltip_attributes('info', _('Prize settings'), 'bottom') }}>
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-prize-config-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                ) }}"
-                hx-trigger="click"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <i class="bi-gear-fill"></i>
-            </button>
-        </span>
-        <span
-            class="dropdown-end"
-            {% if not client.can_manage_prizes %}
-                {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-            {% elif not admin_prize_group %}
-                {{ macros.tooltip_attributes('info', _('You must create a prize bracket before creating a prize category.'), 'bottom') }}
-            {% else %}
-                {{ macros.tooltip_attributes('info', _('Add a prize category to the prize bracket.'), 'bottom') }}
-            {% endif %}
-        >
-            <button
-                class="btn btn-primary text-nowrap dropdown-toggle"
-                type="button"
-                {% if not admin_prize_group or not client.can_manage_prizes %}
-                    disabled
-                {% else %}
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                {% endif %}
-            >
-                <i class="bi-plus-lg pe-1"></i>
-                {{ _('Create a category') }}
-            </button>
-            {% if admin_prize_group and client.can_manage_prizes %}
-                <ul class="dropdown-menu">
-                    <li>
-                        <button
-                            class="dropdown-item text-start cursor-pointer"
-                            hx-get="{{ url_for(
-                                'admin-prize-category-create-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                prize_group_id=admin_prize_group.id
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-plus-lg pe-1"></i>
-                            {{ _('Create a category') }}
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            class="dropdown-item text-start cursor-pointer"
-                            hx-get="{{ url_for(
-                                'admin-prize-categories-generate-age-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                prize_group_id=admin_prize_group.id
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-people-fill pe-1"></i>
-                            {{ _('Generate age categories') }}
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            class="dropdown-item text-start cursor-pointer"
-                            hx-get="{{ url_for(
-                                'admin-prize-categories-generate-rating-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                prize_group_id=admin_prize_group.id
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-bar-chart-fill pe-1"></i>
-                            {{ _('Generate rating categories') }}
-                        </button>
-                    </li>
-                </ul>
-            {% endif %}
-        </span>
-    </div>
-    {% if admin_prize_group and admin_tournament.prize_groups|length == 1 %}
-        <span
-            {% if not client.can_manage_prizes %}
-                {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-            {% else %}
-                {{ macros.tooltip_attributes(
-                    'info',
-                    _('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
-                    'bottom'
-                ) }}
-            {% endif %}
-        >
-            <button
-                class="btn btn-primary"
-                {% if not client.can_manage_prizes %}
-                    disabled
-                {% else %}
-                    hx-get="{{ url_for(
-                        'admin-prize-groups-modal',
+        {{ components.modal_button(
+            url_for('admin-prize-config-modal', event_uniq_id=admin_event.uniq_id),
+            _('Prize settings'),
+            icon='settings',
+            icon_only=true,
+            tooltip_placement='bottom',
+        ) }}
+        {% call components.menu_button(
+            _('Create a category'),
+            kind='primary',
+            icon='add',
+            allowed=admin_prize_group and client.can_manage_prizes,
+            reason=_('You are not allowed to manage prizes.') if not client.can_manage_prizes
+                else _('You must create a prize bracket before creating a prize category.'),
+            tooltip=_('Add a prize category to the prize bracket.'),
+            tooltip_placement='bottom',
+        ) %}
+            {% if admin_prize_group %}
+                {{ components.menu_item(
+                    _('Create a category'),
+                    icon='add',
+                    url=url_for(
+                        'admin-prize-category-create-modal',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                {% endif %}
-            >
-                <i class="bi-gear-fill pe-1"></i>
-                {{ _('Manage the prize brackets') }}
-            </button>
-        </span>
+                        prize_group_id=admin_prize_group.id
+                    ),
+                    modal=true,
+                ) }}
+                {{ components.menu_item(
+                    _('Generate age categories'),
+                    icon='bi-people-fill',
+                    url=url_for(
+                        'admin-prize-categories-generate-age-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id
+                    ),
+                    modal=true,
+                ) }}
+                {{ components.menu_item(
+                    _('Generate rating categories'),
+                    icon='bi-bar-chart-fill',
+                    url=url_for(
+                        'admin-prize-categories-generate-rating-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id
+                    ),
+                    modal=true,
+                ) }}
+            {% endif %}
+        {% endcall %}
+    </div>
+    {% set manage_brackets_url = url_for(
+        'admin-prize-groups-modal',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+    ) if admin_tournament else none %}
+    {% if admin_prize_group and admin_tournament.prize_groups|length == 1 %}
+        {{ components.modal_button(
+            manage_brackets_url,
+            _('Manage the prize brackets'),
+            kind='primary',
+            icon='settings',
+            allowed=client.can_manage_prizes,
+            reason=_('You are not allowed to manage prizes.'),
+            tooltip=_('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
+            tooltip_placement='bottom',
+        ) }}
     {% elif admin_prize_group %}
         <div class="d-flex flex-column">
-            <div style="font-size: 0.8rem;">
+            <div class="small">
                 {{ _('%(string)s:', string=_('Prize Brackets')) }}
             </div>
             <div class="d-flex align-items-end">
@@ -182,76 +121,44 @@
                         </option>
                     {% endfor %}
                 </select>
-                <span
-                    {% if not client.can_manage_prizes %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes(
-                            'info',
-                            _('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
-                            'bottom'
-                        ) }}
-                    {% endif %}
-                >
-                    <button
-                        class="btn text-primary"
-                        {% if not client.can_manage_prizes %}
-                            disabled
-                        {% else %}
-                            hx-get="{{ url_for(
-                                'admin-prize-groups-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        {% endif %}
-                    >
-                        <i class="bi-gear-fill"></i>
-                    </button>
-                </span>
+                {{ components.modal_button(
+                    manage_brackets_url,
+                    _('Manage the prize brackets'),
+                    kind='link',
+                    icon='settings',
+                    icon_only=true,
+                    allowed=client.can_manage_prizes,
+                    reason=_('You are not allowed to manage prizes.'),
+                    tooltip=_('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
+                    tooltip_placement='bottom',
+                ) }}
             </div>
         </div>
     {% else %}
-        <span>
-            <span
-                {% if not client.can_manage_prizes %}
-                    {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
-                {% elif not admin_tournament %}
-                    {{ macros.tooltip_attributes('info', _('You must create a tournament before creating a prize bracket.'), 'bottom') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('info', _('Create a prize bracket in which you will then be able to create categories, and then prizes.'), 'bottom') }}
-                {% endif %}
-            >
-                <form
-                    {% if admin_tournament and client.can_manage_prizes %}
-                        hx-trigger="click, SC_Plus from:body"
-                        hx-post="{{ url_for(
-                            'admin-prize-group-create',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    {% endif %}
-                >
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        {% if not admin_tournament or not client.can_manage_prizes %}
-                            disabled
-                        {% else %}
-                            type="submit"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <i class="bi-plus-lg pe-1"></i>
-                        {{ _('Create a Prize Bracket') }}
-                    </button>
-                </form>
-            </span>
-        </span>
+        <form
+            {% if admin_tournament and client.can_manage_prizes %}
+                hx-trigger="click, SC_Plus from:body"
+                hx-post="{{ url_for(
+                    'admin-prize-group-create',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            {% endif %}
+        >
+            {{ components.button(
+                _('Create a Prize Bracket'),
+                kind='primary',
+                icon='add',
+                type='submit',
+                allowed=admin_tournament and client.can_manage_prizes,
+                reason=_('You are not allowed to manage prizes.') if not client.can_manage_prizes
+                    else _('You must create a tournament before creating a prize bracket.'),
+                tooltip=_('Create a prize bracket in which you will then be able to create categories, and then prizes.'),
+                tooltip_placement='bottom',
+            ) }}
+        </form>
     {% endif %}
     {% if tournament_options|length > 1 %}
         <select
@@ -276,8 +183,7 @@
 {% block cards_container_cards %}
     {% set sortable = admin_prize_group and admin_prize_group.categories|length > 1 %}
     {% if not admin_prize_group %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-            <h5 class="mt-2 my-5 text-center">{{ _('No Prize Bracket') }}</h5>
+        {% call components.empty_state(_('No Prize Bracket')) %}
             <p>
                 {{ _(
                     'Sharly Chess offers a powerful and flexible '
@@ -293,10 +199,9 @@
                 ) }}
             </p>
             <p>{{ _('Create a Prize Bracket now to get started.') }}</p>
-        </div>
+        {% endcall %}
     {% elif not admin_prize_group.categories %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-            <h5 class="mt-2 my-5 text-center">{{ _('No Prize Category') }}</h5>
+        {% call components.empty_state(_('No Prize Category')) %}
             <p>
                 {{ _(
                     'Each bracket should contain one or more categories '
@@ -313,7 +218,7 @@
                 ) }}
             </p>
             <p>{{ _('Create a Prize Category now to continue.') }}</p>
-        </div>
+        {% endcall %}
     {% else %}
         <form
             {% if sortable %}

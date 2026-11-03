@@ -1,183 +1,160 @@
-{% import '../macros.j2' as macros with context %}
-{% import '../../admin/common/macros.j2' as admin_macros with context %}
+{% extends '/admin/components/modal.html' %}
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
 
-<div class="modal-dialog modal-dialog-scrollable admin-profile-modal">
-    <div class="modal-content">
-        <div class="modal-header position-relative">
-            <button
-                type="button"
-                class="btn-close position-absolute top-0 end-0 mt-2 me-2"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-            <div class="row gy-2 gx-3 w-100 pe-4">
-                <div class="col-12 col-sm-6">
-                    <h2 class="modal-title">
-                        {{ _("Profile") }}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
-                    </h2>
+{% set modal_doc = 'profile' %}
+{% set profile_url = url_for('profile-modal', event_uniq_id=admin_event.uniq_id) %}
+
+{% block title %}{{ _('Profile') }}{% endblock %}
+
+{% block body %}
+    {% call components.section_heading() %}{{ _('Display') }}{% endcall %}
+    <div class="profile-preferences">
+        <span>{{ _('Language:') }}</span>
+        {% set current_locale_label %}
+            <img src="{{ locale_infos[locale].flag_url }}" alt="" class="locale-flag" />
+            {{ locale_infos[locale].name }}
+        {% endset %}
+        {% call components.menu_button(current_locale_label, kind='secondary', menu_class='locale') %}
+            {% for l, l_info in locale_infos.items() %}
+                {% if l != locale %}
+                    {% call components.menu_item(
+                        l_info.name,
+                        url=profile_url,
+                        attrs={'hx-vals': '{"locale": "' ~ l ~ '"}'},
+                    ) %}
+                        <img src="{{ l_info.flag_url }}" alt="" class="locale-flag" />
+                        <span>{{ l_info.name }}</span>
+                    {% endcall %}
+                {% endif %}
+            {% endfor %}
+        {% endcall %}
+        {% if not client.is_local %}
+            <span>{{ _('Administration theme:') }}</span>
+            {% call components.segmented(_('Administration theme:')) %}
+                {% for value, label in [('auto', _('Automatic')), ('dark', _('Dark')), ('light', _('Light'))] %}
+                    {{ components.segment_button(
+                        label,
+                        active=theme == value,
+                        attrs={
+                            'hx-get': profile_url,
+                            'hx-vals': '{"theme": "' ~ value ~ '"}',
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
+                {% endfor %}
+            {% endcall %}
+        {% endif %}
+    </div>
+
+    {% if client.account.administrator %}
+        {% call components.section_heading() %}{{ _('Sharly Chess server') }}{% endcall %}
+        <p>{{ _('You are connected on the Sharly Chess server and have full administration privileges.') }}</p>
+    {% elif client.account.anonymous and active_user_account_options %}
+        {% call components.section_heading() %}{{ _('Not logged in') }}{% endcall %}
+        <form
+            id="modal-form"
+            hx-trigger="submit, enterKeypressFromModal"
+            hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <div class="row gy-2 gx-3">
+                <div class="col-12 col-md-6">
+                    {{ admin_macros.select_input(
+                        name='account_id',
+                        label=_('%(string)s:', string=_('Account')),
+                        select_options=active_user_account_options,
+                        data=data, errors=errors
+                    ) }}
                 </div>
-                <div class="profile-locale-picker dropdown col-12 col-sm-6 d-flex align-items-center justify-content-end gap-1">
-                    <i class="bi-translate pe-1"></i>
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img
-                            src="{{ locale_infos[locale].flag_url }}"
-                            alt="{{ locale_infos[locale].name }}"
-                            class="locale-flag"
-                        />
-                        {{ locale_infos[locale].name }}
-                    </button>
-                    <ul class="dropdown-menu locale">
-                        {% for l, l_info in locale_infos.items() %}
-                            {% if l != locale %}
-                                <li
-                                    class="dropdown-item text-start cursor-pointer"
-                                    hx-get="{{ url_for('profile-modal', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-vals='{"locale": "{{ l }}"}'
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    hx-trigger="click, keyup[key=='Enter']"
-                                    tabindex="0"
-                                >
-                                    <img
-                                        src="{{ l_info.flag_url }}"
-                                        alt="{{ l_info.name }}"
-                                        class="locale-flag"
-                                    />
-                                    {{ l_info.name }}
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
+                <div class="col-12 col-md-6">
+                    {{ admin_macros.password_input(
+                        name='password',
+                        label=_('Password:'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                    {{ components.button(
+                        _('Log in'),
+                        kind='primary',
+                        icon='bi-person-check-fill',
+                        type='submit',
+                        class='log-button',
+                        attrs={'form': 'modal-form'},
+                    ) }}
                 </div>
             </div>
-        </div>
-        <div class="modal-body">
-            {% if client.account.administrator %}
-                <h4>
-                    {{ _('Sharly Chess server') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12">
-                        {{ _('You are connected on the Sharly Chess server and have full administration privileges.') }}
-                    </div>
-                </div>
-            {% elif client.account.anonymous and active_user_account_options %}
-                <h4>
-                    {{ _('Not logged in') }}
-                </h4>
-                <form
-                    id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                    hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.select_input(
-                                name='account_id',
-                                label=_('%(string)s:', string=_('Account')),
-                                select_options=active_user_account_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.password_input(
-                                name='password',
-                                label=_('Password:'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 d-flex justify-content-end">
-                            <button
-                                type="submit"
-                                form="modal-form"
-                                class="log-button text-nowrap white btn btn-primary"
-                            >
-                                <i class="bi-person-check-fill pe-1"></i>
-                                {{ _('Log in') }}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            {% elif not client.account.anonymous %}
-                <h4>
-                    {{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}
-                </h4>
-                <form
-                    id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                    hx-post="{{ url_for('profile-logout', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12 col-md-6">
-                            <button
-                                type="submit"
-                                form="modal-form"
-                                class="log-button text-nowrap white btn btn-primary"
-                            >
-                                <i class="bi-person-fill-x pe-1"></i>
-                                {{ _('Log out') }}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            {% endif %}
-            <h4>
-                {{ _('Permissions') }}
-            </h4>
-            <table
-                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
-            >
-                <thead>
-                    <th class="text-start">
-                        {{ _('Access level') }}
-                    </th>
-                    <th class="text-start">
-                        {{ _('Scope') }}
-                    </th>
-                </thead>
-                <tbody>
-                    {% if client.permissions_by_access_level %}
-                        {% for access_level, permission in client.permissions_by_access_level.items() %}
-                            <tr>
-                                <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                    {{ access_level.name }}
-                                    {% if permission.inherited %}
-                                        {{ _('(inherited)') }}
-                                    {% endif %}
-                                </td>
-                                <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                    {% if access_level.has_tournament_scope %}
-                                        {% if permission.tournament_ids %}
-                                            {{ ', '.join(permission.tournament_names(admin_event)) }}
-                                        {% else %}
-                                            {{ _('All the tournaments') }}
-                                        {% endif %}
-                                    {% else %}
-                                        {{ access_level.scope.name }}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="2 text-secondary">
-                                {{ _('No permissions') }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+        </form>
+    {% elif not client.account.anonymous %}
+        {% call components.section_heading() %}{{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}{% endcall %}
+        <form
+            id="modal-form"
+            hx-trigger="submit, enterKeypressFromModal"
+            hx-post="{{ url_for('profile-logout', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {{ components.button(
+                _('Log out'),
+                kind='primary',
+                icon='bi-person-fill-x',
+                type='submit',
+                class='log-button',
+                attrs={'form': 'modal-form'},
+            ) }}
+        </form>
+    {% endif %}
 
-<script>
-    requestRefresh();
-    $('.log-button').click(() => {
-        refreshRequested = false;
-    });
-</script>
+    {% call components.section_heading() %}{{ _('Permissions') }}{% endcall %}
+    <table class="table prominent table-sm w-100">
+        <thead>
+            <th class="text-start">{{ _('Access level') }}</th>
+            <th class="text-start">{{ _('Scope') }}</th>
+        </thead>
+        <tbody>
+            {% if client.permissions_by_access_level %}
+                {% for access_level, permission in client.permissions_by_access_level.items() %}
+                    <tr>
+                        <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
+                            {{ access_level.name }}
+                            {% if permission.inherited %}
+                                {{ _('(inherited)') }}
+                            {% endif %}
+                        </td>
+                        <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
+                            {% if access_level.has_tournament_scope %}
+                                {% if permission.tournament_ids %}
+                                    {{ ', '.join(permission.tournament_names(admin_event)) }}
+                                {% else %}
+                                    {{ _('All the tournaments') }}
+                                {% endif %}
+                            {% else %}
+                                {{ access_level.scope.name }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" class="text-secondary">{{ _('No permissions') }}</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block footer %}{{ components.cancel_button(_('Close')) }}{% endblock %}
+
+{% block after_modal %}
+    <script>
+        requestRefresh();
+        $('.log-button').click(() => {
+            refreshRequested = false;
+        });
+        window.scRequestedTheme = "{{ theme }}";
+        window.scApplyTheme();
+    </script>
+{% endblock %}

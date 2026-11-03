@@ -520,11 +520,11 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default number of illegal moves to record.
     default_record_illegal_moves: int = 0
 
-    # The default colors for the timers.
-    default_timer_colors: ClassVar[dict[int, str]] = {
-        1: '#00FF00',
-        2: '#FF7700',
-        3: '#FF0000',
+    # The colours of the timers.
+    timer_colors: ClassVar[dict[int, str]] = {
+        1: '#0F6E3A',
+        2: '#B25E00',
+        3: '#B3261E',
     }
 
     # The default delays for the timers.
@@ -534,11 +534,11 @@ class SharlyChessConfig(metaclass=Singleton):
         3: 10,
     }
 
-    # The default text colour for the alert messages.
-    default_message_color: str = '#FF0000'
+    # The text colour of the alert messages.
+    message_color: str = '#101418'
 
-    # The default background colour for the alert messages.
-    default_message_background_color: str = '#FFFF00'
+    # The background colour of the alert messages.
+    message_background_color: str = '#FFC425'
 
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15

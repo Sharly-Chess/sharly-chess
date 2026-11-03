@@ -4,38 +4,18 @@
     hx-target="body"
     hx-indicator="#please-wait"
 >
-    <span class="dropdown-center" >
-        <button
-            class="btn btn-outline-primary dropdown-toggle text-nowrap"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            data-bs-auto-close="outside"
-        >
-            <span
-                {{ macros.tooltip_attributes('info', _('Choose the columns displayed.'), 'top') }}
-            >
-                <i class="bi-layout-three-columns pe-1"></i>
-                {{ _('Columns') }}
-            </span>
-        </button>
-        <ul class="dropdown-menu table-dropdown-menu p-0">
+    {% call components.menu_button(
+        _('Columns'),
+        icon='bi-layout-three-columns',
+        tooltip=_('Choose the columns displayed.'),
+        class='dropdown-center',
+        toggle_attrs={'data-bs-auto-close': 'outside'},
+        menu_class='table-dropdown-menu p-0',
+    ) %}
             {% set name = 'column_ids' %}
             {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
             <input type="hidden" name="{{ name }}" value="" />
-            <li class="dropdown-item title text-nowrap">
-                <input
-                    type="checkbox"
-                    class="form-check-input blue-checkbox"
-                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
-                    onclick="$('input.hideable-columns').prop('checked', this.checked)"
-                />
-                <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
-                    <i class="bi-check-lg pe-1"></i>
-                    {{ _('OK') }}
-                </button>
-            </li>
-            <li class="dropdown-divider m-0"></li>
+            {{ components.menu_select_all(enabled_columns|length == visible_columns|length, "$('input.hideable-columns').prop('checked', this.checked)") }}
             {% for column in enabled_columns %}
                 <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
                     <input
@@ -52,6 +32,5 @@
                     </label>
                 </li>
             {% endfor %}
-        </ul>
-    </span>
+    {% endcall %}
 </form>

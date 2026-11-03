@@ -1,31 +1,33 @@
-{% import '/common/macros.j2' as macros with context %}
-
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'player-diff-modal' %}
+{% set modal_size = 'max' %}
+{% set modal_class = 'admin-players-update-modal' %}
 {% set player_updated_class='' %}
 {% set player_unchanged_class='text-secondary' %}
 {% set field_updated_class='text-warning fw-bold' %}
 {% set field_unchanged_class='' %}
-<div id="player-diff-modal" class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
-                    {{ _('Players update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
-                {% else %}
-                    {{ _('Players update') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <h4>
-                {{ _('Data source: %(data_source)s', data_source=data_source.name) }}
-            </h4>
-            {% with message, is_warning = data_source.info_or_warning_message %}
-                {% if message %}
-                    <h6 class="{% if is_warning %}text-danger{% endif %}">
-                        {{ message }}
-                    </h6>
-                {% endif %}
-            {% endwith %}
+
+{% block title %}
+    {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
+        {{ _('Players update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+    {% else %}
+        {{ _('Players update') }}
+    {% endif %}
+{% endblock %}
+
+{% set source_message, source_message_is_warning = data_source.info_or_warning_message %}
+
+{% block subtitle %}
+    <div>{{ _('Data source: %(data_source)s', data_source=data_source.name) }}</div>
+    {% if source_message and not source_message_is_warning %}
+        <div>{{ source_message }}</div>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+            {% if source_message and source_message_is_warning %}
+                {{ components.note('danger', source_message, icon='warning') }}
+            {% endif %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -66,7 +68,7 @@
                 {% set show_tournament=not admin_tournament and admin_event.tournaments_by_id|length > 1 %}
                 <table
                     id="player-matches-table"
-                    class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                    class="table prominent table-striped table-sm table-hover w-100 mx-auto justify-content-center"
                 >
                     <thead class="modal-table-sticky-header">
                         <tr>
@@ -167,26 +169,15 @@
                     </tbody>
                 </table>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="update-players-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-                {% if not update_enabled %}disabled{% endif %}
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Save'),
+        kind='primary',
+        icon='save',
+        type='submit',
+        attrs={'id': 'update-players-button', 'form': 'modal-form', 'disabled': not update_enabled},
+    ) }}
+{% endblock %}

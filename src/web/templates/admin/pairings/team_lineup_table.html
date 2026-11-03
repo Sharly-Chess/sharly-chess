@@ -1,3 +1,4 @@
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
 {# Side-column "Teams" table for team systems (flat fixed-table, Swiss and
    round-robin): lists every team with a lineup-edit button, persistent
@@ -9,7 +10,7 @@
     <table
         id="{{ table_id }}"
         {% if swap_oob %}hx-swap-oob="true"{% endif %}
-        class="table prominent table-striped table-sm w-100 bg-light {% if unsafe_editing %}table-danger-header{% endif %}"
+        class="table prominent table-striped table-sm w-100 {% if unsafe_editing %}table-danger-header{% endif %}"
     >
         <thead
             id="{{ table_id }}-header"
@@ -19,16 +20,18 @@
             <tr>
                 <th colspan="2">
                     {% if _collapsed %}
-                        <button
-                            class="btn btn-sm p-0 border-0 bg-transparent text-reset"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#{{ table_id }}-body"
-                            aria-expanded="false"
-                        >
-                            <i class="bi-caret-right-fill"></i>
-                            {{ title }} ({{ teams|length }})
-                        </button>
+                        {{ components.button(
+                            title ~ ' (' ~ teams|length ~ ')',
+                            kind='plain',
+                            icon='bi-caret-right-fill',
+                            size='sm',
+                            class='p-0 border-0 bg-transparent text-reset',
+                            attrs={
+                                'data-bs-toggle': 'collapse',
+                                'data-bs-target': '#' ~ table_id ~ '-body',
+                                'aria-expanded': 'false',
+                            },
+                        ) }}
                     {% else %}
                         {{ title }} ({{ teams|length }})
                     {% endif %}
@@ -48,62 +51,29 @@
                         {% endif %}
                         <a
                             class="player-link"
-                            hx-get="{{ url_for(
+                            {{ components.modal_trigger_attrs(url_for(
                                 'admin-team-record-modal',
                                 event_uniq_id=admin_event.uniq_id,
                                 team_id=team.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                            )) }}
                         ><strong>{{ team.name }}</strong></a>
-                        {% set _mp, _gp = admin_tournament.point_adjustments.effective(
-                            team.id, admin_round
-                        ) %}
-                        {% set _note = admin_tournament.point_adjustments.from_rule_set(team.id, admin_round) %}
-                        {% set _note = _note.explanation if _note else '' %}
-                        {% if _mp or _gp or _note %}
-                            <a
-                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else ('text-bg-success' if (_mp or _gp) else 'text-bg-secondary') }}"
-                                style="cursor: pointer;"
-                                hx-get="{{ url_for(
-                                    'admin-team-point-adjustment-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    team_id=team.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    macros.point_adjustment_tooltip(admin_tournament, team.id, admin_round),
-                                    'top'
-                                ) }}
-                            >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _mp and not _gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
-                        {% endif %}
+                        {{ pairing_components.team_points_badge(
+                            admin_tournament, team.id, admin_round, editable=true, class='align-middle ms-1',
+                        ) }}
                     </td>
                     <td class="text-end">
                         {% if _lineup and client.can_update_tournaments %}
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                hx-get="{{ url_for(
+                            {{ components.modal_button(
+                                url_for(
                                     'admin-team-lineups-modal',
                                     event_uniq_id=admin_event.uniq_id,
                                     team_id=team.id,
-                                ) }}?round={{ admin_round }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
-                            >
-                                <i class="bi-list-ol"></i>
-                            </button>
+                                ) ~ '?round=' ~ admin_round,
+                                _('Edit lineup'),
+                                icon='bi-list-ol',
+                                size='sm',
+                                icon_only=true,
+                            ) }}
                         {% endif %}
                     </td>
                 </tr>

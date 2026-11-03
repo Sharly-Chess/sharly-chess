@@ -2,6 +2,7 @@
 services, over HTTP."""
 
 import os
+import re
 from collections.abc import Iterator
 from unittest.mock import patch
 from xml.etree import ElementTree
@@ -274,6 +275,44 @@ def test_results_wait_for_the_round_shown_on_screens_to_be_published(
     publish(http, tournament, 1)
     enter_result(http, tournament, 1)
     assert EVENT.tournament().round_has_played_result(1)
+
+
+def enabled_results(http: TestClient, tournament: Tournament, round_: int) -> set[int]:
+    """The results the pairing modal of the first board lets the arbiter
+    set, special ones included (a disabled button carries no request)."""
+    board = EVENT.tournament().get_round_boards(round_)[0]
+    response = http.get(
+        f'/event/{EVENT_ID}/pairing/{tournament.id}/{round_}/{board.id}'
+    )
+    assert response.status_code == 200
+    return {
+        int(result)
+        for result in re.findall(
+            rf'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.id}/(\d+)',
+            response.text,
+        )
+    }
+
+
+@pytest.mark.unit
+def test_every_result_waits_for_the_round_shown_on_screens_to_be_published(
+    http: TestClient, api: ApiClient, tournament: Tournament
+):
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_id': tournament.id},
+    )
+    pair_round(http, tournament, 1)
+    assert enabled_results(http, tournament, 1) == set()
+    publish(http, tournament, 1)
+    assert {
+        Result.WIN.value,
+        Result.DRAW.value,
+        Result.UNRATED_DRAW.value,
+    } <= enabled_results(http, tournament, 1)
 
 
 @pytest.mark.unit

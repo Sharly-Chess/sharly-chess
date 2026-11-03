@@ -11,16 +11,7 @@
 
 {% block top_right_nav %}
     {% include '/admin/common/collection_controls.html' %}
-    <button
-        class="btn btn-primary text-nowrap"
-        hx-get="{{ url_for('admin-championship-create-modal') }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
-        data-bs-toggle="modal"
-        data-bs-target="#modal-wrapper"
-    >
-        <i class="bi-plus-circle-fill pe-1"></i>{{ _('Create a championship') }}
-    </button>
+    {{ components.modal_button(url_for('admin-championship-create-modal'), _('Create a championship'), kind='primary', icon='add') }}
 {% endblock %}
 
 {% block cards_container_cards %}

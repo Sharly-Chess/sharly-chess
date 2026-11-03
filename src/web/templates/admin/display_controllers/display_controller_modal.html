@@ -1,96 +1,80 @@
-<div
-    class="modal-dialog modal-dialog-scrollable admin-display_controller-edit-modal"
-    style="--bs-modal-width: fit-content;"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'create' %}
-                    {{ _('Create display controller') }}
-                {% elif action == 'update' %}
-                    {{ _('Edit display controller') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete display controller') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-display-controller-create', event_uniq_id=admin_event.uniq_id) }}"
-                {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-display-controller-' ~ action, event_uniq_id=admin_event.uniq_id, display_controller_id=admin_display_controller.id) }}"
-                {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-display-controller-' ~ action, event_uniq_id=admin_event.uniq_id, display_controller_id=admin_display_controller.id) }}"
-                {% else %}
-                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
-                {% endif %}
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% if action == 'delete' %}
-                    <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Display Controller'), value=admin_display_controller.name) }}
-                    </h4>
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
-                {% else %}
-                    <div class="row gy-2 gx-3">
-                       <div class="d-flex">
-                            {{ admin_macros.switch_input(
-                                name='public',
-                                label='',
-                                placeholder=_('Define as public'),
-                                data=data, errors=errors
-                            ) }}
-                            <i class="bi bi-info-circle-fill"
-                                {{ macros.tooltip_attributes(
-                                    'info', _('Only allowed users can view private display controllers.'), 'top'
-                                ) }}
-                            ></i>
-                        </div>
-                        <div class="col-12">
-                            {{ admin_macros.text_input(
-                                name='name',
-                                label=_('%(string)s:', string=_('Name')),
-                                placeholder=_('E.g.: My display controller'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-                {% endif %}
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                 {% if action == 'create' %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Create') }}
-                {% elif action == 'update' %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    <i class="bi-trash pe-1"></i>
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
-            </button>
-        </div>
-    </div>
-</div>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'fit' %}
+{% set modal_class = 'admin-display_controller-edit-modal' %}
+
+{% block title %}
+    {% if action == 'create' %}
+        {{ _('Create display controller') }}
+    {% elif action == 'update' %}
+        {{ _('Edit display controller') }}
+    {% elif action == 'delete' %}
+        {{ _('Delete display controller') }}
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}
+    {% if action == 'delete' %}
+        {{ _('%(string)s: %(value)s', string=_('Display Controller'), value=admin_display_controller.name) }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        {% if action == 'create' %}
+            hx-post="{{ url_for('admin-display-controller-create', event_uniq_id=admin_event.uniq_id) }}"
+        {% elif action == 'update' %}
+            hx-patch="{{ url_for('admin-display-controller-' ~ action, event_uniq_id=admin_event.uniq_id, display_controller_id=admin_display_controller.id) }}"
+        {% elif action == 'delete' %}
+            hx-delete="{{ url_for('admin-display-controller-' ~ action, event_uniq_id=admin_event.uniq_id, display_controller_id=admin_display_controller.id) }}"
+        {% else %}
+            hx-get="{{ url_for('unknown-action-' ~ action) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {% if action == 'delete' %}
+            {{ components.note('danger', _('Warning: the deletion is permanent!'), icon='warning') }}
+        {% else %}
+            <div class="row gy-2 gx-3">
+               <div class="d-flex">
+                    {{ admin_macros.switch_input(
+                        name='public',
+                        label='',
+                        placeholder=_('Define as public'),
+                        data=data, errors=errors
+                    ) }}
+                    <i class="bi bi-info-circle-fill"
+                        {{ macros.tooltip_attributes(
+                            'info', _('Only allowed users can view private display controllers.'), 'top'
+                        ) }}
+                    ></i>
+                </div>
+                <div class="col-12">
+                    {{ admin_macros.text_input(
+                        name='name',
+                        label=_('%(string)s:', string=_('Name')),
+                        placeholder=_('E.g.: My display controller'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if action == 'delete' %}
+        {{ components.button(_('Delete'), kind='danger', icon='delete', type='submit', attrs={'form': 'modal-form'}) }}
+    {% else %}
+        {{ components.button(
+            _('Save') if action == 'update' else _('Create'),
+            kind='primary',
+            icon='save',
+            type='submit',
+            attrs={'form': 'modal-form'},
+        ) }}
+    {% endif %}
+{% endblock %}

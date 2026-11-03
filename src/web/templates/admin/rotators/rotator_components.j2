@@ -25,7 +25,7 @@
         data-testid="screens-count"
         {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
     >
-        <i class="bi-window pe-1 text-secondary"></i>{{ item.screens|length }}
+        {% call components.icon_text('bi-window', icon_class='text-secondary') %}{{ item.screens|length }}{% endcall %}
     </span>
 {% endmacro %}
 
@@ -35,25 +35,25 @@
         data-testid="families-count"
         {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
     >
-        <i class="bi-window-split pe-1 text-secondary"></i>{{ item.families|length }}
+        {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.families|length }}{% endcall %}
     </span>
 {% endmacro %}
 
 {% macro screens_button(item, show_label=false) %}
-    <button
-        class="btn btn-sm btn-outline-primary"
-        hx-get="{{ url_for(
-            'admin-rotator-screens-modal',
-            event_uniq_id=admin_event.uniq_id,
-            rotator_id=item.id,
-        ) }}"
-        {{ macros.tooltip_attributes(
-            'info', _('Define the screens and multi-screens to display.'), 'top'
-        ) }}
-    >
-        <i class="bi-window-stack{% if show_label %} pe-1{% endif %}"></i>
-        {% if show_label %}{{ _('Screens') }}{% endif %}
-    </button>
+    {{ components.button(
+        _('Screens'),
+        icon='bi-window-stack',
+        icon_only=not show_label,
+        size='sm',
+        tooltip=_('Define the screens and multi-screens to display.'),
+        attrs={
+            'hx-get': url_for(
+                'admin-rotator-screens-modal',
+                event_uniq_id=admin_event.uniq_id,
+                rotator_id=item.id,
+            ),
+        },
+    ) }}
 {% endmacro %}
 
 {% macro screen_assignments(item, view, placement) %}
@@ -96,7 +96,7 @@
                 _('There needs to be at least one screen or multi-screen defined for the rotator to be accessible.'),
                 'top',
             ) }}
-        ><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('Empty') }}</span>
+        >{% call components.icon_text('warning') %}{{ _('Empty') }}{% endcall %}</span>
     {% endif %}
 {% endmacro %}
 
@@ -104,7 +104,7 @@
     <span
         class="text-nowrap"
         {{ macros.tooltip_attributes('info', _('Rotation delay'), 'top') }}
-    ><i class="bi-hourglass-split pe-1 text-secondary"></i>{{ _('%(seconds)d sec.', seconds=item.delay) }}</span>
+    >{% call components.icon_text('bi-hourglass-split', icon_class='text-secondary') %}{{ _('%(seconds)d sec.', seconds=item.delay) }}{% endcall %}</span>
 {% endmacro %}
 
 {% macro timer(item, view, placement) %}
@@ -120,10 +120,7 @@
 
 {% macro alert_message_content(rotator) %}
     {% if rotator.message_text %}
-        <div
-            class="px-2 alert-message rotator-alert-message"
-            style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-        >{{ rotator.message_text }}</div>
+        <div class="rotator-alert-message">{{ rotator.message_text }}</div>
     {% else %}
         <span class="text-secondary fst-italic">
             {{ _('Default alert messages') if rotator.message_default else _('No alert message') }}
@@ -184,12 +181,14 @@
             <div class="d-flex align-items-center gap-1">
                 {% if view == 'card' %}{{ screens_button(rotator, true) }}{% endif %}
                 {% if rotator.rotating_screens_by_id %}
-                    <a
-                        class="btn btn-sm btn-outline-primary"
-                        href="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}
-                    ><i class="bi-eye"></i></a>
+                    {{ components.button(
+                        _('Go to the rotator.'),
+                        icon='bi-eye',
+                        icon_only=true,
+                        size='sm',
+                        href=url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id),
+                        attrs={'target': '_blank'},
+                    ) }}
                     {{ admin_macros.display_controller_assign_dropdown(
                         admin_event.sorted_display_controllers,
                         'rotator',
@@ -198,41 +197,33 @@
                 {% endif %}
             </div>
             <div class="d-flex align-items-center gap-1">
-                {% call macros.action_tooltip('info', _('Edit the properties of the rotator.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for('admin-rotator-update-modal', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-pencil"></i></button>
-                {% endcall %}
-                {% call macros.action_tooltip('info', _('Duplicate the rotator.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for('admin-rotator-clone-modal', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-copy"></i></button>
-                {% endcall %}
-                {% call macros.action_tooltip('info', _('Delete the rotator.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-danger"
-                        hx-get="{{ url_for(
-                            'admin-rotator-delete-modal',
-                            action='delete',
-                            event_uniq_id=admin_event.uniq_id,
-                            rotator_id=rotator.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-trash"></i></button>
-                {% endcall %}
+                {{ components.modal_button(
+                    url_for('admin-rotator-update-modal', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id),
+                    _('Edit the properties of the rotator.'),
+                    icon='edit',
+                    icon_only=true,
+                    size='sm',
+                ) }}
+                {{ components.modal_button(
+                    url_for('admin-rotator-clone-modal', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id),
+                    _('Duplicate the rotator.'),
+                    icon='copy',
+                    icon_only=true,
+                    size='sm',
+                ) }}
+                {{ components.modal_button(
+                    url_for(
+                        'admin-rotator-delete-modal',
+                        action='delete',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=rotator.id,
+                    ),
+                    _('Delete the rotator.'),
+                    kind='outline-danger',
+                    icon='delete',
+                    icon_only=true,
+                    size='sm',
+                ) }}
             </div>
         </div>
     {% endif %}

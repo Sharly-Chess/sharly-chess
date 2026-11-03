@@ -1,29 +1,28 @@
-<div
-    class="modal-dialog modal-dialog-scrollable admin-family-edit-modal"
-    {% if action == 'delete' %}
-        style="--bs-modal-width: fit-content;"
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'fit' if action == 'delete' else 'wide' %}
+{% set modal_class = 'admin-family-edit-modal' %}
+
+{% block title %}
+    {% if action in ['create', 'clone', ] %}
+        {{ _('Create multi-screen') }}
+    {% elif action == 'update' %}
+        {{ _('Edit multi-screen') }}
+    {% elif action == 'delete' %}
+        {{ _('Delete multi-screen') }}
     {% endif %}
->
-    <div class="modal-content">
-        <div class="modal-header">
-            {% if action == 'update' %}
-                {% include 'family_update_modal_header.html' %}
-            {% elif action in ['create', 'clone', ] %}
-                <div class="vstack">
-                    <h2 class="modal-title">
-                        {{ _('Create multi-screen') }}
-                    </h2>
-                    <div class="form-text pt-0 mt-0">
-                        {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
-                    </div>
-                </div>
-            {% elif action == 'delete' %}
-                 <h2 class="modal-title">
-                   {{ _('Delete multi-screen') }}
-                </h2>
-            {% endif %}
-        </div>
-        <div class="modal-body">
+{% endblock %}
+
+{% block subtitle %}
+    {% if action == 'update' %}
+        {% include 'family_update_modal_header.html' %}
+    {% elif action in ['create', 'clone', ] %}
+        {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
+    {% elif action == 'delete' %}
+        {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -42,14 +41,9 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
-                    <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
-                    </h4>
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
+                    {{ components.note('danger', _('Warning: the deletion is permanent!'), icon='warning') }}
                 {% else %}
-                    <h4>{{ _('Properties') }}</h4>
+                    {{ components.section_heading(_('Properties')) }}
                     <div class="row gy-2 gx-3">
                         <div class="col-12">
                             {{ admin_macros.switch_input(
@@ -105,9 +99,7 @@
                     {% endif %}
                     {% set sel = family_type.selection_labels(is_team, is_team_matches) %}
                     {% set show_board_selection = family_type.supports_fixed_boards and not is_team_matches %}
-                    <h4 class="mt-4">
-                        {{ sel.header }}
-                    </h4>
+                    {{ components.section_heading(sel.header) }}
                     <div class="row gy-2 gx-3">
                         {% if show_board_selection %}
                             <div class="col-12">
@@ -167,9 +159,7 @@
                         </script>
                     {% endif %}
 
-                    <h4 class="mt-4">
-                        {{ _('Layout') }}
-                    </h4>
+                    {{ components.section_heading(_('Layout')) }}
                     <div class="row gy-2 gx-3">
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
@@ -244,34 +234,19 @@
                     });
                 </script>
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                {% if action in ['create', 'clone', ] %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Create') }}
-                {% elif action == 'update' %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    <i class="bi-trash pe-1"></i>
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if action == 'delete' %}
+        {{ components.button(_('Delete'), kind='danger', icon='delete', type='submit', attrs={'form': 'modal-form'}) }}
+    {% else %}
+        {{ components.button(
+            _('Save') if action == 'update' else _('Create'),
+            kind='primary',
+            icon='save',
+            type='submit',
+            attrs={'form': 'modal-form'},
+        ) }}
+    {% endif %}
+{% endblock %}

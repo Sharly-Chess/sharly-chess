@@ -436,6 +436,7 @@ class SharlyChessServerToga(toga.App):
         self.date_formatter_select: toga.Selection | None = None
         self.name_formatter_select: toga.Selection | None = None
         self.capitalise_last_name_switch: toga.Switch | None = None
+        self.admin_theme_select: toga.Selection | None = None
         self.experimental_switch: toga.Switch | None = None
 
         # About view
@@ -774,6 +775,9 @@ class SharlyChessServerToga(toga.App):
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
             self._settings_row('', self._build_capitalise_last_name_switch()),
+            self._settings_row(
+                _('Administration theme:'), self._build_admin_theme_select()
+            ),
             self._settings_row('', self.launch_browser_switch),
         ]
         if config.experimental_features:
@@ -997,6 +1001,19 @@ class SharlyChessServerToga(toga.App):
         )
         return self.name_formatter_select
 
+    def _build_admin_theme_select(self) -> toga.Selection:
+        self.admin_theme_select = self._select(
+            [
+                {'admin_theme': 'auto', 'text': _('Automatic')},
+                {'admin_theme': 'dark', 'text': _('Dark')},
+                {'admin_theme': 'light', 'text': _('Light')},
+            ],
+            SharlyChessConfig().stored_config.admin_theme,
+            'admin_theme',
+            self._on_admin_theme_change,
+        )
+        return self.admin_theme_select
+
     def _build_capitalise_last_name_switch(self) -> toga.Switch:
         self.capitalise_last_name_switch = toga.Switch(
             text=_('Capitalise last names'),
@@ -1086,6 +1103,9 @@ class SharlyChessServerToga(toga.App):
 
     def _on_name_formatter_change(self, widget: toga.Selection, **kwargs: Any) -> None:
         self._update_config('name_formatter', getattr(widget.value, 'name_formatter'))  # noqa: B009
+
+    def _on_admin_theme_change(self, widget: toga.Selection, **kwargs: Any) -> None:
+        self._update_config('admin_theme', getattr(widget.value, 'admin_theme'))  # noqa: B009
 
     def _on_capitalise_last_name_switch_change(
         self, widget: toga.Switch, **kwargs: Any

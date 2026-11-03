@@ -1,29 +1,18 @@
-{% import '/common/macros.j2' as macros with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'player-modal' %}
+{% set modal_size = 'max' %}
+{% set modal_class = 'admin-players-update-modal' %}
+{% set modal_close = true %}
 
-<div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Pairing information for round %(round)d', round=admin_round) }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
+{% block title %}{{ _('Pairing information for round %(round)d', round=admin_round) }}{% endblock %}
 
-        <div class="modal-body">
+{% block body %}
             {% if warning %}
-                <div class="alert alert-warning" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    {{ warning }}
-                </div>
+                {{ components.note('warning', warning) }}
             {% endif %}
             <table
                 id="pairings-info-table"
-                class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                class="table prominent table-sm table-hover w-100 mx-auto justify-content-center"
             >
                 {% with first_entry=pairing_history[0][1][0] %}
                     <thead>
@@ -141,6 +130,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

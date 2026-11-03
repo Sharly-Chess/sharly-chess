@@ -806,11 +806,11 @@ class IndexAdminController(BaseAdminController):
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # Defaults edited in other tabs
-            timer_colors=config.default_timer_colors,  # type: ignore[arg-type]
+            timer_colors=config.timer_colors,  # type: ignore[arg-type]
             timer_delays=config.default_timer_delays,  # type: ignore[arg-type]
             background_color=config.default_background_color,
-            message_background_color=config.default_message_background_color,
-            message_color=config.default_message_color,
+            message_background_color=config.message_background_color,
+            message_color=config.message_color,
         )
         if admin_event:
             # Defaults edited in other tabs

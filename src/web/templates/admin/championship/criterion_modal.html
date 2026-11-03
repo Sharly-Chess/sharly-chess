@@ -1,20 +1,17 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">{{ _('Edit criterion') if criterion else _('Create criterion') }}</h2>
-        </div>
-        <div class="modal-body">
-            <h4 class="mb-3">{{ category.name }}</h4>
+{% block title %}{{ _('Edit criterion') if criterion else _('Create criterion') }}{% endblock %}
+
+{% block subtitle %}{{ category.name }}{% endblock %}
+
+{% block body %}
             {% if previous_criterion %}
-                {% with type='success', message=_(
+                {{ components.banner('success', _(
                     'Criterion [%(criterion)s] successfully created!',
                     criterion=previous_criterion_label,
-                ) %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                )) }}
             {% endif %}
             <form
                 id="modal-form"
@@ -61,26 +58,23 @@
                     });
                 </script>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for('admin-championship-criteria-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <i class="bi-arrow-left-circle-fill pe-1"></i>{{ _('Back') }}
-            </button>
-            {% if criterion %}
-                <button type="submit" form="modal-form" class="btn btn-primary text-nowrap">
-                    <i class="bi-floppy-fill pe-1"></i>{{ _('Save') }}
-                </button>
-            {% else %}
-                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}
+    {{ components.modal_button(
+        url_for('admin-championship-criteria-modal', championship_uniq_id=championship.uniq_id, category_id=category.id),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+    {% if criterion %}
+        {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+    {% else %}
+        {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+    {% endif %}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

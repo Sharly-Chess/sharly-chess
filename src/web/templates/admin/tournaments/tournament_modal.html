@@ -1,19 +1,22 @@
+{% extends '/admin/components/modal.html' %}
 {% import "/admin/common/warning_macros.j2" as warning_macros with context %}
 {% import "/admin/tournaments/time_control_editor.html" as time_control_editor with context %}
-<div class="modal-dialog modal-dialog-scrollable admin-tournament-edit-modal">
-    <div class="modal-content">
-        {# Required for time pickers #}
-        <div tabindex="0" class="focus-honey-pot"></div>
-        <div class="modal-header">
-             <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit tournament') }}
-                {% else %}
-                   {{ _('Create tournament') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-tournament-edit-modal' %}
+{% set modal_doc = 'tournaments' %}
+
+{# Required for time pickers #}
+{% block before_header %}<div tabindex="0" class="focus-honey-pot"></div>{% endblock %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit tournament') }}
+    {% else %}
+        {{ _('Create tournament') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -36,9 +39,7 @@
                 hx-indicator="#please-wait"
             >
                 {% set reload_schedule_script = "htmx.trigger(document.getElementById('schedule-section'), 'schedule-params-updated')" %}
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
+                {{ components.section_heading(_('Properties')) }}
                 {# These inputs are a trick to avoid autocomplete #}
                 <input type="text" style="display:none">
                 <input type="password" style="display:none">
@@ -252,9 +253,7 @@
                     </div>
                 {% endif %}
 
-                <h4>
-                    {{ _('Pairings') }}
-                </h4>
+                {{ components.section_heading(_('Pairings')) }}
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
@@ -569,7 +568,7 @@
                 </div>
 
                 {% if is_team_event %}
-                    <h4 class="mt-3">{{ _('Team competition') }}</h4>
+                    {{ components.section_heading(_('Team competition')) }}
                     <div class="row gy-2 gx-3">
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
@@ -851,9 +850,7 @@
                     </button>
                     <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
                         {% if is_team_event %}
-                            <h6 class="mt-3 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
-                                {{ _('Game points') }}
-                            </h6>
+                            {{ components.section_heading(_('Game points'), sub=true) }}
                         {% endif %}
                         <div class="row gy-2 gx-3">
                             <div class="col-6 col-md-4">
@@ -997,9 +994,7 @@
                         </script>
                         {% if is_team_event %}
                             <div id="match-points-section">
-                            <h6 class="mt-4 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
-                                {{ _('Match points') }}
-                            </h6>
+                            {{ components.section_heading(_('Match points'), sub=true) }}
                             <div class="row gy-2 gx-3">
                                 <div class="col-6 col-md-4">
                                     {{ admin_macros.number_input(
@@ -1388,37 +1383,21 @@
                     </script>
                 {% endif %}
             </form>
+{% endblock %}
 
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <span id="submit-button-container">
-                {% if action == 'update' %}
-                    <button
-                        type="submit"
-                        form="modal-form"
-                        class="text-nowrap white btn btn-primary"
-                    >
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    </button>
-                {% else %}
-                    {{ admin_macros.split_submit_buttons(
-                        options={
-                            'create': _('Create'),
-                            'add_screens': _('Create with default screens'),
-                        },
-                        active_option='create'
-                    ) }}
-                {% endif %}
-            </span>
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.cancel_button() }}
+    <span id="submit-button-container">
+        {% if action == 'update' %}
+            {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+        {% else %}
+            {{ admin_macros.split_submit_buttons(
+                options={
+                    'create': _('Create'),
+                    'add_screens': _('Create with default screens'),
+                },
+                active_option='create'
+            ) }}
+        {% endif %}
+    </span>
+{% endblock %}

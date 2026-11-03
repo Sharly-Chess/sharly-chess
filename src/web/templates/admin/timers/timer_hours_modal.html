@@ -1,77 +1,62 @@
-<div
-    class="modal-dialog {% if admin_timer.timer_hours %}modal-dialog-scrollable{% endif %}"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Hours') }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_close = true %}
+{% set modal_scrollable = admin_timer.timer_hours | length > 0 %}
+
+{% block title %}{{ _('Hours') }}{% endblock %}
+
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Timer')) }}
+    {{ admin_timer.name }}
+{% endblock %}
+
+{% block body %}
             <div class="d-flex gap-2 mb-3 justify-content-end">
                 {% if admin_timer.timer_hours %}
-                    <button
-                        class="btn btn-sm btn-outline-danger text-nowrap"
-                        hx-get="{{ url_for(
+                    {{ components.modal_button(
+                        url_for(
                             'admin-timer-hours-clear-modal',
                             event_uniq_id=admin_event.uniq_id,
                             timer_id=admin_timer.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {{ macros.tooltip_attributes('info', _('Delete all hours for this timer and start fresh.'), 'top') }}
-                    >
-                        <i class="bi-trash-fill pe-1"></i>
-                        {{ _('Clear all') }}
-                    </button>
+                        ),
+                        _('Clear all'),
+                        kind='outline-danger',
+                        icon='bi-trash-fill',
+                        size='sm',
+                        tooltip=_('Delete all hours for this timer and start fresh.'),
+                        from_modal=true,
+                    ) }}
                 {% endif %}
-                <button
-                    class="btn btn-sm btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for(
+                {{ components.modal_button(
+                    url_for(
                         'admin-timer-usage-modal',
                         event_uniq_id=admin_event.uniq_id,
                         timer_id=admin_timer.id,
-                    ) }}"
-                    hx-indicator="#please-wait"
-                    {{ macros.tooltip_attributes('info', _('Choose the screens that display the timer'), 'top') }}
-                >
-                    <i class="bi-window pe-1"></i>
-                    {{ _('Screens') }}
-                </button>
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for(
+                    ),
+                    _('Screens'),
+                    icon='bi-window',
+                    size='sm',
+                    tooltip=_('Choose the screens that display the timer'),
+                    from_modal=true,
+                ) }}
+                {{ components.modal_button(
+                    url_for(
                         'admin-timer-hour-create-modal',
                         event_uniq_id=admin_event.uniq_id,
                         timer_id=admin_timer.id,
-                    ) }}"
-                    hx-indicator="#please-wait"
-                    {{ macros.tooltip_attributes('info', _('Add an hour to the timer.'), 'top') }}
-                >
-                    <i class="bi-plus-lg-fill pe-1"></i>
-                    {{ _('Add') }}
-                </button>
+                    ),
+                    _('Add'),
+                    kind='primary',
+                    icon='add',
+                    tooltip=_('Add an hour to the timer.'),
+                    from_modal=true,
+                ) }}
             </div>
-            <h4 class="mb-3">
-                {{ _('%(string)s:', string=_('Timer')) }}
-                {{ admin_timer.name }}
-            </h4>
             {% if success_message %}
-                {% with type='success', message=success_message %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner('success', success_message) }}
             {% endif %}
             {% if warning_message %}
-                {% with type='warning', message=warning_message %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner('warning', warning_message) }}
             {% endif %}
 
             <div id="timer-hours-container" class="d-flex flex-column gap-2">
@@ -79,38 +64,26 @@
                     <div class="text-danger">{{ _('No hours.') }}</div>
                     {% set tournaments_with_schedule = admin_event.tournaments | selectattr('has_schedule') | list %}
                     {% if tournaments_with_schedule %}
-                        <div class="mt-2 text-center">
-                            <div class="btn-group dropdown">
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-primary dropdown-toggle text-nowrap"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    {{ macros.tooltip_attributes('info', _('Automatically create timer hours matching the round schedule of a specific tournament.'), 'top') }}
-                                >
-                                    <i class="bi-calendar2-check-fill pe-1"></i>
-                                    {{ _('Create hours from tournament') }}
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    {% for t in tournaments_with_schedule %}
-                                        <li>
-                                            <button
-                                                class="dropdown-item"
-                                                hx-post="{{ url_for(
-                                                    'admin-timer-hours-from-tournament',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    timer_id=admin_timer.id,
-                                                    tournament_id=t.id,
-                                                ) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                            >
-                                                {{ t.name }}
-                                            </button>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                        <div class="mt-2 d-flex justify-content-center">
+                            {% call components.menu_button(
+                                _('Create hours from tournament'),
+                                icon='bi-calendar2-check-fill',
+                                align='end',
+                                tooltip=_('Automatically create timer hours matching the round schedule of a specific tournament.'),
+                            ) %}
+                                {% for t in tournaments_with_schedule %}
+                                    {{ components.menu_item(t.name, attrs={
+                                        'hx-post': url_for(
+                                            'admin-timer-hours-from-tournament',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            timer_id=admin_timer.id,
+                                            tournament_id=t.id,
+                                        ),
+                                        'hx-target': 'body',
+                                        'hx-indicator': '#please-wait',
+                                    }) }}
+                                {% endfor %}
+                            {% endcall %}
                         </div>
                     {% endif %}
                 {% endif %}
@@ -121,16 +94,15 @@
                     <h6 id="{{ id }}-field" class="date-field fw-bold mt-2">
                         {{ date_str }}
                         {% if has_available_date %}
-                            <span>
-                                <button
-                                    id="{{ id }}-update-button"
-                                    data-testid="{{ id }}-update-button"
-                                    type="button"
-                                    class="btn btn-sm text-primary text-nowrap"
-                                >
-                                    <i class="bi-pencil"></i>
-                                </button>
-                            </span>
+                            {{ components.button(
+                                _('Edit'),
+                                kind='link',
+                                icon='edit',
+                                size='sm',
+                                icon_only=true,
+                                class='text-primary',
+                                attrs={'id': id ~ '-update-button', 'data-testid': id ~ '-update-button'},
+                            ) }}
                         {% endif %}
                     </h6>
                     {% if has_available_date %}
@@ -180,48 +152,49 @@
                                         {{ timer_hour.name }}
                                     </div>
                                     <div class="flex-shrink-0 d-flex gap-2 align-items-center">
-                                        <button
-                                            class="btn btn-sm btn-outline-primary text-nowrap"
-                                            hx-get="{{ url_for(
+                                        {{ components.modal_button(
+                                            url_for(
                                                 'admin-timer-hour-update-modal',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 timer_id=admin_timer.id,
                                                 timer_hour_id=timer_hour.id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-pencil-fill"></i>
-                                        </button>
-                                        <button
-                                            class="btn btn-sm btn-outline-primary text-nowrap"
-                                            hx-get="{{ url_for(
+                                            ),
+                                            _('Edit hour'),
+                                            icon='bi-pencil-fill',
+                                            size='sm',
+                                            icon_only=true,
+                                            from_modal=true,
+                                        ) }}
+                                        {{ components.modal_button(
+                                            url_for(
                                                 'admin-timer-hour-clone-modal',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 timer_id=admin_timer.id,
                                                 timer_hour_id=timer_hour.id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-copy"></i>
-                                        </button>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger text-nowrap"
-                                            hx-delete="{{ url_for(
-                                                'admin-timer-hour-delete',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                timer_id=admin_timer.id,
-                                                timer_hour_id=timer_hour.id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-trash-fill"></i>
-                                        </button>
+                                            ),
+                                            _('Duplicate'),
+                                            icon='copy',
+                                            size='sm',
+                                            icon_only=true,
+                                            from_modal=true,
+                                        ) }}
+                                        {{ components.button(
+                                            _('Delete'),
+                                            kind='outline-danger',
+                                            icon='bi-trash-fill',
+                                            size='sm',
+                                            icon_only=true,
+                                            attrs={
+                                                'hx-delete': url_for(
+                                                    'admin-timer-hour-delete',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    timer_id=admin_timer.id,
+                                                    timer_hour_id=timer_hour.id,
+                                                ),
+                                                'hx-target': 'body',
+                                                'hx-indicator': '#please-wait',
+                                            },
+                                        ) }}
                                     </div>
                                 </div>
                                 <div class="timer-hour-text form-text" style="display:none">
@@ -241,8 +214,10 @@
                     });
                 </script>
             </div>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

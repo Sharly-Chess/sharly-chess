@@ -540,8 +540,8 @@ class ScreenType(IdentifiableEntity, ABC):
     @property
     def has_config_fields(self) -> bool:
         """Whether the create/edit form shows the general configuration fields
-        (menu label, timer, columns, font size, alert message). ``False`` for
-        the standalone image type."""
+        (menu label, columns, font size, alert message). ``False`` for the
+        standalone image type."""
         return True
 
     @property

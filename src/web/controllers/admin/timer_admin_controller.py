@@ -131,19 +131,12 @@ class TimerAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         stored_event = web_context.get_admin_event().stored_event
         if data is None:
-            colors = stored_event.timer_colors
             delays = stored_event.timer_delays
             data = {}
             for i in range(1, 4):
-                data |= WebContext.values_dict_to_form_data(
-                    {
-                        f'color_{i}': colors[i],
-                        f'color_{i}_checkbox': colors[i] is None,
-                        f'delay_{i}': delays[i],
-                    }
-                )
+                data |= WebContext.values_dict_to_form_data({f'delay_{i}': delays[i]})
         return {
-            'timer_color_texts': cls._get_timer_color_texts(
+            'timer_delay_texts': cls._get_timer_delay_texts(
                 SharlyChessConfig.default_timer_delays
             ),
             'modal': 'default-timers',
@@ -182,17 +175,8 @@ class TimerAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         stored_event = event.stored_event
 
-        timer_colors: dict[int, str | None] = dict.fromkeys(range(1, 4))
         timer_delays: dict[int, int | None] = dict.fromkeys(range(1, 4))
         for i in range(1, 4):
-            field = f'color_{i}'
-            if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-                try:
-                    timer_colors[i] = WebContext.form_data_to_rgb(data, field)
-                except ValueError:
-                    errors[field] = _(
-                        'Invalid colour [{color}] ([#RRGGBB] expected).'
-                    ).format(color={data[field]})
             field = f'delay_{i}'
             try:
                 timer_delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
@@ -207,7 +191,6 @@ class TimerAdminController(BaseEventAdminController):
                 self._default_timers_modal_context(web_context, data, errors),
             )
 
-        stored_event.timer_colors = timer_colors
         stored_event.timer_delays = timer_delays
 
         with EventDatabase(event.uniq_id, write=True) as event_database:
@@ -229,15 +212,12 @@ class TimerAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         if data is None:
-            colors: dict[int, str | None]
             delays: dict[int, int | None]
             if action == FormAction.CREATE:
                 name = event.get_unused_timer_name()
-                colors = dict.fromkeys(range(1, 4))
                 delays = dict.fromkeys(range(1, 4))
             else:
                 stored_timer = web_context.get_admin_timer().stored_timer
-                colors = stored_timer.colors
                 delays = stored_timer.delays
                 if action == FormAction.CLONE:
                     name = event.get_unused_timer_name(stored_timer.name)
@@ -245,15 +225,9 @@ class TimerAdminController(BaseEventAdminController):
                     name = stored_timer.name
             data = {'name': WebContext.value_to_form_data(name)}
             for i in range(1, 4):
-                data |= WebContext.values_dict_to_form_data(
-                    {
-                        f'color_{i}': colors[i],
-                        f'color_{i}_checkbox': colors[i] is None,
-                        f'delay_{i}': delays[i],
-                    }
-                )
+                data |= WebContext.values_dict_to_form_data({f'delay_{i}': delays[i]})
         return {
-            'timer_color_texts': cls._get_timer_color_texts(event.timer_delays),
+            'timer_delay_texts': cls._get_timer_delay_texts(event.timer_delays),
             'modal': 'timer',
             'action': action,
             'data': data,
@@ -268,8 +242,11 @@ class TimerAdminController(BaseEventAdminController):
     ) -> tuple[StoredTimer | None, dict[str, str]]:
         event = web_context.get_admin_event()
         errors: dict[str, str] = {}
-        colors: dict[int, str | None] = dict.fromkeys(range(1, 4))
-        color_checkboxes: dict[int, bool | None] = dict.fromkeys(range(1, 4))
+        colors: dict[int, str | None] = (
+            dict.fromkeys(range(1, 4))
+            if action == FormAction.CREATE
+            else dict(web_context.get_admin_timer().stored_timer.colors)
+        )
         delays: dict[int, int | None] = dict.fromkeys(range(1, 4))
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
@@ -282,17 +259,6 @@ class TimerAdminController(BaseEventAdminController):
                 errors[field] = _('This name is already used.')
 
         for i in range(1, 4):
-            field = f'color_{i}'
-            color_checkboxes[i] = WebContext.form_data_to_bool(
-                data, field + '_checkbox'
-            )
-            if not color_checkboxes[i]:
-                try:
-                    colors[i] = WebContext.form_data_to_rgb(data, field)
-                except ValueError:
-                    errors[field] = _(
-                        'Invalid colour [{color}] ([#RRGGBB] expected).'
-                    ).format(color={data[field]})
             field = f'delay_{i}'
             try:
                 delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
@@ -507,12 +473,8 @@ class TimerAdminController(BaseEventAdminController):
         event: Event,
     ) -> list[tuple[str, Screen | Family | Rotator]]:
         return (
-            [(f'screen_{screen.id}', screen) for screen in event.timer_screens]
-            + [
-                (f'family_{family.id}', family)
-                for family in event.sorted_families
-                if family.screen_type.has_config_fields
-            ]
+            [(f'screen_{screen.id}', screen) for screen in event.sorted_basic_screens]
+            + [(f'family_{family.id}', family) for family in event.sorted_families]
             + [(f'rotator_{rotator.id}', rotator) for rotator in event.sorted_rotators]
         )
 

@@ -1,22 +1,15 @@
-{% import '/common/macros.j2' as macros with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'team-pairing-info-modal' %}
+{% set modal_size = 'max' %}
+{% set modal_class = 'admin-players-update-modal' %}
+{% set modal_close = true %}
 
-<div id="team-pairing-info-modal" class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Team pairing information for round %(round)d', round=admin_round) }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
+{% block title %}{{ _('Team pairing information for round %(round)d', round=admin_round) }}{% endblock %}
+
+{% block body %}
             <table
                 id="team-pairings-info-table"
-                class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                class="table prominent table-sm table-hover w-100 mx-auto justify-content-center"
             >
                 <thead>
                     <tr>
@@ -142,6 +135,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

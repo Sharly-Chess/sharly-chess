@@ -32,12 +32,6 @@ msgstr "Tous les tournois"
 msgid "Back"
 msgstr "Retour"
 
-msgid "Cancel"
-msgstr "Annuler"
-
-msgid "Close"
-msgstr "Fermer"
-
 msgid "Connection configuration"
 msgstr "Configuration de la connexion"
 

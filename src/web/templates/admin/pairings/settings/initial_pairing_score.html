@@ -17,8 +17,7 @@
 <h4>
     {{ _('Initial pairing scores') }}
     <i
-        class="bi-info-circle-fill ps-1 text-body"
-        style="font-size: 90%"
+        class="bi-info-circle-fill ps-1 text-body small"
         {{ macros.tooltip_attributes(
             '', _(
                 'A player starts every round with these points added to those '
@@ -31,9 +30,12 @@
 
 {% if source_events and not settings_read_only %}
     <div class="mb-2">
-        <a class="small" data-bs-toggle="collapse" href="#initial-score-fill" role="button">
-            <i class="bi-chevron-down pe-1"></i>{{ _('Fill from another tournament') }}
-        </a>
+        {% call components.icon_text(
+            'bi-chevron-down',
+            tag='a',
+            class='small',
+            attrs={'data-bs-toggle': 'collapse', 'href': '#initial-score-fill', 'role': 'button'},
+        ) %}{{ _('Fill from another tournament') }}{% endcall %}
         <div class="collapse {{ 'show' if data.get(setting.source_event_field) }}" id="initial-score-fill">
             <div class="border rounded p-2 mt-2">
                 <div class="row gy-2">
@@ -117,21 +119,22 @@
                     <div class="small text-muted flex-grow-1">
                         {{ data.get(setting.report_field, '') }}
                     </div>
-                    <button
-                        id="initial-score-fill-button"
-                        type="button"
-                        class="btn btn-sm btn-outline-primary text-nowrap"
-                        {# There is nothing to fill from until a tournament
-                           has been picked, not merely an event. #}
-                        {{ 'disabled' if not data.get(setting.source_tournament_field) }}
-                        hx-post="{{ action_url }}"
-                        hx-include="#modal-form"
-                        hx-vals='{"{{ setting.action_field }}": "{{ setting.ACTION_FILL }}"}'
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-download pe-1"></i>{{ _('Fill') }}
-                    </button>
+                    {# There is nothing to fill from until a tournament
+                       has been picked, not merely an event. #}
+                    {{ components.button(
+                        _('Fill'),
+                        icon='download',
+                        size='sm',
+                        attrs={
+                            'id': 'initial-score-fill-button',
+                            'disabled': not data.get(setting.source_tournament_field),
+                            'hx-post': action_url,
+                            'hx-include': '#modal-form',
+                            'hx-vals': '{"' ~ setting.action_field ~ '": "' ~ setting.ACTION_FILL ~ '"}',
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 </div>
             </div>
         </div>
@@ -155,7 +158,7 @@
     </script>
 {% endif %}
 
-<table class="table prominent table-striped table-sm w-100 bg-light">
+<table class="table prominent table-striped table-sm w-100">
     <thead>
         <tr>
             <th>{{ _('Players') }}</th>

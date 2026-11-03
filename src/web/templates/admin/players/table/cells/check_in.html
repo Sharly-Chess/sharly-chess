@@ -13,7 +13,7 @@
     {{ macros.tooltip_attributes(
         '',
         '<div class="fw-bold">' ~ status.name ~ '</div>'
-        '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+        '<div class="sc-detail">' ~ click_detail ~ '</div>'
         if editable else status.name,
         'right'
     ) }}

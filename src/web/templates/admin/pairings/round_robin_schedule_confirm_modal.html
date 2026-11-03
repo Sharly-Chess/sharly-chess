@@ -1,3 +1,7 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_class = 'pairing-modal' %}
+{% set modal_scrollable = false %}
 {% if schedule_action == 'clear' %}
     {% set title = _('Clear the schedule') %}
     {% set message = _('Every seat whose game has not been played will be emptied.') %}
@@ -14,38 +18,24 @@
     {% set confirm_label = _('Save anyway') %}
     {% set confirm_url = url_for('admin-pairings-schedule-save', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) ~ '?force=true' %}
 {% endif %}
-<div
-    class="modal-dialog pairing-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fw-bold">
-                <h3>{{ title }}</h3>
-            </div>
-        </div>
-        <div class="modal-body">
-            {{ message }}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="schedule-confirm"
-                class="btn {{ 'btn-danger' if schedule_action == 'force' else 'btn-primary' }} text-nowrap"
-                hx-post="{{ confirm_url }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                hx-disabled-elt="this"
-            >
-                {{ confirm_label }}
-            </button>
-        </div>
-    </div>
-</div>
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    {{ message }}
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        confirm_label,
+        kind='danger' if schedule_action == 'force' else 'primary',
+        attrs={
+            'id': 'schedule-confirm',
+            'hx-post': confirm_url,
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+            'hx-disabled-elt': 'this',
+        },
+    ) }}
+{% endblock %}

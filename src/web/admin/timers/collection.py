@@ -33,7 +33,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ListColumn('usage', label=_('Displayed on')),
             ListColumn(
                 'thresholds',
-                label=_('Colour thresholds'),
+                label=_('Delays'),
                 width='minmax(min-content, 1.2fr)',
             ),
             ListColumn(

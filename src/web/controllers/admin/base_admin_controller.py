@@ -17,6 +17,7 @@ from web.admin.collection import (
     resolve_admin_collection_view_mode,
 )
 from web.controllers.base_controller import BaseController, WebContext
+from web.session import SessionAdminTheme
 from web.utils import RequestUtils
 
 
@@ -73,7 +74,16 @@ class AdminWebContext(WebContext):
 
     @property
     def theme(self) -> str:
-        return 'dark'
+        """The theme set in the application window on the server; a client
+        connected over the network chooses its own, following its system's
+        appearance until it does."""
+        if self.client.is_local:
+            return SharlyChessConfig().stored_config.admin_theme
+        return SessionAdminTheme(self.request).get()
+
+    @property
+    def interface(self) -> str:
+        return 'admin'
 
     def get_admin_collection_spec(self, collection_key: str) -> AdminCollectionSpec:
         collection_spec = get_admin_collection_spec(collection_key)
@@ -147,16 +157,16 @@ class BaseAdminController(BaseController):
         }
 
     @staticmethod
-    def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
+    def _get_timer_delay_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(
-                'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the colour then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
+                'The timer is green until {delay_1} minutes before the start of the rounds, then turns gradually orange until {delay_2} minutes before the start of the rounds.'
             ).format(delay_1=delays[1], delay_2=delays[2]),
             2: _(
-                'Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the colour then changes gradually until colour #3 (at the start of the rounds).'
+                'The timer is orange {delay_2} minutes before the start of the rounds, then turns gradually red until the start of the rounds.'
             ).format(delay_2=delays[2]),
             3: _(
-                'Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).'
+                'The timer stays red from the start of the rounds and for {delay_3} minutes after.'
             ).format(delay_3=delays[3]),
         }
 

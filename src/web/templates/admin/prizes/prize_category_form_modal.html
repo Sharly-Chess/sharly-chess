@@ -1,25 +1,19 @@
-<div
-    class="modal-dialog modal-dialog-scrollable "
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit prize category') }}
-                {% else %}
-                     {{ _('Create prize category') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit prize category') }}
+    {% else %}
+        {{ _('Create prize category') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% if previous_category %}
-                {% with type='success', auto_remove=true, message=_(
+                {{ components.banner('success', _(
                     'Category [%(category)s] successfully created!',
                     category=previous_category.name
-                ) %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                ), auto_remove=true) }}
             {% endif %}
             <form
                 id="modal-form"
@@ -224,16 +218,15 @@
                             style="display: none"
                         {% endif %}
                     >
-                        <h4>
+                        {% call components.section_heading(_('Simple criteria')) %}
                             {{ _('Simple criteria') }}
                             <i
-                                class="bi-info-circle-fill text-body ps-1"
-                                style="font-size: 80%"
+                                class="bi-info-circle-fill text-body ps-1 small"
                                 {{ macros.tooltip_attributes('', _(
                                     'Advanced criteria can be created from the dedicated criteria form.'
                                 )) }}
                             ></i>
-                        </h4>
+                        {% endcall %}
                         <div class="row gy-2 gx-3">
                             <div class="col-12">
                                 {{ admin_macros.integer_range_input(
@@ -268,30 +261,17 @@
                     </div>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            {% if action == 'update' %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    <i class="bi bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                </button>
-            {% else %}
-                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if action == 'update' %}
+        {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+    {% else %}
+        {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+    {% endif %}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

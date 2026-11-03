@@ -1,31 +1,20 @@
-{% import '/common/macros.j2' as macros with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'max' %}
+{% set modal_close = true %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="max-width: 90%;"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Players of category [%(category)s]', category=admin_prize_category.name) }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
-            <h4>
-                {% if admin_tournament.max_ranking_round == 0 %}
-                    {{ _('Ranking before the first round') }}
-                {% else %}
-                    {{ _('Ranking after round #%(round)d', round=admin_tournament.max_ranking_round) }}
-                {% endif %}
-            </h4>
+{% block title %}{{ _('Players of category [%(category)s]', category=admin_prize_category.name) }}{% endblock %}
+
+{% block subtitle %}
+    {% if admin_tournament.max_ranking_round == 0 %}
+        {{ _('Ranking before the first round') }}
+    {% else %}
+        {{ _('Ranking after round #%(round)d', round=admin_tournament.max_ranking_round) }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <table
-                class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                class="table prominent table-striped table-sm table-hover w-100 mx-auto justify-content-center"
             >
                 <thead class="modal-table-sticky-header">
                     <tr>
@@ -144,6 +133,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

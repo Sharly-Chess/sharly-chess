@@ -28,7 +28,7 @@
 {% endblock admin_header_back_button %}
 
 {% block admin_nav %}
-    <h4 class="w-100 px-2 fs-5 mt-2 text-center">{{ admin_event.name }}</h4>
+    <h4 class="w-100 px-2 fs-5 mt-2 text-center" data-page-context="{{ admin_event.name }}">{{ admin_event.name }}</h4>
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% include '/admin/event_layout_nav_item.html' %}
     {% endfor %}
@@ -92,25 +92,15 @@
         {% endif %}
     {% endfor %}
     {% if not admin_event_tab %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-            {% if client.can_view_public_screens %}
-                <h5 class="my-5 text-center">
-                    {{ _('No public screens') }}
-                </h5>
-                <p class="text-center">
-                    {{ _("There are no public screens available for this event.") }}
-                </p>
-                <p class="text-center">
-                    {{ _("If you have an account you may connect by clicking on the <i>Profile</i> button in the menu.") }}
-                </p>
-            {% else %}
-                <h5 class="my-5 text-center">
-                    {{ _('You have no permissions') }}
-                </h5>
-                <p class="text-center">
-                    {{ _('You can ask the administrator for permission to access the event screens.') }}
-                </p>
-            {% endif %}
-        </div>
+        {% if client.can_view_public_screens %}
+            {% call components.empty_state(_('No public screens')) %}
+                <p>{{ _("There are no public screens available for this event.") }}</p>
+                <p>{{ _("If you have an account you may connect by clicking on the <i>Profile</i> button in the menu.") }}</p>
+            {% endcall %}
+        {% else %}
+            {% call components.empty_state(_('You have no permissions')) %}
+                <p>{{ _('You can ask the administrator for permission to access the event screens.') }}</p>
+            {% endcall %}
+        {% endif %}
     {% endif %}
 {% endblock admin_content %}

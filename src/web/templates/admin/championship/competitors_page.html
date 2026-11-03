@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <tbody
     {% if competitor_page < competitor_pages %}
@@ -47,14 +48,18 @@
             {% endif %}
             <td class="text-center compact-col text-nowrap">
                 <span data-testid="championship-tournament-count">{{ row.participations|length }}</span>
-                <button
-                    type="button"
-                    class="btn championship-stage-info p-1"
-                    data-content-id="championship-stage-content-{{ row_index }}"
-                    aria-label="{{ _('Show the stages of %(competitor)s', competitor=row.name) }}"
-                >
-                    <i class="bi-info-circle"></i>
-                </button>
+                {# Its popover takes the place of a tooltip: the label is only its
+                   accessible name. #}
+                {% call components.button(
+                    _('Show the stages of %(competitor)s', competitor=row.name),
+                    kind='plain',
+                    icon='bi-info-circle',
+                    class='championship-stage-info p-1',
+                    attrs={
+                        'aria-label': _('Show the stages of %(competitor)s', competitor=row.name),
+                        'data-content-id': 'championship-stage-content-' ~ row_index,
+                    },
+                ) %}{% endcall %}
                 <div
                     id="championship-stage-content-{{ row_index }}"
                     class="d-none"
@@ -74,19 +79,20 @@
             <td class="text-nowrap text-center compact-col">
                 {% if row.override_group_keys %}
                     {% for group_key in row.override_group_keys %}
-                        <button
-                            class="btn btn-sm btn-outline-warning"
-                            type="button"
-                            hx-delete="{{ url_for(
-                                'admin-championship-override-group-delete',
-                                championship_uniq_id=championship.uniq_id,
-                                group_key=group_key,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-link-45deg pe-1"></i>{{ _('Unmerge') }}
-                        </button>
+                        {{ components.button(
+                            _('Unmerge'),
+                            icon='bi-link-45deg',
+                            size='sm',
+                            attrs={
+                                'hx-delete': url_for(
+                                    'admin-championship-override-group-delete',
+                                    championship_uniq_id=championship.uniq_id,
+                                    group_key=group_key,
+                                ),
+                                'hx-target': 'body',
+                                'hx-indicator': '#please-wait',
+                            },
+                        ) }}
                     {% endfor %}
                 {% else %}
                     <span class="text-body-secondary">{{ _('Automatic') }}</span>

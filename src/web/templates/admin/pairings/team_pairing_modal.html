@@ -1,3 +1,5 @@
+{% extends '/admin/components/modal.html' %}
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
 
 {# Admin team-match modal (opened from the match button on the pairings
@@ -5,57 +7,49 @@
    pairing_modal.html. Bonus/penalty points are edited from their own
    modal (the penalty badge / the team-record modal), not here. #}
 
+{% set modal_size = 'md' %}
+{% set modal_close = true %}
 {% set _a_gp, _b_gp = team_board.game_points %}
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(95vw, 480px);"
->
-    <div class="modal-content">
-        <div class="modal-header d-flex flex-column position-relative">
-            <button
-                type="button"
-                class="btn-close position-absolute top-0 end-0 mt-3 me-3"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-            <h2 class="modal-title fs-5 fw-bold text-center w-100">
-                {{ team_board.team_a.name }}
-                {% if team_board.team_b %}
-                    <span class="mx-2">{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}</span>
-                    {{ team_board.team_b.name }}
-                {% else %}
-                    <span class="mx-2">— {{ _('EXEMPT') }}</span>
-                {% endif %}
-            </h2>
-            <div class="text-muted small w-100 text-center">
-                {{ _('Round #%(round)d', round=team_board.round) }}
-            </div>
-        </div>
-        <div class="modal-body">
+
+{% block title %}
+    {{ team_board.team_a.name }}
+    {% if team_board.team_b %}
+        <span class="mx-2">{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}</span>
+        {{ team_board.team_b.name }}
+    {% else %}
+        <span class="mx-2">— {{ _('EXEMPT') }}</span>
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}{{ _('Round #%(round)d', round=team_board.round) }}{% endblock %}
+
+{% block body %}
             {# Knock-out: a match level on game points still needs a
                qualifier. Show who advances and, when a play-off is
                configured, let the arbiter designate the winning team. #}
             {% set ko_adv = admin_tournament.knockout.team_board_advancement(team_board) %}
             {% if ko_adv %}
                 <div class="mb-3">
-                    <h6 class="mb-2">{{ _('Who advances') }}</h6>
+                    {{ components.section_heading(_('Who advances')) }}
                     {% if ko_adv.winner_id %}
                         {% set winner_name = team_board.team_a.name
                             if ko_adv.winner_id == team_board.team_a.id
                             else team_board.team_b.name %}
                         <div class="mb-2">
-                            <span class="badge rounded-pill bg-dark text-primary lh-1 me-1">1</span>
+                            {{ pairing_components.advance_mark(tooltip=false) }}
                             <b>{{ winner_name }}</b>
                             {% if ko_adv.reason %}
                                 <span class="text-secondary">({{ ko_adv.reason }})</span>
                             {% endif %}
                         </div>
                     {% elif not ko_adv.manual_reached %}
-                        <div class="text-warning mb-2">
-                            <i class="bi-exclamation-triangle-fill pe-1"></i>
-                            {{ _('No tie-break decides this tied match. Add the '
-                                '"Manual" tie-break to hold a play-off.') }}
-                        </div>
+                        {{ components.note(
+                            'warning',
+                            _('No tie-break decides this tied match. Add the '
+                                '"Manual" tie-break to hold a play-off.'),
+                            compact=true,
+                            class='mb-2',
+                        ) }}
                     {% endif %}
                     {% if ko_adv.breakdown %}
                         <table class="table table-sm">
@@ -73,27 +67,26 @@
                                             <td class="align-middle">{{ _('Manual') }}</td>
                                             {% for team in [team_board.team_a, team_board.team_b] %}
                                                 <td class="text-center">
-                                                    <button
-                                                        class="btn btn-sm {{ 'btn-primary'
+                                                    {{ components.button(
+                                                        pgettext('team knock-out', 'Unmark winner')
                                                             if ko_adv.winner_id == team.id
-                                                            else 'btn-outline-primary' }}"
-                                                        {% if row.used %}
-                                                            hx-put="{{ url_for(
+                                                            else pgettext('team knock-out', 'Mark as winner'),
+                                                        kind='primary' if ko_adv.winner_id == team.id else 'outline',
+                                                        size='sm',
+                                                        allowed=row.used,
+                                                        attrs={
+                                                            'hx-put': url_for(
                                                                 'admin-pairings-knockout-team-winner',
                                                                 event_uniq_id=admin_event.uniq_id,
                                                                 tournament_id=admin_tournament.id,
                                                                 round=team_board.round,
                                                                 team_board_id=team_board.id,
                                                                 team_id=(0 if ko_adv.winner_id == team.id else team.id),
-                                                            ) }}"
-                                                            hx-target="body"
-                                                            hx-indicator="#please-wait"
-                                                        {% else %}
-                                                            disabled
-                                                        {% endif %}
-                                                    >{{ pgettext('team knock-out', 'Unmark winner')
-                                                        if ko_adv.winner_id == team.id
-                                                        else pgettext('team knock-out', 'Mark as winner') }}</button>
+                                                            ),
+                                                            'hx-target': 'body',
+                                                            'hx-indicator': '#please-wait',
+                                                        },
+                                                    ) }}
                                                 </td>
                                             {% endfor %}
                                         </tr>
@@ -139,47 +132,28 @@
                 or has_played_result.value
                 or not client.can_unpair_boards(admin_tournament.id)
             ) %}
-            {% if unpair_disabled and has_played_result.value %}
-                <span class="d-grid" {{ macros.tooltip_attributes(
-                    'info',
-                    _('Clear board results between players first before unpairing.'),
-                    'top'
-                ) }}>
+            {% if action in allowed_actions %}
+                {% set unpair_attrs = {'hx-delete': action_route} %}
             {% else %}
-                <div class="d-grid">
+                {% set unpair_attrs = {'hx-get': url_for(
+                    'admin-pairings-warning-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=team_board.round,
+                    action=action,
+                    redirect_method='DELETE',
+                    redirect_route=action_route,
+                )} %}
             {% endif %}
-                <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    {% if unpair_disabled %}
-                        disabled
-                    {% else %}
-                        {% if action in allowed_actions %}
-                            hx-delete="{{ action_route }}"
-                        {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-warning-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=team_board.round,
-                                action=action,
-                                redirect_method='DELETE',
-                                redirect_route=action_route,
-                            ) }}"
-                        {% endif %}
-                        hx-trigger="click"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    {% endif %}
-                >
-                    {{ _('Unpair') }}
-                </button>
-            {% if unpair_disabled and has_played_result.value %}
-                </span>
-            {% else %}
-                </div>
+            {% do unpair_attrs.update({'hx-trigger': 'click', 'hx-target': 'body', 'hx-indicator': '#please-wait'}) %}
+            {{ components.button(
+                _('Unpair'),
+                class='w-100',
+                allowed=not unpair_disabled,
+                reason=_('Clear board results between players first before unpairing.') if has_played_result.value else none,
+                attrs=unpair_attrs,
+            ) }}
             {% endif %}
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

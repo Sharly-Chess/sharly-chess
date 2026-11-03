@@ -1,14 +1,10 @@
-<div
-    class="modal-dialog modal-dialog-scrollable admin-distribute-players-modal"
-    style="--bs-modal-width: min(90vw, 550px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ _('Distribute the players (%(num)d)', num=admin_event.player_count) }}
-            </div>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+{% set modal_class = 'admin-distribute-players-modal' %}
+
+{% block title %}{{ _('Distribute the players (%(num)d)', num=admin_event.player_count) }}{% endblock %}
+
+{% block body %}
             {% with update_players_alert_message=_(
                 'Reminder: you might have to update the players\' information '
                 'before distributing them among the tournaments.'
@@ -57,18 +53,20 @@
                     ) }}
                 </div>
                 <h4 class="mt-3 mb-2">{{ _('Players per tournament') }}</h4>
-                <h5 id="over-warning" class="warning-message text-danger mt-1" style="display:none">
-                    {{ _('Warning: too many players selected.') }}
-                </h5>
-                <h5 id="under-warning" class="warning-message text-danger mt-1" style="display:none">
-                    {{ _('Warning: too few players selected.') }}
-                </h5>
-                <h5 id="criteria-warning" class="warning-message text-danger mt-1" style="display:none">
-                    {{ _(
+                {% for id, message in [
+                    ('over-warning', _('Warning: too many players selected.')),
+                    ('under-warning', _('Warning: too few players selected.')),
+                    ('criteria-warning', _(
                         'Warning: some players do not match the '
                         'criteria of any of the selected tournaments.'
+                    )),
+                ] %}
+                    {{ components.note(
+                        'danger', message, icon='warning', compact=true,
+                        class='warning-message mt-1 mb-2',
+                        attrs={'id': id, 'style': 'display:none'},
                     ) }}
-                </h5>
+                {% endfor %}
                 <span id="balance-groups-help">
                     {{ _('Click and drag to select balanced groups.') }}
                 </span>
@@ -274,25 +272,15 @@
                     $('#distribution-type').trigger('change');
                 </script>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="submit-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi bi-sort-numeric-down-alt pe-1"></i>
-                {{ _('Distribute') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Distribute'),
+        kind='primary',
+        icon='bi-sort-numeric-down-alt',
+        type='submit',
+        attrs={'id': 'submit-button', 'form': 'modal-form'},
+    ) }}
+{% endblock %}

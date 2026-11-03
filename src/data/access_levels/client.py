@@ -44,8 +44,13 @@ class Client:
         self.event = event
         self.account = self._get_account()
 
+    @property
+    def is_local(self) -> bool:
+        """Whether the client runs on the server itself."""
+        return self.host in [LOCALHOST_IP, LOCALHOST_NAME]
+
     def _get_account(self) -> Account:
-        if self.host in [LOCALHOST_IP, LOCALHOST_NAME]:
+        if self.is_local:
             if self.event:
                 return self.event.administrator_account
             return Account.predefined_administrator_account()

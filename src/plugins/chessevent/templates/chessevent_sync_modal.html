@@ -1,23 +1,15 @@
-{% import '/common/macros.j2' as macros with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-event-edit-modal' %}
+{% set modal_doc = 'chessevent' %}
 
-<div class="modal-dialog modal-dialog-scrollable admin-event-edit-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Synchronize tournaments with ChessEvent') }}
-                <span style="font-size: 70%">{{ macros.doc_icon('chessevent', 'ms-2') }}</span>
-            </h2>
-        </div>
+{% block title %}{{ _('Synchronize tournaments with ChessEvent') }}{% endblock %}
 
-        <div class="modal-body">
+{% block body %}
             {% if message %}
-                {% with type=message_type %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner(message_type, message) }}
             {% endif %}
-            <h4 class="text-danger">
-                {{ _('Warning: synchronizing a tournament overwrites all of its player data.') }}
-            </h4>
+            {{ components.note('danger', _('Warning: synchronizing a tournament overwrites all of its player data.'), icon='warning') }}
             <div class="mb-3">
                 {% if not allow_sync %}
                     <input
@@ -40,7 +32,7 @@
             </div>
 
             <table
-                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+                class="table prominent table-sm w-100 mx-auto justify-content-center"
             >
                 <thead>
                     <tr>
@@ -99,62 +91,37 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-2 justify-content-end">
-                                    <span
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            tournament_status.settings_disabled_message or
-                                            _('Configure the ChessEvent settings of this tournament.'),
-                                            'top'
-                                        ) }}
-                                    >
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                            {% if tournament_status.settings_disabled_message %}
-                                                disabled
-                                            {% else %}
-                                                hx-get="{{ url_for(
-                                                    'admin-tournament-import-modal',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=tournament.id,
-                                                    importer_id=chessevent_importer.id
-                                                ) }}"
-                                            {% endif %}
-                                        >
-                                            <i class="bi-gear-fill lh-1"></i>
-                                        </button>
-                                    </span>
-                                    <span
-                                        {% if not allow_sync %}
-                                            {{ macros.tooltip_attributes(
-                                                'warning', _('You have to acknowledge the warning first.'), 'top'
-                                            ) }}
-                                        {% else %}
-                                            {{ macros.tooltip_attributes(
-                                                'info',
-                                                tournament_status.sync_disabled_message or
-                                                _('Synchronize this tournament from its ChessEvent tournament.'),
-                                                'top'
-                                            ) }}
-                                        {% endif %}
-                                    >
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                            {% if tournament_status.sync_disabled_message or not allow_sync %}
-                                                disabled
-                                            {% else %}
-                                                hx-patch="{{ url_for(
-                                                    'chessevent-sync-tournament',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=tournament.id
-                                                ) }}"
-                                                hx-indicator="#please-wait"
-                                            {% endif %}
-                                        >
-                                            <i class="bi-arrow-repeat lh-1"></i>
-                                        </button>
-                                    </span>
+                                    {{ components.modal_button(
+                                        url_for(
+                                            'admin-tournament-import-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            importer_id=chessevent_importer.id
+                                        ),
+                                        _('Configure the ChessEvent settings of this tournament.'),
+                                        icon='settings',
+                                        size='sm',
+                                        icon_only=true,
+                                        allowed=not tournament_status.settings_disabled_message,
+                                        reason=tournament_status.settings_disabled_message,
+                                        from_modal=true,
+                                    ) }}
+                                    {{ components.button(
+                                        _('Synchronize this tournament from its ChessEvent tournament.'),
+                                        icon='bi-arrow-repeat',
+                                        size='sm',
+                                        icon_only=true,
+                                        allowed=allow_sync and not tournament_status.sync_disabled_message,
+                                        reason=tournament_status.sync_disabled_message if allow_sync else _('You have to acknowledge the warning first.'),
+                                        attrs={
+                                            'hx-patch': url_for(
+                                                'chessevent-sync-tournament',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=tournament.id
+                                            ),
+                                            'hx-indicator': '#please-wait',
+                                        },
+                                    ) }}
                                 </div>
                             </td>
                         </tr>
@@ -162,38 +129,21 @@
                 </tbody>
             </table>
 
-            <div
-                class="text-center mt-4 mb-1"
-                {% if not allow_sync %}
-                    {{ macros.tooltip_attributes(
-                        'warning', _('You have to acknowledge the warning first.'), 'top'
-                    ) }}
-                {% endif %}
-            >
-                <button
-                    type="button"
-                    hx-patch="{{ url_for('chessevent-sync-all-tournaments', event_uniq_id=admin_event.uniq_id) }}"
-                    class="text-nowrap white btn btn-outline-primary"
-                    {% if not allow_sync %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi bi-arrow-repeat pe-1"></i>
-                    {{ _('Synchronize all tournaments') }}
-                </button>
+            <div class="text-center mt-4 mb-1">
+                {{ components.button(
+                    _('Synchronize all tournaments'),
+                    icon='bi-arrow-repeat',
+                    allowed=allow_sync,
+                    reason=_('You have to acknowledge the warning first.'),
+                    attrs={'hx-patch': url_for('chessevent-sync-all-tournaments', event_uniq_id=admin_event.uniq_id)},
+                ) }}
             </div>
-        </div>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-        </div>
-    </div>
-</div>
-<script>requestRefresh();</script>
+{% block footer %}
+    {{ components.cancel_button(_('Close')) }}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh();</script>
+{% endblock %}

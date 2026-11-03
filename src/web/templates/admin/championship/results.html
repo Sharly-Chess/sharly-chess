@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro ranking_row(row, table_id, index, manual=false) %}
     <tr class="player-row {{ 'even' if index is even else 'odd' }}">
         <td class="rank text-end fw-bold compact-col">
@@ -60,14 +61,18 @@
         <td class="text-center compact-col text-nowrap">
             <span data-testid="championship-stage-count">{{ row.used_stage_count }}/{{ row.stage_count }}</span>
             {% if row.stages %}
-                <button
-                    type="button"
-                    class="btn championship-stage-info p-1"
-                    data-content-id="championship-ranking-stage-content-{{ table_id }}-{{ index }}"
-                    aria-label="{{ _('Show the stages of %(competitor)s', competitor=row.name) }}"
-                >
-                    <i class="bi-info-circle"></i>
-                </button>
+                {# Its popover takes the place of a tooltip: the label is only its
+                   accessible name. #}
+                {% call components.button(
+                    _('Show the stages of %(competitor)s', competitor=row.name),
+                    kind='plain',
+                    icon='bi-info-circle',
+                    class='championship-stage-info p-1',
+                    attrs={
+                        'aria-label': _('Show the stages of %(competitor)s', competitor=row.name),
+                        'data-content-id': 'championship-ranking-stage-content-' ~ table_id ~ '-' ~ index,
+                    },
+                ) %}{% endcall %}
                 <div
                     id="championship-ranking-stage-content-{{ table_id }}-{{ index }}"
                     class="d-none"
@@ -117,7 +122,7 @@
     {% endif %}
     <table
         id="{{ table_id }}"
-        class="rankings-table table prominent table-sm table-hover w-100 bg-light"
+        class="rankings-table table prominent table-sm table-hover w-100"
         aria-label="{{ _('Championship standings') }}"
     >
         <thead class="position-sticky z-2" style="top: var(--header-height);">
@@ -182,7 +187,7 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
         {{ admin_macros.admin_title(_('Rankings')) }}
-        {% if not championship.rules %}<span class="badge text-bg-warning fs-6"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No ranking rules configured') }}</span>{% endif %}
+        {% if not championship.rules %}{{ components.badge('warning', _('No ranking rules configured'), icon='warning', class='fs-6') }}{% endif %}
         <div class="flex-grow-1"></div>
         <select
             id="championship-ranking-selector"
@@ -204,14 +209,15 @@
             <h3 class="h4 mb-0">{{ _('General ranking') }}</h3>
             <div class="flex-grow-1"></div>
             {% if has_manual_rule and has_manual_values %}
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('admin-championship-manual-tiebreak-reset', championship_uniq_id=championship.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi bi-arrow-clockwise pe-1"></i>{{ _('Reset manual tie-break') }}
-                </button>
+                {{ components.button(
+                    _('Reset manual tie-break'),
+                    icon='refresh',
+                    attrs={
+                        'hx-post': url_for('admin-championship-manual-tiebreak-reset', championship_uniq_id=championship.uniq_id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
             {% endif %}
         </div>
         {{ ranking_table(ranking_rows, 'championship-ranking-table-overall', manual=has_manual_rule) }}

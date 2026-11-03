@@ -37,13 +37,13 @@
     {% set content %}
         <span class="d-inline-flex align-items-center gap-3 text-nowrap">
             <span {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}>
-                <i class="bi-window pe-1 text-secondary"></i>{{ item.screens|length }}
+                {% call components.icon_text('bi-window', icon_class='text-secondary') %}{{ item.screens|length }}{% endcall %}
             </span>
             <span {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}>
-                <i class="bi-window-split pe-1 text-secondary"></i>{{ item.families|length }}
+                {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.families|length }}{% endcall %}
             </span>
             <span {{ macros.tooltip_attributes('info', _('Number of rotators'), 'top') }}>
-                <i class="bi-window-stack pe-1 text-secondary"></i>{{ item.rotators|length }}
+                {% call components.icon_text('bi-window-stack', icon_class='text-secondary') %}{{ item.rotators|length }}{% endcall %}
             </span>
         </span>
     {% endset %}
@@ -76,22 +76,19 @@
             <span class="text-secondary">{{ first_hour.name }}</span>
         </span>
     {% else %}
-        <span class="text-danger"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No hours') }}</span>
+        {% call components.icon_text('warning', class='text-danger') %}{{ _('No hours') }}{% endcall %}
     {% endif %}
 {% endmacro %}
 
 {% macro thresholds(item, view, placement) %}
     <div class="timer-thresholds d-flex flex-column align-items-start gap-0 lh-sm">
         <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            <span class="timer-colour-swatch" style="background-color: {{ item.colors[1] }}"></span>
             {{ _('%(minutes)d min before', minutes=item.delays[1]) }}
         </span>
         <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            <span class="timer-colour-swatch" style="background-color: {{ item.colors[2] }}"></span>
             {{ _('%(minutes)d min before', minutes=item.delays[2]) }}
         </span>
         <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            <span class="timer-colour-swatch" style="background-color: {{ item.colors[3] }}"></span>
             {{ _('%(minutes)d min after', minutes=item.delays[3]) }}
         </span>
     </div>
@@ -102,9 +99,7 @@
         <section class="collection-detail-section">
             <h6>{{ _('Scheduled hours') }}</h6>
             {% if not item.timer_hours %}
-                <span class="text-danger">
-                    <i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No hours.') }}
-                </span>
+                {% call components.icon_text('warning', class='text-danger') %}{{ _('No hours.') }}{% endcall %}
             {% endif %}
             {% for date_str, timer_hours in item.timer_hours_by_date_str.items() %}
                 <div class="mt-2">
@@ -128,92 +123,54 @@
     <div class="collection-actions d-flex flex-wrap align-items-center {% if view == 'card' %}justify-content-between{% else %}justify-content-end{% endif %} gap-2">
         {% if view == 'card' %}
             <div class="d-flex align-items-center gap-1">
-                {% call macros.action_tooltip('info', _('Edit the hours of the timer'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for(
-                            'admin-timer-hours-modal',
-                            action='update',
-                            event_uniq_id=admin_event.uniq_id,
-                            timer_id=timer.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-collection"></i>
-                        <span class="ms-1">{{ _('Hours') }}</span>
-                    </button>
-                {% endcall %}
-                {% call macros.action_tooltip('info', _('Choose the screens that display the timer'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for(
-                            'admin-timer-usage-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            timer_id=timer.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-window"></i>
-                        <span class="ms-1">{{ _('Screens') }}</span>
-                    </button>
-                {% endcall %}
+                {{ components.modal_button(
+                    url_for(
+                        'admin-timer-hours-modal',
+                        action='update',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=timer.id,
+                    ),
+                    _('Hours'),
+                    icon='bi-collection',
+                    size='sm',
+                    tooltip=_('Edit the hours of the timer'),
+                ) }}
+                {{ components.modal_button(
+                    url_for(
+                        'admin-timer-usage-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=timer.id,
+                    ),
+                    _('Screens'),
+                    icon='bi-window',
+                    size='sm',
+                    tooltip=_('Choose the screens that display the timer'),
+                ) }}
             </div>
         {% endif %}
         <div class="d-flex align-items-center gap-1">
-            {% call macros.action_tooltip('info', _('Edit the properties of the timer.'), 'top') %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-timer-update-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        timer_id=timer.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-pencil"></i>
-                </button>
-            {% endcall %}
-            {% call macros.action_tooltip('info', _('Duplicate the timer.'), 'top') %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-timer-clone-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        timer_id=timer.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-copy"></i>
-                </button>
-            {% endcall %}
-            {% call macros.action_tooltip('info', _('Delete the timer.'), 'top') %}
-                <button
-                    class="btn btn-sm btn-outline-danger"
-                    hx-get="{{ url_for(
-                        'admin-timer-delete-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        timer_id=timer.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-trash"></i>
-                </button>
-            {% endcall %}
+            {{ components.modal_button(
+                url_for('admin-timer-update-modal', event_uniq_id=admin_event.uniq_id, timer_id=timer.id),
+                _('Edit the properties of the timer.'),
+                icon='edit',
+                icon_only=true,
+                size='sm',
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-timer-clone-modal', event_uniq_id=admin_event.uniq_id, timer_id=timer.id),
+                _('Duplicate the timer.'),
+                icon='copy',
+                icon_only=true,
+                size='sm',
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-timer-delete-modal', event_uniq_id=admin_event.uniq_id, timer_id=timer.id),
+                _('Delete the timer.'),
+                kind='outline-danger',
+                icon='delete',
+                icon_only=true,
+                size='sm',
+            ) }}
         </div>
     </div>
 {% endmacro %}

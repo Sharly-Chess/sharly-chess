@@ -1,12 +1,9 @@
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(95vw, 700px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">{{ _('Generate age categories') }}</h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'xl' %}
+
+{% block title %}{{ _('Generate age categories') }}{% endblock %}
+
+{% block body %}
             <p class="text-secondary">
                 {{ _(
                     'Select the age categories to create and enter the default prizes '
@@ -17,9 +14,7 @@
                 ) }}
             </p>
             {% if errors['categories'] %}
-                {% with type='danger', message=errors['categories'] %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner('danger', errors['categories']) }}
             {% endif %}
             <form
                 id="modal-form"
@@ -111,28 +106,14 @@
                     </tbody>
                 </table>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-plus-lg pe-1"></i>
-                {{ _('Generate') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Generate'), kind='primary', icon='add', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}
+
+{% block after_modal %}
 <script>
     (function () {
         const placeCount = document.getElementById('place_count');
@@ -178,3 +159,4 @@
     })();
     requestRefresh();
 </script>
+{% endblock %}

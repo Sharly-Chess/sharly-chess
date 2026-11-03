@@ -1,65 +1,54 @@
-<div
-    class="modal-dialog modal-dialog-scrollable print-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Documents') }}<span style="font-size: 70%">{{ macros.doc_icon('documents', 'ms-2') }}</span>
-            </h2>
-        </div>
-        <div class="modal-body">
-            <div id="document-success-message"></div>
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                hx-target="body"
-                hx-post="{{ url_for('event-generate-document', event_uniq_id=admin_event.uniq_id) }}"
-            >
-                {% include '/admin/event/_document_picker_fields.html' %}
-            </form>
-        </div>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_class = 'print-modal' %}
+{% set modal_doc = 'documents' %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi bi-file-earmark-arrow-down-fill pe-1"></i>
-                {{ _('Generate') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% block title %}{{ _('Documents') }}{% endblock %}
 
-{% if not errors %}
-    <script>
-        {# Tabs can set default values #}
-        if (default_print_document_id && $(`#document option[value="${default_print_document_id}"]`).length) {
-            $('#document').val(default_print_document_id).trigger('change');
-        }
-        if (default_print_tournament_id) {
-            const select = $('#tournament');
-            if (select && !select.prop('disabled')) {
-                select.val(default_print_tournament_id).trigger('change');
+{% block body %}
+    <div id="document-success-message"></div>
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-target="body"
+        hx-post="{{ url_for('event-generate-document', event_uniq_id=admin_event.uniq_id) }}"
+    >
+        {% include '/admin/event/_document_picker_fields.html' %}
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Generate'),
+        kind='primary',
+        icon='bi-file-earmark-arrow-down-fill',
+        type='submit',
+        attrs={'form': 'modal-form'},
+    ) }}
+{% endblock %}
+
+{% block after_modal %}
+    {% if not errors %}
+        <script>
+            {# Tabs can set default values #}
+            if (default_print_document_id && $(`#document option[value="${default_print_document_id}"]`).length) {
+                $('#document').val(default_print_document_id).trigger('change');
             }
+            if (default_print_tournament_id) {
+                const select = $('#tournament');
+                if (select && !select.prop('disabled')) {
+                    select.val(default_print_tournament_id).trigger('change');
+                }
 
-            const multipleSelect = $('#tournaments');
-            if (multipleSelect && !multipleSelect.prop('disabled')) {
-                multipleSelect.val(default_print_tournament_id).trigger('change');
+                const multipleSelect = $('#tournaments');
+                if (multipleSelect && !multipleSelect.prop('disabled')) {
+                    multipleSelect.val(default_print_tournament_id).trigger('change');
+                }
             }
-        }
-        if (default_print_round && $('#round')) {
-            $('#round').val(default_print_round).trigger('change');
-        }
-    </script>
-{% endif %}
+            if (default_print_round && $('#round')) {
+                $('#round').val(default_print_round).trigger('change');
+            }
+        </script>
+    {% endif %}
+{% endblock %}

@@ -1,95 +1,60 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set modal_size = 'xl' %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 800px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('FFE upload') }}
-                <a
-                    href="https://www.youtube.com/watch?v=BQFzn1_10gQ"
-                    target="_blank"
-                ><i
-                    class="bi-exclamation-triangle-fill text-warning ps-1"
-                    style="font-size: 75%"
-                    {{ macros.tooltip_attributes('', _(
-                        'Some table numbers might differ between Sharly Chess and '
-                        'the FFE website. To communicate pairings to players, it is '
-                        'recommended to use another platform, like Sharly-Chess.com '
-                        'or Chess-Results.com. Click for more details.'
-                    )) }}
-                ></i></a>
-            </h2>
-        </div>
-        <div class="modal-body">
-            {% if message %}
-                {% with type=message_type or 'success' %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
-            {% endif %}
-            {% include 'ffe_upload_results.html' %}
-            <div class="d-flex justify-content-center gap-2 mt-3 mb-1">
-                <span
-                    {% if not ffe_configured_tournaments %}
-                        {{ macros.tooltip_attributes('', _(
-                            'No tournament configured for FFE upload.'
-                        )) }}
-                    {% endif %}
-                >
-                    <button
-                        type="button"
-                        hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="#upload-results"
-                        hx-swap="outerHTML"
-                        class="text-nowrap white btn btn-outline-primary"
-                        {% if not ffe_configured_tournaments %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                        {{ _('Upload all tournaments') }}
-                    </button>
-                </span>
-                <div
-                    class="dropup"
-                        {{ macros.tooltip_attributes('', (
-                            _('You are not allowed to publish rules.')
-                            if not client.can_publish_rules else
-                            _('No tournament configured for FFE upload.')
-                            if not ffe_rules_tournaments else _(
-                                'Upload the rules in PDF format to the '
-                                'FFE website for one or more tournaments.'
-                            )
-                        )) }}
-                >
-                    <button
-                        class="btn btn-outline-primary text-nowrap"
-                        hx-get="{{ url_for(
-                            'ffe-rules-upload-modal', event_uniq_id=admin_event.uniq_id
-                        ) }}"
-                        {% if not client.can_publish_rules or not ffe_rules_tournaments %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi bi-file-earmark-text-fill pe-1"></i>
-                        {{ _('Upload rules') }}
-                    </button>
-                </div>
-            </div>
-        </div>
+{% block title %}
+    {{ _('FFE upload') }}
+    <a
+        href="https://www.youtube.com/watch?v=BQFzn1_10gQ"
+        target="_blank"
+    ><i
+        class="bi-exclamation-triangle-fill text-warning ps-1 small"
+        {{ macros.tooltip_attributes('', _(
+            'Some table numbers might differ between Sharly Chess and '
+            'the FFE website. To communicate pairings to players, it is '
+            'recommended to use another platform, like Sharly-Chess.com '
+            'or Chess-Results.com. Click for more details.'
+        )) }}
+    ></i></a>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-        </div>
+{% block body %}
+    {% if message %}
+        {{ components.banner(message_type or 'success', message) }}
+    {% endif %}
+    {% include 'ffe_upload_results.html' %}
+    <div class="d-flex justify-content-center gap-2 mt-3 mb-1">
+        {{ components.button(
+            _('Upload all tournaments'),
+            icon='bi-cloud-arrow-up-fill',
+            allowed=ffe_configured_tournaments|length > 0,
+            reason=_('No tournament configured for FFE upload.'),
+            attrs={
+                'hx-post': url_for('ffe-upload', event_uniq_id=admin_event.uniq_id),
+                'hx-target': '#upload-results',
+                'hx-swap': 'outerHTML',
+            },
+        ) }}
+        {{ components.modal_button(
+            url_for('ffe-rules-upload-modal', event_uniq_id=admin_event.uniq_id),
+            _('Upload rules'),
+            icon='bi-file-earmark-text-fill',
+            allowed=client.can_publish_rules and ffe_rules_tournaments|length > 0,
+            reason=(
+                _('You are not allowed to publish rules.')
+                if not client.can_publish_rules else
+                _('No tournament configured for FFE upload.')
+            ),
+            tooltip=_(
+                'Upload the rules in PDF format to the '
+                'FFE website for one or more tournaments.'
+            ),
+            from_modal=true,
+        ) }}
     </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button(_('Close')) }}
+{% endblock %}

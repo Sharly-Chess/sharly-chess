@@ -83,38 +83,44 @@
                 ) }}
             </div>
             {% if admin_tournament.can_restore_manual_pairing %}
-                <button
-                    class="btn btn-sm table-status-bar-action text-nowrap"
-                    hx-post="{{ url_for(
-                        'admin-pairings-cancel-manual-pairing',
+                {{ components.button(
+                    _('Cancel editing'),
+                    kind='plain',
+                    icon='bi-arrow-counterclockwise',
+                    size='sm',
+                    tooltip=_('Put the pairings back as they were before editing.'),
+                    class='table-status-bar-action',
+                    attrs={
+                        'hx-post': url_for(
+                            'admin-pairings-cancel-manual-pairing',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_tournament.manual_pairing_round,
+                        ),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                        'hx-disabled-elt': 'this',
+                    },
+                ) }}
+            {% endif %}
+            {{ components.button(
+                _('Validate the pairings'),
+                kind='plain',
+                icon='bi-check2-square',
+                size='sm',
+                class='table-status-bar-action',
+                attrs={
+                    'hx-post': url_for(
+                        'admin-pairings-validate-manual-pairing',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_tournament.manual_pairing_round,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    hx-disabled-elt="this"
-                    {{ macros.tooltip_attributes('info', _('Put the pairings back as they were before editing.'), 'top') }}
-                >
-                    <i class="bi-arrow-counterclockwise pe-1"></i>
-                    {{ _('Cancel editing') }}
-                </button>
-            {% endif %}
-            <button
-                class="btn btn-sm table-status-bar-action text-nowrap"
-                hx-post="{{ url_for(
-                    'admin-pairings-validate-manual-pairing',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    round=admin_tournament.manual_pairing_round,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                hx-disabled-elt="this"
-            >
-                <i class="bi-check2-square pe-1"></i>
-                {{ _('Validate the pairings') }}
-            </button>
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                    'hx-disabled-elt': 'this',
+                },
+            ) }}
         </div>
     {% endif %}
     {% if schedule_editing %}
@@ -222,33 +228,26 @@
                     <div class="pairings-action-buttons d-flex flex-wrap gap-2 justify-content-end mb-2 align-items-end w-100">
                         {% include admin_tournament.pairing_system.pairing_buttons_template %}
                         {% if admin_boards %}
-                            {% with name='show_without_results', wo_results=show_without_results %}
-                                <div class="btn-group">
-                                    <button
-                                        class="btn btn-outline-primary {% if not wo_results %}active{% endif %}"
-                                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                        hx-vals='{"{{ name }}": false }'
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                    >
-                                        {{ _('All') }}
-                                    </button>
-                                    <button
-                                        class="text-nowrap btn btn-outline-primary {% if wo_results %}active{% endif %}"
-                                        hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                                        hx-vals='{"{{ name }}": true }'
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                    >
-                                        {{ _('In play') }}
-                                    </button>
-                                </div>
-                            {% endwith %}
+                            {% set pairings_url = url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) %}
+                            {% call components.segmented(_('Boards shown')) %}
+                                {% for wo_results, label in [(false, _('All')), (true, _('In play'))] %}
+                                    {{ components.segment_button(
+                                        label,
+                                        active=wo_results if show_without_results else not wo_results,
+                                        attrs={
+                                            'hx-get': pairings_url,
+                                            'hx-vals': '{"show_without_results": ' ~ ('true' if wo_results else 'false') ~ '}',
+                                            'hx-target': 'body',
+                                            'hx-indicator': '#please-wait',
+                                        },
+                                    ) }}
+                                {% endfor %}
+                            {% endcall %}
 
                             {% if 'RESULT_UPDATE' in existing_actions and not round_locked and not admin_tournament.awaits_publication(admin_round) %}
                             {# No keyboard to drive them on a phone. #}
                             <div class="d-none d-md-flex flex-column">
-                                <div style="font-size: 0.8rem;">
+                                <div class="small">
                                     {{ _('Keyboard shortcuts:') }}
                                     <i
                                         class="bi-info-circle-fill ps-1"
@@ -268,70 +267,53 @@
                                     ></i>
                                 </div>
                                 {% set action = 'RESULT_UPDATE' %}
-                                <div class="btn-group">
-                                    <span
-                                        {% if action in allowed_actions or confirmation_unlocks_round %}
-                                            {{ macros.tooltip_attributes(
-                                                'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
-                                            ) }}
-                                        {% else %}
-                                            {{ macros.tooltip_attributes(
-                                                'info', _('Overwrite the result of the pairing when using the keyboard shortcuts. In FIDE mode, each correction to the previous round is confirmed separately.'), 'top'
-                                            ) }}
-                                        {% endif %}
-                                    >
-                                        <button
-                                            id="overwrite-mode"
-                                            {% if action in allowed_actions %}
-                                                class="btn btn-outline-primary active"
-                                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                                            {% elif not confirmation_unlocks_round %}
-                                                class="btn btn-outline-primary {% if overwrite_mode %}active{% endif %}"
-                                                hx-on:click="$(this).addClass('active'); $('button[id=\'highlight-mode\']').removeClass('active');"
-                                            {% else %}
-                                                class="btn btn-outline-primary"
-                                                hx-get="{{ url_for(
-                                                    'admin-pairings-warning-modal',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=admin_tournament.id,
-                                                    round=admin_round,
-                                                    action=action,
-                                                    redirect_method='POST',
-                                                    redirect_route=url_for(
-                                                        'admin-pairings-unlock',
-                                                        event_uniq_id=admin_event.uniq_id,
-                                                        tournament_id=admin_tournament.id,
-                                                        round=admin_round,
-                                                        action=action,
-                                                    ),
-                                                ) }}"
-                                                hx-trigger="click"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                                hx-indicator="#please-wait"
-                                                hx-target="body"
-                                            {% endif %}
-                                        >
-                                            {{ _('Entry') }}
-                                        </button>
-                                    </span>
-                                    <button
-                                        id="highlight-mode"
-                                        class="btn btn-outline-primary {% if action not in allowed_actions and not overwrite_mode %}active{% endif %}"
-                                        hx-on:click="$(this).addClass('active'); $('button[id=\'overwrite-mode\']').removeClass('active');"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            _(
-                                                'Highlights the row if the new result is different '
-                                                'when using the keyboard shortcuts '
-                                                '(useful when re-entering all the results for verification).'
+                                {% set select_mode = "$(this).addClass('active').attr('aria-pressed', 'true'); $('#%s').removeClass('active').attr('aria-pressed', 'false');" %}
+                                {% if action in allowed_actions or not confirmation_unlocks_round %}
+                                    {% set entry_attrs = {'id': 'overwrite-mode', 'hx-on:click': select_mode|format('highlight-mode')} %}
+                                {% else %}
+                                    {% set entry_attrs = {
+                                        'id': 'overwrite-mode',
+                                        'hx-get': url_for(
+                                            'admin-pairings-warning-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='POST',
+                                            redirect_route=url_for(
+                                                'admin-pairings-unlock',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                round=admin_round,
+                                                action=action,
                                             ),
-                                            'top'
-                                        ) }}
-                                    >
-                                        {{ _('Verify') }}
-                                    </button>
-                                </div>
+                                        ),
+                                        'hx-indicator': '#please-wait',
+                                        'hx-target': 'body',
+                                    } %}
+                                {% endif %}
+                                {% call components.segmented(_('Keyboard entry mode')) %}
+                                    {{ components.segment_button(
+                                        _('Entry'),
+                                        active=action in allowed_actions or (overwrite_mode and not confirmation_unlocks_round),
+                                        tooltip=_('Overwrite the result of the pairing when using the keyboard shortcuts.')
+                                            if action in allowed_actions or confirmation_unlocks_round
+                                            else _('Overwrite the result of the pairing when using the keyboard shortcuts. In FIDE mode, each correction to the previous round is confirmed separately.'),
+                                        tooltip_type='info',
+                                        attrs=entry_attrs,
+                                    ) }}
+                                    {{ components.segment_button(
+                                        _('Verify'),
+                                        active=action not in allowed_actions and not overwrite_mode,
+                                        tooltip=_(
+                                            'Highlights the row if the new result is different '
+                                            'when using the keyboard shortcuts '
+                                            '(useful when re-entering all the results for verification).'
+                                        ),
+                                        tooltip_type='info',
+                                        attrs={'id': 'highlight-mode', 'hx-on:click': select_mode|format('overwrite-mode')},
+                                    ) }}
+                                {% endcall %}
                             </div>
                             {% endif %}
                         {% endif %}
@@ -437,7 +419,7 @@
                     {% else %}
                         <table
                             id="pairings-table"
-                            class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if unsafe_editing %}table-danger-header{% endif %} {% if show_without_results %}table-danger-warning{% endif %}"
+                            class="pairings-table table prominent table-striped table-sm table-hover w-100 {% if unsafe_editing %}table-danger-header{% endif %} {% if show_without_results %}table-danger-warning{% endif %}"
                             {% if show_without_results %}data-inplay-filter="1"{% endif %}
                             {% if admin_filtered_boards %}style="table-layout: fixed;"{% endif %}
                         >
@@ -947,9 +929,5 @@
         });
     </script>
 {% else %}
-    <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-        <h5 class="mt-2 my-5 text-center">
-            {{ _('No pairings.') }}
-        </h5>
-    </div>
+    {{ components.empty_state(_('No pairings.')) }}
 {% endif %}

@@ -1,11 +1,12 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% set auto_upload_count = sce_allowed_tournaments | selectattr('plugin_data.sce.auto_upload') | list | length %}
 
 <table
     id="sce-upload-table"
-    class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+    class="table prominent table-sm w-100 mx-auto justify-content-center"
 >
     <thead>
         <tr>
@@ -101,29 +102,22 @@
                         target="_blank"
                         {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
                     ><i class="bi bi-gear-fill"></i></a>
-                    <span {{ macros.tooltip_attributes('',
-                        _('Upload') if tournament.started else
-                        _('Tournament has not started yet, no results to upload.')
-                    ) }}>
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                            hx-post="{{ url_for(
+                    {{ components.button(
+                        _('Upload'),
+                        icon='bi-cloud-arrow-up-fill',
+                        size='sm',
+                        icon_only=true,
+                        allowed=not (sce_event_status.actions_disabled or not tournament.started),
+                        reason=_('Upload') if tournament.started else _('Tournament has not started yet, no results to upload.'),
+                        attrs={
+                            'hx-post': url_for(
                                 'sce-upload-tournament-results',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=tournament.id
-                            ) }}"
-                            hx-indicator="#please-wait"
-                            {% if (
-                                sce_event_status.actions_disabled
-                                or not tournament.started
-                            ) %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                        </button>
-                    </span>
+                            ),
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 </td>
             </tr>
         {% endfor %}

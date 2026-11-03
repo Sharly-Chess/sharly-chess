@@ -17,69 +17,47 @@
         {% include '/admin/common/collection_controls.html' %}
     {% endif %}
     {% include '/admin/common/screens_config_button.html' %}
-    <span
-        class="dropdown-end pe-0"
-        {% if not admin_event.tournaments_by_id %}
-            {{ macros.tooltip_attributes(
-                'info',
-                _('You must create a tournament before creating a multi-screen.'),
-                'left'
+    {% call components.menu_button(
+        _('Create a multi-screen'),
+        kind='primary',
+        icon='add',
+        allowed=admin_event.tournaments_by_id | length > 0,
+        reason=_('You must create a tournament before creating a multi-screen.'),
+        tooltip_placement='left',
+    ) %}
+        {% for screen_type in family_screen_types %}
+            {{ components.menu_item(
+                screen_type.name,
+                icon=screen_type.icon_str,
+                url=url_for(
+                    'admin-family-create-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    family_type=screen_type.value,
+                ),
+                modal=true,
             ) }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-primary dropdown-toggle mx-auto"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            {% if not admin_event.tournaments_by_id %}
-                disabled
-            {% endif %}
-        >
-            <i class="bi-plus-lg pe-1"></i>
-            {{ _('Create a multi-screen') }}
-        </button>
-        <ul class="dropdown-menu">
-            {% for screen_type in family_screen_types %}
-                <li>
-                    <button
-                        class="dropdown-item text-start cursor-pointer"
-                        hx-get="{{ url_for(
-                            'admin-family-create-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            family_type=screen_type.value,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="{{ screen_type.icon_str }}"></i>
-                        {{ screen_type.name }}
-                    </button>
-                </li>
-            {% endfor %}
-        </ul>
-    </span>
+        {% endfor %}
+    {% endcall %}
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% with
-        items=admin_event.sorted_families,
-        empty_message=_('No multi-screens'),
-        sortable=false,
-        show_details=collection_show_details
-    %}
-        {% include '/admin/common/collection.html' %}
-    {% endwith %}
     {% if not admin_event.families_by_id %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
+        {% call components.empty_state(_('No multi-screens')) %}
             <p>{{ _('Multi-Screens are used to split a large amount of information across multiple screens.') }}</p>
             <p>
                 {{ _('You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically.') }}
             </p>
             <p>{{ _('Unlike single Screens, multi-screens can only be used to display information about a single tournament.') }}</p>
             <p>{{ _('Create a multi-screen now to get started.') }}</p>
-        </div>
+        {% endcall %}
+    {% else %}
+        {% with
+            items=admin_event.sorted_families,
+            empty_message=_('No multi-screens'),
+            sortable=false,
+            show_details=collection_show_details
+        %}
+            {% include '/admin/common/collection.html' %}
+        {% endwith %}
     {% endif %}
 {% endblock %}

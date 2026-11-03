@@ -1,9 +1,10 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div id="screen-list-container">
     {% set rotating_screens = admin_rotator.sorted_rotating_screens %}
     {% if not rotating_screens %}
-        <div class="text-danger">{{ _('No screens.') }}</div>
+        <div class="text-secondary">{{ _('No screens.') }}</div>
     {% else %}
         <form
             class="sortable d-flex flex-column gap-2"
@@ -41,20 +42,23 @@
                             {% endif %}
                         </div>
                         <div class="flex-shrink-0 d-flex gap-2 align-items-center">
-                            <button
-                                class="btn btn-sm btn-outline-danger text-nowrap"
-                                hx-delete="{{ url_for(
-                                    'admin-rotator-screen-delete',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    rotator_id=admin_rotator.id,
-                                    rotating_screen_id=rotating_screen.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-target="#modal-wrapper"
-                            >
-                                <i class="bi-trash-fill"></i>
-                            </button>
+                            {{ components.button(
+                                _('Delete'),
+                                kind='outline-danger',
+                                icon='bi-trash-fill',
+                                size='sm',
+                                icon_only=true,
+                                attrs={
+                                    'hx-delete': url_for(
+                                        'admin-rotator-screen-delete',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        rotator_id=admin_rotator.id,
+                                        rotating_screen_id=rotating_screen.id,
+                                    ),
+                                    'hx-target': 'body',
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) }}
                         </div>
                     </div>
                 </div>

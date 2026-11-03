@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% macro round_datetime_input(round_num) %}
     {{ admin_macros.datetime_input(
@@ -69,12 +70,11 @@
                             {% endif %}
                         </span>
                         {% if span.first_round > 1 %}
-                            <button type="button"
-                                    class="btn btn-sm btn-link text-body p-0"
-                                    title="{{ _('Remove this period') }}"
-                                    onclick="setPeriodStart({{ span.first_round }}, false)">
-                                <i class="bi-x-lg"></i>
-                            </button>
+                            {{ components.button(
+                                _('Remove this period'), kind='link', icon='close', size='sm', icon_only=true,
+                                class='text-body p-0',
+                                attrs={'onclick': 'setPeriodStart(' ~ span.first_round ~ ', false)'},
+                            ) }}
                         {% endif %}
                     </div>
                     {% if period_error %}
@@ -107,28 +107,28 @@
                                 </div>
                                 {% if round_num == span.first_round %}
                                     {% if span.first_round > 1 %}
-                                        <button type="button"
-                                                class="btn btn-outline-primary"
-                                                title="{{ _('Move this round to the previous period') }}"
-                                                onclick="{% if alone %}setPeriodStart({{ round_num }}, false){% else %}movePeriodStart({{ round_num }}, {{ round_num + 1 }}){% endif %}">
-                                            <i class="bi-arrow-up"></i>
-                                        </button>
+                                        {{ components.button(
+                                            _('Move this round to the previous period'), icon='bi-arrow-up', icon_only=true,
+                                            attrs={'onclick': (
+                                                'setPeriodStart(' ~ round_num ~ ', false)' if alone
+                                                else 'movePeriodStart(' ~ round_num ~ ', ' ~ (round_num + 1) ~ ')'
+                                            )},
+                                        ) }}
                                     {% endif %}
                                 {% else %}
-                                    <button type="button"
-                                            class="btn btn-outline-primary"
-                                            title="{{ _('Start a new period at this round') }}"
-                                            onclick="setPeriodStart({{ round_num }}, true)">
-                                        <i class="bi-scissors"></i>
-                                    </button>
+                                    {{ components.button(
+                                        _('Start a new period at this round'), icon='bi-scissors', icon_only=true,
+                                        attrs={'onclick': 'setPeriodStart(' ~ round_num ~ ', true)'},
+                                    ) }}
                                 {% endif %}
                                 {% if round_num == span.last_round and not period_loop.last %}
-                                    <button type="button"
-                                            class="btn btn-outline-primary"
-                                            title="{{ _('Move this round to the next period') }}"
-                                            onclick="{% if alone %}setPeriodStart({{ span.last_round + 1 }}, false){% else %}movePeriodStart({{ span.last_round + 1 }}, {{ round_num }}){% endif %}">
-                                        <i class="bi-arrow-down"></i>
-                                    </button>
+                                    {{ components.button(
+                                        _('Move this round to the next period'), icon='bi-arrow-down', icon_only=true,
+                                        attrs={'onclick': (
+                                            'setPeriodStart(' ~ (span.last_round + 1) ~ ', false)' if alone
+                                            else 'movePeriodStart(' ~ (span.last_round + 1) ~ ', ' ~ round_num ~ ')'
+                                        )},
+                                    ) }}
                                 {% endif %}
                             </div>
                         {% endfor %}

@@ -13,19 +13,13 @@
             {% endif %}
             <div class="flex-grow-1"></div>
             <div class="d-flex gap-2 ms-auto align-items-center">
-                <button
-                    id="championship-merge-competitors"
-                    class="btn btn-primary text-nowrap"
-                    type="submit"
-                    disabled
-                >
-                    <i class="bi-link-45deg pe-1"></i>
-                    {% if championship.competitor_type == competitor_type_team %}
-                        {{ _('Merge selected teams') }}
-                    {% else %}
-                        {{ _('Merge selected players') }}
-                    {% endif %}
-                </button>
+                {{ components.button(
+                    _('Merge selected teams') if championship.competitor_type == competitor_type_team else _('Merge selected players'),
+                    kind='primary',
+                    icon='bi-link-45deg',
+                    type='submit',
+                    attrs={'id': 'championship-merge-competitors', 'disabled': true},
+                ) }}
             </div>
         </div>
     </div>
@@ -33,7 +27,7 @@
     <section class="px-3 pb-1">
         <table
             id="championship-competitors-table"
-            class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+            class="table prominent table-striped table-sm table-hover w-100 mx-auto justify-content-center"
         >
             <thead
                 class="position-sticky z-2"

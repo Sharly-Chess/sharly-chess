@@ -1,18 +1,12 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
-
 {% set absent_count = admin_absent_players|length %}
 {% set over_half_absents = absent_count > admin_tournament.player_count / 2 %}
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, {% if over_half_absents %}625{% else %}500{% endif %}px);"
->
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ _('Absent players (%(count)d)', count=absent_count) }}
-            </div>
-        </div>
-        <div class="modal-body">
+{% set modal_size = 'lg' if over_half_absents else 'md' %}
+
+{% block title %}{{ _('Absent players (%(count)d)', count=absent_count) }}{% endblock %}
+
+{% block body %}
             <div
                 hx-get="{{ url_for(
                     'absents-modal-new-check-ins-message',
@@ -36,61 +30,58 @@
                 hx-indicator="#please-wait"
             >
                 {% if over_half_absents %}
-                    <h5 class="text-warning">
-                        {{ _('Warning: over half of the players are absent!') }}
-                    </h5>
+                    {{ components.note('warning', _('Warning: over half of the players are absent!')) }}
                     <div class="my-2">
                         {{ _('Select an action for the %(count)d absent players:', count=absent_count) }}
                     </div>
                     {% set unpaired_count = admin_unpaired|length %}
                     <div class="d-flex gap-2">
-                        <button
-                            type="submit"
-                            class="btn btn-outline-primary w-100"
-                            name="over_50_present"
-                        >
+                        {% call components.button(
+                            _('Mark as "Present" (recommended)'),
+                            type='submit',
+                            class='w-100 flex-column',
+                            attrs={'name': 'over_50_present'},
+                        ) %}
                             <div>
                                 {{ _('Mark as "Present" (recommended)') }}
                             </div>
-                            <div class="fst-italic" style="font-size: 85%">
+                            <div class="fst-italic small">
                                 {{ ngettext(
                                     '%(num)d player will be paired',
                                     '%(num)d players will be paired',
                                     unpaired_count + absent_count,
                                 ) }}
                             </div>
-                        </button>
-                        <button
-                            type="submit"
-                            class="btn btn-outline-danger w-100"
-                            name="over_50_zpb"
-                        >
+                        {% endcall %}
+                        {% call components.button(
+                            _('Do not pair for round #%(round)d', round=admin_round),
+                            kind='outline-danger',
+                            type='submit',
+                            class='w-100 flex-column',
+                            attrs={'name': 'over_50_zpb'},
+                        ) %}
                             <div>
                                 {{ _(
                                     'Do not pair for round #%(round)d',
                                     round=admin_round,
                                 ) }}
                             </div>
-                            <div class="fst-italic" style="font-size: 85%">
-                                <i class="bi-exclamation-triangle-fill pe-1"></i>
+                            {% call components.icon_text('warning', tag='div', class='fst-italic small') %}
                                 {{ ngettext(
                                     '%(num)d player will be paired',
                                     '%(num)d players will be paired',
                                     unpaired_count,
                                 ) }}
-                            </div>
-                        </button>
+                            {% endcall %}
+                        {% endcall %}
                     </div>
 
                 {% else %}
                     <div class="mb-3">
                         {{ _('Select an action for absent players:') }}
                     </div>
-                    <div class="d-grid ms-3" style="grid-template-columns: 30px min-content;">
-                        <h5>
-                            <i class="bi-0-circle-fill"></i>
-                        </h5>
-                        <span class="text-nowrap">
+                    {% call components.legend(class='ms-3') %}
+                        {% call components.legend_item('bi-0-circle-fill') %}
                             {{
                                 _(
                                     'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
@@ -111,12 +102,9 @@
                                     }}
                                 ></i>
                             {% endif %}
-                        </span>
+                        {% endcall %}
                         {% if admin_round < admin_tournament.rounds %}
-                            <h5>
-                                <i class="bi-sign-stop"></i>
-                            </h5>
-                            <span class="text-nowrap">
+                            {% call components.legend_item('bi-sign-stop') %}
                                 {{
                                     _(
                                         'Definitive withdrawal'
@@ -134,12 +122,9 @@
                                         )
                                     }}
                                 ></i>
-                            </span>
+                            {% endcall %}
                         {% endif %}
-                        <h5>
-                            <i class="bi-check-circle-fill"></i>
-                        </h5>
-                        <span class="text-nowrap">
+                        {% call components.legend_item('bi-check-circle-fill') %}
                             {{
                                 _(
                                     'Pair at round %(pairing_round)d',
@@ -162,63 +147,30 @@
                                     {% endif %}
                                 ></i>
                             {% endif %}
-                        </span>
-                    </div>
+                        {% endcall %}
+                    {% endcall %}
                     <div class="d-flex align-items-center justify-content-end pe-2 pb-2 mt-3">
                         <span class="text-start flex-grow-1 fw-bold">
                             {{ _('Apply to all') }}
                         </span>
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input
-                                type="radio"
-                                class="btn-check"
-                                id="zpb-all"
-                                value="zpb"
-                                name="all_players"
-                                autocomplete="off"
-                                checked
-                            >
-                            <label
-                                class="btn btn-outline-primary lh-1"
-                                for="zpb-all"
-                                {{ macros.tooltip_attributes('', _('Do not pair at round %(pairing_round)d', pairing_round=admin_round)) }}
-                            >
-                                <i class="bi-0-circle-fill"></i>
-                            </label>
-
+                        {% call components.segmented(_('Apply to all')) %}
+                            {{ components.segment_radio(
+                                'all_players', 'zpb',
+                                _('Do not pair at round %(pairing_round)d', pairing_round=admin_round),
+                                'zpb-all', icon='bi-0-circle-fill', icon_only=true, checked=true,
+                            ) }}
                             {% if admin_round < admin_tournament.rounds %}
-                                <input
-                                    type="radio"
-                                    class="btn-check"
-                                    id="withdraw-all"
-                                    value="withdraw"
-                                    name="all_players"
-                                    autocomplete="off"
-                                >
-                                <label
-                                    class="btn btn-outline-primary lh-1"
-                                    for="withdraw-all"
-                                    {{ macros.tooltip_attributes('', _('Definitive withdrawal')) }}
-                                >
-                                    <i class="bi-sign-stop"></i>
-                                </label>
+                                {{ components.segment_radio(
+                                    'all_players', 'withdraw', _('Definitive withdrawal'),
+                                    'withdraw-all', icon='bi-sign-stop', icon_only=true,
+                                ) }}
                             {% endif %}
-                            <input
-                                type="radio"
-                                class="btn-check"
-                                id="present-all"
-                                value="present"
-                                name="all_players"
-                                autocomplete="off"
-                            >
-                            <label
-                                class="btn btn-outline-primary lh-1"
-                                for="present-all"
-                                {{ macros.tooltip_attributes('', _('Pair at round %(pairing_round)d', pairing_round=admin_round)) }}
-                            >
-                                <i class="bi-check-circle-fill"></i>
-                            </label>
-                        </div>
+                            {{ components.segment_radio(
+                                'all_players', 'present',
+                                _('Pair at round %(pairing_round)d', pairing_round=admin_round),
+                                'present-all', icon='bi-check-circle-fill', icon_only=true,
+                            ) }}
+                        {% endcall %}
                         <script>
                             $('input[name="all_players"]').on('change', function() {
                                 $('.player-' + $(this).val()).prop('checked', true);
@@ -232,79 +184,48 @@
                                     <div class="text-start flex-grow-1">
                                         {{ player.full_name }}
                                     </div>
-                                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                        <input
-                                            type="radio"
-                                            class="btn-check player-zpb"
-                                            name="player_{{ player.id }}"
-                                            id="zpb-{{ player.id }}"
-                                            value="zpb"
-                                            autocomplete="off"
-                                            checked
-                                        >
-                                        <label class="btn btn-outline-primary lh-1" for="zpb-{{ player.id }}">
-                                            <i class="bi-0-circle-fill"></i>
-                                        </label>
-
+                                    {% call components.segmented(player.full_name) %}
+                                        {{ components.segment_radio(
+                                            'player_' ~ player.id, 'zpb',
+                                            _('Do not pair at round %(pairing_round)d', pairing_round=admin_round),
+                                            'zpb-' ~ player.id, icon='bi-0-circle-fill', icon_only=true,
+                                            checked=true, class='player-zpb',
+                                        ) }}
                                         {% if admin_round < admin_tournament.rounds %}
-                                            <input
-                                                type="radio"
-                                                class="btn-check player-withdraw"
-                                                name="player_{{ player.id }}"
-                                                id="withdraw-{{ player.id }}"
-                                                value="withdraw"
-                                                autocomplete="off"
-                                            >
-                                            <label class="btn btn-outline-primary lh-1" for="withdraw-{{ player.id }}">
-                                                <i class="bi-sign-stop"></i>
-                                            </label>
+                                            {{ components.segment_radio(
+                                                'player_' ~ player.id, 'withdraw', _('Definitive withdrawal'),
+                                                'withdraw-' ~ player.id, icon='bi-sign-stop', icon_only=true,
+                                                class='player-withdraw',
+                                            ) }}
                                         {% endif %}
-                                        <input
-                                            type="radio"
-                                            class="btn-check player-present"
-                                            name="player_{{ player.id }}"
-                                            id="present-{{ player.id }}"
-                                            value="present"
-                                            autocomplete="off"
-                                        >
-                                        <label class="btn btn-outline-primary lh-1" for="present-{{ player.id }}">
-                                            <i class="bi-check-circle-fill "></i>
-                                        </label>
-                                    </div>
+                                        {{ components.segment_radio(
+                                            'player_' ~ player.id, 'present',
+                                            _('Pair at round %(pairing_round)d', pairing_round=admin_round),
+                                            'present-' ~ player.id, icon='bi-check-circle-fill', icon_only=true,
+                                            class='player-present',
+                                        ) }}
+                                    {% endcall %}
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            {% if not over_half_absents %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
+{% endblock %}
 
-                >
-                    {% if admin_round == 1 %}
-                        <i class="bi-check-circle-fill pe-1"></i>
-                        {{ _('Validate') }}
-                    {% else %}
-                        <i class="bi-shuffle pe-1"></i>
-                        {{ _('Validate and pair') }}
-                    {% endif %}
-                </button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if not over_half_absents %}
+        {{ components.button(
+            _('Validate') if admin_round == 1 else _('Validate and pair'),
+            kind='primary',
+            icon='confirm' if admin_round == 1 else 'bi-shuffle',
+            type='submit',
+            attrs={'form': 'modal-form'},
+        ) }}
+    {% endif %}
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

@@ -9,26 +9,21 @@
     </div>
     {% if sce_event_status.retry_button or sce_event_status.oauth_button %}
         <div class="align-self-center">
-            <button
-                type="button"
-                class="btn btn-sm btn-outline-light text-nowrap"
-                hx-get="{{ url_for(
-                    'sce-sync-modal'
-                    if sce_event_status.retry_button else
-                    'sce-oauth-event-connect',
-                    event_uniq_id=admin_event.uniq_id
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% if sce_event_status.retry_button %}
-                    <i class="bi-arrow-clockwise pe-1"></i>
-                    {{ _('Retry') }}
-                {% else %}
-                    <i class="bi-lock-fill pe-1"></i>
-                    {{ _('Authorisation') }}
-                {% endif %}
-            </button>
+            {{ components.button(
+                _('Retry') if sce_event_status.retry_button else _('Authorisation'),
+                icon='refresh' if sce_event_status.retry_button else 'bi-lock-fill',
+                size='sm',
+                attrs={
+                    'hx-get': url_for(
+                        'sce-sync-modal'
+                        if sce_event_status.retry_button else
+                        'sce-oauth-event-connect',
+                        event_uniq_id=admin_event.uniq_id
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         </div>
     {% endif %}
 {% endblock %}

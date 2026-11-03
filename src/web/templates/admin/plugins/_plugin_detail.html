@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% import '/common/macros.j2' as macros with context %}
 
 {% macro plugin_link(plugin) %}
@@ -8,10 +9,7 @@
     <div class="card-body">
         <div class="d-flex align-items-start gap-3 flex-wrap">
             <div>
-                <h3 class="h5 mb-0">
-                    <i class="bi-plugin pe-1"></i>
-                    {{ plugin.name }}
-                </h3>
+                {% call components.icon_text('bi-plugin', tag='h3', class='h5 mb-0') %}{{ plugin.name }}{% endcall %}
             </div>
             <div class="ms-auto d-flex align-items-center gap-2">
                 {% if plugin.is_enabled %}
@@ -28,34 +26,31 @@
                             used_by_events|length
                         ) %}
                     {% endif %}
-                    <span
-                        {% if uninstall_blocked_message %}
-                            {{ macros.tooltip_attributes('info', uninstall_blocked_message, 'top') }}
-                        {% endif %}
-                    >
-                        <button
-                            type="button"
-                            class="btn btn-outline-danger text-nowrap"
-                            data-testid="plugin-uninstall-{{ plugin.id }}"
-                            hx-post="{{ url_for('admin-plugin-toggle', plugin_id=plugin.id) }}{% if embedded %}?embedded=1{% endif %}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {% if uninstall_blocked_message %}disabled{% endif %}
-                        >
-                            <i class="bi-dash-circle-fill pe-1"></i>{{ _('Uninstall') }}
-                        </button>
-                    </span>
+                    {{ components.button(
+                        _('Uninstall'),
+                        kind='outline-danger',
+                        icon='bi-dash-circle-fill',
+                        allowed=not uninstall_blocked_message,
+                        reason=uninstall_blocked_message,
+                        attrs={
+                            'data-testid': 'plugin-uninstall-' ~ plugin.id,
+                            'hx-post': url_for('admin-plugin-toggle', plugin_id=plugin.id) ~ ('?embedded=1' if embedded else ''),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 {% else %}
-                    <button
-                        type="button"
-                        class="btn btn-primary text-nowrap"
-                        data-testid="plugin-install-{{ plugin.id }}"
-                        hx-post="{{ url_for('admin-plugin-toggle', plugin_id=plugin.id) }}{% if embedded %}?embedded=1{% endif %}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-plus-circle-fill pe-1"></i>{{ _('Install') }}
-                    </button>
+                    {{ components.button(
+                        _('Install'),
+                        kind='primary',
+                        icon='bi-plus-circle-fill',
+                        attrs={
+                            'data-testid': 'plugin-install-' ~ plugin.id,
+                            'hx-post': url_for('admin-plugin-toggle', plugin_id=plugin.id) ~ ('?embedded=1' if embedded else ''),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 {% endif %}
             </div>
         </div>
@@ -67,17 +62,14 @@
                     {% if plugin.federation %}
                         <span class="text-nowrap">
                             {{ _('Federation') }}
-                            <span class="badge text-bg-secondary">
-                                {{ federation_name or plugin.federation }}
-                                - {{ plugin.federation }}
-                            </span>
+                            {{ components.badge('neutral', (federation_name or plugin.federation) ~ ' - ' ~ plugin.federation) }}
                         </span>
                     {% endif %}
                     {% if plugin.supported_event_types is not none %}
                         <span class="text-nowrap">
                             {{ _('Type') }}
                             {% for event_type in plugin.supported_event_types %}
-                                <span class="badge text-bg-secondary">{{ event_type }}</span>
+                                {{ components.badge('neutral', event_type) }}
                             {% endfor %}
                         </span>
                     {% endif %}
@@ -102,23 +94,23 @@
             {% if plugin.is_enabled %}
                 <dt>{{ _('Enabled by default') }}</dt>
                 <dd>
-                    <div class="btn-group btn-group-sm" role="group">
+                    {% call components.segmented(_('Enabled by default'), size='sm') %}
                         {% for enabled, label in [
                             (true, _('Yes')), (false, _('No'))
                         ] %}
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary plugin-toggle-button
-                                    {% if plugin.event_is_enabled_by_default == enabled %}active{% endif %}"
-                                data-testid="plugin-default-event-{{ plugin.id }}-{{ 'yes' if enabled else 'no' }}"
-                                hx-post="{{ url_for(
-                                    'admin-plugin-default-event', plugin_id=plugin.id
-                                ) }}?enabled={{ 1 if enabled else 0 }}{% if embedded %}&embedded=1{% endif %}"
-                                hx-target="#plugin-detail"
-                                hx-indicator="#please-wait"
-                            >{{ label }}</button>
+                            {{ components.segment_button(
+                                label,
+                                active=plugin.event_is_enabled_by_default == enabled,
+                                attrs={
+                                    'data-testid': 'plugin-default-event-' ~ plugin.id ~ '-' ~ ('yes' if enabled else 'no'),
+                                    'hx-post': url_for('admin-plugin-default-event', plugin_id=plugin.id)
+                                        ~ '?enabled=' ~ (1 if enabled else 0) ~ ('&embedded=1' if embedded else ''),
+                                    'hx-target': '#plugin-detail',
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) }}
                         {% endfor %}
-                    </div>
+                    {% endcall %}
                 </dd>
             {% endif %}
 
@@ -135,11 +127,11 @@
                         aria-expanded="false"
                         aria-controls="plugin-used-by-events"
                     >
-                        <i class="bi-chevron-down text-body pe-1"></i>{{ ngettext(
+                        {% call components.icon_text('bi-chevron-down', icon_class='text-body') %}{{ ngettext(
                             '%(num)d event',
                             '%(num)d events',
                             used_by_events|length
-                        ) }}
+                        ) }}{% endcall %}
                     </button>
                     <ul
                         id="plugin-used-by-events"
@@ -179,12 +171,12 @@
         <p>{{ plugin.description }}</p>
     {% endif %}
     {% if plugin.doc_slug %}
-        <a
-            class="btn btn-sm btn-outline-primary"
-            href="{{ macros.doc_url(plugin.doc_slug)|trim }}"
-            target="_blank"
-        >
-            <i class="bi-book pe-1"></i>{{ _('Read the documentation') }}
-        </a>
+        {{ components.button(
+            _('Read the documentation'),
+            icon='bi-book',
+            size='sm',
+            href=macros.doc_url(plugin.doc_slug)|trim,
+            attrs={'target': '_blank'},
+        ) }}
     {% endif %}
 </div>

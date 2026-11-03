@@ -622,7 +622,7 @@ class FamilyAdminController(BaseEventAdminController):
             context=web_context.template_context
             | {'family_uniq_ids': list(event.families_by_uniq_id.keys())},
             re_swap='innerHTML',
-            re_target='.modal-header',
+            re_target='.sc-modal-subtitle',
         )
 
     @delete(

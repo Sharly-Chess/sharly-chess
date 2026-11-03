@@ -1,0 +1,83 @@
+{#
+    The frame of an administration modal, extended by each modal:
+
+        {% extends '/admin/components/modal.html' %}
+        {% set modal_size = 'lg' %}
+        {% block title %}...{% endblock %}
+        {% block body %}...{% endblock %}
+        {% block footer %}{{ components.cancel_button() }}...{% endblock %}
+
+    The subtitle block holds the lines shown under the title (the event, the
+    tournament...), and toolbar the buttons acting on the modal's contents
+    (Add, Edit...), set on the right at the top of the body.
+    A modal without a title has no header, and one without a body (a bare
+    question with its answers) no body.
+
+    Settings, set in the extending template:
+        modal_size: sm (450px), md (500px, the default), lg (600px), xl (800px),
+            wide (1000px), max (90% of the window) or fit (as wide as its
+            content).
+        modal_id: the id of the dialog.
+        modal_doc: the help page shown as an icon after the title.
+        modal_close: a close button in the header (default false; the
+            footer's Cancel closes the modal).
+        modal_scrollable: the body scrolls within the window (default true).
+        modal_class: extra classes of the dialog.
+        modal_attrs: extra attributes of the dialog, as a dict (an hx-get that
+            refreshes the modal...).
+        modal_footer_id: the id of the footer, for the scripts that show or
+            hide its buttons.
+#}
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+{% set _size = modal_size | default('md') %}
+<div
+    {% if modal_id is defined and modal_id %}id="{{ modal_id }}"{% endif %}
+    class="modal-dialog sc-modal sc-modal-{{ _size }}{% if modal_scrollable | default(true) %} modal-dialog-scrollable{% endif %}{% if modal_class is defined and modal_class %} {{ modal_class }}{% endif %}"
+    {{- components.html_attributes(modal_attrs | default({})) }}
+>
+    <div class="modal-content">
+        {% block before_header %}{% endblock %}
+        {% set _title %}{% block title %}{% endblock %}{% endset %}
+        {% set _subtitle %}{% block subtitle %}{% endblock %}{% endset %}
+        {% if _title | trim or modal_close | default(false) %}
+            <div class="modal-header">
+                <div class="sc-modal-heading">
+                    <h2 class="modal-title">
+                        {{ _title }}
+                        {% if modal_doc is defined and modal_doc %}
+                            {{ macros.doc_icon(modal_doc, 'sc-modal-doc') }}
+                        {% endif %}
+                    </h2>
+                    {% if _subtitle | trim %}
+                        <div class="sc-modal-subtitle">{{ _subtitle }}</div>
+                    {% endif %}
+                </div>
+                {% if modal_close | default(false) %}
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% set _toolbar %}{% block toolbar %}{% endblock %}{% endset %}
+        {% set _body %}{% block body %}{% endblock %}{% endset %}
+        {% if _body | trim or _toolbar | trim %}
+            <div class="modal-body">
+                {% if _toolbar | trim %}
+                    <div class="sc-modal-toolbar">{{ _toolbar }}</div>
+                {% endif %}
+                {{ _body }}
+            </div>
+        {% endif %}
+        {% set _footer %}{% block footer %}{{ components.cancel_button() }}{% endblock %}{% endset %}
+        {% set _footer_start %}{% block footer_start %}{% endblock %}{% endset %}
+        {% if _footer | trim or _footer_start | trim %}
+            <div class="modal-footer"{% if modal_footer_id is defined and modal_footer_id %} id="{{ modal_footer_id }}"{% endif %}>
+                {% if _footer_start | trim %}
+                    <div class="sc-modal-footer-start">{{ _footer_start }}</div>
+                {% endif %}
+                {{ _footer }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% block after_modal %}{% endblock %}

@@ -10,15 +10,14 @@
 
 {% block form_content %}
     {% if referencing_championships %}
-        <div class="alert alert-warning mt-3" role="alert">
-            <i class="bi-exclamation-triangle-fill pe-1"></i>
+        {% call components.note('warning', class='mt-3') %}
             {{ _('Deleting this tournament will break its source in the following championships:') }}
             <ul class="mb-0 mt-2">
                 {% for championship in referencing_championships %}
                     <li>{{ championship.name }}</li>
                 {% endfor %}
             </ul>
-        </div>
+        {% endcall %}
     {% endif %}
     {% if (
         admin_tournament.dependent_screens

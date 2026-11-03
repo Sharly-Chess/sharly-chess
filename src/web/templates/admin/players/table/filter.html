@@ -10,37 +10,23 @@
     hx-target="#players-table"
     hx-indicator="#please-wait"
 >
-    <span class="dropdown-center">
-        <button
-            id="column-{{ column.id }}-filter-dropdown-button"
-            class="btn text-dark m-0 p-0"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            data-bs-auto-close="outside"
-        >
-            <i class="{{ 'bi-funnel-fill text-warning' if is_active else 'bi-funnel' }}"></i>
-        </button>
-        <ul
-            id="column-{{ column.id }}-filter-dropdown"
-            class="dropdown-menu table-dropdown-menu p-0"
-        >
+    {% call components.menu_button(
+        _('Filter'),
+        kind='plain',
+        icon='bi-funnel-fill' if is_active else 'bi-funnel',
+        icon_only=true,
+        class='dropdown-center',
+        toggle_class='m-0 p-0' ~ (' text-warning' if is_active else ''),
+        toggle_attrs={'data-bs-auto-close': 'outside'},
+        menu_class='table-dropdown-menu p-0',
+    ) %}
             {% set name = 'filters' %}
             {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
             <input type="hidden" name="{{ name }}" value="" checked />
-            <li class="dropdown-item title text-nowrap">
-                <input
-                    type="checkbox"
-                    class="form-check-input blue-checkbox"
-                    {% if column.all_filter_value_active %}checked{% endif %}
-                    onclick="$('input.filter-{{ column.id }}').prop('checked', this.checked)"
-                />
-                <button type="submit" class="btn w-100 text-end compact-y-padding" data-bs-dismiss="modal" >
-                    <i class="bi-check-lg pe-1"></i>
-                    {{ _('OK') }}
-                </button>
-            </li>
-            <li class="dropdown-divider m-0"></li>
+            {{ components.menu_select_all(
+                column.all_filter_value_active,
+                "$('input.filter-" ~ column.id ~ "').prop('checked', this.checked)",
+            ) }}
             {% for filter_value in column.filter_values %}
                 {% set tooltip = column.get_filter_row_tooltip(filter_value.value) %}
                 <li
@@ -65,6 +51,5 @@
                     </label>
                 </li>
             {% endfor %}
-        </ul>
-    </span>
+    {% endcall %}
 </form>

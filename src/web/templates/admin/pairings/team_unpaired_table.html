@@ -15,7 +15,7 @@
 {% if teams %}
     <table
         id="{{ table_id }}"
-        class="table prominent table-striped table-sm w-100 bg-light {% if unsafe_editing %}table-danger-header{% endif %}"
+        class="table prominent table-striped table-sm w-100 {% if unsafe_editing %}table-danger-header{% endif %}"
     >
         <thead
             id="{{ table_id }}-header"
@@ -39,38 +39,30 @@
                     <td>
                         <a
                             class="player-link"
-                            hx-get="{{ url_for(
+                            {{ components.modal_trigger_attrs(url_for(
                                 'admin-team-record-modal',
                                 event_uniq_id=admin_event.uniq_id,
                                 team_id=team.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                            )) }}
                         ><strong>{{ team.name }}</strong></a>
                     </td>
                     {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
                     <td
                         class="text-end text-nowrap cursor-pointer"
-                        hx-get="{{ url_for(
+                        {{ components.modal_trigger_attrs(url_for(
                             'pairings-unpaired-team-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
                             team_id=team.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        )) }}
                     >
                         {% if bye_type in bye_icon_class %}
                             <i
                                 class="{{ bye_icon_class[bye_type] }} text-body text-secondary"
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ _('%(bye)s at round %(round)d', bye=bye_label_map[bye_type], round=admin_round) ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         {% elif not team.check_in %}
@@ -78,7 +70,7 @@
                                 class="bi-x-circle-fill text-danger"
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ _('Absent') ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         {% else %}
@@ -86,7 +78,7 @@
                                 class="bi-check-circle-fill text-success"
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ _('Present') ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         {% endif %}

@@ -19,49 +19,38 @@
 {% block top_right_nav %}
     {% include '/admin/common/collection_controls.html' %}
     {% if client.can_manage_screens %}
-        <span
-            {{ macros.tooltip_attributes(
-                'info',
-                _('Add a display controller to the event.'),
-                'top')
-            }}
-        >
-            <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-trigger="click, SC_Plus from:body"
-                hx-get="{{ url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-plus-lg-fill pe-1"></i>
-                {{ _('Create a display controller') }}
-            </button>
-        </span>
+        {{ components.modal_button(
+            url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id),
+            _('Create a display controller'),
+            kind='primary',
+            icon='add',
+            tooltip=_('Add a display controller to the event.'),
+            attrs={'hx-trigger': 'click, SC_Plus from:body'},
+        ) }}
     {% endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% with
-        items=admin_display_controllers,
-        empty_message=_('No display controllers'),
-        sortable=false,
-        show_details=collection_show_details,
-        hidden_list_columns=['actions'] if not client.can_manage_screens else []
-    %}
-        {% include '/admin/common/collection.html' %}
-    {% endwith %}
     {% if not admin_display_controllers and client.can_manage_screens %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
+        {% call components.empty_state(_('No display controllers')) %}
             <p>{{ _('Display controllers allow you to control screens at your event from your server (or any allowed device).') }}</p>
             <p>{{ _('Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator.') }}</p>
             <p>
                 {{ _('From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:') }}
-                <i class="bi-box-arrow-in-right ps-2"></i>
+                {{ components.icon('import', class='ps-2') }}
             </p>
             <p>{{ _('Any number of devices can be controlled by the same display controller.') }}</p>
             <p>{{ _('Create a display controller now to get started.') }}</p>
-        </div>
+        {% endcall %}
+    {% else %}
+        {% with
+            items=admin_display_controllers,
+            empty_message=_('No display controllers'),
+            sortable=false,
+            show_details=collection_show_details,
+            hidden_list_columns=['actions'] if not client.can_manage_screens else []
+        %}
+            {% include '/admin/common/collection.html' %}
+        {% endwith %}
     {% endif %}
 {% endblock %}

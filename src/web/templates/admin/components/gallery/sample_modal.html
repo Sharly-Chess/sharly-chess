@@ -1,0 +1,25 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = size %}
+{% set modal_doc = 'tournaments' if with_doc else none %}
+{% set modal_close = with_close %}
+
+{% block title %}Modal ({{ size }}){% endblock %}
+
+{% block body %}
+    {{ components.section_heading('Section heading') }}
+    <p>The body of a modal, with a note and a second section.</p>
+    {{ components.note('info', 'A note inside the modal body.') }}
+    {{ components.section_heading('Another section') }}
+    <p class="mb-0">More content.</p>
+{% endblock %}
+
+{% block footer_start %}
+    {% if with_footer_start %}
+        {{ components.button('Reset', kind='outline-danger', icon='refresh') }}
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button('Save', kind='primary', icon='save') }}
+{% endblock %}

@@ -15,14 +15,11 @@
 {% endblock %}
 
 {% block form_content %}
-    <div class="alert alert-warning mt-3" role="alert">
-        <i class="bi-exclamation-triangle-fill pe-1"></i>
-        {{ _(
-            'This event could not be read. Archiving it sets its file aside, '
-            'and its backups are kept with it: both can be brought back from '
-            'the archives.'
-        ) }}
-    </div>
+    {{ components.note('warning', _(
+        'This event could not be read. Archiving it sets its file aside, '
+        'and its backups are kept with it: both can be brought back from '
+        'the archives.'
+    ), class='mt-3') }}
     {{ admin_macros.checkbox_input(
         name='archive',
         placeholder=_('I confirm that I want to archive this event.'),
@@ -45,10 +42,8 @@
     ) }}
 {% endblock %}
 
-{% block delete_button_content %}
-    <i class="bi-archive-fill pe-1"></i>
-    {{ _('Archive') }}
-{% endblock %}
+{% block delete_label %}{{ _('Archive') }}{% endblock %}
+{% block delete_icon %}bi-archive-fill{% endblock %}
 
 {% block delete_modal_script %}
     <script>requestRefresh()</script>

@@ -28,12 +28,11 @@
 
 {% macro screen_count(item, view, placement) %}
     <span class="{% if not item.screens_by_uniq_id %}text-danger{% endif %} text-nowrap">
-        <i class="bi-window pe-1"></i>
-        {{ ngettext(
+        {% call components.icon_text('bi-window') %}{{ ngettext(
             '%(num)d screen',
             '%(num)d screens',
             item.screens_by_uniq_id|length,
-        ) }}
+        ) }}{% endcall %}
     </span>
 {% endmacro %}
 
@@ -60,7 +59,7 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-danger"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No screens') }}</div>
+        <div class="text-danger">{% call components.icon_text('bi-exclamation-triangle-fill') %}{{ _('No screens') }}{% endcall %}</div>
     {% endif %}
 {% endmacro %}
 
@@ -83,21 +82,18 @@
             <h6>{{ _('General configuration') }}</h6>
             {% if screen_type.has_exit_button %}
                 <div>
-                    <i class="bi-x-circle pe-1"></i>
-                    {{ _('Exit button:') }} {{ _('yes') if family.input_exit_button else _('no') }}
+                    {% call components.icon_text('bi-x-circle') %}{{ _('Exit button:') }} {{ _('yes') if family.input_exit_button else _('no') }}{% endcall %}
                 </div>
             {% endif %}
             <div>
-                <i class="bi-hand-index pe-1"></i>
-                {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}
+                {% call components.icon_text('bi-hand-index') %}{{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}{% endcall %}
             </div>
             <div class="{% if not family.timer %}text-secondary{% endif %}">
-                <i class="bi-clock pe-1"></i>
-                {{
+                {% call components.icon_text('bi-clock') %}{{
                     _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name)
                     if family.timer
                     else _('Timer: none')
-                }}
+                }}{% endcall %}
             </div>
         </section>
         {% if screen_type.card_detail_template %}
@@ -112,10 +108,7 @@
         <section class="collection-detail-section collection-detail-wide">
             <h6>{{ _('Alert message') }}</h6>
             {% if family.message_text %}
-                <div
-                    class="px-2 alert-message screen-alert-message"
-                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-                >
+                <div class="screen-alert-message">
                     {{ family.message_text }}
                     {% if family.message_default %}<span class="fst-italic">{{ _('(by default)') }}</span>{% endif %}
                 </div>
@@ -134,66 +127,43 @@
     <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
         <div>
             {% if family.calculated_first_screen_id %}
-                <a
-                    class="btn btn-sm btn-outline-primary"
-                    href="{{ url_for(
+                {{ components.button(
+                    _('Go to the first screen.'),
+                    icon='bi-eye',
+                    icon_only=true,
+                    size='sm',
+                    href=url_for(
                         'user-screen',
                         event_uniq_id=admin_event.uniq_id,
                         screen_uniq_id=family.calculated_first_screen_id,
-                    ) }}"
-                    target="_blank"
-                    {{ macros.tooltip_attributes('info', _('Go to the first screen.'), 'top') }}
-                >
-                    <i class="bi-eye"></i>
-                </a>
+                    ),
+                    attrs={'target': '_blank'},
+                ) }}
             {% endif %}
         </div>
         <div class="d-flex align-items-center gap-1">
-            {% call macros.action_tooltip('info', _('Edit the properties of the multi-screen.'), 'top') %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-family-modal',
-                        action='update',
-                        event_uniq_id=admin_event.uniq_id,
-                        family_id=family.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                ><i class="bi-pencil"></i></button>
-            {% endcall %}
-            {% call macros.action_tooltip('info', _('Duplicate the multi-screen.'), 'top') %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-family-modal',
-                        action='clone',
-                        event_uniq_id=admin_event.uniq_id,
-                        family_id=family.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                ><i class="bi-copy"></i></button>
-            {% endcall %}
-            {% call macros.action_tooltip('info', _('Delete the multi-screen.'), 'top') %}
-                <button
-                    class="btn btn-sm btn-outline-danger"
-                    hx-get="{{ url_for(
-                        'admin-family-modal',
-                        action='delete',
-                        event_uniq_id=admin_event.uniq_id,
-                        family_id=family.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                ><i class="bi-trash"></i></button>
-            {% endcall %}
+            {{ components.modal_button(
+                url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=family.id),
+                _('Edit the properties of the multi-screen.'),
+                icon='edit',
+                icon_only=true,
+                size='sm',
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-family-modal', action='clone', event_uniq_id=admin_event.uniq_id, family_id=family.id),
+                _('Duplicate the multi-screen.'),
+                icon='copy',
+                icon_only=true,
+                size='sm',
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-family-modal', action='delete', event_uniq_id=admin_event.uniq_id, family_id=family.id),
+                _('Delete the multi-screen.'),
+                kind='outline-danger',
+                icon='delete',
+                icon_only=true,
+                size='sm',
+            ) }}
         </div>
     </div>
 {% endmacro %}

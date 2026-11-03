@@ -1,4 +1,8 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+{% set modal_size = 'xl' %}
+{% set modal_class = 'pairing-modal' %}
+{% set modal_scrollable = false %}
 
 {% set validate_route = url_for(
     'admin-pairings-validate-manual-pairing',
@@ -57,15 +61,12 @@
     {{ bye_problem_list() }}
 {% endmacro %}
 
-<div style="--bs-modal-width: min(90vw, 800px);" class="modal-dialog pairing-modal">
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ warning_macros.level_icon(4 if differs else 3) }}
-                {{ _('Validate the pairings') }}
-            </div>
-        </div>
-        <div class="modal-body">
+{% block title %}
+    {{ warning_macros.level_icon(4 if differs else 3) }}
+    {{ _('Validate the pairings') }}
+{% endblock %}
+
+{% block body %}
             {% if differs %}
                 {% call(button) warning_macros.double_confirmation(
                     'manual-pairing-check',
@@ -86,21 +87,16 @@
                 {% endcall %}
             {% else %}
                 {{ bye_problem_list() }}
-                <div class="d-flex justify-content-end gap-2">
-                    <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
-                        <i class="bi-x-circle-fill pe-1"></i>
-                        {{ _('Cancel') }}
-                    </button>
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        hx-post="{{ validate_route }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                        {{ _('Validate anyway') }}
-                    </button>
-                </div>
             {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {% if not differs %}
+        {{ components.cancel_button() }}
+        {{ components.button(
+            _('Validate anyway'),
+            kind='primary',
+            attrs={'hx-post': validate_route, 'hx-target': 'body', 'hx-indicator': '#please-wait'},
+        ) }}
+    {% endif %}
+{% endblock %}

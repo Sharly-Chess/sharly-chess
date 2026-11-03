@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div
     id="upload-results"
@@ -7,7 +8,7 @@
     hx-swap="outerHTML"
 >
     {% set all_auto = documents and documents | rejectattr('auto_upload') | list | length == 0 %}
-    <table class="table prominent table-sm w-100 bg-light mx-auto justify-content-center">
+    <table class="table prominent table-sm w-100 mx-auto justify-content-center">
         <thead>
             <th class="text-center">
                 <div
@@ -92,15 +93,13 @@
                     <td id="document-upload-statuses-{{ document.id }}" class="text-center">
                         {% set document_statuses = custom_upload_utils.resolve_document_upload_statuses(admin_event, document) %}
                         {% for status in document_statuses %}
-                            {% set tooltip_message = status.tooltip_message(admin_event, document) %}
-                            <span
-                                class="badge rounded-pill {{ status.css_classes }}"
-                                {% if tooltip_message %}
-                                    {{ macros.tooltip_attributes('', tooltip_message) }}
-                                {% endif %}
-                            >
-                                {{ status.name }}
-                            </span>
+                            {{ components.badge(
+                                status.badge_kind,
+                                status.name,
+                                pill=true,
+                                tooltip=status.tooltip_message(admin_event, document),
+                                tooltip_type='',
+                            ) }}
                         {% endfor %}
                     </td>
                     <td class="text-center text-nowrap">
@@ -108,41 +107,43 @@
                     </td>
                     <td class="d-flex gap-2 align-items-center">
                         <div class="flex-grow-1"></div>
-                        <span {{ macros.tooltip_attributes('', _('Edit document')) }}>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                hx-get="{{ url_for('custom-upload-edit-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
-                                hx-target="#modal-wrapper"
-                                hx-indicator="#please-wait"
-                            >
-                                <i class="bi-pencil-fill lh-1"></i>
-                            </button>
-                        </span>
-                        <span {{ macros.tooltip_attributes('', _('Remove document')) }}>
-                            <button
-                                type="button"
-                                class="btn btn-outline-danger btn-sm d-flex h-100 align-items-center"
-                                hx-post="{{ url_for('custom-upload-remove-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
-                                hx-target="#upload-results"
-                                hx-swap="outerHTML"
-                                hx-confirm="{{ _('Remove this document from the upload list?') }}"
-                            >
-                                <i class="bi-trash-fill lh-1"></i>
-                            </button>
-                        </span>
-                        <span {{ macros.tooltip_attributes('', connection_message or _('Upload')) }}>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                hx-post="{{ url_for('custom-upload-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
-                                hx-target="#upload-results"
-                                hx-swap="outerHTML"
-                                {% if connection_message %}disabled{% endif %}
-                            >
-                                <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                            </button>
-                        </span>
+                        {{ components.button(
+                            _('Edit document'),
+                            icon='edit',
+                            size='sm',
+                            icon_only=true,
+                            attrs={
+                                'hx-get': url_for('custom-upload-edit-document', event_uniq_id=admin_event.uniq_id, document_id=document.id),
+                                'hx-target': '#modal-wrapper',
+                                'hx-indicator': '#please-wait',
+                            },
+                        ) }}
+                        {{ components.button(
+                            _('Remove document'),
+                            kind='outline-danger',
+                            icon='delete',
+                            size='sm',
+                            icon_only=true,
+                            attrs={
+                                'hx-post': url_for('custom-upload-remove-document', event_uniq_id=admin_event.uniq_id, document_id=document.id),
+                                'hx-target': '#upload-results',
+                                'hx-swap': 'outerHTML',
+                                'hx-confirm': _('Remove this document from the upload list?'),
+                            },
+                        ) }}
+                        {{ components.button(
+                            _('Upload'),
+                            icon='bi-cloud-arrow-up-fill',
+                            size='sm',
+                            icon_only=true,
+                            allowed=not connection_message,
+                            reason=connection_message,
+                            attrs={
+                                'hx-post': url_for('custom-upload-document', event_uniq_id=admin_event.uniq_id, document_id=document.id),
+                                'hx-target': '#upload-results',
+                                'hx-swap': 'outerHTML',
+                            },
+                        ) }}
                     </td>
                 </tr>
             {% endfor %}

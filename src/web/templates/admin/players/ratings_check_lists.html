@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% set _query = 'tab=' ~ tab ~ ('&tournament_id=' ~ admin_tournament.id if admin_tournament else '') ~ ('&updating=1' if lists_updating else '') %}
 {% set _ids = stale_lists|map(attribute='id')|list %}
 {% if _ids %}{% set _query = _query ~ '&database_ids=' ~ _ids|join('&database_ids=') %}{% endif %}
@@ -24,30 +25,32 @@
             hx-indicator="#please-wait"
         ></div>
     {% elif lists_updating %}
-        <div class="alert alert-info d-flex align-items-center gap-3">
-            <span class="spinner-border spinner-border-sm" role="status"></span>
-            <span class="flex-grow-1">
-                {{ _('Updating the lists: %(lists)s. The check is run again once they are up to date.', lists=stale_lists|map(attribute='name')|join(', ')) }}
-            </span>
-        </div>
+        {{ components.note(
+            'info',
+            _('Updating the lists: %(lists)s. The check is run again once they are up to date.', lists=stale_lists|map(attribute='name')|join(', ')),
+            icon='spinner-border spinner-border-sm',
+        ) }}
     {% elif stale_lists %}
-        <div class="alert alert-warning d-flex align-items-center gap-3">
-            <span class="flex-grow-1">
-                {{ _('Newer versions of these lists are available: %(lists)s. Update them before relying on this check.', lists=stale_lists|map(attribute='name')|join(', ')) }}
-            </span>
+        {% set update_action %}
             {% if client.can_manage_source_databases %}
-                <button
-                    type="button"
-                    class="btn btn-sm btn-primary text-nowrap"
-                    hx-post="{{ url_for('admin-event-ratings-check-lists-update', event_uniq_id=admin_event.uniq_id) }}?{{ _query }}"
-                    hx-target="#ratings-check-lists"
-                    hx-swap="outerHTML"
-                    hx-disabled-elt="this"
-                >
-                    <i class="bi-arrow-repeat pe-1"></i>
-                    {{ _('Update the lists') }}
-                </button>
+                {{ components.button(
+                    _('Update the lists'),
+                    kind='primary',
+                    icon='bi-arrow-repeat',
+                    size='sm',
+                    attrs={
+                        'hx-post': url_for('admin-event-ratings-check-lists-update', event_uniq_id=admin_event.uniq_id) ~ '?' ~ _query,
+                        'hx-target': '#ratings-check-lists',
+                        'hx-swap': 'outerHTML',
+                        'hx-disabled-elt': 'this',
+                    },
+                ) }}
             {% endif %}
-        </div>
+        {% endset %}
+        {{ components.note(
+            'warning',
+            _('Newer versions of these lists are available: %(lists)s. Update them before relying on this check.', lists=stale_lists|map(attribute='name')|join(', ')),
+            actions=update_action if update_action|trim else none,
+        ) }}
     {% endif %}
 </div>

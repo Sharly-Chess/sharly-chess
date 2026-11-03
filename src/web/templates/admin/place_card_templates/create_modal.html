@@ -1,42 +1,35 @@
-<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 26rem);">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">{{ _('New place card template') }}</h2>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'sm' %}
+
+{% block title %}{{ _('New place card template') }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-post="{{ url_for('place-card-template-create') }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <div class="row gy-2 gx-3">
+            <div class="col-12">
+                {{ admin_macros.text_input(
+                    name='name', label=_('%(string)s:', string=_('Name')),
+                    placeholder=_('E.g.: %(string)s', string=_('My player cards')),
+                    data=data, errors=errors
+                ) }}
+            </div>
+            <div class="col-12">
+                {{ admin_macros.select_input(
+                    name='type', label=_('%(string)s:', string=_('Type')),
+                    select_options=type_options, data=data, errors=errors
+                ) }}
+            </div>
         </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                hx-post="{{ url_for('place-card-template-create') }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <div class="row gy-2 gx-3">
-                    <div class="col-12">
-                        {{ admin_macros.text_input(
-                            name='name', label=_('%(string)s:', string=_('Name')),
-                            placeholder=_('E.g.: %(string)s', string=_('My player cards')),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12">
-                        {{ admin_macros.select_input(
-                            name='type', label=_('%(string)s:', string=_('Type')),
-                            select_options=type_options, data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary text-nowrap">
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button type="submit" form="modal-form" class="text-nowrap white btn btn-primary">
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Create') }}
-            </button>
-        </div>
-    </div>
-</div>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Create'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}

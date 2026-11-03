@@ -17,7 +17,7 @@
 <div class="d-flex mb-2 align-items-center flex-wrap gap-1">
 </div>
 
-<table class="mt-5 table prominent table-striped w-auto bg-light mx-auto justify-content-center">
+<table class="mt-5 table prominent table-striped w-auto mx-auto justify-content-center">
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
             <th scope="col" class="text-nowrap">{{ _('Archived event') }}</th>
@@ -32,24 +32,14 @@
                     <th scope="row gy-2 gx-3" class="text-nowrap">{{ archive.name }}</th>
                     <td>{{ archive.date_str }}</td>
                     <td>
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            hx-post="{{ url_for('admin-restore-archive', archive_name=archive.url_name) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {{ macros.tooltip_attributes('info', _('Restore'), 'top') }}
-                        >
-                            <i class="bi-arrow-counterclockwise"></i>
-                        </button>
-                        <button
-                            class="btn btn-sm btn-outline-danger"
-                            hx-delete="{{ url_for('admin-delete-archive', archive_name=archive.url_name) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {{ macros.tooltip_attributes('info', _('Delete'), 'top') }}
-                        >
-                            <i class="bi-trash-fill"></i>
-                        </button>
+                        {{ components.button(
+                            _('Restore'), icon='bi-arrow-counterclockwise', size='sm', icon_only=true,
+                            attrs={'hx-post': url_for('admin-restore-archive', archive_name=archive.url_name), 'hx-target': 'body', 'hx-indicator': '#please-wait'},
+                        ) }}
+                        {{ components.button(
+                            _('Delete'), kind='outline-danger', icon='delete', size='sm', icon_only=true,
+                            attrs={'hx-delete': url_for('admin-delete-archive', archive_name=archive.url_name), 'hx-target': 'body', 'hx-indicator': '#please-wait'},
+                        ) }}
                     </td>
                 </tr>
             {% endfor %}

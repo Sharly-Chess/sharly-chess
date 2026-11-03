@@ -1,5 +1,4 @@
-{% import '/common/macros.j2' as macros with context %}
-{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {# Tag filter of the event lists. Each badge toggles its own tag; the whole
    resulting selection is sent as `filter_tags`, so no client-side state is
@@ -18,70 +17,58 @@
             {% else %}
                 {% set new_tag_ids = (admin_events_tag_filter | list) + [tag.id] %}
             {% endif %}
-            <button
-                type="button"
-                class="btn btn-sm border-0 p-0 lh-1"
-                {% if is_selected or count %}
-                    hx-get="{{ collection_url }}"
-                    hx-vals='{"filter_tags": "{{ new_tag_ids | join(';') }}"}'
-                    hx-target="body"
-                    hx-push-url="false"
-                    hx-indicator="#please-wait"
-                {% else %}
-                    disabled
-                {% endif %}
-                aria-pressed="{{ 'true' if is_selected else 'false' }}"
-            >
-                {% if is_selected %}
-                    {{ tag_macros.tag_badge(tag, count=count) }}
-                {% else %}
-                    {# Tinted rather than outlined: the label keeps the body
-                       colour, which stays legible whatever the tag colour. #}
-                    <span
-                        class="badge tag-badge rounded-pill fw-normal d-inline-flex align-items-center gap-1{% if not count %} opacity-50{% endif %}"
-                        style="
-                            background-color: color-mix(in srgb, {{ tag.color }} 25%, transparent);
-                            color: var(--bs-body-color);
-                            border-color: color-mix(
-                                in srgb, {{ tag.color }} 65%, var(--bs-body-color)
-                            ) !important;
-                        "
-                    >
-                        <span>{{ tag.name }}</span>
-                        <span class="opacity-75">({{ count }})</span>
-                    </span>
-                {% endif %}
-            </button>
+            {% call components.button(
+                tag.name,
+                kind='plain',
+                size='sm',
+                allowed=is_selected or count,
+                class='border-0 p-0 lh-1',
+                attrs={
+                    'hx-get': collection_url,
+                    'hx-vals': '{"filter_tags": "' ~ (new_tag_ids | join(';')) ~ '"}',
+                    'hx-target': 'body',
+                    'hx-push-url': 'false',
+                    'hx-indicator': '#please-wait',
+                    'aria-pressed': 'true' if is_selected else 'false',
+                },
+            ) %}
+                {{ components.tag_badge(tag, count=count, tinted=not is_selected, dimmed=not is_selected and not count) }}
+            {% endcall %}
         {% endfor %}
         {% if admin_events_tag_filter %}
-            <button
-                type="button"
-                data-testid="events-tag-filter-clear"
-                class="btn btn-sm btn-link text-primary p-0 ms-1 text-nowrap lh-1"
-                hx-get="{{ collection_url }}"
-                hx-vals='{"filter_tags": ""}'
-                hx-target="body"
-                hx-push-url="false"
-                hx-indicator="#please-wait"
-                {{ macros.tooltip_attributes('info', _('Clear the tag filter.'), 'top') }}
-            >
-                <i class="bi-x-circle"></i>
-            </button>
+            {{ components.button(
+                _('Clear the tag filter.'),
+                kind='link',
+                icon='bi-x-circle',
+                size='sm',
+                icon_only=true,
+                class='text-primary p-0 ms-1 lh-1',
+                attrs={
+                    'data-testid': 'events-tag-filter-clear',
+                    'hx-get': collection_url,
+                    'hx-vals': '{"filter_tags": ""}',
+                    'hx-target': 'body',
+                    'hx-push-url': 'false',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         {% endif %}
         {% if client.can_manage_events %}
-            <button
-                type="button"
-                data-testid="events-tag-filter-manage"
-                class="btn btn-sm btn-link text-primary p-0 ms-1 text-nowrap lh-1"
-                hx-post="{{ url_for('tag-manager') }}"
-                hx-vals='{"tags_close_url": "{{ collection_url }}"}'
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-target="#modal-wrapper"
-                {{ macros.tooltip_attributes('info', _('Manage the tags.'), 'top') }}
-            >
-                <i class="bi-gear-fill"></i>
-            </button>
+            {{ components.button(
+                _('Manage the tags.'),
+                kind='link',
+                icon='bi-gear-fill',
+                size='sm',
+                icon_only=true,
+                class='text-primary p-0 ms-1 lh-1',
+                attrs={
+                    'data-testid': 'events-tag-filter-manage',
+                    'hx-post': url_for('tag-manager'),
+                    'hx-vals': '{"tags_close_url": "' ~ collection_url ~ '"}',
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         {% endif %}
     </div>
 {% endif %}

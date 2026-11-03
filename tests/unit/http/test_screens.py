@@ -199,6 +199,9 @@ def test_the_link_to_a_screen_follows_its_renaming(
         data={'uniq_id': f'{old_uniq_id}-renamed'},
     )
     assert response.status_code == 200
+    # The renamed ID replaces the subtitle only, leaving the title in place.
+    assert response.headers['HX-Retarget'] == '.sc-modal-subtitle'
+    assert 'modal-title' not in response.text
 
     renamed = http.get(f'/event/{EVENT_ID}/input-screens')
     assert f'/view/screen/{EVENT_ID}/{old_uniq_id}-renamed' in renamed.text
@@ -341,6 +344,8 @@ def test_the_link_to_a_multi_screen_follows_its_renaming(
         data={'uniq_id': f'{FAMILY_ID}-renamed'},
     )
     assert response.status_code == 200
+    assert response.headers['HX-Retarget'] == '.sc-modal-subtitle'
+    assert 'modal-title' not in response.text
     assert (
         http.get(f'/view/screen/{EVENT_ID}/{FAMILY_ID}-renamed:001').status_code == 200
     )

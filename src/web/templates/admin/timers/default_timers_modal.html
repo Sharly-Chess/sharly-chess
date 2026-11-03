@@ -1,66 +1,36 @@
-<div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Timer defaults') }}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                hx-patch="{{ url_for('default-timers-update', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <h4>
-                    {{ _('Timers') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    {% for num in [1, 2, 3] %}
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.color_input(
-                                name='color_'~num,
-                                label=_('Colour #%(num)d:', num=num),
-                                tooltip_text=timer_color_texts[num],
-                                default_checkbox=true,
-                                default_color=sharly_chess_config.default_timer_colors[num],
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
 
-                        <div class="col-12 col-md-6">
-                            {% with id='delay-'~num, name='delay_'~num %}
-                                {{ admin_macros.number_input(
-                                    name='delay_'~num,
-                                    label=_('Delay #%(num)d:', num=num),
-                                    placeholder=_('By default: %(minutes)d minutes', minutes=sharly_chess_config.default_timer_delays[num]),
-                                    data=data, errors=errors
-                                ) }}
-                            {% endwith %}
-                        </div>
-                    {% endfor %}
+{% block title %}{{ _('Timer defaults') }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-patch="{{ url_for('default-timers-update', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {{ components.section_heading(_('Timers')) }}
+        <div class="row gy-2 gx-3">
+            {% for num in [1, 2, 3] %}
+                <div class="col-12">
+                    {% with id='delay-'~num, name='delay_'~num %}
+                        {{ admin_macros.number_input(
+                            name='delay_'~num,
+                            label=_('Delay #%(num)d:', num=num),
+                            tooltip_text=timer_delay_texts[num],
+                            placeholder=_('By default: %(minutes)d minutes', minutes=sharly_chess_config.default_timer_delays[num]),
+                            data=data, errors=errors
+                        ) }}
+                    {% endwith %}
                 </div>
-            </form>
+            {% endfor %}
         </div>
+    </form>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}

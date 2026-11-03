@@ -1,0 +1,80 @@
+{# Result entry on a phone: one card per game, the two players one above the
+   other, since the white and black columns do not fit side by side. #}
+{% set boards = screen_set.boards_lists | sum(start=[]) %}
+{% set show_real_points = tournament.print_real_points() %}
+<div class="input-cards">
+    {% for board in boards %}
+        {% set editable =
+            board.black_tournament_player
+            and (
+                client.can_update_results(tournament.id)
+                or
+                (not board.result_str and client.can_enter_results(tournament.id))
+            )
+        %}
+        {% if editable %}
+            {% set result_url = url_for(
+                'user-result-modal',
+                event_uniq_id=user_event.uniq_id,
+                display_controller_id=display_controller.id,
+                tournament_id=tournament.id,
+                board_id=board.id
+            ) if display_controller else url_for(
+                'user-result-modal',
+                is_screen=1,
+                event_uniq_id=user_event.uniq_id,
+                screen_uniq_id=screen.uniq_id,
+                tournament_id=tournament.id,
+                board_id=board.identifier
+            ) %}
+        {% endif %}
+        <div
+            id="tournament-{{ tournament.id }}-board-{{ board.id }}-card"
+            class="
+                input-card
+                {% if editable %}editable{% endif %}
+                {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
+                {% if board.result_str or not board.black_tournament_player %}result-set{% else %}result-not-set{% endif %}
+                {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
+            {% if editable %}
+                hx-get="{{ result_url }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% endif %}
+        >
+            <div class="input-card-top">
+                <span class="input-card-board">{{ board.number_str }}</span>
+                <div class="score">
+                    {% if board.result_str %}
+                        <span class="input-card-result">{{ board.result_str }}</span>
+                    {% elif editable %}
+                        <span class="input-card-enter">{{ pgettext('result entry button', 'Enter') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% for side in ['white', 'black'] %}
+                {% set tp = board.optional_white_tournament_player if side == 'white' else board.black_tournament_player %}
+                <div class="input-card-player {{ side }} {% if board.result_str and ((side == 'white' and board.result_str.startswith('1')) or (side == 'black' and board.result_str.endswith('1'))) %}winner{% endif %}">
+                    <span class="board-color-chip {{ side }}"></span>
+                    {% if tp %}
+                        <span class="input-card-name">
+                            {% if tp.display_title %}<span class="player-title">{{ tp.display_title }}</span>{% endif %}
+                            <span class="input-card-last-name">{{ tp.display_last_name }}</span> {{ tp.display_first_name }}
+                        </span>
+                        <span class="input-card-details">
+                            {{ tp.rating_str }} · {{ tp.vpoints_str }} {{ pgettext('points column header', 'Pts') }}{% if show_real_points %} [{{ tp.points_str }}]{% endif %}
+                        </span>
+                        {% if tournament.record_illegal_moves %}
+                            {% set column = namespace(is_black=side == 'black') %}
+                            {% include '/user/screen/sets/board_row_illegal_moves_cell.html' %}
+                        {% endif %}
+                    {% else %}
+                        <span class="input-card-name fst-italic">{{ _('Bye') }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>

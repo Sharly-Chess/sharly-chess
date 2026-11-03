@@ -40,8 +40,6 @@ class ScreenConfigAdminController(BaseEventAdminController):
             {
                 'background_color': admin_event.background_color,
                 'message_text': stored_event.message_text,
-                'message_color': admin_event.message_color,
-                'message_background_color': admin_event.message_background_color,
             }
         )
 
@@ -55,30 +53,11 @@ class ScreenConfigAdminController(BaseEventAdminController):
             data = {}
         errors: dict[str, str] = {}
 
-        message_color: str | None = None
-        message_background_color: str | None = None
-
         background_color = cls._admin_validate_background_color_update_data(
             data, errors
         )
         field = 'message_text'
         message_text = WebContext.form_data_to_str(data, field)
-        field = 'message_color'
-        if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-            try:
-                message_color = WebContext.form_data_to_rgb(data, field)
-            except ValueError:
-                errors[field] = _(
-                    'Invalid colour [{color}] ([#RRGGBB] expected).'
-                ).format(color={data[field]})
-        field = 'message_background_color'
-        if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-            try:
-                message_background_color = WebContext.form_data_to_rgb(data, field)
-            except ValueError:
-                errors[field] = _(
-                    'Invalid colour [{color}] ([#RRGGBB] expected).'
-                ).format(color={data[field]})
 
         if errors:
             return None, errors
@@ -87,8 +66,6 @@ class ScreenConfigAdminController(BaseEventAdminController):
             admin_event.stored_event,
             background_color=background_color,
             message_text=message_text,
-            message_color=message_color,
-            message_background_color=message_background_color,
         )
         return stored_event, errors
 

@@ -1,10 +1,11 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {# Both macros are rendered in the form that holds the cadence select. #}
 
 {% macro display() %}
     <div class="tc-display d-flex flex-wrap justify-content-end align-items-center gap-2 mt-1">
         <i class="tc-clock bi-clock opacity-75"></i>
         <span class="tc-readable-inline opacity-75"></span>
-        <button type="button" class="tc-edit tc-edit-label btn btn-sm btn-link p-0"></button>
+        {{ components.button('', kind='link', size='sm', class='tc-edit tc-edit-label p-0') }}
     </div>
     <div class="tc-mismatch small text-warning text-end mt-1" hidden>
         <i class="bi-exclamation-triangle-fill"></i>
@@ -40,11 +41,9 @@
             </div>
 
             <div class="d-flex justify-content-end gap-2 mt-2">
-                <button type="button" class="tc-add-period btn btn-sm btn-outline-primary">
-                    + {{ _('Add period') }}
-                </button>
-                <button type="button" class="tc-cancel btn btn-sm btn-outline-secondary">{{ _('Cancel') }}</button>
-                <button type="button" class="tc-ok btn btn-sm btn-primary">{{ _('Validate') }}</button>
+                {{ components.button(_('Add period'), icon='add', size='sm', class='tc-add-period') }}
+                {{ components.button(_('Cancel'), kind='outline-secondary', size='sm', class='tc-cancel') }}
+                {{ components.button(_('Validate'), kind='primary', size='sm', class='tc-ok') }}
             </div>
         </div>
     </div>
@@ -78,7 +77,7 @@
                         <input type="number" class="form-control p-inc" min="0" value="${inc}">
                     </div>
                     <div class="tc-del-wrap">
-                        <button type="button" class="btn btn-sm btn-secondary tc-del">✕</button>
+                        {{ components.button(_('Remove the period'), kind='secondary', icon='close', size='sm', icon_only=true, class='tc-del') }}
                     </div>
                 </div>
             `);

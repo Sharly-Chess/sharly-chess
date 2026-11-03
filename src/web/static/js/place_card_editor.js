@@ -148,12 +148,17 @@
 
     // ------------------------------------------------------------- panels
 
+    function showPanel(props, html) {
+        props.innerHTML = html;
+        initContentBuilder();
+        activateTooltips(props);
+    }
+
     function loadPanel(url) {
         const props = document.getElementById('pc-props');
         if (!url || !props) return;
         fetch(url).then(function (r) { return r.text(); }).then(function (html) {
-            props.innerHTML = html;
-            initContentBuilder();
+            showPanel(props, html);
         });
     }
 
@@ -168,7 +173,7 @@
             .then(function (r) { return r.text(); })
             .then(function (html) {
                 const props = document.getElementById('pc-props');
-                if (props) { props.innerHTML = html; initContentBuilder(); }
+                if (props) showPanel(props, html);
                 // The server applied the upload to the item; re-render the canvas
                 // so the selected node shows it.
                 const form = document.getElementById('pc-props-form');
@@ -195,7 +200,7 @@
         if (!url || !name) return;
         postForm(url, { image: name }).then(function (html) {
             const props = document.getElementById('pc-props');
-            if (props) { props.innerHTML = html; initContentBuilder(); }
+            if (props) showPanel(props, html);
             // Re-render the canvas so any node that used the image (its
             // reference is now cleared server-side) shows the empty box.
             const form = document.getElementById('pc-props-form');

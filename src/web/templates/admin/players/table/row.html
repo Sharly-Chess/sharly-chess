@@ -22,85 +22,53 @@
         {% if can_update or can_update_history or can_delete %}
             <span class="players-table-row-actions">
             {% if can_update %}
-                <span {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'right') }}>
-                    <button
-                        type="button"
-                        class="btn players-table-row-action"
-                        aria-label="{{ _('Edit') }}"
-                        hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-pencil"></i>
-                    </button>
-                </span>
+                {{ components.modal_button(
+                    url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id),
+                    _('Edit'),
+                    kind='plain',
+                    icon='bi-pencil',
+                    icon_only=true,
+                    tooltip=_('Edit the player\'s properties.'),
+                    tooltip_placement='right',
+                    class='players-table-row-action',
+                ) }}
             {% endif %}
-            <span class="dropdown">
-                <button class="btn players-table-row-action" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="{{ _('Actions') }}">
-                    <i class="bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-start table-dropdown-menu p-0" >
+            {% call components.menu_button(
+                _('Actions'),
+                kind='plain',
+                icon='bi-three-dots',
+                icon_only=true,
+                tooltip_placement='right',
+                toggle_class='players-table-row-action',
+                toggle_attrs={'data-bs-display': 'static'},
+                menu_class='table-dropdown-menu p-0',
+            ) %}
                     {% if can_update_history %}
-                        <li {{ macros.tooltip_attributes('info', _('Edit the player\'s tournament record.'), 'right') }}>
-                            <div
-                                class="dropdown-item btn text-start"
-                                hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                hx-trigger="click, keyup[key=='Enter']"
-                                tabindex="0"
-                            >
-                                <i class="bi-0-square"></i><i class="bi-1-square-fill"></i>
-                                {{ _('Record') }}
-                            </div>
-                        </li>
+                        {% call components.menu_item(
+                            _('Record'),
+                            url=url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id),
+                            modal=true,
+                            tooltip=_('Edit the player\'s tournament record.'),
+                        ) %}<span><i class="bi-0-square"></i><i class="bi-1-square-fill"></i></span><span>{{ _('Record') }}</span>{% endcall %}
                     {% endif %}
                     {% if can_update %}
-                        <li
-                            {{ macros.tooltip_attributes(
-                                'warning',
-                                _('Should only be used when the wrong player has been added by mistake.'),
-                                'right'
-                            ) }}
-                        >
-                            <div
-                                class="dropdown-item btn text-start"
-                                hx-get="{{ url_for('admin-player-modal', action='replace', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                hx-trigger="click, keyup[key=='Enter']"
-                                tabindex="0"
-                            >
-                                <i class="bi-arrow-left-right pe-1 text-danger"></i>
-                                {{ _('Replace') }}
-                            </div>
-                        </li>
+                        {% call components.menu_item(
+                            _('Replace'),
+                            url=url_for('admin-player-modal', action='replace', event_uniq_id=admin_event.uniq_id, player_id=player.id),
+                            modal=true,
+                            tooltip=_('Should only be used when the wrong player has been added by mistake.'),
+                            tooltip_type='warning',
+                        ) %}{{ components.icon('bi-arrow-left-right', class='text-danger') }}<span>{{ _('Replace') }}</span>{% endcall %}
                     {% endif %}
                     {% if can_delete %}
-                        <li {{ macros.tooltip_attributes('info', _('Remove the player from the event.'), 'right') }}>
-                            <div
-                                class="dropdown-item btn text-start"
-                                hx-get="{{ url_for('admin-player-delete-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                hx-trigger="click, keyup[key=='Enter']"
-                                tabindex="0"
-                            >
-                                <i class="bi-trash-fill pe-1 text-danger"></i>
-                                {{ _('Delete') }}
-                            </div>
-                        </li>
+                        {% call components.menu_item(
+                            _('Delete'),
+                            url=url_for('admin-player-delete-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id),
+                            modal=true,
+                            tooltip=_('Remove the player from the event.'),
+                        ) %}{{ components.icon('bi-trash-fill', class='text-danger') }}<span>{{ _('Delete') }}</span>{% endcall %}
                     {% endif %}
-                </ul>
-            </span>
+            {% endcall %}
             </span>
         {% endif %}
     </td>

@@ -28,12 +28,6 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-msgid "Cancel"
-msgstr ""
-
-msgid "Close"
-msgstr ""
-
 msgid "Connection configuration"
 msgstr ""
 

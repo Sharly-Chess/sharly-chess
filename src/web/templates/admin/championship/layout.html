@@ -42,7 +42,7 @@
                 <span class="nav-count expanded-only">{{ nav_tab.count }}</span>
             {% endif %}
             {% if nav_id == 'sources' and championship.broken_sources %}
-                <span class="badge rounded-pill text-bg-warning ms-auto expanded-only">{{ championship.broken_sources|length }}</span>
+                {{ components.badge('warning', championship.broken_sources|length, pill=true, class='ms-auto expanded-only') }}
             {% endif %}
         </button>
     {% endfor %}
@@ -50,12 +50,8 @@
         class="nav-link text-start d-flex align-items-center w-100"
         id="nav-documents-tab"
         data-testid="nav-documents-tab"
-        hx-get="{{ url_for('admin-championship-documents-modal', championship_uniq_id=championship.uniq_id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
+        {{ components.modal_trigger_attrs(url_for('admin-championship-documents-modal', championship_uniq_id=championship.uniq_id)) }}
         hx-trigger="click, SC_D from:body"
-        data-bs-toggle="modal"
-        data-bs-target="#modal-wrapper"
     >
         <i class="bi bi-file-earmark-text-fill"></i>
         <span class="expanded-only"><u>D</u>ocuments</span>

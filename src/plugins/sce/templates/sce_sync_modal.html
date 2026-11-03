@@ -1,136 +1,87 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
-
 {% set event_plugin_data = admin_event.plugin_data.sce %}
+{% set modal_id = 'sce-sync-modal' %}
+{% set modal_size = 'xl' %}
+{% set modal_scrollable = true if sce_allowed_tournaments else false %}
+{% set modal_attrs = {
+    'hx-get': url_for('sce-sync-modal', event_uniq_id=admin_event.uniq_id) ~ '?no_refresh=True',
+    'hx-trigger': 'ws:upload-event from:body,ws:upload-event-start from:body',
+    'hx-swap': 'outerHTML',
+} %}
 
-<div
-    id="sce-sync-modal"
-    class="modal-dialog {% if sce_allowed_tournaments %}modal-dialog-scrollable{% endif %}"
-    style="--bs-modal-width: min(90vw, 800px);"
-    hx-get="{{ url_for(
-        'sce-sync-modal', event_uniq_id=admin_event.uniq_id
-    ) }}?no_refresh=True"
-    hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
-    hx-swap="outerHTML"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                <span class="pe-1">
-                    Sharly-Chess.com
-                </span>
-                {% if event_plugin_data.id %}
-                    <a
-                        href="{{ sce_utils.event_public_url(admin_event) }}"
-                        target="_blank"
-                        style="font-size: 70%"
-                        {{ macros.tooltip_attributes('', _('Public page of the event.')) }}
-                    ><i class="bi bi-box-arrow-up-right"></i></a>
-                    <a
-                        href="{{ sce_utils.event_private_url(admin_event) }}"
-                        target="_blank"
-                        style="font-size: 70%"
-                        {{ macros.tooltip_attributes('', _('Configuration page of the event.')) }}
-                    ><i class="bi bi-gear-fill"></i></a>
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% block title %}
+    <span class="pe-1">
+        Sharly-Chess.com
+    </span>
+    {% if event_plugin_data.id %}
+        <a
+            href="{{ sce_utils.event_public_url(admin_event) }}"
+            target="_blank"
+            class="sc-modal-doc"
+            {{ macros.tooltip_attributes('', _('Public page of the event.')) }}
+        ><i class="bi bi-box-arrow-up-right"></i></a>
+        <a
+            href="{{ sce_utils.event_private_url(admin_event) }}"
+            target="_blank"
+            class="sc-modal-doc"
+            {{ macros.tooltip_attributes('', _('Configuration page of the event.')) }}
+        ><i class="bi bi-gear-fill"></i></a>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% if sce_event_status.alert_message %}
                 {% include '/sce_event_status_alert.html' %}
             {% endif %}
             {% if message %}
-                {% with type=message_type or 'success' %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner(message_type or 'success', message) }}
             {% endif %}
-            <h4 class="mt-0 mb-1">
-                {{ _('Registrations and tournament settings') }}
-            </h4>
+            {{ components.section_heading(_('Registrations and tournament settings'), class='mb-1') }}
             <p class="text-muted">
                 {{ _('Changes made here or on Sharly-Chess.com are merged both ways.') }}
             </p>
             <div class="row px-3">
                 <div class="col-12 col-md-6 d-flex flex-column gap-2 text-center mb-2">
-                    {% if tournament_conflict_count %}
-                        <button
-                            class="btn btn-outline-danger"
-                            hx-get="{{ url_for('sce-tournament-conflict-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            {% if sce_event_status.actions_disabled %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-sign-merge-left-fill pe-1"></i>
-                            {{ _('Resolve tournament conflicts (%(count)d)', count=tournament_conflict_count) }}
-                        </button>
-                    {% endif %}
-                    {% if player_conflict_count %}
-                        <button
-                            class="btn btn-outline-danger"
-                            hx-get="{{ url_for('sce-player-conflict-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            {% if sce_event_status.actions_disabled %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-sign-merge-left-fill pe-1"></i>
-                            {{ _('Resolve player conflicts (%(count)d)', count=player_conflict_count) }}
-                        </button>
-                    {% endif %}
-                    {% if player_duplicate_count %}
-                        <button
-                            class="btn btn-outline-danger"
-                            hx-get="{{ url_for('sce-player-duplicate-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            {% if sce_event_status.actions_disabled %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-copy pe-1"></i>
-                            {{ _('Resolve duplicated players (%(count)d)', count=player_duplicate_count) }}
-                        </button>
-                    {% endif %}
-                    {% if removed_player_count %}
-                        <button
-                            class="btn btn-outline-danger"
-                            hx-get="{{ url_for('sce-removed-player-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        >
-                            <i class="bi-person-x-fill pe-1"></i>
-                            {{ _('Players removed on Sharly-Chess.com (%(count)d)', count=removed_player_count) }}
-                        </button>
-                    {% endif %}
-                    <span
-                       style="display: block"
-                        {% if not sce_allowed_tournaments %}
-                            {{ macros.tooltip_attributes('', _(
-                                'Nothing to synchronize yet, import or upload tournaments first.'
-                            )) }}
+                    {% for count, label, icon, route, blocked in [
+                        (tournament_conflict_count, _('Resolve tournament conflicts (%(count)d)', count=tournament_conflict_count), 'bi-sign-merge-left-fill', 'sce-tournament-conflict-modal', sce_event_status.actions_disabled),
+                        (player_conflict_count, _('Resolve player conflicts (%(count)d)', count=player_conflict_count), 'bi-sign-merge-left-fill', 'sce-player-conflict-modal', sce_event_status.actions_disabled),
+                        (player_duplicate_count, _('Resolve duplicated players (%(count)d)', count=player_duplicate_count), 'copy', 'sce-player-duplicate-modal', sce_event_status.actions_disabled),
+                        (removed_player_count, _('Players removed on Sharly-Chess.com (%(count)d)', count=removed_player_count), 'bi-person-x-fill', 'sce-removed-player-modal', false),
+                    ] %}
+                        {% if count %}
+                            {{ components.modal_button(
+                                url_for(route, event_uniq_id=admin_event.uniq_id),
+                                label,
+                                kind='outline-danger',
+                                icon=icon,
+                                allowed=not blocked,
+                                from_modal=true,
+                            ) }}
                         {% endif %}
-                    >
-                        <button
-                            class="btn btn-outline-primary w-100"
-                            hx-post="{{ url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id) }}"
-                            {% if (
-                                sce_event_status.actions_disabled or
-                                is_sync_ongoing or
-                                not sce_allowed_tournaments
-                            ) %}
-                                disabled
-                            {% endif %}
-                        >
-                            {% if is_sync_ongoing %}
-                                 <i
-                                    class="bi-arrow-repeat mb-1 lh-1"
-                                    style="
-                                        display: inline-block;
-                                        animation: spin 1s infinite;
-                                        animation-timing-function: linear;"
-                                ></i>
-                                {{ _('Synchronisation ongoing') }}
-                            {% else %}
-                                <i class="bi-arrow-repeat pe-1"></i>
-                                {{ _('Synchronize now') }}
-                            {% endif %}
-                        </button>
-                    </span>
+                    {% endfor %}
+                    {% call components.button(
+                        _('Synchronize now'),
+                        icon=none if is_sync_ongoing else 'bi-arrow-repeat',
+                        allowed=not (sce_event_status.actions_disabled or is_sync_ongoing or not sce_allowed_tournaments),
+                        reason=_('Nothing to synchronize yet, import or upload tournaments first.') if not sce_allowed_tournaments else none,
+                        class='w-100',
+                        attrs={'hx-post': url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id)},
+                    ) %}
+                        {% if is_sync_ongoing %}
+                            <i
+                                class="bi-arrow-repeat mb-1 lh-1"
+                                style="
+                                    display: inline-block;
+                                    animation: spin 1s infinite;
+                                    animation-timing-function: linear;"
+                            ></i>
+                            {{ _('Synchronisation ongoing') }}
+                        {% else %}
+                            {{ _('Synchronize now') }}
+                        {% endif %}
+                    {% endcall %}
                     <span class="mt-1">
                         {% if event_plugin_data.last_sync_at %}
                             {{ _(
@@ -183,138 +134,81 @@
                     </span>
                 </div>
                 <div class="col-12 col-md-6 d-flex flex-column gap-2 mb-2">
-                    <span
-                        style="display: block"
-                        {% if not new_sce_tournament_options and not sce_event_status.actions_disabled %}
-                            {{ macros.tooltip_attributes('', _(
-                                'All the tournaments of the Sharly-Chess.com event are already imported.'
-                            )) }}
-                        {% endif %}
-                    >
-                        <button
-                            class="btn btn-outline-primary dropdown-toggle text-nowrap w-100"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            data-bs-auto-close="outside"
-                            {% if sce_event_status.actions_disabled or not new_sce_tournament_options %}
-                                disabled
-                            {% endif %}
-                        >
-                            <span
-                                {{ macros.tooltip_attributes('', _(
-                                    'Import Sharly-Chess.com tournaments that do not exist locally.'
-                                )) }}
-                            >
-                                <i class="bi-box-arrow-in-right pe-1"></i>
-                                {{ _('Import a Sharly-Chess.com tournament') }}
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu p-0">
-                            {% for tournament_id, tournament_name in new_sce_tournament_options.items() %}
-                                <li
-                                    class="dropdown-item text-start cursor-pointer"
-                                    hx-post="{{ url_for(
-                                        'sce-import-tournament',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        sce_tournament_id=tournament_id,
-                                    ) }}"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ tournament_name }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </span>
-                    <span
-                        style="display: block"
-                        {% if not new_local_tournament_options and not sce_event_status.actions_disabled %}
-                            {{ macros.tooltip_attributes('', _(
-                                'All the local tournaments are connected to a Sharly-Chess.com tournament.'
-                            )) }}
-                        {% endif %}
-                    >
-                        <button
-                            class="btn btn-outline-primary dropdown-toggle text-nowrap w-100"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            data-bs-auto-close="outside"
-                            {% if sce_event_status.actions_disabled or not new_local_tournament_options %}
-                                disabled
-                            {% endif %}
-                        >
-                            <span
-                                {{ macros.tooltip_attributes('', _(
-                                    'Upload tournaments that only exist locally to Sharly-Chess.com.'
-                                )) }}
-                            >
-                                <i class="bi-box-arrow-right pe-1"></i>
-                                {{ _('Upload a local tournament') }}
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu p-0">
-                            {% for tournament_id, tournament_name in new_local_tournament_options.items() %}
-                                <li
-                                    class="dropdown-item text-start cursor-pointer"
-                                    hx-post="{{ url_for(
-                                        'sce-upload-local-tournament',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=tournament_id,
-                                    ) }}"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ tournament_name }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </span>
+                    {% call components.menu_button(
+                        _('Import a Sharly-Chess.com tournament'),
+                        icon='import',
+                        align='end',
+                        allowed=not (sce_event_status.actions_disabled or not new_sce_tournament_options),
+                        reason=_(
+                            'All the tournaments of the Sharly-Chess.com event are already imported.'
+                        ) if not new_sce_tournament_options and not sce_event_status.actions_disabled else none,
+                        tooltip=_('Import Sharly-Chess.com tournaments that do not exist locally.'),
+                        class='w-100',
+                        toggle_class='w-100',
+                        toggle_attrs={'data-bs-auto-close': 'outside'},
+                        menu_class='table-dropdown-menu p-0',
+                    ) %}
+                        {% for tournament_id, tournament_name in new_sce_tournament_options.items() %}
+                            {{ components.menu_item(tournament_name, attrs={
+                                'hx-post': url_for(
+                                    'sce-import-tournament',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    sce_tournament_id=tournament_id,
+                                ),
+                                'hx-indicator': '#please-wait',
+                            }) }}
+                        {% endfor %}
+                    {% endcall %}
+                    {% call components.menu_button(
+                        _('Upload a local tournament'),
+                        icon='bi-box-arrow-right',
+                        align='end',
+                        allowed=not (sce_event_status.actions_disabled or not new_local_tournament_options),
+                        reason=_(
+                            'All the local tournaments are connected to a Sharly-Chess.com tournament.'
+                        ) if not new_local_tournament_options and not sce_event_status.actions_disabled else none,
+                        tooltip=_('Upload tournaments that only exist locally to Sharly-Chess.com.'),
+                        class='w-100',
+                        toggle_class='w-100',
+                        toggle_attrs={'data-bs-auto-close': 'outside'},
+                        menu_class='table-dropdown-menu p-0',
+                    ) %}
+                        {% for tournament_id, tournament_name in new_local_tournament_options.items() %}
+                            {{ components.menu_item(tournament_name, attrs={
+                                'hx-post': url_for(
+                                    'sce-upload-local-tournament',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament_id,
+                                ),
+                                'hx-indicator': '#please-wait',
+                            }) }}
+                        {% endfor %}
+                    {% endcall %}
                 </div>
             </div>
             {% if sce_allowed_tournaments %}
-                <h4 class="mt-2 mb-1">
-                    {{ _('Pairings and results') }}
-                </h4>
+                {{ components.section_heading(_('Pairings and results'), class='mb-1') }}
                 <p class="text-muted">
                     {{ _('Published from this computer to Sharly-Chess.com.') }}
                 </p>
                 {% include '/sce_upload_table.html' %}
                 {% set started_tournaments = sce_allowed_tournaments | selectattr('started') | list %}
                 <div class="text-center mt-3 mb-1">
-                    <span
-                        {% if not started_tournaments and not sce_event_status.actions_disabled %}
-                            {{ macros.tooltip_attributes('', _(
-                                'No tournament has started yet, no results to upload.'
-                            )) }}
-                        {% endif %}
-                    >
-                        <button
-                            type="button"
-                            hx-post="{{ url_for('sce-upload-all-tournament-results', event_uniq_id=admin_event.uniq_id) }}"
-                            class="text-nowrap white btn btn-outline-primary"
-                            {% if sce_event_status.actions_disabled or not started_tournaments %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-cloud-arrow-up-fill pe-1"></i>
-                            {{ _('Upload all tournament results') }}
-                        </button>
-                    </span>
+                    {{ components.button(
+                        _('Upload all tournament results'),
+                        icon='bi-cloud-arrow-up-fill',
+                        allowed=not (sce_event_status.actions_disabled or not started_tournaments),
+                        reason=_('No tournament has started yet, no results to upload.') if not started_tournaments and not sce_event_status.actions_disabled else none,
+                        attrs={'hx-post': url_for('sce-upload-all-tournament-results', event_uniq_id=admin_event.uniq_id)},
+                    ) }}
                 </div>
             {% endif %}
-        </div>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.cancel_button(_('Close')) }}
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

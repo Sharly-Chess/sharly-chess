@@ -1,71 +1,56 @@
-<div
-    class="modal-dialog pairing-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fw-bold">
-                <h3>
-                    {{ _('Moving on to round #%(round)d', round=admin_round+1) }}
-                </h3>
-            </div>
-        </div>
-        <div class="modal-body">
-            <h4 class="text-danger">
-                {{ _('Warning: round #%(round)d is not finished.', round=admin_round) }}
-            </h4>
-            <ul class="mb-0">
-                {% if unpaired_count %}
-                    <li>{{ ngettext(
-                        '%(num)d player to pair',
-                        '%(num)d players to pair',
-                        unpaired_count
-                    ) }}</li>
-                {% endif %}
-                {% if hole_count %}
-                    <li>{{ ngettext(
-                        '%(num)d empty table to pair',
-                        '%(num)d empty tables to pair',
-                        hole_count
-                    ) }}</li>
-                {% endif %}
-                {% if absent_count %}
-                    <li>{{ ngettext(
-                        '%(num)d absent player without byes',
-                        '%(num)d absent players without byes',
-                        absent_count
-                    ) }}</li>
-                {% endif %}
-                {% if no_result_board_count %}
-                    <li>{{ ngettext(
-                        '%(num)d board without result',
-                        '%(num)d boards without result',
-                        no_result_board_count
-                    ) }}</li>
-                {% endif %}
-            </ul>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {% if admin_round >= admin_tournament.rounds %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi-caret-right"></i>
-                    {{ _('Continue') }}
-                </button>
-        </div>
-    </div>
-</div>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_class = 'pairing-modal' %}
+{% set modal_scrollable = false %}
+
+{% block title %}{{ _('Moving on to round #%(round)d', round=admin_round+1) }}{% endblock %}
+
+{% block body %}
+    {% call components.note('danger', icon='warning', class='mb-0') %}
+        {{ _('Warning: round #%(round)d is not finished.', round=admin_round) }}
+        <ul class="mb-0 mt-2">
+            {% if unpaired_count %}
+                <li>{{ ngettext(
+                    '%(num)d player to pair',
+                    '%(num)d players to pair',
+                    unpaired_count
+                ) }}</li>
+            {% endif %}
+            {% if hole_count %}
+                <li>{{ ngettext(
+                    '%(num)d empty table to pair',
+                    '%(num)d empty tables to pair',
+                    hole_count
+                ) }}</li>
+            {% endif %}
+            {% if absent_count %}
+                <li>{{ ngettext(
+                    '%(num)d absent player without byes',
+                    '%(num)d absent players without byes',
+                    absent_count
+                ) }}</li>
+            {% endif %}
+            {% if no_result_board_count %}
+                <li>{{ ngettext(
+                    '%(num)d board without result',
+                    '%(num)d boards without result',
+                    no_result_board_count
+                ) }}</li>
+            {% endif %}
+        </ul>
+    {% endcall %}
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Continue'),
+        icon='bi-caret-right',
+        allowed=admin_round < admin_tournament.rounds,
+        attrs={
+            'hx-get': url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1),
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+        },
+    ) }}
+{% endblock %}
