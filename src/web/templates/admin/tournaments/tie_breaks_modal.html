@@ -55,6 +55,19 @@
     </style>
 {% endblock %}
 
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Tournament')) }}
+    {{ admin_tournament.name }}
+    {% set warning_message = None if advancement
+        else admin_tournament.tie_break_configuration.warning_message %}
+    {% if warning_message %}
+        <i
+            class="bi-exclamation-triangle-fill text-warning ps-1"
+            {{ macros.tooltip_attributes('', warning_message, 'top') }}
+        ></i>
+    {% endif %}
+{% endblock %}
+
 {% block body %}
             {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
             {% if not editing_locked %}
@@ -75,18 +88,6 @@
             {% if success_message %}
                 {{ components.banner('success', success_message) }}
             {% endif %}
-            <h4 class="mb-3">
-                {{ _('%(string)s:', string=_('Tournament')) }}
-                {{ admin_tournament.name }}
-                {% set warning_message = None if advancement
-                    else admin_tournament.tie_break_configuration.warning_message %}
-                {% if warning_message %}
-                    <i
-                        class="bi-exclamation-triangle-fill text-warning ps-2"
-                        {{ macros.tooltip_attributes('', warning_message, 'top') }}
-                    ></i>
-                {% endif %}
-            </h4>
             {% if advancement %}
                 {{ components.banner('info', _(
                     'Applied in order, these decide who advances from a '

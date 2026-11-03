@@ -3,10 +3,11 @@
 
 {% block title %}{{ _('Tournament export') }}{% endblock %}
 
+{% block subtitle %}
+    {{ _('%(string)s: %(value)s', string=_('Tournament'), value=admin_tournament.name) }}
+{% endblock %}
+
 {% block body %}
-    <h4>
-        {{ _('%(string)s: %(value)s', string=_('Tournament'), value=admin_tournament.name) }}
-    </h4>
     {{ components.note('danger', _('Warning: potential data loss'), icon='warning') }}
     <p>
         {{ _(

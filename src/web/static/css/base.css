@@ -3512,12 +3512,6 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     margin-top: 1.5rem;
 }
 
-/* The object of a modal ("Tournament: …") opening its body keeps its
-   distance from the form below it. */
-[data-sc-interface=admin] .modal-body h4 {
-    margin-bottom: 1.5rem;
-}
-
 /* Bootstrap's text colours fall short of a 4.5 contrast on the admin's
    grounds (its yellow and cyan on white above all): they take the themes'
    colours instead. */

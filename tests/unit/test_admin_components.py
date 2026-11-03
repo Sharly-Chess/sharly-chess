@@ -479,8 +479,12 @@ class TestDeleteModal:
         assert 'modal-dialog-scrollable' in dialog.classes
         assert dialog.only(cls='modal-title').text() == 'Delete team'
         assert not dialog.only(cls='modal-header').find_all(cls='btn-close')
+        assert (
+            'Rooks'
+            in dialog.only(cls='modal-header').only(cls='sc-modal-subtitle').text()
+        )
         body = dialog.only(cls='modal-body')
-        assert 'Rooks' in body.only('h4').text()
+        assert not body.find_all('h4')
         warning = body.only('div', 'alert-danger')
         assert 'permanent' in warning.text()
         assert warning.only('i').classes == ['bi-exclamation-triangle-fill']

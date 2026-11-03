@@ -3,11 +3,12 @@
 
 {% block title %}{{ _('Reset check-in') }}{% endblock %}
 
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Tournament')) }}
+    {{ admin_tournament.name }}
+{% endblock %}
+
 {% block body %}
-    <h4>
-        {{ _('%(string)s:', string=_('Tournament')) }}
-        {{ admin_tournament.name }}
-    </h4>
     <form
         id="modal-form"
         hx-post="{{ url_for(

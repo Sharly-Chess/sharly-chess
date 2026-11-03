@@ -3,6 +3,12 @@
 
 {% block title %}{{ importer.modal_title }}{% endblock %}
 
+{% block subtitle %}
+    {% if admin_tournament %}
+        {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
+    {% endif %}
+{% endblock %}
+
 {% block body %}
     <form
         id="modal-form"
@@ -27,16 +33,11 @@
             {% endif %}
         </span>
 
-        {% if admin_tournament %}
-            <h4>
-                {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
-            </h4>
-            {% if admin_tournament.tournament_players %}
-                {{ components.note('danger', _(
-                    'Warning: the %(player_count)d players in the tournament will be deleted.',
-                    player_count=admin_tournament.tournament_players|length
-                ), icon='warning') }}
-            {% endif %}
+        {% if admin_tournament and admin_tournament.tournament_players %}
+            {{ components.note('danger', _(
+                'Warning: the %(player_count)d players in the tournament will be deleted.',
+                player_count=admin_tournament.tournament_players|length
+            ), icon='warning') }}
         {% endif %}
         <div class="row gy-2 gx-3">
             {% for option in importer.default_options() %}

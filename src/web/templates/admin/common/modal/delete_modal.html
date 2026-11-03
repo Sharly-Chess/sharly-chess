@@ -8,12 +8,13 @@
     {% endblock %}
 {% endblock %}
 
+{% block subtitle %}
+    {% block object_name %}
+        OBJECT NAME
+    {% endblock %}
+{% endblock %}
+
 {% block body %}
-    <h4>
-        {% block object_name %}
-            OBJECT NAME
-        {% endblock %}
-    </h4>
     {% set delete_warning %}{% block delete_warning %}{{ _('Warning: the deletion is permanent!') }}{% endblock %}{% endset %}
     {% if delete_warning|trim %}
         {{ components.note('danger', delete_warning, icon='warning') }}

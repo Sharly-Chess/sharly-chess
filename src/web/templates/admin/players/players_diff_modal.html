@@ -15,15 +15,19 @@
     {% endif %}
 {% endblock %}
 
+{% set source_message, source_message_is_warning = data_source.info_or_warning_message %}
+
+{% block subtitle %}
+    <div>{{ _('Data source: %(data_source)s', data_source=data_source.name) }}</div>
+    {% if source_message and not source_message_is_warning %}
+        <div>{{ source_message }}</div>
+    {% endif %}
+{% endblock %}
+
 {% block body %}
-            <h4>
-                {{ _('Data source: %(data_source)s', data_source=data_source.name) }}
-            </h4>
-            {% with message, is_warning = data_source.info_or_warning_message %}
-                {% if message %}
-                    {{ components.note('danger' if is_warning else 'info', message, icon='warning' if is_warning else none) }}
-                {% endif %}
-            {% endwith %}
+            {% if source_message and source_message_is_warning %}
+                {{ components.note('danger', source_message, icon='warning') }}
+            {% endif %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
