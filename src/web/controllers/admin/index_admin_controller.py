@@ -1038,6 +1038,8 @@ class IndexAdminController(BaseAdminController):
             if not clone_players:
                 database.delete_all_stored_players()
                 database.delete_all_stored_teams()
+                database.delete_all_stored_team_groups()
+                database.delete_all_prohibited_pairing_groups()
 
             if not (clone_pairings and clone_players):
                 database.delete_all_stored_pairings()
@@ -1990,6 +1992,8 @@ class IndexAdminController(BaseAdminController):
             if include_players != 'on':
                 tmp_event_database.delete_all_stored_players()
                 tmp_event_database.delete_all_stored_teams()
+                tmp_event_database.delete_all_stored_team_groups()
+                tmp_event_database.delete_all_prohibited_pairing_groups()
                 tmp_event_database.delete_all_stored_pairings()
             elif include_private_player_data != 'on':
                 tmp_event_database.delete_players_personal_data()
