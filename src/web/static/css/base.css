@@ -3306,6 +3306,10 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     display: block;
 }
 
+[data-sc-interface=admin] .sc-tooltip-wrapper:has(> .w-100) {
+    align-self: stretch;
+}
+
 [data-sc-interface=admin] .dropdown-item.sc-menu-item {
     display: flex;
     align-items: center;
