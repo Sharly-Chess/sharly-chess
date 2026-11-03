@@ -324,6 +324,8 @@ class Result(IntEnum):
                 | Result.UNRATED_LOSS
                 | Result.PENALTY_LL
                 | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
             ):
                 return '-'
             case (
@@ -502,6 +504,18 @@ class Result(IntEnum):
         return self in (
             Result.UNRATED_LOSS,
             Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
+
+    @property
+    def is_unrated(self) -> bool:
+        """A game played but not sent for rating."""
+        return self in (
+            Result.UNRATED_LOSS,
+            Result.UNRATED_DRAW,
+            Result.UNRATED_WIN,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_DL,
             Result.UNRATED_PENALTY_LD,
         )
 

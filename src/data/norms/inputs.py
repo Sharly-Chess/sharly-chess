@@ -30,6 +30,7 @@ REASON_INCLUDED = 'included'
 REASON_INCLUDED_AS_142C_LOSS = 'included_as_1_4_2c_loss'
 REASON_RULE_142A = 'rule_1_4_2a'  # opponent in NON federation
 REASON_RULE_142B = 'rule_1_4_2b'  # RR-only: unrated who lost every game
+REASON_RULE_142C_UNRATED = 'rule_1_4_2c_unrated'  # game not rated by FIDE
 REASON_FORFEIT_WIN_EXCLUDED = 'forfeit_win_excluded'
 REASON_BOARD_BYE = 'board_bye'  # PAB / half-point bye / rest game
 REASON_UNPLAYED_NO_PAIRING = 'unplayed_no_pairing'

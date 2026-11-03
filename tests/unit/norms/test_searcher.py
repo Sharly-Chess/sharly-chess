@@ -314,22 +314,6 @@ class TestCandidateShape:
         searcher = _make_searcher(rounds=9)
         assert list(searcher._candidates(inputs, max_ignores=0)) == []
 
-    def test_unrated_win_counts_as_win_for_1_4_1f(self):
-        opps = [FakeOpponent(i, 2400) for i in range(1, 5)]
-        rounds_data = [
-            (1, opps[0], Result.UNRATED_WIN),
-            (2, opps[1], Result.WIN),
-            (3, opps[2], Result.LOSS),
-            (4, opps[3], Result.DRAW),
-        ]
-        inputs = make_inputs(rounds_data)
-        searcher = _make_searcher(rounds=10)
-        candidates = list(searcher._candidates(inputs, max_ignores=1))
-        assert frozenset({1}) in candidates  # UNRATED_WIN droppable
-        assert frozenset({2}) in candidates  # WIN droppable
-        # R3 (loss) only reachable as the tail {3, 4}; never alone at size 1.
-        assert frozenset({3}) not in candidates
-
 
 class TestDropClassification:
     """`_classify_drops` labels each dropped round 1.4.1e (post-title tail)

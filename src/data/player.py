@@ -947,6 +947,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             pairing
             for pairing in self.pairings.values()
             if pairing.played
+            and not pairing.result.is_unrated
             and pairing.opponent
             and pairing.opponent.rating_type == PlayerRatingType.FIDE
         ]
