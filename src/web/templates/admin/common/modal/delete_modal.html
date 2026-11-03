@@ -17,11 +17,13 @@
                     OBJECT NAME
                 {% endblock %}
             </h4>
-            <h4 class="text-danger">
-                {% block delete_warning %}
-                    {{ _('Warning: the deletion is permanent!') }}
-                {% endblock %}
-            </h4>
+            {% set delete_warning %}{% block delete_warning %}{{ _('Warning: the deletion is permanent!') }}{% endblock %}{% endset %}
+            {% if delete_warning|trim %}
+                <div class="alert alert-danger d-flex align-items-start gap-2">
+                    <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
+                    <div>{{ delete_warning }}</div>
+                </div>
+            {% endif %}
             <form
                 id="modal-form"
                 hx-delete="{% block delete_url %}{% endblock %}"

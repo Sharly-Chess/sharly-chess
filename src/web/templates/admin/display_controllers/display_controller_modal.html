@@ -34,9 +34,10 @@
                     <h4>
                         {{ _('%(string)s: %(value)s', string=_('Display Controller'), value=admin_display_controller.name) }}
                     </h4>
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
+                    <div class="alert alert-danger d-flex align-items-start gap-2">
+                        <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
+                        <div>{{ _('Warning: the deletion is permanent!') }}</div>
+                    </div>
                 {% else %}
                     <div class="row gy-2 gx-3">
                        <div class="d-flex">
