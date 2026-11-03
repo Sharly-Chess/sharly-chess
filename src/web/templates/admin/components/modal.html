@@ -8,7 +8,8 @@
         {% block footer %}{{ components.cancel_button() }}...{% endblock %}
 
     The subtitle block holds the lines shown under the title (the event, the
-    tournament...), and header_actions the buttons on the right of the title.
+    tournament...), and toolbar the buttons acting on the modal's contents
+    (Add, Edit...), set on the right at the top of the body.
     A modal without a title has no header, and one without a body (a bare
     question with its answers) no body.
 
@@ -52,18 +53,20 @@
                         <div class="sc-modal-subtitle">{{ _subtitle }}</div>
                     {% endif %}
                 </div>
-                {% set _header_actions %}{% block header_actions %}{% endblock %}{% endset %}
-                {% if _header_actions | trim %}
-                    <div class="sc-modal-header-actions">{{ _header_actions }}</div>
-                {% endif %}
                 {% if modal_close | default(false) %}
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
                 {% endif %}
             </div>
         {% endif %}
+        {% set _toolbar %}{% block toolbar %}{% endblock %}{% endset %}
         {% set _body %}{% block body %}{% endblock %}{% endset %}
-        {% if _body | trim %}
-            <div class="modal-body">{{ _body }}</div>
+        {% if _body | trim or _toolbar | trim %}
+            <div class="modal-body">
+                {% if _toolbar | trim %}
+                    <div class="sc-modal-toolbar">{{ _toolbar }}</div>
+                {% endif %}
+                {{ _body }}
+            </div>
         {% endif %}
         {% set _footer %}{% block footer %}{{ components.cancel_button() }}{% endblock %}{% endset %}
         {% set _footer_start %}{% block footer_start %}{% endblock %}{% endset %}

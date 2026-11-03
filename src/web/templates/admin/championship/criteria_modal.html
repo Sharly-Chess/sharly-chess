@@ -7,7 +7,7 @@
 
 {% block subtitle %}{{ category.name }}{% endblock %}
 
-{% block header_actions %}
+{% block toolbar %}
     {{ components.modal_button(
         url_for('admin-championship-criterion-create-modal', championship_uniq_id=championship.uniq_id, category_id=category.id),
         _('Add'),

@@ -23,7 +23,7 @@
     {% endif %}
 {% endblock %}
 
-{% block header_actions %}
+{% block toolbar %}
     {% if not admin_prize_category.is_main %}
         {{ components.modal_button(
             url_for(

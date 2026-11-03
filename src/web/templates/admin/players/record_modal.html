@@ -51,13 +51,12 @@
                 </div>
 {% endblock %}
 
-{% block header_actions %}
+{% block toolbar %}
     {% if tournament.pairing_system.allow_bye_definition and not tournament.is_last_round %}
         {% set can_withdraw = client.can_set_zero_point_bye(tournament_player.tournament.id) %}
         {% if tournament_player.has_withdrawn %}
             {{ components.button(
                 _('Return to tournament'),
-                size='sm',
                 allowed=can_withdraw,
                 attrs={
                     'hx-patch': url_for('records-return-player', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id),
@@ -70,7 +69,6 @@
                 _('Withdraw from tournament'),
                 kind='outline-danger',
                 icon='bi-sign-stop',
-                size='sm',
                 allowed=can_withdraw,
                 attrs={
                     'hx-patch': url_for('records-withdraw-player', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id),
@@ -80,28 +78,26 @@
             ) }}
         {% endif %}
     {% endif %}
+    {% if client.can_update_players %}
+        {{ components.modal_button(
+            url_for(
+                'admin-player-modal',
+                action='update',
+                event_uniq_id=admin_event.uniq_id,
+                player_id=admin_player.id
+            ) ~ '?redirect_to=' ~ url_for(
+                'admin-record-modal',
+                event_uniq_id=admin_event.uniq_id,
+                player_id=tournament_player.id,
+            ),
+            _('Edit Player'),
+            icon='edit',
+            from_modal=true,
+        ) }}
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-            {% if client.can_update_players %}
-                <div class="d-flex justify-content-end mb-3">
-                    {{ components.modal_button(
-                        url_for(
-                            'admin-player-modal',
-                            action='update',
-                            event_uniq_id=admin_event.uniq_id,
-                            player_id=admin_player.id
-                        ) ~ '?redirect_to=' ~ url_for(
-                            'admin-record-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            player_id=tournament_player.id,
-                        ),
-                        _('Edit Player'),
-                        icon='edit',
-                        from_modal=true,
-                    ) }}
-                </div>
-            {% endif %}
             {{ components.section_heading(_('Tournament record')) }}
             {% set display_rating_change = tournament.uses_fide_ratings and tournament_player.tournament.started %}
             <table

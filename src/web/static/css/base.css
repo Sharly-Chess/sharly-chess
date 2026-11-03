@@ -3354,16 +3354,13 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     align-items: flex-start;
 }
 
-[data-sc-interface=admin] .sc-modal-header-actions {
+/* The buttons acting on a modal's contents, at the top of its body. */
+[data-sc-interface=admin] .sc-modal-toolbar {
     display: flex;
-    flex-shrink: 0;
-    align-self: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: .5rem;
-    margin-left: 1rem;
-}
-
-[data-sc-interface=admin] .sc-modal-header-actions + .btn-close {
-    margin-left: .5rem;
+    margin-bottom: 1rem;
 }
 
 [data-sc-interface=admin] .sc-modal-subtitle {
