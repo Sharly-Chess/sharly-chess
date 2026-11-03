@@ -236,6 +236,31 @@ class TestMenu:
         assert menu.only(cls='dropdown-header').text() == 'Group'
         assert menu.find_all('hr', 'dropdown-divider')
 
+    def test_split_button(self) -> None:
+        root = _render(
+            "{% call components.split_button('Create', icon='add', tooltip='Adds one.',"
+            " attrs={'hx-get': '/create'}) %}"
+            "{{ components.menu_item('Random', url='/random', modal=true) }}"
+            '{% endcall %}'
+        )
+        group = root.only('div', 'sc-split-button')
+        main, toggle = group.find_all('button')[:2]
+        assert main['hx-get'] == '/create'
+        assert 'btn-primary' in main.classes
+        assert {'dropdown-toggle', 'dropdown-toggle-split', 'btn-primary'} <= set(
+            toggle.classes
+        )
+        assert group.only('ul', 'dropdown-menu').only('button')['hx-get'] == '/random'
+        assert 'Adds one.' in root.only('span', 'sc-tooltip-wrapper')['data-bs-title']
+
+    def test_split_button_without_items_is_a_button(self) -> None:
+        root = _render(
+            "{% call components.split_button('Create') %}{% if false %}x{% endif %}"
+            '{% endcall %}'
+        )
+        assert not root.find_all(cls='btn-group')
+        assert root.only('button').text() == 'Create'
+
     def test_not_allowed_menu_has_no_items(self) -> None:
         root = _render(
             "{% call components.menu_button('Actions', allowed=false,"

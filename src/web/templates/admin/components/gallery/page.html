@@ -107,6 +107,9 @@
                     {{ components.menu_item('First choice') }}
                     {{ components.menu_item('Second choice') }}
                 {% endcall %}
+                {% call components.split_button('Split button', icon='add', tooltip='A main action with others beside it.') %}
+                    {{ components.menu_item('Another way to create', icon='bi-dice-5-fill') }}
+                {% endcall %}
                 {% call components.menu_button('Not allowed', allowed=false, reason='The reason it is disabled.') %}
                     {{ components.menu_item('Never shown') }}
                 {% endcall %}

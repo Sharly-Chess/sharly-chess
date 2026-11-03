@@ -226,6 +226,49 @@
 {%- endmacro %}
 
 {#
+    A main action with a menu of other ones beside it, the `menu_item`s
+    given in a `{% call %}`; without items it is a plain button. It takes the
+    arguments of `button` for the main action (attrs carries its hx-*).
+#}
+{% macro split_button(
+    label,
+    kind='primary',
+    icon=none,
+    size=none,
+    type='button',
+    allowed=true,
+    reason=none,
+    tooltip=none,
+    tooltip_placement='top',
+    class='',
+    attrs={},
+    menu_class=''
+) -%}
+    {%- set items = caller() -%}
+    {%- set markup -%}
+        {%- if items | trim -%}
+            <div class="btn-group sc-split-button{% if class %} {{ class }}{% endif %}">
+                {{ button(label, kind=kind, icon=icon, size=size, type=type, allowed=allowed, attrs=attrs) }}
+                {%- if allowed %}
+                    <button
+                        type="button"
+                        class="btn {{ _button_classes[kind] }}{% if size == 'sm' %} btn-sm{% endif %} dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    ><span class="visually-hidden">{{ _('More') }}</span></button>
+                    <ul class="dropdown-menu dropdown-menu-end{% if menu_class %} {{ menu_class }}{% endif %}">
+                        {{ items }}
+                    </ul>
+                {%- endif %}
+            </div>
+        {%- else -%}
+            {{ button(label, kind=kind, icon=icon, size=size, type=type, allowed=allowed, class=class, attrs=attrs) }}
+        {%- endif -%}
+    {%- endset -%}
+    {{- _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement) -}}
+{%- endmacro %}
+
+{#
     An item of a menu: a button, so that it can be reached from the keyboard.
 
     url: the URL it loads (hx-get), or with modal=true the modal it opens;
