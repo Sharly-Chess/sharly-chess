@@ -34,6 +34,7 @@ from data.norms import (
     NormInputs,
     TitleNormEvaluator,
 )
+from data.norms.inputs import REASON_RULE_142C_UNRATED, RoundDecision
 from data.pairings.variations import StandardSwissVariation
 from data.player import TournamentPlayer
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
@@ -820,6 +821,44 @@ class TestRule_1_4_2a_NON_excluded:
         assert Federation('NON') not in inputs.federations_counter
 
 
+class TestRule_1_4_2c_unrated_excluded:
+    @pytest.mark.parametrize(
+        'unrated_result',
+        [
+            Result.UNRATED_WIN,
+            Result.UNRATED_DRAW,
+            Result.UNRATED_LOSS,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_DL,
+            Result.UNRATED_PENALTY_LD,
+        ],
+    )
+    def test_unrated_game_is_not_counted(self, unrated_result: Result):
+        """1.4.2c: a game not rated by FIDE counts neither as a game played
+        nor for the opponent mix or the score."""
+        rated = _gm(1, federation='USA')
+        unrated = _gm(2, federation='GER')
+        player = _player_with_pairings(
+            rounds=9,
+            pairings={
+                1: (rated, Result.DRAW),
+                2: (unrated, unrated_result),
+            },
+        )
+        inputs = TitleNormEvaluator(player).collect_inputs(
+            include_last_forfeit_as_loss=False
+        )
+        assert inputs.played_games == 1
+        assert inputs.score == Result.DRAW.point_value
+        assert _counted_opponents(inputs) == [rated]
+        assert Federation('GER') not in inputs.federations_counter
+        assert inputs.titles_counter[PlayerTitle.GRANDMASTER] == 1
+        assert inputs.forfeits_or_byes == 0
+        audit = {entry.round_: entry for entry in inputs.round_audit}
+        assert audit[2].decision == RoundDecision.EXCLUDED
+        assert audit[2].reason_key == REASON_RULE_142C_UNRATED
+
+
 class TestRule_1_4_2a_FID_nuance:
     """FIDE QC clarification (2026): "FID is not considered a federation.
     FID players are disregarded." A game against a FID opponent is still
@@ -1000,6 +1039,35 @@ class TestRule_1_4_2b_RR_unrated_zero:
         )
         assert survivor.id not in inputs.ignored_opponents_ids
         assert survivor in _counted_opponents(inputs)
+
+    def test_unrated_game_does_not_save_the_opponent_in_rr(self):
+        """A score made in a game not rated by FIDE does not count: the
+        unrated opponent who scored only there is still excluded."""
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        doomed_opp = FakeOpponent(
+            id=99,
+            rating=1800,
+            rating_type=PlayerRatingType.NATIONAL,
+            federation=Federation('USA'),
+            title=PlayerTitle.NONE,
+        )
+        rated_foe = _gm(50)
+        doomed_opp.pairings_by_round = {
+            1: _fake_pairing(Result.UNRATED_DRAW, rated_foe),
+            **{r: _fake_pairing(Result.LOSS, rated_foe) for r in range(2, 10)},
+        }
+
+        player = _player_with_pairings(
+            rounds=9,
+            pairing_system=RoundRobinPairingSystem(),
+            pairings={1: (doomed_opp, Result.WIN)},
+        )
+        inputs = TitleNormEvaluator(player).collect_inputs(
+            include_last_forfeit_as_loss=False
+        )
+        assert doomed_opp.id in inputs.ignored_opponents_ids
+        assert doomed_opp not in _counted_opponents(inputs)
 
     def test_unrated_opponent_zero_NOT_excluded_in_swiss(self):
         """1.4.2b is RR-only. In a Swiss event, the same opponent is kept

@@ -2727,14 +2727,14 @@ class RatingAchievementCertificatePrintDocument(PrintDocument):
     def _games_to_peak(
         self, tournament_player: TournamentPlayer, k_factor: int
     ) -> list[tuple[int, Pairing, RatingChange]]:
-        """The games of the finished rounds, up to the earliest round after
-        which the intermediate rating is at its highest. Empty when no game
-        counts for the rating."""
+        """The games with a final result, including those of a round still
+        in play, up to the earliest round after which the intermediate rating
+        is at its highest. Empty when no game counts for the rating."""
         games = [
             (round_, pairing, pairing.fide_rating_change(k_factor))
             for round_, pairing in tournament_player.pairings_by_round.items()
-            if round_ <= self.tournament.max_ranking_round
-            and pairing.played
+            if pairing.played
+            and not pairing.result.is_adjourned
             and pairing.opponent is not None
         ]
         peak_count = 0

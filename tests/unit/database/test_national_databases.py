@@ -4,7 +4,7 @@ federation's file, and searching the shared player table."""
 import sqlite3
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -18,6 +18,7 @@ from database.sqlite.national.national_database import (
 )
 from database.sqlite.national.ssl_database import SslDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
+from utils.enum import PlayerGender
 
 
 def _write(path: Path, content: str, encoding: str = 'utf-8') -> Path:
@@ -631,16 +632,108 @@ def test_lok_reads_the_birthday_and_the_ids() -> None:
 
 
 @pytest.mark.unit
-def test_ucf_splits_the_titles_off_the_names() -> None:
+def test_ucf_splits_the_junior_and_senior_marks_off_the_names() -> None:
     from database.sqlite.national.ucf_database import UcfDatabase
 
     split = UcfDatabase._split_name
-    assert split('Іванчук Василь мг/змс') == ('Іванчук', 'Василь', 'GM')
-    assert split('Галинський Тимофій мм/мс') == ('Галинський', 'Тимофій', 'IM')
-    assert split('Александров Валерій кмс') == ('Александров', 'Валерій', '')
-    assert split('Жуков Володимир А. кмс') == ('Жуков', 'Володимир А.', '')
-    assert split('Попович Андрій (мол)') == ('Попович', 'Андрій', '')
-    assert split('Ель Кадер Марія') == ('Ель', 'Кадер Марія', '')
+    assert split('Іванчук Василь') == ('Іванчук', 'Василь')
+    assert split('Величко Василь ст.') == ('Величко', 'Василь')
+    assert split('Абада Дмитро мл.  ') == ('Абада', 'Дмитро')
+    assert split('Кельбас Ярослав (мл)') == ('Кельбас', 'Ярослав')
+    assert split('Попович Андрій (мол)') == ('Попович', 'Андрій')
+    assert split('Жуков Володимир А.') == ('Жуков', 'Володимир А.')
+    assert split('Ель Кадер Марія') == ('Ель', 'Кадер Марія')
+
+
+@pytest.mark.unit
+def _ucf_players(tmp_path: Path, fixture: str) -> list[NationalPlayerRow]:
+    """The players read from the UCF zip holding the *fixture* spreadsheet."""
+    import zipfile
+
+    from database.sqlite.national.ucf_database import UcfDatabase
+
+    file = tmp_path / 'national_ratings.zip'
+    with zipfile.ZipFile(file, 'w') as archive:
+        archive.write(Path(__file__).parent / fixture, fixture)
+    return list(UcfDatabase()._read_players(file))
+
+
+@pytest.mark.unit
+def test_ucf_reads_the_swiss_manager_list(tmp_path: Path) -> None:
+    """The fixture holds the header, then two players, the first listed
+    twice."""
+    aksenova, avramenko = _ucf_players(tmp_path, 'ucf-national-ratings.xls')
+    assert (aksenova.national_id, aksenova.fide_id) == ('14106086', 14106086)
+    assert (aksenova.last_name, aksenova.first_name) == ('Аксенова', 'Тетяна')
+    assert (aksenova.title, aksenova.gender, aksenova.club) == (
+        'FM',
+        PlayerGender.WOMAN,
+        'КИЇ',
+    )
+    assert aksenova.date_of_birth == date(1984, 7, 29)
+    assert aksenova.year_of_birth == 1984
+    assert (aksenova.standard_rating, aksenova.fide_standard_rating) == (2224, 2224)
+    assert (avramenko.national_id, avramenko.fide_id) == ('1639', None)
+    assert (avramenko.last_name, avramenko.first_name) == ('Авраменко', 'Іван')
+    assert (avramenko.title, avramenko.gender) == ('', PlayerGender.MAN)
+    assert (avramenko.year_of_birth, avramenko.date_of_birth) == (None, None)
+    assert (avramenko.standard_rating, avramenko.fide_standard_rating) == (1915, None)
+
+
+@pytest.mark.unit
+def test_ucf_reads_the_general_list_after_the_legend(tmp_path: Path) -> None:
+    """The fixture holds a title, a legend, the header, the source and
+    numbering rows, then two players, the first listed twice."""
+    abakarov, abada = _ucf_players(tmp_path, 'ucf-players-list.xls')
+    assert (abakarov.national_id, abakarov.fide_id) == ('14106680', 14106680)
+    assert (abakarov.last_name, abakarov.first_name) == ('Абакаров', 'Олександр')
+    assert (abakarov.title, abakarov.year_of_birth, abakarov.gender) == (
+        'IM',
+        1972,
+        PlayerGender.MAN,
+    )
+    assert abakarov.club == 'АРК'
+    assert (abakarov.standard_rating, abakarov.fide_standard_rating) == (2207, 2187)
+    assert (abada.national_id, abada.fide_id) == ('26001', None)
+    assert (abada.last_name, abada.first_name, abada.title) == ('Абада', 'Дмитро', 'FM')
+    assert (abada.year_of_birth, abada.date_of_birth, abada.gender) == (
+        None,
+        None,
+        PlayerGender.WOMAN,
+    )
+    assert (abada.standard_rating, abada.fide_standard_rating) == (1915, None)
+
+
+class _UcfSheet:
+    """The rows of a sheet of the UCF list, as read by xlrd."""
+
+    def __init__(self, rows: list[list[Any]]) -> None:
+        self.rows = rows
+        self.nrows = len(rows)
+        self.ncols = max(len(row) for row in rows)
+
+    def row_values(self, index: int, start: int, end: int) -> list[Any]:
+        return (self.rows[index] + [''] * self.ncols)[start:end]
+
+
+@pytest.mark.unit
+def test_ucf_checks_the_layout_of_the_columns_read() -> None:
+    from database.sqlite.national.ucf_database import UcfDatabase
+
+    header = ['Номер', "Ім'я", '', 'Федерація', 'Звання', '', 'Кол-во партий <=30']
+    header += ['Рейтинг', '', 'дата народження', '', 'Рік народження', '', 'Стать']
+    source = ['', 'українське', 'ФІДЕ', '', 'українське', 'ФІДЕ', '', 'ФШУ']
+    source += ['ФІДЕ станом на 31.10.26', 'ФШУ', 'ФІДЕ', 'ФШУ', 'ФІДЕ', 'ФШУ', 'ФІДЕ']
+    numbers: list[Any] = [float(column) for column in range(1, 15)] + ['ФІДЕ']
+
+    def has_layout(*rows: list[Any]) -> bool:
+        return UcfDatabase._has_layout(cast(Any, _UcfSheet(list(rows))), 0)
+
+    assert has_layout(header, source, numbers)
+    assert not has_layout(header, source)
+    assert not has_layout(header, source, ['', *numbers[:-1]])
+    assert not has_layout(header, ['', *source[:-1]], numbers)
+    assert not has_layout(['Номер', 'Ранг', *header[1:-1]], source, numbers)
 
 
 @pytest.mark.unit
