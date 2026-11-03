@@ -4148,6 +4148,9 @@ msgstr ""
 msgid "Fill the schedule with the Berger tables, following the Berger numbers."
 msgstr ""
 
+msgid "Filter"
+msgstr ""
+
 msgid "Filter out players of higher categories."
 msgstr ""
 
@@ -5856,9 +5859,6 @@ msgid "Montenegro"
 msgstr ""
 
 msgid "More"
-msgstr ""
-
-msgid "More copy options"
 msgstr ""
 
 msgid "Morocco"

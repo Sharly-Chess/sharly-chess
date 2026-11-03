@@ -46,7 +46,7 @@
     "fixed-colour": 2
   },
   "src/web/templates/admin/common/macros.j2": {
-    "button": 8,
+    "button": 7,
     "menu-item": 1
   },
   "src/web/templates/admin/common/player_search.html": {
@@ -64,9 +64,6 @@
   "src/web/templates/admin/common/warning_macros.j2": {
     "button": 6,
     "icon-spacing": 3
-  },
-  "src/web/templates/admin/display_controllers/display_controller_components.j2": {
-    "button": 1
   },
   "src/web/templates/admin/event_layout.html": {
     "button": 1
@@ -169,12 +166,7 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/players/table/filter.html": {
-    "button": 1,
-    "fixed-colour": 1,
     "menu-item": 2
-  },
-  "src/web/templates/admin/players/table/row.html": {
-    "button": 1
   },
   "src/web/templates/admin/players/table/table.html": {
     "fixed-colour": 1

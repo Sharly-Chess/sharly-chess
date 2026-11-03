@@ -10,21 +10,16 @@
     hx-target="#players-table"
     hx-indicator="#please-wait"
 >
-    <span class="dropdown-center">
-        <button
-            id="column-{{ column.id }}-filter-dropdown-button"
-            class="btn text-dark m-0 p-0"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            data-bs-auto-close="outside"
-        >
-            <i class="{{ 'bi-funnel-fill text-warning' if is_active else 'bi-funnel' }}"></i>
-        </button>
-        <ul
-            id="column-{{ column.id }}-filter-dropdown"
-            class="dropdown-menu table-dropdown-menu p-0"
-        >
+    {% call components.menu_button(
+        _('Filter'),
+        kind='plain',
+        icon='bi-funnel-fill' if is_active else 'bi-funnel',
+        icon_only=true,
+        class='dropdown-center',
+        toggle_class='m-0 p-0 ' ~ ('text-warning' if is_active else 'text-dark'),
+        toggle_attrs={'data-bs-auto-close': 'outside'},
+        menu_class='table-dropdown-menu p-0',
+    ) %}
             {% set name = 'filters' %}
             {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
             <input type="hidden" name="{{ name }}" value="" checked />
@@ -69,6 +64,5 @@
                     </label>
                 </li>
             {% endfor %}
-        </ul>
-    </span>
+    {% endcall %}
 </form>

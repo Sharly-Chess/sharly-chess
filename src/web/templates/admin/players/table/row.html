@@ -33,11 +33,16 @@
                     class='players-table-row-action',
                 ) }}
             {% endif %}
-            <span class="dropdown">
-                <button class="btn players-table-row-action" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="{{ _('Actions') }}">
-                    <i class="bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-start table-dropdown-menu p-0" >
+            {% call components.menu_button(
+                _('Actions'),
+                kind='plain',
+                icon='bi-three-dots',
+                icon_only=true,
+                tooltip_placement='right',
+                toggle_class='players-table-row-action',
+                toggle_attrs={'data-bs-display': 'static'},
+                menu_class='table-dropdown-menu p-0',
+            ) %}
                     {% if can_update_history %}
                         {% call components.menu_item(
                             _('Record'),
@@ -63,8 +68,7 @@
                             tooltip=_('Remove the player from the event.'),
                         ) %}{{ components.icon('bi-trash-fill', class='text-danger') }}<span>{{ _('Delete') }}</span>{% endcall %}
                     {% endif %}
-                </ul>
-            </span>
+            {% endcall %}
             </span>
         {% endif %}
     </td>

@@ -64,14 +64,14 @@
                         attrs={'target': '_blank'},
                     ) }}
                 {% endif %}
-                <div
-                    class="dropdown d-inline"
-                    {{ macros.tooltip_attributes('info', _('Assign a screen to the controller.'), 'top') }}
-                >
-                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="bi-box-arrow-in-right"></i>
-                    </button>
-                    <ul class="dropdown-menu">
+                {% call components.menu_button(
+                    _('Assign a screen to the controller.'),
+                    icon='bi-box-arrow-in-right',
+                    icon_only=true,
+                    size='sm',
+                    class='d-inline-block',
+                    toggle_class='dropdown-toggle',
+                ) %}
                         {% for basic_screen in sorted_screens %}
                             {% if loop.changed(basic_screen.type) %}
                                 {{ components.menu_header(basic_screen.type_str) }}
@@ -112,8 +112,7 @@
                                 {{ macros.rotator_icon() }} <b>{{ rotator.name }}</b>
                             {% endcall %}
                         {% endfor %}
-                    </ul>
-                </div>
+                {% endcall %}
                 {% if display_controller.assigned_object %}
                     {{ components.button(
                         _('Remove the screen from the display controller.'),
