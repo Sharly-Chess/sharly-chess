@@ -3290,7 +3290,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 /* Admin components (templates/admin/components) */
 
 /* A button's icon and label keep the same gap everywhere. */
-[data-sc-interface=admin] .sc-btn {
+.sc-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -3298,69 +3298,69 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     white-space: nowrap;
 }
 
-[data-sc-interface=admin] .sc-tooltip-wrapper {
+.sc-tooltip-wrapper {
     display: inline-block;
 }
 
-[data-sc-interface=admin] :is(.dropdown-menu .sc-tooltip-wrapper, .sc-tooltip-wrapper:has(> .w-100)) {
+:is(.dropdown-menu .sc-tooltip-wrapper, .sc-tooltip-wrapper:has(> .w-100)) {
     display: block;
 }
 
-[data-sc-interface=admin] .sc-tooltip-wrapper:has(> .w-100) {
+.sc-tooltip-wrapper:has(> .w-100) {
     align-self: stretch;
 }
 
-[data-sc-interface=admin] .dropdown-item.sc-menu-item {
+.dropdown-item.sc-menu-item {
     display: flex;
     align-items: center;
     gap: .5rem;
 }
 
-[data-sc-interface=admin] .sc-submenu-caret {
+.sc-submenu-caret {
     margin-left: auto;
     padding-left: 1rem;
 }
 
-[data-sc-interface=admin] .sc-modal {
+.sc-modal {
     --bs-modal-width: min(90vw, 500px);
 }
 
-[data-sc-interface=admin] .sc-modal-sm {
+.sc-modal-sm {
     --bs-modal-width: min(90vw, 450px);
 }
 
-[data-sc-interface=admin] .sc-modal-lg {
+.sc-modal-lg {
     --bs-modal-width: min(90vw, 600px);
 }
 
-[data-sc-interface=admin] .sc-modal-xl {
+.sc-modal-xl {
     --bs-modal-width: min(90vw, 800px);
 }
 
-[data-sc-interface=admin] .sc-modal-wide {
+.sc-modal-wide {
     --bs-modal-width: min(90vw, 1000px);
 }
 
-[data-sc-interface=admin] .sc-modal-max {
+.sc-modal-max {
     --bs-modal-width: 90vw;
 }
 
-[data-sc-interface=admin] .sc-modal-fit {
+.sc-modal-fit {
     --bs-modal-width: fit-content;
 }
 
-[data-sc-interface=admin] .sc-modal-heading {
+.sc-modal-heading {
     flex: 1;
     min-width: 0;
 }
 
 /* Under a title of several lines, the close button stays by the title. */
-[data-sc-interface=admin] .modal-header:has(.sc-modal-subtitle) {
+.modal-header:has(.sc-modal-subtitle) {
     align-items: flex-start;
 }
 
 /* The buttons acting on a modal's contents, at the top of its body. */
-[data-sc-interface=admin] .sc-modal-toolbar {
+.sc-modal-toolbar {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -3368,37 +3368,37 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     margin-bottom: 1rem;
 }
 
-[data-sc-interface=admin] .sc-modal-subtitle {
+.sc-modal-subtitle {
     margin-top: .25rem;
     color: var(--bs-secondary-color);
 }
 
-[data-sc-interface=admin] .sc-modal-doc {
+.sc-modal-doc {
     margin-left: .5rem;
     font-size: 70%;
 }
 
 /* A button set apart on the left of the footer, the others staying right. */
-[data-sc-interface=admin] .sc-modal-footer-start {
+.sc-modal-footer-start {
     margin-right: auto;
 }
 
-[data-sc-interface=admin] .sc-note {
+.sc-note {
     display: flex;
     align-items: flex-start;
     gap: .6rem;
 }
 
-[data-sc-interface=admin] .sc-note > i {
+.sc-note > i {
     flex-shrink: 0;
 }
 
-[data-sc-interface=admin] .sc-note-body {
+.sc-note-body {
     flex: 1;
     min-width: 0;
 }
 
-[data-sc-interface=admin] .sc-note-actions {
+.sc-note-actions {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -3408,11 +3408,11 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 }
 
 @media (max-width: 575.98px) {
-    [data-sc-interface=admin] .sc-note:has(.sc-note-actions) {
+    .sc-note:has(.sc-note-actions) {
         flex-wrap: wrap;
     }
 
-    [data-sc-interface=admin] .sc-note-actions {
+    .sc-note-actions {
         flex-direction: row;
         flex-wrap: wrap;
         flex-basis: 100%;
@@ -3420,55 +3420,55 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     }
 }
 
-[data-sc-interface=admin] .sc-note-compact {
+.sc-note-compact {
     padding: .3rem .6rem;
     font-size: .875em;
 }
 
 /* A badge carries its own ground, so its colours hold in both themes. */
-[data-sc-interface=admin] .sc-badge {
+.sc-badge {
     display: inline-flex;
     align-items: center;
     gap: .3em;
 }
 
-[data-sc-interface=admin] .sc-badge-primary {
+.sc-badge-primary {
     --bs-badge-color: var(--pw-contrast-text);
     background-color: var(--bs-primary);
 }
 
-[data-sc-interface=admin] .sc-badge-neutral {
+.sc-badge-neutral {
     --bs-badge-color: var(--bs-body-color);
     --bs-badge-font-weight: 500;
-    background-color: var(--pw-surface-raised-bg);
+    background-color: var(--pw-surface-raised-bg, var(--bs-secondary-bg));
 }
 
-[data-sc-interface=admin] .sc-badge-info {
+.sc-badge-info {
     --bs-badge-color: #0b1f33;
     background-color: #7cb8ec;
 }
 
-[data-sc-interface=admin] .sc-badge-warning {
+.sc-badge-warning {
     --bs-badge-color: #1a1712;
     background-color: #f0c35a;
 }
 
-[data-sc-interface=admin] .sc-badge-danger {
+.sc-badge-danger {
     --bs-badge-color: #fff;
     background-color: #b02a37;
 }
 
-[data-sc-interface=admin] .sc-badge-success {
+.sc-badge-success {
     --bs-badge-color: #fff;
     background-color: #1e7e47;
 }
 
-[data-sc-interface=admin] .sc-badge-action {
+.sc-badge-action {
     cursor: pointer;
 }
 
 /* The winner of a knock-out game, pinned on the edge of its result button. */
-[data-sc-interface=admin] .sc-advance-mark {
+.sc-advance-mark {
     justify-content: center;
     width: 1.1rem;
     height: 1.1rem;
@@ -3477,17 +3477,17 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     line-height: 1;
 }
 
-[data-sc-interface=admin] .sc-advance-mark:is(.sc-advance-mark-start, .sc-advance-mark-end) {
+.sc-advance-mark:is(.sc-advance-mark-start, .sc-advance-mark-end) {
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
 }
 
-[data-sc-interface=admin] .sc-advance-mark-start {
+.sc-advance-mark-start {
     left: 0;
 }
 
-[data-sc-interface=admin] .sc-advance-mark-end {
+.sc-advance-mark-end {
     left: 100%;
 }
 
@@ -3502,7 +3502,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     border-color: color-mix(in srgb, var(--sc-tag-color) 65%, var(--bs-body-color));
 }
 
-[data-sc-interface=admin] .sc-badge-group {
+.sc-badge-group {
     display: inline-flex;
     flex-wrap: wrap;
     gap: .25rem;
@@ -3523,7 +3523,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     margin: 0;
 }
 
-[data-sc-interface=admin] .sc-legend {
+.sc-legend {
     display: flex;
     flex-direction: column;
     gap: .4rem;
@@ -3532,20 +3532,20 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     list-style: none;
 }
 
-[data-sc-interface=admin] .sc-legend-item {
+.sc-legend-item {
     display: flex;
     align-items: center;
     gap: .6rem;
 }
 
-[data-sc-interface=admin] .sc-legend-item > i:first-child {
+.sc-legend-item > i:first-child {
     flex-shrink: 0;
     width: 1.25rem;
     font-size: 1.15rem;
     text-align: center;
 }
 
-[data-sc-interface=admin] .sc-section-heading {
+.sc-section-heading {
     margin: 0 0 1rem;
     color: var(--bs-emphasis-color);
     font-size: 1.1rem;
@@ -3554,7 +3554,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 
 /* Space above a heading that follows content: hidden inputs, scripts and
    styles show nothing, so a heading after them alone opens its container. */
-[data-sc-interface=admin] :is(
+:is(
     :not(input[type=hidden], script, style) + .sc-section-heading,
     * + form > .sc-section-heading:first-child
 ) {
@@ -3584,7 +3584,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     color: var(--bs-secondary-color) !important;
 }
 
-[data-sc-interface=admin] .sc-section-subheading {
+.sc-section-subheading {
     margin: 1rem 0 .5rem;
     padding-bottom: .25rem;
     border-bottom: 1px solid var(--bs-border-color);
