@@ -62,6 +62,19 @@
     {{ _icon_tag(name, class) }}
 {%- endmacro -%}
 
+{#
+    An icon followed by the text given in a `{% call %}`, kept on its line and
+    at the gap of the buttons. `tag` is the element holding them: a span sits
+    in a line of text, a p or a div is a line of its own. `icon_class` colours
+    the icon alone.
+#}
+{%- macro icon_text(icon, icon_class='', tag='span', class='', attrs={}) -%}
+    {%- set content = caller() -%}
+    <{{ tag }} class="sc-icon-text{% if class %} {{ class }}{% endif %}"{{ _attributes(attrs) }}>
+        {{- _icon_tag(icon, icon_class) -}}<span>{{ content }}</span>
+    </{{ tag }}>
+{%- endmacro -%}
+
 {# The attributes of `attrs`; with `active=false`, those that would act or open
    something (hx-*, data-bs-*) are left out. #}
 {%- macro _attributes(attrs, active=true) -%}

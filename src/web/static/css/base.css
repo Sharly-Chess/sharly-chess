@@ -3538,6 +3538,20 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     gap: .6rem;
 }
 
+.sc-icon-text {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+:is(p, div).sc-icon-text {
+    display: flex;
+}
+
+.sc-icon-text > i {
+    flex-shrink: 0;
+}
+
 .sc-legend-item > i:first-child {
     flex-shrink: 0;
     width: 1.25rem;

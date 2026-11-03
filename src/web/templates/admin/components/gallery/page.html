@@ -156,6 +156,14 @@
             </div>
         </section>
 
+        <section id="gallery-icon-text" class="d-flex flex-column gap-2">
+            <h2 class="h4">Icon and text</h2>
+            {% call components.icon_text('confirm', icon_class='text-success', tag='p', class='text-secondary mb-0') %}Last backup taken at 14:32.{% endcall %}
+            <p class="mb-0">
+                In a sentence: {% call components.icon_text('warning', icon_class='text-warning') %}3 players unpaired{% endcall %}, to check.
+            </p>
+        </section>
+
         <section id="gallery-segmented" class="d-flex flex-column gap-2">
             <h2 class="h4">Segmented controls</h2>
             <div class="d-flex flex-wrap align-items-center gap-3">

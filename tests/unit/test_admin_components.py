@@ -525,6 +525,16 @@ class TestOtherComponents:
         ]
         assert [item.only('span').text() for item in items] == ['Withdrawal', 'Pair']
 
+    def test_icon_text(self) -> None:
+        root = _render(
+            "{% call components.icon_text('confirm', icon_class='text-success',"
+            " tag='p', class='mb-0') %}Saved{% endcall %}"
+        )
+        line = root.only('p', 'sc-icon-text')
+        assert 'mb-0' in line.classes
+        assert line.only('i').classes == ['bi-check-circle-fill', 'text-success']
+        assert line.only('span').text() == 'Saved'
+
     def test_segmented_radios(self) -> None:
         root = _render(
             "{% call components.segmented('Order', size='sm') %}"
