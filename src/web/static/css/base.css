@@ -3330,8 +3330,38 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     --bs-modal-width: min(90vw, 1000px);
 }
 
+[data-sc-interface=admin] .sc-modal-max {
+    --bs-modal-width: 90vw;
+}
+
 [data-sc-interface=admin] .sc-modal-fit {
     --bs-modal-width: fit-content;
+}
+
+[data-sc-interface=admin] .sc-modal-heading {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Under a title of several lines, the close button stays by the title. */
+[data-sc-interface=admin] .modal-header:has(.sc-modal-subtitle) {
+    align-items: flex-start;
+}
+
+[data-sc-interface=admin] .sc-modal-header-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: .5rem;
+    margin-left: 1rem;
+}
+
+[data-sc-interface=admin] .sc-modal-header-actions + .btn-close {
+    margin-left: .5rem;
+}
+
+[data-sc-interface=admin] .sc-modal-subtitle {
+    margin-top: .25rem;
+    color: var(--bs-secondary-color);
 }
 
 [data-sc-interface=admin] .sc-modal-doc {

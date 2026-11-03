@@ -393,11 +393,12 @@
 {%- endmacro %}
 
 {# The heading of a part of a modal body or a form; `sub` for a part within
-   a part. #}
+   a part. A `{% call %}` gives rich content in place of `text`. #}
 {% macro section_heading(text, sub=false, class='') -%}
+    {%- set content = caller() if caller is defined else text -%}
     {%- if sub -%}
-        <h4 class="sc-section-subheading{% if class %} {{ class }}{% endif %}">{{ text }}</h4>
+        <h4 class="sc-section-subheading{% if class %} {{ class }}{% endif %}">{{ content }}</h4>
     {%- else -%}
-        <h3 class="sc-section-heading{% if class %} {{ class }}{% endif %}">{{ text }}</h3>
+        <h3 class="sc-section-heading{% if class %} {{ class }}{% endif %}">{{ content }}</h3>
     {%- endif -%}
 {%- endmacro %}

@@ -7,9 +7,14 @@
         {% block body %}...{% endblock %}
         {% block footer %}{{ components.cancel_button() }}...{% endblock %}
 
+    The subtitle block holds the lines shown under the title (the event, the
+    tournament...), and header_actions the buttons on the right of the title. A modal without a title has no header, and one without a body (a bare
+    question with its answers) no body.
+
     Settings, set in the extending template:
         modal_size: sm (450px), md (500px, the default), lg (600px), xl (800px),
-            wide (1000px) or fit (as wide as its content).
+            wide (1000px), max (90% of the window) or fit (as wide as its
+            content).
         modal_id: the id of the dialog.
         modal_doc: the help page shown as an icon after the title.
         modal_close: a close button in the header (default false; the
@@ -26,20 +31,34 @@
 >
     <div class="modal-content">
         {% block before_header %}{% endblock %}
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% block title %}{% endblock %}
-                {% if modal_doc is defined and modal_doc %}
-                    {{ macros.doc_icon(modal_doc, 'sc-modal-doc') }}
+        {% set _title %}{% block title %}{% endblock %}{% endset %}
+        {% set _subtitle %}{% block subtitle %}{% endblock %}{% endset %}
+        {% if _title | trim or modal_close | default(false) %}
+            <div class="modal-header">
+                <div class="sc-modal-heading">
+                    <h2 class="modal-title">
+                        {{ _title }}
+                        {% if modal_doc is defined and modal_doc %}
+                            {{ macros.doc_icon(modal_doc, 'sc-modal-doc') }}
+                        {% endif %}
+                    </h2>
+                    {% if _subtitle | trim %}
+                        <div class="sc-modal-subtitle">{{ _subtitle }}</div>
+                    {% endif %}
+                </div>
+                {% set _header_actions %}{% block header_actions %}{% endblock %}{% endset %}
+                {% if _header_actions | trim %}
+                    <div class="sc-modal-header-actions">{{ _header_actions }}</div>
                 {% endif %}
-            </h2>
-            {% if modal_close | default(false) %}
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
-            {% endif %}
-        </div>
-        <div class="modal-body">
-            {% block body %}{% endblock %}
-        </div>
+                {% if modal_close | default(false) %}
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% set _body %}{% block body %}{% endblock %}{% endset %}
+        {% if _body | trim %}
+            <div class="modal-body">{{ _body }}</div>
+        {% endif %}
         {% set _footer %}{% block footer %}{{ components.cancel_button() }}{% endblock %}{% endset %}
         {% set _footer_start %}{% block footer_start %}{% endblock %}{% endset %}
         {% if _footer | trim or _footer_start | trim %}
