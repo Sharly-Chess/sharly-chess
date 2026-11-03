@@ -64,10 +64,10 @@
     "button": 5
   },
   "src/web/templates/admin/players/filter_columns.html": {
-    "menu-item": 2
+    "menu-item": 1
   },
   "src/web/templates/admin/players/table/filter.html": {
-    "menu-item": 2
+    "menu-item": 1
   },
   "src/web/templates/admin/plugins/_plugin_detail.html": {
     "icon-spacing": 1

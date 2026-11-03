@@ -15,23 +15,7 @@
             {% set name = 'column_ids' %}
             {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
             <input type="hidden" name="{{ name }}" value="" />
-            <li class="dropdown-item title text-nowrap">
-                <input
-                    type="checkbox"
-                    class="form-check-input blue-checkbox"
-                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
-                    onclick="$('input.hideable-columns').prop('checked', this.checked)"
-                />
-                {{ components.button(
-                    _('OK'),
-                    kind='plain',
-                    icon='bi-check-lg',
-                    type='submit',
-                    class='w-100 justify-content-end py-0',
-                    attrs={'data-bs-dismiss': 'modal'},
-                ) }}
-            </li>
-            <li class="dropdown-divider m-0"></li>
+            {{ components.menu_select_all(enabled_columns|length == visible_columns|length, "$('input.hideable-columns').prop('checked', this.checked)") }}
             {% for column in enabled_columns %}
                 <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
                     <input

@@ -23,23 +23,10 @@
             {% set name = 'filters' %}
             {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
             <input type="hidden" name="{{ name }}" value="" checked />
-            <li class="dropdown-item title text-nowrap">
-                <input
-                    type="checkbox"
-                    class="form-check-input blue-checkbox"
-                    {% if column.all_filter_value_active %}checked{% endif %}
-                    onclick="$('input.filter-{{ column.id }}').prop('checked', this.checked)"
-                />
-                {{ components.button(
-                    _('OK'),
-                    kind='plain',
-                    icon='bi-check-lg',
-                    type='submit',
-                    class='w-100 justify-content-end compact-y-padding',
-                    attrs={'data-bs-dismiss': 'modal'},
-                ) }}
-            </li>
-            <li class="dropdown-divider m-0"></li>
+            {{ components.menu_select_all(
+                column.all_filter_value_active,
+                "$('input.filter-" ~ column.id ~ "').prop('checked', this.checked)",
+            ) }}
             {% for filter_value in column.filter_values %}
                 {% set tooltip = column.get_filter_row_tooltip(filter_value.value) %}
                 <li

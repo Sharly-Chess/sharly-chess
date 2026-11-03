@@ -68,6 +68,11 @@ class _TreeBuilder(HTMLParser):
         if tag not in _VOID_ELEMENTS:
             self.stack.append(node)
 
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+        if tag not in _VOID_ELEMENTS:
+            self.handle_endtag(tag)
+
     def handle_endtag(self, tag: str) -> None:
         while len(self.stack) > 1:
             if self.stack.pop().tag == tag:
@@ -549,6 +554,17 @@ class TestOtherComponents:
         assert 'dropdown-toggle' not in toggle.classes
         assert toggle.text() == ''
         assert 'px-2' in root.only('button', 'sc-menu-item').classes
+
+    def test_menu_select_all(self) -> None:
+        root = _render(
+            "{{ components.menu_select_all(true, \"$('input.x').prop('checked', this.checked)\") }}"
+        )
+        head = root.only('li', 'sc-menu-select-all')
+        box = head.only('input')
+        assert box.has('checked')
+        assert box['onclick'] == "$('input.x').prop('checked', this.checked)"
+        assert head.only('button')['type'] == 'submit'
+        assert root.only('hr', 'dropdown-divider')
 
     def test_icon_text(self) -> None:
         root = _render(

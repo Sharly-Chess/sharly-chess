@@ -383,6 +383,22 @@
     <li><h6 class="dropdown-header">{{ text }}</h6></li>
 {%- endmacro %}
 
+{# The head of a menu of checkboxes in a form: a checkbox ticking them all,
+   which runs `onclick`, and the button submitting the form. #}
+{% macro menu_select_all(checked, onclick) -%}
+    <li class="sc-menu-select-all">
+        <input
+            type="checkbox"
+            class="form-check-input blue-checkbox"
+            aria-label="{{ _('Select all') }}"
+            {%- if checked %} checked{% endif %}
+            onclick="{{ onclick }}"
+        />
+        {{ button(_('OK'), kind='plain', icon='bi-check-lg', type='submit', class='py-0', attrs={'data-bs-dismiss': 'modal'}) }}
+    </li>
+    {{ menu_divider() }}
+{%- endmacro %}
+
 {% macro menu_divider() -%}
     <li><hr class="dropdown-divider"></li>
 {%- endmacro %}
