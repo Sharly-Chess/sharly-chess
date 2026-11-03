@@ -1,44 +1,30 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set modal_size = 'xl' %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 800px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Chess-Results.com upload') }}
-            </h2>
-        </div>
-        <div class="modal-body">
-            {% include 'chess_results_upload_results.html' %}
+{% block title %}{{ _('Chess-Results.com upload') }}{% endblock %}
 
-            <div class="text-center mt-3 mb-1">
-                <button
-                    type="button"
-                    hx-post="{{ url_for('chess-results-upload', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="#upload-results"
-                    hx-swap="outerHTML"
-                    class="text-nowrap white btn btn-outline-primary"
-                >
-                    <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ _('Upload all tournaments') }}
-                </button>
-            </div>
-        </div>
+{% block body %}
+    {% include 'chess_results_upload_results.html' %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-        </div>
+    <div class="text-center mt-3 mb-1">
+        {{ components.button(
+            _('Upload all tournaments'),
+            icon='bi-cloud-arrow-up-fill',
+            attrs={
+                'hx-post': url_for('chess-results-upload', event_uniq_id=admin_event.uniq_id),
+                'hx-target': '#upload-results',
+                'hx-swap': 'outerHTML',
+            },
+        ) }}
     </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}
+    {{ components.cancel_button(_('Close')) }}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

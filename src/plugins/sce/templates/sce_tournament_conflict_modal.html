@@ -1,45 +1,38 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
-
+{% set modal_size = 'wide' %}
 {% set event_plugin_data = admin_event.plugin_data.sce %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 900px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Sharly-Chess.com tournament conflicts') }}
-                <i
-                    class="bi-info-circle-fill text-body ps-1"
-                    style="font-size: 75%"
-                    {{ macros.tooltip_attributes('', _(
-                        'Synchronisation conflicts happen when the same data '
-                        'has been modified in both the local application and '
-                        'Sharly-Chess.com. To resolve them, you must either '
-                        'update the data to a non-conflictual state, or choose '
-                        'one version of the data to apply everywhere.'
-                    )) }}
-                ></i>
-            </h2>
-        </div>
-        <div class="modal-body">
+{% block title %}
+    {{ _('Sharly-Chess.com tournament conflicts') }}
+    <i
+        class="bi-info-circle-fill sc-modal-doc"
+        {{ macros.tooltip_attributes('', _(
+            'Synchronisation conflicts happen when the same data '
+            'has been modified in both the local application and '
+            'Sharly-Chess.com. To resolve them, you must either '
+            'update the data to a non-conflictual state, or choose '
+            'one version of the data to apply everywhere.'
+        )) }}
+    ></i>
+{% endblock %}
+
+{% block subtitle %}
+    {{ _(
+        '%(string)s: %(value)s',
+        string=_('Remaining conflicts'),
+        value=remaining_conflicts
+    ) }}
+{% endblock %}
+
+{% block body %}
             {% if sce_event_status.alert_message %}
                 {% include '/sce_event_status_alert.html' %}
             {% endif %}
             {% if error_message %}
-                {% with message=error_message, type='error' %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner('error', error_message) }}
             {% endif %}
-            <h4>
-                {{ _(
-                    '%(string)s: %(value)s',
-                    string=_('Remaining conflicts'),
-                    value=remaining_conflicts
-                ) }}
-            </h4>
             <div class="row">
                 {% with display_data=local_sync_data, compare_data=sce_sync_data, metadata={
                     'title': _('Local'),
@@ -70,36 +63,34 @@
                 {% endwith %}
             </div>
             <div class="text-center">
-                <button
-                    class="btn btn-outline-primary mt-2"
-                    hx-get="{{ url_for(
+                {{ components.modal_button(
+                    url_for(
                         'admin-tournament-modal',
                         action='update',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=conflict_tournament.id,
-                    ) }}?redirect_to={{ url_for(
+                    ) ~ '?redirect_to=' ~ url_for(
                         'sce-tournament-conflict-modal',
                         event_uniq_id=admin_event.uniq_id,
-                    ) }}"
-                >
-                    <i class="bi-pencil-fill pe-1"></i>
-                    {{ _('Edit the tournament') }}
-                </button>
+                    ),
+                    _('Edit the tournament'),
+                    icon='edit',
+                    from_modal=true,
+                    class='mt-2',
+                ) }}
             </div>
-        </div>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for(
-                    'sce-sync-modal', event_uniq_id=admin_event.uniq_id
-                ) }}"
-            >
-                <i class="bi-arrow-left-circle-fill pe-1"></i>
-                {{ _('Back') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.modal_button(
+        url_for('sce-sync-modal', event_uniq_id=admin_event.uniq_id),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

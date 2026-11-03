@@ -6,73 +6,27 @@
     "icon-spacing": 1,
     "menu-item": 2
   },
-  "src/plugins/chess_results/templates/chess_results_upload_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/plugins/chess_results/templates/chess_results_upload_results.html": {
     "button": 1,
     "fixed-colour": 1
   },
   "src/plugins/chessevent/templates/chessevent_sync_modal.html": {
-    "button": 4,
-    "dead-white-class": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/plugins/custom_upload/templates/custom_upload_auth_fields.html": {
     "button": 1,
     "icon-spacing": 1
-  },
-  "src/plugins/custom_upload/templates/custom_upload_configuration_modal.html": {
-    "button": 3,
-    "dead-white-class": 1,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/plugins/custom_upload/templates/custom_upload_document_picker.html": {
-    "button": 3,
-    "dead-white-class": 1,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/plugins/custom_upload/templates/custom_upload_modal.html": {
-    "button": 3,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/plugins/custom_upload/templates/custom_upload_results.html": {
     "button": 3,
     "fixed-colour": 1
   },
   "src/plugins/ffe/templates/ffe_rules_upload_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
+    "fixed-colour": 1
   },
   "src/plugins/ffe/templates/ffe_tournament_card_action_menu_items.html": {
     "icon-spacing": 4,
     "menu-item": 6
-  },
-  "src/plugins/ffe/templates/ffe_upload_modal.html": {
-    "button": 3,
-    "dead-white-class": 1,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/plugins/ffe/templates/ffe_upload_results.html": {
     "button": 5,
@@ -100,40 +54,8 @@
   "src/plugins/sce/templates/sce_player_conflict_diff.html": {
     "button": 1
   },
-  "src/plugins/sce/templates/sce_player_conflict_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/plugins/sce/templates/sce_player_duplicate_modal.html": {
-    "button": 4,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/plugins/sce/templates/sce_removed_player_modal.html": {
-    "button": 3,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/plugins/sce/templates/sce_sync_modal.html": {
-    "button": 9,
-    "dead-white-class": 1,
-    "icon-spacing": 9,
-    "menu-item": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/plugins/sce/templates/sce_tournament_conflict_diff.html": {
     "button": 1
-  },
-  "src/plugins/sce/templates/sce_tournament_conflict_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/plugins/sce/templates/sce_upload_table.html": {
     "button": 1,

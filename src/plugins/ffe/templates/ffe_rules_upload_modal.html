@@ -1,19 +1,18 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set modal_size = 'sm' %}
 
-{% set event_plugin_data = admin_event.plugin_data.ffe %}
+{% block title %}{{ _('Upload the FFE rules') }}{% endblock %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Upload the FFE rules') }}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% block subtitle %}
+    {% if ffe_rules_tournaments|length == 1 %}
+        {{ _('%(string)s:', string=_('Tournament')) }}
+        {{ ffe_rules_tournaments[0].name }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-post="{{ url_for('ffe-modal-upload-rules', event_uniq_id=admin_event.uniq_id) }}"
@@ -22,12 +21,7 @@
                 hx-indicator="#please-wait"
             >
                 {% if ffe_rules_tournaments|length == 1 %}
-                    {% set tournament = ffe_rules_tournaments[0] %}
-                    <h4>
-                        {{ _('%(string)s:', string=_('Tournament')) }}
-                        {{ tournament.name }}
-                    </h4>
-                    <input type="hidden" name="tournament_{{ tournament.id }}" value="on"/>
+                    <input type="hidden" name="tournament_{{ ffe_rules_tournaments[0].id }}" value="on"/>
                 {% endif %}
                 {{ admin_macros.file_input(
                     name='rules_file',
@@ -76,32 +70,21 @@
                     </table>
                 {% endif %}
             </form>
-        </div>
+{% endblock %}
 
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for(
-                    'ffe-upload-modal', event_uniq_id=admin_event.uniq_id
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-arrow-left-circle-fill pe-1"></i>
-                {{ _('Back') }}
-            </button>
-
-            <button
-                type="submit"
-                id="upload-button"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi bi-upload pe-1"></i>
-                {{ _('Upload') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.modal_button(
+        url_for('ffe-upload-modal', event_uniq_id=admin_event.uniq_id),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+    {{ components.button(
+        _('Upload'),
+        kind='primary',
+        icon='upload',
+        type='submit',
+        attrs={'id': 'upload-button', 'form': 'modal-form'},
+    ) }}
+{% endblock %}
