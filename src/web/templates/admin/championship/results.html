@@ -61,14 +61,18 @@
         <td class="text-center compact-col text-nowrap">
             <span data-testid="championship-stage-count">{{ row.used_stage_count }}/{{ row.stage_count }}</span>
             {% if row.stages %}
-                <button
-                    type="button"
-                    class="btn championship-stage-info p-1"
-                    data-content-id="championship-ranking-stage-content-{{ table_id }}-{{ index }}"
-                    aria-label="{{ _('Show the stages of %(competitor)s', competitor=row.name) }}"
-                >
-                    <i class="bi-info-circle"></i>
-                </button>
+                {# Its popover takes the place of a tooltip: the label is only its
+                   accessible name. #}
+                {% call components.button(
+                    _('Show the stages of %(competitor)s', competitor=row.name),
+                    kind='plain',
+                    icon='bi-info-circle',
+                    class='championship-stage-info p-1',
+                    attrs={
+                        'aria-label': _('Show the stages of %(competitor)s', competitor=row.name),
+                        'data-content-id': 'championship-ranking-stage-content-' ~ table_id ~ '-' ~ index,
+                    },
+                ) %}{% endcall %}
                 <div
                     id="championship-ranking-stage-content-{{ table_id }}-{{ index }}"
                     class="d-none"
@@ -205,14 +209,15 @@
             <h3 class="h4 mb-0">{{ _('General ranking') }}</h3>
             <div class="flex-grow-1"></div>
             {% if has_manual_rule and has_manual_values %}
-                <button
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('admin-championship-manual-tiebreak-reset', championship_uniq_id=championship.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi bi-arrow-clockwise pe-1"></i>{{ _('Reset manual tie-break') }}
-                </button>
+                {{ components.button(
+                    _('Reset manual tie-break'),
+                    icon='refresh',
+                    attrs={
+                        'hx-post': url_for('admin-championship-manual-tiebreak-reset', championship_uniq_id=championship.uniq_id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
             {% endif %}
         </div>
         {{ ranking_table(ranking_rows, 'championship-ranking-table-overall', manual=has_manual_rule) }}

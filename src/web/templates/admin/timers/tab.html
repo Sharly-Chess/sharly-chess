@@ -14,49 +14,26 @@
 
 {% block top_right_nav %}
     {% include '/admin/common/collection_controls.html' %}
-    <span {{ macros.tooltip_attributes('info', _('Default timer settings'), 'bottom') }}>
-        <button
-            class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for(
-                'admin-default-timers-modal',
-                event_uniq_id=admin_event.uniq_id,
-            ) }}"
-            hx-trigger="click"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            hx-target="body"
-            hx-indicator="#please-wait"
-        >
-            <i class="bi-gear-fill"></i>
-        </button>
-    </span>
-    <span {{ macros.tooltip_attributes('info', _('Add a timer to the event.'), 'top') }}>
-        <button
-            class="btn btn-primary text-nowrap"
-            hx-trigger="click, SC_Plus from:body"
-            hx-get="{{ url_for('admin-timer-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi-plus-lg pe-1"></i>
-            {{ _('Create a timer') }}
-        </button>
-    </span>
+    {{ components.modal_button(
+        url_for('admin-default-timers-modal', event_uniq_id=admin_event.uniq_id),
+        _('Default timer settings'),
+        icon='settings',
+        icon_only=true,
+        tooltip_placement='bottom',
+    ) }}
+    {{ components.modal_button(
+        url_for('admin-timer-create-modal', event_uniq_id=admin_event.uniq_id),
+        _('Create a timer'),
+        kind='primary',
+        icon='add',
+        tooltip=_('Add a timer to the event.'),
+        attrs={'hx-trigger': 'click, SC_Plus from:body'},
+    ) }}
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% with
-        items=admin_event.timers_by_name.values(),
-        empty_message=_('No timers'),
-        sortable=false,
-        show_details=collection_show_details
-    %}
-        {% include '/admin/common/collection.html' %}
-    {% endwith %}
     {% if not admin_event.timers_by_name %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
+        {% call components.empty_state(_('No timers')) %}
             <p>
                 {{ _('Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event.') }}
             </p>
@@ -64,6 +41,15 @@
                 {{ _('Once created, choose the screens, multi-screens and rotators that display the timer with its Screens button, or select the timer in the settings of each of them.') }}
             </p>
             <p>{{ _('Create a timer now to get started.') }}</p>
-        </div>
+        {% endcall %}
+    {% else %}
+        {% with
+            items=admin_event.timers_by_name.values(),
+            empty_message=_('No timers'),
+            sortable=false,
+            show_details=collection_show_details
+        %}
+            {% include '/admin/common/collection.html' %}
+        {% endwith %}
     {% endif %}
 {% endblock %}

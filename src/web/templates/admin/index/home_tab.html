@@ -5,42 +5,34 @@
 
 <div id="home-content" class="content home-content">
     <div class="home-locale-picker position-absolute end-0 top-0 mt-5 me-5">
-        <div class="dropdown text-center">
-            <i class="bi-translate pe-1"></i>
-            <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="d-flex align-items-center gap-1">
+            {{ components.icon('bi-translate') }}
+            {% set current_locale_label %}
                 <img
                     src="{{ locale_infos[locale].flag_url }}"
                     alt="{{ locale_infos[locale].name }}"
                     class="locale-flag"
                 />
                 {{ locale_infos[locale].name }}
-            </button>
-            <ul class="dropdown-menu locale">
+            {% endset %}
+            {% call components.menu_button(current_locale_label, kind='secondary', menu_class='locale') %}
                 {% for l, l_info in locale_infos.items() %}
                     {% if l != locale %}
-                        <li
-                            class="
-                                dropdown-item
-                                text-start
-                                {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
-                                "
-                            hx-get="{{ url_for('index') }}"
-                            hx-vals='{"locale": "{{ l }}"}'
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            hx-trigger="click, keyup[key=='Enter']"
-                            tabindex="0"
-                        >
+                        {% call components.menu_item(
+                            l_info.name,
+                            url=url_for('index'),
+                            attrs={'hx-vals': '{"locale": "' ~ l ~ '"}'},
+                        ) %}
                             <img
                                 src="{{ l_info.flag_url }}"
                                 alt="{{ l_info.name }}"
                                 class="locale-flag"
                             />
                             {{ l_info.name }}
-                        </li>
+                        {% endcall %}
                     {% endif %}
                 {% endfor %}
-            </ul>
+            {% endcall %}
         </div>
     </div>
     <div class="d-grid gap-2 col-auto mx-auto {% if client.account.administrator %}mt-5{% endif %}">
@@ -55,16 +47,11 @@
         {% if client.can_manage_events %}
             <div class="d-flex flex-column gap-3 mx-auto" style="width: 350px">
                 <hr class="my-2 w-100">
-                <button
-                    class="btn btn-outline-primary text-nowrap btn-lg"
-                    hx-get="{{ url_for('admin-championship-create-modal') }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    {{ _('Create a championship') }}
-                </button>
+                {{ components.modal_button(
+                    url_for('admin-championship-create-modal'),
+                    _('Create a championship'),
+                    class='btn-lg',
+                ) }}
                 <p class="text-body-secondary small text-center mb-0">
                     {{ _('A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix.') }}
                 </p>
@@ -75,15 +62,12 @@
         <p class="mb-2">
             {{ _('Do you like Sharly Chess? Help us keep it free and improving!') }}
         </p>
-        <a
-            class="btn btn-outline-primary"
-            href="{{ sharly_chess_config.donate_url }}"
-            target="_blank"
-            rel="noopener"
-        >
-            <i class="bi-heart-fill pe-1"></i>
-            {{ _('Support the Sharly Chess project') }}
-        </a>
+        {{ components.button(
+            _('Support the Sharly Chess project'),
+            icon='bi-heart-fill',
+            href=sharly_chess_config.donate_url,
+            attrs={'target': '_blank', 'rel': 'noopener'},
+        ) }}
     </div>
 </div>
 

@@ -20,44 +20,30 @@
             {{ admin_macros.admin_title(_('Players'), 'players') }}
             <div class="flex-grow-1"></div>
             <div class="top-nav-collapsible d-flex gap-2 ms-auto flex-wrap justify-content-end">
-                <div class="dropdown d-inline"
-                     {% if client.can_update_players %}
-                        {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to update the players\' information from an external data source.'), 'top') }}
-                    {% endif %}
-                >
-                    <button
-                        class="btn btn-outline-primary dropdown-toggle mx-auto"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        {% if not client.can_update_players %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-arrow-repeat pe-1"></i>
-                        {{ _('Update') }}
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% with from_modal=false, tab='players' %}
-                            {% include 'players_diff.html' %}
-                        {% endwith %}
-                    </ul>
-                </div>
+                {% call components.menu_button(
+                    _('Update'),
+                    icon='bi-arrow-repeat',
+                    allowed=client.can_update_players,
+                    reason=_('You are not allowed to update the players\' information from an external data source.'),
+                    tooltip=_('Update the players\' information from an external data source.'),
+                ) %}
+                    {% with from_modal=false, tab='players' %}
+                        {% include 'players_diff.html' %}
+                    {% endwith %}
+                {% endcall %}
                 {% if not admin_event.is_team_event %}
-                    <div
-                        {{ macros.tooltip_attributes('info', _('Reset the absent/present status of all the players.'), 'top') }}
-                    >
-                        <button
-                            class="btn btn-outline-primary text-nowrap"
-                            hx-get="{{ url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
-                            {{ _('Check-in') }}
-                        </button>
-                    </div>
+                    {% call components.button(
+                        _('Check-in'),
+                        tooltip=_('Reset the absent/present status of all the players.'),
+                        attrs={
+                            'hx-get': url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) %}
+                        <span class="d-inline-flex">{{ components.icon('bi-x-circle') }}{{ components.icon('bi-check-circle') }}</span>
+                        {{ _('Check-in') }}
+                    {% endcall %}
                 {% endif %}
                 {% set add_player_error_message = (
                     _('You are not allowed to add players to the event.')
@@ -69,53 +55,25 @@
                     if not player_addable_tournaments
                         and not admin_event.is_team_event else ''
                 ) %}
-                <span
-                    {% if add_player_error_message %}
-                        {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Import players from a CSV file.'), 'top') }}
-                    {% endif %}
-                >
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        hx-get="{{ url_for('players-import-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                        {% if add_player_error_message %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-box-arrow-in-right pe-1"></i>
-                        {{ _('Import') }}
-                    </button>
-                </span>
-                <span
-                    {% if add_player_error_message %}
-                        {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
-                    {% endif %}
-                >
-                    <button
-                        data-testid="add-player-button"
-                        class="btn btn-primary text-nowrap"
-                        hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                        {% if add_player_error_message %}
-                            disabled
-                        {% else %}
-                            hx-trigger="click, SC_Plus from:body"
-                        {% endif %}
-                    >
-                        <i class="bi-plus-lg pe-1"></i>
-                        {{ _('Add') }}
-                    </button>
-                </span>
+                {{ components.modal_button(
+                    url_for('players-import-modal', event_uniq_id=admin_event.uniq_id),
+                    _('Import'),
+                    kind='primary',
+                    icon='import',
+                    allowed=not add_player_error_message,
+                    reason=add_player_error_message,
+                    tooltip=_('Import players from a CSV file.'),
+                ) }}
+                {{ components.modal_button(
+                    url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id),
+                    _('Add'),
+                    kind='primary',
+                    icon='add',
+                    allowed=not add_player_error_message,
+                    reason=add_player_error_message,
+                    tooltip=_('Add a player to the event.'),
+                    attrs={'data-testid': 'add-player-button', 'hx-trigger': 'click, SC_Plus from:body'},
+                ) }}
             </div>
             <div class="top-nav-collapsible w-100 d-flex flex-wrap gap-2 pt-1">
                 <span class="top-nav-keep" style="width: 400px; max-width: 100%; min-width: 15rem;">
@@ -132,82 +90,43 @@
                     ) }}
                 </span>
                 <div class="flex-grow-1"></div>
-                <div class="dropdown d-inline">
-                    <button
-                        class="btn btn-outline-primary dropdown-toggle mx-auto"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                        {{ _('Actions') }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="dropdown-submenu">
-                            <span
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('Download the players matching the search into a file.'),
-                                    'left'
-                                ) }}
-                            >
-                                <button class="dropdown-item d-flex justify-content-between">
-                                    <span><i class="bi-box-arrow-right pe-1"></i>{{ _('Export') }}</span>
-                                    <i class="ps-3 bi-caret-right-fill"></i>
-                                </button>
-                            </span>
-                            <ul class="dropdown-menu">
-                                {% for exporter in player_exporters %}
-                                    <li
-                                        class="dropdown-item text-start cursor-pointer"
-                                        onclick="$('#exporter-{{ exporter.id }}-form').submit()"
-                                        {% set tooltip = exporter.warning_tooltip %}
-                                        {% if tooltip %}
-                                            {{ macros.tooltip_attributes('warning', tooltip, 'left') }}
-                                        {% endif %}
-                                    >
-                                        <form
-                                            id="exporter-{{ exporter.id }}-form"
-                                            action="{{ url_for(
-                                                'event-export-players',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                exporter_id=exporter.id
-                                            ) }}"
-                                            hx-indicator="#please-wait"
-                                        >
-                                            {{ exporter.name }}
-                                        </form>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% if not admin_event.is_team_event %}
-                            <li>
-                                <span
-                                    {% if not client.can_distribute_players %}
-                                        {{ macros.tooltip_attributes('warning', _('You are not allowed to distribute the players.'), 'left') }}
-                                    {% elif admin_event.player_distribution_error_message %}
-                                        {{ macros.tooltip_attributes('warning', admin_event.player_distribution_error_message, 'left') }}
-                                    {% endif %}
-                                >
-                                    <button
-                                        class="dropdown-item text-nowrap"
-                                        {% if not admin_event.player_distribution_error_message and client.can_distribute_players %}
-                                            hx-get="{{ url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id) }}"
-                                            hx-vals='{"tab": "players"}'
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                        {% else %}
-                                            disabled
-                                        {% endif %}
-                                    >
-                                        <i class="bi bi-sort-numeric-down-alt pe-1"></i>
-                                        {{ _('Distribute the players among the tournaments') }}
-                                    </button>
-                                </span>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
+                {% call components.menu_button(_('Actions'), align='end') %}
+                    {% call components.submenu(
+                        _('Export'),
+                        icon='bi-box-arrow-right',
+                        tooltip=_('Download the players matching the search into a file.'),
+                    ) %}
+                        {% for exporter in player_exporters %}
+                            {{ components.menu_item(
+                                exporter.name,
+                                tooltip=exporter.warning_tooltip,
+                                tooltip_type='warning',
+                                tooltip_placement='left',
+                                attrs={
+                                    'id': 'exporter-' ~ exporter.id ~ '-item',
+                                    'onclick': 'window.location.href = ' ~ (url_for(
+                                        'event-export-players',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        exporter_id=exporter.id
+                                    ) | string | tojson | forceescape) ~ ';',
+                                },
+                            ) }}
+                        {% endfor %}
+                    {% endcall %}
+                    {% if not admin_event.is_team_event %}
+                        {{ components.menu_item(
+                            _('Distribute the players among the tournaments'),
+                            icon='bi-sort-numeric-down-alt',
+                            url=url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id),
+                            allowed=client.can_distribute_players and not admin_event.player_distribution_error_message,
+                            reason=_('You are not allowed to distribute the players.')
+                                if not client.can_distribute_players
+                                else admin_event.player_distribution_error_message,
+                            tooltip_placement='left',
+                            attrs={'hx-vals': '{"tab": "players"}'},
+                        ) }}
+                    {% endif %}
+                {% endcall %}
                 {% include 'filter_columns.html' %}
             </div>
         </div>

@@ -28,7 +28,7 @@
                         </div>
                     </div>
                 {% endif %}
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="clearFilters()">{{ _('Clear all') }}</button>
+                {{ components.button(_('Clear all'), size='sm', attrs={'onclick': 'clearFilters()'}) }}
             </div>
         </div>
     </div>

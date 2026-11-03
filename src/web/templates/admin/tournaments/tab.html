@@ -15,138 +15,70 @@
 {% block top_right_nav %}
     {% include '/admin/common/collection_controls.html' %}
     {% if admin_event.tournaments_by_id %}
-        <div class="dropdown dropdown-menu-end">
-            <button
-                class="btn btn-outline-primary dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                {{ _('Actions') }}
-            </button>
-            <ul class="dropdown-menu">
-                {% for menu_items_template in plugin_tab_action_menu_items_templates %}
-                    {% include menu_items_template %}
-                {% endfor %}
-                <li>
-                    <span
-                        {{ macros.tooltip_attributes('info', _('May be used for per-round prize giveaways etc.'), 'right') }}
-                    >
-                        <button
-                            class="dropdown-item text-nowrap"
-                            hx-get="{{ url_for('admin-random-player', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi bi-dice-3-fill pe-1"></i>
-                            {{ _('Choose a random player') }}
-                        </button>
-                    </span>
-                </li>
-                {% if not admin_event.is_team_event %}
-                    <li>
-                        <span
-                            {% if not client.can_distribute_players %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to distribute the players.'), 'right') }}
-                            {% elif admin_event.player_distribution_error_message %}
-                                {{ macros.tooltip_attributes('warning', admin_event.player_distribution_error_message, 'right') }}
-                            {% endif %}
-                        >
-                            <button
-                                class="dropdown-item text-nowrap"
-                                {% if not admin_event.player_distribution_error_message and client.can_distribute_players %}
-                                    hx-get="{{ url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                {% else %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi bi-sort-numeric-down-alt pe-1"></i>
-                                {{ _('Distribute the players among the tournaments') }}
-                            </button>
-                        </span>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
+        {% call components.menu_button(_('Actions'), align='end') %}
+            {% for menu_items_template in plugin_tab_action_menu_items_templates %}
+                {% include menu_items_template %}
+            {% endfor %}
+            {{ components.menu_item(
+                _('Choose a random player'),
+                icon='bi-dice-3-fill',
+                url=url_for('admin-random-player', event_uniq_id=admin_event.uniq_id),
+                tooltip=_('May be used for per-round prize giveaways etc.'),
+            ) }}
+            {% if not admin_event.is_team_event %}
+                {{ components.menu_item(
+                    _('Distribute the players among the tournaments'),
+                    icon='bi-sort-numeric-down-alt',
+                    url=url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id),
+                    allowed=client.can_distribute_players and not admin_event.player_distribution_error_message,
+                    reason=_('You are not allowed to distribute the players.')
+                        if not client.can_distribute_players
+                        else admin_event.player_distribution_error_message,
+                ) }}
+            {% endif %}
+        {% endcall %}
     {% endif %}
     {% if client.can_add_tournament %}
-        <span
-            class="dropdown-end"
-            {{ macros.tooltip_attributes(
-                'info', _('Import a tournament to the event from an external source.'), 'top'
-            ) }}
-        >
-            <button
-                class="btn btn-outline-primary dropdown-toggle mx-auto"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                <i class="bi-box-arrow-in-right pe-1"></i>
-                {{ _('Import a tournament') }}
-            </button>
-            <ul class="dropdown-menu">
-                {% for importer in tournament_importers %}
-                    <li
-                        class="dropdown-item text-start cursor-pointer"
-                        hx-get="{{ url_for(
-                            'admin-tournament-import-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            importer_id=importer.id
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                        {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
-                    >
-                        {{ importer.name }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </span>
-        <span {{ macros.tooltip_attributes('info', _('Add a tournament to the event.'), 'top') }}>
-            <div class="btn-group dropdown ms-1">
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-trigger="click, SC_Plus from:body"
-                    hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-plus-lg pe-1"></i>
-                    {{ _('Create a tournament') }}
-                </button>
-                {% if DEVEL_ENV %}
-                    <button
-                        type="button"
-                        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <button
-                            class="dropdown-item text-nowrap"
-                            hx-get="{{ url_for(
-                                'admin-random-tournament-modal', event_uniq_id=admin_event.uniq_id
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi bi-dice-5-fill pe-1"></i>
-                            {{ _('Generate a random tournament') }}
-                        </button>
-                    </div>
-                {% endif %}
-            </div>
-        </span>
+        {% call components.menu_button(
+            _('Import a tournament'),
+            icon='import',
+            tooltip=_('Import a tournament to the event from an external source.'),
+        ) %}
+            {% for importer in tournament_importers %}
+                {{ components.menu_item(
+                    importer.name,
+                    url=url_for(
+                        'admin-tournament-import-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        importer_id=importer.id
+                    ),
+                    modal=true,
+                    tooltip=importer.tooltip,
+                ) }}
+            {% endfor %}
+        {% endcall %}
+        {% call components.split_button(
+            _('Create a tournament'),
+            icon='add',
+            tooltip=_('Add a tournament to the event.'),
+            attrs={
+                'hx-trigger': 'click, SC_Plus from:body',
+                'hx-get': url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id),
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#modal-wrapper',
+            },
+        ) %}
+            {% if DEVEL_ENV %}
+                {{ components.menu_item(
+                    _('Generate a random tournament'),
+                    icon='bi-dice-5-fill',
+                    url=url_for('admin-random-tournament-modal', event_uniq_id=admin_event.uniq_id),
+                    modal=true,
+                ) }}
+            {% endif %}
+        {% endcall %}
     {% endif %}
 {% endblock %}
 

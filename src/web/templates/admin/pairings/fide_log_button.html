@@ -1,32 +1,27 @@
 {% import '/admin/components/macros.j2' as components with context %}
 {% set log_count = admin_tournament.log_entries | length %}
 {% if (admin_tournament.pairing_system.logs_pairing_breaches and (log_count or admin_tournament.fide_mode_exit_round)) or (schedule_editor and log_count) %}
-    <div
-        {{ macros.tooltip_attributes(
-            'info',
-            _('What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report.'),
-            'top',
-        ) }}
-    >
-        <button
-            class="btn btn-outline-primary text-nowrap d-inline-flex align-items-center justify-content-center"
-            hx-get="{{ url_for(
+    {% call components.button(
+        _('Log'),
+        icon='bi-journal-text',
+        tooltip=_('What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report.'),
+        attrs={
+            'hx-get': url_for(
                 'admin-pairings-fide-log-modal',
                 event_uniq_id=admin_event.uniq_id,
                 tournament_id=admin_tournament.id,
                 round=admin_round
-            ) }}"
-            hx-trigger="click"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            hx-target="body"
-            hx-indicator="#please-wait"
-        >
-            <i class="bi-journal-text pe-1"></i>
-            {{ _('Log') }}
-            {% if log_count %}
-                {{ components.badge('warning', log_count, pill=true, class='ms-2') }}
-            {% endif %}
-        </button>
-    </div>
+            ),
+            'hx-trigger': 'click',
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#modal-wrapper',
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+        },
+    ) %}
+        {{ _('Log') }}
+        {% if log_count %}
+            {{ components.badge('warning', log_count, pill=true) }}
+        {% endif %}
+    {% endcall %}
 {% endif %}

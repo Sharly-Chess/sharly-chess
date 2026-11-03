@@ -12,41 +12,36 @@
     {% set pp_count = admin_tournament.prohibited_pairings.count_for_round(admin_round) %}
     {% if client.can_use_pairing_engine(admin_tournament.id)
         and admin_tournament.pairing_system.supports_prohibited_pairings %}
-        <div
-            {{ macros.tooltip_attributes(
-                'info',
-                ngettext(
-                    '%(num)d prohibited-pairing group is configured for this round.',
-                    '%(num)d prohibited-pairing groups are configured for this round.',
-                    pp_count,
-                ) if pp_count else (
-                    _('No prohibited pairings were used for this round.')
-                    if _pp_round_paired
-                    else _('Configure prohibited pairings for this round.')
-                ),
-                'top',
-            ) }}
-        >
-            <button
-                class="btn btn-outline-primary text-nowrap d-inline-flex align-items-center justify-content-center"
-                hx-get="{{ url_for(
+        {% call components.button(
+            _('Prohibited'),
+            icon='bi-slash-circle',
+            tooltip=ngettext(
+                '%(num)d prohibited-pairing group is configured for this round.',
+                '%(num)d prohibited-pairing groups are configured for this round.',
+                pp_count,
+            ) if pp_count else (
+                _('No prohibited pairings were used for this round.')
+                if _pp_round_paired
+                else _('Configure prohibited pairings for this round.')
+            ),
+            attrs={
+                'hx-get': url_for(
                     'admin-prohibited-pairings-modal',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id,
                     round=admin_round
-                ) }}"
-                hx-trigger="click"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <i class="bi-slash-circle pe-1"></i>
-                {{ _('Prohibited') }}
-                {% if pp_count %}
-                    {{ components.badge('warning', pp_count, pill=true, class='ms-2') }}
-                {% endif %}
-            </button>
-        </div>
+                ),
+                'hx-trigger': 'click',
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#modal-wrapper',
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) %}
+            {{ _('Prohibited') }}
+            {% if pp_count %}
+                {{ components.badge('warning', pp_count, pill=true) }}
+            {% endif %}
+        {% endcall %}
     {% endif %}
 </span>

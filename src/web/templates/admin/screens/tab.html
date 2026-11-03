@@ -37,50 +37,20 @@
         {% endwith %}
         {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
-        <span
-            class="dropdown-end"
-        >
-            <button
-                class="btn btn-primary dropdown-toggle mx-auto"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                <i class="bi-plus-lg pe-1"></i>
-                {{ _('Create a screen') }}
-            </button>
-            <ul class="dropdown-menu">
-                {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
-                    {% set screen_type_create_enabled=admin_event.tournaments_by_id or not screen_type.has_screen_sets %}
-                    <span
-                        {% if not screen_type_create_enabled %}
-                            {{ macros.tooltip_attributes('info', _('You must create a tournament before creating these screens.'), 'left') }}
-                        {% endif %}
-                    >
-                        <li>
-                            <button
-                                data-testid="create-screen-type-{{ screen_type.value }}"
-                                class="dropdown-item text-start cursor-pointer"
-                                {% if screen_type_create_enabled %}
-                                    hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                    hx-trigger="click, keyup[key=='Enter']"
-                                    tabindex="0"
-                                {% else %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="{{ screen_type.icon_str }}"></i>
-                                {{ screen_type_data['title'] }}
-                            </button>
-                        </li>
-                    </span>
-                {% endfor %}
-            </ul>
-        </span>
+        {% call components.menu_button(_('Create a screen'), kind='primary', icon='add') %}
+            {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
+                {{ components.menu_item(
+                    screen_type_data['title'],
+                    icon=screen_type.icon_str,
+                    url=url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value),
+                    modal=true,
+                    allowed=admin_event.tournaments_by_id or not screen_type.has_screen_sets,
+                    reason=_('You must create a tournament before creating these screens.'),
+                    tooltip_placement='left',
+                    attrs={'data-testid': 'create-screen-type-' ~ screen_type.value},
+                ) }}
+            {% endfor %}
+        {% endcall %}
     {% endif %}
 {% endblock %}
 
@@ -88,10 +58,7 @@
     {% if client.can_manage_screens %}
         {% with screens=admin_event.sorted_screens if show_family_screens else admin_event.sorted_basic_screens %}
             {% if not screens %}
-                <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-                    <h5 class="mt-2 my-5 text-center">
-                        {{ _('No screens') }}
-                    </h5>
+                {% call components.empty_state(_('No screens')) %}
                     {% if client.can_manage_screens %}
                         <p>
                             {{ _('You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network.') }}
@@ -106,7 +73,7 @@
                             {{ _('Create a screen now to get started.') }}
                         </p>
                     {% endif %}
-                </div>
+                {% endcall %}
             {% else %}
                 {% set present_types = admin_screen_types_data.items()|selectattr('1.screens')|list %}
                 {% if present_types|length > 1 %}

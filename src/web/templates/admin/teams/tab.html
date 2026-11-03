@@ -58,54 +58,34 @@
 
 {% block top_right_nav %}
     {% include '/admin/common/collection_controls.html' %}
-    <div
-        {{ macros.tooltip_attributes('info', _('Reset the absent/present status of all the teams.'), 'top') }}
-    >
-        <button
-            class="btn btn-outline-primary text-nowrap ms-1"
-            {% if not admin_event.teams %}
-                disabled
-            {% else %}
-                hx-get="{{ url_for('admin-team-check-in-modal', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% endif %}
-        >
-            <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
-            {{ _('Check-in') }}
-        </button>
-    </div>
+    {% call components.button(
+        _('Check-in'),
+        allowed=admin_event.teams | length > 0,
+        tooltip=_('Reset the absent/present status of all the teams.'),
+        attrs={
+            'hx-get': url_for('admin-team-check-in-modal', event_uniq_id=admin_event.uniq_id),
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#modal-wrapper',
+        },
+    ) %}
+        <span class="d-inline-flex">{{ components.icon('bi-x-circle') }}{{ components.icon('bi-check-circle') }}</span>
+        {{ _('Check-in') }}
+    {% endcall %}
     {% if client.can_update_tournaments %}
-        <button
-            class="btn btn-outline-primary text-nowrap ms-1"
-            {% if not admin_event.teams %}
-                disabled
-            {% else %}
-                hx-get="{{ url_for('admin-team-affiliations-modal', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% endif %}
-        >
-            <i class="bi-collection-fill pe-1"></i>
-            {{ _('Set affiliations') }}
-        </button>
-    {% endif %}
-    {% if client.can_update_tournaments %}
-        <button
-            class="btn btn-primary text-nowrap ms-1"
-            hx-get="{{ url_for('admin-team-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi-plus-lg pe-1"></i>
-            {{ _('Create a team') }}
-        </button>
+        {{ components.modal_button(
+            url_for('admin-team-affiliations-modal', event_uniq_id=admin_event.uniq_id),
+            _('Set affiliations'),
+            icon='bi-collection-fill',
+            allowed=admin_event.teams | length > 0,
+        ) }}
+        {{ components.modal_button(
+            url_for('admin-team-create-modal', event_uniq_id=admin_event.uniq_id),
+            _('Create a team'),
+            kind='primary',
+            icon='add',
+        ) }}
     {% endif %}
 {% endblock %}
 
@@ -141,51 +121,34 @@
                                     'top'
                                 ) }}
                             >{{ _('Pairing order:') }}</span>
-                            {# A disabled button swallows hover events, so the
-                               lock tooltip has to live on the wrapping span. #}
-                            <span
-                                class="dropdown"
-                                {% if sort_locked %}
-                                    {{ macros.tooltip_attributes(
-                                        'info',
-                                        _('The rule set fixes the team sort order.')
-                                        if tournament.rule_set_forced_team_sort_mode
-                                        else _('The team sort order is fixed once the first round is paired.'),
-                                        'top'
+                            {% call components.menu_button(
+                                sort_mode,
+                                icon='bi-sort-down',
+                                size='sm',
+                                align='end',
+                                allowed=not sort_locked,
+                                reason=_('The rule set fixes the team sort order.')
+                                    if tournament.rule_set_forced_team_sort_mode
+                                    else _('The team sort order is fixed once the first round is paired.'),
+                                class='mb-1',
+                            ) %}
+                                {% for mode in team_sort_modes %}
+                                    {{ components.menu_item(
+                                        mode|string,
+                                        active=mode == sort_mode,
+                                        attrs={
+                                            'hx-patch': url_for(
+                                                'admin-team-sort-mode',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=tournament.id,
+                                            ),
+                                            'hx-vals': '{"team_sort_mode": "' ~ mode.value ~ '"}',
+                                            'hx-target': 'body',
+                                            'hx-indicator': '#please-wait',
+                                        },
                                     ) }}
-                                {% endif %}
-                            >
-                                <button
-                                    class="btn btn-sm btn-outline-primary dropdown-toggle text-nowrap mb-1"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    {% if sort_locked %}disabled{% endif %}
-                                >
-                                    <i class="bi-sort-down me-1"></i>
-                                    {{ sort_mode }}
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    {% for mode in team_sort_modes %}
-                                        <li>
-                                            <button
-                                                type="button"
-                                                class="dropdown-item {% if mode == sort_mode %}active{% endif %}"
-                                                hx-patch="{{ url_for(
-                                                    'admin-team-sort-mode',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=tournament.id,
-                                                ) }}"
-                                                hx-vals='{"team_sort_mode": "{{ mode.value }}"}'
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                            >
-                                                {{ mode|string }}
-                                            </button>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </span>
+                                {% endfor %}
+                            {% endcall %}
                         {% endif %}
                     </h5>
                     {% if tournament_teams %}
@@ -323,8 +286,7 @@
             </script>
         {% endif %}
     {% else %}
-        <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-            <h5 class="mt-2 my-5 text-center">{{ _('No teams') }}</h5>
+        {% call components.empty_state(_('No teams')) %}
             {% if client.can_update_tournaments %}
                 <p>
                     {{ _('Create teams and assign them to tournaments.') }}
@@ -336,6 +298,6 @@
                     ) }}
                 </p>
             {% endif %}
-        </div>
+        {% endcall %}
     {% endif %}
 {% endblock %}

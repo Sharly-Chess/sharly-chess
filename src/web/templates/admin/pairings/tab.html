@@ -83,38 +83,44 @@
                 ) }}
             </div>
             {% if admin_tournament.can_restore_manual_pairing %}
-                <button
-                    class="btn btn-sm table-status-bar-action text-nowrap"
-                    hx-post="{{ url_for(
-                        'admin-pairings-cancel-manual-pairing',
+                {{ components.button(
+                    _('Cancel editing'),
+                    kind='plain',
+                    icon='bi-arrow-counterclockwise',
+                    size='sm',
+                    tooltip=_('Put the pairings back as they were before editing.'),
+                    class='table-status-bar-action',
+                    attrs={
+                        'hx-post': url_for(
+                            'admin-pairings-cancel-manual-pairing',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_tournament.manual_pairing_round,
+                        ),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                        'hx-disabled-elt': 'this',
+                    },
+                ) }}
+            {% endif %}
+            {{ components.button(
+                _('Validate the pairings'),
+                kind='plain',
+                icon='bi-check2-square',
+                size='sm',
+                class='table-status-bar-action',
+                attrs={
+                    'hx-post': url_for(
+                        'admin-pairings-validate-manual-pairing',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_tournament.manual_pairing_round,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    hx-disabled-elt="this"
-                    {{ macros.tooltip_attributes('info', _('Put the pairings back as they were before editing.'), 'top') }}
-                >
-                    <i class="bi-arrow-counterclockwise pe-1"></i>
-                    {{ _('Cancel editing') }}
-                </button>
-            {% endif %}
-            <button
-                class="btn btn-sm table-status-bar-action text-nowrap"
-                hx-post="{{ url_for(
-                    'admin-pairings-validate-manual-pairing',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    round=admin_tournament.manual_pairing_round,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                hx-disabled-elt="this"
-            >
-                <i class="bi-check2-square pe-1"></i>
-                {{ _('Validate the pairings') }}
-            </button>
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                    'hx-disabled-elt': 'this',
+                },
+            ) }}
         </div>
     {% endif %}
     {% if schedule_editing %}
@@ -947,9 +953,5 @@
         });
     </script>
 {% else %}
-    <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-        <h5 class="mt-2 my-5 text-center">
-            {{ _('No pairings.') }}
-        </h5>
-    </div>
+    {{ components.empty_state(_('No pairings.')) }}
 {% endif %}

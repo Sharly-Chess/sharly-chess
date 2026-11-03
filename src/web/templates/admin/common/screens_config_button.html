@@ -1,16 +1,7 @@
-<span {{ macros.tooltip_attributes('info', _('Screen settings'), 'bottom') }}>
-    <button
-        class="btn btn-outline-primary text-nowrap"
-        hx-get="{{ url_for(
-            'admin-screen-config-modal',
-            event_uniq_id=admin_event.uniq_id,
-        ) }}"
-        hx-trigger="click"
-        data-bs-toggle="modal"
-        data-bs-target="#modal-wrapper"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    >
-        <i class="bi-gear-fill"></i>
-    </button>
-</span>
+{{ components.modal_button(
+    url_for('admin-screen-config-modal', event_uniq_id=admin_event.uniq_id),
+    _('Screen settings'),
+    icon='settings',
+    icon_only=true,
+    tooltip_placement='bottom',
+) }}

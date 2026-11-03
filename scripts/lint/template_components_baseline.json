@@ -66,48 +66,25 @@
     "icon-spacing": 10,
     "modal-trigger": 4
   },
-  "src/web/templates/admin/accounts/tab.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "modal-trigger": 2
-  },
   "src/web/templates/admin/championship/championship_components.j2": {
     "button": 1,
     "icon-spacing": 4,
     "modal-trigger": 1
   },
   "src/web/templates/admin/championship/competitors.html": {
-    "button": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 1
-  },
-  "src/web/templates/admin/championship/competitors_page.html": {
-    "button": 2,
-    "icon-spacing": 1
-  },
-  "src/web/templates/admin/championship/configuration.html": {
-    "button": 10,
-    "icon-spacing": 4,
-    "modal-trigger": 8
+    "fixed-colour": 1
   },
   "src/web/templates/admin/championship/layout.html": {
     "button": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/championship/results.html": {
-    "button": 2,
-    "fixed-colour": 1,
-    "icon-spacing": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/championship/source_components.j2": {
     "button": 3,
     "icon-spacing": 3,
     "modal-trigger": 2
-  },
-  "src/web/templates/admin/championship/sources.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
   },
   "src/web/templates/admin/common/collection.html": {
     "button": 1,
@@ -118,9 +95,6 @@
   },
   "src/web/templates/admin/common/collection_view_toggle.html": {
     "button": 2
-  },
-  "src/web/templates/admin/common/database/database_button.html": {
-    "modal-trigger": 1
   },
   "src/web/templates/admin/common/database/database_modal.html": {
     "fixed-colour": 2
@@ -145,15 +119,8 @@
   "src/web/templates/admin/common/player_search.html": {
     "menu-item": 1
   },
-  "src/web/templates/admin/common/print_button.html": {
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/common/screens_config_button.html": {
-    "button": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/common/search_filter_form.html": {
-    "button": 2,
+    "button": 1,
     "menu-item": 1
   },
   "src/web/templates/admin/common/search_results.html": {
@@ -170,12 +137,6 @@
     "icon-spacing": 2,
     "menu-item": 2,
     "modal-trigger": 2
-  },
-  "src/web/templates/admin/display_controllers/tab.html": {
-    "button": 1,
-    "empty-state": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
   },
   "src/web/templates/admin/event/event_age_categories_form.html": {
     "button": 1,
@@ -218,13 +179,6 @@
     "icon-spacing": 6,
     "modal-trigger": 3
   },
-  "src/web/templates/admin/families/tab.html": {
-    "button": 1,
-    "empty-state": 1,
-    "icon-spacing": 1,
-    "menu-item": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/index/_admin_nav.html": {
     "button": 1,
     "icon-spacing": 1,
@@ -232,19 +186,10 @@
     "modal-trigger": 2
   },
   "src/web/templates/admin/index/archives_tab.html": {
-    "button": 2,
     "fixed-colour": 1
   },
   "src/web/templates/admin/index/championship_archives_tab.html": {
-    "button": 3,
-    "fixed-colour": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/index/championships_tab.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/index/create_event_button.html": {
     "button": 2,
@@ -259,37 +204,16 @@
     "button": 3,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/index/home_tab.html": {
-    "button": 3,
-    "icon-spacing": 2,
-    "menu-item": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/menus/menu_components.j2": {
     "button": 5,
     "icon-spacing": 2,
     "modal-trigger": 3
-  },
-  "src/web/templates/admin/menus/menu_items_form.html": {
-    "button": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/menus/tab.html": {
-    "button": 1,
-    "empty-state": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/absents_modal.html": {
     "button": 6
   },
   "src/web/templates/admin/pairings/absents_new_check_ins_alert.html": {
     "button": 1
-  },
-  "src/web/templates/admin/pairings/fide_log_button.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/knockout_rankings_table.html": {
     "fixed-colour": 1
@@ -314,11 +238,6 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/pairing_settings_button.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/prohibited_button.html": {
     "button": 1,
     "icon-spacing": 1,
     "modal-trigger": 1
@@ -383,10 +302,8 @@
     "modal-trigger": 2
   },
   "src/web/templates/admin/pairings/tab.html": {
-    "button": 8,
-    "empty-state": 1,
+    "button": 6,
     "fixed-colour": 1,
-    "icon-spacing": 2,
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/team_absents_modal.html": {
@@ -479,12 +396,6 @@
   "src/web/templates/admin/players/record_modal.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/players/tab.html": {
-    "button": 5,
-    "icon-spacing": 6,
-    "menu-item": 3,
-    "modal-trigger": 2
-  },
   "src/web/templates/admin/players/table/cells/tournament.html": {
     "button": 2,
     "menu-item": 1
@@ -532,21 +443,8 @@
     "menu-item": 1,
     "modal-trigger": 6
   },
-  "src/web/templates/admin/prizes/prize_groups_modal.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "menu-item": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/prizes/prize_players_modal.html": {
     "fixed-colour": 1
-  },
-  "src/web/templates/admin/prizes/tab.html": {
-    "button": 5,
-    "empty-state": 2,
-    "icon-spacing": 6,
-    "menu-item": 3,
-    "modal-trigger": 6
   },
   "src/web/templates/admin/rotators/rotator_components.j2": {
     "button": 5,
@@ -555,12 +453,6 @@
   },
   "src/web/templates/admin/rotators/rotator_screens_form.html": {
     "button": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/rotators/tab.html": {
-    "button": 1,
-    "empty-state": 1,
-    "icon-spacing": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/screens/cards/config_card.html": {
@@ -580,20 +472,6 @@
   "src/web/templates/admin/screens/screen_sets_modal_set_div.html": {
     "button": 3
   },
-  "src/web/templates/admin/screens/tab.html": {
-    "button": 1,
-    "empty-state": 1,
-    "icon-spacing": 1,
-    "menu-item": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/teams/tab.html": {
-    "button": 4,
-    "empty-state": 1,
-    "icon-spacing": 3,
-    "menu-item": 1,
-    "modal-trigger": 3
-  },
   "src/web/templates/admin/teams/team_check_in_modal.html": {
     "fixed-colour": 1
   },
@@ -609,12 +487,6 @@
   "src/web/templates/admin/teams/team_lineups_modal.html": {
     "button": 2
   },
-  "src/web/templates/admin/timers/tab.html": {
-    "button": 2,
-    "empty-state": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 2
-  },
   "src/web/templates/admin/timers/timer_components.j2": {
     "button": 5,
     "icon-spacing": 5,
@@ -622,12 +494,6 @@
   },
   "src/web/templates/admin/timers/timer_usage_modal.html": {
     "icon-spacing": 1
-  },
-  "src/web/templates/admin/tournaments/tab.html": {
-    "button": 4,
-    "icon-spacing": 5,
-    "menu-item": 4,
-    "modal-trigger": 3
   },
   "src/web/templates/admin/tournaments/tournament_components.j2": {
     "button": 6,
