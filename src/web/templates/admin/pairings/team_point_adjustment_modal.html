@@ -1,24 +1,16 @@
-{% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
+{% extends '/admin/components/modal.html' %}
 {# Per-team bonus/penalty modal, keyed by (team, round). Opened from the
    penalty badge on the pairings tab and from the team-record modal.
    Requires: ``pa_adjustment`` (see _team_point_adjustment_context) and
    ``pa_round``. #}
+{% set modal_size = 'sm' %}
 {% set adj = pa_adjustment %}
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(95vw, 460px);"
->
-    <div class="modal-content">
-        <div class="modal-header d-flex flex-column">
-            <h2 class="modal-title fs-5 fw-bold w-100">
-                {{ _('Bonus / penalty points') }}
-            </h2>
-            <div class="text-muted small w-100">
-                {{ adj.team.name }} — {{ _('Round #%(round)d', round=pa_round) }}
-            </div>
-        </div>
-        <div class="modal-body">
+
+{% block title %}{{ _('Bonus / penalty points') }}{% endblock %}
+
+{% block subtitle %}{{ adj.team.name }} — {{ _('Round #%(round)d', round=pa_round) }}{% endblock %}
+
+{% block body %}
             {% if adj.rule_set_mp or adj.rule_set_gp or adj.rule_set_explanation %}
                 {% call components.note('warning', compact=true, class='mb-3') %}
                         <div class="fw-bold">
@@ -93,26 +85,11 @@
                 'results of the games, which are reported to FIDE as '
                 'they were played.'
             ), compact=true, class='mt-3 mb-0') }}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-            {% if client.can_update_results(admin_tournament.id) %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="btn btn-primary text-nowrap"
-                >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save points') }}
-                </button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button(_('Close')) }}
+    {% if client.can_update_results(admin_tournament.id) %}
+        {{ components.button(_('Save points'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+    {% endif %}
+{% endblock %}

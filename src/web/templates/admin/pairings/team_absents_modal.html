@@ -1,16 +1,10 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
+{% set modal_size = 'md' %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ _('Absent teams (%(count)d)', count=admin_team_absent|length) }}
-            </div>
-        </div>
-        <div class="modal-body">
+{% block title %}{{ _('Absent teams (%(count)d)', count=admin_team_absent|length) }}{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -158,31 +152,19 @@
                     {% endfor %}
                 </div>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                {% if admin_round == 1 %}
-                    <i class="bi-check-circle-fill pe-1"></i>
-                    {{ _('Validate') }}
-                {% else %}
-                    <i class="bi-shuffle pe-1"></i>
-                    {{ _('Validate and pair') }}
-                {% endif %}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Validate') if admin_round == 1 else _('Validate and pair'),
+        kind='primary',
+        icon='confirm' if admin_round == 1 else 'bi-shuffle',
+        type='submit',
+        attrs={'form': 'modal-form'},
+    ) }}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

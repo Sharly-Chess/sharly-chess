@@ -1,5 +1,6 @@
-{% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_scrollable = false %}
 
 {# Round 1 normally goes through the pairing-settings modal, but team
    variations (and any other variation with an empty settings list)
@@ -12,14 +13,9 @@
     admin_round == 1 and admin_tournament.tie_break_configuration.lacks_tie_breaks
 ) %}
 
-<div class="modal-dialog" style="--bs-modal-width: min(90vw, 500px);">
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ _('Before pairing') if lacks_tie_breaks else _('Ratings update') }}
-            </div>
-        </div>
-        <div class="modal-body">
+{% block title %}{{ _('Before pairing') if lacks_tie_breaks else _('Ratings update') }}{% endblock %}
+
+{% block body %}
             {% if lacks_tie_breaks %}
                 {% call components.note('warning') %}
                     <div>
@@ -56,84 +52,58 @@
                             {{ _('This round opens a new period of the tournament, which FIDE rates on the ratings in force when it starts: you might have to update them before pairing.') }}
                         {% endif %}
                     </div>
-                    <div class="dropdown mt-2">
-                        <button
-                            class="btn btn-sm btn-outline-primary dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            <i class="bi-arrow-repeat pe-1"></i>
-                            {{ _('Update') }}
-                        </button>
-                        <ul class="dropdown-menu">
-                            {% with from_modal=true, tournament=admin_tournament, tab='pairings' %}
-                                {% include '../players/players_diff.html' %}
-                            {% endwith %}
-                        </ul>
-                    </div>
+                    {% call components.menu_button(_('Update'), icon='bi-arrow-repeat', size='sm', class='mt-2') %}
+                        {% with from_modal=true, tournament=admin_tournament, tab='pairings' %}
+                            {% include '../players/players_diff.html' %}
+                        {% endwith %}
+                    {% endcall %}
             {% endcall %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                class="text-nowrap white btn {% if admin_team_absent or admin_absent_players or show_settings_modal %}btn-outline-primary{% else %}btn-primary{% endif %}"
-                {% if admin_team_absent %}
-                    hx-get="{{ url_for(
-                        'pairings-team-absents-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round
-                    ) }}"
-                {% elif admin_absent_players %}
-                    hx-get="{{ url_for(
-                        'pairings-absents-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round
-                    ) }}"
-                {% elif show_settings_modal %}
-                    hx-get="{{ url_for(
-                        'pairings-settings-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round
-                    ) }}"
-                {% elif not admin_tournament.pairing_system.round_per_round_pairing_generation %}
-                    hx-post="{{ url_for(
-                        'generate-tournament-pairings',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                    ) }}"
-                    hx-target="body"
-                {% else %}
-                    hx-post="{{ url_for(
-                        'generate-round-pairings',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round
-                    ) }}"
-                    hx-target="body"
-                {% endif %}
-                hx-indicator="#please-wait"
-                hx-disabled-elt="this"
-            >
-                {% if admin_team_absent or admin_absent_players or show_settings_modal %}
-                    <i class="bi-caret-right"></i>
-                    {{ _('Continue') }}
-                {% else %}
-                    <i class="bi-shuffle pe-1"></i>
-                    {{ _('Pair') }}
-                {% endif %}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% set continues = admin_team_absent or admin_absent_players or show_settings_modal %}
+    {% if admin_team_absent %}
+        {% set next_attrs = {'hx-get': url_for(
+            'pairings-team-absents-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round
+        )} %}
+    {% elif admin_absent_players %}
+        {% set next_attrs = {'hx-get': url_for(
+            'pairings-absents-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round
+        )} %}
+    {% elif show_settings_modal %}
+        {% set next_attrs = {'hx-get': url_for(
+            'pairings-settings-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round
+        )} %}
+    {% elif not admin_tournament.pairing_system.round_per_round_pairing_generation %}
+        {% set next_attrs = {'hx-post': url_for(
+            'generate-tournament-pairings',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+        ), 'hx-target': 'body'} %}
+    {% else %}
+        {% set next_attrs = {'hx-post': url_for(
+            'generate-round-pairings',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round
+        ), 'hx-target': 'body'} %}
+    {% endif %}
+    {% do next_attrs.update({'hx-indicator': '#please-wait', 'hx-disabled-elt': 'this'}) %}
+    {{ components.button(
+        _('Continue') if continues else _('Pair'),
+        kind='outline' if continues else 'primary',
+        icon='bi-caret-right' if continues else 'bi-shuffle',
+        type='submit',
+        attrs=next_attrs,
+    ) }}
+{% endblock %}

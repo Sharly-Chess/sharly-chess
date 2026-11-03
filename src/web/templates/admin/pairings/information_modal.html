@@ -1,24 +1,24 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+{% set modal_size = 'lg' %}
+{% set modal_class = 'pairing-modal' %}
+{% set modal_scrollable = false %}
 
-<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog pairing-modal">
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ warning_macros.level_icon(2) }}
-                {{ _('Information') }}
-            </div>
-        </div>
-        <div class="modal-body">
-            {% for message in information_messages %}
-                <p {% if loop.last %}class="mb-0"{% endif %}>{{ message }}</p>
-            {% endfor %}
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary text-nowrap" data-bs-dismiss="modal" autofocus>
-                <i class="bi-check-circle-fill pe-1"></i>
-                {{ _('OK') }}
-            </button>
-        </div>
-    </div>
-</div>
-<script>requestRefresh()</script>
+{% block title %}
+    {{ warning_macros.level_icon(2) }}
+    {{ _('Information') }}
+{% endblock %}
+
+{% block body %}
+    {% for message in information_messages %}
+        <p {% if loop.last %}class="mb-0"{% endif %}>{{ message }}</p>
+    {% endfor %}
+{% endblock %}
+
+{% block footer %}
+    {{ components.button(_('OK'), kind='primary', icon='confirm', attrs={'data-bs-dismiss': 'modal', 'autofocus': true}) }}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

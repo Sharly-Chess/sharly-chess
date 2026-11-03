@@ -1,90 +1,69 @@
-{% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+{% set modal_class = 'pairing-modal' %}
 
-<div style="--bs-modal-width: min(90vw, 500px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ _('Pairing settings') }}
-            </div>
-        </div>
-        <div class="modal-body">
-            {% if settings_read_only %}
-                {{ components.note('info', _(
-                    'These settings are part of the pairings already made '
-                    'and can no longer be changed.'
-                )) }}
+{% block title %}{{ _('Pairing settings') }}{% endblock %}
+
+{% block subtitle %}{{ admin_tournament.pairing_variation.name }}{% endblock %}
+
+{% block body %}
+    {% if settings_read_only %}
+        {{ components.note('info', _(
+            'These settings are part of the pairings already made '
+            'and can no longer be changed.'
+        )) }}
+    {% endif %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        {% if settings_for_pairing %}
+            {% if admin_tournament.pairing_system.round_per_round_pairing_generation %}
+                hx-post="{{ url_for(
+                    'generate-round-pairings-with-settings',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round
+                ) }}"
+            {% else %}
+                hx-post="{{ url_for(
+                    'generate-tournament-pairings',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id
+                ) }}"
             {% endif %}
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                {% if settings_for_pairing %}
-                    {% if admin_tournament.pairing_system.round_per_round_pairing_generation %}
-                        hx-post="{{ url_for(
-                            'generate-round-pairings-with-settings',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_round
-                        ) }}"
-                    {% else %}
-                        hx-post="{{ url_for(
-                            'generate-tournament-pairings',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id
-                        ) }}"
-                    {% endif %}
-                {% else %}
-                    hx-post="{{ url_for(
-                        'pairings-settings-save',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round
-                    ) }}"
-                {% endif %}
-                hx-target="body"
-                hx-indicator="#please-wait"
-                hx-disabled-elt="[form='modal-form']"
-            >
-                <h4 class="mb-3">
-                    {{ admin_tournament.pairing_variation.name }}
-                </h4>
-                {# A disabled fieldset disables every control inside, so
-                   the settings render read-only without each of them
-                   having to know about it. #}
-                <fieldset {% if settings_read_only %}disabled{% endif %}>
-                    {% for setting in pairing_settings %}
-                        {% include setting.template_path %}
-                    {% endfor %}
-                </fieldset>
-            </form>
-        </div>
-        <div class="modal-footer">
-            {% if admin_tournament.pairing_variation.settings_footer_template %}
-                {% include admin_tournament.pairing_variation.settings_footer_template %}
-            {% endif %}
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Close') if settings_read_only else _('Cancel') }}
-            </button>
-            {% if not settings_read_only %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    {% if settings_for_pairing %}
-                        <i class="bi-shuffle pe-1"></i>
-                        {{ _('Pair') }}
-                    {% else %}
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    {% endif %}
-                </button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+        {% else %}
+            hx-post="{{ url_for(
+                'pairings-settings-save',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round
+            ) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt="[form='modal-form']"
+    >
+        {# A disabled fieldset disables every control inside, so
+           the settings render read-only without each of them
+           having to know about it. #}
+        <fieldset {% if settings_read_only %}disabled{% endif %}>
+            {% for setting in pairing_settings %}
+                {% include setting.template_path %}
+            {% endfor %}
+        </fieldset>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {% if admin_tournament.pairing_variation.settings_footer_template %}
+        {% include admin_tournament.pairing_variation.settings_footer_template %}
+    {% endif %}
+    {{ components.cancel_button(_('Close') if settings_read_only else _('Cancel')) }}
+    {% if not settings_read_only %}
+        {% if settings_for_pairing %}
+            {{ components.button(_('Pair'), kind='primary', icon='bi-shuffle', type='submit', attrs={'form': 'modal-form'}) }}
+        {% else %}
+            {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+        {% endif %}
+    {% endif %}
+{% endblock %}

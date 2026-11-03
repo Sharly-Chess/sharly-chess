@@ -1,30 +1,43 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/warning_macros.j2' as warning_macros with context %}
+{% set modal_size = 'lg' %}
+{% set modal_class = 'pairing-modal' %}
+{% set modal_scrollable = false %}
 
 {% set is_correction = admin_tournament.fide_mode and round_status == 'PREVIOUS' %}
+{% set shows_rounds = not (
+    action == 'FULL_UNPAIRING' or (round_status == 'NEXT' and action == 'MANUAL_PAIRING')
+) %}
 {% macro action_attributes(leave_fide_mode=false) %}
     hx-{{ redirect_method | lower }}="{{ redirect_route }}{% if leave_fide_mode %}{{ '&' if '?' in redirect_route else '?' }}leave_fide_mode=1{% endif %}"
     hx-target="body"
     hx-indicator="#please-wait"
 {% endmacro %}
 
-<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog pairing-modal">
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ warning_macros.level_icon(warning_level) }}
-                {% if warning_level == 5 %}
-                    {{ _('Prohibited in FIDE mode') }}
-                {% elif starts_manual_pairing %}
-                    {{ _('Manual pairing') }}
-                {% elif is_correction %}
-                    {{ _('Correction of the previous round') }}
-                {% else %}
-                    {{ _('Protected pairings editing') }}
-                {% endif %}
-            </div>
-        </div>
-        <div class="modal-body">
+{% block title %}
+    {{ warning_macros.level_icon(warning_level) }}
+    {% if warning_level == 5 %}
+        {{ _('Prohibited in FIDE mode') }}
+    {% elif starts_manual_pairing %}
+        {{ _('Manual pairing') }}
+    {% elif is_correction %}
+        {{ _('Correction of the previous round') }}
+    {% else %}
+        {{ _('Protected pairings editing') }}
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}
+    {% if shows_rounds %}
+        {{
+            _('Displayed round: %(round)d', round=admin_round) ~ ' - ' ~
+            _('Current round: %(round)d', round=admin_tournament.current_round)
+        }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <div id="warning-explanation">
                 {% if action == 'FULL_UNPAIRING' %}
                     <p>
@@ -48,12 +61,6 @@
                         ) }}
                     </p>
                 {% else %}
-                    <h6>
-                        {{
-                            _('Displayed round: %(round)d', round=admin_round) ~ ' - ' ~
-                            _('Current round: %(round)d', round=admin_tournament.current_round)
-                        }}
-                    </h6>
                     {% if round_status == 'PAST' %}
                         <p>
                             {{ _(
@@ -125,28 +132,26 @@
                     {% endif %}
                 {% endcall %}
             {% endif %}
-        </div>
-        <div id="warning-buttons" class="modal-footer">
-            <button class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            {% if warning_level == 5 %}
-                <button
-                    class="btn btn-outline-danger text-nowrap"
-                    onclick="
-                        $('#warning-explanation, #warning-buttons').addClass('d-none');
-                        $('#leave-fide-mode').removeClass('d-none');
-                    "
-                >
-                    {{ _('Leave FIDE mode…') }}
-                </button>
-            {% else %}
-                <button class="btn btn-primary text-nowrap" {{ action_attributes() }}>
-                    <i class="bi-check-circle-fill pe-1"></i>
-                    {{ _('Proceed') }}
-                </button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if warning_level == 5 %}
+        {{ components.button(
+            _('Leave FIDE mode…'),
+            kind='outline-danger',
+            attrs={'onclick': "$('#warning-explanation').addClass('d-none'); $(this).closest('.modal-footer').addClass('d-none'); $('#leave-fide-mode').removeClass('d-none');"},
+        ) }}
+    {% else %}
+        {{ components.button(
+            _('Proceed'),
+            kind='primary',
+            icon='confirm',
+            attrs={
+                ('hx-' ~ (redirect_method | lower)): redirect_route,
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+    {% endif %}
+{% endblock %}

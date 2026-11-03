@@ -1,21 +1,12 @@
-{% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'player-modal' %}
+{% set modal_size = 'max' %}
+{% set modal_class = 'admin-players-update-modal' %}
+{% set modal_close = true %}
 
-<div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Pairing information for round %(round)d', round=admin_round) }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
+{% block title %}{{ _('Pairing information for round %(round)d', round=admin_round) }}{% endblock %}
 
-        <div class="modal-body">
+{% block body %}
             {% if warning %}
                 {{ components.note('warning', warning) }}
             {% endif %}
@@ -139,6 +130,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

@@ -527,41 +527,15 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/absents_modal.html": {
-    "button": 10,
-    "dead-white-class": 1,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "button": 6
   },
   "src/web/templates/admin/pairings/absents_new_check_ins_alert.html": {
     "button": 1
-  },
-  "src/web/templates/admin/pairings/absolute_criteria_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/pairings/adjournment_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/pairings/fide_log_button.html": {
     "button": 1,
     "icon-spacing": 1,
     "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/fide_log_modal.html": {
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/pairings/information_modal.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/pairings/knockout_rankings_table.html": {
     "fixed-colour": 1
@@ -569,27 +543,16 @@
   "src/web/templates/admin/pairings/knockout_team_rankings_table.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/pairings/manual_pairing_check_modal.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/pairings/pairing_info_button.html": {
     "button": 1,
     "icon-spacing": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/pairing_info_modal.html": {
-    "fixed-colour": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/pairing_modal.html": {
-    "button": 6,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "icon-spacing": 2
   },
   "src/web/templates/admin/pairings/pairing_row.html": {
     "button": 1,
@@ -601,22 +564,13 @@
     "icon-spacing": 1,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/pairings/player_point_adjustment_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/pairings/prohibited_button.html": {
     "button": 1,
     "icon-spacing": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/prohibited_pairings_modal.html": {
-    "button": 6,
-    "icon-spacing": 6,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "icon-spacing": 3
   },
   "src/web/templates/admin/pairings/publish_button.html": {
     "button": 2,
@@ -626,13 +580,6 @@
     "button": 2,
     "fixed-colour": 1,
     "icon-spacing": 1
-  },
-  "src/web/templates/admin/pairings/ratings_warning_modal.html": {
-    "button": 3,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/pairings/round_controls.html": {
     "button": 6,
@@ -653,21 +600,10 @@
     "button": 1,
     "icon-spacing": 1
   },
-  "src/web/templates/admin/pairings/round_robin_schedule_confirm_modal.html": {
-    "button": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/pairings/round_robin_schedule_editor.html": {
     "button": 1,
     "fixed-colour": 1,
     "icon-spacing": 1
-  },
-  "src/web/templates/admin/pairings/rounds_schedule_mismatch_modal.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/pairings/settings/acceleration_rules_link.html": {
     "button": 2,
@@ -687,13 +623,6 @@
     "fixed-colour": 1,
     "icon-spacing": 2
   },
-  "src/web/templates/admin/pairings/settings/modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/pairings/swiss_pairing_buttons.html": {
     "button": 4,
     "icon-spacing": 3,
@@ -707,11 +636,7 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/team_absents_modal.html": {
-    "button": 6,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "button": 4
   },
   "src/web/templates/admin/pairings/team_block_header.html": {
     "button": 3,
@@ -731,21 +656,10 @@
     "modal-trigger": 2
   },
   "src/web/templates/admin/pairings/team_pairing_info_modal.html": {
-    "fixed-colour": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_pairing_modal.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/pairings/team_point_adjustment_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "icon-spacing": 1
   },
   "src/web/templates/admin/pairings/team_rankings_table.html": {
     "fixed-colour": 1
@@ -754,31 +668,10 @@
     "fixed-colour": 1,
     "modal-trigger": 2
   },
-  "src/web/templates/admin/pairings/unfinished_round_modal.html": {
-    "button": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/pairings/unpaired_player_modal.html": {
-    "button": 7,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/pairings/unpaired_table.html": {
     "button": 3,
     "fixed-colour": 1,
     "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/unpaired_team_modal.html": {
-    "button": 6,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/pairings/warning_modal.html": {
-    "button": 3,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/place_card_templates/_library_content.html": {
     "button": 2,

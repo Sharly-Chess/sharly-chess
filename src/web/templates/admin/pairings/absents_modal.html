@@ -1,19 +1,12 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
-
 {% set absent_count = admin_absent_players|length %}
 {% set over_half_absents = absent_count > admin_tournament.player_count / 2 %}
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, {% if over_half_absents %}625{% else %}500{% endif %}px);"
->
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header">
-            <div class="modal-title fs-4 fw-bold">
-                {{ _('Absent players (%(count)d)', count=absent_count) }}
-            </div>
-        </div>
-        <div class="modal-body">
+{% set modal_size = 'lg' if over_half_absents else 'md' %}
+
+{% block title %}{{ _('Absent players (%(count)d)', count=absent_count) }}{% endblock %}
+
+{% block body %}
             <div
                 hx-get="{{ url_for(
                     'absents-modal-new-check-ins-message',
@@ -43,11 +36,12 @@
                     </div>
                     {% set unpaired_count = admin_unpaired|length %}
                     <div class="d-flex gap-2">
-                        <button
-                            type="submit"
-                            class="btn btn-outline-primary w-100"
-                            name="over_50_present"
-                        >
+                        {% call components.button(
+                            _('Mark as "Present" (recommended)'),
+                            type='submit',
+                            class='w-100 flex-column',
+                            attrs={'name': 'over_50_present'},
+                        ) %}
                             <div>
                                 {{ _('Mark as "Present" (recommended)') }}
                             </div>
@@ -58,12 +52,14 @@
                                     unpaired_count + absent_count,
                                 ) }}
                             </div>
-                        </button>
-                        <button
-                            type="submit"
-                            class="btn btn-outline-danger w-100"
-                            name="over_50_zpb"
-                        >
+                        {% endcall %}
+                        {% call components.button(
+                            _('Do not pair for round #%(round)d', round=admin_round),
+                            kind='outline-danger',
+                            type='submit',
+                            class='w-100 flex-column',
+                            attrs={'name': 'over_50_zpb'},
+                        ) %}
                             <div>
                                 {{ _(
                                     'Do not pair for round #%(round)d',
@@ -71,14 +67,14 @@
                                 ) }}
                             </div>
                             <div class="fst-italic" style="font-size: 85%">
-                                <i class="bi-exclamation-triangle-fill pe-1"></i>
+                                {{ components.icon('warning') }}
                                 {{ ngettext(
                                     '%(num)d player will be paired',
                                     '%(num)d players will be paired',
                                     unpaired_count,
                                 ) }}
                             </div>
-                        </button>
+                        {% endcall %}
                     </div>
 
                 {% else %}
@@ -276,34 +272,21 @@
                     </div>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            {% if not over_half_absents %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
+{% endblock %}
 
-                >
-                    {% if admin_round == 1 %}
-                        <i class="bi-check-circle-fill pe-1"></i>
-                        {{ _('Validate') }}
-                    {% else %}
-                        <i class="bi-shuffle pe-1"></i>
-                        {{ _('Validate and pair') }}
-                    {% endif %}
-                </button>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if not over_half_absents %}
+        {{ components.button(
+            _('Validate') if admin_round == 1 else _('Validate and pair'),
+            kind='primary',
+            icon='confirm' if admin_round == 1 else 'bi-shuffle',
+            type='submit',
+            attrs={'form': 'modal-form'},
+        ) }}
+    {% endif %}
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

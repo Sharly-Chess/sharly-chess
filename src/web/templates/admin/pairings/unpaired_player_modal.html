@@ -1,298 +1,207 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import "/admin/common/warning_macros.j2" as warning_macros with context %}
-
+{% set modal_size = 'sm' %}
+{% set modal_class = 'pairing-modal' %}
 {% set can_set_zpb = client.can_set_zero_point_bye(admin_tournament.id) %}
-{% with
-    no_bye_possible = admin_round > tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes,
-    pairing = tournament_player.pairings[admin_round]
-%}
-    <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog pairing-modal">
-        <div class="modal-content bg-secondary-subtle">
-            <div class="modal-header d-flex flex-column mb-1">
-                <h2 class="modal-title fs-4 fw-bold">
-                    {{ tournament_player.full_name }}
-                </h2>
-                <div>
-                    {{ _('Round #%(round)d', round=admin_round) }}
-                </div>
-            </div>
-            <div class="modal-body">
-                {% set check_in_status = tournament_player.check_in_status_for_round(admin_round) %}
-                <div class="d-flex flex-column align-items-center justify-content-center gap-2">
-                    {% if check_in_status == 0 %}
-                        <span
-                            class="w-100"
-                            {% if admin_tournament.is_last_round %}
-                                {{ macros.tooltip_attributes('', _(
-                                    'It is not possible to return players on the last round.'
-                                ), 'right') }}
-                            {% elif not can_set_zpb %}
-                                {{ macros.tooltip_attributes('', _(
-                                    'You are not allowed to return players.'
-                                ), 'right') }}
-                            {% endif %}
-                        >
-                            <button
-                                class="btn btn-outline-primary w-100"
-                                hx-patch="{{ url_for(
-                                    'pairings-player-return-to-tournament',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    player_id=tournament_player.id,
+{% set no_bye_possible = admin_round > tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes %}
+{% set pairing = tournament_player.pairings[admin_round] %}
 
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                {% if not can_set_zpb or admin_tournament.is_last_round %}disabled{% endif %}
-                            >
-                                {{ _('Return to tournament') }}
-                            </button>
-                        </span>
+{% macro _warning_modal_url(action, action_route) -%}
+    {{ url_for(
+        'admin-pairings-warning-modal',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        round=admin_round,
+        action=action,
+        redirect_method='PATCH',
+        redirect_route=action_route,
+    ) }}
+{%- endmacro %}
+
+{% block title %}{{ tournament_player.full_name }}{% endblock %}
+
+{% block subtitle %}{{ _('Round #%(round)d', round=admin_round) }}{% endblock %}
+
+{% block body %}
+    {% set check_in_status = tournament_player.check_in_status_for_round(admin_round) %}
+    <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+        {% if check_in_status == 0 %}
+            {{ components.button(
+                _('Return to tournament'),
+                allowed=can_set_zpb and not admin_tournament.is_last_round,
+                reason=_('It is not possible to return players on the last round.')
+                    if admin_tournament.is_last_round
+                    else _('You are not allowed to return players.'),
+                tooltip_placement='right',
+                class='w-100',
+                attrs={
+                    'hx-patch': url_for(
+                        'pairings-player-return-to-tournament',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        player_id=tournament_player.id,
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
+        {% else %}
+            {% set action = 'BYE_UPDATE' %}
+            {{ components.button(
+                _(
+                    'Mark as "%(status)s" ',
+                    status=_('Absent') if tournament_player.check_in else _('Present')
+                ),
+                class='w-100',
+                attrs={
+                    'hx-patch': url_for(
+                        'pairings-player-check-in-out',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        player_id=tournament_player.id,
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
+            {% if check_in_status not in (4, 5) %}
+                {% set action_route = url_for(
+                    'pairings-cancel-player-bye',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round,
+                    player_id=tournament_player.id,
+                ) %}
+{% set action_attrs = {'hx-patch': action_route} if action in allowed_actions else {'hx-get': _warning_modal_url(action, action_route) | trim} %}
+{% do action_attrs.update({'hx-target': 'body', 'hx-indicator': '#please-wait'}) %}
+                {{ components.button(
+                    _('Cancel "%(bye)s" ', bye=check_in_status.name),
+                    allowed=can_set_zpb,
+                    reason=_('You are not allowed to cancel byes.'),
+                    tooltip_placement='right',
+                    class='w-100',
+                    attrs=action_attrs,
+                ) }}
+            {% endif %}
+            {% if not pairing.zero_point_bye %}
+                {% set action_route = url_for(
+                    'pairings-set-player-zpb',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round,
+                    player_id=tournament_player.id,
+                ) %}
+{% set action_attrs = {'hx-patch': action_route} if action in allowed_actions else {'hx-get': _warning_modal_url(action, action_route) | trim} %}
+{% do action_attrs.update({'hx-target': 'body', 'hx-indicator': '#please-wait'}) %}
+                {{ components.button(
+                    _('Zero-Point Bye'),
+                    allowed=can_set_zpb,
+                    reason=_('You are not allowed to set Zero-Point Byes.'),
+                    tooltip_placement='right',
+                    class='w-100',
+                    attrs=action_attrs,
+                ) }}
+            {% endif %}
+            {% if not pairing.half_point_bye %}
+                {% set action_route = url_for(
+                    'pairings-set-player-hpb',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round,
+                    player_id=tournament_player.id,
+                ) %}
+{% set action_attrs = {'hx-patch': action_route} if action in allowed_actions else {'hx-get': _warning_modal_url(action, action_route) | trim} %}
+{% do action_attrs.update({'hx-target': 'body', 'hx-indicator': '#please-wait'}) %}
+                {% set hpb_request %}
+                    {% if action in allowed_actions %}
+                        hx-patch="{{ action_route }}"
                     {% else %}
-                        {% set action = 'BYE_UPDATE' %}
-                        <button
-                            class="btn btn-outline-primary w-100"
-                            hx-patch="{{ url_for(
-                                'pairings-player-check-in-out',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                player_id=tournament_player.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            {{ _(
-                                'Mark as "%(status)s" ',
-                                status=_('Absent') if tournament_player.check_in else _('Present')
-                            ) }}
-                        </button>
-                        {% if check_in_status not in (4, 5) %}
-                            {% set action_route = url_for(
-                                'pairings-cancel-player-bye',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                player_id=tournament_player.id,
-                            ) %}
-                            <span
-                                class="w-100"
-                                {% if not can_set_zpb %}
-                                    {{ macros.tooltip_attributes('', _(
-                                        'You are not allowed to cancel byes.'
-                                    ), 'right') }}
-                                {% endif %}
-                            >
-                                <button
-                                    class="btn btn-outline-primary w-100"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    {% if not can_set_zpb %}disabled{% endif %}
-                                    {% if action in allowed_actions %}
-                                        hx-patch="{{ action_route }}"
-                                    {% else %}
-                                        hx-get="{{ url_for(
-                                            'admin-pairings-warning-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            round=admin_round,
-                                            action=action,
-                                            redirect_method='PATCH',
-                                            redirect_route=action_route,
-                                        ) }}"
-                                    {% endif %}
-                                >
-                                    {% set bye = check_in_status.name %}
-                                    {{ _('Cancel "%(bye)s" ', bye=bye) }}
-                                </button>
-                            </span>
-                        {% endif %}
-                        {% if not pairing.zero_point_bye %}
-                            {% set action_route = url_for(
-                                'pairings-set-player-zpb',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                player_id=tournament_player.id,
-                            ) %}
-                            <span
-                                class="w-100"
-                                {% if not can_set_zpb %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to set Zero-Point Byes.'), 'right') }}
-                                {% endif %}
-                            >
-                                <button
-                                    class="btn btn-outline-primary w-100"
-                                    {% if not can_set_zpb %}
-                                        disabled
-                                    {% else %}
-                                        {% if action in allowed_actions %}
-                                            hx-patch="{{ action_route }}"
-                                        {% else %}
-                                            hx-get="{{ url_for(
-                                                'admin-pairings-warning-modal',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=admin_tournament.id,
-                                                round=admin_round,
-                                                action=action,
-                                                redirect_method='PATCH',
-                                                redirect_route=action_route,
-                                            ) }}"
-                                        {% endif %}
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                    {% endif %}
-                                >
-                                    {{ _('Zero-Point Bye') }}
-                                </button>
-                            </span>
-                        {% endif %}
-                        {% if not pairing.half_point_bye %}
-                            <span
-                                class="w-100"
-                                {% if not client.can_set_half_point_bye(admin_tournament.id) %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to set Half-Point Byes.'), 'right') }}
-                                {% elif not tournament_player.byes_allowed %}
-                                    {{ macros.tooltip_attributes('info', _('The player is not eligible for byes.'), 'top') }}
-                                {% elif no_bye_possible %}
-                                    {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=tournament_player.tournament.last_rounds_no_byes), 'top') }}
-                                {% elif not hpb_possible %}
-                                    {{ macros.tooltip_attributes('info', _('Bye limit (%(limit)d) is already reached for this tournament.', limit=tournament_player.tournament.max_byes), 'top') }}
-                                {% endif %}
-                            >
-                                {% set action_route = url_for(
-                                    'pairings-set-player-hpb',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    player_id=tournament_player.id,
-                                ) %}
-                                {% set hpb_request %}
-                                    {% if action in allowed_actions %}
-                                        hx-patch="{{ action_route }}"
-                                    {% else %}
-                                        hx-get="{{ url_for(
-                                            'admin-pairings-warning-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            round=admin_round,
-                                            action=action,
-                                            redirect_method='PATCH',
-                                            redirect_route=action_route,
-                                        ) }}"
-                                    {% endif %}
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                {% endset %}
-                                {% set hpb_needs_confirmation = tournament_player.half_point_bye_needs_confirmation(admin_round) %}
-                                <button
-                                    class="btn btn-outline-primary w-100"
-                                    {% if (
-                                        not client.can_set_half_point_bye(admin_tournament.id)
-                                        or not tournament_player.byes_allowed
-                                        or no_bye_possible
-                                        or not hpb_possible
-                                    ) %}
-                                        disabled
-                                    {% elif hpb_needs_confirmation %}
-                                        onclick="$('#second-hpb-confirmation').removeClass('d-none');"
-                                    {% else %}
-                                        {{ hpb_request }}
-                                    {% endif %}
-                                >
-                                    {{ _('Half-Point Bye') }}
-                                </button>
-                            </span>
-                            {% if hpb_needs_confirmation %}
-                                <div class="w-100">
-                                    {% call(button) warning_macros.confirmation(
-                                        'second-hpb-confirmation',
-                                        _(
-                                            'The FIDE regulations allow a player one half-point bye per tournament, '
-                                            'and %(player)s already has one.',
-                                            player=tournament_player.full_name,
-                                        ),
-                                        _('Set Half-Point Bye'),
-                                        hidden=true,
-                                    ) %}
-                                        {% if button == 'cancel' %}
-                                            onclick="$('#second-hpb-confirmation').addClass('d-none');"
-                                        {% else %}
-                                            {{ hpb_request }}
-                                        {% endif %}
-                                    {% endcall %}
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                        {% set action = 'MANUAL_PAIRING' %}
-                        {% set action_route = url_for(
-                            'admin-pairings-pair-player',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_round,
-                            player_id=tournament_player.id,
-                        ) %}
-                        {% if action in existing_actions %}
-                            {% set can_manually_pair = client.can_manually_pair_players(admin_tournament.id) %}
-                            <span
-                                class="w-100"
-                                {% if not can_manually_pair %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to pair players.'), 'right') }}
-                                {% endif %}
-                            >
-                                <button
-                                    class="btn btn-outline-primary w-100 {% if exempt_tournament_player %}d-flex flex-column align-items-center gap-1{% endif %}"
-                                    {% if not can_manually_pair %}
-                                        disabled
-                                    {% else %}
-                                        {% if action in allowed_actions %}
-                                            hx-patch="{{ action_route }}"
-                                        {% else %}
-                                            hx-get="{{ url_for(
-                                                'admin-pairings-warning-modal',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=admin_tournament.id,
-                                                round=admin_round,
-                                                action=action,
-                                                redirect_method='PATCH',
-                                                redirect_route=action_route,
-                                            ) }}"
-                                        {% endif %}
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                    {% endif %}
-                                >
-                                    {% if exempt_tournament_player %}
-                                        {{ _('Pair as BLACK') }}
-                                        <div>
-                                            {{ _('vs %(player)s', player=exempt_tournament_player.full_name) }}
-                                        </div>
-                                        <div class="text-danger italic" style="font-size: 0.9rem;">
-                                            {% set round_played_against = tournament_player.round_played_against(exempt_tournament_player.id) %}
-                                            {% if round_played_against %}
-                                                {{ _('Encounter already happened at round #%(round)d', round=round_played_against) }}
-                                            {% endif %}
-                                        </div>
-                                    {% else %}
-                                        {{ _('Pair as WHITE') }}
-                                    {% endif %}
-                                </button>
-                            </span>
-                        {% endif %}
+                        hx-get="{{ _warning_modal_url(action, action_route) }}"
                     {% endif %}
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button
-                    type="button"
-                    class="btn btn-secondary text-nowrap"
-                    data-bs-dismiss="modal"
-                >
-                    <i class="bi-x-circle-fill"></i>
-                    {{ _('Cancel') }}
-                </button>
-            </div>
-        </div>
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                {% endset %}
+                {% set hpb_needs_confirmation = tournament_player.half_point_bye_needs_confirmation(admin_round) %}
+                {% if not client.can_set_half_point_bye(admin_tournament.id) %}
+                    {% set hpb_reason = _('You are not allowed to set Half-Point Byes.') %}
+                {% elif not tournament_player.byes_allowed %}
+                    {% set hpb_reason = _('The player is not eligible for byes.') %}
+                {% elif no_bye_possible %}
+                    {% set hpb_reason = _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=tournament_player.tournament.last_rounds_no_byes) %}
+                {% elif not hpb_possible %}
+                    {% set hpb_reason = _('Bye limit (%(limit)d) is already reached for this tournament.', limit=tournament_player.tournament.max_byes) %}
+                {% else %}
+                    {% set hpb_reason = none %}
+                {% endif %}
+                {{ components.button(
+                    _('Half-Point Bye'),
+                    allowed=hpb_reason is none,
+                    reason=hpb_reason,
+                    tooltip_placement='right',
+                    class='w-100',
+                    attrs={'onclick': "$('#second-hpb-confirmation').removeClass('d-none');"}
+                        if hpb_needs_confirmation
+                        else action_attrs,
+                ) }}
+                {% if hpb_needs_confirmation %}
+                    <div class="w-100">
+                        {% call(button) warning_macros.confirmation(
+                            'second-hpb-confirmation',
+                            _(
+                                'The FIDE regulations allow a player one half-point bye per tournament, '
+                                'and %(player)s already has one.',
+                                player=tournament_player.full_name,
+                            ),
+                            _('Set Half-Point Bye'),
+                            hidden=true,
+                        ) %}
+                            {% if button == 'cancel' %}
+                                onclick="$('#second-hpb-confirmation').addClass('d-none');"
+                            {% else %}
+                                {{ hpb_request }}
+                            {% endif %}
+                        {% endcall %}
+                    </div>
+                {% endif %}
+            {% endif %}
+            {% set action = 'MANUAL_PAIRING' %}
+            {% set action_route = url_for(
+                'admin-pairings-pair-player',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round,
+                player_id=tournament_player.id,
+            ) %}
+{% set action_attrs = {'hx-patch': action_route} if action in allowed_actions else {'hx-get': _warning_modal_url(action, action_route) | trim} %}
+{% do action_attrs.update({'hx-target': 'body', 'hx-indicator': '#please-wait'}) %}
+            {% if action in existing_actions %}
+                {% call components.button(
+                    _('Pair as BLACK') if exempt_tournament_player else _('Pair as WHITE'),
+                    allowed=client.can_manually_pair_players(admin_tournament.id),
+                    reason=_('You are not allowed to pair players.'),
+                    tooltip_placement='right',
+                    class='w-100' ~ (' flex-column gap-1' if exempt_tournament_player else ''),
+                    attrs=action_attrs,
+                ) %}
+                    {% if exempt_tournament_player %}
+                        {{ _('Pair as BLACK') }}
+                        <div>
+                            {{ _('vs %(player)s', player=exempt_tournament_player.full_name) }}
+                        </div>
+                        <div class="text-danger italic" style="font-size: 0.9rem;">
+                            {% set round_played_against = tournament_player.round_played_against(exempt_tournament_player.id) %}
+                            {% if round_played_against %}
+                                {{ _('Encounter already happened at round #%(round)d', round=round_played_against) }}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {{ _('Pair as WHITE') }}
+                    {% endif %}
+                {% endcall %}
+            {% endif %}
+        {% endif %}
     </div>
-{% endwith %}
+{% endblock %}
