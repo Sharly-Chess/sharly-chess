@@ -128,12 +128,11 @@
                     {% endif %}
                 {% endcall %}
             {% elif snapshot_status.last_success_at %}
-                <p class="text-secondary">
-                    <i class="bi-check-circle-fill pe-1 text-success"></i>
+                {% call components.icon_text('bi-check-circle-fill', icon_class='text-success', tag='p', class='text-secondary') %}
                     {{ _('Last backup taken at {time}.').format(
                         time=snapshot_status.last_success_str
                     ) }}
-                </p>
+                {% endcall %}
             {% endif %}
 
             {% if not event_is_accessible %}

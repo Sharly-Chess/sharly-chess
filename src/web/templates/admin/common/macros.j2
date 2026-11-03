@@ -1915,6 +1915,9 @@ with_indicator: display a loading indicator, optional
     object_type,
     object_uniq_id
 ) %}
+    {% if components is not defined %}
+        {% import '/admin/components/macros.j2' as components with context %}
+    {% endif %}
     <div class="dropdown d-inline" {{ macros.tooltip_attributes('info', _('Assign to a display controller.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary dropdown-toggle mx-auto" type="button"
@@ -1928,15 +1931,15 @@ with_indicator: display a loading indicator, optional
         </button>
         <ul class="dropdown-menu">
             {% for display_controller in display_controllers %}
-                <li>
-                    <button
-                        class="dropdown-item text-start cursor-pointer"
-                        hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
-                            hx-indicator="#please-wait"
-                    >
-                        <b>{{ display_controller.name }}</b> {% if display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_object.name) }}{% endif %}
-                    </button>
-                </li>
+                {% call components.menu_item(
+                    display_controller.name,
+                    attrs={
+                        'hx-patch': url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type=object_type, object_uniq_id=object_uniq_id),
+                        'hx-indicator': '#please-wait',
+                    },
+                ) %}
+                    <span><b>{{ display_controller.name }}</b> {% if display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_object.name) }}{% endif %}</span>
+                {% endcall %}
             {% endfor %}
         </ul>
     </div>

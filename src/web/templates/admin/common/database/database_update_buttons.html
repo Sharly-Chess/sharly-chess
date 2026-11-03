@@ -1,23 +1,23 @@
-{% import '/common/macros.j2' as macros with context %}
+{% if components is not defined %}
+    {% import '/admin/components/macros.j2' as components with context %}
+{% endif %}
 
 <div class="d-flex gap-2 justify-content-end">
     {% if (database.exists() or not database.is_forced_active) and not database.is_updating %}
-        <button
-            type="button"
-            class="btn btn-outline-danger btn-sm d-inline-flex gap-2 align-items-center"
-            hx-delete="{{ url_for('admin-database-delete', database_id=database.id) }}"
-            hx-indicator="#please-wait"
-        >
-            <i class="bi-trash-fill"></i>
-        </button>
+        {{ components.button(
+            _('Delete'),
+            kind='outline-danger',
+            icon='bi-trash-fill',
+            size='sm',
+            icon_only=true,
+            attrs={
+                'hx-delete': url_for('admin-database-delete', database_id=database.id),
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
     {% endif %}
     {% if database.is_updating %}
-        <button
-            type="button"
-            class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
-            disabled
-            hx-swap="outerHTML"
-        >
+        {% call components.button(database.progress or _('Updating'), size='sm', allowed=false) %}
             <i
                 class="bi bi-arrow-clockwise lh-1"
                 style="
@@ -25,7 +25,7 @@
                     animation-timing-function: linear;"
             ></i>
             {{ database.progress or _('Updating') }}
-        </button>
+        {% endcall %}
     {% else %}
         <form
             id="database-{{ database.id }}-file-form"
@@ -44,46 +44,35 @@
                 accept="{{ database.source_file_accept }}"
                 class="d-none"
             >
-            <button
-                type="button"
-                class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
-                onclick="$('#database-{{ database.id }}-file').click()"
-                {{ macros.tooltip_attributes(
-                    '',
-                    database.source_file_help or _('Install the database from a source file you downloaded yourself.'),
-                    'left',
-                ) }}
-            >
-                <i class="bi bi-folder2-open lh-1"></i>
-                {% if database.is_manual %}
-                    {{ _('Install from a file…') }}
-                {% endif %}
-            </button>
+            {{ components.button(
+                _('Install from a file…'),
+                icon='bi-folder2-open',
+                size='sm',
+                icon_only=not database.is_manual,
+                tooltip=database.source_file_help or _('Install the database from a source file you downloaded yourself.'),
+                tooltip_type='',
+                tooltip_placement='left',
+                attrs={'onclick': "$('#database-" ~ database.id ~ "-file').click()"},
+            ) }}
         </form>
         {% if not database.is_manual %}
-            <button
-                type="button"
-                class="btn btn-outline-primary btn-sm d-inline-flex gap-2 align-items-center"
-                hx-post="{{ url_for('admin-database-update', database_id=database.id) }}"
-                hx-target="closest div"
-                hx-swap="outerHTML"
-            >
-                {% if database.exists() %}
-                    <i class="bi bi-arrow-clockwise lh-1"></i>
-                    {{ _('Update') }}
-                {% else %}
-                    <i class="bi bi-download lh-1"></i>
-                    {{ _('Install') }}
-                {% endif %}
-            </button>
+            {{ components.button(
+                _('Update') if database.exists() else _('Install'),
+                icon='refresh' if database.exists() else 'download',
+                size='sm',
+                attrs={
+                    'hx-post': url_for('admin-database-update', database_id=database.id),
+                    'hx-target': 'closest div',
+                    'hx-swap': 'outerHTML',
+                },
+            ) }}
         {% endif %}
     {% endif %}
     {% set updated_at_html %}
         {% if database.is_outdated and not database.is_updating %}
-            <span class="text-danger fw-bold">
-                <i class="bi bi-exclamation-circle-fill pe-1"></i>
+            {% call components.icon_text('bi-exclamation-circle-fill', class='text-danger fw-bold') %}
                 {{ database.updated_at_str }}
-            </span>
+            {% endcall %}
         {% else %}
             {{ database.updated_at_str }}
         {% endif %}

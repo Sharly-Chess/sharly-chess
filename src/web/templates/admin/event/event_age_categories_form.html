@@ -23,25 +23,19 @@
             {{ admin_macros.hidden_disabled_input(data, 'age_categories') }}
         </div>
         {% if client.can_manage_events %}
-            <div
-                {{ macros.tooltip_attributes(
-                    'info', _('Configure the category sets, which are available for all events.'), 'top'
-                ) }}
-            >
-                <button
-                    id="age-category-sets-configure-button"
-                    type="button"
-                    class="btn btn-sm btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('age-category-sets-manager') }}"
-                    hx-include="#modal-form"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-gear-fill pe-1"></i>
-                    {{ _('Category sets') }}
-                </button>
-            </div>
+            {{ components.button(
+                _('Category sets'),
+                icon='settings',
+                size='sm',
+                tooltip=_('Configure the category sets, which are available for all events.'),
+                attrs={
+                    'id': 'age-category-sets-configure-button',
+                    'hx-post': url_for('age-category-sets-manager'),
+                    'hx-include': '#modal-form',
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         {% endif %}
     </div>
 

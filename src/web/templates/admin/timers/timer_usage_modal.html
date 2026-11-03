@@ -45,8 +45,11 @@
                                             {% if item.checked %}checked{% elif item.other_timer %}data-other-timer{% endif %}
                                         />
                                         <label class="form-check-label" for="{{ id }}">
-                                            {% if not screen_type %}<i class="bi-window-stack pe-1"></i>{% endif %}
-                                            {{ item.label }}
+                                            {% if screen_type %}
+                                                {{ item.label }}
+                                            {% else %}
+                                                {% call components.icon_text('bi-window-stack') %}{{ item.label }}{% endcall %}
+                                            {% endif %}
                                             {% if item.other_timer %}
                                                 <i
                                                     class="bi-clock-fill text-secondary small ps-1"

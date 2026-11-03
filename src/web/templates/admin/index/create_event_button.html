@@ -2,60 +2,35 @@
     ('dropdown-item' if is_dropdown else 'btn btn-primary') +
     (' dropdown-item-lg' if is_large else '')
 ) %}
+{% set create_url = url_for('admin-event-modal', admin_tab=admin_tab, action='create') %}
 {% if is_dropdown %}
-    <div class="btn-group dropdown">
-        <button
-            class="btn btn-primary text-nowrap"
-            hx-trigger="click, SC_Plus from:body"
-            hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            {{ _('Create an event') }}
-        </button>
-        <button
-            type="button"
-            class="btn btn-primary dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-        >
-        </button>
-        <div class="dropdown-menu dropdown-menu-end">
-            {% set btn_class = 'dropdown-item' %}
-            <button
-                id="import-button"
-                class="{{ btn_class }}"
-            >
-                {{ _('Import an SCE file') }}
-            </button>
-            {% for template in plugin_event_create_button_templates %}
-                {% include template %}
-            {% endfor %}
-        </div>
-    </div>
+    {% set btn_class = 'dropdown-item' %}
+    {% call components.split_button(
+        _('Create an event'),
+        kind='primary',
+        attrs={
+            'hx-get': create_url,
+            'hx-trigger': 'click, SC_Plus from:body',
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#modal-wrapper',
+        },
+    ) %}
+        {{ components.menu_item(_('Import an SCE file'), attrs={'id': 'import-button'}) }}
+        {% for template in plugin_event_create_button_templates %}
+            <li>{% include template %}</li>
+        {% endfor %}
+    {% endcall %}
 {% else %}
     {% set btn_class = 'btn btn-primary text-nowrap btn-lg' %}
     <div class="d-flex flex-column gap-3 my-3 mx-auto" style="width: 350px">
-        <button
-            class="{{ btn_class }}"
-            hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            {{ _('Create an event') }}
-        </button>
-        <button id="import-button" class="{{ btn_class }}">
-            {{ _('Import an SCE file') }}
-        </button>
+        {{ components.modal_button(create_url, _('Create an event'), kind='primary', class='btn-lg') }}
+        {{ components.button(_('Import an SCE file'), kind='primary', class='btn-lg', attrs={'id': 'import-button'}) }}
         {% for template in plugin_event_create_button_templates %}
             {% include template %}
         {% endfor %}
     </div>
-
 {% endif %}
 <form
     style="display: none"

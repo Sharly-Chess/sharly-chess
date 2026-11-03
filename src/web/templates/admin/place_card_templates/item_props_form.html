@@ -65,9 +65,13 @@
                     <div class="text-body-secondary small">{{ _('No images yet — upload one.') }}</div>
                 {% endif %}
             </div>
-            <label class="btn btn-sm btn-outline-primary w-100 mt-2" for="pc-image-upload">
-                <i class="bi-upload pe-1"></i>{{ _('Upload image') }}
-            </label>
+            {{ components.button(
+                _('Upload image'),
+                icon='upload',
+                size='sm',
+                class='w-100 mt-2',
+                attrs={'onclick': "document.getElementById('pc-image-upload').click()"},
+            ) }}
             <input type="file" id="pc-image-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="d-none"
                    data-pc-image-upload="{{ url_for('place-card-item-image-upload', template_id=template_id) }}?section={{ section }}">
         </div>
@@ -170,8 +174,8 @@
                 </div>
                 <input type="hidden" name="content" value="">
                 <div class="d-flex gap-1 mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-primary flex-fill" data-pc-add-part="t"><i class="bi-plus-lg pe-1"></i>{{ _('Text') }}</button>
-                    <button type="button" class="btn btn-sm btn-outline-primary flex-fill" data-pc-add-part="f"><i class="bi-plus-lg pe-1"></i>{{ _('Field') }}</button>
+                    {{ components.button(_('Text'), icon='add', size='sm', class='flex-fill', attrs={'data-pc-add-part': 't'}) }}
+                    {{ components.button(_('Field'), icon='add', size='sm', class='flex-fill', attrs={'data-pc-add-part': 'f'}) }}
                 </div>
                 <template id="pc-part-text-tpl">{{ text_row('') }}</template>
                 <template id="pc-part-field-tpl">{{ field_row('', '', '', field_options) }}</template>
@@ -269,7 +273,12 @@
         <textarea class="form-control form-control-sm font-monospace pc-code mt-2" id="pc-css" name="css" rows="2" spellcheck="false" placeholder="border-radius: 2mm;">{{ data.css }}</textarea>
     </details>
 
-    <button type="button" class="btn btn-sm btn-outline-danger w-100 mt-2" data-pc-delete>
-        <i class="bi-trash-fill pe-1"></i>{{ _('Delete item') }}
-    </button>
+    {{ components.button(
+        _('Delete item'),
+        kind='outline-danger',
+        icon='bi-trash-fill',
+        size='sm',
+        class='w-100 mt-2',
+        attrs={'data-pc-delete': true},
+    ) }}
 </form>

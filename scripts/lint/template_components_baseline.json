@@ -53,18 +53,13 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/championship/layout.html": {
-    "button": 1,
-    "modal-trigger": 1
+    "button": 1
   },
   "src/web/templates/admin/championship/results.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/common/database/database_modal.html": {
     "fixed-colour": 2
-  },
-  "src/web/templates/admin/common/database/database_update_buttons.html": {
-    "button": 4,
-    "icon-spacing": 1
   },
   "src/web/templates/admin/common/database/out_of_date_badge.html": {
     "fixed-colour": 1
@@ -74,10 +69,7 @@
   },
   "src/web/templates/admin/common/macros.j2": {
     "button": 8,
-    "menu-item": 2
-  },
-  "src/web/templates/admin/common/needs_refresh.html": {
-    "button": 1
+    "menu-item": 1
   },
   "src/web/templates/admin/common/player_search.html": {
     "menu-item": 1
@@ -98,41 +90,12 @@
   "src/web/templates/admin/display_controllers/display_controller_components.j2": {
     "button": 1
   },
-  "src/web/templates/admin/event/event_age_categories_form.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/event/event_age_category_sets_modal.html": {
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/event/event_backup_status.html": {
-    "button": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/event/event_snapshots_modal.html": {
-    "icon-spacing": 1
-  },
-  "src/web/templates/admin/event/event_tags_form.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/event/event_tags_modal.html": {
-    "modal-trigger": 2
-  },
-  "src/web/templates/admin/event/print_options/place_card_template.html": {
-    "button": 1,
-    "icon-spacing": 1
-  },
   "src/web/templates/admin/event_layout.html": {
-    "button": 1,
-    "empty-state": 1
+    "button": 1
   },
   "src/web/templates/admin/event_layout_nav_item.html": {
     "fixed-colour": 4,
-    "menu-item": 1,
-    "modal-trigger": 3
+    "menu-item": 1
   },
   "src/web/templates/admin/families/family_components.j2": {
     "icon-spacing": 1
@@ -140,22 +103,13 @@
   "src/web/templates/admin/index/_admin_nav.html": {
     "button": 1,
     "icon-spacing": 1,
-    "menu-item": 2,
-    "modal-trigger": 2
+    "menu-item": 2
   },
   "src/web/templates/admin/index/archives_tab.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/index/championship_archives_tab.html": {
     "fixed-colour": 1
-  },
-  "src/web/templates/admin/index/create_event_button.html": {
-    "button": 2,
-    "modal-trigger": 2
-  },
-  "src/web/templates/admin/index/events_tag_filter.html": {
-    "button": 3,
-    "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/knockout_rankings_table.html": {
     "fixed-colour": 1
@@ -212,19 +166,11 @@
   "src/web/templates/admin/pairings/unpaired_table.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/place_card_templates/_library_content.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "menu-item": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/place_card_templates/item_props_form.html": {
-    "button": 9,
-    "icon-spacing": 4
+    "button": 5
   },
   "src/web/templates/admin/place_card_templates/visual_editor.html": {
-    "button": 10,
-    "icon-spacing": 3
+    "button": 5
   },
   "src/web/templates/admin/players/check_in_tournaments_modal.html": {
     "fixed-colour": 1
@@ -259,12 +205,7 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/plugins/_plugin_detail.html": {
-    "button": 3,
-    "icon-spacing": 6
-  },
-  "src/web/templates/admin/plugins/_plugins_home.html": {
-    "button": 2,
-    "icon-spacing": 2
+    "icon-spacing": 1
   },
   "src/web/templates/admin/prizes/prize_category_components.j2": {
     "icon-spacing": 1
@@ -274,10 +215,6 @@
   },
   "src/web/templates/admin/rotators/rotator_components.j2": {
     "icon-spacing": 1
-  },
-  "src/web/templates/admin/rotators/rotator_screens_form.html": {
-    "button": 1,
-    "modal-trigger": 1
   },
   "src/web/templates/admin/screens/screen_components.j2": {
     "icon-spacing": 2
@@ -290,8 +227,5 @@
   },
   "src/web/templates/admin/teams/team_components.j2": {
     "icon-spacing": 5
-  },
-  "src/web/templates/admin/timers/timer_usage_modal.html": {
-    "icon-spacing": 1
   }
 }

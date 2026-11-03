@@ -1,5 +1,6 @@
 {% extends '/common/alert.html' %}
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% block type %}warning{% endblock %}
 
@@ -22,19 +23,11 @@
         {% endif %}
     </div>
     <div class="align-self-center">
-        <button
-            type="button"
-            class="btn btn-sm btn-outline-primary text-nowrap"
-            hx-get="{{ url_for(
-                'event-snapshots-modal', event_uniq_id=snapshots_event_uniq_id
-            ) }}"
-            hx-push-url="false"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            {{ _('Backups') }}
-        </button>
+        {{ components.modal_button(
+            url_for('event-snapshots-modal', event_uniq_id=snapshots_event_uniq_id),
+            _('Backups'),
+            size='sm',
+            attrs={'hx-push-url': 'false'},
+        ) }}
     </div>
 {% endblock %}

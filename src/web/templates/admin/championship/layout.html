@@ -50,12 +50,8 @@
         class="nav-link text-start d-flex align-items-center w-100"
         id="nav-documents-tab"
         data-testid="nav-documents-tab"
-        hx-get="{{ url_for('admin-championship-documents-modal', championship_uniq_id=championship.uniq_id) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
+        {{ components.modal_trigger_attrs(url_for('admin-championship-documents-modal', championship_uniq_id=championship.uniq_id)) }}
         hx-trigger="click, SC_D from:body"
-        data-bs-toggle="modal"
-        data-bs-target="#modal-wrapper"
     >
         <i class="bi bi-file-earmark-text-fill"></i>
         <span class="expanded-only"><u>D</u>ocuments</span>

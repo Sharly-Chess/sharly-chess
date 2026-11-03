@@ -192,20 +192,33 @@
 
 <div class="pc-editor d-flex flex-column">
     <div class="d-flex align-items-center gap-2 border-bottom p-2">
-        <button
-            class="btn btn-sm btn-outline-secondary"
-            hx-get="{{ url_for('place-card-templates') }}"
-            hx-target="body" hx-push-url="true" hx-indicator="#please-wait"
-        >
-            <i class="bi-chevron-left pe-1"></i>{{ _('Templates') }}
-        </button>
+        {{ components.button(
+            _('Templates'),
+            kind='outline-secondary',
+            icon='bi-chevron-left',
+            size='sm',
+            attrs={
+                'hx-get': url_for('place-card-templates'),
+                'hx-target': 'body',
+                'hx-push-url': 'true',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
         <span class="fw-bold ms-2" id="pc-template-name">{{ template_name }}</span>
         <div class="ms-auto d-flex align-items-center gap-2">
             <div class="btn-group btn-group-sm">
                 <button type="button" class="btn btn-outline-secondary" data-pc-undo title="{{ _('Undo') }}" disabled><i class="bi-arrow-counterclockwise"></i></button>
                 <button type="button" class="btn btn-outline-secondary" data-pc-redo title="{{ _('Redo') }}" disabled><i class="bi-arrow-clockwise"></i></button>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary active" data-pc-bounds title="{{ _('Show/hide outlines') }}" aria-pressed="true"><i class="bi-bounding-box"></i></button>
+            {{ components.button(
+                _('Show/hide outlines'),
+                kind='outline-secondary',
+                icon='bi-bounding-box',
+                size='sm',
+                icon_only=true,
+                class='active',
+                attrs={'data-pc-bounds': true, 'aria-pressed': 'true'},
+            ) }}
             <div class="btn-group btn-group-sm">
                 <button class="btn btn-outline-secondary" data-pc-zoom="out" aria-label="{{ _('Zoom out') }}"><i class="bi-zoom-out"></i></button>
                 <button class="btn btn-outline-secondary" data-pc-zoom="reset" id="pc-zoom-label" title="{{ _('Reset zoom') }}">—</button>
@@ -217,12 +230,8 @@
     <div class="d-flex flex-grow-1" style="min-height: 0; overflow: hidden;">
         <div class="pc-side-panel border-end py-3 px-2 flex-shrink-0" style="width: 210px; overflow: auto;">
             <h6 class="text-uppercase text-body-secondary small">{{ _('Add') }}</h6>
-            <button class="btn btn-sm btn-outline-primary w-100 mb-2" data-pc-add="text">
-                <i class="bi-fonts pe-1"></i>{{ _('Text') }}
-            </button>
-            <button class="btn btn-sm btn-outline-primary w-100" data-pc-add="image">
-                <i class="bi-image pe-1"></i>{{ _('Image') }}
-            </button>
+            {{ components.button(_('Text'), icon='bi-fonts', size='sm', class='w-100 mb-2', attrs={'data-pc-add': 'text'}) }}
+            {{ components.button(_('Image'), icon='bi-image', size='sm', class='w-100', attrs={'data-pc-add': 'image'}) }}
 
             <hr />
 
@@ -230,11 +239,13 @@
             <p class="text-body-secondary small">{{ _('Preview the card with different sample data.') }}</p>
             <div class="d-grid gap-1">
                 {% for example in examples %}
-                    <button
-                        class="btn btn-sm btn-outline-secondary text-start text-wrap{% if example.index == 0 %} active{% endif %}"
-                        data-pc-example="{{ example.index }}"
-                        title="{{ example.label }}"
-                    >{{ example.label }}</button>
+                    {{ components.button(
+                        example.label,
+                        kind='outline-secondary',
+                        size='sm',
+                        class='justify-content-start text-start text-wrap' ~ (' active' if example.index == 0 else ''),
+                        attrs={'data-pc-example': example.index, 'title': example.label},
+                    ) }}
                 {% endfor %}
             </div>
         </div>

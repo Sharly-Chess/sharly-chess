@@ -1,4 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
+{% if components is not defined %}
+    {% import '/admin/components/macros.j2' as components with context %}
+{% endif %}
 
 <div
     id="nav-{{ nav_id }}-wrapper"
@@ -51,11 +54,7 @@
                             <button
                                 class="dropdown-item d-flex align-items-center px-2 {% if sub_nav_id == admin_event_tab %}active{% endif %}"
                                 {% if 'modal' in sub_nav_tab %}
-                                    hx-get="{{ url_for(sub_nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
+                                    {{ components.modal_trigger_attrs(url_for(sub_nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id)) }}
                                 {% else %}
                                     hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
                                     hx-target="body"
@@ -139,11 +138,7 @@
                         id="nav-{{ sub_nav_id }}-tab"
                         data-testid="nav-{{ sub_nav_id }}-tab"
                         {% if 'modal' in sub_nav %}
-                            hx-get="{{ url_for(sub_nav.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                            {{ components.modal_trigger_attrs(url_for(sub_nav.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id)) }}
                         {% else %}
                             hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
                             hx-target="body"
@@ -195,11 +190,7 @@
             id="nav-{{ nav_id }}-tab"
             data-testid="nav-{{ nav_id }}-tab"
             class="nav-link text-start me-1 position-relative align-items-center"
-            hx-get="{{ url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
+            {{ components.modal_trigger_attrs(url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id)) }}
             {% if nav_tab.shortcut %}
                 hx-trigger="click, {{ nav_tab.shortcut }}"
             {% endif %}
