@@ -66,14 +66,13 @@
                                     round=admin_round,
                                 ) }}
                             </div>
-                            <div class="fst-italic" style="font-size: 85%">
-                                {{ components.icon('warning') }}
+                            {% call components.icon_text('warning', tag='div', class='fst-italic small') %}
                                 {{ ngettext(
                                     '%(num)d player will be paired',
                                     '%(num)d players will be paired',
                                     unpaired_count,
                                 ) }}
-                            </div>
+                            {% endcall %}
                         {% endcall %}
                     </div>
 
