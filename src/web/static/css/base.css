@@ -3324,6 +3324,10 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     display: inline-block;
 }
 
+[data-sc-interface=admin] .dropdown-menu .sc-tooltip-wrapper {
+    display: block;
+}
+
 [data-sc-interface=admin] .dropdown-item.sc-menu-item {
     display: flex;
     align-items: center;

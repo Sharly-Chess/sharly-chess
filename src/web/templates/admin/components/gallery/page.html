@@ -1,0 +1,188 @@
+{% extends '/admin/common/base.html' %}
+{% import '/admin/components/macros.j2' as components with context %}
+
+{# The gallery of the administration's components, served only when running
+   from the sources: its text is not translated. #}
+
+{% block title %}Components{% endblock %}
+
+{% block ws %}{% endblock ws %}
+
+{% block admin_header_back_button %}
+    <a class="nav-link d-flex align-items-center gap-2 px-3" href="{{ url_for('admin-tab', admin_tab='home') }}">{{ components.icon('back') }} Home</a>
+{% endblock admin_header_back_button %}
+
+{% set sections = [
+    ('buttons', 'Buttons'),
+    ('menus', 'Menus'),
+    ('notes', 'Notes'),
+    ('badges', 'Badges'),
+    ('banners', 'Banners'),
+    ('empty-states', 'Empty states'),
+    ('modals', 'Modals'),
+] %}
+
+{% block admin_nav %}
+    {% for id, title in sections %}
+        <a class="nav-link px-3" href="#gallery-{{ id }}">{{ title }}</a>
+    {% endfor %}
+{% endblock admin_nav %}
+
+{% set button_kinds = ['primary', 'secondary', 'outline', 'outline-secondary', 'danger', 'outline-danger', 'link'] %}
+
+{% block admin_content %}
+    <style>
+        .component-gallery .gallery-label {
+            min-width: 9rem;
+            color: var(--bs-secondary-color);
+        }
+
+        .component-gallery .gallery-modal {
+            position: static;
+            display: block;
+            height: auto;
+            overflow: visible;
+        }
+
+        .component-gallery .gallery-modal .modal-dialog {
+            margin: 0;
+        }
+    </style>
+    <div id="component-gallery" class="component-gallery d-flex flex-column gap-4 p-3">
+        <div class="d-flex align-items-center gap-3">
+            <h1 class="h3 m-0">Components</h1>
+            <div class="btn-group" role="group" aria-label="Theme">
+                {% for theme_name in ['light', 'dark'] %}
+                    {{ components.button(
+                        theme_name | capitalize,
+                        kind='outline',
+                        size='sm',
+                        attrs={
+                            'data-gallery-theme': theme_name,
+                            'onclick': "window.scRequestedTheme = '" ~ theme_name ~ "'; window.scApplyTheme();",
+                        },
+                    ) }}
+                {% endfor %}
+            </div>
+        </div>
+
+        <section id="gallery-buttons" class="d-flex flex-column gap-3">
+            <h2 class="h4">Buttons</h2>
+            {% for kind in button_kinds %}
+                <div class="d-flex flex-wrap align-items-center gap-2" data-gallery-sample="button-{{ kind }}">
+                    <code class="gallery-label">{{ kind }}</code>
+                    {{ components.button('Label', kind=kind) }}
+                    {{ components.button('With icon', kind=kind, icon='save') }}
+                    {{ components.button('Small', kind=kind, icon='add', size='sm') }}
+                    {{ components.button('Settings', kind=kind, icon='settings', icon_only=true) }}
+                    {{ components.button('Tooltip', kind=kind, icon='edit', tooltip='An info tooltip.') }}
+                    {{ components.button('Not allowed', kind=kind, icon='delete', allowed=false, reason='The reason it is disabled.') }}
+                </div>
+            {% endfor %}
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <code class="gallery-label">cancel / modal</code>
+                {{ components.cancel_button() }}
+                {{ components.modal_button('#', 'Opens a modal', kind='primary', icon='add') }}
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <code class="gallery-label">icons</code>
+                {% for name in ['add', 'back', 'cancel', 'close', 'confirm', 'copy', 'delete', 'download', 'edit', 'external', 'import', 'print', 'refresh', 'save', 'settings', 'upload'] %}
+                    {{ components.button(name, icon=name, icon_only=true, size='sm') }}
+                {% endfor %}
+            </div>
+        </section>
+
+        <section id="gallery-menus" class="d-flex flex-column gap-3">
+            <h2 class="h4">Menus</h2>
+            <div class="d-flex flex-wrap align-items-start gap-2">
+                {% call components.menu_button('Actions', icon='settings') %}
+                    {{ components.menu_header('A group') }}
+                    {{ components.menu_item('An item', icon='edit') }}
+                    {{ components.menu_item('The active item', icon='confirm', active=true) }}
+                    {{ components.menu_item('Not allowed', icon='delete', allowed=false, reason='The reason it is disabled.') }}
+                    {{ components.menu_divider() }}
+                    {{ components.menu_item('Opens a modal', icon='add', url='#', modal=true) }}
+                {% endcall %}
+                {% call components.menu_button('Create', kind='primary', icon='add', align='end') %}
+                    {{ components.menu_item('First choice') }}
+                    {{ components.menu_item('Second choice') }}
+                {% endcall %}
+                {% call components.menu_button('Not allowed', allowed=false, reason='The reason it is disabled.') %}
+                    {{ components.menu_item('Never shown') }}
+                {% endcall %}
+            </div>
+            <ul class="dropdown-menu position-static d-block" data-gallery-sample="menu-open">
+                {{ components.menu_header('An open menu') }}
+                {{ components.menu_item('An item', icon='edit') }}
+                {{ components.menu_item('The active item', icon='confirm', active=true) }}
+                {{ components.menu_item('Not allowed', icon='delete', allowed=false, reason='The reason it is disabled.') }}
+                {{ components.menu_divider() }}
+                {{ components.menu_item('Last item', icon='copy') }}
+            </ul>
+        </section>
+
+        <section id="gallery-notes" class="d-flex flex-column gap-2" style="max-width: 40rem;">
+            <h2 class="h4">Notes</h2>
+            {% for level in ['info', 'warning', 'danger', 'secondary'] %}
+                {{ components.note(level, 'A ' ~ level ~ ' note, long enough to wrap onto a second line when the page is narrow.', attrs={'data-gallery-sample': 'note-' ~ level}) }}
+            {% endfor %}
+            {{ components.note('warning', 'A compact note, as set among form fields.', compact=true) }}
+            {% call components.note('warning') %}
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="flex-grow-1">A note with an action.</span>
+                    {{ components.button('Update', size='sm', icon='refresh') }}
+                </div>
+            {% endcall %}
+        </section>
+
+        <section id="gallery-badges" class="d-flex flex-column gap-2">
+            <h2 class="h4">Badges</h2>
+            {% for kind in ['primary', 'neutral', 'warning', 'danger', 'success'] %}
+                <div class="d-flex flex-wrap align-items-center gap-2" data-gallery-sample="badge-{{ kind }}">
+                    <code class="gallery-label">{{ kind }}</code>
+                    {{ components.badge(kind, 'Badge') }}
+                    {{ components.badge(kind, 'Pill', pill=true) }}
+                    {{ components.badge(kind, 'Icon', icon='bi-star-fill') }}
+                </div>
+            {% endfor %}
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <code class="gallery-label">delta</code>
+                {{ components.delta_badge(2) }}
+                {{ components.delta_badge(-1.5) }}
+                {{ components.delta_badge(0) }}
+            </div>
+        </section>
+
+        <section id="gallery-banners" class="d-flex flex-column gap-2" style="max-width: 40rem;">
+            <h2 class="h4">Banners</h2>
+            {% for type in ['debug', 'info', 'success', 'warning', 'error'] %}
+                {{ components.banner(type, 'A ' ~ type ~ ' message.') }}
+            {% endfor %}
+            {{ components.banner('info', 'A message that cannot be dismissed, with an icon.', icon='info', dismissible=false) }}
+        </section>
+
+        <section id="gallery-empty-states">
+            <h2 class="h4">Empty states</h2>
+            <div>{{ components.empty_state('Nothing here') }}</div>
+            <div>
+                {% call components.empty_state('No prize bracket') %}
+                    <p>An explanation of what the page holds once something has been created.</p>
+                    <p>Create one now to get started.</p>
+                {% endcall %}
+            </div>
+        </section>
+
+        <section id="gallery-modals" class="d-flex flex-column gap-3">
+            <h2 class="h4">Modals</h2>
+            {% for size, with_doc, with_close, with_footer_start in [
+                ('sm', false, false, false),
+                ('md', true, true, false),
+                ('lg', true, false, true),
+            ] %}
+                <div class="modal gallery-modal">
+                    {% include '/admin/components/gallery/sample_modal.html' %}
+                </div>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock admin_content %}
