@@ -1,10 +1,7 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <button
-    hx-get="{{ url_for('sce-oauth-event-import') }}"
     class="{{ btn_class }}"
-    hx-target="body"
-    hx-indicator="#please-wait"
-    data-bs-toggle="modal"
-    data-bs-target="#modal-wrapper"
+    {{ components.modal_trigger_attrs(url_for('sce-oauth-event-import')) }}
 >
     {{ _('Import from Sharly-Chess.com') }}
 </button>

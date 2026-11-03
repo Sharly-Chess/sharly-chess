@@ -4,136 +4,86 @@
 {% if ffe_utils.supports_ffe_transfer(tournament) %}
     {% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
     {% set team_transfer = ffe_utils.supports_team_transfer(tournament) %}
+    {% set ffe_logo %}
+        <img
+            src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+            style="height: 1.2em"
+            alt=""
+        />
+    {% endset %}
     {% if ffe_actions_unavailable_message %}
-        <li
-            {{ macros.tooltip_attributes(
-                'warning', ffe_actions_unavailable_message, 'top'
-            ) }}
-        >
-            <button
-                class="dropdown-item text-start text-secondary"
-                disabled
-            >
-                <img
-                    src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
-                    style="height: 1.2em"
-                    class="pe-1"
-                    alt=""
-                />
-                {{ _('FFE site') }}
-            </button>
-        </li>
+        {% call components.menu_item(
+            _('FFE site'),
+            allowed=false,
+            reason=ffe_actions_unavailable_message,
+            tooltip_placement='top',
+        ) %}
+            {{ ffe_logo }}<span>{{ _('FFE site') }}</span>
+        {% endcall %}
     {% else %}
-        <li class="dropdown-submenu">
-            <button class="dropdown-item d-flex justify-content-between">
-                <span>
-                    <img
-                        src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
-                        style="height: 1.2em"
-                        class="pe-1"
-                        alt=""
-                    />
-                    {{ _('FFE site') }}
-                </span>
-                <i class="ps-3 bi bi-caret-right-fill"></i>
-            </button>
-            <ul class="dropdown-menu">
+        {% call components.submenu(_('FFE site'), leading=ffe_logo) %}
                 {% if not team_transfer %}
-                <li>
-                    <span
-                        {% if not client.can_publish_results %}
-                            {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
-                        {% else %}
-                            {{ macros.tooltip_attributes('info', _('By default, tournaments are not visible on the FFE site.'), 'right') }}
-                        {% endif %}
-                    >
-                        <button
-                            class="dropdown-item text-nowrap"
-                            {% if client.can_publish_results %}
-                                hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% else %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi bi-eye-fill pe-1"></i>
-                            {{ _('Make visible on FFE site') }}
-                        </button>
-                    </span>
-                </li>
+                    {{ components.menu_item(
+                        _('Make visible on FFE site'),
+                        icon='bi-eye-fill',
+                        allowed=client.can_publish_results,
+                        reason=_('You are not allowed to publish results.'),
+                        tooltip=_('By default, tournaments are not visible on the FFE site.'),
+                        attrs={
+                            'hx-post': url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 {% endif %}
-                <li>
-                    <span
-                        {% if not client.can_publish_results %}
-                            {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
-                        {% endif %}
-                    >
-                        <button
-                            class="dropdown-item text-nowrap"
-                            {% if client.can_publish_results %}
-                                hx-post="{{ url_for('ffe-upload-single-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% else %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                            {{ _('Upload to the FFE site') }}
-                        </button>
-                    </span>
-                </li>
+                {{ components.menu_item(
+                    _('Upload to the FFE site'),
+                    icon='bi-cloud-arrow-up-fill',
+                    allowed=client.can_publish_results,
+                    reason=_('You are not allowed to publish results.'),
+                    attrs={
+                        'hx-post': url_for('ffe-upload-single-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
                 {% if not team_transfer %}
-                <li>
-                    <span
-                        {% if not client.can_download_fees %}
-                            {{ macros.tooltip_attributes('warning', _('You are not allowed to download fees.'), 'right') }}
-                        {% else %}
-                            {{ macros.tooltip_attributes('info', _('Download the fees that the organizer should pay to the FFE.'), 'right') }}
-                        {% endif %}
-                    >
-                        <button
-                            id="ffe-extract-fees-button"
-                            class="dropdown-item text-nowrap"
-                            {% if client.can_download_fees %}
-                                hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% else %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
-                            {{ _('Download fees') }}
-                        </button>
-                    </span>
-                </li>
-                {# A period already submitted is sent again on its own, under
-                   the registration it was declared with — what a correction
-                   to a rated period needs. #}
-                {% if tournament.periods|length > 1 and client.can_publish_results %}
-                    {% for period in tournament.periods %}
-                        <li>
-                            <button
-                                class="dropdown-item text-nowrap small"
-                                hx-post="{{ url_for(
-                                    'ffe-upload-single-tournament',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id,
-                                ) }}?period_id={{ period.id }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            >
-                                <i class="bi-arrow-return-right pe-1"></i>
-                                {{ _('Upload period %(index)d', index=loop.index) }}
-                                · {{ period.rounds_str }}
-                            </button>
-                        </li>
-                    {% endfor %}
+                    {{ components.menu_item(
+                        _('Download fees'),
+                        icon='bi-file-earmark-arrow-up-fill',
+                        allowed=client.can_download_fees,
+                        reason=_('You are not allowed to download fees.'),
+                        tooltip=_('Download the fees that the organizer should pay to the FFE.'),
+                        attrs={
+                            'id': 'ffe-extract-fees-button',
+                            'hx-get': url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
+                    {# A period already submitted is sent again on its own, under
+                       the registration it was declared with — what a correction
+                       to a rated period needs. #}
+                    {% if tournament.periods|length > 1 and client.can_publish_results %}
+                        {% for period in tournament.periods %}
+                            {% call components.menu_item(
+                                _('Upload period %(index)d', index=loop.index),
+                                icon='bi-arrow-return-right',
+                                attrs={
+                                    'hx-post': url_for(
+                                        'ffe-upload-single-tournament',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                    ) ~ '?period_id=' ~ period.id,
+                                    'hx-target': 'body',
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) %}
+                                <span class="small">{{ _('Upload period %(index)d', index=loop.index) }} · {{ period.rounds_str }}</span>
+                            {% endcall %}
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
-                {% endif %}
-            </ul>
-        </li>
+        {% endcall %}
     {% endif %}
 {% endif %}

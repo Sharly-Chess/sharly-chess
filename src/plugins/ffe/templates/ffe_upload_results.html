@@ -111,62 +111,58 @@
                         ><i class="bi bi-box-arrow-up-right"></i></a>
                     {% endif %}
                     {% if not ffe_utils.is_configured(tournament) %}
-                        <span {{ macros.tooltip_attributes('', _('Edit the properties of the tournament.')) }}>
-                            <button
-                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                hx-get="{{ url_for(
-                                    'admin-tournament-modal',
-                                    action='update',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id
-                                ) }}?redirect_to={{ url_for(
-                                    'ffe-upload-modal', event_uniq_id=admin_event.uniq_id
-                                ) }}"
-                            >
-                                <i class="bi-pencil-fill lh-1"></i>
-                            </button>
-                        </span>
+                        {{ components.modal_button(
+                            url_for(
+                                'admin-tournament-modal',
+                                action='update',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=tournament.id
+                            ) ~ '?redirect_to=' ~ url_for('ffe-upload-modal', event_uniq_id=admin_event.uniq_id),
+                            _('Edit the properties of the tournament.'),
+                            icon='edit',
+                            size='sm',
+                            icon_only=true,
+                            from_modal=true,
+                        ) }}
                     {% else %}
                         {% if not team_transfer %}
-                        <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                hx-post="{{ url_for(
-                                    'ffe-modal-make-visible',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id
-                                ) }}"
-                                hx-target="#upload-results"
-                                hx-swap="outerHTML"
-                                hx-indicator="#please-wait"
-                                {% if actions_unavailable_message %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi-eye lh-1"></i>
-                            </button>
-                        </span>
+                            {{ components.button(
+                                _('Make visible on FFE site'),
+                                icon='bi-eye',
+                                size='sm',
+                                icon_only=true,
+                                allowed=not actions_unavailable_message,
+                                reason=actions_unavailable_message,
+                                attrs={
+                                    'hx-post': url_for(
+                                        'ffe-modal-make-visible',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id
+                                    ),
+                                    'hx-target': '#upload-results',
+                                    'hx-swap': 'outerHTML',
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) }}
                         {% endif %}
-                        <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                hx-post="{{ url_for(
+                        {{ components.button(
+                            _('Upload'),
+                            icon='bi-cloud-arrow-up-fill',
+                            size='sm',
+                            icon_only=true,
+                            allowed=not actions_unavailable_message,
+                            reason=actions_unavailable_message,
+                            attrs={
+                                'hx-post': url_for(
                                     'ffe-modal-upload-tournament',
                                     event_uniq_id=admin_event.uniq_id,
                                     tournament_id=tournament.id
-                                ) }}"
-                                hx-target="#upload-results"
-                                hx-swap="outerHTML"
-                                hx-indicator="#please-wait"
-                                {% if actions_unavailable_message %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                            </button>
-                        </span>
+                                ),
+                                'hx-target': '#upload-results',
+                                'hx-swap': 'outerHTML',
+                                'hx-indicator': '#please-wait',
+                            },
+                        ) }}
                     {% endif %}
                 </td>
             </tr>
@@ -206,48 +202,46 @@
                                 ><i class="bi bi-box-arrow-up-right"></i></a>
                             {% endif %}
                             {% if period_plugin_data.ffe_id and period_plugin_data.password %}
-                                <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Make visible on FFE site')) }}>
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                        hx-post="{{ url_for(
+                                {{ components.button(
+                                    _('Make visible on FFE site'),
+                                    icon='bi-eye',
+                                    size='sm',
+                                    icon_only=true,
+                                    allowed=not actions_unavailable_message,
+                                    reason=actions_unavailable_message,
+                                    attrs={
+                                        'hx-post': url_for(
                                             'ffe-modal-make-period-visible',
                                             event_uniq_id=admin_event.uniq_id,
                                             tournament_id=tournament.id,
                                             period_id=period.id,
-                                        ) }}"
-                                        hx-target="#upload-results"
-                                        hx-swap="outerHTML"
-                                        hx-indicator="#please-wait"
-                                        hx-disabled-elt="this"
-                                        {% if actions_unavailable_message %}
-                                            disabled
-                                        {% endif %}
-                                    >
-                                        <i class="bi-eye lh-1"></i>
-                                    </button>
-                                </span>
-                                <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                        hx-post="{{ url_for(
+                                        ),
+                                        'hx-target': '#upload-results',
+                                        'hx-swap': 'outerHTML',
+                                        'hx-indicator': '#please-wait',
+                                        'hx-disabled-elt': 'this',
+                                    },
+                                ) }}
+                                {{ components.button(
+                                    _('Upload'),
+                                    icon='bi-cloud-arrow-up-fill',
+                                    size='sm',
+                                    icon_only=true,
+                                    allowed=not actions_unavailable_message,
+                                    reason=actions_unavailable_message,
+                                    attrs={
+                                        'hx-post': url_for(
                                             'ffe-modal-upload-period',
                                             event_uniq_id=admin_event.uniq_id,
                                             tournament_id=tournament.id,
                                             period_id=period.id,
-                                        ) }}"
-                                        hx-target="#upload-results"
-                                        hx-swap="outerHTML"
-                                        hx-indicator="#please-wait"
-                                        hx-disabled-elt="this"
-                                        {% if actions_unavailable_message %}
-                                            disabled
-                                        {% endif %}
-                                    >
-                                        <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                                    </button>
-                                </span>
+                                        ),
+                                        'hx-target': '#upload-results',
+                                        'hx-swap': 'outerHTML',
+                                        'hx-indicator': '#please-wait',
+                                        'hx-disabled-elt': 'this',
+                                    },
+                                ) }}
                             {% endif %}
                         </td>
                     </tr>

@@ -1,46 +1,28 @@
 {# The Chess-Results upload reports a game-point score, so it is not
    offered for a pairing system whose score is not game points. #}
 {% if tournament.pairing_system.uses_result_points %}
-<li class="dropdown-submenu">
-    <button class="dropdown-item d-flex justify-content-between">
-        <span>
-            <img
-                src="{{ url_for('static', file_path='/images/chess-results.png') }}?version={{ sharly_chess_config.version }}"
-                style="height: 1.2em"
-                class="pe-1"
-                alt=""
-            />
-            {{ _('Chess-Results.com') }}
-        </span>
-        <i class="ps-3 bi bi-caret-right-fill"></i>
-    </button>
-    <ul class="dropdown-menu">
-
-        <li>
-            <span
-                {% if not client.can_publish_results %}
-                    {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
-                {% endif %}
-            >
-                <button
-                    class="dropdown-item text-nowrap"
-                    {% if client.can_publish_results %}
-                        hx-post="{{ url_for(
-                            'chess-results-upload-tournament-from-card',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=tournament.id
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    {% else %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ _('Upload to Chess-Results.com') }}
-                </button>
-            </span>
-        </li>
-    </ul>
-</li>
+{% set chess_results_logo %}
+    <img
+        src="{{ url_for('static', file_path='/images/chess-results.png') }}?version={{ sharly_chess_config.version }}"
+        style="height: 1.2em"
+        alt=""
+    />
+{% endset %}
+{% call components.submenu(_('Chess-Results.com'), leading=chess_results_logo) %}
+        {{ components.menu_item(
+            _('Upload to Chess-Results.com'),
+            icon='bi-cloud-arrow-up-fill',
+            allowed=client.can_publish_results,
+            reason=_('You are not allowed to publish results.'),
+            attrs={
+                'hx-post': url_for(
+                    'chess-results-upload-tournament-from-card',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=tournament.id
+                ),
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+{% endcall %}
 {% endif %}
