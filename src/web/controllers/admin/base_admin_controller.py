@@ -17,6 +17,7 @@ from web.admin.collection import (
     resolve_admin_collection_view_mode,
 )
 from web.controllers.base_controller import BaseController, WebContext
+from web.session import SessionAdminTheme
 from web.utils import RequestUtils
 
 
@@ -73,7 +74,12 @@ class AdminWebContext(WebContext):
 
     @property
     def theme(self) -> str:
-        return SharlyChessConfig().stored_config.admin_theme
+        """The theme set in the application window on the server; a client
+        connected over the network chooses its own, following its system's
+        appearance until it does."""
+        if self.client.is_local:
+            return SharlyChessConfig().stored_config.admin_theme
+        return SessionAdminTheme(self.request).get()
 
     @property
     def interface(self) -> str:

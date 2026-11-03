@@ -591,25 +591,14 @@ body[data-sc-interface=admin] #sidebar-expander {
     }
 }
 
-/* The profile modal's header row is padded on the right to keep clear of the
-   close button. On a phone the language picker drops to a row of its own,
-   below the close button, so that padding only holds it short of the edge:
-   let the row and its two columns run edge to edge of the header instead.
-   !important throughout, as the utilities being undone are. */
-@media (max-width: 575.98px) {
-    .admin-profile-modal .modal-header > .row {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        padding-right: 0 !important;
-    }
-
-    .admin-profile-modal .modal-header > .row > .col-12:first-child {
-        padding-left: 0;
-    }
-
-    .profile-locale-picker {
-        padding-right: 0;
-    }
+/* The display preferences of the profile modal: each label beside its
+   control. */
+.profile-preferences {
+    display: grid;
+    grid-template-columns: max-content auto;
+    justify-content: start;
+    align-items: center;
+    gap: .75rem 1.5rem;
 }
 
 /* A modal is sized against the layout viewport, which on a phone is as wide

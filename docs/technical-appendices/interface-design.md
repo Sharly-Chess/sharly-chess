@@ -63,7 +63,9 @@ The administration follows the appearance of the system by default, or is forced
 configuration: `auto`, `dark` or `light`). Its controllers set `theme` from that setting
 and `interface` to `admin`, and `macros.theme_script` puts both on `<body>` (htmx cannot
 change the attributes of the body itself), resolving `auto` with `prefers-color-scheme`
-and switching when the system does.
+and switching when the system does. That setting is the server's own: a client connected
+over the network follows the appearance of its system, and can choose a theme for its
+session in its profile (`SessionAdminTheme`).
 
 Both themes share every rule; only the tokens differ, defined in
 `[data-sc-interface=admin][data-bs-theme=dark]` and `…[data-bs-theme=light]` in

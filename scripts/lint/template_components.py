@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BASELINE_PATH = Path(__file__).with_name('template_components_baseline.json')
 
 ADMIN_TEMPLATES = ROOT / 'src/web/templates/admin'
+PROFILE_TEMPLATES = ROOT / 'src/web/templates/common/profile'
 EXCLUDED_DIRECTORIES = (ADMIN_TEMPLATES / 'components', ADMIN_TEMPLATES / 'print')
 PLUGIN_TEMPLATES_GLOB = 'src/plugins/*/templates'
 TEMPLATE_SUFFIXES = ('.html', '.j2')
@@ -121,7 +122,11 @@ Counts = dict[str, dict[str, int]]
 
 def template_paths() -> Iterator[Path]:
     """The templates the check covers, in a stable order."""
-    roots = [ADMIN_TEMPLATES, *sorted(ROOT.glob(PLUGIN_TEMPLATES_GLOB))]
+    roots = [
+        ADMIN_TEMPLATES,
+        PROFILE_TEMPLATES,
+        *sorted(ROOT.glob(PLUGIN_TEMPLATES_GLOB)),
+    ]
     for root in roots:
         for path in sorted(root.rglob('*')):
             if (

@@ -421,6 +421,25 @@ class SessionLocale(SessionVariable[str]):
         return locale
 
 
+class SessionAdminTheme(SessionVariable[str]):
+    """The theme of the administration chosen by a client connected over the
+    network: `auto` (its system's appearance), `dark` or `light`."""
+
+    THEMES = ('auto', 'dark', 'light')
+
+    @property
+    def key(self) -> str:
+        return 'admin_theme'
+
+    @property
+    def default_value(self) -> str:
+        return 'auto'
+
+    def get(self) -> str:
+        theme = super().get()
+        return theme if theme in self.THEMES else self.default_value
+
+
 class SessionPlayersSearch(EventNoneSessionVariable[str]):
     @property
     def key(self) -> str:
