@@ -75,11 +75,11 @@
 {# `content` in the tooltip of a disabled action (its reason) or of an
    enabled one. A disabled button fires no event, so the tooltip goes on a
    span around it. #}
-{%- macro _with_tooltip(content, allowed, reason, tooltip, placement) -%}
+{%- macro _with_tooltip(content, allowed, reason, tooltip, placement, tooltip_type='info') -%}
     {%- if not allowed and reason -%}
         <span class="sc-tooltip-wrapper" {{ macros.tooltip_attributes('warning', reason, placement) }}>{{ content }}</span>
     {%- elif allowed and tooltip -%}
-        <span class="sc-tooltip-wrapper" {{ macros.tooltip_attributes('info', tooltip, placement) }}>{{ content }}</span>
+        <span class="sc-tooltip-wrapper" {{ macros.tooltip_attributes(tooltip_type, tooltip, placement) }}>{{ content }}</span>
     {%- else -%}
         {{ content }}
     {%- endif -%}
@@ -96,7 +96,8 @@
         without another tooltip, its tooltip.
     allowed / reason: when not allowed, the button is disabled, does nothing,
         and shows the reason in a tooltip.
-    tooltip: the tooltip of the enabled button.
+    tooltip: the tooltip of the enabled button, of the kind tooltip_type
+        (info or warning).
     A `{% call %}` replaces the label with richer content.
 #}
 {% macro button(
@@ -109,6 +110,7 @@
     allowed=true,
     reason=none,
     tooltip=none,
+    tooltip_type='info',
     tooltip_placement='top',
     class='',
     attrs={}
@@ -126,7 +128,7 @@
             {%- if content %}{{ content }}{% endif -%}
         </button>
     {%- endset -%}
-    {{- _with_tooltip(markup, allowed, reason, tooltip or (label if icon_only else none), tooltip_placement) -}}
+    {{- _with_tooltip(markup, allowed, reason, tooltip or (label if icon_only else none), tooltip_placement, tooltip_type) -}}
 {%- endmacro %}
 
 {# The Cancel button of a modal footer. #}
@@ -140,7 +142,9 @@
     hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" data-bs-toggle="modal" data-bs-target="#modal-wrapper"
 {%- endmacro -%}
 
-{# A button that opens the modal at `url`; it takes the arguments of `button`. #}
+{# A button that opens the modal at `url`; it takes the arguments of `button`.
+   from_modal: the button sits in a modal, whose place the new one takes; it
+   leaves out the Bootstrap toggle, which would close the open modal. #}
 {% macro modal_button(
     url,
     label,
@@ -152,6 +156,7 @@
     reason=none,
     tooltip=none,
     tooltip_placement='top',
+    from_modal=false,
     class='',
     attrs={}
 ) -%}
@@ -159,9 +164,10 @@
         'hx-get': url,
         'hx-target': 'body',
         'hx-indicator': '#please-wait',
-        'data-bs-toggle': 'modal',
-        'data-bs-target': '#modal-wrapper',
     } -%}
+    {%- if not from_modal -%}
+        {%- do merged.update({'data-bs-toggle': 'modal', 'data-bs-target': '#modal-wrapper'}) -%}
+    {%- endif -%}
     {%- do merged.update(attrs) -%}
     {{- button(
         label, kind=kind, icon=icon, size=size, icon_only=icon_only,
@@ -386,7 +392,12 @@
     </div>
 {%- endmacro %}
 
-{# The heading of a part of a modal body or a form. #}
-{% macro section_heading(text, class='') -%}
-    <h3 class="sc-section-heading{% if class %} {{ class }}{% endif %}">{{ text }}</h3>
+{# The heading of a part of a modal body or a form; `sub` for a part within
+   a part. #}
+{% macro section_heading(text, sub=false, class='') -%}
+    {%- if sub -%}
+        <h4 class="sc-section-subheading{% if class %} {{ class }}{% endif %}">{{ text }}</h4>
+    {%- else -%}
+        <h3 class="sc-section-heading{% if class %} {{ class }}{% endif %}">{{ text }}</h3>
+    {%- endif -%}
 {%- endmacro %}
