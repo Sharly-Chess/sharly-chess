@@ -13,10 +13,9 @@
 {% block body %}
             {% if pp_locked %}
                 {# Round already paired → frozen snapshot, read-only. #}
-                <div class="text-muted small mb-3">
-                    <i class="bi-lock-fill pe-1"></i>
+                {% call components.icon_text('bi-lock-fill', tag='div', class='text-muted small mb-3') %}
                     {{ _('This round is paired; the prohibited pairings used are frozen.') }}
-                </div>
+                {% endcall %}
                 {% if pp_snapshot_groups %}
                     <ul class="list-group">
                         {% for group in pp_snapshot_groups %}
@@ -32,13 +31,12 @@
                     </ul>
                     {% if pp_protect_rank is not none %}
                         <div class="mt-2">
-                            <a
-                                class="small"
-                                data-bs-toggle="collapse"
-                                href="#pp-applied-groups"
-                                role="button"
-                            >
-                                <i class="bi-chevron-down pe-1"></i>
+                            {% call components.icon_text(
+                                'bi-chevron-down',
+                                tag='a',
+                                class='small',
+                                attrs={'data-bs-toggle': 'collapse', 'href': '#pp-applied-groups', 'role': 'button'},
+                            ) %}
                                 {{ _(
                                     '%(n)d teams freed from their soft constraints',
                                     n=pp_released | length
@@ -46,7 +44,7 @@
                                     '%(n)d players freed from their soft constraints',
                                     n=pp_released | length
                                 ) }}
-                            </a>
+                            {% endcall %}
                             <div class="collapse mt-1" id="pp-applied-groups">
                                 <div class="text-muted small mb-1">
                                     {% if pp_is_team %}
@@ -169,19 +167,18 @@
 
                 {% if pp_dimension %}
                     <div class="mt-2">
-                        <a
-                            class="small"
-                            data-bs-toggle="collapse"
-                            href="#pp-auto-groups"
-                            role="button"
-                        >
-                            <i class="bi-chevron-down pe-1"></i>
+                        {% call components.icon_text(
+                            'bi-chevron-down',
+                            tag='a',
+                            class='small',
+                            attrs={'data-bs-toggle': 'collapse', 'href': '#pp-auto-groups', 'role': 'button'},
+                        ) %}
                             {% trans count=pp_auto_groups | length -%}
                                 {{ count }} automatic group
                             {%- pluralize -%}
                                 {{ count }} automatic groups
                             {%- endtrans %}
-                        </a>
+                        {% endcall %}
                         <div class="collapse mt-1" id="pp-auto-groups">
                             {% if pp_auto_groups %}
                                 <ul class="list-group">

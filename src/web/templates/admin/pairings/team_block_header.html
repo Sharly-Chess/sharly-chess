@@ -46,15 +46,11 @@
                     {% endif %}
                     <a
                         class="player-link {{ 'text-decoration-line-through' if ko_loser_id == team_board.team_a.id }}"
-                        hx-get="{{ url_for(
+                        {{ components.modal_trigger_attrs(url_for(
                             'admin-team-record-modal',
                             event_uniq_id=admin_event.uniq_id,
                             team_id=team_board.team_a.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        )) }}
                         onclick="event.stopPropagation()"
                     >{{ team_board.team_a.name }}</a>
                     {{ pairing_components.team_points_badge(
@@ -67,15 +63,11 @@
                         type="button"
                         class="team-header-lineup-a btn btn-sm btn-outline-primary ms-2 d-inline-flex align-items-center justify-content-center"
                         style="height: {{ header_button_height }};"
-                        hx-get="{{ url_for(
+                        {{ components.modal_trigger_attrs(url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
                             team_id=team_board.team_a.id,
-                        ) }}?round={{ team_board.round }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        ) ~ '?round=' ~ team_board.round) }}
                         onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
@@ -116,32 +108,7 @@
             {% if admin_tournament.pairing_system.show_unpaired_team_modal or ko_adv %}
                 {# A locked round is read-only: the score (with its advancement
                    marker) shows as plain text rather than a modal button. #}
-                {% if round_locked is defined and round_locked %}
-                <span
-                    class="d-inline-block position-relative text-nowrap text-center align-middle
-                        {% if team_board.all_games_played %}fw-bold{% endif %} {{ _score_classes }}"
-                    style="{{ _score_style }}"
-                >
-                {% else %}
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-primary position-relative
-                        {% if team_board.all_games_played %}fw-bold{% endif %} text-nowrap {{ _score_classes }}"
-                    style="{{ _score_style }}"
-                    hx-get="{{ url_for(
-                        'admin-event-team-pairing-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=team_board.round,
-                        team_board_id=team_board.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    onclick="event.stopPropagation()"
-                >
-                {% endif %}
+                {% set _score_content %}
                     {{ _score_text | trim }}
                     {{ _effective_text | trim }}
                     {# Markers live inside the button/text so hover/click count
@@ -163,7 +130,35 @@
                                 style="top: 2px; right: 3px; font-size: 0.6rem; line-height: 1;"></i>
                         </span>
                     {% endif %}
-                {% if round_locked is defined and round_locked %}</span>{% else %}</button>{% endif %}
+                {% endset %}
+                {% if round_locked is defined and round_locked %}
+                    <span
+                        class="d-inline-block position-relative text-nowrap text-center align-middle
+                            {% if team_board.all_games_played %}fw-bold{% endif %} {{ _score_classes }}"
+                        style="{{ _score_style }}"
+                    >{{ _score_content }}</span>
+                {% else %}
+                    {% call components.button(
+                        '',
+                        size='sm',
+                        class='position-relative gap-0 ' ~ ('fw-bold ' if team_board.all_games_played else '') ~ _score_classes,
+                        attrs={
+                            'style': _score_style,
+                            'hx-get': url_for(
+                                'admin-event-team-pairing-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=team_board.round,
+                                team_board_id=team_board.id,
+                            ),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                            'data-bs-toggle': 'modal',
+                            'data-bs-target': '#modal-wrapper',
+                            'onclick': 'event.stopPropagation()',
+                        },
+                    ) %}{{ _score_content }}{% endcall %}
+                {% endif %}
             {% else %}
                 {# Fixed-schedule systems (round-robin, two-game match): the
                    match belongs to a fixed schedule and can't be unpaired, so
@@ -178,15 +173,11 @@
                         type="button"
                         class="team-header-lineup-b btn btn-sm btn-outline-primary me-2 d-inline-flex align-items-center justify-content-center"
                         style="height: {{ header_button_height }};"
-                        hx-get="{{ url_for(
+                        {{ components.modal_trigger_attrs(url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
                             team_id=team_board.team_b.id,
-                        ) }}?round={{ team_board.round }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
+                        ) ~ '?round=' ~ team_board.round) }}
                         onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
@@ -197,15 +188,11 @@
                     {% if team_board.team_b %}
                         <a
                             class="player-link {{ 'text-decoration-line-through' if ko_loser_id == team_board.team_b.id }}"
-                            hx-get="{{ url_for(
+                            {{ components.modal_trigger_attrs(url_for(
                                 'admin-team-record-modal',
                                 event_uniq_id=admin_event.uniq_id,
                                 team_id=team_board.team_b.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                            )) }}
                             onclick="event.stopPropagation()"
                         >{{ team_board.team_b.name }}</a>
                         {{ pairing_components.team_points_badge(

@@ -62,9 +62,7 @@
                 'hx-indicator': '#please-wait',
             },
         ) }}
-        <span class="text-nowrap">
-            <i class="bi-flag pe-1"></i><span class="fw-bold">{{ count }}</span>
-        </span>
+        {% call components.icon_text('bi-flag', class='fw-bold') %}{{ count }}{% endcall %}
         {{ components.button(
             _('Add'),
             icon='add',
@@ -516,11 +514,13 @@
                                 {% endif %}
                             </div>
                         {% elif not ko_adv.manual_reached %}
-                            <div class="text-warning mb-2">
-                                <i class="bi-exclamation-triangle-fill pe-1"></i>
-                                {{ _('No tie-break decides this drawn game. Add the '
-                                    '"Manual" tie-break to hold a play-off.') }}
-                            </div>
+                            {{ components.note(
+                                'warning',
+                                _('No tie-break decides this drawn game. Add the '
+                                    '"Manual" tie-break to hold a play-off.'),
+                                compact=true,
+                                class='mb-2',
+                            ) }}
                         {% endif %}
                         {% if ko_adv.breakdown %}
                             <table class="table table-sm">

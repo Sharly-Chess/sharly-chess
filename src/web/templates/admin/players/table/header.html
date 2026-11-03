@@ -1,5 +1,8 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% if components is not defined %}
+    {% import '/admin/components/macros.j2' as components with context %}
+{% endif %}
 
 <thead
     id="players-table-header"
@@ -13,23 +16,29 @@
         <th colspan="3" class="text-nowrap compact-col">
             {# Covers the buttons, index and title columns #}
             <div class="d-flex align-items-center">
-                <i
-                    class="bi-arrow-clockwise btn text-dark compact-y-padding ps-0 pe-1 m-0"
-                    hx-get="{{ url }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}
-                ></i>
+                {{ components.button(
+                    _('Refresh this page.'),
+                    kind='plain',
+                    icon='refresh',
+                    icon_only=true,
+                    class='compact-y-padding ps-0 pe-1 m-0',
+                    attrs={'hx-get': url, 'hx-target': 'body', 'hx-indicator': '#please-wait'},
+                ) }}
                 <span id="players-table-counters" class="px-0">
                     {{ filtered_player_count }}/{{ allowed_players|length }}
                 </span>
-                <i
-                    class="bi-x-circle btn text-dark compact-y-padding ps-1 pe-0 m-0"
-                    hx-get="{{ url_for('admin-event-players-clear-filters', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {{ macros.tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
-                ></i>
+                {{ components.button(
+                    _('Clear all the filters.'),
+                    kind='plain',
+                    icon='bi-x-circle',
+                    icon_only=true,
+                    class='compact-y-padding ps-1 pe-0 m-0',
+                    attrs={
+                        'hx-get': url_for('admin-event-players-clear-filters', event_uniq_id=admin_event.uniq_id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
             </div>
         </th>
         {% for column in visible_columns %}

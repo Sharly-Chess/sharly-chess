@@ -29,16 +29,18 @@
             <tr>
                 <th colspan="{% if admin_tournament.pairing_system.show_unpaired_player_modal or _flat_team_repair %}3{% else %}2{% endif %}">
                     {% if _collapsed %}
-                        <button
-                            class="btn btn-sm p-0 border-0 bg-transparent text-reset"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#{{ table_id }}-body"
-                            aria-expanded="false"
-                        >
-                            <i class="bi-caret-right-fill"></i>
-                            {{ title }} ({{ unpaired_players|length + _holes|length }})
-                        </button>
+                        {{ components.button(
+                            title ~ ' (' ~ (unpaired_players|length + _holes|length) ~ ')',
+                            kind='plain',
+                            icon='bi-caret-right-fill',
+                            size='sm',
+                            class='p-0 border-0 bg-transparent text-reset',
+                            attrs={
+                                'data-bs-toggle': 'collapse',
+                                'data-bs-target': '#' ~ table_id ~ '-body',
+                                'aria-expanded': 'false',
+                            },
+                        ) }}
                     {% else %}
                         {{ title }} ({{ unpaired_players|length + _holes|length }})
                     {% endif %}
@@ -63,17 +65,13 @@
                     {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
                         <td
                             class="text-end text-nowrap cursor-pointer"
-                            hx-get="{{ url_for(
+                            {{ components.modal_trigger_attrs(url_for(
                                 'pairings-unpaired-player-modal',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 round=admin_round,
                                 player_id=tournament_player.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                            )) }}
                         >
                             {% if status not in (0, 4, 5) %}
                                 {% set status_no_bye = tournament_player.check_in_status_no_bye %}
@@ -100,15 +98,15 @@
                         </td>
                     {% elif _can_flat_pair %}
                         <td class="text-end text-nowrap">
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                data-pair-entity="p{{ tournament_player.id }}"
-                                onclick="flatPairToggle(this)"
-                                {{ macros.tooltip_attributes('', _('Select to pair (White, then pick the opponent)'), 'right') }}
-                            >
-                                <i class="bi-arrow-left-right"></i>
-                            </button>
+                            {{ components.button(
+                                _('Select to pair (White, then pick the opponent)'),
+                                icon='bi-arrow-left-right',
+                                size='sm',
+                                icon_only=true,
+                                tooltip_type='',
+                                tooltip_placement='right',
+                                attrs={'data-pair-entity': 'p' ~ tournament_player.id, 'onclick': 'flatPairToggle(this)'},
+                            ) }}
                         </td>
                     {% endif %}
                 </tr>
@@ -124,15 +122,15 @@
                     <td></td>
                     {% if _can_flat_pair %}
                         <td class="text-end text-nowrap">
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                data-pair-entity="h{{ hole.index }}"
-                                onclick="flatPairToggle(this)"
-                                {{ macros.tooltip_attributes('', _('Select this empty table (forfeit for the paired player)'), 'right') }}
-                            >
-                                <i class="bi-arrow-left-right"></i>
-                            </button>
+                            {{ components.button(
+                                _('Select this empty table (forfeit for the paired player)'),
+                                icon='bi-arrow-left-right',
+                                size='sm',
+                                icon_only=true,
+                                tooltip_type='',
+                                tooltip_placement='right',
+                                attrs={'data-pair-entity': 'h' ~ hole.index, 'onclick': 'flatPairToggle(this)'},
+                            ) }}
                         </td>
                     {% endif %}
                 </tr>

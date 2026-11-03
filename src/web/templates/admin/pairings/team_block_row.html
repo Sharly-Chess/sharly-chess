@@ -109,22 +109,19 @@
                 {% if display_result_str %}{{ display_result_str }}{% else %}-{% endif %}
             </span>
             {% else %}
-            <button
-                class="btn btn-sm btn-outline-primary text-nowrap"
-                style="width: 4.5rem;"
-                {% if not allowed or has_hole or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
-                    disabled
-                {% else %}
-                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
-                    hx-trigger="click"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                {% endif %}
-            >
-                {% if display_result_str %}{{ display_result_str }}{% else %}-{% endif %}
-            </button>
+            {% call components.button(
+                '',
+                size='sm',
+                allowed=allowed and not has_hole and ('MANUAL_UNPAIRING' in existing_actions or not board.exempt),
+                attrs={
+                    'style': 'width: 4.5rem;',
+                    'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                    'data-bs-toggle': 'modal',
+                    'data-bs-target': '#modal-wrapper',
+                },
+            ) %}{% if display_result_str %}{{ display_result_str }}{% else %}-{% endif %}{% endcall %}
             {% endif %}
         </span>
     </td>

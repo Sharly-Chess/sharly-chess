@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div id="ratings-check-banner" class="window-width table-status-bar-wrapper">
     <div class="table-status-bar" role="status">
         <span class="table-status-bar-dot" aria-hidden="true"></span>
@@ -8,17 +9,19 @@
                 count,
             ) }}
         </span>
-        <button
-            type="button"
-            class="btn btn-sm table-status-bar-action text-nowrap"
-            hx-get="{{ url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab='players') }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            {{ _('Review') }}<i class="bi-arrow-right ps-1" aria-hidden="true"></i>
-        </button>
+        {% call components.button(
+            _('Review'),
+            kind='plain',
+            size='sm',
+            class='table-status-bar-action',
+            attrs={
+                'hx-get': url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab='players'),
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#modal-wrapper',
+            },
+        ) %}{{ _('Review') }}{{ components.icon('bi-arrow-right') }}{% endcall %}
         <button
             type="button"
             class="btn-close"

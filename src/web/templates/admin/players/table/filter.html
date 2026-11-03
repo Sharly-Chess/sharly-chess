@@ -35,10 +35,14 @@
                     {% if column.all_filter_value_active %}checked{% endif %}
                     onclick="$('input.filter-{{ column.id }}').prop('checked', this.checked)"
                 />
-                <button type="submit" class="btn w-100 text-end compact-y-padding" data-bs-dismiss="modal" >
-                    <i class="bi-check-lg pe-1"></i>
-                    {{ _('OK') }}
-                </button>
+                {{ components.button(
+                    _('OK'),
+                    kind='plain',
+                    icon='bi-check-lg',
+                    type='submit',
+                    class='w-100 justify-content-end compact-y-padding',
+                    attrs={'data-bs-dismiss': 'modal'},
+                ) }}
             </li>
             <li class="dropdown-divider m-0"></li>
             {% for filter_value in column.filter_values %}

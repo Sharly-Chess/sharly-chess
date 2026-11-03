@@ -61,13 +61,14 @@
             >
         </td>
         <td class="text-end">
-            <button
-                type="button"
-                class="btn btn-sm btn-outline-danger delete-custom-acceleration-row"
-                aria-label="{{ _('Delete') }}"
-            >
-                <i class="bi-trash-fill"></i>
-            </button>
+            {{ components.button(
+                _('Delete'),
+                kind='outline-danger',
+                icon='bi-trash-fill',
+                size='sm',
+                icon_only=true,
+                class='delete-custom-acceleration-row',
+            ) }}
         </td>
     </tr>
     {% set row_errors = [
@@ -119,13 +120,13 @@
 <div id="custom-acceleration-empty" class="fst-italic small mb-2">
     {{ _('No acceleration.') }}
 </div>
-<button
-    type="button"
-    id="add-custom-acceleration-row"
-    class="btn btn-sm btn-outline-primary mb-3"
->
-    <i class="bi-plus-circle pe-1"></i>{{ _('Add accelerated rounds') }}
-</button>
+{{ components.button(
+    _('Add accelerated rounds'),
+    icon='bi-plus-circle',
+    size='sm',
+    class='mb-3',
+    attrs={'id': 'add-custom-acceleration-row'},
+) }}
 <template id="custom-acceleration-row-template">
     {{ rule_row('ROW_INDEX') }}
 </template>

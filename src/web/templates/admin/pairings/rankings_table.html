@@ -14,20 +14,20 @@
         </h4>
         <div class="flex-grow-1"></div>
         {% if admin_tournament.tie_break_configuration.has_manual_values %}
-            <button
-                class="btn btn-outline-primary text-nowrap mb-3"
-                hx-post="{{ url_for(
-                    'admin-manual-tiebreak-reset',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-
-            >
-                <i class="bi bi-arrow-clockwise pe-1"></i>
-                {{ _('Reset manual tie-break') }}
-            </button>
+            {{ components.button(
+                _('Reset manual tie-break'),
+                icon='refresh',
+                class='mb-3',
+                attrs={
+                    'hx-post': url_for(
+                        'admin-manual-tiebreak-reset',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                    ),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         {% endif %}
     </div>
     <table

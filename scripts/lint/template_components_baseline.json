@@ -157,132 +157,60 @@
     "button": 3,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/pairings/absents_new_check_ins_alert.html": {
-    "button": 1
-  },
   "src/web/templates/admin/pairings/knockout_rankings_table.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/knockout_team_rankings_table.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/pairings/pairing_info_button.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/pairings/pairing_info_modal.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/pairings/pairing_modal.html": {
-    "icon-spacing": 2
-  },
   "src/web/templates/admin/pairings/pairing_row.html": {
-    "button": 1,
-    "fixed-colour": 2,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/pairing_settings_button.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/prohibited_pairings_modal.html": {
-    "icon-spacing": 3
-  },
-  "src/web/templates/admin/pairings/publish_button.html": {
-    "button": 2,
-    "icon-spacing": 2
+    "fixed-colour": 2
   },
   "src/web/templates/admin/pairings/rankings_table.html": {
-    "button": 2,
-    "fixed-colour": 1,
-    "icon-spacing": 1
+    "button": 1,
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/round_controls.html": {
     "button": 6,
     "icon-spacing": 4,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/pairings/round_robin_pairing_buttons.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/round_robin_schedule_banner.html": {
-    "button": 4,
-    "icon-spacing": 5,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/round_robin_schedule_button.html": {
-    "button": 1,
-    "icon-spacing": 1
-  },
   "src/web/templates/admin/pairings/round_robin_schedule_editor.html": {
-    "button": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 1
-  },
-  "src/web/templates/admin/pairings/settings/acceleration_rules_link.html": {
-    "button": 2,
-    "icon-spacing": 2
-  },
-  "src/web/templates/admin/pairings/settings/berger_numbers.html": {
-    "button": 1,
-    "dead-white-class": 1,
     "fixed-colour": 1
   },
-  "src/web/templates/admin/pairings/settings/custom_acceleration.html": {
-    "button": 2,
-    "icon-spacing": 1
+  "src/web/templates/admin/pairings/settings/berger_numbers.html": {
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/settings/initial_pairing_score.html": {
-    "button": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 2
-  },
-  "src/web/templates/admin/pairings/swiss_pairing_buttons.html": {
-    "button": 4,
-    "icon-spacing": 3,
-    "modal-trigger": 2
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/tab.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_block_header.html": {
-    "button": 3,
-    "fixed-colour": 1,
-    "modal-trigger": 5
-  },
-  "src/web/templates/admin/pairings/team_block_row.html": {
-    "button": 1,
-    "modal-trigger": 1
+    "button": 2,
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_blocks_table.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_lineup_table.html": {
-    "button": 2,
-    "fixed-colour": 1,
-    "modal-trigger": 2
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_pairing_info_modal.html": {
     "fixed-colour": 1
-  },
-  "src/web/templates/admin/pairings/team_pairing_modal.html": {
-    "icon-spacing": 1
   },
   "src/web/templates/admin/pairings/team_rankings_table.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_unpaired_table.html": {
-    "fixed-colour": 1,
-    "modal-trigger": 2
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/unpaired_table.html": {
-    "button": 3,
-    "fixed-colour": 1,
-    "modal-trigger": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/place_card_templates/_library_content.html": {
     "button": 2,
@@ -298,20 +226,11 @@
     "button": 10,
     "icon-spacing": 3
   },
-  "src/web/templates/admin/player_link.html": {
-    "modal-trigger": 2
-  },
   "src/web/templates/admin/players/check_in_tournaments_modal.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/players/filter_columns.html": {
-    "button": 2,
-    "icon-spacing": 2,
     "menu-item": 2
-  },
-  "src/web/templates/admin/players/players_diff.html": {
-    "menu-item": 3,
-    "modal-trigger": 2
   },
   "src/web/templates/admin/players/players_diff_modal.html": {
     "fixed-colour": 1
@@ -319,42 +238,19 @@
   "src/web/templates/admin/players/players_import_diff_modal.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/players/ratings_check_banner.html": {
-    "button": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/players/ratings_check_modal.html": {
     "fixed-colour": 1
   },
   "src/web/templates/admin/players/record_modal.html": {
     "fixed-colour": 1
   },
-  "src/web/templates/admin/players/table/cells/tournament.html": {
-    "button": 2,
-    "menu-item": 1
-  },
   "src/web/templates/admin/players/table/filter.html": {
-    "button": 2,
+    "button": 1,
     "fixed-colour": 1,
-    "icon-spacing": 1,
     "menu-item": 2
   },
-  "src/web/templates/admin/players/table/filter_rows/name.html": {
-    "icon-spacing": 2
-  },
-  "src/web/templates/admin/players/table/header.html": {
-    "button": 2,
-    "fixed-colour": 2,
-    "icon-spacing": 1
-  },
-  "src/web/templates/admin/players/table/headers/payment.html": {
-    "icon-spacing": 1
-  },
   "src/web/templates/admin/players/table/row.html": {
-    "button": 5,
-    "icon-spacing": 2,
-    "menu-item": 3,
-    "modal-trigger": 4
+    "button": 1
   },
   "src/web/templates/admin/players/table/table.html": {
     "fixed-colour": 1
@@ -394,13 +290,6 @@
   },
   "src/web/templates/admin/teams/team_components.j2": {
     "icon-spacing": 5
-  },
-  "src/web/templates/admin/teams/team_group_fields.html": {
-    "button": 5,
-    "icon-spacing": 5
-  },
-  "src/web/templates/admin/teams/team_lineups_modal.html": {
-    "button": 1
   },
   "src/web/templates/admin/timers/timer_usage_modal.html": {
     "icon-spacing": 1

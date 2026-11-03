@@ -79,29 +79,9 @@
             {% endif %}
             {# A locked round is read-only: show the result as plain text
                rather than an editable button. #}
-            {% if round_locked is defined and round_locked %}
-            <span
-                class="d-inline-block text-nowrap position-relative text-center py-1"
-                style="width: 4.5rem;"
-            >
-            {% else %}
-            <button
-                class="btn btn-sm btn-outline-primary text-nowrap position-relative"
-                style="width: 4.5rem;"
-                {% if _modal_disabled %}
-                    disabled
-                {% else %}
-                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
-                    hx-trigger="click"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                {% endif %}
-            >
-            {% endif %}
+            {% set _result_content %}
                 {% set _rating_correction = admin_tournament.rating_correction_for(board) if wtp and btp and admin_tournament.stored_tournament.stored_rating_corrections else none %}
-                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}{% if _rating_correction %}<span class="position-absolute" {{ macros.tooltip_attributes('warning', _rating_correction.summary(admin_tournament), 'top') }}>*</span>{% endif %}
+                <span>{% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}{% if _rating_correction %}<span class="position-absolute" {{ macros.tooltip_attributes('warning', _rating_correction.summary(admin_tournament), 'top') }}>*</span>{% endif %}</span>
                 {# Knock-out markers live inside the button so hovering/clicking
                    them counts as the button. The advancing side gets a numbered
                    badge; a drawn game a diagonally-cut warning corner. #}
@@ -123,7 +103,28 @@
                             style="top: 2px; right: 3px; font-size: 0.6rem; line-height: 1;"></i>
                     </span>
                 {% endif %}
-            {% if round_locked is defined and round_locked %}</span>{% else %}</button>{% endif %}
+            {% endset %}
+            {% if round_locked is defined and round_locked %}
+                <span
+                    class="d-inline-block text-nowrap position-relative text-center py-1"
+                    style="width: 4.5rem;"
+                >{{ _result_content }}</span>
+            {% else %}
+                {% call components.button(
+                    '',
+                    size='sm',
+                    allowed=not _modal_disabled,
+                    class='position-relative',
+                    attrs={
+                        'style': 'width: 4.5rem;',
+                        'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                        'data-bs-toggle': 'modal',
+                        'data-bs-target': '#modal-wrapper',
+                    },
+                ) %}{{ _result_content }}{% endcall %}
+            {% endif %}
         </span>
     </td>
     {% if btp %}

@@ -66,33 +66,34 @@
                     <td class="align-middle">{{ loop.index }}</td>
                     {% if table_index in locked_tables %}
                         <td class="align-middle">
-                            <i
-                                class="bi-lock-fill pe-1"
-                                {{ macros.tooltip_attributes('info', _('This game has been played.') if not schedule_editor.is_team else _('This round is paired.'), 'top') }}
-                            ></i>
-                            {{ schedule_editor.member_name(first) }}
+                            {% call components.icon_text('bi-lock-fill') %}
+                                <span {{ macros.tooltip_attributes('info', _('This game has been played.') if not schedule_editor.is_team else _('This round is paired.'), 'top') }}>{{ schedule_editor.member_name(first) }}</span>
+                            {% endcall %}
                         </td>
                         <td></td>
                         <td class="align-middle">{{ schedule_editor.member_name(second) }}</td>
                     {% else %}
                         <td>{{ member_select(first, table_index, 0) }}</td>
                         <td class="text-center">
-                            <button
-                                class="btn btn-sm btn-outline-primary schedule-swap-colours"
-                                hx-post="{{ url_for(
-                                    'admin-pairings-schedule-swap-colours',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    table=table_index,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                hx-disabled-elt="this"
-                                {{ macros.tooltip_attributes('info', _('Swap the colours.'), 'top') }}
-                            >
-                                <i class="bi-arrow-left-right"></i>
-                            </button>
+                            {{ components.button(
+                                _('Swap the colours.'),
+                                icon='bi-arrow-left-right',
+                                size='sm',
+                                icon_only=true,
+                                class='schedule-swap-colours',
+                                attrs={
+                                    'hx-post': url_for(
+                                        'admin-pairings-schedule-swap-colours',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=admin_round,
+                                        table=table_index,
+                                    ),
+                                    'hx-target': 'body',
+                                    'hx-indicator': '#please-wait',
+                                    'hx-disabled-elt': 'this',
+                                },
+                            ) }}
                         </td>
                         <td>{{ member_select(second, table_index, 1) }}</td>
                     {% endif %}

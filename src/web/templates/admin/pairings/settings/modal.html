@@ -54,10 +54,13 @@
     </form>
 {% endblock %}
 
-{% block footer %}
+{% block footer_start %}
     {% if admin_tournament.pairing_variation.settings_footer_template %}
         {% include admin_tournament.pairing_variation.settings_footer_template %}
     {% endif %}
+{% endblock %}
+
+{% block footer %}
     {{ components.cancel_button(_('Close') if settings_read_only else _('Cancel')) }}
     {% if not settings_read_only %}
         {% if settings_for_pairing %}

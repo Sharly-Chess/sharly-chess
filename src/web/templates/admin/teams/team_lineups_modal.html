@@ -88,12 +88,12 @@
                         {% if warn_lineup_order %}
                         {% set reset_action %}
                             {% if editable %}
-                                <button
-                                    type="button"
-                                    class="lineup-reset-order btn btn-sm compact-padding text-nowrap"
-                                >
-                                    {{ _('Reset order') }}
-                                </button>
+                                {{ components.button(
+                                    _('Reset order'),
+                                    kind='plain',
+                                    size='sm',
+                                    class='lineup-reset-order compact-padding',
+                                ) }}
                             {% endif %}
                         {% endset %}
                         {{ components.note(

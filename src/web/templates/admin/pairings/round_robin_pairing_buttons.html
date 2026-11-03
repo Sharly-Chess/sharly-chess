@@ -11,64 +11,35 @@
         {% include '/admin/pairings/round_robin_schedule_button.html' %}
     {% endif %}
     {% if not admin_tournament.has_pairings and schedule_editor.follows_berger_tables %}
-        <div
-            {% if not client.can_use_pairing_engine(admin_tournament.id) %}
-                {{ macros.tooltip_attributes('warning', _('You are not allowed to generate the pairings.'), 'top') }}
-            {% elif pairings_generation_disabled_message %}
-                {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
-            {% else %}
-                {{ macros.tooltip_attributes('info', _('Generate pairings for all the rounds of the tournament.'), 'top') }}
-            {% endif %}
-        >
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                {% if
-                    not client.can_use_pairing_engine(admin_tournament.id)
-                    or
-                    pairings_generation_disabled_message
-                %}
-                    disabled
-                {% else %}
-                    hx-get="{{ url_for(
-                        'pairings-settings-modal' if skip_ratings_warning else 'pairings-ratings-warning-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round
-                    ) }}"
-                    hx-trigger="click"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                {% endif %}
-            >
-                <i class="bi-shuffle pe-1"></i>
-                {{ _('Pair tournament') }}
-            </button>
-        </div>
+        {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}
+        {{ components.modal_button(
+            url_for(
+                'pairings-settings-modal' if skip_ratings_warning else 'pairings-ratings-warning-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round
+            ),
+            _('Pair tournament'),
+            icon='bi-shuffle',
+            allowed=can_use_pairing_engine and not pairings_generation_disabled_message,
+            reason=_('You are not allowed to generate the pairings.')
+                if not can_use_pairing_engine else pairings_generation_disabled_message,
+            tooltip=_('Generate pairings for all the rounds of the tournament.'),
+        ) }}
     {% endif %}
 
     {% if admin_tournament.has_pairings and not admin_tournament.has_results and schedule_editor.follows_berger_tables %}
-        <div
-            {% if not client.can_unpair_round(admin_tournament.id) %}
-                {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}
-            {% else %}
-                {{ macros.tooltip_attributes('info', _('Unpair all the rounds of the tournament.'), 'top') }}
-            {% endif %}
-        >
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                {% if not client.can_unpair_round(admin_tournament.id) %}
-                    disabled
-                {% else %}
-                    hx-post="{{ url_for('admin-pairings-unpair-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                {% endif %}
-            >
-                {{ _('Unpair tournament') }}
-            </button>
-        </div>
+        {{ components.button(
+            _('Unpair tournament'),
+            allowed=client.can_unpair_round(admin_tournament.id),
+            reason=_('You are not allowed to unpair rounds.'),
+            tooltip=_('Unpair all the rounds of the tournament.'),
+            attrs={
+                'hx-post': url_for('admin-pairings-unpair-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
     {% endif %}
 
     {% include 'publish_button.html' %}

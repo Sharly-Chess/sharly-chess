@@ -11,15 +11,14 @@
                 <span>
                     {{ _('Number') }}
                 </span>
-                    <button
-                        id="random-berger-numbers"
-                        class="text-nowrap white btn btn-sm btn-secondary"
-                        {{ macros.tooltip_attributes(
-                            'info', _('Randomly select the pairing numbers.'), 'top'
-                        ) }}
-                    >
-                        <i class="bi-shuffle"></i>
-                    </button>
+                    {{ components.button(
+                        _('Randomly select the pairing numbers.'),
+                        kind='secondary',
+                        icon='bi-shuffle',
+                        size='sm',
+                        icon_only=true,
+                        attrs={'id': 'random-berger-numbers'},
+                    ) }}
                 </div>
             </th>
 
