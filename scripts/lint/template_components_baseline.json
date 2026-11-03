@@ -1,0 +1,1410 @@
+{
+  "src/plugins/chess960/templates/chess960_screen_form.html": {
+    "button": 2
+  },
+  "src/plugins/chess_results/templates/chess_results_tournament_card_action_menu_items.html": {
+    "icon-spacing": 1,
+    "menu-item": 2
+  },
+  "src/plugins/chess_results/templates/chess_results_tournament_statuses.html": {
+    "badge": 1
+  },
+  "src/plugins/chess_results/templates/chess_results_upload_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/chess_results/templates/chess_results_upload_results.html": {
+    "button": 1,
+    "fixed-colour": 1
+  },
+  "src/plugins/chessevent/templates/chessevent_sync_modal.html": {
+    "button": 4,
+    "dead-white-class": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/plugins/custom_upload/templates/custom_upload_auth_fields.html": {
+    "button": 1,
+    "icon-spacing": 1
+  },
+  "src/plugins/custom_upload/templates/custom_upload_configuration_modal.html": {
+    "button": 3,
+    "dead-white-class": 1,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/custom_upload/templates/custom_upload_document_picker.html": {
+    "button": 3,
+    "dead-white-class": 1,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/custom_upload/templates/custom_upload_modal.html": {
+    "button": 3,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/custom_upload/templates/custom_upload_results.html": {
+    "badge": 1,
+    "button": 3,
+    "fixed-colour": 1
+  },
+  "src/plugins/ffe/templates/ffe_rules_upload_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/plugins/ffe/templates/ffe_tournament_card_action_menu_items.html": {
+    "icon-spacing": 4,
+    "menu-item": 6
+  },
+  "src/plugins/ffe/templates/ffe_tournament_statuses.html": {
+    "badge": 1
+  },
+  "src/plugins/ffe/templates/ffe_upload_modal.html": {
+    "button": 3,
+    "dead-white-class": 1,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/ffe/templates/ffe_upload_results.html": {
+    "badge": 1,
+    "button": 5,
+    "fixed-colour": 1,
+    "icon-spacing": 1
+  },
+  "src/plugins/fra_schools/templates/fra_schools_player_form_fields.html": {
+    "button": 5,
+    "icon-spacing": 5
+  },
+  "src/plugins/fra_schools/templates/fra_schools_search_result.html": {
+    "button": 1,
+    "menu-item": 1
+  },
+  "src/plugins/fra_schools/templates/fra_schools_search_results.html": {
+    "menu-item": 2
+  },
+  "src/plugins/sce/templates/sce_event_create_button.html": {
+    "modal-trigger": 1
+  },
+  "src/plugins/sce/templates/sce_event_status_alert.html": {
+    "button": 1,
+    "icon-spacing": 2
+  },
+  "src/plugins/sce/templates/sce_player_conflict_diff.html": {
+    "button": 1
+  },
+  "src/plugins/sce/templates/sce_player_conflict_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/sce/templates/sce_player_duplicate_modal.html": {
+    "button": 4,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/sce/templates/sce_removed_player_modal.html": {
+    "button": 3,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/sce/templates/sce_sync_modal.html": {
+    "button": 9,
+    "dead-white-class": 1,
+    "icon-spacing": 9,
+    "menu-item": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/sce/templates/sce_tournament_conflict_diff.html": {
+    "button": 1
+  },
+  "src/plugins/sce/templates/sce_tournament_conflict_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/plugins/sce/templates/sce_tournament_statuses.html": {
+    "badge": 1
+  },
+  "src/plugins/sce/templates/sce_upload_table.html": {
+    "button": 1,
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/accounts/account_components.j2": {
+    "button": 4,
+    "icon-spacing": 10,
+    "modal-trigger": 4
+  },
+  "src/web/templates/admin/accounts/account_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/accounts/account_permission_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/accounts/account_permissions_modal.html": {
+    "button": 3,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/accounts/tab.html": {
+    "button": 2,
+    "icon-spacing": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/championship/category_modal.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/category_rename_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/championship_components.j2": {
+    "button": 1,
+    "icon-spacing": 4,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/championship/competitors.html": {
+    "button": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/championship/competitors_page.html": {
+    "button": 2,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/championship/config_modal.html": {
+    "button": 3,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/configuration.html": {
+    "badge": 1,
+    "button": 10,
+    "icon-spacing": 4,
+    "modal-trigger": 8
+  },
+  "src/web/templates/admin/championship/create_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/criteria_modal.html": {
+    "button": 3,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/criterion_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/documents_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/layout.html": {
+    "badge": 1,
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/championship/results.html": {
+    "badge": 1,
+    "button": 2,
+    "fixed-colour": 1,
+    "icon-spacing": 2
+  },
+  "src/web/templates/admin/championship/rule_delete_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/championship/rule_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/source_coefficient_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/source_components.j2": {
+    "button": 3,
+    "icon-spacing": 3,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/championship/source_modal.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/championship/sources.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/common/collection.html": {
+    "button": 1,
+    "empty-state": 1
+  },
+  "src/web/templates/admin/common/collection_macros.j2": {
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/common/collection_view_toggle.html": {
+    "button": 2
+  },
+  "src/web/templates/admin/common/database/database_button.html": {
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/common/database/database_modal.html": {
+    "button": 4,
+    "fixed-colour": 2,
+    "icon-spacing": 4,
+    "menu-item": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/common/database/database_update_buttons.html": {
+    "button": 4,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/common/database/out_of_date_badge.html": {
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/common/database/updating_badge.html": {
+    "fixed-colour": 2
+  },
+  "src/web/templates/admin/common/macros.j2": {
+    "badge": 2,
+    "button": 8,
+    "icon-spacing": 2,
+    "menu-item": 2
+  },
+  "src/web/templates/admin/common/needs_refresh.html": {
+    "button": 1
+  },
+  "src/web/templates/admin/common/player_search.html": {
+    "menu-item": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/common/print_button.html": {
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/common/screens_config_button.html": {
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/common/search_filter.html": {
+    "badge": 1
+  },
+  "src/web/templates/admin/common/search_filter_form.html": {
+    "button": 2,
+    "menu-item": 1
+  },
+  "src/web/templates/admin/common/search_results.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "menu-item": 6
+  },
+  "src/web/templates/admin/common/tag_macros.j2": {
+    "badge": 1
+  },
+  "src/web/templates/admin/common/warning_macros.j2": {
+    "button": 6,
+    "icon-spacing": 3,
+    "note": 3
+  },
+  "src/web/templates/admin/display_controllers/display_controller_components.j2": {
+    "button": 5,
+    "icon-spacing": 2,
+    "menu-item": 2,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/display_controllers/display_controller_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/display_controllers/tab.html": {
+    "button": 1,
+    "empty-state": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/event/event_age_categories_form.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/event/event_age_category_sets_modal.html": {
+    "button": 5,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 5
+  },
+  "src/web/templates/admin/event/event_backup_status.html": {
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/event/event_damaged_delete_modal.html": {
+    "icon-spacing": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/event/event_delete_modal.html": {
+    "icon-spacing": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/event/event_export_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/event/event_modal.html": {
+    "button": 5,
+    "dead-white-class": 1,
+    "icon-spacing": 5,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/event/event_snapshot_restore_modal.html": {
+    "button": 2,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 2
+  },
+  "src/web/templates/admin/event/event_snapshots_modal.html": {
+    "button": 5,
+    "icon-spacing": 6,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 2,
+    "note": 3
+  },
+  "src/web/templates/admin/event/event_tags_form.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/event/event_tags_modal.html": {
+    "button": 8,
+    "icon-spacing": 6,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 8
+  },
+  "src/web/templates/admin/event/event_update_modal_header.html": {
+    "button": 1
+  },
+  "src/web/templates/admin/event/print_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/event/print_options/place_card_template.html": {
+    "button": 1,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/event_layout.html": {
+    "button": 1,
+    "empty-state": 1
+  },
+  "src/web/templates/admin/event_layout_nav_item.html": {
+    "fixed-colour": 4,
+    "menu-item": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/families/family_components.j2": {
+    "button": 4,
+    "icon-spacing": 6,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/families/family_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/families/family_update_modal_header.html": {
+    "button": 1
+  },
+  "src/web/templates/admin/families/tab.html": {
+    "button": 1,
+    "empty-state": 1,
+    "icon-spacing": 1,
+    "menu-item": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/index/_admin_nav.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "menu-item": 2,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/index/archives_tab.html": {
+    "button": 2,
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/index/championship_archives_tab.html": {
+    "button": 3,
+    "fixed-colour": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/index/championships_tab.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/index/create_event_button.html": {
+    "button": 2,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/index/event_components.j2": {
+    "button": 6,
+    "icon-spacing": 17,
+    "modal-trigger": 6
+  },
+  "src/web/templates/admin/index/events_tag_filter.html": {
+    "badge": 1,
+    "button": 3,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/index/home_tab.html": {
+    "button": 3,
+    "icon-spacing": 2,
+    "menu-item": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/menus/menu_components.j2": {
+    "button": 5,
+    "icon-spacing": 2,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/menus/menu_items_form.html": {
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/menus/menu_items_modal.html": {
+    "button": 4,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/menus/menu_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/menus/tab.html": {
+    "button": 1,
+    "empty-state": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/absents_modal.html": {
+    "button": 10,
+    "dead-white-class": 1,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/pairings/absents_new_check_ins_alert.html": {
+    "button": 1
+  },
+  "src/web/templates/admin/pairings/absolute_criteria_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/adjournment_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/fide_log_button.html": {
+    "badge": 1,
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/fide_log_modal.html": {
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/pairings/information_modal.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/knockout_rankings_table.html": {
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/pairings/knockout_team_rankings_table.html": {
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/pairings/manual_pairing_check_modal.html": {
+    "button": 2,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/pairing_info_button.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/pairing_info_modal.html": {
+    "fixed-colour": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/pairings/pairing_modal.html": {
+    "badge": 1,
+    "button": 7,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/pairings/pairing_row.html": {
+    "badge": 1,
+    "button": 1,
+    "fixed-colour": 2,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/pairing_settings_button.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/player_point_adjustment_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/pairings/prohibited_button.html": {
+    "badge": 1,
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/prohibited_pairings_modal.html": {
+    "badge": 1,
+    "button": 6,
+    "icon-spacing": 6,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/pairings/publish_button.html": {
+    "button": 2,
+    "icon-spacing": 2
+  },
+  "src/web/templates/admin/pairings/rankings_table.html": {
+    "button": 2,
+    "fixed-colour": 1,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/pairings/ratings_warning_modal.html": {
+    "button": 4,
+    "dead-white-class": 1,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 2
+  },
+  "src/web/templates/admin/pairings/round_controls.html": {
+    "button": 6,
+    "icon-spacing": 4,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/round_robin_pairing_buttons.html": {
+    "button": 2,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/round_robin_schedule_banner.html": {
+    "button": 4,
+    "icon-spacing": 5,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/round_robin_schedule_button.html": {
+    "button": 1,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/pairings/round_robin_schedule_confirm_modal.html": {
+    "button": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/round_robin_schedule_editor.html": {
+    "button": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/pairings/rounds_schedule_mismatch_modal.html": {
+    "button": 2,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/pairings/settings/acceleration_rules_link.html": {
+    "button": 2,
+    "icon-spacing": 2
+  },
+  "src/web/templates/admin/pairings/settings/berger_numbers.html": {
+    "button": 1,
+    "dead-white-class": 1,
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/pairings/settings/custom_acceleration.html": {
+    "button": 2,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/pairings/settings/initial_pairing_score.html": {
+    "button": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2
+  },
+  "src/web/templates/admin/pairings/settings/knockout_grouping.html": {
+    "badge": 1
+  },
+  "src/web/templates/admin/pairings/settings/modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/pairings/swiss_pairing_buttons.html": {
+    "button": 4,
+    "icon-spacing": 3,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/pairings/tab.html": {
+    "button": 8,
+    "empty-state": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/team_absents_modal.html": {
+    "button": 6,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/team_block_header.html": {
+    "badge": 3,
+    "button": 3,
+    "fixed-colour": 2,
+    "modal-trigger": 7
+  },
+  "src/web/templates/admin/pairings/team_block_row.html": {
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/team_blocks_table.html": {
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/pairings/team_lineup_table.html": {
+    "badge": 1,
+    "button": 2,
+    "fixed-colour": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/pairings/team_pairing_info_modal.html": {
+    "fixed-colour": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/team_pairing_modal.html": {
+    "badge": 1,
+    "button": 2,
+    "fixed-colour": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/team_point_adjustment_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 2
+  },
+  "src/web/templates/admin/pairings/team_rankings_table.html": {
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/pairings/team_unpaired_table.html": {
+    "fixed-colour": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/pairings/unfinished_round_modal.html": {
+    "button": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/pairings/unpaired_player_modal.html": {
+    "button": 7,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/unpaired_table.html": {
+    "button": 3,
+    "fixed-colour": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/pairings/unpaired_team_modal.html": {
+    "button": 6,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/pairings/warning_modal.html": {
+    "button": 3,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/place_card_templates/_library_content.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "menu-item": 1,
+    "modal-trigger": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/place_card_templates/card_props_form.html": {
+    "badge": 1,
+    "button": 2
+  },
+  "src/web/templates/admin/place_card_templates/create_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/place_card_templates/duplicate_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/place_card_templates/item_props_form.html": {
+    "button": 21,
+    "icon-spacing": 6,
+    "note": 1
+  },
+  "src/web/templates/admin/place_card_templates/place_card_template_components.j2": {
+    "badge": 1,
+    "button": 4,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/place_card_templates/visual_editor.html": {
+    "button": 10,
+    "icon-spacing": 3
+  },
+  "src/web/templates/admin/player_link.html": {
+    "badge": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/players/check_in_player_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/players/check_in_tournament_reset_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/players/check_in_tournaments_modal.html": {
+    "button": 1,
+    "fixed-colour": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/players/filter_columns.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "menu-item": 2
+  },
+  "src/web/templates/admin/players/player_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/players/players_diff.html": {
+    "menu-item": 3,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/players/players_diff_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/players/players_import_diff_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/players/players_import_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/players/ratings_check_banner.html": {
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/players/ratings_check_lists.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "note": 2
+  },
+  "src/web/templates/admin/players/ratings_check_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/players/record_modal.html": {
+    "badge": 1,
+    "button": 4,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/players/tab.html": {
+    "button": 5,
+    "icon-spacing": 6,
+    "menu-item": 3,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/players/table/cells/tournament.html": {
+    "button": 2,
+    "menu-item": 1
+  },
+  "src/web/templates/admin/players/table/filter.html": {
+    "button": 2,
+    "fixed-colour": 1,
+    "icon-spacing": 1,
+    "menu-item": 2
+  },
+  "src/web/templates/admin/players/table/filter_rows/name.html": {
+    "icon-spacing": 2
+  },
+  "src/web/templates/admin/players/table/header.html": {
+    "button": 2,
+    "fixed-colour": 2,
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/players/table/headers/payment.html": {
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/players/table/row.html": {
+    "button": 5,
+    "icon-spacing": 2,
+    "menu-item": 3,
+    "modal-trigger": 4
+  },
+  "src/web/templates/admin/players/table/table.html": {
+    "fixed-colour": 1
+  },
+  "src/web/templates/admin/players/team_record_modal.html": {
+    "badge": 1,
+    "button": 1,
+    "fixed-colour": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/players/update_players_alert.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/plugins/_plugin_detail.html": {
+    "badge": 2,
+    "button": 4,
+    "icon-spacing": 6
+  },
+  "src/web/templates/admin/plugins/_plugins_content.html": {
+    "badge": 1
+  },
+  "src/web/templates/admin/plugins/_plugins_home.html": {
+    "button": 2,
+    "icon-spacing": 2
+  },
+  "src/web/templates/admin/prizes/prize_categories_generate_age_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prize_categories_generate_rating_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prize_category_components.j2": {
+    "button": 7,
+    "icon-spacing": 6,
+    "menu-item": 1,
+    "modal-trigger": 6
+  },
+  "src/web/templates/admin/prizes/prize_category_copy_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prize_category_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prize_criteria_modal.html": {
+    "button": 4,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/prizes/prize_criterion_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prize_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/prizes/prize_group_copy_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prize_groups_modal.html": {
+    "button": 5,
+    "icon-spacing": 2,
+    "menu-item": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/prizes/prize_players_modal.html": {
+    "fixed-colour": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prizes_config_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/prizes/prizes_modal.html": {
+    "button": 4,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/prizes/tab.html": {
+    "button": 5,
+    "empty-state": 2,
+    "icon-spacing": 6,
+    "menu-item": 3,
+    "modal-trigger": 6
+  },
+  "src/web/templates/admin/rotators/rotator_components.j2": {
+    "button": 5,
+    "icon-spacing": 6,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/rotators/rotator_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/rotators/rotator_screens_form.html": {
+    "button": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/rotators/rotator_screens_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/rotators/tab.html": {
+    "button": 1,
+    "empty-state": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/screens/cards/config_card.html": {
+    "icon-spacing": 3
+  },
+  "src/web/templates/admin/screens/cards/image_card.html": {
+    "icon-spacing": 1
+  },
+  "src/web/templates/admin/screens/screen_components.j2": {
+    "badge": 1,
+    "button": 4,
+    "icon-spacing": 4,
+    "modal-trigger": 4
+  },
+  "src/web/templates/admin/screens/screen_eye_link.html": {
+    "button": 1
+  },
+  "src/web/templates/admin/screens/screen_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/screens/screen_set_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 3,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/screens/screen_sets_modal.html": {
+    "button": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/screens/screen_sets_modal_set_div.html": {
+    "button": 3
+  },
+  "src/web/templates/admin/screens/screen_update_modal_header.html": {
+    "button": 1
+  },
+  "src/web/templates/admin/screens/screens_config_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/screens/tab.html": {
+    "button": 1,
+    "empty-state": 1,
+    "icon-spacing": 1,
+    "menu-item": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/teams/tab.html": {
+    "button": 4,
+    "empty-state": 1,
+    "icon-spacing": 3,
+    "menu-item": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/teams/team_affiliations_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/teams/team_check_in_modal.html": {
+    "button": 2,
+    "fixed-colour": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/teams/team_components.j2": {
+    "button": 4,
+    "icon-spacing": 8,
+    "modal-trigger": 4
+  },
+  "src/web/templates/admin/teams/team_group_fields.html": {
+    "button": 5,
+    "icon-spacing": 5
+  },
+  "src/web/templates/admin/teams/team_lineups_modal.html": {
+    "button": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 2
+  },
+  "src/web/templates/admin/teams/team_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/teams/team_roster_modal.html": {
+    "button": 3,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/timers/default_timers_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/timers/tab.html": {
+    "button": 2,
+    "empty-state": 1,
+    "icon-spacing": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/timers/timer_components.j2": {
+    "button": 5,
+    "icon-spacing": 5,
+    "modal-trigger": 5
+  },
+  "src/web/templates/admin/timers/timer_hour_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 1
+  },
+  "src/web/templates/admin/timers/timer_hours_modal.html": {
+    "button": 8,
+    "icon-spacing": 4,
+    "menu-item": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/timers/timer_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/timers/timer_usage_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/tournaments/distribute_players_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 3
+  },
+  "src/web/templates/admin/tournaments/export_data_loss_modal.html": {
+    "button": 4,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "warning-heading": 1
+  },
+  "src/web/templates/admin/tournaments/import_check_modal.html": {
+    "button": 2,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/tournaments/random_player_modal.html": {
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/tournaments/random_tournament_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 2
+  },
+  "src/web/templates/admin/tournaments/tab.html": {
+    "button": 4,
+    "icon-spacing": 5,
+    "menu-item": 4,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/tournaments/tie_break_form_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/tournaments/tie_break_sets_modal.html": {
+    "button": 2,
+    "icon-spacing": 1,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 2
+  },
+  "src/web/templates/admin/tournaments/tie_breaks_modal.html": {
+    "button": 8,
+    "icon-spacing": 4,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "modal-trigger": 3
+  },
+  "src/web/templates/admin/tournaments/time_control_editor.html": {
+    "button": 5
+  },
+  "src/web/templates/admin/tournaments/tournament_components.j2": {
+    "badge": 1,
+    "button": 6,
+    "icon-spacing": 9,
+    "menu-item": 11,
+    "modal-trigger": 6
+  },
+  "src/web/templates/admin/tournaments/tournament_delete_modal.html": {
+    "icon-spacing": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/tournaments/tournament_import_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1,
+    "note": 1
+  },
+  "src/web/templates/admin/tournaments/tournament_modal.html": {
+    "button": 2,
+    "dead-white-class": 1,
+    "icon-spacing": 2,
+    "modal-dialog": 1,
+    "modal-header": 1
+  },
+  "src/web/templates/admin/tournaments/tournament_schedule_section.html": {
+    "button": 4
+  }
+}

@@ -28,3 +28,11 @@ repos:
     hooks:
     -   id: djlint
         files: ^src/.*\.html$
+-   repo: local
+    hooks:
+    -   id: template-components
+        name: template components
+        entry: python scripts/lint/template_components.py
+        language: python
+        files: ^(src/web/templates/admin/|src/plugins/[^/]+/templates/|scripts/lint/template_components)
+        pass_filenames: false
