@@ -75,6 +75,11 @@ class TogaPdfRenderer(PdfRenderer):
                 # a window that is not shown gets only when asked for it.
                 _ = self.window._impl.native.Handle
                 _ = self.web_view._impl.native.Handle
+                # The background of a WebView2 is the grey of the windows of
+                # the system, which the print paints under the page.
+                from System.Drawing import Color  # type: ignore[import-not-found]
+
+                self.web_view._impl.native.DefaultBackgroundColor = Color.White
         return self.web_view
 
 
