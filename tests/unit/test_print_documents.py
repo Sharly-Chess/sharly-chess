@@ -2,12 +2,14 @@
 
 import inspect
 import math
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import timedelta
+from typing import Any
 
 import pytest
 
 from data.access_levels.client import Client
+from data.board import Board
 from data.event import Event
 from data.loader import EventLoader
 from data.pairings.molter import StandardMolterVariation
@@ -39,6 +41,7 @@ EVENT_ID = 'test-print-documents'
 TEAM_EVENT_ID = 'test-print-documents-teams'
 MOLTER_EVENT_ID = 'test-print-documents-molter'
 PLAYING_EVENT_ID = 'test-print-documents-playing'
+UNRATED_EVENT_ID = 'test-print-documents-unrated'
 TOURNAMENT_NAME = 'test-print-documents-tournament'
 TEAM_COUNT = 4
 TEAM_SIZE = 2
@@ -61,31 +64,64 @@ def event() -> Iterator[Event]:
     TestUtils.delete_event(EVENT_ID)
 
 
+def _seed_edited_event(
+    event_id: str, edit: Callable[[Tournament, EventDatabase], None]
+) -> Iterator[Event]:
+    """The individual event, with some of its results changed by *edit*."""
+    TestUtils.create_event(event_id)
+    TestUtils.create_tournament(event_id, TOURNAMENT_NAME, json_file='tec-swiss')
+    original_event = EventLoader().load_event(event_id)
+    with EventDatabase(event_id, write=True) as database:
+        edit(original_event.tournaments_by_name[TOURNAMENT_NAME], database)
+    EventLoader.unload_event(event_id)
+    yield EventLoader().load_event(event_id)
+    EventLoader.unload_event(event_id)
+    TestUtils.delete_event(event_id)
+
+
+def _played_boards(tournament: Tournament, round_: int) -> list[Board]:
+    return [
+        board
+        for board in tournament.get_round_boards(round_)
+        if board.optional_white_tournament_player is not None
+        and board.black_tournament_player is not None
+    ]
+
+
 @pytest.fixture(scope='module')
 def playing_event() -> Iterator[Event]:
     """The individual event with its last round still in play: one board
     of that round has no result yet."""
-    TestUtils.create_event(PLAYING_EVENT_ID)
-    TestUtils.create_tournament(
-        PLAYING_EVENT_ID, TOURNAMENT_NAME, json_file='tec-swiss'
-    )
-    finished_event = EventLoader().load_event(PLAYING_EVENT_ID)
-    tournament = finished_event.tournaments_by_name[TOURNAMENT_NAME]
-    board = next(
-        board
-        for board in tournament.get_round_boards(tournament.rounds)
-        if board.optional_white_tournament_player is not None
-        and board.black_tournament_player is not None
-    )
-    with EventDatabase(PLAYING_EVENT_ID, write=True) as database:
+
+    def clear_one_result(tournament: Tournament, database: EventDatabase) -> None:
+        board = _played_boards(tournament, tournament.rounds)[0]
         board.white_pairing.update_result(database, Result.NO_RESULT)
         board.black_pairing.update_result(database, Result.NO_RESULT)
-    EventLoader.unload_event(PLAYING_EVENT_ID)
-    event = EventLoader().load_event(PLAYING_EVENT_ID)
-    assert event.tournaments_by_name[TOURNAMENT_NAME].playing
-    yield event
-    EventLoader.unload_event(PLAYING_EVENT_ID)
-    TestUtils.delete_event(PLAYING_EVENT_ID)
+
+    for event in _seed_edited_event(PLAYING_EVENT_ID, clear_one_result):
+        assert event.tournaments_by_name[TOURNAMENT_NAME].playing
+        yield event
+
+
+UNRATED_RESULTS = {
+    Result.WIN: Result.UNRATED_WIN,
+    Result.DRAW: Result.UNRATED_DRAW,
+    Result.LOSS: Result.UNRATED_LOSS,
+}
+
+
+@pytest.fixture(scope='module')
+def unrated_event() -> Iterator[Event]:
+    """The individual event with every game of its first round unrated."""
+
+    def unrate_first_round(tournament: Tournament, database: EventDatabase) -> None:
+        for board in _played_boards(tournament, 1):
+            for pairing in (board.white_pairing, board.black_pairing):
+                pairing.update_result(
+                    database, UNRATED_RESULTS.get(pairing.result, pairing.result)
+                )
+
+    yield from _seed_edited_event(UNRATED_EVENT_ID, unrate_first_round)
 
 
 def _seed_team_event(event_id: str, pairing: str, rounds: int) -> Iterator[Event]:
@@ -366,12 +402,12 @@ def test_place_cards_date_the_tournament_from_its_start(
     assert place_card_tournament.start.year == tournament.start_date.year
 
 
-def _certified_rounds(event: Event) -> list[int]:
+def _certificates(event: Event) -> list[dict[str, Any]]:
     """Checks the certificate of every FIDE-rated player against the
-    intermediate ratings computed round by round, and returns the round each
-    certificate was issued after."""
+    intermediate ratings computed round by round from the rated games, and
+    returns what each certificate prints."""
     tournament = event.tournaments_by_name[TOURNAMENT_NAME]
-    certified_rounds: list[int] = []
+    certificates: list[dict[str, Any]] = []
     for tournament_player in tournament.tournament_players:
         if tournament_player.rating_used_by_fide.type != PlayerRatingType.FIDE:
             continue
@@ -380,7 +416,7 @@ def _certified_rounds(event: Event) -> list[int]:
         ratings_by_round: dict[int, int] = {}
         performance_diff = 0.0
         for round_, pairing in tournament_player.pairings_by_round.items():
-            if not pairing.played:
+            if not pairing.played or pairing.result.is_unrated:
                 continue
             rating_change = pairing.fide_rating_change(k_factor)
             if rating_change.delta is None:
@@ -412,8 +448,8 @@ def _certified_rounds(event: Event) -> list[int]:
         assert {round_ for round_, _pairing, _change in context['games']} <= set(
             range(1, peak_round + 1)
         )
-        certified_rounds.append(peak_round)
-    return certified_rounds
+        certificates.append(context)
+    return certificates
 
 
 @pytest.mark.unit
@@ -422,7 +458,7 @@ def test_rating_certificate_stops_at_the_peak_rating(event: Event):
     reached, after the earliest round it was reached, adding K times the
     difference between the score and the expected score of the rated games
     played until then."""
-    assert _certified_rounds(event)
+    assert _certificates(event)
 
 
 @pytest.mark.unit
@@ -430,4 +466,26 @@ def test_rating_certificate_counts_the_round_in_play(playing_event: Event):
     """The games of a round still in play count for the certificate as soon
     as their result is entered."""
     tournament = playing_event.tournaments_by_name[TOURNAMENT_NAME]
-    assert tournament.rounds in _certified_rounds(playing_event)
+    assert tournament.rounds in {
+        certificate['at_round'] for certificate in _certificates(playing_event)
+    }
+
+
+@pytest.mark.unit
+def test_rating_certificate_leaves_out_the_unrated_games(unrated_event: Event):
+    """An unrated game is listed as not rated, and its result does not
+    count for the intermediate rating."""
+    unrated_games = [
+        rating_change
+        for certificate in _certificates(unrated_event)
+        for round_, _pairing, rating_change in certificate['games']
+        if round_ == 1
+    ]
+    assert unrated_games
+    assert all(rating_change.delta is None for rating_change in unrated_games)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('result', list(Result))
+def test_every_result_has_a_crosstable_symbol(result: Result):
+    assert isinstance(result.to_crosstable, str)

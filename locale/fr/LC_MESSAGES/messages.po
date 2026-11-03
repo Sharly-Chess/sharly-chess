@@ -12009,6 +12009,9 @@ msgstr "Défaite non comptabilisée pour le classement Elo"
 msgid "Unrated Win"
 msgstr "Victoire non comptabilisée pour le classement Elo"
 
+msgid "Unrated game."
+msgstr "Partie non comptabilisée pour le classement Elo."
+
 msgid "Unrated opponent."
 msgstr "Adversaire non classé·e."
 

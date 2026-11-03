@@ -12007,6 +12007,9 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
+msgid "Unrated game."
+msgstr ""
+
 msgid "Unrated opponent."
 msgstr ""
 
