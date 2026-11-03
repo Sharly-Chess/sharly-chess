@@ -891,8 +891,10 @@ body[data-sc-interface=admin] .htmx-indicator {
     --bs-tooltip-font-size: .85rem;
 }
 
+/* The tooltip is dark in both themes: its icon is a dimmer shade of its own
+   text. */
 [data-sc-interface=admin] .sharly-chess-tooltip-info .tooltip-inner > i:first-child {
-    color: var(--bs-secondary-color);
+    color: color-mix(in srgb, var(--bs-tooltip-color) 60%, transparent);
 }
 
 [data-sc-interface=admin] .sharly-chess-tooltip-warning {
@@ -3583,6 +3585,14 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 .sc-detail {
     font-style: italic;
     font-size: .85em;
+}
+
+.sc-menu-select-all {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: 0 var(--bs-dropdown-item-padding-x);
 }
 
 .sc-icon-text {
