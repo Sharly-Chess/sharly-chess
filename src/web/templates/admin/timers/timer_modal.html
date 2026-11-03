@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-scrollable">
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -37,7 +37,7 @@
                     {{ _('Properties') }}
                 </h4>
                 <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('%(string)s:', string=_('Name')),
@@ -51,7 +51,7 @@
                 </h4>
                 <div class="row gy-2 gx-3">
                     {% for num in [1, 2, 3] %}
-                        <div class="col-12 col-md-4">
+                        <div class="col-12">
                             {% with id='delay-'~num, name='delay_'~num %}
                                 {{ admin_macros.number_input(
                                     name='delay_'~num,
