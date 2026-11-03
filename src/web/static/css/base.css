@@ -697,6 +697,16 @@ body[data-sc-interface=admin] #top-nav-wrapper {
     opacity: 1;
 }
 
+/* Fields side by side in a row sit at its bottom, so that their inputs line
+   up when the label of one wraps above its input and the others do not. A
+   row with a line under one of its inputs (help, error, link) keeps them at
+   the top, or the others would drop to the level of that line. */
+[data-sc-interface=admin] .row:not(:has(.form-text, > * > .input-block + *)) > :has(> .input-block) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
 .input-block .form-check-label {
     white-space: nowrap;
     margin-right: 1rem;
