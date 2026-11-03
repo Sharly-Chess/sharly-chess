@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div id="event-snapshot-restore-modal" class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
@@ -36,8 +37,7 @@
                     {% endfor %}
                 </ul>
             {% endif %}
-            <div class="alert alert-warning" role="alert">
-                <i class="bi-exclamation-triangle-fill pe-1"></i>
+            {% call components.note('warning') %}
                 {{ _('The event will be replaced by this backup.') }}
                 {% if event_is_accessible %}
                     {{ _(
@@ -50,12 +50,9 @@
                         'of the state it is in now.'
                     ) }}
                 {% endif %}
-            </div>
+            {% endcall %}
             {% for warning in restore_warnings %}
-                <div class="alert alert-warning" role="alert">
-                    <i class="bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ warning }}
-                </div>
+                {{ components.note('warning', warning, icon='bi-cloud-arrow-up-fill') }}
             {% endfor %}
             <form
                 id="modal-form"

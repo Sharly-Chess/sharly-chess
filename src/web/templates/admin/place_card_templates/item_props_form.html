@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% set h_label = _('From right') if data.anchor_h == 'right' else _('From left') %}
 {% set v_label = _('From bottom') if data.anchor_v == 'bottom' else _('From top') %}
 <div id="pc-anchor" data-section="{{ section }}" class="mb-3 d-flex gap-3 align-items-start">
@@ -50,7 +51,7 @@
         <div class="mb-2">
             <label class="form-label small mb-1">{{ _('Image') }}</label>
             {% if errors.get('image') %}
-                <div class="alert alert-danger py-1 px-2 small mb-2">{{ errors['image'] }}</div>
+                {{ components.note('danger', errors['image'], compact=true, class='mb-2') }}
             {% endif %}
             <input type="hidden" id="pc-image" name="image" value="{{ data.image }}">
             <div class="d-flex flex-wrap gap-2">

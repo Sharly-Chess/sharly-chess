@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div
     class="modal-dialog modal-dialog-scrollable admin-display_controller-edit-modal"
     style="--bs-modal-width: fit-content;"
@@ -34,10 +35,7 @@
                     <h4>
                         {{ _('%(string)s: %(value)s', string=_('Display Controller'), value=admin_display_controller.name) }}
                     </h4>
-                    <div class="alert alert-danger d-flex align-items-start gap-2">
-                        <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
-                        <div>{{ _('Warning: the deletion is permanent!') }}</div>
-                    </div>
+                    {{ components.note('danger', _('Warning: the deletion is permanent!'), icon='warning') }}
                 {% else %}
                     <div class="row gy-2 gx-3">
                        <div class="d-flex">

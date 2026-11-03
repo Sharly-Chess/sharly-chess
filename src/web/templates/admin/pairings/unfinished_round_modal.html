@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div
     class="modal-dialog pairing-modal"
     style="--bs-modal-width: min(90vw, 500px);"
@@ -11,10 +12,9 @@
             </div>
         </div>
         <div class="modal-body">
-            <h4 class="text-danger">
-                {{ _('Warning: round #%(round)d is not finished.', round=admin_round) }}
-            </h4>
-            <ul class="mb-0">
+            {% call components.note('danger', icon='warning', class='mb-0') %}
+            {{ _('Warning: round #%(round)d is not finished.', round=admin_round) }}
+            <ul class="mb-0 mt-2">
                 {% if unpaired_count %}
                     <li>{{ ngettext(
                         '%(num)d player to pair',
@@ -44,6 +44,7 @@
                     ) }}</li>
                 {% endif %}
             </ul>
+            {% endcall %}
         </div>
         <div class="modal-footer">
             <button

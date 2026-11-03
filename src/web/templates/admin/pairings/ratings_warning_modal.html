@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {# Round 1 normally goes through the pairing-settings modal, but team
    variations (and any other variation with an empty settings list)
@@ -20,38 +21,34 @@
         </div>
         <div class="modal-body">
             {% if lacks_tie_breaks %}
-                <div class="alert alert-warning d-flex align-items-start gap-2">
-                    <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
+                {% call components.note('warning') %}
                     <div>
-                        <div>
-                            {% if admin_tournament.is_team_tournament %}
-                                {{ _('No tie-break is set for this tournament: teams on the same score will not be separated in the standings.') }}
-                            {% else %}
-                                {{ _('No tie-break is set for this tournament: players on the same score will not be separated in the standings.') }}
-                            {% endif %}
-                        </div>
-                        {% if client.can_update_tournaments %}
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary mt-2"
-                                hx-get="{{ url_for(
+                        {% if admin_tournament.is_team_tournament %}
+                            {{ _('No tie-break is set for this tournament: teams on the same score will not be separated in the standings.') }}
+                        {% else %}
+                            {{ _('No tie-break is set for this tournament: players on the same score will not be separated in the standings.') }}
+                        {% endif %}
+                    </div>
+                    {% if client.can_update_tournaments %}
+                        {{ components.button(
+                            _('Set the tie-breaks'),
+                            icon='bi-sliders',
+                            size='sm',
+                            class='mt-2',
+                            attrs={
+                                'hx-get': url_for(
                                     'admin-tie-breaks-modal',
                                     event_uniq_id=admin_event.uniq_id,
                                     tournament_id=admin_tournament.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            >
-                                <i class="bi-sliders pe-1"></i>
-                                {{ _('Set the tie-breaks') }}
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
+                                ),
+                                'hx-target': 'body',
+                                'hx-indicator': '#please-wait',
+                            },
+                        ) }}
+                    {% endif %}
+                {% endcall %}
             {% endif %}
-            <div class="alert alert-warning d-flex align-items-start gap-2 mb-0">
-                <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
-                <div>
+            {% call components.note('warning', class='mb-0') %}
                     <div>
                         {% if admin_round == 1 %}
                             {{ _('Reminder: you might have to update the players\' ratings before pairing.') }}
@@ -75,8 +72,7 @@
                             {% endwith %}
                         </ul>
                     </div>
-                </div>
-            </div>
+            {% endcall %}
         </div>
         <div class="modal-footer">
             <button

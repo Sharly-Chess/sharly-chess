@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 <div
     class="modal-dialog modal-dialog-scrollable admin-team-lineups-modal"
     style="--bs-modal-width: min(95vw, 720px);"
@@ -86,30 +87,18 @@
                         {% if round_num != default_round %}style="display:none"{% endif %}
                     >
                         {% if not editable %}
-                            <div class="alert alert-info py-1 px-2 small mb-2">
-                                {{ _(
-                                    'This round has been paired, so its lineup is '
-                                    'what stands on its boards. You can still edit '
-                                    'the lineup from the Pairings tab.'
-                                ) }}
-                            </div>
+                            {{ components.note('info', _(
+                                'This round has been paired, so its lineup is '
+                                'what stands on its boards. You can still edit '
+                                'the lineup from the Pairings tab.'
+                            ), compact=true, class='mb-2') }}
                         {% endif %}
                         {# The tournament's "warn on lineup out of roster
                            order" setting covers this warning and the mark on
                            the round's button; the roster positions on the
                            cards are shown either way. #}
                         {% if warn_lineup_order %}
-                        <div
-                            class="lineup-order-warning alert alert-warning py-1 px-2 small mb-2"
-                            {% if not round_info['out_of_order'] %}style="display:none"{% endif %}
-                        >
-                            <i class="bi-recycle"></i>
-                            <span class="flex-grow-1">
-                                {{ _(
-                                    'The lineup for round %(round)d is not in the same order as the team roster.',
-                                    round=round_num
-                                ) }}
-                            </span>
+                        {% set reset_action %}
                             {% if editable %}
                                 <button
                                     type="button"
@@ -118,7 +107,19 @@
                                     {{ _('Reset order') }}
                                 </button>
                             {% endif %}
-                        </div>
+                        {% endset %}
+                        {{ components.note(
+                            'warning',
+                            _(
+                                'The lineup for round %(round)d is not in the same order as the team roster.',
+                                round=round_num
+                            ),
+                            icon='bi-recycle',
+                            compact=true,
+                            actions=reset_action if reset_action|trim else none,
+                            class='lineup-order-warning mb-2',
+                            attrs={'style': none if round_info['out_of_order'] else 'display:none'},
+                        ) }}
                         {% endif %}
                         <form
                             class="lineup-form"

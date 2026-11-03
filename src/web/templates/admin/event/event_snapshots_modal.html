@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {# Reached from a healthy event and from one whose file could not be read, so
    nothing here goes through the loaded event. #}
@@ -104,19 +105,15 @@
         </div>
         <div class="modal-body">
             {% if not snapshots_enabled %}
-                <div class="alert alert-warning" role="alert">
-                    <i class="bi-exclamation-triangle-fill pe-1"></i>
-                    {{ _(
-                        'Backups are turned off in the settings: no new one is '
-                        'being taken. The backups already taken can still be '
-                        'restored.'
-                    ) }}
-                </div>
+                {{ components.note('warning', _(
+                    'Backups are turned off in the settings: no new one is '
+                    'being taken. The backups already taken can still be '
+                    'restored.'
+                )) }}
             {% endif %}
 
             {% if snapshot_status.is_failing %}
-                <div class="alert alert-danger" role="alert">
-                    <i class="bi-exclamation-octagon-fill pe-1"></i>
+                {% call components.note('danger') %}
                     {% if snapshot_status.last_failure == 'source_unreadable' %}
                         {{ _(
                             'This event could not be read to be backed up, which '
@@ -129,7 +126,7 @@
                     {% if snapshot_status.last_failure_message %}
                         <div class="mt-2 small">{{ snapshot_status.last_failure_message }}</div>
                     {% endif %}
-                </div>
+                {% endcall %}
             {% elif snapshot_status.last_success_at %}
                 <p class="text-secondary">
                     <i class="bi-check-circle-fill pe-1 text-success"></i>
@@ -140,13 +137,10 @@
             {% endif %}
 
             {% if not event_is_accessible %}
-                <div class="alert alert-warning" role="alert">
-                    <i class="bi-exclamation-triangle-fill pe-1"></i>
-                    {{ _(
-                        'This event could not be opened. Restoring a backup '
-                        'replaces its file, which is what brings it back.'
-                    ) }}
-                </div>
+                {{ components.note('warning', _(
+                    'This event could not be opened. Restoring a backup '
+                    'replaces its file, which is what brings it back.'
+                )) }}
             {% endif %}
 
             <table class="table table-striped align-middle">

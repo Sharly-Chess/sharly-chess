@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
     <div class="modal-content">
@@ -14,30 +15,24 @@
         <div class="modal-body">
             {% set selected_rows = row_count - import_errors_by_index|length %}
             {% if overwrite_players and admin_tournament and admin_tournament.tournament_players %}
-                <div class="alert alert-danger d-flex align-items-start gap-2">
-                    <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
-                    <div>
-                        {{ _(
-                            'Warning: the %(player_count)d players in the tournament will be deleted.',
-                            player_count=admin_tournament.tournament_players|length,
-                        ) }}
-                    </div>
-                </div>
+                {{ components.note('danger', _(
+                    'Warning: the %(player_count)d players in the tournament will be deleted.',
+                    player_count=admin_tournament.tournament_players|length,
+                ), icon='warning') }}
             {% endif %}
-            <div class="d-flex">
+            <div class="d-flex align-items-start gap-3">
                 {% if unknown_column_ids %}
-                    <h5 class="text-warning">
+                    {% call components.note('warning', compact=true, class='mb-0') %}
                         {{ ngettext(
                             '%(num)d unknown column (ignored)',
                             '%(num)d unknown columns (ignored)',
                             unknown_column_ids|length
                         ) }}
                         <i
-                            class="bi-info-circle-fill ps-1 text-body"
-                            style="font-size: 90%"
+                            class="bi-info-circle-fill ps-1"
                             {{ macros.tooltip_attributes('', build_list_tooltip(unknown_column_ids), 'right') }}
                         ></i>
-                    </h5>
+                    {% endcall %}
                 {% endif %}
                 <div class="flex-grow-1"></div>
                 <div class="form-check form-switch d-inline-block pe-3">

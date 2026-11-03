@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div
     class="modal-dialog modal-dialog-scrollable admin-distribute-players-modal"
     style="--bs-modal-width: min(90vw, 550px);"
@@ -57,18 +58,20 @@
                     ) }}
                 </div>
                 <h4 class="mt-3 mb-2">{{ _('Players per tournament') }}</h4>
-                <h5 id="over-warning" class="warning-message text-danger mt-1" style="display:none">
-                    {{ _('Warning: too many players selected.') }}
-                </h5>
-                <h5 id="under-warning" class="warning-message text-danger mt-1" style="display:none">
-                    {{ _('Warning: too few players selected.') }}
-                </h5>
-                <h5 id="criteria-warning" class="warning-message text-danger mt-1" style="display:none">
-                    {{ _(
+                {% for id, message in [
+                    ('over-warning', _('Warning: too many players selected.')),
+                    ('under-warning', _('Warning: too few players selected.')),
+                    ('criteria-warning', _(
                         'Warning: some players do not match the '
                         'criteria of any of the selected tournaments.'
+                    )),
+                ] %}
+                    {{ components.note(
+                        'danger', message, icon='warning', compact=true,
+                        class='warning-message mt-1 mb-2',
+                        attrs={'id': id, 'style': 'display:none'},
                     ) }}
-                </h5>
+                {% endfor %}
                 <span id="balance-groups-help">
                     {{ _('Click and drag to select balanced groups.') }}
                 </span>

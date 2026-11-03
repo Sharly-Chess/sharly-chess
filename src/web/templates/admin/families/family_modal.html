@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div
     class="modal-dialog modal-dialog-scrollable admin-family-edit-modal"
     {% if action == 'delete' %}
@@ -45,10 +46,7 @@
                     <h4>
                         {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
                     </h4>
-                    <div class="alert alert-danger d-flex align-items-start gap-2">
-                        <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
-                        <div>{{ _('Warning: the deletion is permanent!') }}</div>
-                    </div>
+                    {{ components.note('danger', _('Warning: the deletion is permanent!'), icon='warning') }}
                 {% else %}
                     <h4>{{ _('Properties') }}</h4>
                     <div class="row gy-2 gx-3">

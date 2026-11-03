@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
     <div class="modal-content">
@@ -7,7 +8,7 @@
         </div>
         <div class="modal-body">
             <h4>{{ rule.name }}</h4>
-            <h4 class="text-danger">{{ _('Delete this scoring rule?') }}</h4>
+            {{ components.note('danger', _('Delete this scoring rule?'), icon='warning') }}
             <form
                 id="modal-form"
                 hx-delete="{{ url_for('admin-championship-rule-delete', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"

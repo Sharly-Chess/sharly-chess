@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {# Shown before the first round is drawn when the arbiter configured a schedule
    over a different number of rounds than the pairing system will actually play
@@ -12,14 +13,12 @@
             </div>
         </div>
         <div class="modal-body">
-            <h5 class="text-warning">
-                {{ _(
-                    'The schedule was configured with %(scheduled)d round(s), but '
-                    'this pairing system will play %(calculated)d.',
-                    scheduled=scheduled_rounds,
-                    calculated=calculated_rounds,
-                ) }}
-            </h5>
+            {{ components.note('warning', _(
+                'The schedule was configured with %(scheduled)d round(s), but '
+                'this pairing system will play %(calculated)d.',
+                scheduled=scheduled_rounds,
+                calculated=calculated_rounds,
+            )) }}
             <p class="mb-0">
                 {{ ngettext(
                     'Continue with %(num)d round?',

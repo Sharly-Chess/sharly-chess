@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div style="--bs-modal-width: min(90vw, 500px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
     <div class="modal-content bg-secondary-subtle">
@@ -9,13 +10,10 @@
         </div>
         <div class="modal-body">
             {% if settings_read_only %}
-                <div class="alert alert-info py-2">
-                    <i class="bi-info-circle-fill pe-1"></i>
-                    {{ _(
-                        'These settings are part of the pairings already made '
-                        'and can no longer be changed.'
-                    ) }}
-                </div>
+                {{ components.note('info', _(
+                    'These settings are part of the pairings already made '
+                    'and can no longer be changed.'
+                )) }}
             {% endif %}
             <form
                 id="modal-form"

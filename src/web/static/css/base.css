@@ -3125,20 +3125,6 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     box-shadow: 0 0 0 0.1rem var(--bs-body-bg);
 }
 
-/* Laid out here rather than with Bootstrap's d-flex: that class carries
-   !important, which would outrank the inline display:none that hides the
-   alert on a round whose lineup is in order.
-
-   Filled rather than Bootstrap 5.3's subtle alert, which was too quiet to
-   catch the eye. Done by overriding the alert's own variables, so the
-   Reset button below keeps deriving its colours from them and stays
-   readable against the stronger background. */
-.lineup-order-warning {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 /* Takes its colours from the alert it sits in rather than naming them, so
    it still matches if that alert is ever given another type. */
 .lineup-reset-order {

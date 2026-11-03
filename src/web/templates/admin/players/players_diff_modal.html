@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% set player_updated_class='' %}
 {% set player_unchanged_class='text-secondary' %}
@@ -21,9 +22,7 @@
             </h4>
             {% with message, is_warning = data_source.info_or_warning_message %}
                 {% if message %}
-                    <h6 class="{% if is_warning %}text-danger{% endif %}">
-                        {{ message }}
-                    </h6>
+                    {{ components.note('danger' if is_warning else 'info', message, icon='warning' if is_warning else none) }}
                 {% endif %}
             {% endwith %}
             <form

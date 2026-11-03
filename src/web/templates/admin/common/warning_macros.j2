@@ -1,3 +1,5 @@
+{% import '/admin/components/macros.j2' as components with context %}
+
 {% macro level_icon(level, css_class='') %}
     {% if level == 2 %}
         <i class="bi-info-circle-fill text-info pe-2 {{ css_class }}"></i>
@@ -16,41 +18,35 @@
    buttons, stacked beside the message to leave it room. #}
 {% macro double_confirmation(id, first_message, consequences, confirm_label, hidden=false) %}
     <div id="{{ id }}" class="double-confirmation {% if hidden %}d-none{% endif %}">
-        <div data-step="1" class="alert alert-danger d-flex align-items-center mb-2">
-            {{ level_icon(4, 'align-self-start') }}
-            <div class="flex-grow-1 align-self-start">{{ first_message }}</div>
-            <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
-                <button type="button" class="btn btn-sm btn-outline-danger text-nowrap cap-centred" {{ caller('cancel') }}>
-                    <i class="bi-x-circle-fill pe-1"></i>
-                    {{ _('Cancel') }}
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-sm btn-danger text-nowrap cap-centred"
-                    onclick="
-                        const box = this.closest('.double-confirmation');
-                        box.querySelector('[data-step=\'1\']').classList.add('d-none');
-                        box.querySelector('[data-step=\'2\']').classList.remove('d-none');
-                        box.querySelector('[data-step=\'2\'] [data-default]').focus();
-                    "
-                >
-                    {{ _('Continue') }}
-                </button>
-            </div>
-        </div>
-        <div data-step="2" class="alert alert-danger d-flex align-items-center mb-2 d-none">
-            {{ level_icon(4, 'align-self-start') }}
-            <div class="flex-grow-1 align-self-start">{{ consequences }}</div>
-            <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
-                <button type="button" class="btn btn-sm btn-danger text-nowrap cap-centred" data-default {{ caller('cancel') }}>
-                    <i class="bi-x-circle-fill pe-1"></i>
-                    {{ _('Cancel') }}
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-danger text-nowrap cap-centred" {{ caller('confirm') }}>
-                    {{ confirm_label }}
-                </button>
-            </div>
-        </div>
+        {% set first_actions %}
+            <button type="button" class="btn btn-sm btn-outline-danger text-nowrap cap-centred" {{ caller('cancel') }}>
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-danger text-nowrap cap-centred"
+                onclick="
+                    const box = this.closest('.double-confirmation');
+                    box.querySelector('[data-step=\'1\']').classList.add('d-none');
+                    box.querySelector('[data-step=\'2\']').classList.remove('d-none');
+                    box.querySelector('[data-step=\'2\'] [data-default]').focus();
+                "
+            >
+                {{ _('Continue') }}
+            </button>
+        {% endset %}
+        {{ components.note('danger', first_message, actions=first_actions, class='mb-2', attrs={'data-step': '1'}) }}
+        {% set second_actions %}
+            <button type="button" class="btn btn-sm btn-danger text-nowrap cap-centred" data-default {{ caller('cancel') }}>
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger text-nowrap cap-centred" {{ caller('confirm') }}>
+                {{ confirm_label }}
+            </button>
+        {% endset %}
+        {{ components.note('danger', consequences, actions=second_actions, class='mb-2 d-none', attrs={'data-step': '2'}) }}
     </div>
 {% endmacro %}
 
@@ -58,19 +54,19 @@
    and is confirmed once. The caller gives the attributes of the 'cancel'
    and 'confirm' buttons. #}
 {% macro confirmation(id, message, confirm_label, hidden=false) %}
-    <div id="{{ id }}" class="alert alert-warning d-flex align-items-center mb-2 {% if hidden %}d-none{% endif %}">
-        {{ level_icon(3, 'align-self-start') }}
-        <div class="flex-grow-1 align-self-start">{{ message }}</div>
-        <div class="d-flex flex-column gap-2 ms-3 flex-shrink-0">
-            <button type="button" class="btn btn-sm btn-warning text-nowrap cap-centred" {{ caller('cancel') }}>
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-warning text-nowrap cap-centred" {{ caller('confirm') }}>
-                {{ confirm_label }}
-            </button>
-        </div>
-    </div>
+    {% set actions %}
+        <button type="button" class="btn btn-sm btn-warning text-nowrap cap-centred" {{ caller('cancel') }}>
+            <i class="bi-x-circle-fill pe-1"></i>
+            {{ _('Cancel') }}
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-warning text-nowrap cap-centred" {{ caller('confirm') }}>
+            {{ confirm_label }}
+        </button>
+    {% endset %}
+    {{ components.note(
+        'warning', message, actions=actions,
+        class='mb-2' ~ (' d-none' if hidden else ''), attrs={'id': id},
+    ) }}
 {% endmacro %}
 
 {% macro leave_fide_mode_consequences(tournament) %}

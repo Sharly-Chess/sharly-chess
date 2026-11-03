@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div
     class="modal-dialog modal-dialog-scrollable admin-random-tournament-modal"
@@ -12,13 +13,11 @@
             </div>
         </div>
         <div class="modal-body">
-            <div class="alert alert-info py-2">
-                {{ _(
-                    'A field left blank is given a random value. The rounds are '
-                    'paired by the pairing engine, the results come from the '
-                    'players\' ratings and the standings from the tie-break engine.'
-                ) }}
-            </div>
+            {{ components.note('info', _(
+                'A field left blank is given a random value. The rounds are '
+                'paired by the pairing engine, the results come from the '
+                'players\' ratings and the standings from the tie-break engine.'
+            )) }}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -146,7 +145,7 @@
                     <h4 class="mt-3 mb-2">
                         {{ _('Byes, forfeits and unusual results') }}
                     </h4>
-                    <div class="alert alert-secondary py-2">
+                    {% call components.note('secondary') %}
                         {% if admin_event.is_team_event %}
                             {{ _(
                                 'Each is a fixed number for the whole tournament (4), or '
@@ -162,7 +161,7 @@
                                 'used.'
                             ) }}
                         {% endif %}
-                    </div>
+                    {% endcall %}
                     <div class="row gy-2">
                         {{ admin_macros.text_input(
                             name='full_point_byes',
