@@ -291,9 +291,17 @@ body:not([data-sc-interface=admin]) #copyright-wrapper {
     align-items: center;
 }
 
+/* A title too long for the sidebar wraps, leaving the icon and the count
+   their room. */
 .sidebar .nav-link > .nav-count,
-.sidebar .nav-link > span:has(+ .nav-count) {
+.sidebar .nav-link > i {
     flex-shrink: 0;
+}
+
+.sidebar .nav-link > span:has(+ .nav-count) {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .sidebar .sidebar-tooltip:has(.nav-count) .nav-link,
