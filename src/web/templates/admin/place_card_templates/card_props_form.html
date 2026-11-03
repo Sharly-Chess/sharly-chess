@@ -15,12 +15,10 @@
     </div>
 
     <label class="form-label small mb-1">{{ _('Unit') }}</label>
-    <div class="btn-group btn-group-sm w-100 mb-2" role="group">
-        <input type="radio" class="btn-check" name="unit" id="pc-unit-mm" value="mm" {% if data.unit != 'in' %}checked{% endif %}>
-        <label class="btn btn-outline-secondary" for="pc-unit-mm">{{ _('mm') }}</label>
-        <input type="radio" class="btn-check" name="unit" id="pc-unit-in" value="in" {% if data.unit == 'in' %}checked{% endif %}>
-        <label class="btn btn-outline-secondary" for="pc-unit-in">{{ _('in') }}</label>
-    </div>
+    {% call components.segmented(_('Unit'), size='sm', class='w-100 mb-2') %}
+        {{ components.segment_radio('unit', 'mm', _('mm'), 'pc-unit-mm', checked=data.unit != 'in') }}
+        {{ components.segment_radio('unit', 'in', _('in'), 'pc-unit-in', checked=data.unit == 'in') }}
+    {% endcall %}
 
     <div class="row g-2 mb-2">
         <div class="col-4">

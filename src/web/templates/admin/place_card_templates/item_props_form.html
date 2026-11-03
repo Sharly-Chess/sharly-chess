@@ -34,12 +34,8 @@
 <div id="pc-stacking" data-section="{{ section }}" class="mb-3">
     <label class="form-label small mb-1">{{ _('Stacking') }}</label>
     <div class="btn-group btn-group-sm w-100" role="group">
-        <button type="button" class="btn btn-outline-secondary" data-pc-reorder="back">
-            <i class="bi-back pe-1"></i>{{ _('To back') }}
-        </button>
-        <button type="button" class="btn btn-outline-secondary" data-pc-reorder="front">
-            <i class="bi-front pe-1"></i>{{ _('To front') }}
-        </button>
+        {{ components.button(_('To back'), kind='outline-secondary', icon='bi-back', attrs={'data-pc-reorder': 'back'}) }}
+        {{ components.button(_('To front'), kind='outline-secondary', icon='bi-front', attrs={'data-pc-reorder': 'front'}) }}
     </div>
 </div>
 
@@ -139,10 +135,24 @@
         <div class="mb-2">
             <div class="d-flex align-items-center gap-2 mb-1">
                 <label class="form-label small mb-0">{{ _('Content') }}</label>
-                <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="{{ _('Editor mode') }}">
-                    <button type="button" class="btn py-0 {% if data.content_mode != 'advanced' %}btn-secondary{% else %}btn-outline-secondary{% endif %}" data-pc-mode="basic" {% if not data.can_be_basic %}disabled title="{{ _('This content is too advanced for the block editor.') }}"{% endif %}>{{ _('Basic') }}</button>
-                    <button type="button" class="btn py-0 {% if data.content_mode == 'advanced' %}btn-secondary{% else %}btn-outline-secondary{% endif %}" data-pc-mode="advanced">{{ _('Advanced') }}</button>
-                </div>
+                {% call components.segmented(_('Editor mode'), size='sm', class='ms-auto') %}
+                    {{ components.segment_button(
+                        _('Basic'),
+                        active=data.content_mode != 'advanced',
+                        class='py-0',
+                        attrs={
+                            'data-pc-mode': 'basic',
+                            'disabled': not data.can_be_basic,
+                            'title': none if data.can_be_basic else _('This content is too advanced for the block editor.'),
+                        },
+                    ) }}
+                    {{ components.segment_button(
+                        _('Advanced'),
+                        active=data.content_mode == 'advanced',
+                        class='py-0',
+                        attrs={'data-pc-mode': 'advanced'},
+                    ) }}
+                {% endcall %}
             </div>
             {% if data.content_mode == 'advanced' %}
                 {# Complex Jinja (loops, if/elif, with...) can't be built from
@@ -188,27 +198,28 @@
             <input type="number" step="0.5" class="form-control form-control-sm" id="pc-font-size" name="font_size" value="{{ data.font_size }}">
         </div>
         <label class="form-label small mb-1">{{ _('Style') }}</label>
-        <div class="btn-group btn-group-sm w-100 mb-2" role="group">
-            <input type="checkbox" class="btn-check" name="bold" id="pc-bold" {% if data.bold == 'on' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-bold" title="{{ _('Bold') }}"><i class="bi-type-bold"></i></label>
-            <input type="checkbox" class="btn-check" name="italic" id="pc-italic" {% if data.italic == 'on' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-italic" title="{{ _('Italic') }}"><i class="bi-type-italic"></i></label>
-            <input type="checkbox" class="btn-check" name="underline" id="pc-underline" {% if data.underline == 'on' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-underline" title="{{ _('Underline') }}"><i class="bi-type-underline"></i></label>
-            <input type="checkbox" class="btn-check" name="strikethrough" id="pc-strike" {% if data.strikethrough == 'on' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-strike" title="{{ _('Strikethrough') }}"><i class="bi-type-strikethrough"></i></label>
-            <input type="checkbox" class="btn-check" name="uppercase" id="pc-uppercase" {% if data.uppercase == 'on' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-uppercase" title="{{ _('All caps') }}"><span style="font-size: .8rem; font-weight: 600; letter-spacing: .5px;">AA</span></label>
-        </div>
+        {% set all_caps %}<span style="font-size: .8rem; font-weight: 600; letter-spacing: .5px;">AA</span>{% endset %}
+        {% call components.segmented(_('Style'), size='sm', class='w-100 mb-2') %}
+            {% for name, id, label, icon in [
+                ('bold', 'pc-bold', _('Bold'), 'bi-type-bold'),
+                ('italic', 'pc-italic', _('Italic'), 'bi-type-italic'),
+                ('underline', 'pc-underline', _('Underline'), 'bi-type-underline'),
+                ('strikethrough', 'pc-strike', _('Strikethrough'), 'bi-type-strikethrough'),
+            ] %}
+                {{ components.segment_checkbox(name, label, id, icon=icon, icon_only=true, checked=data[name] == 'on') }}
+            {% endfor %}
+            {{ components.segment_checkbox('uppercase', all_caps, 'pc-uppercase', tooltip=_('All caps'), checked=data.uppercase == 'on') }}
+        {% endcall %}
         <label class="form-label small mb-1">{{ _('Text align') }}</label>
-        <div class="btn-group btn-group-sm w-100 mb-2" role="group">
-            <input type="radio" class="btn-check" name="text_align" id="pc-ta-left" value="left" {% if data.text_align == 'left' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-ta-left"><i class="bi-text-left"></i></label>
-            <input type="radio" class="btn-check" name="text_align" id="pc-ta-center" value="center" {% if data.text_align == 'center' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-ta-center"><i class="bi-text-center"></i></label>
-            <input type="radio" class="btn-check" name="text_align" id="pc-ta-right" value="right" {% if data.text_align == 'right' %}checked{% endif %}>
-            <label class="btn btn-outline-secondary" for="pc-ta-right"><i class="bi-text-right"></i></label>
-        </div>
+        {% call components.segmented(_('Text align'), size='sm', class='w-100 mb-2') %}
+            {% for value, label, icon in [
+                ('left', _('Align left'), 'bi-text-left'),
+                ('center', _('Centre'), 'bi-text-center'),
+                ('right', _('Align right'), 'bi-text-right'),
+            ] %}
+                {{ components.segment_radio('text_align', value, label, 'pc-ta-' ~ value, icon=icon, icon_only=true, checked=data.text_align == value) }}
+            {% endfor %}
+        {% endcall %}
         <div class="row g-2 mb-2 small">
             <label class="col-6 d-flex align-items-center gap-2 mb-0" for="pc-color">
                 {{ _('Text') }}

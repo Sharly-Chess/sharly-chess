@@ -100,23 +100,23 @@
             {% if plugin.is_enabled %}
                 <dt>{{ _('Enabled by default') }}</dt>
                 <dd>
-                    <div class="btn-group btn-group-sm" role="group">
+                    {% call components.segmented(_('Enabled by default'), size='sm') %}
                         {% for enabled, label in [
                             (true, _('Yes')), (false, _('No'))
                         ] %}
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary plugin-toggle-button
-                                    {% if plugin.event_is_enabled_by_default == enabled %}active{% endif %}"
-                                data-testid="plugin-default-event-{{ plugin.id }}-{{ 'yes' if enabled else 'no' }}"
-                                hx-post="{{ url_for(
-                                    'admin-plugin-default-event', plugin_id=plugin.id
-                                ) }}?enabled={{ 1 if enabled else 0 }}{% if embedded %}&embedded=1{% endif %}"
-                                hx-target="#plugin-detail"
-                                hx-indicator="#please-wait"
-                            >{{ label }}</button>
+                            {{ components.segment_button(
+                                label,
+                                active=plugin.event_is_enabled_by_default == enabled,
+                                attrs={
+                                    'data-testid': 'plugin-default-event-' ~ plugin.id ~ '-' ~ ('yes' if enabled else 'no'),
+                                    'hx-post': url_for('admin-plugin-default-event', plugin_id=plugin.id)
+                                        ~ '?enabled=' ~ (1 if enabled else 0) ~ ('&embedded=1' if embedded else ''),
+                                    'hx-target': '#plugin-detail',
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) }}
                         {% endfor %}
-                    </div>
+                    {% endcall %}
                 </dd>
             {% endif %}
 

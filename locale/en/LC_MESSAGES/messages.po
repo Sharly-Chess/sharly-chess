@@ -1010,6 +1010,12 @@ msgstr ""
 msgid "Algeria"
 msgstr ""
 
+msgid "Align left"
+msgstr ""
+
+msgid "Align right"
+msgstr ""
+
 msgid "All"
 msgstr ""
 
@@ -1759,6 +1765,9 @@ msgstr ""
 msgid "Boards screens show pairings by board number."
 msgstr ""
 
+msgid "Boards shown"
+msgstr ""
+
 msgid "Bold"
 msgstr ""
 
@@ -2033,6 +2042,9 @@ msgid "Cayman Islands"
 msgstr ""
 
 msgid "Central African Republic"
+msgstr ""
+
+msgid "Centre"
 msgstr ""
 
 msgid "Chad"
@@ -5161,6 +5173,9 @@ msgid "Keizer"
 msgstr ""
 
 msgid "Kenya"
+msgstr ""
+
+msgid "Keyboard entry mode"
 msgstr ""
 
 msgid "Keyboard shortcuts:"
@@ -8420,6 +8435,9 @@ msgid "Remove from team"
 msgstr ""
 
 msgid "Remove the correction"
+msgstr ""
+
+msgid "Remove the period"
 msgstr ""
 
 msgid "Remove the player from the event."

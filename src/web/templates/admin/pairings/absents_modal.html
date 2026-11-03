@@ -154,57 +154,24 @@
                         <span class="text-start flex-grow-1 fw-bold">
                             {{ _('Apply to all') }}
                         </span>
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input
-                                type="radio"
-                                class="btn-check"
-                                id="zpb-all"
-                                value="zpb"
-                                name="all_players"
-                                autocomplete="off"
-                                checked
-                            >
-                            <label
-                                class="btn btn-outline-primary lh-1"
-                                for="zpb-all"
-                                {{ macros.tooltip_attributes('', _('Do not pair at round %(pairing_round)d', pairing_round=admin_round)) }}
-                            >
-                                <i class="bi-0-circle-fill"></i>
-                            </label>
-
+                        {% call components.segmented(_('Apply to all')) %}
+                            {{ components.segment_radio(
+                                'all_players', 'zpb',
+                                _('Do not pair at round %(pairing_round)d', pairing_round=admin_round),
+                                'zpb-all', icon='bi-0-circle-fill', icon_only=true, checked=true,
+                            ) }}
                             {% if admin_round < admin_tournament.rounds %}
-                                <input
-                                    type="radio"
-                                    class="btn-check"
-                                    id="withdraw-all"
-                                    value="withdraw"
-                                    name="all_players"
-                                    autocomplete="off"
-                                >
-                                <label
-                                    class="btn btn-outline-primary lh-1"
-                                    for="withdraw-all"
-                                    {{ macros.tooltip_attributes('', _('Definitive withdrawal')) }}
-                                >
-                                    <i class="bi-sign-stop"></i>
-                                </label>
+                                {{ components.segment_radio(
+                                    'all_players', 'withdraw', _('Definitive withdrawal'),
+                                    'withdraw-all', icon='bi-sign-stop', icon_only=true,
+                                ) }}
                             {% endif %}
-                            <input
-                                type="radio"
-                                class="btn-check"
-                                id="present-all"
-                                value="present"
-                                name="all_players"
-                                autocomplete="off"
-                            >
-                            <label
-                                class="btn btn-outline-primary lh-1"
-                                for="present-all"
-                                {{ macros.tooltip_attributes('', _('Pair at round %(pairing_round)d', pairing_round=admin_round)) }}
-                            >
-                                <i class="bi-check-circle-fill"></i>
-                            </label>
-                        </div>
+                            {{ components.segment_radio(
+                                'all_players', 'present',
+                                _('Pair at round %(pairing_round)d', pairing_round=admin_round),
+                                'present-all', icon='bi-check-circle-fill', icon_only=true,
+                            ) }}
+                        {% endcall %}
                         <script>
                             $('input[name="all_players"]').on('change', function() {
                                 $('.player-' + $(this).val()).prop('checked', true);
@@ -218,45 +185,27 @@
                                     <div class="text-start flex-grow-1">
                                         {{ player.full_name }}
                                     </div>
-                                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                        <input
-                                            type="radio"
-                                            class="btn-check player-zpb"
-                                            name="player_{{ player.id }}"
-                                            id="zpb-{{ player.id }}"
-                                            value="zpb"
-                                            autocomplete="off"
-                                            checked
-                                        >
-                                        <label class="btn btn-outline-primary lh-1" for="zpb-{{ player.id }}">
-                                            <i class="bi-0-circle-fill"></i>
-                                        </label>
-
+                                    {% call components.segmented(player.full_name) %}
+                                        {{ components.segment_radio(
+                                            'player_' ~ player.id, 'zpb',
+                                            _('Do not pair at round %(pairing_round)d', pairing_round=admin_round),
+                                            'zpb-' ~ player.id, icon='bi-0-circle-fill', icon_only=true,
+                                            checked=true, class='player-zpb',
+                                        ) }}
                                         {% if admin_round < admin_tournament.rounds %}
-                                            <input
-                                                type="radio"
-                                                class="btn-check player-withdraw"
-                                                name="player_{{ player.id }}"
-                                                id="withdraw-{{ player.id }}"
-                                                value="withdraw"
-                                                autocomplete="off"
-                                            >
-                                            <label class="btn btn-outline-primary lh-1" for="withdraw-{{ player.id }}">
-                                                <i class="bi-sign-stop"></i>
-                                            </label>
+                                            {{ components.segment_radio(
+                                                'player_' ~ player.id, 'withdraw', _('Definitive withdrawal'),
+                                                'withdraw-' ~ player.id, icon='bi-sign-stop', icon_only=true,
+                                                class='player-withdraw',
+                                            ) }}
                                         {% endif %}
-                                        <input
-                                            type="radio"
-                                            class="btn-check player-present"
-                                            name="player_{{ player.id }}"
-                                            id="present-{{ player.id }}"
-                                            value="present"
-                                            autocomplete="off"
-                                        >
-                                        <label class="btn btn-outline-primary lh-1" for="present-{{ player.id }}">
-                                            <i class="bi-check-circle-fill "></i>
-                                        </label>
-                                    </div>
+                                        {{ components.segment_radio(
+                                            'player_' ~ player.id, 'present',
+                                            _('Pair at round %(pairing_round)d', pairing_round=admin_round),
+                                            'present-' ~ player.id, icon='bi-check-circle-fill', icon_only=true,
+                                            class='player-present',
+                                        ) }}
+                                    {% endcall %}
                                 </div>
                             </div>
                         {% endfor %}

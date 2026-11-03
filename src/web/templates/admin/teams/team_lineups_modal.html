@@ -26,19 +26,17 @@
                         <div class="lineup-round-group" data-group="{{ group_index }}">
                             {% set first_round = group[0]['round'] %}
                             {% set last_round = group[-1]['round'] %}
-                            <div class="btn-group btn-group-sm" role="group">
+                            {% call components.segmented(_('Rounds'), size='sm') %}
                                 {% for round_info in group %}
                                     {% set round_num = round_info['round'] %}
-                                    <button
-                                        type="button"
-                                        class="lineup-round-button btn {{ 'btn-primary' if round_num == default_round else 'btn-outline-primary' }}"
-                                        data-round="{{ round_num }}"
-                                        data-group="{{ group_index }}"
-                                    >
-                                        {{ round_num }}
-                                    </button>
+                                    {{ components.segment_button(
+                                        round_num|string,
+                                        active=round_num == default_round,
+                                        class='lineup-round-button',
+                                        attrs={'data-round': round_num, 'data-group': group_index},
+                                    ) }}
                                 {% endfor %}
-                            </div>
+                            {% endcall %}
                             {# One mark for the group: its rounds share a
                                lineup, so they are in or out of roster order
                                together. #}
@@ -248,8 +246,7 @@
                             });
                             $('.lineup-round-button').each(function () {
                                 const active = String($(this).data('round')) === round;
-                                $(this).toggleClass('btn-primary', active);
-                                $(this).toggleClass('btn-outline-primary', !active);
+                                $(this).toggleClass('active', active).attr('aria-pressed', active);
                             });
                         });
                         function syncSlotInputs(form) {

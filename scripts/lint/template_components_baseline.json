@@ -191,9 +191,6 @@
     "icon-spacing": 2,
     "modal-trigger": 3
   },
-  "src/web/templates/admin/pairings/absents_modal.html": {
-    "button": 6
-  },
   "src/web/templates/admin/pairings/absents_new_check_ins_alert.html": {
     "button": 1
   },
@@ -284,12 +281,7 @@
     "modal-trigger": 2
   },
   "src/web/templates/admin/pairings/tab.html": {
-    "button": 6,
-    "fixed-colour": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/pairings/team_absents_modal.html": {
-    "button": 4
+    "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_block_header.html": {
     "button": 3,
@@ -332,12 +324,9 @@
     "menu-item": 1,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/place_card_templates/card_props_form.html": {
-    "button": 2
-  },
   "src/web/templates/admin/place_card_templates/item_props_form.html": {
-    "button": 21,
-    "icon-spacing": 6
+    "button": 9,
+    "icon-spacing": 4
   },
   "src/web/templates/admin/place_card_templates/place_card_template_components.j2": {
     "button": 4,
@@ -412,7 +401,7 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/plugins/_plugin_detail.html": {
-    "button": 4,
+    "button": 3,
     "icon-spacing": 6
   },
   "src/web/templates/admin/plugins/_plugins_home.html": {
@@ -467,7 +456,7 @@
     "icon-spacing": 5
   },
   "src/web/templates/admin/teams/team_lineups_modal.html": {
-    "button": 2
+    "button": 1
   },
   "src/web/templates/admin/timers/timer_components.j2": {
     "button": 5,

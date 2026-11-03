@@ -1010,6 +1010,12 @@ msgstr "Message d'alerte"
 msgid "Algeria"
 msgstr "Algérie"
 
+msgid "Align left"
+msgstr "Aligner à gauche"
+
+msgid "Align right"
+msgstr "Aligner à droite"
+
 msgid "All"
 msgstr "Tous"
 
@@ -1759,6 +1765,9 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
 
+msgid "Boards shown"
+msgstr "Échiquiers affichés"
+
 msgid "Bold"
 msgstr "Gras"
 
@@ -2034,6 +2043,9 @@ msgstr "Îles Caïmanes"
 
 msgid "Central African Republic"
 msgstr "République centrafricaine"
+
+msgid "Centre"
+msgstr "Centrer"
 
 msgid "Chad"
 msgstr "Tchad"
@@ -5162,6 +5174,9 @@ msgstr "Keizer"
 
 msgid "Kenya"
 msgstr "Kenya"
+
+msgid "Keyboard entry mode"
+msgstr "Mode de saisie au clavier"
 
 msgid "Keyboard shortcuts:"
 msgstr "Raccourcis clavier :"
@@ -8423,6 +8438,9 @@ msgstr "Retirer de l'équipe"
 
 msgid "Remove the correction"
 msgstr "Supprimer la correction"
+
+msgid "Remove the period"
+msgstr "Supprimer la période"
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."

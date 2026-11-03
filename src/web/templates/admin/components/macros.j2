@@ -523,9 +523,30 @@
     class='',
     attrs={}
 ) -%}
+    {{ _segment_input('radio', name, value, label, id, icon, icon_only, checked, tooltip, class, attrs) }}
+{%- endmacro %}
+
+{# An on/off choice of a segmented control that a form submits: a checkbox
+   named `name`, sent as `value` when on. #}
+{% macro segment_checkbox(
+    name,
+    label,
+    id,
+    value='on',
+    icon=none,
+    icon_only=false,
+    checked=false,
+    tooltip=none,
+    class='',
+    attrs={}
+) -%}
+    {{ _segment_input('checkbox', name, value, label, id, icon, icon_only, checked, tooltip, class, attrs) }}
+{%- endmacro %}
+
+{% macro _segment_input(type, name, value, label, id, icon, icon_only, checked, tooltip, class, attrs) -%}
     {%- set tooltip = tooltip or (label if icon_only else none) -%}
     <input
-        type="radio"
+        type="{{ type }}"
         class="btn-check{% if class %} {{ class }}{% endif %}"
         id="{{ id }}"
         name="{{ name }}"
@@ -546,13 +567,17 @@
 {%- endmacro %}
 
 {# A choice of a segmented control that acts on its own (a request, a
-   script): a button, `active` when it is the current choice. #}
+   script): a button, `active` when it is the current choice. A tooltip
+   takes the Bootstrap toggle, so a button with one opens a modal without
+   it, the modal showing once loaded. #}
 {% macro segment_button(
     label,
     icon=none,
     icon_only=false,
     active=false,
     tooltip=none,
+    tooltip_type='',
+    tooltip_placement='top',
     class='',
     attrs={}
 ) -%}
@@ -562,7 +587,7 @@
         class="btn btn-outline-primary sc-btn{% if icon_only %} sc-btn-icon-only{% endif %}{% if active %} active{% endif %}{% if class %} {{ class }}{% endif %}"
         aria-pressed="{{ 'true' if active else 'false' }}"
         {%- if icon_only %} aria-label="{{ label }}"{% endif %}
-        {%- if tooltip %} {{ macros.tooltip_attributes('', tooltip) }}{% endif %}
+        {%- if tooltip %} {{ macros.tooltip_attributes(tooltip_type, tooltip, tooltip_placement) }}{% endif %}
         {{- _attributes(attrs) }}
     >
         {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
