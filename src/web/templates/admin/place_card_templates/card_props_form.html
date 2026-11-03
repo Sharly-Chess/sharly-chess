@@ -1,5 +1,6 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div class="mb-3">
-    <span class="badge text-bg-secondary">{{ type_name }}</span>
+    {{ components.badge('neutral', type_name) }}
 </div>
 
 <form id="pc-card-form" onsubmit="return false">

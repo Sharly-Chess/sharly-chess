@@ -1,4 +1,4 @@
-{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% macro item_class(item, view) -%}
     {%- if not item.accessible or not item.are_all_plugins_enabled -%}
@@ -131,11 +131,11 @@
         {% if item.tags %}
             <div class="collection-fact">
                 <span class="collection-fact-label"><i class="bi-tags"></i>{{ _('Tags') }}</span>
-                {{ tag_macros.tag_badges(item.tags) }}
+                {{ components.tag_badges(item.tags) }}
             </div>
         {% endif %}
     {% else %}
-        {{ tag_macros.tag_badges(item.tags) }}
+        {{ components.tag_badges(item.tags) }}
     {% endif %}
 {% endmacro %}
 

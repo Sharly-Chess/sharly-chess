@@ -1,13 +1,11 @@
-{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% for tournament_status in cr_utils.resolve_tournament_upload_statuses(tournament) %}
-    {% set tooltip_message = tournament_status.tooltip_message(tournament) %}
-    <span
-        class="badge rounded-pill {{ tournament_status.css_classes }}"
-        {% if tooltip_message %}
-            {{ macros.tooltip_attributes('', tooltip_message) }}
-        {% endif %}
-    >
-        {{ tournament_status.name }}
-    </span>
+    {{ components.badge(
+        tournament_status.badge_kind,
+        tournament_status.name,
+        pill=true,
+        tooltip=tournament_status.tooltip_message(tournament),
+        tooltip_type='',
+    ) }}
 {% endfor %}

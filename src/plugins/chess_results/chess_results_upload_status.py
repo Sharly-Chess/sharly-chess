@@ -13,8 +13,8 @@ class CRUploadStatus(IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def css_classes(self) -> str:
-        """CSS classes to apply to the status."""
+    def badge_kind(self) -> str:
+        """The kind of the badge showing the status (see components.badge)."""
 
 
 class NeverUploadedCRUploadStatus(CRUploadStatus):
@@ -27,8 +27,8 @@ class NeverUploadedCRUploadStatus(CRUploadStatus):
         return _('Never uploaded')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
     def tooltip_message(self, tournament: Tournament) -> str | None:
         return None
@@ -47,8 +47,8 @@ class UpToDateCRUploadStatus(CRUploadStatus):
         return _('No changes detected since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-success'
+    def badge_kind(self) -> str:
+        return 'success'
 
 
 class ModifiedCRUploadStatus(CRUploadStatus):
@@ -64,8 +64,8 @@ class ModifiedCRUploadStatus(CRUploadStatus):
         return _('Tournament has been modified since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class PendingCRUploadStatus(CRUploadStatus):
@@ -81,8 +81,8 @@ class PendingCRUploadStatus(CRUploadStatus):
         return _('Tournament upload has been planned.')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
 
 class OngoingCRUploadStatus(CRUploadStatus):
@@ -98,8 +98,8 @@ class OngoingCRUploadStatus(CRUploadStatus):
         return _('Tournament is currently being uploaded.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class FailureCRUploadStatus(CRUploadStatus, ABC):
@@ -108,8 +108,8 @@ class FailureCRUploadStatus(CRUploadStatus, ABC):
         return _('Failure')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-error'
+    def badge_kind(self) -> str:
+        return 'danger'
 
     @property
     @abstractmethod

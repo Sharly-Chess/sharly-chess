@@ -223,12 +223,12 @@
                         <ul class="list-group">
                             {% for group in pp_rule_groups %}
                                 <li class="list-group-item d-flex align-items-center">
-                                    <span
-                                        class="badge {{ 'text-bg-danger' if group.constraint.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0"
-                                        {{ macros.tooltip_attributes('info', group.constraint.description, 'top') }}
-                                    >
-                                        {{ group.constraint if group.constraint.is_hard else _('Soft') }}
-                                    </span>
+                                    {{ components.badge(
+                                        'danger' if group.constraint.is_hard else 'neutral',
+                                        group.constraint if group.constraint.is_hard else _('Soft'),
+                                        tooltip=group.constraint.description,
+                                        class='me-2 flex-shrink-0',
+                                    ) }}
                                     <div>
                                         <span class="fw-bold">{{ group.label }}</span>
                                         <span class="text-muted small">({{ group.count }})</span>

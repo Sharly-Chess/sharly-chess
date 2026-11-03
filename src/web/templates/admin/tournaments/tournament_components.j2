@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro item_class(item, view) -%}
     {%- if not item.started -%}
         collection-status-warning
@@ -324,22 +325,19 @@
         {% set invalid_messages_by_id = {} if advancement else item.tie_break_configuration.invalid_messages %}
         {% for stored_id, tie_break in config.items() %}
             {% if stored_id in invalid_messages_by_id %}
-                {% set badge_class = 'text-bg-danger' %}
+                {% set badge_kind = 'danger' %}
                 {% set has_issue = true %}
                 {% set tooltip = tie_break.full_name ~ ': ' ~ invalid_messages_by_id[stored_id] %}
             {% else %}
                 {% set warning_message = tie_break.get_warning_for_tournament(item) %}
-                {% set badge_class = 'text-bg-warning' if warning_message else 'text-bg-secondary' %}
+                {% set badge_kind = 'warning' if warning_message else 'neutral' %}
                 {% set has_issue = warning_message %}
                 {% set tooltip = tie_break.full_name ~ (': ' ~ warning_message if warning_message else '') %}
             {% endif %}
-            <span
-                class="badge {{ badge_class }}"
-                {{ macros.tooltip_attributes('', tooltip, 'top') }}
-            >
+            {% call components.badge(badge_kind, tie_break.acronym, tooltip=tooltip, tooltip_type='') %}
                 {{ tie_break.acronym }}
-                {% if has_issue %}<i class="bi-exclamation-triangle-fill ps-1"></i>{% endif %}
-            </span>
+                {% if has_issue %}{{ components.icon('warning') }}{% endif %}
+            {% endcall %}
         {% endfor %}
     {% else %}
         <span class="text-secondary">{{ _('None') }}</span>

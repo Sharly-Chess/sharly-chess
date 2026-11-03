@@ -1,5 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
-{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {# Tag filter of the event lists. Each badge toggles its own tag; the whole
    resulting selection is sent as `filter_tags`, so no client-side state is
@@ -32,25 +32,7 @@
                 {% endif %}
                 aria-pressed="{{ 'true' if is_selected else 'false' }}"
             >
-                {% if is_selected %}
-                    {{ tag_macros.tag_badge(tag, count=count) }}
-                {% else %}
-                    {# Tinted rather than outlined: the label keeps the body
-                       colour, which stays legible whatever the tag colour. #}
-                    <span
-                        class="badge tag-badge rounded-pill fw-normal d-inline-flex align-items-center gap-1{% if not count %} opacity-50{% endif %}"
-                        style="
-                            background-color: color-mix(in srgb, {{ tag.color }} 25%, transparent);
-                            color: var(--bs-body-color);
-                            border-color: color-mix(
-                                in srgb, {{ tag.color }} 65%, var(--bs-body-color)
-                            ) !important;
-                        "
-                    >
-                        <span>{{ tag.name }}</span>
-                        <span class="opacity-75">({{ count }})</span>
-                    </span>
-                {% endif %}
+                {{ components.tag_badge(tag, count=count, tinted=not is_selected, dimmed=not is_selected and not count) }}
             </button>
         {% endfor %}
         {% if admin_events_tag_filter %}

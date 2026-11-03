@@ -1,3 +1,4 @@
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
 
 {# Admin team-match modal (opened from the match button on the pairings
@@ -44,7 +45,7 @@
                             if ko_adv.winner_id == team_board.team_a.id
                             else team_board.team_b.name %}
                         <div class="mb-2">
-                            <span class="badge rounded-pill bg-dark text-primary lh-1 me-1">1</span>
+                            {{ pairing_components.advance_mark(tooltip=false) }}
                             <b>{{ winner_name }}</b>
                             {% if ko_adv.reason %}
                                 <span class="text-secondary">({{ ko_adv.reason }})</span>

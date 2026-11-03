@@ -57,34 +57,10 @@
                         data-bs-target="#modal-wrapper"
                         onclick="event.stopPropagation()"
                     >{{ team_board.team_a.name }}</a>
-                    {% set _a_mp, _a_gp = admin_tournament.point_adjustments.effective(
-                        team_board.team_a.id, team_board.round
-                    ) %}
-                    {% set _a_note = admin_tournament.point_adjustments.from_rule_set(team_board.team_a.id, team_board.round) %}
-                    {% set _a_note = _a_note.explanation if _a_note else '' %}
-                    {% if _a_mp or _a_gp or _a_note %}
-                        <a
-                            class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_a_mp < 0 or _a_gp < 0) else ('text-bg-success' if (_a_mp or _a_gp) else 'text-bg-secondary') }}"
-                            style="cursor: pointer;"
-                            onclick="event.stopPropagation()"
-                            hx-get="{{ url_for(
-                                'admin-team-point-adjustment-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=team_board.round,
-                                team_id=team_board.team_a.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                macros.point_adjustment_tooltip(admin_tournament, team_board.team_a.id, team_board.round),
-                                'top'
-                            ) }}
-                        >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _a_mp and not _a_gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
-                    {% endif %}
+                    {{ pairing_components.team_points_badge(
+                        admin_tournament, team_board.team_a.id, team_board.round,
+                        editable=true, class='align-middle ms-1',
+                    ) }}
                 </strong>
                 {% if client.can_update_tournaments %}
                     <button
@@ -171,15 +147,10 @@
                     {# Markers live inside the button/text so hover/click count
                        as the button. #}
                     {% if ko_adv and ko_adv.winner_id %}
-                        {% set _win_left = ko_adv.winner_id == team_board.team_a.id %}
-                        <span
-                            class="badge rounded-pill bg-dark text-primary lh-1 d-inline-flex
-                                align-items-center justify-content-center position-absolute
-                                top-50 translate-middle {{ 'start-0' if _win_left else 'start-100' }}"
-                            style="width: 1.1rem; height: 1.1rem; font-size: 0.7rem;"
-                            {{ macros.tooltip_attributes('', _('Advances')
-                                ~ (' (' ~ ko_adv.reason ~ ')' if ko_adv.reason else ''), 'top') }}
-                        >1</span>
+                        {{ pairing_components.advance_mark(
+                            ko_adv.reason,
+                            side='start' if ko_adv.winner_id == team_board.team_a.id else 'end',
+                        ) }}
                     {% elif ko_adv and ko_adv.manual_pending %}
                         <span
                             class="position-absolute overflow-hidden"
@@ -237,34 +208,10 @@
                             data-bs-target="#modal-wrapper"
                             onclick="event.stopPropagation()"
                         >{{ team_board.team_b.name }}</a>
-                        {% set _b_mp, _b_gp = admin_tournament.point_adjustments.effective(
-                            team_board.team_b.id, team_board.round
-                        ) %}
-                        {% set _b_note = admin_tournament.point_adjustments.from_rule_set(team_board.team_b.id, team_board.round) %}
-                        {% set _b_note = _b_note.explanation if _b_note else '' %}
-                        {% if _b_mp or _b_gp or _b_note %}
-                            <a
-                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_b_mp < 0 or _b_gp < 0) else ('text-bg-success' if (_b_mp or _b_gp) else 'text-bg-secondary') }}"
-                                style="cursor: pointer;"
-                                onclick="event.stopPropagation()"
-                                hx-get="{{ url_for(
-                                    'admin-team-point-adjustment-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=team_board.round,
-                                    team_id=team_board.team_b.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    macros.point_adjustment_tooltip(admin_tournament, team_board.team_b.id, team_board.round),
-                                    'top'
-                                ) }}
-                            >{% if _b_mp %}{{ '%+g'|format(_b_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _b_mp and _b_gp %} {% endif %}{% if _b_gp %}{{ '%+g'|format(_b_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _b_mp and not _b_gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
-                        {% endif %}
+                        {{ pairing_components.team_points_badge(
+                            admin_tournament, team_board.team_b.id, team_board.round,
+                            editable=true, class='align-middle ms-1',
+                        ) }}
                         {% if not admin_tournament.hide_team_block_points %}
                             {% set _b_score = admin_tournament.team_primary_score_before_round(
                                 team_board.team_b.id, team_board.round

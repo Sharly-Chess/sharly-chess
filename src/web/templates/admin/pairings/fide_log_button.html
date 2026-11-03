@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% set log_count = admin_tournament.log_entries | length %}
 {% if (admin_tournament.pairing_system.logs_pairing_breaches and (log_count or admin_tournament.fide_mode_exit_round)) or (schedule_editor and log_count) %}
     <div
@@ -24,9 +25,7 @@
             <i class="bi-journal-text pe-1"></i>
             {{ _('Log') }}
             {% if log_count %}
-                <span class="badge rounded-pill text-bg-warning ms-2">
-                    <span style="position: relative; top: 1px;">{{ log_count }}</span>
-                </span>
+                {{ components.badge('warning', log_count, pill=true, class='ms-2') }}
             {% endif %}
         </button>
     </div>

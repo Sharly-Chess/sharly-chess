@@ -106,15 +106,10 @@
                    them counts as the button. The advancing side gets a numbered
                    badge; a drawn game a diagonally-cut warning corner. #}
                 {% if ko_adv and ko_adv.winner_id %}
-                    {% set _win_left = wtp and ko_adv.winner_id == wtp.id %}
-                    <span
-                        class="badge rounded-pill text-bg-primary lh-1 d-inline-flex
-                            align-items-center justify-content-center position-absolute
-                            top-50 translate-middle {{ 'start-0' if _win_left else 'start-100' }}"
-                        style="width: 1.1rem; height: 1.1rem; font-size: 0.7rem;"
-                        {{ macros.tooltip_attributes('', _('Advances')
-                            ~ (' (' ~ ko_adv.reason ~ ')' if ko_adv.reason else ''), 'top') }}
-                    >1</span>
+                    {{ pairing_components.advance_mark(
+                        ko_adv.reason,
+                        side='start' if wtp and ko_adv.winner_id == wtp.id else 'end',
+                    ) }}
                 {% elif ko_adv and ko_adv.manual_pending %}
                     <span
                         class="position-absolute overflow-hidden"

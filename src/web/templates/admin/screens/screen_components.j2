@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro item_class(item, view) -%}
     collection-status-{{ 'public' if item.public else 'private' }}
 {%- endmacro %}
@@ -19,7 +20,7 @@
         {% endif %}
         <span class="fw-bold text-truncate">{{ item.name }}</span>
         {% if item.family %}
-            <span class="badge text-bg-secondary">{{ _('Multi-Screen') }}</span>
+            {{ components.badge('neutral', _('Multi-Screen')) }}
         {% endif %}
     </span>
 {% endmacro %}

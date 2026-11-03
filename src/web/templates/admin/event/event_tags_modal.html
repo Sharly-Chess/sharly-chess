@@ -1,6 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
-{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {# The tag registry, opened from the event modal. That modal's in-progress
    fields ride along as hidden inputs, so Back restores a half-filled form
@@ -98,7 +98,7 @@
                                         <i class="bi-grip-horizontal"></i>
                                     {% endif %}
                                     <div class="text-start flex-grow-1 min-width-0">
-                                        {{ tag_macros.tag_badge(tag) }}
+                                        {{ components.tag_badge(tag) }}
                                     </div>
                                     {% set event_count = tag_event_counts.get(tag.id, 0) %}
                                     <div
@@ -165,7 +165,7 @@
                                 <span class="fw-bold text-nowrap">{{ tag_set.name }}</span>
                                 <span class="d-inline-flex flex-wrap gap-1 justify-content-end flex-grow-1">
                                     {% for tag in tag_set.tags %}
-                                        {{ tag_macros.tag_badge(tag) }}
+                                        {{ components.tag_badge(tag) }}
                                     {% endfor %}
                                 </span>
                             </label>

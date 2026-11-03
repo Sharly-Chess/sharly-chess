@@ -1394,16 +1394,6 @@ body[data-sc-interface=admin] .htmx-indicator {
     --bs-btn-color: var(--bs-secondary-color);
 }
 
-[data-sc-interface=admin] .text-bg-primary {
-    color: var(--pw-contrast-text) !important;
-}
-
-.collection-fact .badge.text-bg-secondary {
-    background-color: var(--pw-surface-raised-bg, var(--bs-secondary-bg)) !important;
-    color: var(--bs-body-color) !important;
-    font-weight: 500;
-}
-
 .collection-fact .text-start {
     display: inline;
 }

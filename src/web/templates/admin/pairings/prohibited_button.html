@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {# The "Prohibited" pairings button with its live group-count badge. Wrapped in
    a stable element so the prohibited-pairings modal can refresh it out-of-band
    (hx-swap-oob) as groups are configured — keeping the badge current once the
@@ -43,9 +44,7 @@
                 <i class="bi-slash-circle pe-1"></i>
                 {{ _('Prohibited') }}
                 {% if pp_count %}
-                    <span class="badge rounded-pill text-bg-warning ms-2">
-                        <span style="position: relative; top: 1px;">{{ pp_count }}</span>
-                    </span>
+                    {{ components.badge('warning', pp_count, pill=true, class='ms-2') }}
                 {% endif %}
             </button>
         </div>

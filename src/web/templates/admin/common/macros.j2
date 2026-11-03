@@ -1885,26 +1885,29 @@ with_indicator: display a loading indicator, optional
 
 {% macro not_in_fide_mode_badge(tournaments) %}
     {% if tournaments %}
-        <span
-            class="badge text-bg-danger"
-            {{ macros.tooltip_attributes(
-                'warning',
-                _('Not in FIDE mode: %(tournaments)s', tournaments=tournaments | map(attribute='name') | join(', ')),
-                'bottom',
-            ) }}
-        >
-            <i class="bi-slash-circle pe-1"></i>{{ _('Not in FIDE mode') }}
-        </span>
+        {% import '/admin/components/macros.j2' as components with context %}
+        {{ components.badge(
+            'danger',
+            _('Not in FIDE mode'),
+            icon='bi-slash-circle',
+            tooltip=_('Not in FIDE mode: %(tournaments)s', tournaments=tournaments | map(attribute='name') | join(', ')),
+            tooltip_type='warning',
+            tooltip_placement='bottom',
+        ) }}
     {% endif %}
 {% endmacro %}
 
 {% macro provisional_badge() %}
-    <span
-        class="badge provisional-badge fs-6 align-middle"
-        {{ macros.tooltip_attributes('warning', _('Adjourned games count as draws until their result is entered.'), 'bottom') }}
-    >
-        <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
-    </span>
+    {% import '/admin/components/macros.j2' as components with context %}
+    {{ components.badge(
+        'warning',
+        _('Provisional'),
+        icon='bi-hourglass-split',
+        tooltip=_('Adjourned games count as draws until their result is entered.'),
+        tooltip_type='warning',
+        tooltip_placement='bottom',
+        class='fs-6 align-middle',
+    ) }}
 {% endmacro %}
 
 {% macro display_controller_assign_dropdown(

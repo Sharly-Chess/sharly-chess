@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro ranking_row(row, table_id, index, manual=false) %}
     <tr class="player-row {{ 'even' if index is even else 'odd' }}">
         <td class="rank text-end fw-bold compact-col">
@@ -182,7 +183,7 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
         {{ admin_macros.admin_title(_('Rankings')) }}
-        {% if not championship.rules %}<span class="badge text-bg-warning fs-6"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No ranking rules configured') }}</span>{% endif %}
+        {% if not championship.rules %}{{ components.badge('warning', _('No ranking rules configured'), icon='warning', class='fs-6') }}{% endif %}
         <div class="flex-grow-1"></div>
         <select
             id="championship-ranking-selector"

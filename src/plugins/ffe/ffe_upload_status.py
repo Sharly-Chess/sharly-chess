@@ -13,8 +13,8 @@ class FFEUploadStatus(IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def css_classes(self) -> str:
-        """CSS classes to apply to the status."""
+    def badge_kind(self) -> str:
+        """The kind of the badge showing the status (see components.badge)."""
 
 
 class NeverUploadedFFEUploadStatus(FFEUploadStatus):
@@ -27,8 +27,8 @@ class NeverUploadedFFEUploadStatus(FFEUploadStatus):
         return _('Never uploaded')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
     def tooltip_message(self, tournament: Tournament) -> str | None:
         return None
@@ -49,8 +49,8 @@ class NotConfiguredFFEUploadStatus(FFEUploadStatus):
         return FFEUtils.ffe_actions_unavailable_message(tournament)
 
     @property
-    def css_classes(self) -> str:
-        return 'message-warning'
+    def badge_kind(self) -> str:
+        return 'warning'
 
 
 class WarningFFEUploadStatus(FFEUploadStatus):
@@ -68,8 +68,8 @@ class WarningFFEUploadStatus(FFEUploadStatus):
         return PapiConverter.papi_export_warning(tournament)
 
     @property
-    def css_classes(self) -> str:
-        return 'message-warning'
+    def badge_kind(self) -> str:
+        return 'warning'
 
 
 class IncompatibleFFEUploadStatus(FFEUploadStatus):
@@ -87,8 +87,8 @@ class IncompatibleFFEUploadStatus(FFEUploadStatus):
         return FFEUtils.upload_unavailable_message(tournament)
 
     @property
-    def css_classes(self) -> str:
-        return 'message-error'
+    def badge_kind(self) -> str:
+        return 'danger'
 
 
 class UpToDateFFEUploadStatus(FFEUploadStatus):
@@ -104,8 +104,8 @@ class UpToDateFFEUploadStatus(FFEUploadStatus):
         return _('No changes detected since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-success'
+    def badge_kind(self) -> str:
+        return 'success'
 
 
 class FinishedFFEUploadStatus(FFEUploadStatus):
@@ -125,8 +125,8 @@ class FinishedFFEUploadStatus(FFEUploadStatus):
         return _('This period has been submitted; later rounds do not change it.')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
 
 class ModifiedFFEUploadStatus(FFEUploadStatus):
@@ -142,8 +142,8 @@ class ModifiedFFEUploadStatus(FFEUploadStatus):
         return _('Tournament has been modified since the last upload.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class PendingFFEUploadStatus(FFEUploadStatus):
@@ -159,8 +159,8 @@ class PendingFFEUploadStatus(FFEUploadStatus):
         return _('Tournament upload has been planned.')
 
     @property
-    def css_classes(self) -> str:
-        return 'bg-secondary'
+    def badge_kind(self) -> str:
+        return 'neutral'
 
 
 class OngoingFFEUploadStatus(FFEUploadStatus):
@@ -176,8 +176,8 @@ class OngoingFFEUploadStatus(FFEUploadStatus):
         return _('Tournament is currently being uploaded.')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-info'
+    def badge_kind(self) -> str:
+        return 'info'
 
 
 class FailureFFEUploadStatus(FFEUploadStatus, ABC):
@@ -191,8 +191,8 @@ class FailureFFEUploadStatus(FFEUploadStatus, ABC):
         return _('Failure')
 
     @property
-    def css_classes(self) -> str:
-        return 'message-error'
+    def badge_kind(self) -> str:
+        return 'danger'
 
     @property
     @abstractmethod

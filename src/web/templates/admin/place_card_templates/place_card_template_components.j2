@@ -1,9 +1,10 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro identity(item, view, placement) %}
     <span class="fw-bold text-truncate d-block">{{ item.name }}</span>
 {% endmacro %}
 
 {% macro type_badge(item, view, placement) %}
-    <span class="badge text-bg-secondary">{{ item.type.static_singular_name() }}</span>
+    {{ components.badge('neutral', item.type.static_singular_name()) }}
 {% endmacro %}
 
 {# Shown in the cards view body and, expandable, in the list view's details row. #}

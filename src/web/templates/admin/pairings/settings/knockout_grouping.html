@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {# Options are the tournament's pairing dimensions (individual/team + enabled
    plugins); an empty value means the plain seed order. #}
 {% set grouping_options = {'': _('No grouping')} %}
@@ -33,7 +34,7 @@
                     <hr class="mt-2 mb-3">
                     <div class="mb-1">
                         {% for group in preview.groups %}
-                            <span class="badge rounded-pill text-bg-light border me-1">{{ group.label or _('Unaffiliated') }}: {{ group.count }}</span>
+                            {{ components.badge('neutral', (group.label or _('Unaffiliated')) ~ ': ' ~ group.count, pill=true, class='me-1') }}
                         {% endfor %}
                     </div>
                     <div class="{{ 'text-danger fw-semibold' if preview.blown_up else 'text-muted' }}">

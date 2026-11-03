@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% import '/common/macros.j2' as macros with context %}
 
 {% macro plugin_link(plugin) %}
@@ -67,17 +68,14 @@
                     {% if plugin.federation %}
                         <span class="text-nowrap">
                             {{ _('Federation') }}
-                            <span class="badge text-bg-secondary">
-                                {{ federation_name or plugin.federation }}
-                                - {{ plugin.federation }}
-                            </span>
+                            {{ components.badge('neutral', (federation_name or plugin.federation) ~ ' - ' ~ plugin.federation) }}
                         </span>
                     {% endif %}
                     {% if plugin.supported_event_types is not none %}
                         <span class="text-nowrap">
                             {{ _('Type') }}
                             {% for event_type in plugin.supported_event_types %}
-                                <span class="badge text-bg-secondary">{{ event_type }}</span>
+                                {{ components.badge('neutral', event_type) }}
                             {% endfor %}
                         </span>
                     {% endif %}

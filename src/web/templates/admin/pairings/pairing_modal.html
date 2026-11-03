@@ -1,3 +1,4 @@
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/components/macros.j2' as components with context %}
 
@@ -539,7 +540,7 @@
                             {% set winner_name = wtp.full_name
                                 if ko_adv.winner_id == wtp.id else btp.full_name %}
                             <div class="mb-2">
-                                <span class="badge rounded-pill text-bg-primary lh-1 me-1">1</span>
+                                {{ pairing_components.advance_mark(tooltip=false) }}
                                 <b>{{ winner_name }}</b>
                                 {% if ko_adv.reason %}
                                     <span class="text-secondary">({{ ko_adv.reason }})</span>

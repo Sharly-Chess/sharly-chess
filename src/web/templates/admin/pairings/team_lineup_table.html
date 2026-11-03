@@ -1,3 +1,4 @@
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import '/common/macros.j2' as macros with context %}
 {# Side-column "Teams" table for team systems (flat fixed-table, Swiss and
    round-robin): lists every team with a lineup-edit button, persistent
@@ -58,33 +59,9 @@
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         ><strong>{{ team.name }}</strong></a>
-                        {% set _mp, _gp = admin_tournament.point_adjustments.effective(
-                            team.id, admin_round
-                        ) %}
-                        {% set _note = admin_tournament.point_adjustments.from_rule_set(team.id, admin_round) %}
-                        {% set _note = _note.explanation if _note else '' %}
-                        {% if _mp or _gp or _note %}
-                            <a
-                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else ('text-bg-success' if (_mp or _gp) else 'text-bg-secondary') }}"
-                                style="cursor: pointer;"
-                                hx-get="{{ url_for(
-                                    'admin-team-point-adjustment-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    team_id=team.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    macros.point_adjustment_tooltip(admin_tournament, team.id, admin_round),
-                                    'top'
-                                ) }}
-                            >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}{% if not _mp and not _gp %}0&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
-                        {% endif %}
+                        {{ pairing_components.team_points_badge(
+                            admin_tournament, team.id, admin_round, editable=true, class='align-middle ms-1',
+                        ) }}
                     </td>
                     <td class="text-end">
                         {% if _lineup and client.can_update_tournaments %}

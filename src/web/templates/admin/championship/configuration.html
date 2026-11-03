@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 <div class="container-fluid p-4">
     <h2 class="mb-1">{{ _('Configuration') }}</h2>
 
@@ -110,7 +111,7 @@
                                         {% endif %}
                                     </span>
                                     <span class="championship-rule-order fw-semibold text-end">{{ loop.index }}</span>
-                                    <span class="text-nowrap"><span class="badge text-bg-secondary">{{ rule.acronym }}</span></span>
+                                    <span class="text-nowrap">{{ components.badge('neutral', rule.acronym) }}</span>
                                     <span class="fw-semibold min-width-0 text-truncate">
                                         {{ rule.name }}
                                     </span>

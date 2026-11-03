@@ -42,7 +42,7 @@
                 <span class="nav-count expanded-only">{{ nav_tab.count }}</span>
             {% endif %}
             {% if nav_id == 'sources' and championship.broken_sources %}
-                <span class="badge rounded-pill text-bg-warning ms-auto expanded-only">{{ championship.broken_sources|length }}</span>
+                {{ components.badge('warning', championship.broken_sources|length, pill=true, class='ms-auto expanded-only') }}
             {% endif %}
         </button>
     {% endfor %}

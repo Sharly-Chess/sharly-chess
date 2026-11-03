@@ -6,9 +6,6 @@
     "icon-spacing": 1,
     "menu-item": 2
   },
-  "src/plugins/chess_results/templates/chess_results_tournament_statuses.html": {
-    "badge": 1
-  },
   "src/plugins/chess_results/templates/chess_results_upload_modal.html": {
     "button": 2,
     "dead-white-class": 1,
@@ -54,7 +51,6 @@
     "modal-header": 1
   },
   "src/plugins/custom_upload/templates/custom_upload_results.html": {
-    "badge": 1,
     "button": 3,
     "fixed-colour": 1
   },
@@ -71,9 +67,6 @@
     "icon-spacing": 4,
     "menu-item": 6
   },
-  "src/plugins/ffe/templates/ffe_tournament_statuses.html": {
-    "badge": 1
-  },
   "src/plugins/ffe/templates/ffe_upload_modal.html": {
     "button": 3,
     "dead-white-class": 1,
@@ -82,7 +75,6 @@
     "modal-header": 1
   },
   "src/plugins/ffe/templates/ffe_upload_results.html": {
-    "badge": 1,
     "button": 5,
     "fixed-colour": 1,
     "icon-spacing": 1
@@ -142,9 +134,6 @@
     "icon-spacing": 2,
     "modal-dialog": 1,
     "modal-header": 1
-  },
-  "src/plugins/sce/templates/sce_tournament_statuses.html": {
-    "badge": 1
   },
   "src/plugins/sce/templates/sce_upload_table.html": {
     "button": 1,
@@ -216,7 +205,6 @@
     "modal-header": 1
   },
   "src/web/templates/admin/championship/configuration.html": {
-    "badge": 1,
     "button": 10,
     "icon-spacing": 4,
     "modal-trigger": 8
@@ -247,15 +235,13 @@
     "modal-header": 1
   },
   "src/web/templates/admin/championship/layout.html": {
-    "badge": 1,
     "button": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/championship/results.html": {
-    "badge": 1,
     "button": 2,
     "fixed-colour": 1,
-    "icon-spacing": 2
+    "icon-spacing": 1
   },
   "src/web/templates/admin/championship/rule_delete_modal.html": {
     "button": 2,
@@ -324,9 +310,7 @@
     "fixed-colour": 2
   },
   "src/web/templates/admin/common/macros.j2": {
-    "badge": 2,
     "button": 8,
-    "icon-spacing": 2,
     "menu-item": 2
   },
   "src/web/templates/admin/common/needs_refresh.html": {
@@ -342,9 +326,6 @@
     "button": 1,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/common/search_filter.html": {
-    "badge": 1
-  },
   "src/web/templates/admin/common/search_filter_form.html": {
     "button": 2,
     "menu-item": 1
@@ -353,9 +334,6 @@
     "button": 1,
     "icon-spacing": 1,
     "menu-item": 6
-  },
-  "src/web/templates/admin/common/tag_macros.j2": {
-    "badge": 1
   },
   "src/web/templates/admin/common/warning_macros.j2": {
     "button": 6,
@@ -511,7 +489,6 @@
     "modal-trigger": 6
   },
   "src/web/templates/admin/index/events_tag_filter.html": {
-    "badge": 1,
     "button": 3,
     "modal-trigger": 1
   },
@@ -572,7 +549,6 @@
     "modal-header": 1
   },
   "src/web/templates/admin/pairings/fide_log_button.html": {
-    "badge": 1,
     "button": 1,
     "icon-spacing": 1,
     "modal-trigger": 1
@@ -610,14 +586,12 @@
     "modal-header": 1
   },
   "src/web/templates/admin/pairings/pairing_modal.html": {
-    "badge": 1,
     "button": 6,
     "icon-spacing": 3,
     "modal-dialog": 1,
     "modal-header": 1
   },
   "src/web/templates/admin/pairings/pairing_row.html": {
-    "badge": 1,
     "button": 1,
     "fixed-colour": 2,
     "modal-trigger": 1
@@ -634,13 +608,11 @@
     "modal-header": 1
   },
   "src/web/templates/admin/pairings/prohibited_button.html": {
-    "badge": 1,
     "button": 1,
     "icon-spacing": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/prohibited_pairings_modal.html": {
-    "badge": 1,
     "button": 6,
     "icon-spacing": 6,
     "modal-dialog": 1,
@@ -715,9 +687,6 @@
     "fixed-colour": 1,
     "icon-spacing": 2
   },
-  "src/web/templates/admin/pairings/settings/knockout_grouping.html": {
-    "badge": 1
-  },
   "src/web/templates/admin/pairings/settings/modal.html": {
     "button": 2,
     "dead-white-class": 1,
@@ -745,10 +714,9 @@
     "modal-header": 1
   },
   "src/web/templates/admin/pairings/team_block_header.html": {
-    "badge": 3,
     "button": 3,
-    "fixed-colour": 2,
-    "modal-trigger": 7
+    "fixed-colour": 1,
+    "modal-trigger": 5
   },
   "src/web/templates/admin/pairings/team_block_row.html": {
     "button": 1,
@@ -758,10 +726,9 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/pairings/team_lineup_table.html": {
-    "badge": 1,
     "button": 2,
     "fixed-colour": 1,
-    "modal-trigger": 3
+    "modal-trigger": 2
   },
   "src/web/templates/admin/pairings/team_pairing_info_modal.html": {
     "fixed-colour": 1,
@@ -769,9 +736,7 @@
     "modal-header": 1
   },
   "src/web/templates/admin/pairings/team_pairing_modal.html": {
-    "badge": 1,
     "button": 2,
-    "fixed-colour": 1,
     "icon-spacing": 1,
     "modal-dialog": 1,
     "modal-header": 1
@@ -822,7 +787,6 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/place_card_templates/card_props_form.html": {
-    "badge": 1,
     "button": 2
   },
   "src/web/templates/admin/place_card_templates/create_modal.html": {
@@ -844,7 +808,6 @@
     "icon-spacing": 6
   },
   "src/web/templates/admin/place_card_templates/place_card_template_components.j2": {
-    "badge": 1,
     "button": 4,
     "modal-trigger": 2
   },
@@ -853,8 +816,7 @@
     "icon-spacing": 3
   },
   "src/web/templates/admin/player_link.html": {
-    "badge": 1,
-    "modal-trigger": 3
+    "modal-trigger": 2
   },
   "src/web/templates/admin/players/check_in_player_modal.html": {
     "button": 2,
@@ -928,7 +890,6 @@
     "modal-header": 1
   },
   "src/web/templates/admin/players/record_modal.html": {
-    "badge": 1,
     "button": 4,
     "fixed-colour": 1,
     "icon-spacing": 2,
@@ -973,7 +934,6 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/players/team_record_modal.html": {
-    "badge": 1,
     "button": 1,
     "fixed-colour": 1,
     "modal-dialog": 1,
@@ -985,12 +945,8 @@
     "icon-spacing": 1
   },
   "src/web/templates/admin/plugins/_plugin_detail.html": {
-    "badge": 2,
     "button": 4,
     "icon-spacing": 6
-  },
-  "src/web/templates/admin/plugins/_plugins_content.html": {
-    "badge": 1
   },
   "src/web/templates/admin/plugins/_plugins_home.html": {
     "button": 2,
@@ -1128,7 +1084,6 @@
     "icon-spacing": 1
   },
   "src/web/templates/admin/screens/screen_components.j2": {
-    "badge": 1,
     "button": 4,
     "icon-spacing": 4,
     "modal-trigger": 4
@@ -1334,7 +1289,6 @@
     "button": 5
   },
   "src/web/templates/admin/tournaments/tournament_components.j2": {
-    "badge": 1,
     "button": 6,
     "icon-spacing": 9,
     "menu-item": 11,
