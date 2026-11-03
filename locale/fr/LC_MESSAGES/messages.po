@@ -4850,6 +4850,9 @@ msgstr "Inclure les joueur·euses"
 msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
 
+msgid "Include teams and players"
+msgstr "Inclure les équipes et les joueur·euses"
+
 msgid "Includes adjourned games, counted as draws."
 msgstr "Comprend des parties ajournées, comptées comme nulles."
 

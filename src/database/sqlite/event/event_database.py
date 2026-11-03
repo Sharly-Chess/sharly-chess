@@ -1928,6 +1928,9 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_team(self, team_id: int) -> None:
         self.execute('DELETE FROM `team` WHERE `id` = ?', (team_id,))
 
+    def delete_all_stored_teams(self) -> None:
+        self.execute('DELETE FROM `team`')
+
     def set_team_tournament(self, team_id: int, tournament_id: int | None) -> None:
         self.execute(
             'UPDATE `team` SET `tournament_id` = ? WHERE `id` = ?',

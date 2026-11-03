@@ -18,7 +18,7 @@
             <div class="col-12">
                 {{ admin_macros.switch_input(
                     name='include_players',
-                    placeholder=_('Include players'),
+                    placeholder=_('Include teams and players') if admin_event.is_team_event else _('Include players'),
                     data=data, errors=errors
                 ) }}
             </div>

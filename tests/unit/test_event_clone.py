@@ -106,6 +106,7 @@ class EventCloneTestCase(TestCase):
         with EventDatabase(CLONE_ID, write=True) as database:
             if not keep_players:
                 database.delete_all_stored_players()
+                database.delete_all_stored_teams()
             database.delete_all_stored_pairings()
             for stored_tournament in database.load_stored_tournaments():
                 tournament_id = stored_tournament.id
@@ -127,9 +128,9 @@ class EventCloneTestCase(TestCase):
         self._assert_no_round_is_paired(tournament)
         self.assertEqual(tournament.generate_round_pairings(1), '')
 
-    def test_a_duplicate_without_players_keeps_no_team_matches(self):
+    def test_a_duplicate_without_players_keeps_no_teams(self):
         self._play_two_rounds()
         tournament = self._clone_without_pairings(keep_players=False)
-        self.assertEqual(len(tournament.teams), 4)
+        self.assertEqual(len(tournament.teams), 0)
         self.assertEqual(tournament.player_count, 0)
         self._assert_no_round_is_paired(tournament)
