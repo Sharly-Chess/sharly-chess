@@ -6,22 +6,11 @@
 {% import '/admin/components/macros.j2' as components with context %}
 {% if client.can_update_players and data_sources %}
     {% set update_action %}
-        <div class="dropdown">
-            <button
-                class="btn btn-sm btn-outline-warning dropdown-toggle text-nowrap"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                <i class="bi-arrow-repeat pe-1"></i>
-                {{ _('Update') }}
-            </button>
-            <ul class="dropdown-menu">
-                {% with from_modal=true, tab='players', tournament=none %}
-                    {% include '/admin/players/players_diff.html' %}
-                {% endwith %}
-            </ul>
-        </div>
+        {% call components.menu_button(_('Update'), icon='bi-arrow-repeat', size='sm', align='end') %}
+            {% with from_modal=true, tab='players', tournament=none %}
+                {% include '/admin/players/players_diff.html' %}
+            {% endwith %}
+        {% endcall %}
     {% endset %}
     {{ components.note(
         'warning',

@@ -55,11 +55,11 @@
    and 'confirm' buttons. #}
 {% macro confirmation(id, message, confirm_label, hidden=false) %}
     {% set actions %}
-        <button type="button" class="btn btn-sm btn-warning text-nowrap cap-centred" {{ caller('cancel') }}>
+        <button type="button" class="btn btn-sm btn-secondary text-nowrap cap-centred" {{ caller('cancel') }}>
             <i class="bi-x-circle-fill pe-1"></i>
             {{ _('Cancel') }}
         </button>
-        <button type="button" class="btn btn-sm btn-outline-warning text-nowrap cap-centred" {{ caller('confirm') }}>
+        <button type="button" class="btn btn-sm btn-outline-primary text-nowrap cap-centred" {{ caller('confirm') }}>
             {{ confirm_label }}
         </button>
     {% endset %}

@@ -940,10 +940,6 @@
     "modal-header": 1,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/players/update_players_alert.html": {
-    "button": 1,
-    "icon-spacing": 1
-  },
   "src/web/templates/admin/plugins/_plugin_detail.html": {
     "button": 4,
     "icon-spacing": 6

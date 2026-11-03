@@ -3363,6 +3363,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    align-self: center;
     gap: .5rem;
     margin-left: .5rem;
 }
