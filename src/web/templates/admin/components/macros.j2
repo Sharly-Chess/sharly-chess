@@ -45,7 +45,7 @@
 
 {% set _note_levels = ['info', 'warning', 'danger', 'secondary'] %}
 
-{% set _badge_kinds = ['primary', 'neutral', 'warning', 'danger', 'success'] %}
+{% set _badge_kinds = ['primary', 'neutral', 'info', 'warning', 'danger', 'success'] %}
 
 {# The class of an icon: a name of the list above, or a Bootstrap Icons class
    for a one-off icon. #}
@@ -286,7 +286,9 @@
     A badge.
 
     kind: primary (the accent: FIDE list, winner...), neutral (counts,
-        national lists), warning, danger, success.
+        national lists), info, warning, danger, success.
+    modal_url: makes the badge a link opening that modal.
+    A `{% call %}` gives rich content in place of `text`.
 #}
 {% macro badge(
     kind,
@@ -296,27 +298,61 @@
     tooltip=none,
     tooltip_type='info',
     tooltip_placement='top',
+    modal_url=none,
     class='',
     attrs={}
 ) -%}
-    <span
-        class="badge sc-badge sc-badge-{{ kind if kind in _badge_kinds else 'neutral' }}{% if pill %} rounded-pill{% endif %}{% if class %} {{ class }}{% endif %}"
+    {%- set content = caller() if caller is defined else text -%}
+    {%- set tag = 'a' if modal_url else 'span' -%}
+    <{{ tag }}
+        class="badge sc-badge sc-badge-{{ kind if kind in _badge_kinds else 'neutral' }}{% if pill %} rounded-pill{% endif %}{% if modal_url %} sc-badge-action{% endif %}{% if class %} {{ class }}{% endif %}"
+        {%- if modal_url %} role="button" tabindex="0" {{ modal_trigger_attrs(modal_url) }}{% endif %}
         {%- if tooltip %} {{ macros.tooltip_attributes(tooltip_type, tooltip, tooltip_placement) }}{% endif %}
         {{- _attributes(attrs) }}
     >
         {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
-        {{ text }}
+        {{ content }}
+    </{{ tag }}>
+{%- endmacro %}
+
+{#
+    An event tag, in the colour its user picked; the label colour is derived
+    from it (see data.tag).
+
+    count: shown after the name, as in the tag filter.
+    tinted: a light wash of the tag colour with the label in the body colour,
+        legible whatever the colour, for a tag that is not selected.
+    dimmed: greys the tag out, for one that would leave nothing to show.
+#}
+{% macro tag_badge(tag, count=none, tinted=false, dimmed=false, class='') -%}
+    <span
+        class="badge sc-badge tag-badge rounded-pill fw-normal{% if tinted %} sc-tag-badge-tinted{% endif %}{% if dimmed %} opacity-50{% endif %}{% if class %} {{ class }}{% endif %}"
+        style="--sc-tag-color: {{ tag.color }}; --sc-tag-text-color: {{ tag.text_color }};"
+    >
+        <span>{{ tag.name }}</span>
+        {%- if count is not none %}<span class="opacity-75">({{ count }})</span>{% endif -%}
     </span>
 {%- endmacro %}
 
-{# A signed number in a pill: green above zero, red below. #}
-{% macro delta_badge(value, tooltip=none, tooltip_placement='top', class='', attrs={}) -%}
+{# The tags of an event, wrapping as a group. #}
+{% macro tag_badges(tags, class='') -%}
+    {%- if tags -%}
+        <span class="sc-badge-group{% if class %} {{ class }}{% endif %}">
+            {%- for tag in tags %}{{ tag_badge(tag) }}{% endfor -%}
+        </span>
+    {%- endif -%}
+{%- endmacro %}
+
+{# A signed number in a pill: green above zero, red below; `text` replaces
+   the number when it needs formatting. #}
+{% macro delta_badge(value, text=none, tooltip=none, tooltip_placement='top', modal_url=none, class='', attrs={}) -%}
     {{- badge(
         'success' if value > 0 else ('danger' if value < 0 else 'neutral'),
-        ('+' if value > 0 else ('−' if value < 0 else '')) ~ (value | abs),
+        text if text is not none else ('+' if value > 0 else ('−' if value < 0 else '')) ~ (value | abs),
         pill=true,
         tooltip=tooltip,
         tooltip_placement=tooltip_placement,
+        modal_url=modal_url,
         class=class,
         attrs=attrs,
     ) -}}

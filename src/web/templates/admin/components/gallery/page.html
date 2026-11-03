@@ -137,7 +137,7 @@
 
         <section id="gallery-badges" class="d-flex flex-column gap-2">
             <h2 class="h4">Badges</h2>
-            {% for kind in ['primary', 'neutral', 'warning', 'danger', 'success'] %}
+            {% for kind in ['primary', 'neutral', 'info', 'warning', 'danger', 'success'] %}
                 <div class="d-flex flex-wrap align-items-center gap-2" data-gallery-sample="badge-{{ kind }}">
                     <code class="gallery-label">{{ kind }}</code>
                     {{ components.badge(kind, 'Badge') }}

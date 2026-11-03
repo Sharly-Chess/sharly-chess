@@ -1,0 +1,79 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+
+{# The badges of the pairings and the records, built on components.badge. #}
+
+{#
+    The bonus or penalty points of a player in a round, if any.
+
+    editable: the badge opens the modal that sets them.
+#}
+{% macro player_points_badge(tournament, player_id, round, editable=false, class='') -%}
+    {%- set delta = tournament.point_adjustments.for_player(player_id, round) -%}
+    {%- if delta -%}
+        {{ components.delta_badge(
+            delta,
+            text=utils.points_delta_str(delta),
+            tooltip=macros.player_point_adjustment_tooltip(tournament, player_id, round),
+            modal_url=url_for(
+                'admin-player-point-adjustment-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=tournament.id,
+                round=round,
+                player_id=player_id,
+            ) if editable else none,
+            class=class,
+            attrs={'onclick': 'event.stopPropagation()'} if editable else {},
+        ) }}
+    {%- endif -%}
+{%- endmacro %}
+
+{#
+    The match and game points a team is given or loses in a round, by hand or
+    by the rule set, if any: red when any is taken away, green when any is
+    given, neutral for a rule set that applies but changes nothing.
+
+    editable: the badge opens the modal that sets them.
+#}
+{% macro team_points_badge(tournament, team_id, round, editable=false, class='') -%}
+    {%- set mp, gp = tournament.point_adjustments.effective(team_id, round) -%}
+    {%- set rule_set = tournament.point_adjustments.from_rule_set(team_id, round) -%}
+    {%- if mp or gp or (rule_set and rule_set.explanation) -%}
+        {%- set parts = [] -%}
+        {%- if mp %}{% do parts.append('%+g'|format(mp) ~ ' ' ~ pgettext('match points', 'MP')) %}{% endif -%}
+        {%- if gp %}{% do parts.append('%+g'|format(gp) ~ ' ' ~ pgettext('game points', 'GP')) %}{% endif -%}
+        {%- if not parts %}{% do parts.append('0 ' ~ pgettext('game points', 'GP')) %}{% endif -%}
+        {{ components.badge(
+            'danger' if (mp < 0 or gp < 0) else ('success' if (mp or gp) else 'neutral'),
+            parts | join(' '),
+            pill=true,
+            tooltip=macros.point_adjustment_tooltip(tournament, team_id, round),
+            modal_url=url_for(
+                'admin-team-point-adjustment-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=tournament.id,
+                round=round,
+                team_id=team_id,
+            ) if editable else none,
+            class=class,
+            attrs={'onclick': 'event.stopPropagation()'} if editable else {},
+        ) }}
+    {%- endif -%}
+{%- endmacro %}
+
+{#
+    The mark of the side that advances in a knock-out.
+
+    side: start or end, to pin the mark on that edge of the result button it
+        sits in; none to set it in the text.
+#}
+{% macro advance_mark(reason=none, side=none, tooltip=true) -%}
+    {{ components.badge(
+        'primary',
+        '1',
+        pill=true,
+        tooltip=(_('Advances') ~ (' (' ~ reason ~ ')' if reason else '')) if tooltip else none,
+        tooltip_type='',
+        class='sc-advance-mark' ~ (' sc-advance-mark-' ~ side if side else ''),
+    ) }}
+{%- endmacro %}

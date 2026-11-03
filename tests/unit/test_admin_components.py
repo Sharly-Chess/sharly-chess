@@ -315,6 +315,122 @@ class TestBadges:
 
 
 @pytest.mark.unit
+class TestBadgeVariants:
+    def test_badge_opening_a_modal(self) -> None:
+        root = _render(
+            "{{ components.badge('success', '+1', modal_url='/m',"
+            " attrs={'onclick': 'event.stopPropagation()'}) }}"
+        )
+        link = root.only('a', 'badge')
+        assert 'sc-badge-action' in link.classes
+        assert link['role'] == 'button'
+        assert link['hx-get'] == '/m'
+        assert link['data-bs-target'] == '#modal-wrapper'
+        assert link['onclick'] == 'event.stopPropagation()'
+
+    def test_rich_badge(self) -> None:
+        root = _render(
+            "{% call components.badge('warning', 'TB') %}TB"
+            "{{ components.icon('warning') }}{% endcall %}"
+        )
+        badge = root.only('span', 'badge')
+        assert badge.text() == 'TB'
+        assert badge.only('i').classes == ['bi-exclamation-triangle-fill']
+
+    def test_tag_badges(self) -> None:
+        tag = SimpleNamespace(name='Youth', color='#ff0000', text_color='#ffffff')
+        root = _render(
+            '{{ components.tag_badge(tag, count=3, tinted=true, dimmed=true) }}'
+            '{{ components.tag_badges([tag, tag]) }}',
+            tag=tag,
+        )
+        tinted = root.find_all('span', 'tag-badge')[0]
+        assert {'sc-tag-badge-tinted', 'opacity-50'} <= set(tinted.classes)
+        assert '--sc-tag-color: #ff0000' in tinted['style']
+        assert tinted.text() == 'Youth(3)'
+        group = root.only('span', 'sc-badge-group')
+        assert len(group.find_all('span', 'tag-badge')) == 2
+
+
+def _render_pairing_components(source: str, **context: Any) -> Node:
+    template = template_engine.engine.from_string(
+        "{% import '/admin/components/pairings.j2' as pairing_components"
+        ' with context %}' + source
+    )
+    return _parse(
+        template.render(
+            locale='en',
+            url_for=_url_for,
+            admin_event=SimpleNamespace(uniq_id='event'),
+            **context,
+        )
+    )
+
+
+class _PointAdjustments:
+    def __init__(self, mp: float, gp: float, explanation: str = '') -> None:
+        self.mp, self.gp, self.explanation = mp, gp, explanation
+
+    def effective(self, team_id: int, round_: int) -> tuple[float, float]:
+        return self.mp, self.gp
+
+    def from_rule_set(self, team_id: int, round_: int) -> SimpleNamespace | None:
+        return (
+            SimpleNamespace(explanation=self.explanation) if self.explanation else None
+        )
+
+    def stored(self, team_id: int, round_: int) -> None:
+        return None
+
+
+@pytest.mark.unit
+class TestPairingComponents:
+    @pytest.mark.parametrize(
+        ('mp', 'gp', 'explanation', 'kind', 'text'),
+        [
+            (-1, 0, '', 'danger', '-1 MP'),
+            (0, 2, '', 'success', '+2 GP'),
+            (1, -0.5, '', 'danger', '+1 MP -0.5 GP'),
+            (0, 0, 'Forfeit rule', 'neutral', '0 GP'),
+        ],
+    )
+    def test_team_points_badge(
+        self, mp: float, gp: float, explanation: str, kind: str, text: str
+    ) -> None:
+        tournament = SimpleNamespace(
+            id=1, point_adjustments=_PointAdjustments(mp, gp, explanation)
+        )
+        root = _render_pairing_components(
+            '{{ pairing_components.team_points_badge(tournament, 7, 2, editable=true) }}',
+            tournament=tournament,
+        )
+        badge = root.only('a', 'badge')
+        assert f'sc-badge-{kind}' in badge.classes
+        raw_text = ''.join(child for child in badge.children if isinstance(child, str))
+        assert raw_text.strip() == text
+        assert badge['hx-get'] == '/admin-team-point-adjustment-modal/event/1/2/7'
+
+    def test_no_team_points_badge_without_adjustment(self) -> None:
+        tournament = SimpleNamespace(id=1, point_adjustments=_PointAdjustments(0, 0))
+        root = _render_pairing_components(
+            '{{ pairing_components.team_points_badge(tournament, 7, 2) }}',
+            tournament=tournament,
+        )
+        assert not root.find_all(cls='badge')
+
+    def test_advance_mark(self) -> None:
+        root = _render_pairing_components(
+            "{{ pairing_components.advance_mark('Armageddon', side='end') }}"
+        )
+        mark = root.only('span', 'badge')
+        assert {'sc-badge-primary', 'sc-advance-mark', 'sc-advance-mark-end'} <= set(
+            mark.classes
+        )
+        assert mark.text() == '1'
+        assert 'Armageddon' in mark['data-bs-title']
+
+
+@pytest.mark.unit
 class TestOtherComponents:
     def test_banner(self) -> None:
         root = _render(
