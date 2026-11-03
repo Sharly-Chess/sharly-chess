@@ -493,6 +493,83 @@
     </div>
 {%- endmacro %}
 
+{#
+    A segmented control: choices joined in one group, the `segment_radio`s or
+    `segment_button`s given in a `{% call %}`. `label` names the group for
+    screen readers.
+#}
+{% macro segmented(label, size=none, class='', attrs={}) -%}
+    {%- set items = caller() -%}
+    <div
+        class="btn-group sc-segmented{% if size == 'sm' %} btn-group-sm{% endif %}{% if class %} {{ class }}{% endif %}"
+        role="group"
+        aria-label="{{ label }}"
+        {{- _attributes(attrs) }}
+    >{{ items }}</div>
+{%- endmacro %}
+
+{# A choice of a segmented control that a form submits: a radio input named
+   `name`. icon_only shows the icon alone, the label being its tooltip. The
+   tooltip goes on the segment itself: a wrapper would break the group. #}
+{% macro segment_radio(
+    name,
+    value,
+    label,
+    id,
+    icon=none,
+    icon_only=false,
+    checked=false,
+    tooltip=none,
+    class='',
+    attrs={}
+) -%}
+    {%- set tooltip = tooltip or (label if icon_only else none) -%}
+    <input
+        type="radio"
+        class="btn-check{% if class %} {{ class }}{% endif %}"
+        id="{{ id }}"
+        name="{{ name }}"
+        value="{{ value }}"
+        autocomplete="off"
+        {%- if checked %} checked{% endif %}
+        {{- _attributes(attrs) }}
+    >
+    <label
+        class="btn btn-outline-primary sc-btn{% if icon_only %} sc-btn-icon-only{% endif %}"
+        for="{{ id }}"
+        {%- if icon_only %} aria-label="{{ label }}"{% endif %}
+        {%- if tooltip %} {{ macros.tooltip_attributes('', tooltip) }}{% endif %}
+    >
+        {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+        {%- if not icon_only %}{{ label }}{% endif -%}
+    </label>
+{%- endmacro %}
+
+{# A choice of a segmented control that acts on its own (a request, a
+   script): a button, `active` when it is the current choice. #}
+{% macro segment_button(
+    label,
+    icon=none,
+    icon_only=false,
+    active=false,
+    tooltip=none,
+    class='',
+    attrs={}
+) -%}
+    {%- set tooltip = tooltip or (label if icon_only else none) -%}
+    <button
+        type="button"
+        class="btn btn-outline-primary sc-btn{% if icon_only %} sc-btn-icon-only{% endif %}{% if active %} active{% endif %}{% if class %} {{ class }}{% endif %}"
+        aria-pressed="{{ 'true' if active else 'false' }}"
+        {%- if icon_only %} aria-label="{{ label }}"{% endif %}
+        {%- if tooltip %} {{ macros.tooltip_attributes('', tooltip) }}{% endif %}
+        {{- _attributes(attrs) }}
+    >
+        {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+        {%- if not icon_only %}{{ label }}{% endif -%}
+    </button>
+{%- endmacro %}
+
 {# A legend of icons and what they stand for: `legend` holds the
    `legend_item`s, each an icon with its text, given in `{% call %}`s. #}
 {% macro legend(class='') -%}

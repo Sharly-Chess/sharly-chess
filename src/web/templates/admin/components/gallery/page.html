@@ -156,6 +156,24 @@
             </div>
         </section>
 
+        <section id="gallery-segmented" class="d-flex flex-column gap-2">
+            <h2 class="h4">Segmented controls</h2>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                {% call components.segmented('Display') %}
+                    {{ components.segment_radio('gallery-display', 'all', 'All', 'gallery-display-all', checked=true) }}
+                    {{ components.segment_radio('gallery-display', 'playing', 'In play', 'gallery-display-playing') }}
+                {% endcall %}
+                {% call components.segmented('Mode', size='sm') %}
+                    {{ components.segment_radio('gallery-mode', 'entry', 'Entry', 'gallery-mode-entry', icon='bi-pencil') }}
+                    {{ components.segment_radio('gallery-mode', 'verify', 'Verify', 'gallery-mode-verify', icon='bi-check2-square', checked=true) }}
+                {% endcall %}
+                {% call components.segmented('View mode') %}
+                    {{ components.segment_button('List view', icon='bi-list-ul', icon_only=true, active=true) }}
+                    {{ components.segment_button('Card view', icon='bi-grid', icon_only=true) }}
+                {% endcall %}
+            </div>
+        </section>
+
         <section id="gallery-legend" class="d-flex flex-column gap-2">
             <h2 class="h4">Legend</h2>
             {% call components.legend() %}

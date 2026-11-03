@@ -525,6 +525,46 @@ class TestOtherComponents:
         ]
         assert [item.only('span').text() for item in items] == ['Withdrawal', 'Pair']
 
+    def test_segmented_radios(self) -> None:
+        root = _render(
+            "{% call components.segmented('Order', size='sm') %}"
+            "{{ components.segment_radio('order', 'asc', 'Up', 'order-asc',"
+            " icon='bi-arrow-up', icon_only=true, checked=true) }}"
+            "{{ components.segment_radio('order', 'desc', 'Down', 'order-desc') }}"
+            '{% endcall %}'
+        )
+        group = root.only('div', 'sc-segmented')
+        assert group['role'] == 'group'
+        assert group['aria-label'] == 'Order'
+        assert 'btn-group-sm' in group.classes
+        inputs = group.find_all('input', 'btn-check')
+        assert [(i['name'], i['value'], i.has('checked')) for i in inputs] == [
+            ('order', 'asc', True),
+            ('order', 'desc', False),
+        ]
+        labels = group.find_all('label')
+        assert [label['for'] for label in labels] == ['order-asc', 'order-desc']
+        assert labels[0]['aria-label'] == 'Up'
+        assert labels[0].text() == ''
+        assert labels[0].has('data-bs-title')
+        assert labels[1].text() == 'Down'
+        assert not labels[1].has('aria-label')
+
+    def test_segmented_buttons(self) -> None:
+        root = _render(
+            "{% call components.segmented('View') %}"
+            "{{ components.segment_button('List', active=true,"
+            " attrs={'hx-get': '/list'}) }}"
+            "{{ components.segment_button('Cards') }}"
+            '{% endcall %}'
+        )
+        buttons = root.only('div', 'sc-segmented').find_all('button')
+        assert [b.text() for b in buttons] == ['List', 'Cards']
+        assert [b['aria-pressed'] for b in buttons] == ['true', 'false']
+        assert 'active' in buttons[0].classes
+        assert 'active' not in buttons[1].classes
+        assert buttons[0]['hx-get'] == '/list'
+
     def test_section_heading(self) -> None:
         root = _render("{{ components.section_heading('Part') }}")
         assert root.only('h3', 'sc-section-heading').text() == 'Part'

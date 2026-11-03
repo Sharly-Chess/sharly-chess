@@ -78,9 +78,6 @@
   "src/web/templates/admin/common/collection_macros.j2": {
     "modal-trigger": 1
   },
-  "src/web/templates/admin/common/collection_view_toggle.html": {
-    "button": 2
-  },
   "src/web/templates/admin/common/database/database_modal.html": {
     "fixed-colour": 2
   },
