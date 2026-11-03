@@ -10590,6 +10590,10 @@ msgid "The pairings of round {round} are being edited: validate or cancel them b
 msgstr "Les appariements de la ronde {round} sont en cours de modification : validez-les ou annulez la modification avant de modifier les appariements d'une autre ronde."
 
 #, python-brace-format
+msgid "The pairings of round {round} are not published yet. Results can be entered once they are, with the Publish button of the pairings page."
+msgstr "Les appariements de la ronde {round} ne sont pas encore publiés. Les résultats pourront être saisis une fois qu'ils le seront, avec le bouton Publier de la page des appariements."
+
+#, python-brace-format
 msgid "The pairings of round {round} cannot be published."
 msgstr "Les appariements de la ronde {round} ne peuvent pas être publiés."
 

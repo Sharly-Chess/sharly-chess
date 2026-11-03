@@ -198,6 +198,12 @@
                 ></button>
             </div>
             <div class="modal-body">
+                {% if awaits_publication %}
+                    <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert">
+                        <i class="bi-exclamation-triangle-fill"></i>
+                        <span>{{ _('The pairings of round {round} are not published yet. Results can be entered once they are, with the Publish button of the pairings page.').format(round=admin_round) }}</span>
+                    </div>
+                {% endif %}
                 {# White / neutral / Black columns. Buttons show just the
                    score; the headers and column position convey the rest. #}
                 <div class="row g-2 mb-1">
@@ -273,12 +279,6 @@
                         </div>
                     </div>
 
-                    {% if awaits_publication %}
-                        <p class="small text-muted mt-2 mb-0">
-                            {{ _('Publish round {round} to enter its results.').format(round=admin_round) }}
-                        </p>
-                    {% endif %}
-
                     {% if board.result.is_adjourned %}
                         <p class="small text-muted mt-2 mb-0">
                             {{ _('The game counts as a draw until its result is entered, which can be done at any time.') }}
@@ -329,6 +329,7 @@
                             (
                                 board.no_result
                                 or board.exempt
+                                or awaits_publication
                                 or is_team_forfeit_lock
                                 or not can_update
                             ),
@@ -429,7 +430,7 @@
                                 {% for result_id, label in results %}
                                     <div class="col-4">
                                         {{ result_button(
-                                            result_id, board.exempt,
+                                            result_id, board.exempt or awaits_publication,
                                             label,
                                             'btn-outline-primary',
                                         ) }}

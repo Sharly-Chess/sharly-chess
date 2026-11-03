@@ -10588,6 +10588,10 @@ msgid "The pairings of round {round} are being edited: validate or cancel them b
 msgstr ""
 
 #, python-brace-format
+msgid "The pairings of round {round} are not published yet. Results can be entered once they are, with the Publish button of the pairings page."
+msgstr ""
+
+#, python-brace-format
 msgid "The pairings of round {round} cannot be published."
 msgstr ""
 
