@@ -207,11 +207,12 @@
     <!-- theme_script() -->
     <!-- This is needed since it's not possible to change body attributes using HTMX -->
     <script>
-        // `auto` follows the appearance of the system, and changes with it.
+        // `auto` follows the appearance of the system, and changes with it; a
+        // browser that cannot tell it gets the dark theme.
         window.scRequestedTheme = "{{ theme }}";
         window.scApplyTheme ??= function() {
             var new_theme = window.scRequestedTheme === 'auto'
-                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
                 : window.scRequestedTheme;
             if ($('body').attr('data-bs-theme') != new_theme) {
                 $('body').attr('data-bs-theme', new_theme);
