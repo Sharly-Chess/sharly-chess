@@ -21,7 +21,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import EventType, Result
+from utils.enum import EventType, ProhibitedPairingConstraint, Result
 
 
 EVENT_ID = 'test-event-clone'
@@ -50,6 +50,8 @@ class EventCloneTestCase(TestCase):
         tournament_id = stored_tournament.id
         assert tournament_id is not None
         with EventDatabase(EVENT_ID, write=True) as database:
+            group_id = database.add_stored_team_group('Club')
+            team_ids: list[int] = []
             for seed in range(1, 5):
                 team_id = database.add_stored_team(
                     StoredTeam(
@@ -57,9 +59,11 @@ class EventCloneTestCase(TestCase):
                         name=f'Team{seed}',
                         tournament_id=tournament_id,
                         pairing_number=seed,
+                        group_id=group_id,
                         check_in=True,
                     )
                 )
+                team_ids.append(team_id)
                 for index in range(N):
                     player_id = database.add_stored_player(
                         StoredPlayer(
@@ -77,6 +81,10 @@ class EventCloneTestCase(TestCase):
                             pairing_number=index + 1,
                         )
                     )
+            database.replace_manual_prohibited_pairing_groups(
+                tournament_id,
+                [(ProhibitedPairingConstraint.LOWEST_CRITERION.value, team_ids[:2])],
+            )
 
     def _load(self, uniq_id: str) -> Tournament:
         with suppress(KeyError):
@@ -106,7 +114,11 @@ class EventCloneTestCase(TestCase):
         with EventDatabase(CLONE_ID, write=True) as database:
             if not keep_players:
                 database.delete_all_stored_players()
+                database.delete_all_stored_teams()
+                database.delete_all_stored_team_groups()
+                database.delete_all_prohibited_pairing_groups()
             database.delete_all_stored_pairings()
+            database.delete_all_round_prohibited_pairing_snapshots()
             for stored_tournament in database.load_stored_tournaments():
                 tournament_id = stored_tournament.id
                 assert tournament_id is not None
@@ -124,12 +136,17 @@ class EventCloneTestCase(TestCase):
         self._play_two_rounds()
         tournament = self._clone_without_pairings(keep_players=True)
         self.assertEqual(len(tournament.teams), 4)
+        self.assertEqual(len(self._event.team_groups_by_id), 1)
+        stored_groups = tournament.stored_tournament.stored_prohibited_pairing_groups
+        self.assertEqual([group.round_ for group in stored_groups], [None])
         self._assert_no_round_is_paired(tournament)
         self.assertEqual(tournament.generate_round_pairings(1), '')
 
-    def test_a_duplicate_without_players_keeps_no_team_matches(self):
+    def test_a_duplicate_without_players_keeps_no_teams(self):
         self._play_two_rounds()
         tournament = self._clone_without_pairings(keep_players=False)
-        self.assertEqual(len(tournament.teams), 4)
+        self.assertEqual(len(tournament.teams), 0)
+        self.assertEqual(len(self._event.team_groups_by_id), 0)
+        self.assertFalse(tournament.stored_tournament.stored_prohibited_pairing_groups)
         self.assertEqual(tournament.player_count, 0)
         self._assert_no_round_is_paired(tournament)

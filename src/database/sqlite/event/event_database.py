@@ -1928,6 +1928,12 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_team(self, team_id: int) -> None:
         self.execute('DELETE FROM `team` WHERE `id` = ?', (team_id,))
 
+    def delete_all_stored_teams(self) -> None:
+        self.execute('DELETE FROM `team`')
+
+    def delete_all_stored_team_groups(self) -> None:
+        self.execute('DELETE FROM `team_group`')
+
     def set_team_tournament(self, team_id: int, tournament_id: int | None) -> None:
         self.execute(
             'UPDATE `team` SET `tournament_id` = ? WHERE `id` = ?',
@@ -2645,6 +2651,12 @@ class EventDatabase(MigrationDatabase):
             'WHERE `tournament_id` = ? AND `round` = ?',
             (tournament_id, round_),
         )
+
+    def delete_all_prohibited_pairing_groups(self) -> None:
+        self.execute('DELETE FROM `prohibited_pairing_group`')
+
+    def delete_all_round_prohibited_pairing_snapshots(self) -> None:
+        self.execute('DELETE FROM `prohibited_pairing_group` WHERE `round` IS NOT NULL')
 
     # ---------------------------------------------------------------------------------
     # StoredFamily

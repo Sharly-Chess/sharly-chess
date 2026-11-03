@@ -4850,6 +4850,9 @@ msgstr ""
 msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr ""
 
+msgid "Include teams and players"
+msgstr ""
+
 msgid "Includes adjourned games, counted as draws."
 msgstr ""
 
