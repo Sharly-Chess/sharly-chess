@@ -825,7 +825,7 @@ body:has(#screen-exit-button) .alert-message {
     }
     .timer-wrapper {
         box-sizing: border-box;
-        max-width: calc(var(--vw, 100vw) - var(--side-bar-width, 0px));
+        max-width: 100%;
     }
     .timer {
         font-size: 1.1rem;

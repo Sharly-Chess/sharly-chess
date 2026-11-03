@@ -102,6 +102,46 @@ body:not([data-sc-interface=admin]) #main-wrapper {
     --side-bar-width: 0px;
 }
 
+/* The client pages have no sidebar and nothing scrolling sideways: they fill
+   the window without measuring it, so that they can never be a fraction of a
+   pixel or a scrollbar larger than it. */
+body:not([data-sc-interface=admin]) #main-wrapper {
+    min-width: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+}
+body:not([data-sc-interface=admin]) #main-wrapper > .sidebar {
+    display: none;
+}
+body:not([data-sc-interface=admin]) #scroll-wrapper {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+body:not([data-sc-interface=admin]) #page-wrapper {
+    display: block;
+    flex: 1 0 auto;
+    min-width: 0;
+    min-height: 0;
+}
+body:not([data-sc-interface=admin]) #top-nav-wrapper {
+    min-width: 0;
+}
+body:not([data-sc-interface=admin]) #top-nav-content {
+    max-width: none;
+}
+body:not([data-sc-interface=admin]) #copyright-wrapper {
+    flex-grow: 0;
+    position: static;
+    width: auto;
+}
+@media (max-width: 767.98px) {
+    body:not([data-sc-interface=admin]) .modal-dialog {
+        max-width: calc(100% - 1rem) !important;
+    }
+}
+
 .sidebar-divider {
     height: 1px;
     width: 100%;;
