@@ -43,7 +43,7 @@
 {% block body %}
     <div class="d-flex flex-column gap-2">
         {% if not admin_prize_category.criteria %}
-            <div class="text-danger">{{ _('No criteria.') }}</div>
+            <div class="text-body-secondary">{{ _('No criteria.') }}</div>
         {% endif %}
         {% for criterion in admin_prize_category.criteria %}
             <div class="border border-secondary bg-body-tertiary">

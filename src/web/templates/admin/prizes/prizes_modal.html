@@ -60,7 +60,7 @@
 {% block body %}
     <div class="d-flex flex-column gap-2">
         {% if not admin_prize_category.prizes %}
-            <div class="text-danger">{{ _('No prizes.') }}</div>
+            <div class="text-body-secondary">{{ _('No prizes.') }}</div>
         {% endif %}
         {% for prize in admin_prize_category.sorted_prizes %}
             <div class="border border-secondary bg-body-tertiary">
