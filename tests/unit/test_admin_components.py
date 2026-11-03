@@ -525,6 +525,23 @@ class TestOtherComponents:
         ]
         assert [item.only('span').text() for item in items] == ['Withdrawal', 'Pair']
 
+    def test_icon_only_menu_button(self) -> None:
+        root = _render(
+            "{% call components.menu_button('Actions', icon='bi-three-dots',"
+            ' icon_only=true) %}'
+            "{{ components.menu_item('Edit', class='px-2') }}"
+            '{% endcall %}'
+        )
+        wrapper = root.only('span', 'sc-tooltip-wrapper')
+        assert 'Actions' in wrapper['data-bs-title']
+        toggle = wrapper.only('div', 'dropdown').only('button', 'btn')
+        assert toggle['aria-label'] == 'Actions'
+        assert toggle['data-bs-toggle'] == 'dropdown'
+        assert 'sc-btn-icon-only' in toggle.classes
+        assert 'dropdown-toggle' not in toggle.classes
+        assert toggle.text() == ''
+        assert 'px-2' in root.only('button', 'sc-menu-item').classes
+
     def test_icon_text(self) -> None:
         root = _render(
             "{% call components.icon_text('confirm', icon_class='text-success',"

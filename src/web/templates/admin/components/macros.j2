@@ -220,6 +220,8 @@
     A button opening a menu of `menu_item`s, given in a `{% call %}`.
 
     align: start or end, the side of the button the menu lines up with.
+    icon_only: shows the icon alone, without the caret; the label is then its
+        accessible name and, without another tooltip, its tooltip.
     toggle_class / toggle_attrs: classes and attributes of the toggle button
         (data-bs-auto-close, data-bs-config...); menu_class: classes of the
         menu.
@@ -229,6 +231,7 @@
     kind='outline',
     icon=none,
     size=none,
+    icon_only=false,
     align='start',
     allowed=true,
     reason=none,
@@ -241,14 +244,15 @@
 ) -%}
     {%- set items = caller() -%}
     {%- set merged = {'data-bs-toggle': 'dropdown', 'aria-expanded': 'false'} -%}
+    {%- if icon_only %}{% do merged.update({'aria-label': label}) %}{% endif -%}
     {%- do merged.update(toggle_attrs) -%}
+    {%- set toggle_classes = ['sc-btn-icon-only' if icon_only else 'dropdown-toggle'] + ([toggle_class] if toggle_class else []) -%}
     {%- set markup -%}
         <div class="dropdown sc-menu{% if class %} {{ class }}{% endif %}">
-            {{ button(
+            {% call button(
                 label, kind=kind, icon=icon, size=size, allowed=allowed,
-                class='dropdown-toggle' ~ (' ' ~ toggle_class if toggle_class else ''),
-                attrs=merged,
-            ) }}
+                class=toggle_classes | join(' '), attrs=merged,
+            ) %}{% if not icon_only %}{{ label }}{% endif %}{% endcall %}
             {% if allowed %}
                 <ul class="dropdown-menu{% if align == 'end' %} dropdown-menu-end{% endif %}{% if menu_class %} {{ menu_class }}{% endif %}">
                     {{ items }}
@@ -256,7 +260,7 @@
             {% endif %}
         </div>
     {%- endset -%}
-    {{- _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement) -}}
+    {{- _with_tooltip(markup, allowed, reason, tooltip or (label if icon_only else none), tooltip_placement) -}}
 {%- endmacro %}
 
 {#
@@ -325,6 +329,7 @@
     tooltip=none,
     tooltip_type='info',
     tooltip_placement='right',
+    class='',
     attrs={}
 ) -%}
     {%- set content = caller() if caller is defined else none -%}
@@ -345,7 +350,7 @@
     {%- set markup -%}
         <button
             type="button"
-            class="dropdown-item sc-menu-item{% if active %} active{% endif %}"
+            class="dropdown-item sc-menu-item{% if active %} active{% endif %}{% if class %} {{ class }}{% endif %}"
             {%- if not allowed %} disabled{% endif %}
             {{- _attributes(merged, allowed) }}
         >
