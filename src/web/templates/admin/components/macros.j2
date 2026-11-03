@@ -1,0 +1,352 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{#
+    The building blocks of the administration's pages and modals. Each one owns
+    its markup; its look lives in the "Admin components" part of base.css and
+    only uses the theme's tokens.
+
+    Extra HTML attributes are passed as a dict, `attrs={'hx-get': url, ...}`:
+    a value of `true` writes a bare attribute, `none` or `false` leaves it out.
+#}
+
+{% set _icons = {
+    'add': 'bi-plus-lg',
+    'back': 'bi-arrow-left-circle-fill',
+    'cancel': 'bi-x-circle-fill',
+    'close': 'bi-x-lg',
+    'confirm': 'bi-check-circle-fill',
+    'copy': 'bi-copy',
+    'delete': 'bi-trash',
+    'download': 'bi-download',
+    'edit': 'bi-pencil',
+    'external': 'bi-box-arrow-up-right',
+    'import': 'bi-box-arrow-in-right',
+    'print': 'bi-printer',
+    'refresh': 'bi-arrow-clockwise',
+    'save': 'bi-floppy-fill',
+    'settings': 'bi-gear-fill',
+    'upload': 'bi-upload',
+    'info': 'bi-info-circle-fill',
+    'warning': 'bi-exclamation-triangle-fill',
+    'danger': 'bi-exclamation-octagon-fill',
+    'success': 'bi-check-circle-fill',
+    'secondary': 'bi-info-circle',
+} %}
+
+{% set _button_classes = {
+    'primary': 'btn-primary',
+    'secondary': 'btn-secondary',
+    'outline': 'btn-outline-primary',
+    'outline-secondary': 'btn-outline-secondary',
+    'danger': 'btn-danger',
+    'outline-danger': 'btn-outline-danger',
+    'link': 'btn-link',
+} %}
+
+{% set _note_levels = ['info', 'warning', 'danger', 'secondary'] %}
+
+{% set _badge_kinds = ['primary', 'neutral', 'warning', 'danger', 'success'] %}
+
+{# The class of an icon: a name of the list above, or a Bootstrap Icons class
+   for a one-off icon. #}
+{%- macro icon_class(name) -%}
+    {{ _icons[name] if name in _icons else name }}
+{%- endmacro -%}
+
+{%- macro _icon_tag(name, class='') -%}
+    <i class="{{ icon_class(name) }}{% if class %} {{ class }}{% endif %}" aria-hidden="true"></i>
+{%- endmacro -%}
+
+{%- macro icon(name, class='') -%}
+    {{ _icon_tag(name, class) }}
+{%- endmacro -%}
+
+{# The attributes of `attrs`; with `active=false`, those that would act or open
+   something (hx-*, data-bs-*) are left out. #}
+{%- macro _attributes(attrs, active=true) -%}
+    {%- for name, value in attrs.items() -%}
+        {%- if value is not none and value is not false
+            and (active or not (name.startswith('hx-') or name.startswith('data-bs-'))) -%}
+            {{ ' ' }}{{ name }}{% if value is not true %}="{{ value }}"{% endif %}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{# `content` in the tooltip of a disabled action (its reason) or of an
+   enabled one. A disabled button fires no event, so the tooltip goes on a
+   span around it. #}
+{%- macro _with_tooltip(content, allowed, reason, tooltip, placement) -%}
+    {%- if not allowed and reason -%}
+        <span class="sc-tooltip-wrapper" {{ macros.tooltip_attributes('warning', reason, placement) }}>{{ content }}</span>
+    {%- elif allowed and tooltip -%}
+        <span class="sc-tooltip-wrapper" {{ macros.tooltip_attributes('info', tooltip, placement) }}>{{ content }}</span>
+    {%- else -%}
+        {{ content }}
+    {%- endif -%}
+{%- endmacro -%}
+
+{#
+    A button.
+
+    kind: primary (the main action), secondary (Cancel and the like), outline
+        (toolbar actions), outline-secondary, danger, outline-danger, link.
+    icon: a name of the icon list above (save, cancel, delete...) or a
+        Bootstrap Icons class.
+    icon_only: shows the icon alone; the label is then its accessible name and,
+        without another tooltip, its tooltip.
+    allowed / reason: when not allowed, the button is disabled, does nothing,
+        and shows the reason in a tooltip.
+    tooltip: the tooltip of the enabled button.
+    A `{% call %}` replaces the label with richer content.
+#}
+{% macro button(
+    label,
+    kind='outline',
+    icon=none,
+    size=none,
+    type='button',
+    icon_only=false,
+    allowed=true,
+    reason=none,
+    tooltip=none,
+    tooltip_placement='top',
+    class='',
+    attrs={}
+) -%}
+    {%- set content = caller() if caller is defined else (none if icon_only else label) -%}
+    {%- set markup -%}
+        <button
+            type="{{ type }}"
+            class="btn {{ _button_classes[kind] }} sc-btn{% if size == 'sm' %} btn-sm{% endif %}{% if icon_only %} sc-btn-icon-only{% endif %}{% if class %} {{ class }}{% endif %}"
+            {%- if icon_only %} aria-label="{{ label }}"{% endif %}
+            {%- if not allowed %} disabled{% endif %}
+            {{- _attributes(attrs, allowed) }}
+        >
+            {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+            {%- if content %}{{ content }}{% endif -%}
+        </button>
+    {%- endset -%}
+    {{- _with_tooltip(markup, allowed, reason, tooltip or (label if icon_only else none), tooltip_placement) -}}
+{%- endmacro %}
+
+{# The Cancel button of a modal footer. #}
+{% macro cancel_button(label=none) -%}
+    {{- button(label or _('Cancel'), kind='secondary', icon='cancel', attrs={'data-bs-dismiss': 'modal'}) -}}
+{%- endmacro %}
+
+{# The attributes that load a modal from `url`, for an element that is not a
+   button (a card, a row). #}
+{%- macro modal_trigger_attrs(url) -%}
+    hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" data-bs-toggle="modal" data-bs-target="#modal-wrapper"
+{%- endmacro -%}
+
+{# A button that opens the modal at `url`; it takes the arguments of `button`. #}
+{% macro modal_button(
+    url,
+    label,
+    kind='outline',
+    icon=none,
+    size=none,
+    icon_only=false,
+    allowed=true,
+    reason=none,
+    tooltip=none,
+    tooltip_placement='top',
+    class='',
+    attrs={}
+) -%}
+    {%- set merged = {
+        'hx-get': url,
+        'hx-target': 'body',
+        'hx-indicator': '#please-wait',
+        'data-bs-toggle': 'modal',
+        'data-bs-target': '#modal-wrapper',
+    } -%}
+    {%- do merged.update(attrs) -%}
+    {{- button(
+        label, kind=kind, icon=icon, size=size, icon_only=icon_only,
+        allowed=allowed, reason=reason, tooltip=tooltip,
+        tooltip_placement=tooltip_placement, class=class, attrs=merged,
+    ) -}}
+{%- endmacro %}
+
+{#
+    A button opening a menu of `menu_item`s, given in a `{% call %}`.
+
+    align: start or end, the side of the button the menu lines up with.
+#}
+{% macro menu_button(
+    label,
+    kind='outline',
+    icon=none,
+    size=none,
+    align='start',
+    allowed=true,
+    reason=none,
+    tooltip=none,
+    tooltip_placement='top',
+    class=''
+) -%}
+    {%- set items = caller() -%}
+    {%- set markup -%}
+        <div class="dropdown sc-menu{% if class %} {{ class }}{% endif %}">
+            {{ button(
+                label, kind=kind, icon=icon, size=size, allowed=allowed,
+                class='dropdown-toggle',
+                attrs={'data-bs-toggle': 'dropdown', 'aria-expanded': 'false'},
+            ) }}
+            {% if allowed %}
+                <ul class="dropdown-menu{% if align == 'end' %} dropdown-menu-end{% endif %}">
+                    {{ items }}
+                </ul>
+            {% endif %}
+        </div>
+    {%- endset -%}
+    {{- _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement) -}}
+{%- endmacro %}
+
+{#
+    An item of a menu: a button, so that it can be reached from the keyboard.
+
+    url: the URL it loads (hx-get), or with modal=true the modal it opens;
+        other hx-* attributes go in attrs.
+    active: marks the current choice of the menu.
+    A `{% call %}` replaces the label with richer content.
+#}
+{% macro menu_item(
+    label,
+    icon=none,
+    url=none,
+    modal=false,
+    active=false,
+    allowed=true,
+    reason=none,
+    tooltip=none,
+    tooltip_placement='right',
+    attrs={}
+) -%}
+    {%- set content = caller() if caller is defined else none -%}
+    {%- if url and modal -%}
+        {%- set merged = {
+            'hx-get': url,
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#modal-wrapper',
+        } -%}
+    {%- elif url -%}
+        {%- set merged = {'hx-get': url, 'hx-target': 'body', 'hx-indicator': '#please-wait'} -%}
+    {%- else -%}
+        {%- set merged = {} -%}
+    {%- endif -%}
+    {%- do merged.update(attrs) -%}
+    {%- set markup -%}
+        <button
+            type="button"
+            class="dropdown-item sc-menu-item{% if active %} active{% endif %}"
+            {%- if not allowed %} disabled{% endif %}
+            {{- _attributes(merged, allowed) }}
+        >
+            {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+            {%- if content %}{{ content }}{% else %}<span>{{ label }}</span>{% endif -%}
+        </button>
+    {%- endset -%}
+    <li>{{ _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement) }}</li>
+{%- endmacro %}
+
+{% macro menu_header(text) -%}
+    <li><h6 class="dropdown-header">{{ text }}</h6></li>
+{%- endmacro %}
+
+{% macro menu_divider() -%}
+    <li><hr class="dropdown-divider"></li>
+{%- endmacro %}
+
+{#
+    A note in a modal or a form.
+
+    level: info, warning, danger or secondary; the icon follows the level
+        unless given.
+    compact: the smaller note set among form fields.
+    A `{% call %}` gives rich content (links, buttons) in place of `body`.
+#}
+{% macro note(level, body=none, icon=none, compact=false, class='', attrs={}) -%}
+    {%- set content = caller() if caller is defined else body -%}
+    <div class="alert alert-{{ level if level in _note_levels else 'info' }} sc-note{% if compact %} sc-note-compact{% endif %}{% if class %} {{ class }}{% endif %}"{{ _attributes(attrs) }}>
+        {{ _icon_tag(icon or level) }}
+        <div class="sc-note-body">{{ content }}</div>
+    </div>
+{%- endmacro %}
+
+{#
+    A badge.
+
+    kind: primary (the accent: FIDE list, winner...), neutral (counts,
+        national lists), warning, danger, success.
+#}
+{% macro badge(
+    kind,
+    text,
+    icon=none,
+    pill=false,
+    tooltip=none,
+    tooltip_type='info',
+    tooltip_placement='top',
+    class='',
+    attrs={}
+) -%}
+    <span
+        class="badge sc-badge sc-badge-{{ kind if kind in _badge_kinds else 'neutral' }}{% if pill %} rounded-pill{% endif %}{% if class %} {{ class }}{% endif %}"
+        {%- if tooltip %} {{ macros.tooltip_attributes(tooltip_type, tooltip, tooltip_placement) }}{% endif %}
+        {{- _attributes(attrs) }}
+    >
+        {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+        {{ text }}
+    </span>
+{%- endmacro %}
+
+{# A signed number in a pill: green above zero, red below. #}
+{% macro delta_badge(value, tooltip=none, tooltip_placement='top', class='', attrs={}) -%}
+    {{- badge(
+        'success' if value > 0 else ('danger' if value < 0 else 'neutral'),
+        ('+' if value > 0 else ('−' if value < 0 else '')) ~ (value | abs),
+        pill=true,
+        tooltip=tooltip,
+        tooltip_placement=tooltip_placement,
+        class=class,
+        attrs=attrs,
+    ) -}}
+{%- endmacro %}
+
+{#
+    A message band, like the messages shown at the bottom of the page.
+
+    type: debug, info, success, warning or error.
+#}
+{% macro banner(type, text, icon=none, dismissible=true, auto_remove=false, class='') -%}
+    {%- with
+        type=type,
+        message=text,
+        icon=icon_class(icon) if icon else none,
+        hide_remove_button=not dismissible,
+        auto_remove=auto_remove,
+        alert_classes=class
+    -%}
+        {%- include '/common/alert.html' -%}
+    {%- endwith -%}
+{%- endmacro %}
+
+{# What a page or a list shows when there is nothing in it yet; a
+   `{% call %}` adds the explanation below the title. #}
+{% macro empty_state(title, class='') -%}
+    {%- set content = caller() if caller is defined else none -%}
+    <div class="admin-empty-state mx-auto{% if class %} {{ class }}{% endif %}">
+        <h5>{{ title }}</h5>
+        {%- if content %}{{ content }}{% endif -%}
+    </div>
+{%- endmacro %}
+
+{# The heading of a part of a modal body or a form. #}
+{% macro section_heading(text, class='') -%}
+    <h3 class="sc-section-heading{% if class %} {{ class }}{% endif %}">{{ text }}</h3>
+{%- endmacro %}

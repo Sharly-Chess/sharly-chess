@@ -3293,6 +3293,117 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     color: inherit;
 }
 
+/* Admin components (templates/admin/components) */
+
+/* A button's icon and label keep the same gap everywhere. */
+[data-sc-interface=admin] .sc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    white-space: nowrap;
+}
+
+[data-sc-interface=admin] .sc-tooltip-wrapper {
+    display: inline-block;
+}
+
+[data-sc-interface=admin] .dropdown-item.sc-menu-item {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+[data-sc-interface=admin] .sc-modal {
+    --bs-modal-width: min(90vw, 500px);
+}
+
+[data-sc-interface=admin] .sc-modal-sm {
+    --bs-modal-width: min(90vw, 450px);
+}
+
+[data-sc-interface=admin] .sc-modal-lg {
+    --bs-modal-width: min(90vw, 600px);
+}
+
+[data-sc-interface=admin] .sc-modal-xl {
+    --bs-modal-width: min(90vw, 800px);
+}
+
+[data-sc-interface=admin] .sc-modal-fit {
+    --bs-modal-width: fit-content;
+}
+
+[data-sc-interface=admin] .sc-modal-doc {
+    margin-left: .5rem;
+    font-size: 70%;
+}
+
+/* A button set apart on the left of the footer, the others staying right. */
+[data-sc-interface=admin] .sc-modal-footer-start {
+    margin-right: auto;
+}
+
+[data-sc-interface=admin] .sc-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+}
+
+[data-sc-interface=admin] .sc-note > i {
+    flex-shrink: 0;
+}
+
+[data-sc-interface=admin] .sc-note-body {
+    flex: 1;
+    min-width: 0;
+}
+
+[data-sc-interface=admin] .sc-note-compact {
+    padding: .3rem .6rem;
+    font-size: .875em;
+}
+
+/* A badge carries its own ground, so its colours hold in both themes. */
+[data-sc-interface=admin] .sc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3em;
+}
+
+[data-sc-interface=admin] .sc-badge-primary {
+    --bs-badge-color: var(--pw-contrast-text);
+    background-color: var(--bs-primary);
+}
+
+[data-sc-interface=admin] .sc-badge-neutral {
+    --bs-badge-color: var(--bs-body-color);
+    background-color: var(--pw-surface-raised-bg);
+    box-shadow: inset 0 0 0 1px var(--pw-control-border-color);
+}
+
+[data-sc-interface=admin] .sc-badge-warning {
+    --bs-badge-color: #1a1712;
+    background-color: #f0c35a;
+}
+
+[data-sc-interface=admin] .sc-badge-danger {
+    --bs-badge-color: #fff;
+    background-color: #b02a37;
+}
+
+[data-sc-interface=admin] .sc-badge-success {
+    --bs-badge-color: #fff;
+    background-color: #1e7e47;
+}
+
+[data-sc-interface=admin] .sc-section-heading {
+    margin: 0 0 .75rem;
+    color: var(--bs-emphasis-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
 .error-page-container {
     display: flex;
     flex-direction: column;

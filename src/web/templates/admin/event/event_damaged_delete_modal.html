@@ -45,10 +45,8 @@
     ) }}
 {% endblock %}
 
-{% block delete_button_content %}
-    <i class="bi-archive-fill pe-1"></i>
-    {{ _('Archive') }}
-{% endblock %}
+{% block delete_label %}{{ _('Archive') }}{% endblock %}
+{% block delete_icon %}bi-archive-fill{% endblock %}
 
 {% block delete_modal_script %}
     <script>requestRefresh()</script>

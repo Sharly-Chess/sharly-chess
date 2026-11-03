@@ -11,6 +11,4 @@
     championship_uniq_id=championship.uniq_id,
     source_id=source.id,
 ) }}{% endblock %}
-{% block delete_button_content %}
-    <i class="bi-trash pe-1"></i>{{ _('Remove') }}
-{% endblock %}
+{% block delete_label %}{{ _('Remove') }}{% endblock %}

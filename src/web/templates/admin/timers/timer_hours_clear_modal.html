@@ -20,10 +20,7 @@
         'admin-timer-hours-clear',
         event_uniq_id=admin_event.uniq_id,
         timer_id=admin_timer.id,
-    ) }}"
+    ) }}
 {% endblock %}
 
-{% block delete_button_content %}
-    <i class="bi-trash-fill pe-1"></i>
-    {{ _('Clear all') }}
-{% endblock %}
+{% block delete_label %}{{ _('Clear all') }}{% endblock %}

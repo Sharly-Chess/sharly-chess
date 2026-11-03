@@ -1,57 +1,47 @@
-<div
-    id="delete-modal"
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content;"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% block modal_title %}
-                    MODAL TITLE
-                {% endblock %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <h4>
-                {% block object_name %}
-                    OBJECT NAME
-                {% endblock %}
-            </h4>
-            {% set delete_warning %}{% block delete_warning %}{{ _('Warning: the deletion is permanent!') }}{% endblock %}{% endset %}
-            {% if delete_warning|trim %}
-                <div class="alert alert-danger d-flex align-items-start gap-2">
-                    <i class="bi-exclamation-triangle-fill flex-shrink-0"></i>
-                    <div>{{ delete_warning }}</div>
-                </div>
-            {% endif %}
-            <form
-                id="modal-form"
-                hx-delete="{% block delete_url %}{% endblock %}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% block form_content %}{% endblock %}
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary text-nowrap">
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="delete-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-danger"
-            >
-                {% block delete_button_content %}
-                    <i class="bi-trash pe-1"></i>
-                    {{ _('Delete') }}
-                {% endblock %}
-            </button>
-        </div>
-    </div>
-</div>
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'delete-modal' %}
+{% set modal_size = 'fit' %}
 
-{% block delete_modal_script %}
+{% block title %}
+    {% block modal_title %}
+        MODAL TITLE
+    {% endblock %}
+{% endblock %}
+
+{% block body %}
+    <h4>
+        {% block object_name %}
+            OBJECT NAME
+        {% endblock %}
+    </h4>
+    {% set delete_warning %}{% block delete_warning %}{{ _('Warning: the deletion is permanent!') }}{% endblock %}{% endset %}
+    {% if delete_warning|trim %}
+        {{ components.note('danger', delete_warning, icon='warning') }}
+    {% endif %}
+    <form
+        id="modal-form"
+        hx-delete="{% block delete_url %}{% endblock %}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {% block form_content %}{% endblock %}
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% set delete_label %}{% block delete_label %}{{ _('Delete') }}{% endblock %}{% endset %}
+    {% set delete_icon %}{% block delete_icon %}delete{% endblock %}{% endset %}
+    {{ components.button(
+        delete_label|trim,
+        kind='danger',
+        icon=delete_icon|trim,
+        type='submit',
+        attrs={'id': 'delete-button', 'form': 'modal-form'},
+    ) }}
+{% endblock %}
+
+{% block after_modal %}
+    {% block delete_modal_script %}
+    {% endblock %}
 {% endblock %}
