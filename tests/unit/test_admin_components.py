@@ -274,6 +274,17 @@ class TestNote:
         assert note.only('i').classes == ['bi-flag']
         assert note.only(cls='sc-note-body').only('a').text() == 'Link'
 
+    def test_note_actions_and_attributes(self) -> None:
+        root = _render(
+            "{{ components.note('danger', 'Text', actions=components.button('Go'),"
+            " attrs={'id': 'n', 'style': 'display:none'}) }}"
+        )
+        note = root.only('div', 'alert')
+        assert note['id'] == 'n'
+        assert note['style'] == 'display:none'
+        assert note.only(cls='sc-note-actions').only('button').text() == 'Go'
+        assert not root.only(cls='sc-note-body').find_all('button')
+
 
 @pytest.mark.unit
 class TestBadges:

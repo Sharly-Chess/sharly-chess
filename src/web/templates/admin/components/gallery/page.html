@@ -127,12 +127,12 @@
                 {{ components.note(level, 'A ' ~ level ~ ' note, long enough to wrap onto a second line when the page is narrow.', attrs={'data-gallery-sample': 'note-' ~ level}) }}
             {% endfor %}
             {{ components.note('warning', 'A compact note, as set among form fields.', compact=true) }}
-            {% call components.note('warning') %}
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <span class="flex-grow-1">A note with an action.</span>
-                    {{ components.button('Update', size='sm', icon='refresh') }}
-                </div>
-            {% endcall %}
+            {{ components.note('warning', 'A note with an action.', actions=components.button('Update', size='sm', icon='refresh')) }}
+            {% set confirm_actions %}
+                {{ components.button('Cancel', kind='danger', icon='cancel', size='sm') }}
+                {{ components.button('Leave FIDE mode', kind='outline-danger', size='sm') }}
+            {% endset %}
+            {{ components.note('danger', 'A note asking for a confirmation, its buttons stacked on the right and below the text on a phone.', icon='bi-slash-circle-fill', actions=confirm_actions) }}
         </section>
 
         <section id="gallery-badges" class="d-flex flex-column gap-2">

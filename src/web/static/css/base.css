@@ -3379,6 +3379,27 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     min-width: 0;
 }
 
+[data-sc-interface=admin] .sc-note-actions {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: .5rem;
+    margin-left: .5rem;
+}
+
+@media (max-width: 575.98px) {
+    [data-sc-interface=admin] .sc-note:has(.sc-note-actions) {
+        flex-wrap: wrap;
+    }
+
+    [data-sc-interface=admin] .sc-note-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        flex-basis: 100%;
+        margin-left: 0;
+    }
+}
+
 [data-sc-interface=admin] .sc-note-compact {
     padding: .3rem .6rem;
     font-size: .875em;

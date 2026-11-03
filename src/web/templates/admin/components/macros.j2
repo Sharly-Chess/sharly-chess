@@ -268,13 +268,17 @@
     level: info, warning, danger or secondary; the icon follows the level
         unless given.
     compact: the smaller note set among form fields.
+    actions: buttons stacked on the right of the text (below it on a phone).
     A `{% call %}` gives rich content (links, buttons) in place of `body`.
 #}
-{% macro note(level, body=none, icon=none, compact=false, class='', attrs={}) -%}
+{% macro note(level, body=none, icon=none, compact=false, actions=none, class='', attrs={}) -%}
     {%- set content = caller() if caller is defined else body -%}
     <div class="alert alert-{{ level if level in _note_levels else 'info' }} sc-note{% if compact %} sc-note-compact{% endif %}{% if class %} {{ class }}{% endif %}"{{ _attributes(attrs) }}>
         {{ _icon_tag(icon or level) }}
         <div class="sc-note-body">{{ content }}</div>
+        {%- if actions %}
+            <div class="sc-note-actions">{{ actions }}</div>
+        {%- endif %}
     </div>
 {%- endmacro %}
 
