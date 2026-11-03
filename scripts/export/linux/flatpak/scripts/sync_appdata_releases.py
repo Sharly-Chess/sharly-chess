@@ -138,7 +138,7 @@ def update_appdata(releases_xml: str) -> None:
     content = APPDATA_FILE.read_text(encoding='utf-8')
     new_block = f'  <releases>\n{releases_xml}\n  </releases>'
     new_content, count = re.subn(
-        r'  <releases>.*?</releases>', new_block, content, flags=re.DOTALL
+        r'  <releases>.*?</releases>', lambda _: new_block, content, flags=re.DOTALL
     )
     if count == 0:
         raise RuntimeError('<releases> section not found in appdata file')
