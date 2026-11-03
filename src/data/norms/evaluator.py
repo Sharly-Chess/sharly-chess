@@ -16,6 +16,7 @@ from data.norms.inputs import (
     REASON_NO_OPPONENT,
     REASON_RULE_142A,
     REASON_RULE_142B,
+    REASON_RULE_142C_UNRATED,
     REASON_UNPLAYED_NO_PAIRING,
     RoundAuditEntry,
     RoundDecision,
@@ -210,12 +211,27 @@ class TitleNormEvaluator:
                 )
                 continue
 
-            inputs.played_games += 1
             assert pairing.opponent is not None  # narrowed by include_as_played
             # Read at the period the game belongs to: in a tournament of more
             # than 30 days the opponent's rating and titles are those of the
             # day they were played (B.01 1.1.4).
             opponent = NormOpponent.in_round(pairing.opponent, rnd)
+
+            # 1.4.2c — a game not rated by FIDE does not count.
+            if effective_pairing_result.is_unrated:
+                inputs.round_audit.append(
+                    RoundAuditEntry(
+                        round_=rnd,
+                        opponent=opponent,
+                        raw_result=pairing.result,
+                        effective_result=None,
+                        decision=RoundDecision.EXCLUDED,
+                        reason_key=REASON_RULE_142C_UNRATED,
+                    )
+                )
+                continue
+
+            inputs.played_games += 1
 
             # 1.4.2b — Round-Robin only: ignore unrated opponents who lost every
             # game they actually played against a FIDE-rated opponent.
@@ -226,6 +242,7 @@ class TitleNormEvaluator:
                         opponent_pairing.opponent
                         and not opponent_pairing.result.is_loss
                         and not opponent_pairing.result.is_unplayed
+                        and not opponent_pairing.result.is_unrated
                         and opponent_pairing.opponent.rating_type
                         == PlayerRatingType.FIDE
                     ):
