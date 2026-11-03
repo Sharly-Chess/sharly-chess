@@ -3357,6 +3357,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 [data-sc-interface=admin] .sc-modal-header-actions {
     display: flex;
     flex-shrink: 0;
+    align-self: center;
     gap: .5rem;
     margin-left: 1rem;
 }
@@ -3505,6 +3506,21 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     gap: .25rem;
 }
 
+/* A check written as plain Bootstrap (input then label, the input floated)
+   is centred on its label like the ones the form macros build. */
+[data-sc-interface=admin] .form-check:has(> .form-check-input + .form-check-label) {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding-left: 0;
+}
+
+[data-sc-interface=admin] .form-check:has(> .form-check-input + .form-check-label) > .form-check-input {
+    float: none;
+    flex-shrink: 0;
+    margin: 0;
+}
+
 [data-sc-interface=admin] .sc-legend {
     display: flex;
     flex-direction: column;
@@ -3528,7 +3544,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 }
 
 [data-sc-interface=admin] .sc-section-heading {
-    margin: 0 0 .75rem;
+    margin: 0 0 1rem;
     color: var(--bs-emphasis-color);
     font-size: 1.1rem;
     font-weight: 600;
