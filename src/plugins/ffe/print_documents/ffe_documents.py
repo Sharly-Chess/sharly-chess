@@ -38,6 +38,12 @@ class FFEPrintDocument(PrintDocument):
         return self.ffe_document_type.title
 
     @property
+    def tab_title(self) -> str:
+        if TournamentPrintOption in self.ffe_document_type.get_valid_option_types():
+            return f'{self.name} - {self.tournament.name}'
+        return self.name
+
+    @property
     def ffe_document_type(self) -> FFEDocumentType:
         document_type_id = self._get_option(FFEDocumentTypePrintOption).value
         # An unset type is rejected by the option's own validate().
