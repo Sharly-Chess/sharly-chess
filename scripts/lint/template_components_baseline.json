@@ -1228,87 +1228,16 @@
     "modal-dialog": 1,
     "modal-header": 1
   },
-  "src/web/templates/admin/tournaments/distribute_players_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/export_data_loss_modal.html": {
-    "button": 4,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/import_check_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/random_player_modal.html": {
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/random_tournament_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/tournaments/tab.html": {
     "button": 4,
     "icon-spacing": 5,
     "menu-item": 4,
     "modal-trigger": 3
   },
-  "src/web/templates/admin/tournaments/tie_break_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/tie_break_sets_modal.html": {
-    "button": 2,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 2
-  },
-  "src/web/templates/admin/tournaments/tie_breaks_modal.html": {
-    "button": 8,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 3
-  },
-  "src/web/templates/admin/tournaments/time_control_editor.html": {
-    "button": 5
-  },
   "src/web/templates/admin/tournaments/tournament_components.j2": {
     "button": 6,
     "icon-spacing": 9,
     "menu-item": 11,
     "modal-trigger": 6
-  },
-  "src/web/templates/admin/tournaments/tournament_import_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/tournament_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/tournaments/tournament_schedule_section.html": {
-    "button": 4
   }
 }

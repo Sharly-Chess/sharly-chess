@@ -1,95 +1,74 @@
-{% import '/admin/components/macros.j2' as components with context %}
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ importer.modal_title }}
-                {% if importer.doc_url %}
-                    <span style="font-size: 70%">{{ macros.doc_icon(importer.doc_url, 'ms-2') }}</span>
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                hx-post="{{ url_for(
-                    'admin-tournament-import',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    importer_id=importer.id
-                ) if admin_tournament else url_for(
-                    'admin-tournament-import',
-                    event_uniq_id=admin_event.uniq_id,
-                    importer_id=importer.id
-                ) }}"
-                enctype="multipart/form-data"
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <span id="alert-message">
-                    {% if errors.alert %}
-                        {% with type='error', message=errors.alert %}
-                            {% include '/common/alert.html' %}
-                        {% endwith %}
-                    {% endif %}
-                </span>
+{% extends '/admin/components/modal.html' %}
+{% set modal_doc = importer.doc_url %}
 
-                {% if admin_tournament %}
-                    <h4>
-                        {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
-                    </h4>
-                    {% if admin_tournament.tournament_players %}
-                        {{ components.note('danger', _(
-                            'Warning: the %(player_count)d players in the tournament will be deleted.',
-                            player_count=admin_tournament.tournament_players|length
-                        ), icon='warning') }}
-                    {% endif %}
-                {% endif %}
-                <div class="row gy-2 gx-3">
-                    {% for option in importer.default_options() %}
-                        {% include option.template_name %}
-                    {% endfor %}
-                </div>
-                {% if admin_tournament and admin_tournament.tournament_players %}
-                    <div class="mt-2 wrapping-form-check">
-                        {{ admin_macros.checkbox_input(
-                            name='confirm_checkbox',
-                            placeholder=_(
-                                'I confirm that I want to overwrite the player data of this tournament.'
-                            ),
-                        ) }}
-                    </div>
-                    <script>
-                        $('#confirm-checkbox').change(function () {
-                           $('#import-button').prop('disabled', !$(this).is(':checked'));
-                        });
-                        $('#confirm-checkbox').trigger('change');
-                    </script>
-                {% endif %}
-            </form>
+{% block title %}{{ importer.modal_title }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-post="{{ url_for(
+            'admin-tournament-import',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            importer_id=importer.id
+        ) if admin_tournament else url_for(
+            'admin-tournament-import',
+            event_uniq_id=admin_event.uniq_id,
+            importer_id=importer.id
+        ) }}"
+        enctype="multipart/form-data"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <span id="alert-message">
+            {% if errors.alert %}
+                {{ components.banner('error', errors.alert) }}
+            {% endif %}
+        </span>
+
+        {% if admin_tournament %}
+            <h4>
+                {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
+            </h4>
+            {% if admin_tournament.tournament_players %}
+                {{ components.note('danger', _(
+                    'Warning: the %(player_count)d players in the tournament will be deleted.',
+                    player_count=admin_tournament.tournament_players|length
+                ), icon='warning') }}
+            {% endif %}
+        {% endif %}
+        <div class="row gy-2 gx-3">
+            {% for option in importer.default_options() %}
+                {% include option.template_name %}
+            {% endfor %}
         </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="import-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-download pe-1"></i>
-                {{ _('Import') }}
-            </button>
-        </div>
-    </div>
-</div>
+        {% if admin_tournament and admin_tournament.tournament_players %}
+            <div class="mt-2 wrapping-form-check">
+                {{ admin_macros.checkbox_input(
+                    name='confirm_checkbox',
+                    placeholder=_(
+                        'I confirm that I want to overwrite the player data of this tournament.'
+                    ),
+                ) }}
+            </div>
+            <script>
+                $('#confirm-checkbox').change(function () {
+                   $('#import-button').prop('disabled', !$(this).is(':checked'));
+                });
+                $('#confirm-checkbox').trigger('change');
+            </script>
+        {% endif %}
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Import'),
+        kind='primary',
+        icon='download',
+        type='submit',
+        attrs={'id': 'import-button', 'form': 'modal-form'},
+    ) }}
+{% endblock %}
