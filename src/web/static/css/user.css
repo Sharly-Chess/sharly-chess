@@ -44,7 +44,7 @@
 :root {
     --screen-ink: #101418;
     --screen-ink-secondary: #3a4250;
-    --title-line-height: 4rem;
+    --title-line-height: 3.25rem;
 }
 .user-screen-content .set-title {
     display: flex;
@@ -246,23 +246,11 @@ body:has(#screen-exit-button) .alert-message {
     opacity: 0.8;
 }
 .result-modal-arbiter {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
     padding-top: 1.1rem;
     border-top: 2px solid #e3e7ec;
-}
-.result-modal-section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--result-ink-secondary);
-}
-.result-modal-arbiter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
 }
 .result-arbiter-button,
 .result-cancel-button {
@@ -274,6 +262,18 @@ body:has(#screen-exit-button) .alert-message {
     color: var(--result-ink);
     font-size: 1.1rem;
     font-weight: 700;
+}
+.result-arbiter-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.5rem 1rem;
+    line-height: 1.2;
+}
+.result-arbiter-score {
+    white-space: nowrap;
 }
 .result-cancel-button {
     margin-left: auto;
@@ -379,7 +379,8 @@ body:has(#screen-exit-button) .alert-message {
     .result-entry-modal .modal-content {
         padding: 1.1rem;
     }
-    .result-modal-choices {
+    .result-modal-choices,
+    .result-modal-arbiter {
         grid-template-columns: 1fr;
         gap: 0.6rem;
     }
@@ -397,6 +398,12 @@ body:has(#screen-exit-button) .alert-message {
     }
     .result-choice-player {
         flex-basis: 100%;
+    }
+    .result-arbiter-button {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0.75rem;
+        text-align: start;
     }
 }
 /*
@@ -494,7 +501,6 @@ body:has(#screen-exit-button) .alert-message {
 }
 /* The last entry made on a screen stays highlighted for a while, so whoever
    made it can see it went through. */
-.grid-striped > .player-row > .player-cell.last_check_in_updated,
 .grid-striped > .board-row.last_result_updated > * {
     background-color: #d4edde !important;
     color: var(--screen-ink) !important;
@@ -734,6 +740,17 @@ body:has(#screen-exit-button) .alert-message {
         text-box-trim: trim-both;
         text-box-edge: cap alphabetic;
     }
+    .timer-clock,
+    .user-screen-content .set-title-name,
+    .user-screen-content .set-title-details {
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+    }
+    .user-screen-content .set-title {
+        row-gap: 0.6em;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
     /* The trimmed line is 0.83em shorter: the padding makes up for it. */
     .screen-menu-item {
         padding-top: calc(0.3rem + 0.415em) !important;
@@ -839,8 +856,12 @@ body:has(#screen-exit-button) .alert-message {
 .timer-icon {
     flex: none;
 }
-/* A long text wraps onto a second line, then is cut. */
+/* A long text wraps onto a second line, then is cut. The font's capitals sit
+   above the middle of their line: they are brought down to the middle of the
+   pill. */
 .timer-text {
+    position: relative;
+    top: 0.12em;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;

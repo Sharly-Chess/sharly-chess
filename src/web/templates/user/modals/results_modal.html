@@ -82,7 +82,10 @@
         data-testid="{{ side }}-wins-by-forfeit-button"
         class="result-arbiter-button"
         {{ request_attributes(6 if side == 'white' else 4) }}
-    >{{ _('White wins by forfeit') if side == 'white' else _('Black wins by forfeit') }} · {{ '1 - F' if side == 'white' else 'F - 1' }}</button>
+    >
+        <span>{{ _('White wins by forfeit') if side == 'white' else _('Black wins by forfeit') }}</span>
+        <span class="result-arbiter-score">{{ '1 - F' if side == 'white' else 'F - 1' }}</span>
+    </button>
 {% endmacro %}
 <div
     class="modal-dialog modal-dialog-centered result-entry-modal"
@@ -90,12 +93,9 @@
 >
     <div class="modal-content">
         <div class="result-modal-header">
-            <span class="result-modal-board">{{ board.number_str }}</span>
-            <div class="result-modal-heading">
-                <div class="result-modal-title">{{ _('What is the result?') }}</div>
-                <div class="result-modal-subtitle">
-                    {{ tournament.name }} · {{ _('Round %(round)d', round=board.round) }}
-                </div>
+            <span class="result-modal-board">{{ _('Board %(number)s', number=board.number_str) }}</span>
+            <div class="result-modal-subtitle">
+                {{ tournament.name }} · {{ _('Round %(round)d', round=board.round) }}
             </div>
         </div>
         <div class="result-modal-choices">
@@ -113,17 +113,17 @@
         </div>
         {% if client.can_set_special_results(tournament.id) %}
             <div class="result-modal-arbiter">
-                <div class="result-modal-section-title">{{ _('Arbiter') }}</div>
-                <div class="result-modal-arbiter-buttons">
-                    {{ forfeit_button('white' if white_on_left else 'black') }}
-                    <button
-                        type="button"
-                        data-testid="double-forfeit-button"
-                        class="result-arbiter-button"
-                        {{ request_attributes(5) }}
-                    >{{ _('Double forfeit') }} · F - F</button>
-                    {{ forfeit_button('black' if white_on_left else 'white') }}
-                </div>
+                {{ forfeit_button('white' if white_on_left else 'black') }}
+                <button
+                    type="button"
+                    data-testid="double-forfeit-button"
+                    class="result-arbiter-button"
+                    {{ request_attributes(5) }}
+                >
+                    <span>{{ _('Double forfeit') }}</span>
+                    <span class="result-arbiter-score">F - F</span>
+                </button>
+                {{ forfeit_button('black' if white_on_left else 'white') }}
             </div>
         {% endif %}
         <div class="result-modal-footer">

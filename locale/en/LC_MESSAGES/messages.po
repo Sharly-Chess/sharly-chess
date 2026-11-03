@@ -12411,9 +12411,6 @@ msgstr ""
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr ""
 
-msgid "What is the result?"
-msgstr ""
-
 msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
 msgstr ""
 

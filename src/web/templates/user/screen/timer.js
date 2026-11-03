@@ -31,32 +31,56 @@ function timer_ink(color) {
     return 1.05 / (luminance + 0.05) >= (luminance + 0.05) / 0.05 ? '#ffffff' : '#101418';
 }
 
+// The width of the title on a single line, without the room kept for the timer.
+function title_natural_width(title) {
+    const style = title.style.cssText;
+    title.style.paddingRight = '0px';
+    title.style.flexWrap = 'nowrap';
+    title.style.whiteSpace = 'nowrap';
+    title.style.width = 'max-content';
+    const width = title.getBoundingClientRect().width;
+    title.style.cssText = style;
+    return width;
+}
+
 // The first title of the screen sits beside the timer, keeps clear of it and is
-// at least as tall; the timer is centred on that title line.
+// at least as tall; the timer is centred on that title line. The timer takes the
+// room a short title leaves, and half of the line when the title is long.
 function update_timer_width() {
     const wrapper = document.getElementById('timer-wrapper');
     const shown = wrapper && !wrapper.classList.contains('d-none');
     const root = document.documentElement;
-    root.style.setProperty('--timer-width', (shown ? wrapper.offsetWidth : 0) + 'px');
     if (!shown) {
+        root.style.setProperty('--timer-width', '0px');
         root.style.setProperty('--timer-height', '0px');
         return;
     }
-    const pill = document.getElementById('timer');
-    const clock = document.getElementById('timer-clock');
-    root.style.setProperty('--timer-height', Math.max(pill.offsetHeight, clock.offsetHeight) + 'px');
     const title = document.querySelector(
         '#user-screen-content .screen > .set-title:first-child, '
         + '#user-screen-content .screen > :first-child > .set-title:first-child'
     );
-    if (title && getComputedStyle(wrapper).position === 'absolute') {
+    const beside_title = title && wrapper.offsetParent && getComputedStyle(wrapper).position === 'absolute';
+    if (beside_title) {
+        const line = title.getBoundingClientRect().width;
+        const gap = 1.5 * parseFloat(getComputedStyle(root).fontSize);
+        wrapper.style.maxWidth = Math.max(line / 2, line - title_natural_width(title) - gap) + 'px';
+    } else {
+        wrapper.style.maxWidth = '';
+    }
+    root.style.setProperty('--timer-width', wrapper.offsetWidth + 'px');
+    const pill = document.getElementById('timer');
+    const clock = document.getElementById('timer-clock');
+    root.style.setProperty('--timer-height', Math.max(pill.offsetHeight, clock.offsetHeight) + 'px');
+    if (beside_title) {
         const titleBox = title.getBoundingClientRect();
         const top = titleBox.top - wrapper.offsetParent.getBoundingClientRect().top;
         wrapper.style.top = top + 'px';
         wrapper.style.height = titleBox.height - parseFloat(getComputedStyle(title).borderBottomWidth) + 'px';
+        wrapper.style.minHeight = '0px';
     } else {
         wrapper.style.top = '';
         wrapper.style.height = '';
+        wrapper.style.minHeight = '';
     }
 }
 
