@@ -2446,7 +2446,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --pw-surface-disabled-bg: #efede8;
     --pw-dropdown-bg: #ffffff;
     --pw-modal-bg: #ffffff;
-    --pw-table-header-bg: #f0eee9;
+    --pw-table-header-bg: #e6e2d9;
     --pw-table-header-border-color: #d9d5cc;
     --pw-table-row-border-color: #eeebe5;
     --pw-check-border-color: #b3afa5;
