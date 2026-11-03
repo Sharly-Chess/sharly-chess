@@ -31,33 +31,41 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button
-                    class="btn btn-sm btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for('admin-screen-set-update-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi-pencil-fill"></i>
-                </button>
-                <button
-                    class="btn btn-sm btn-outline-primary text-nowrap"
-                    hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi-copy"></i>
-                </button>
-                <button
-                    class="btn btn-sm btn-outline-danger text-nowrap"
-                    hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    {% if admin_screen.sorted_screen_sets|length <= 1 %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi-trash-fill"></i>
-                </button>
+                {{ components.button(
+                    _('Edit'),
+                    icon='bi-pencil-fill',
+                    icon_only=true,
+                    size='sm',
+                    attrs={
+                        'hx-get': url_for('admin-screen-set-update-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
+                {{ components.button(
+                    _('Duplicate'),
+                    icon='copy',
+                    icon_only=true,
+                    size='sm',
+                    attrs={
+                        'hx-post': url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
+                {{ components.button(
+                    _('Delete'),
+                    kind='outline-danger',
+                    icon='bi-trash-fill',
+                    icon_only=true,
+                    size='sm',
+                    allowed=admin_screen.sorted_screen_sets|length > 1,
+                    attrs={
+                        'hx-delete': url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                    },
+                ) }}
             </div>
         </div>
     </div>

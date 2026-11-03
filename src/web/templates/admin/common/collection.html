@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% import '/admin/common/collection_macros.j2' as collection_macros with context %}
 {% import collection.components_template as item_components with context %}
 {% set collection_items_class = collection_items_class|default('') %}
@@ -194,17 +195,19 @@
                                 {% if collection.list.details %}
                                     <div class="collection-list-cell collection-details-column" role="cell">
                                         {% if list_details_content|trim %}
-                                            <button
-                                                class="btn collection-details-button"
-                                                type="button"
-                                                data-bs-toggle="collapse"
-                                                data-bs-target="#{{ details_id }}"
-                                                aria-expanded="{{ 'true' if show_details else 'false' }}"
-                                                aria-controls="{{ details_id }}"
-                                                title="{{ _('Toggle details') }}"
-                                            >
-                                                <i class="bi-chevron-right"></i>
-                                            </button>
+                                            {{ components.button(
+                                                _('Toggle details'),
+                                                kind='plain',
+                                                icon='bi-chevron-right',
+                                                icon_only=true,
+                                                class='collection-details-button',
+                                                attrs={
+                                                    'data-bs-toggle': 'collapse',
+                                                    'data-bs-target': '#' ~ details_id,
+                                                    'aria-expanded': 'true' if show_details else 'false',
+                                                    'aria-controls': details_id,
+                                                },
+                                            ) }}
                                         {% endif %}
                                     </div>
                                 {% endif %}
@@ -241,7 +244,5 @@
         </div>
     {% endif %}
 {% else %}
-    <div class="mx-auto admin-empty-state" style="max-width: 500px;">
-        <h5 class="mt-2 my-5 text-center">{{ empty_message }}</h5>
-    </div>
+    {{ components.empty_state(empty_message) }}
 {% endif %}

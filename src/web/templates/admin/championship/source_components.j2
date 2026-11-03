@@ -15,22 +15,27 @@
     <span class="d-inline-flex align-items-center gap-1 min-width-0">
         {% if view == 'card' %}
             <span class="text-nowrap">
-                <i class="bi-calendar-event text-secondary pe-1"></i>{{ source.event_name }}
+                {% call components.icon_text('bi-calendar-event', icon_class='text-secondary') %}{{ source.event_name }}{% endcall %}
             </span>
         {% else %}
             <span class="text-truncate" title="{{ source.event_name }}">{{ source.event_name }}</span>
         {% endif %}
         {% if source.event_openable %}
-            <button
-                type="button"
-                class="btn btn-link btn-sm p-0 text-decoration-none flex-shrink-0 d-inline-flex align-items-center"
-                hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=source.event_uniq_id) }}"
-                hx-target="body"
-                hx-push-url="true"
-                hx-indicator="#please-wait"
-                aria-label="{{ _('Open the event') }}"
-                {{ macros.tooltip_attributes('info', _('Open the event.'), 'top') }}
-            ><i class="bi-box-arrow-up-right"></i></button>
+            {{ components.button(
+                _('Open the event'),
+                kind='link',
+                icon='external',
+                icon_only=true,
+                size='sm',
+                tooltip=_('Open the event.'),
+                class='p-0 text-decoration-none flex-shrink-0',
+                attrs={
+                    'hx-get': url_for('admin-event-tournaments-tab', event_uniq_id=source.event_uniq_id),
+                    'hx-target': 'body',
+                    'hx-push-url': 'true',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
         {% elif source.broken_reason == 'event_not_found' %}
             <span class="text-secondary flex-shrink-0 d-inline-flex align-items-center"
                 {{ macros.tooltip_attributes('warning', _('The event no longer exists, so it cannot be opened.'), 'top') }}>
@@ -48,7 +53,7 @@
 {% macro date(source, view, placement) %}
     {% if source.start_date %}
         <span class="text-nowrap">
-            <i class="bi-calendar3 text-secondary pe-1"></i>{{ format_date(source.start_date) }}
+            {% call components.icon_text('bi-calendar3', icon_class='text-secondary') %}{{ format_date(source.start_date) }}{% endcall %}
         </span>
     {% else %}
         <span class="text-secondary">—</span>
@@ -82,14 +87,13 @@
 {% macro issues(source, view, placement) %}
     {% if source.broken %}
         <span class="text-warning">
-            <i class="bi-exclamation-triangle-fill pe-1"></i>
-            {% if source.broken_reason == 'event_not_found' %}
+            {% call components.icon_text('bi-exclamation-triangle-fill') %}{% if source.broken_reason == 'event_not_found' %}
                 {{ _('Event not found') }}
             {% elif source.broken_reason == 'tournament_not_found' %}
                 {{ _('Tournament not found') }}
             {% else %}
                 {{ _('Competitor type mismatch') }}
-            {% endif %}
+            {% endif %}{% endcall %}
         </span>
     {% elif view == 'list' %}
         <span class="text-secondary">—</span>
@@ -99,34 +103,32 @@
 {% macro actions(source, view, placement) %}
     <div class="collection-actions d-flex justify-content-end gap-1">
         {% if view == 'card' %}
-            <button
-                class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for(
+            {{ components.modal_button(
+                url_for(
                     'admin-championship-source-coefficient-modal',
                     championship_uniq_id=championship.uniq_id,
                     source_id=source.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-                aria-label="{{ _('Set the coefficient') }}"
-                {{ macros.tooltip_attributes('info', _('Set the coefficient applied to this tournament’s scores.'), 'top') }}
-            ><i class="bi-pencil"></i></button>
+                ),
+                _('Set the coefficient'),
+                icon='edit',
+                icon_only=true,
+                size='sm',
+                tooltip=_('Set the coefficient applied to this tournament’s scores.'),
+            ) }}
         {% endif %}
-        <button
-            class="btn btn-sm btn-outline-danger"
-            hx-get="{{ url_for(
+        {{ components.modal_button(
+            url_for(
                 'admin-championship-source-delete-modal',
                 championship_uniq_id=championship.uniq_id,
                 source_id=source.id,
-            ) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            aria-label="{{ _('Remove') }}"
-            {{ macros.tooltip_attributes('warning', _('Remove this tournament.'), 'top') }}
-        ><i class="bi-trash"></i></button>
+            ),
+            _('Remove'),
+            kind='outline-danger',
+            icon='delete',
+            icon_only=true,
+            size='sm',
+            tooltip=_('Remove this tournament.'),
+            tooltip_type='warning',
+        ) }}
     </div>
 {% endmacro %}

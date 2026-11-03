@@ -289,33 +289,21 @@
 
 {% macro tie_break_configuration_button(tournament) %}
     {% set is_advancement = tournament.tie_break_config_purpose == 'ADVANCEMENT' %}
-    {% set configure_label = _('Configure the advancement tie-breaks of the tournament.')
-        if is_advancement else _('Configure the tie-breaks of the tournament.') %}
-    <span
-        class="flex-shrink-0"
-        {% if client.can_update_tournaments %}
-            {{ macros.tooltip_attributes('info', configure_label, 'top') }}
-        {% else %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for(
-                'admin-tie-breaks-modal',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=tournament.id,
-            ) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            aria-label="{{ configure_label }}"
-            {% if not client.can_update_tournaments %}disabled{% endif %}
-        >
-            <i class="bi-gear"></i>
-        </button>
-    </span>
+    {{ components.modal_button(
+        url_for(
+            'admin-tie-breaks-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=tournament.id,
+        ),
+        _('Configure the advancement tie-breaks of the tournament.')
+        if is_advancement else _('Configure the tie-breaks of the tournament.'),
+        icon='bi-gear',
+        icon_only=true,
+        size='sm',
+        allowed=client.can_update_tournaments,
+        reason=_('You are not allowed to update the tournament.'),
+        class='flex-shrink-0',
+    ) }}
 {% endmacro %}
 
 {% macro tie_break_values(item) %}
@@ -500,8 +488,7 @@
 
         <section class="collection-detail-section">
             <h6>{{ _('Schedule') }}</h6>
-            <div>
-                <i class="bi-calendar2-week pe-1"></i>
+            {% call components.icon_text('bi-calendar2-week', tag='div') %}
                 {{ tournament.date_range_str }}
                 {% if tournament.has_schedule %}
                     <i
@@ -509,7 +496,7 @@
                         {{ macros.tooltip_attributes('', tournament.round_schedule_tooltip_str, 'right') }}
                     ></i>
                 {% endif %}
-            </div>
+            {% endcall %}
         </section>
 
         <section class="collection-detail-section">
@@ -613,308 +600,204 @@
     {% set tournament = item %}
     <div class="collection-actions d-flex {% if view == 'list' %}flex-nowrap{% else %}flex-wrap{% endif %} align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-2">
-            <div class="{% if view == 'card' %}dropup{% else %}dropdown{% endif %}">
-                <button
-                    class="btn btn-sm btn-outline-primary dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    {{ _('Actions') }}
-                </button>
-                <ul class="dropdown-menu">
-                    {% if client.can_update_players %}
-                        <li class="dropdown-submenu">
-                            <span
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('Update the players\' information from an external data source.'),
-                                    'top',
-                                ) }}
-                            >
-                                <button class="dropdown-item d-flex justify-content-between">
-                                    <span><i class="bi-arrow-repeat pe-1"></i>{{ _('Update players') }}</span>
-                                    <i class="ps-3 bi-caret-right-fill"></i>
-                                </button>
-                            </span>
-                            <ul class="dropdown-menu">
-                                {% with from_modal=false, tab='tournaments' %}
-                                    {% include '/admin/players/players_diff.html' %}
-                                {% endwith %}
-                            </ul>
-                        </li>
-                    {% endif %}
-                    <li>
-                        <span
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('Generate documents (players, results, etc.).'),
-                                'top',
-                            ) }}
-                        >
-                            <button
-                                class="dropdown-item text-nowrap"
-                                hx-get="{{ url_for(
-                                    'documents-modal',
+            {% call components.menu_button(_('Actions'), size='sm', class='dropup' if view == 'card' else '') %}
+                {% if client.can_update_players %}
+                    {% call components.submenu(
+                        _('Update players'),
+                        icon='bi-arrow-repeat',
+                        tooltip=_('Update the players\' information from an external data source.'),
+                        tooltip_placement='top',
+                    ) %}
+                        {% with from_modal=false, tab='tournaments' %}
+                            {% include '/admin/players/players_diff.html' %}
+                        {% endwith %}
+                    {% endcall %}
+                {% endif %}
+                {{ components.menu_item(
+                    _('Documents'),
+                    icon='bi-file-earmark-text',
+                    url=url_for(
+                        'documents-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=tournament.id,
+                    ),
+                    modal=true,
+                    tooltip=_('Generate documents (players, results, etc.).'),
+                    tooltip_placement='top',
+                ) }}
+                {% if tournament.started %}
+                    {{ components.menu_item(
+                        _('Import'),
+                        icon='import',
+                        allowed=false,
+                        reason=_('Unavailable once the tournament has started.'),
+                    ) }}
+                {% else %}
+                    {% call components.submenu(_('Import'), icon='import') %}
+                        {% for importer in tournament_importers %}
+                            {{ components.menu_item(
+                                importer.name,
+                                url=url_for(
+                                    'admin-tournament-import-modal',
                                     event_uniq_id=admin_event.uniq_id,
                                     tournament_id=tournament.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                            >
-                                <i class="bi-file-earmark-text pe-1"></i>{{ _('Documents') }}
-                            </button>
-                        </span>
-                    </li>
-                    {% if tournament.started %}
-                        <li>
-                            <button
-                                class="dropdown-item text-start text-secondary"
-                                disabled
-                                {{ macros.tooltip_attributes(
-                                    'warning',
-                                    _('Unavailable once the tournament has started.'),
-                                    'right',
-                                ) }}
-                            >
-                                <i class="bi-box-arrow-in-right pe-1"></i>{{ _('Import') }}
-                            </button>
-                        </li>
-                    {% else %}
-                        <li class="dropdown-submenu">
-                            <button class="dropdown-item d-flex justify-content-between">
-                                <span><i class="bi-box-arrow-in-right pe-1"></i>{{ _('Import') }}</span>
-                                <i class="ps-3 bi-caret-right-fill"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                {% for importer in tournament_importers %}
-                                    <li
-                                        class="dropdown-item text-start cursor-pointer"
-                                        hx-get="{{ url_for(
-                                            'admin-tournament-import-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=tournament.id,
-                                            importer_id=importer.id,
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-wrapper"
-                                        {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
-                                    >
-                                        {{ importer.name }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endif %}
-                    <li class="dropdown-submenu">
-                        <button class="dropdown-item d-flex justify-content-between">
-                            <span><i class="bi-box-arrow-right pe-1"></i>{{ _('Export') }}</span>
-                            <i class="ps-3 bi-caret-right-fill"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            {% for exporter in tournament_exporters %}
-                                {% set unavailable = exporter.is_unavailable_message(tournament) %}
-                                {% if unavailable %}
-                                    <li {{ macros.tooltip_attributes('warning', unavailable, 'right') }}>
-                                        <button class="dropdown-item text-secondary" disabled>{{ exporter.label(tournament) }}</button>
-                                    </li>
-                                {% else %}
-                                    {% set warning_message = exporter.warning_message(tournament) %}
-                                    {% set tooltip = exporter.tooltip_for(tournament) %}
-                                    <li
-                                        class="dropdown-item text-start cursor-pointer"
-                                        {% if exporter.data_loss_modal_redirect %}
-                                            hx-get="{{ url_for(
-                                                'tournament-export-data-loss-modal',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=tournament.id,
-                                                exporter_id=exporter.id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                        {% else %}
-                                            data-export-url="{{ url_for(
+                                    importer_id=importer.id,
+                                ),
+                                modal=true,
+                                tooltip=importer.tooltip,
+                            ) }}
+                        {% endfor %}
+                    {% endcall %}
+                {% endif %}
+                {% call components.submenu(_('Export'), icon='bi-box-arrow-right') %}
+                    {% for exporter in tournament_exporters %}
+                        {% set unavailable = exporter.is_unavailable_message(tournament) %}
+                        {% if unavailable %}
+                            {{ components.menu_item(exporter.label(tournament), allowed=false, reason=unavailable) }}
+                        {% else %}
+                            {% set warning_message = exporter.warning_message(tournament) %}
+                            {% if exporter.data_loss_modal_redirect %}
+                                {% set export_attrs = {
+                                    'hx-get': url_for(
+                                        'tournament-export-data-loss-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                        exporter_id=exporter.id,
+                                    ),
+                                    'hx-target': 'body',
+                                    'hx-indicator': '#please-wait',
+                                } %}
+                            {% else %}
+                                {% set export_attrs = {
+                                    'data-export-url': url_for(
+                                        'admin-tournament-export',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                        exporter_id=exporter.id,
+                                    ),
+                                    'onclick': 'downloadFile(this)',
+                                } %}
+                            {% endif %}
+                            {{ components.menu_item(
+                                exporter.label(tournament),
+                                tooltip=warning_message or exporter.tooltip_for(tournament),
+                                tooltip_type='warning' if warning_message else 'info',
+                                attrs=export_attrs,
+                            ) }}
+                            {# A tournament reported in periods is submitted
+                               one period at a time, each its own file. #}
+                            {% if exporter.exports_periods and tournament.periods|length > 1 %}
+                                {% for period in tournament.periods %}
+                                    {% call components.menu_item(
+                                        _('Period %(index)d', index=loop.index),
+                                        icon='bi-arrow-return-right',
+                                        attrs={
+                                            'data-export-url': url_for(
                                                 'admin-tournament-export',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=tournament.id,
                                                 exporter_id=exporter.id,
-                                            ) }}"
-                                            onclick="downloadFile(this)"
-                                        {% endif %}
-                                        {% if warning_message %}
-                                            {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
-                                        {% elif tooltip %}
-                                            {{ macros.tooltip_attributes('info', tooltip, 'right') }}
-                                        {% endif %}
-                                    >
-                                        {{ exporter.label(tournament) }}
-                                    </li>
-                                    {# A tournament reported in periods is submitted
-                                       one period at a time, each its own file. #}
-                                    {% if exporter.exports_periods and tournament.periods|length > 1 %}
-                                        {% for period in tournament.periods %}
-                                            <li
-                                                class="dropdown-item text-start cursor-pointer small"
-                                                data-export-url="{{ url_for(
-                                                    'admin-tournament-export',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=tournament.id,
-                                                    exporter_id=exporter.id,
-                                                ) }}?period_id={{ period.id }}"
-                                                onclick="downloadFile(this)"
-                                            >
-                                                <i class="bi-arrow-return-right pe-1"></i>
-                                                {{ _('Period %(index)d', index=loop.index) }}
-                                                · {{ period.rounds_str }}
-                                            </li>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    <li>
-                        {% set delete_unpaired_disabled = (
-                            _('Unavailable before the tournament start.')
-                            if not tournament.started else
-                            _('All players are paired.')
-                            if not tournament.has_never_paired_players else ''
-                        ) %}
-                        <button
-                            class="dropdown-item text-nowrap {% if delete_unpaired_disabled %}text-secondary{% endif %}"
-                            {% if delete_unpaired_disabled %}
-                                disabled
-                                {{ macros.tooltip_attributes('warning', delete_unpaired_disabled, 'right') }}
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'delete-unpaired-players',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
+                                            ) ~ '?period_id=' ~ period.id,
+                                            'onclick': 'downloadFile(this)',
+                                        },
+                                    ) %}
+                                        <span class="small">{{ _('Period %(index)d', index=loop.index) }} · {{ period.rounds_str }}</span>
+                                    {% endcall %}
+                                {% endfor %}
                             {% endif %}
-                        >
-                            <i class="bi-trash pe-1"></i>{{ _('Delete unpaired players') }}
-                        </button>
-                    </li>
-                    <li>
-                        <span
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('May be used for per-round prize giveaways etc.'),
-                                'top',
-                            ) }}
-                        >
-                            <button
-                                class="dropdown-item text-nowrap"
-                                hx-get="{{ url_for(
-                                    'admin-random-player',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            >
-                                <i class="bi-dice-3 pe-1"></i>{{ _('Choose a random player') }}
-                            </button>
-                        </span>
-                    </li>
-                    {% for menu_items_template in plugin_card_action_menu_items_templates %}
-                        <li><hr class="dropdown-divider"></li>
-                        {% include menu_items_template %}
+                        {% endif %}
                     {% endfor %}
-                </ul>
-            </div>
-            <a
-                class="btn btn-sm btn-outline-primary {% if view == 'card' %}collection-card-main-action{% endif %}"
-                href="{{ url_for(
+                {% endcall %}
+                {% set delete_unpaired_disabled = (
+                    _('Unavailable before the tournament start.')
+                    if not tournament.started else
+                    _('All players are paired.')
+                    if not tournament.has_never_paired_players else ''
+                ) %}
+                {{ components.menu_item(
+                    _('Delete unpaired players'),
+                    icon='delete',
+                    url=url_for(
+                        'delete-unpaired-players',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=tournament.id,
+                    ),
+                    allowed=not delete_unpaired_disabled,
+                    reason=delete_unpaired_disabled,
+                ) }}
+                {{ components.menu_item(
+                    _('Choose a random player'),
+                    icon='bi-dice-3',
+                    url=url_for(
+                        'admin-random-player',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=tournament.id,
+                    ),
+                    tooltip=_('May be used for per-round prize giveaways etc.'),
+                    tooltip_placement='top',
+                ) }}
+                {% for menu_items_template in plugin_card_action_menu_items_templates %}
+                    {{ components.menu_divider() }}
+                    {% include menu_items_template %}
+                {% endfor %}
+            {% endcall %}
+            {{ components.button(
+                _('Pairings'),
+                icon='bi-arrow-left-right',
+                icon_only=view != 'card',
+                size='sm',
+                href=url_for(
                     'admin-event-pairings-tab',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=tournament.id,
-                ) }}"
-                {{ macros.tooltip_attributes('info', _('Go to the pairings.'), 'top') }}
-            >
-                <i class="bi-arrow-left-right"></i>
-                {% if view == 'card' %}<span class="ps-1">{{ _('Pairings') }}</span>{% endif %}
-            </a>
+                ),
+                tooltip=_('Go to the pairings.'),
+                class='collection-card-main-action' if view == 'card' else '',
+            ) }}
         </div>
         <div class="d-flex align-items-center gap-1">
-            {% call macros.action_tooltip(
-                'info' if client.can_update_tournaments else 'warning',
-                _('Edit the properties of the tournament.')
-                if client.can_update_tournaments
-                else _('You are not allowed to update the tournament.'),
-                'top',
-            ) %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-tournament-modal',
-                        action='update',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=tournament.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {% if not client.can_update_tournaments %}disabled{% endif %}
-                >
-                    <i class="bi-pencil"></i>
-                </button>
-            {% endcall %}
-            {% call macros.action_tooltip(
-                'info' if client.can_add_tournament else 'warning',
-                _('Duplicate the tournament.')
-                if client.can_add_tournament
-                else _('You are not allowed to create tournaments.'),
-                'top',
-            ) %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-tournament-modal',
-                        action='clone',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=tournament.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {% if not client.can_add_tournament %}disabled{% endif %}
-                >
-                    <i class="bi-copy"></i>
-                </button>
-            {% endcall %}
-            {% call macros.action_tooltip(
-                'info' if client.can_delete_tournaments else 'warning',
-                _('Delete the tournament.')
-                if client.can_delete_tournaments
-                else _('You are not allowed to delete the tournament.'),
-                'top',
-            ) %}
-                <button
-                    class="btn btn-sm {% if client.can_delete_tournaments %}btn-outline-danger{% else %}btn-outline-primary{% endif %}"
-                    hx-get="{{ url_for(
-                        'admin-tournament-delete-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=tournament.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {% if not client.can_delete_tournaments %}disabled{% endif %}
-                >
-                    <i class="bi-trash"></i>
-                </button>
-            {% endcall %}
+            {{ components.modal_button(
+                url_for(
+                    'admin-tournament-modal',
+                    action='update',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=tournament.id,
+                ),
+                _('Edit the properties of the tournament.'),
+                icon='edit',
+                icon_only=true,
+                size='sm',
+                allowed=client.can_update_tournaments,
+                reason=_('You are not allowed to update the tournament.'),
+            ) }}
+            {{ components.modal_button(
+                url_for(
+                    'admin-tournament-modal',
+                    action='clone',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=tournament.id,
+                ),
+                _('Duplicate the tournament.'),
+                icon='copy',
+                icon_only=true,
+                size='sm',
+                allowed=client.can_add_tournament,
+                reason=_('You are not allowed to create tournaments.'),
+            ) }}
+            {{ components.modal_button(
+                url_for(
+                    'admin-tournament-delete-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=tournament.id,
+                ),
+                _('Delete the tournament.'),
+                kind='outline-danger' if client.can_delete_tournaments else 'outline',
+                icon='delete',
+                icon_only=true,
+                size='sm',
+                allowed=client.can_delete_tournaments,
+                reason=_('You are not allowed to delete the tournament.'),
+            ) }}
         </div>
     </div>
 {% endmacro %}

@@ -2004,6 +2004,10 @@ body[data-sc-interface=admin] .htmx-indicator {
     font-weight: 600;
 }
 
+[data-sc-interface=admin] .admin-empty-state h5:last-child {
+    margin-bottom: 0 !important;
+}
+
 [data-sc-interface=admin] .admin-empty-state p:last-child {
     margin-bottom: 0;
     color: var(--bs-body-color);

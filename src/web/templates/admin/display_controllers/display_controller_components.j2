@@ -39,9 +39,9 @@
 
 {% macro visibility(item, view, placement) %}
     {% if item.public %}
-        <span class="text-visibility-public text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
+        <span class="text-visibility-public text-nowrap">{% call components.icon_text('bi-eye-fill') %}{{ _('Public') }}{% endcall %}</span>
     {% else %}
-        <span class="text-visibility-private text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+        <span class="text-visibility-private text-nowrap">{% call components.icon_text('bi-eye-slash-fill') %}{{ _('Private') }}{% endcall %}</span>
     {% endif %}
 {% endmacro %}
 
@@ -51,16 +51,18 @@
         <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-1">
                 {% if display_controller.assigned_object %}
-                    <a
-                        class="btn btn-sm btn-outline-primary"
-                        href="{{ url_for(
+                    {{ components.button(
+                        _('Go to the display controller.'),
+                        icon='bi-eye',
+                        icon_only=true,
+                        size='sm',
+                        href=url_for(
                             'user-display-controller',
                             event_uniq_id=admin_event.uniq_id,
                             display_controller_id=display_controller.id,
-                        ) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('info', _('Go to the display controller.'), 'top') }}
-                    ><i class="bi-eye"></i></a>
+                        ),
+                        attrs={'target': '_blank'},
+                    ) }}
                 {% endif %}
                 <div
                     class="dropdown d-inline"
@@ -72,91 +74,80 @@
                     <ul class="dropdown-menu">
                         {% for basic_screen in sorted_screens %}
                             {% if loop.changed(basic_screen.type) %}
-                                <li><h6 class="dropdown-header">{{ basic_screen.type_str }}</h6></li>
+                                {{ components.menu_header(basic_screen.type_str) }}
                             {% endif %}
-                            <li>
-                                <button
-                                    class="dropdown-item text-start"
-                                    hx-patch="{{ url_for(
+                            {% call components.menu_item(
+                                basic_screen.name,
+                                attrs={
+                                    'hx-patch': url_for(
                                         'admin-display-controller-assign',
                                         event_uniq_id=admin_event.uniq_id,
                                         display_controller_id=display_controller.id,
                                         type='screen',
                                         object_uniq_id=basic_screen.uniq_id,
-                                    ) }}"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ macros.screen_type_icon(basic_screen.screen_type) }} <b>{{ basic_screen.name }}</b>
-                                </button>
-                            </li>
+                                    ),
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) %}
+                                {{ macros.screen_type_icon(basic_screen.screen_type) }} <b>{{ basic_screen.name }}</b>
+                            {% endcall %}
                         {% endfor %}
                         {% if admin_event.sorted_rotators and sorted_screens %}
-                            <li><hr class="dropdown-divider"></li>
+                            {{ components.menu_divider() }}
                         {% endif %}
                         {% for rotator in admin_event.sorted_rotators %}
-                            <li>
-                                <button
-                                    class="dropdown-item text-start"
-                                    hx-patch="{{ url_for(
+                            {% call components.menu_item(
+                                rotator.name,
+                                attrs={
+                                    'hx-patch': url_for(
                                         'admin-display-controller-assign',
                                         event_uniq_id=admin_event.uniq_id,
                                         display_controller_id=display_controller.id,
                                         type='rotator',
                                         object_uniq_id=rotator.name,
-                                    ) }}"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ macros.rotator_icon() }} <b>{{ rotator.name }}</b>
-                                </button>
-                            </li>
+                                    ),
+                                    'hx-indicator': '#please-wait',
+                                },
+                            ) %}
+                                {{ macros.rotator_icon() }} <b>{{ rotator.name }}</b>
+                            {% endcall %}
                         {% endfor %}
                     </ul>
                 </div>
                 {% if display_controller.assigned_object %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-patch="{{ url_for(
-                            'admin-display-controller-clear',
-                            event_uniq_id=admin_event.uniq_id,
-                            display_controller_id=display_controller.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {{ macros.tooltip_attributes('info', _('Remove the screen from the display controller.'), 'top') }}
-                    ><i class="bi-x-lg"></i></button>
+                    {{ components.button(
+                        _('Remove the screen from the display controller.'),
+                        icon='close',
+                        icon_only=true,
+                        size='sm',
+                        attrs={
+                            'hx-patch': url_for(
+                                'admin-display-controller-clear',
+                                event_uniq_id=admin_event.uniq_id,
+                                display_controller_id=display_controller.id,
+                            ),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                        },
+                    ) }}
                 {% endif %}
             </div>
             <div class="d-flex align-items-center gap-1">
-                {% call macros.action_tooltip('info', _('Edit the properties of the display controller.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for(
-                            'admin-display-controller-modal',
-                            action='update',
-                            event_uniq_id=admin_event.uniq_id,
-                            display_controller_id=display_controller.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-pencil"></i></button>
-                {% endcall %}
-                {% call macros.action_tooltip('info', _('Delete the display controller.'), 'top') %}
-                    <button
-                        class="btn btn-sm btn-outline-danger"
-                        hx-get="{{ url_for(
-                            'admin-display-controller-modal',
-                            action='delete',
-                            event_uniq_id=admin_event.uniq_id,
-                            display_controller_id=display_controller.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
-                    ><i class="bi-trash"></i></button>
-                {% endcall %}
+                {{ components.modal_button(
+                    url_for('admin-display-controller-modal', action='update', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
+                    _('Edit the properties of the display controller.'),
+                    icon='edit',
+                    icon_only=true,
+                    size='sm',
+                ) }}
+                {{ components.modal_button(
+                    url_for('admin-display-controller-modal', action='delete', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
+                    _('Delete the display controller.'),
+                    kind='outline-danger',
+                    icon='delete',
+                    icon_only=true,
+                    size='sm',
+                ) }}
             </div>
         </div>
     {% endif %}

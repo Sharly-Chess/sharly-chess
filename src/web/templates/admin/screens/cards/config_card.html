@@ -10,21 +10,18 @@
     </div>
 {% endif %}
 <div>
-    <i class="bi-hand-index pe-1"></i>
-    {{ _('Menu label: %(menu_label)s', menu_label=screen.menu_entry_label) }}
+    {% call components.icon_text('bi-hand-index') %}{{ _('Menu label: %(menu_label)s', menu_label=screen.menu_entry_label) }}{% endcall %}
 </div>
 <div class="{% if not screen.timer %}text-secondary{% endif %}">
-    <i class="bi-clock-fill pe-1"></i>
-    {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+    {% call components.icon_text('bi-clock-fill') %}{% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}{% endcall %}
 </div>
 {% if show_details and client.can_manage_screens and screen.screen_type.has_exit_button %}
     <div>
-        <i class="bi-x-circle pe-1"></i>
-        {{ _('Exit button:') }}
+        {% call components.icon_text('bi-x-circle') %}{{ _('Exit button:') }}
         {% if screen.input_exit_button %}
             {{ _('yes') }}
         {% else %}
             {{ _('no') }}
-        {% endif %}
+        {% endif %}{% endcall %}
     </div>
 {% endif %}

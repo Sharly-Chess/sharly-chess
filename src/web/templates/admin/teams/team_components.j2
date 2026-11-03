@@ -84,9 +84,7 @@
 
 {% macro players_count(team, view, placement) %}
     {% set count %}
-        <span class="text-nowrap">
-            <i class="bi-people pe-1"></i>{{ team.players|length }}
-        </span>
+        {% call components.icon_text('bi-people', class='text-nowrap') %}{{ team.players|length }}{% endcall %}
     {% endset %}
     {% if view == 'list' %}
         {% call collection_macros.column_edit_button(
@@ -124,13 +122,13 @@
                 'top'
             ) }}
         >
-            <i class="bi-star-fill pe-1"></i>{{ team.average_rating }}
+            {% call components.icon_text('bi-star-fill') %}{{ team.average_rating }}
             {%- if explanation %}<i class="bi-info-circle ps-1"></i>{% endif %}
             {%- if view == 'card' and not team.tournament %}
                 <span class="text-muted small">
                     ({{ admin_event.default_cadence.acronym }})
                 </span>
-            {% endif %}
+            {% endif %}{% endcall %}
         </span>
     {% else %}
         <span class="text-muted">—</span>
@@ -162,56 +160,38 @@
 {% endmacro %}
 
 {% macro roster_button(team, css_class='') %}
-    <span
-        class="{{ css_class }}"
-        {% if client.can_update_tournaments %}
-            {{ macros.tooltip_attributes('info', _('Manage the team roster.'), 'top') }}
-        {% else %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the team.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for(
+    <span class="{{ css_class }}">
+        {{ components.modal_button(
+            url_for(
                 'admin-team-roster-modal',
                 event_uniq_id=admin_event.uniq_id,
                 team_id=team.id,
-            ) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            {% if not client.can_update_tournaments %}disabled{% endif %}
-        >
-            <i class="bi-people"></i>
-        </button>
+            ),
+            _('Manage the team roster.'),
+            icon='bi-people',
+            icon_only=true,
+            size='sm',
+            allowed=client.can_update_tournaments,
+            reason=_('You are not allowed to update the team.'),
+        ) }}
     </span>
 {% endmacro %}
 
 {% macro lineup_button(team, css_class='') %}
-    <span
-        class="{{ css_class }}"
-        {% if client.can_update_tournaments %}
-            {{ macros.tooltip_attributes('info', _('Manage per-round lineups.'), 'top') }}
-        {% else %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the team.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for(
+    <span class="{{ css_class }}">
+        {{ components.modal_button(
+            url_for(
                 'admin-team-lineups-modal',
                 event_uniq_id=admin_event.uniq_id,
                 team_id=team.id,
-            ) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            {% if not client.can_update_tournaments %}disabled{% endif %}
-        >
-            <i class="bi-list-ol"></i>
-        </button>
+            ),
+            _('Manage per-round lineups.'),
+            icon='bi-list-ol',
+            icon_only=true,
+            size='sm',
+            allowed=client.can_update_tournaments,
+            reason=_('You are not allowed to update the team.'),
+        ) }}
     </span>
 {% endmacro %}
 
@@ -372,8 +352,7 @@
             {% endif %}
             {% if not team.captain and team.stored_team.captain_name %}
                 <div class="text-muted small mt-1">
-                    <i class="bi-star-fill text-warning pe-1"></i>
-                    {{ _('Captain') }}: {{ team.stored_team.captain_name }}
+                    {% call components.icon_text('bi-star-fill', icon_class='text-warning') %}{{ _('Captain') }}: {{ team.stored_team.captain_name }}{% endcall %}
                 </div>
             {% endif %}
         </section>
@@ -444,38 +423,29 @@
             </div>
             {% if client.can_update_tournaments %}
                 <div class="d-flex align-items-center gap-1 ms-auto">
-                    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the team.'), 'top') }}>
-                        <button
-                            class="btn btn-sm btn-outline-primary"
-                            hx-get="{{ url_for(
-                                'admin-team-update-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                team_id=team.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-pencil"></i>
-                        </button>
-                    </span>
-                    <span {{ macros.tooltip_attributes('info', _('Delete the team.'), 'top') }}>
-                        <button
-                            class="btn btn-sm btn-outline-danger"
-                            hx-get="{{ url_for(
-                                'admin-team-delete-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                team_id=team.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-trash"></i>
-                        </button>
-                    </span>
+                    {{ components.modal_button(
+                        url_for(
+                            'admin-team-update-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team.id,
+                        ),
+                        _('Edit the properties of the team.'),
+                        icon='edit',
+                        icon_only=true,
+                        size='sm',
+                    ) }}
+                    {{ components.modal_button(
+                        url_for(
+                            'admin-team-delete-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team.id,
+                        ),
+                        _('Delete the team.'),
+                        kind='outline-danger',
+                        icon='delete',
+                        icon_only=true,
+                        size='sm',
+                    ) }}
                 </div>
             {% endif %}
         </div>
