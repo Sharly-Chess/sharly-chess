@@ -18,19 +18,18 @@
         {% for field, label in diff_fields.items() %}
             {% include '/sce_conflict_diff_field.html' %}
         {% endfor %}
-        <button
-            class="btn btn-outline-primary mt-2 mb-1"
-            hx-post="{{ url_for(
-                'sce-resolve-player-conflict',
-                event_uniq_id=admin_event.uniq_id,
-                player_id=conflict_player.id,
-                choice=metadata.choice,
-            ) }}"
-            {% if sce_event_status.actions_disabled %}
-                disabled
-            {% endif %}
-        >
-            {{ _('Choose') }}
-        </button>
+        {{ components.button(
+            _('Choose'),
+            allowed=not sce_event_status.actions_disabled,
+            class='mt-2 mb-1',
+            attrs={
+                'hx-post': url_for(
+                    'sce-resolve-player-conflict',
+                    event_uniq_id=admin_event.uniq_id,
+                    player_id=conflict_player.id,
+                    choice=metadata.choice,
+                ),
+            },
+        ) }}
     </div>
 </div>

@@ -175,8 +175,9 @@
                     <tr class="small">
                         <td></td>
                         <td class="text-nowrap ps-4">
-                            <i class="bi-arrow-return-right pe-1"></i>
-                            {{ _('Period %(index)d', index=loop.index) }} · {{ period.rounds_str }}
+                            {% call components.icon_text('bi-arrow-return-right') %}
+                                {{ _('Period %(index)d', index=loop.index) }} · {{ period.rounds_str }}
+                            {% endcall %}
                         </td>
                         <td class="text-center">
                             {% for period_status in ffe_utils.resolve_period_upload_statuses(period) %}

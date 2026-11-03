@@ -1,16 +1,9 @@
 {
-  "src/plugins/chess960/templates/chess960_screen_form.html": {
-    "button": 2
-  },
   "src/plugins/chess_results/templates/chess_results_upload_results.html": {
     "fixed-colour": 1
   },
   "src/plugins/chessevent/templates/chessevent_sync_modal.html": {
     "fixed-colour": 1
-  },
-  "src/plugins/custom_upload/templates/custom_upload_auth_fields.html": {
-    "button": 1,
-    "icon-spacing": 1
   },
   "src/plugins/custom_upload/templates/custom_upload_results.html": {
     "fixed-colour": 1
@@ -19,12 +12,7 @@
     "fixed-colour": 1
   },
   "src/plugins/ffe/templates/ffe_upload_results.html": {
-    "fixed-colour": 1,
-    "icon-spacing": 1
-  },
-  "src/plugins/fra_schools/templates/fra_schools_player_form_fields.html": {
-    "button": 5,
-    "icon-spacing": 5
+    "fixed-colour": 1
   },
   "src/plugins/fra_schools/templates/fra_schools_search_result.html": {
     "button": 1,
@@ -32,16 +20,6 @@
   },
   "src/plugins/fra_schools/templates/fra_schools_search_results.html": {
     "menu-item": 2
-  },
-  "src/plugins/sce/templates/sce_event_status_alert.html": {
-    "button": 1,
-    "icon-spacing": 2
-  },
-  "src/plugins/sce/templates/sce_player_conflict_diff.html": {
-    "button": 1
-  },
-  "src/plugins/sce/templates/sce_tournament_conflict_diff.html": {
-    "button": 1
   },
   "src/plugins/sce/templates/sce_upload_table.html": {
     "fixed-colour": 1

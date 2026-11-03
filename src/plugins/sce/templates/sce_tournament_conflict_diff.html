@@ -26,19 +26,18 @@
             {% endfor %}
         {% endif %}
         <div class="flex-grow-1"></div>
-        <button
-            class="btn btn-outline-primary mt-2 mb-1"
-            hx-post="{{ url_for(
-                'sce-resolve-tournament-conflict',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=conflict_tournament.id,
-                choice=metadata.choice,
-            ) }}"
-            {% if sce_event_status.actions_disabled %}
-                disabled
-            {% endif %}
-        >
-            {{ _('Choose') }}
-        </button>
+        {{ components.button(
+            _('Choose'),
+            allowed=not sce_event_status.actions_disabled,
+            class='mt-2 mb-1',
+            attrs={
+                'hx-post': url_for(
+                    'sce-resolve-tournament-conflict',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=conflict_tournament.id,
+                    choice=metadata.choice,
+                ),
+            },
+        ) }}
     </div>
 </div>

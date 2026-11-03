@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 <div id="fra-schools-container" class="mt-2 gx-3">
     <div class="d-flex gap-2 gy-2 gx-3">
@@ -16,63 +17,49 @@
                 data=data, errors=errors
             ) }}
         </div>
-        <div {{ macros.tooltip_attributes(
-            'info', _('Edit the selected French school.')
-        ) }}>
-            <button
-                id="fra-school-edit-button"
-                type="button"
-                class="fra-school-button btn btn-outline-primary text-nowrap"
-                hx-get="{{ url_for('fra-schools-update-school-form', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals="js:{fra_school_id: $('#fra-school-id').val()}"
-                {% if show_fra_school_form %}
-                    disabled
-                {% endif %}
-            >
-                <i class="bi-pencil-fill"></i>
-            </button>
-        </div>
+        {# The script below enables and disables the buttons, so they keep
+           their requests whatever their state on load. #}
+        {{ components.button(
+            _('Edit the selected French school.'),
+            icon='bi-pencil-fill',
+            icon_only=true,
+            class='fra-school-button',
+            attrs={
+                'id': 'fra-school-edit-button',
+                'hx-get': url_for('fra-schools-update-school-form', event_uniq_id=admin_event.uniq_id),
+                'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
+                'disabled': show_fra_school_form,
+            },
+        ) }}
 
-        <div
-            {% if fra_schools_database.exists() %}
-                {% set age_in_months = fra_schools_database.age_in_months %}
-                {% if age_in_months > 1 %}
-                    {{ macros.tooltip_attributes(
-                        'warning', _(
-                            'The database [%(database)s] was last updated over %(age)d months ago. '
-                            'It is preferable to update it before proceeding (Menu > Data sources).',
-                            database=fra_schools_database.name,
-                            age=age_in_months,
-                        ), 'top'
-                    ) }}
-                {% else %}
-                    {{ macros.tooltip_attributes(
-                        'info', _('Add a school to the options.'), 'top'
-                    ) }}
-                {% endif %}
-            {% else %}
-                {{ macros.tooltip_attributes(
-                    'warning', _(
-                        'The database [%(database)s] is not installed (to install it: Menu > Data sources).',
-                        database=fra_schools_database.name,
-                    ), 'top'
-                ) }}
-            {% endif %}
-        >
-            <button
-                id="fra-school-add-button"
-                type="button"
-                class="fra-school-button btn btn-outline-primary text-nowrap"
-                hx-get="{{ url_for('fra-schools-add-school-form', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals="js:{fra_school_id: $('#fra-school-id').val()}"
-                {% if not fra_schools_database.exists() or show_fra_school_form %}
-                    disabled
-                {% endif %}
-            >
-                <i class="bi-plus-circle pe-1"></i>
-                {{ _('Add') }}
-            </button>
-        </div>
+        {% if not fra_schools_database.exists() %}
+            {% set add_tooltip_type, add_tooltip = 'warning', _(
+                'The database [%(database)s] is not installed (to install it: Menu > Data sources).',
+                database=fra_schools_database.name,
+            ) %}
+        {% elif fra_schools_database.age_in_months > 1 %}
+            {% set add_tooltip_type, add_tooltip = 'warning', _(
+                'The database [%(database)s] was last updated over %(age)d months ago. '
+                'It is preferable to update it before proceeding (Menu > Data sources).',
+                database=fra_schools_database.name,
+                age=fra_schools_database.age_in_months,
+            ) %}
+        {% else %}
+            {% set add_tooltip_type, add_tooltip = 'info', _('Add a school to the options.') %}
+        {% endif %}
+        {{ components.button(
+            _('Add'),
+            icon='bi-plus-circle',
+            tooltip=add_tooltip,
+            tooltip_type=add_tooltip_type,
+            class='fra-school-button',
+            attrs={
+                'id': 'fra-school-add-button',
+                'hx-get': url_for('fra-schools-add-school-form', event_uniq_id=admin_event.uniq_id),
+                'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
+                'disabled': not fra_schools_database.exists() or show_fra_school_form,
+            },
+        ) }}
     </div>
 
     {% if show_fra_school_form %}
@@ -171,42 +158,35 @@
                 </div>
                 <div class="d-flex gap-2 mt-4">
                     {% if show_fra_school_delete_button %}
-                        <button
-                            type="button"
-                            class="btn btn-outline-danger btn-sm text-nowrap"
-                            hx-delete="{{ url_for(
-                                'fra-schools-delete-school',
-                                event_uniq_id=admin_event.uniq_id,
-                                fra_school_id=fra_school.id,
-                            ) }}"
-                        >
-                            <i class="bi-trash-fill pe-1"></i>
-                            {{ _('Delete') }}
-                        </button>
+                        {{ components.button(
+                            _('Delete'),
+                            kind='outline-danger',
+                            icon='bi-trash-fill',
+                            size='sm',
+                            attrs={
+                                'hx-delete': url_for(
+                                    'fra-schools-delete-school',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    fra_school_id=fra_school.id,
+                                ),
+                            },
+                        ) }}
                     {% endif %}
                     <div class="flex-grow-1"></div>
-                    <button
-                        id="fra-school-cancel-button"
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm text-nowrap"
-                    >
-                        <i class="bi-x-circle pe-1"></i>
-                        {{ _('Cancel') }}
-                    </button>
-                    <button
-                        id="fra-school-submit-button"
-                        type="submit"
-                        form="fra-schools-form"
-                        class="btn btn-outline-primary btn-sm text-nowrap"
-                    >
-                        {% if fra_schools_action == 'create' %}
-                            <i class="bi-plus-circle pe-1"></i>
-                            {{ _('Add') }}
-                        {% else %}
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {{ _('Save') }}
-                        {% endif %}
-                    </button>
+                    {{ components.button(
+                        _('Cancel'),
+                        kind='outline-secondary',
+                        icon='bi-x-circle',
+                        size='sm',
+                        attrs={'id': 'fra-school-cancel-button'},
+                    ) }}
+                    {{ components.button(
+                        _('Add') if fra_schools_action == 'create' else _('Save'),
+                        icon='bi-plus-circle' if fra_schools_action == 'create' else 'save',
+                        size='sm',
+                        type='submit',
+                        attrs={'id': 'fra-school-submit-button', 'form': 'fra-schools-form'},
+                    ) }}
                 </div>
             </form>
         </div>
