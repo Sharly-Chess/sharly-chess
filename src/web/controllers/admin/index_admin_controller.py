@@ -1043,6 +1043,7 @@ class IndexAdminController(BaseAdminController):
 
             if not (clone_pairings and clone_players):
                 database.delete_all_stored_pairings()
+                database.delete_all_round_prohibited_pairing_snapshots()
                 for tournament in event.tournaments:
                     database.set_tournament_pairing_settings(tournament.id, {})
                     database.set_tournament_published_round(tournament.id, 0)

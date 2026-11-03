@@ -2655,6 +2655,9 @@ class EventDatabase(MigrationDatabase):
     def delete_all_prohibited_pairing_groups(self) -> None:
         self.execute('DELETE FROM `prohibited_pairing_group`')
 
+    def delete_all_round_prohibited_pairing_snapshots(self) -> None:
+        self.execute('DELETE FROM `prohibited_pairing_group` WHERE `round` IS NOT NULL')
+
     # ---------------------------------------------------------------------------------
     # StoredFamily
     # ---------------------------------------------------------------------------------
