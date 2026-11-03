@@ -1386,6 +1386,10 @@ body[data-sc-interface=admin] .htmx-indicator {
     --bs-btn-color: var(--bs-secondary-color);
 }
 
+[data-sc-interface=admin] .text-bg-primary {
+    color: var(--pw-contrast-text) !important;
+}
+
 .collection-fact .badge.text-bg-secondary {
     background-color: var(--pw-surface-raised-bg, var(--bs-secondary-bg)) !important;
     color: var(--bs-body-color) !important;
@@ -3205,9 +3209,12 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     border: 1px solid color-mix(in srgb, var(--message-color) 60%, transparent);
     border-radius: var(--bs-border-radius-lg);
     background-color: color-mix(in srgb, var(--message-color) 12%, var(--pw-surface-bg));
-    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, 0.6);
     color: var(--bs-emphasis-color);
     font-weight: 500;
+}
+
+[data-sc-interface=admin] .toast-stack .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) {
+    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, 0.6);
 }
 
 [data-sc-interface=admin] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error)::before {
@@ -3257,7 +3264,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 }
 
 [data-sc-interface=admin] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
+    filter: var(--pw-btn-close-filter);
     opacity: .6;
 }
 

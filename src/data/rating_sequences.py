@@ -158,7 +158,7 @@ def list_html(
     """A list as a badge followed by the ratings read from it."""
     return Markup('{list} {ratings}').format(
         list=Markup('<span class="badge {classes}">{name}</span>').format(
-            classes='bg-primary text-dark'
+            classes='text-bg-primary'
             if family == RatingListFamily.FIDE
             else 'text-bg-secondary',
             name=_('FIDE')
