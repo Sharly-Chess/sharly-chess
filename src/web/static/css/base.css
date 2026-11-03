@@ -1998,7 +1998,7 @@ body[data-sc-interface=admin] .htmx-indicator {
 }
 
 [data-sc-interface=admin] .admin-empty-state h5 {
-    margin: 0 0 .85rem !important;
+    margin: 0 0 1.25rem !important;
     color: var(--bs-emphasis-color);
     font-size: 1.15rem;
     font-weight: 600;
@@ -3314,6 +3314,11 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     display: flex;
     align-items: center;
     gap: .5rem;
+}
+
+[data-sc-interface=admin] .sc-submenu-caret {
+    margin-left: auto;
+    padding-left: 1rem;
 }
 
 [data-sc-interface=admin] .sc-modal {

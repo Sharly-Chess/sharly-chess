@@ -167,6 +167,17 @@ class TestButton:
         assert 'Not yours.' in wrapper['data-bs-title']
         assert 'Deletes.' not in wrapper['data-bs-title']
 
+    def test_plain_kind_and_link(self) -> None:
+        root = _render(
+            "{{ components.button('Own style', kind='plain', class='status-action') }}"
+            "{{ components.button('Donate', href='/donate', attrs={'target': '_blank'}) }}"
+        )
+        assert root.only('button').classes == ['btn', 'sc-btn', 'status-action']
+        link = root.only('a')
+        assert link['href'] == '/donate'
+        assert link['target'] == '_blank'
+        assert 'btn-outline-primary' in link.classes
+
     def test_call_replaces_the_label(self) -> None:
         root = _render(
             "{% call components.button('Rich') %}<b>Rich</b> text{% endcall %}"
@@ -260,6 +271,30 @@ class TestMenu:
         )
         assert not root.find_all(cls='btn-group')
         assert root.only('button').text() == 'Create'
+
+    def test_icon_only_split_button(self) -> None:
+        root = _render(
+            "{% call components.split_button('Duplicate', icon='copy', icon_only=true) %}"
+            "{{ components.menu_item('Copy to…') }}{% endcall %}"
+        )
+        main = root.only('div', 'sc-split-button').find_all('button')[0]
+        assert main['aria-label'] == 'Duplicate'
+        assert main.text() == ''
+        assert 'Duplicate' in root.only('span', 'sc-tooltip-wrapper')['data-bs-title']
+
+    def test_submenu(self) -> None:
+        root = _render(
+            "{% call components.submenu('Export', icon='bi-box-arrow-right',"
+            " tooltip='Download.') %}"
+            "{{ components.menu_item('CSV', tooltip='Loses data.', tooltip_type='warning') }}"
+            '{% endcall %}'
+        )
+        submenu = root.only('li', 'dropdown-submenu')
+        assert submenu.only(cls='sc-submenu-toggle').text() == 'Export'
+        item_wrapper = submenu.only('ul', 'dropdown-menu').only(
+            'span', 'sc-tooltip-wrapper'
+        )
+        assert 'sharly-chess-tooltip-warning' in item_wrapper['data-bs-custom-class']
 
     def test_not_allowed_menu_has_no_items(self) -> None:
         root = _render(

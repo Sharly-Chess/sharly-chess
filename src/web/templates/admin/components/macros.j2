@@ -41,6 +41,7 @@
     'danger': 'btn-danger',
     'outline-danger': 'btn-outline-danger',
     'link': 'btn-link',
+    'plain': '',
 } %}
 
 {% set _note_levels = ['info', 'warning', 'danger', 'secondary'] %}
@@ -95,7 +96,10 @@
     A button.
 
     kind: primary (the main action), secondary (Cancel and the like), outline
-        (toolbar actions), outline-secondary, danger, outline-danger, link.
+        (toolbar actions), outline-secondary, danger, outline-danger, link, or
+        plain (no colour of its own, for a button styled by its own class).
+    href: makes it a link that looks like a button (a page to open rather
+        than an action).
     icon: a name of the icon list above (save, cancel, delete...) or a
         Bootstrap Icons class.
     icon_only: shows the icon alone; the label is then its accessible name and,
@@ -118,21 +122,37 @@
     tooltip=none,
     tooltip_type='info',
     tooltip_placement='top',
+    href=none,
     class='',
     attrs={}
 ) -%}
     {%- set content = caller() if caller is defined else (none if icon_only else label) -%}
+    {%- set classes = 'btn' ~ (' ' ~ _button_classes[kind] if _button_classes[kind] else '') ~ ' sc-btn'
+        ~ (' btn-sm' if size == 'sm' else '') ~ (' sc-btn-icon-only' if icon_only else '')
+        ~ (' ' ~ class if class else '') -%}
     {%- set markup -%}
-        <button
-            type="{{ type }}"
-            class="btn {{ _button_classes[kind] }} sc-btn{% if size == 'sm' %} btn-sm{% endif %}{% if icon_only %} sc-btn-icon-only{% endif %}{% if class %} {{ class }}{% endif %}"
-            {%- if icon_only %} aria-label="{{ label }}"{% endif %}
-            {%- if not allowed %} disabled{% endif %}
-            {{- _attributes(attrs, allowed) }}
-        >
-            {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
-            {%- if content %}{{ content }}{% endif -%}
-        </button>
+        {%- if href and allowed -%}
+            <a
+                href="{{ href }}"
+                class="{{ classes }}"
+                {%- if icon_only %} aria-label="{{ label }}"{% endif %}
+                {{- _attributes(attrs) }}
+            >
+                {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+                {%- if content %}{{ content }}{% endif -%}
+            </a>
+        {%- else -%}
+            <button
+                type="{{ type }}"
+                class="{{ classes }}"
+                {%- if icon_only %} aria-label="{{ label }}"{% endif %}
+                {%- if not allowed %} disabled{% endif %}
+                {{- _attributes(attrs, allowed) }}
+            >
+                {%- if icon %}{{ _icon_tag(icon) }}{% endif -%}
+                {%- if content %}{{ content }}{% endif -%}
+            </button>
+        {%- endif -%}
     {%- endset -%}
     {{- _with_tooltip(markup, allowed, reason, tooltip or (label if icon_only else none), tooltip_placement, tooltip_type) -}}
 {%- endmacro %}
@@ -161,6 +181,7 @@
     allowed=true,
     reason=none,
     tooltip=none,
+    tooltip_type='info',
     tooltip_placement='top',
     from_modal=false,
     class='',
@@ -177,7 +198,7 @@
     {%- do merged.update(attrs) -%}
     {{- button(
         label, kind=kind, icon=icon, size=size, icon_only=icon_only,
-        allowed=allowed, reason=reason, tooltip=tooltip,
+        allowed=allowed, reason=reason, tooltip=tooltip, tooltip_type=tooltip_type,
         tooltip_placement=tooltip_placement, class=class, attrs=merged,
     ) -}}
 {%- endmacro %}
@@ -236,6 +257,7 @@
     icon=none,
     size=none,
     type='button',
+    icon_only=false,
     allowed=true,
     reason=none,
     tooltip=none,
@@ -245,10 +267,13 @@
     menu_class=''
 ) -%}
     {%- set items = caller() -%}
+    {%- set tooltip = tooltip or (label if icon_only else none) -%}
+    {%- set main_attrs = {'aria-label': label} if icon_only else {} -%}
+    {%- do main_attrs.update(attrs) -%}
     {%- set markup -%}
         {%- if items | trim -%}
             <div class="btn-group sc-split-button{% if class %} {{ class }}{% endif %}">
-                {{ button(label, kind=kind, icon=icon, size=size, type=type, allowed=allowed, attrs=attrs) }}
+                {% call button(label, kind=kind, icon=icon, size=size, type=type, allowed=allowed, attrs=main_attrs) %}{% if not icon_only %}{{ label }}{% endif %}{% endcall %}
                 {%- if allowed %}
                     <button
                         type="button"
@@ -262,7 +287,7 @@
                 {%- endif %}
             </div>
         {%- else -%}
-            {{ button(label, kind=kind, icon=icon, size=size, type=type, allowed=allowed, class=class, attrs=attrs) }}
+            {% call button(label, kind=kind, icon=icon, size=size, type=type, allowed=allowed, class=class, attrs=main_attrs) %}{% if not icon_only %}{{ label }}{% endif %}{% endcall %}
         {%- endif -%}
     {%- endset -%}
     {{- _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement) -}}
@@ -285,6 +310,7 @@
     allowed=true,
     reason=none,
     tooltip=none,
+    tooltip_type='info',
     tooltip_placement='right',
     attrs={}
 ) -%}
@@ -314,7 +340,25 @@
             {%- if content %}{{ content }}{% else %}<span>{{ label }}</span>{% endif -%}
         </button>
     {%- endset -%}
-    <li>{{ _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement) }}</li>
+    <li>{{ _with_tooltip(markup, allowed, reason, tooltip, tooltip_placement, tooltip_type) }}</li>
+{%- endmacro %}
+
+{# An item of a menu opening a menu of its own, whose `menu_item`s are given in
+   a `{% call %}`; `leading` is markup set before the label in place of an
+   icon (a logo). #}
+{% macro submenu(label, icon=none, leading=none, tooltip=none, tooltip_placement='left') -%}
+    {%- set items = caller() -%}
+    {%- set toggle -%}
+        <button type="button" class="dropdown-item sc-menu-item sc-submenu-toggle">
+            {%- if leading %}{{ leading }}{% elif icon %}{{ _icon_tag(icon) }}{% endif -%}
+            <span>{{ label }}</span>
+            {{- _icon_tag('bi-caret-right-fill', 'sc-submenu-caret') -}}
+        </button>
+    {%- endset -%}
+    <li class="dropdown-submenu">
+        {{- _with_tooltip(toggle, true, none, tooltip, tooltip_placement) -}}
+        <ul class="dropdown-menu">{{ items }}</ul>
+    </li>
 {%- endmacro %}
 
 {% macro menu_header(text) -%}
