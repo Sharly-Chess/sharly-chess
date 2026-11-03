@@ -29,7 +29,7 @@
                             ) %}
                             {{ macros.tooltip_attributes('', (
                                 '<div class="fw-bold">' ~ (_('Present') if status_present else _('Absent')) ~ '</div>'
-                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                                '<div class="sc-detail">' ~ click_detail ~ '</div>'
                             ), 'right') }}
                             hx-patch="{{ url_for(
                                 'records-check-in-team',
@@ -55,7 +55,7 @@
             {{ components.section_heading(_('Tournament record')) }}
             <table
                 id="team-record-table"
-                class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
+                class="table prominent table-striped table-sm w-100 mx-auto justify-content-center mt-2"
             >
                 <thead>
                     <tr>

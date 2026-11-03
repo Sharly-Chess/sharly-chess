@@ -9,7 +9,7 @@
 {% if unpaired_players or _holes %}
     <table
         id="{{ table_id }}"
-        class="table prominent table-striped table-sm w-100 bg-light {% if unsafe_editing %}table-danger-header{% endif %}"
+        class="table prominent table-striped table-sm w-100 {% if unsafe_editing %}table-danger-header{% endif %}"
         {% if _can_flat_pair %}
             data-flat-pair-url="{{ url_for(
                 'admin-pairings-pair-flat',
@@ -79,7 +79,7 @@
                                     class="{{ status_no_bye.icon_classes }}"
                                     {{ macros.tooltip_attributes('', (
                                         '<div class="fw-bold">' ~ status_no_bye.name ~ '</div>'
-                                        '<div class="fst-italic" style="font-size:90%">' ~ status_no_bye.description ~ '</div>'
+                                        '<div class="sc-detail">' ~ status_no_bye.description ~ '</div>'
                                     )) }}
                                 ></i>
                             {% endif %}
@@ -92,7 +92,7 @@
                                 ) %}
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ status_name ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         </td>

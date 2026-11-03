@@ -15,7 +15,7 @@
 {% if teams %}
     <table
         id="{{ table_id }}"
-        class="table prominent table-striped table-sm w-100 bg-light {% if unsafe_editing %}table-danger-header{% endif %}"
+        class="table prominent table-striped table-sm w-100 {% if unsafe_editing %}table-danger-header{% endif %}"
     >
         <thead
             id="{{ table_id }}-header"
@@ -62,7 +62,7 @@
                                 class="{{ bye_icon_class[bye_type] }} text-body text-secondary"
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ _('%(bye)s at round %(round)d', bye=bye_label_map[bye_type], round=admin_round) ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         {% elif not team.check_in %}
@@ -70,7 +70,7 @@
                                 class="bi-x-circle-fill text-danger"
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ _('Absent') ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         {% else %}
@@ -78,7 +78,7 @@
                                 class="bi-check-circle-fill text-success"
                                 {{ macros.tooltip_attributes('', (
                                     '<div class="fw-bold">' ~ _('Present') ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                    '<div class="sc-detail">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
                         {% endif %}

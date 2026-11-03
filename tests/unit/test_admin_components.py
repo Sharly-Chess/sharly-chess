@@ -489,6 +489,14 @@ class TestPairingComponents:
         assert mark.text() == '1'
         assert 'Armageddon' in mark['data-bs-title']
 
+    def test_pending_advance_mark(self) -> None:
+        root = _render_pairing_components(
+            "{{ pairing_components.pending_advance_mark('Choose who advances.') }}"
+        )
+        mark = root.only('span', 'sc-pending-advance-mark')
+        assert 'Choose who advances.' in mark['data-bs-title']
+        assert mark.only('i').classes == ['bi-exclamation-triangle-fill']
+
 
 @pytest.mark.unit
 class TestOtherComponents:

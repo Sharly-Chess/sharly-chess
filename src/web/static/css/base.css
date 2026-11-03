@@ -2098,29 +2098,35 @@ body[data-sc-interface=admin] .htmx-indicator {
 /* Admin: the game results are rounded tags in the colour played, their
    character centred by the box rather than nudged. */
 [data-sc-interface=admin] .player-record {
-    width: 1.45rem !important;
-    height: 1.45rem !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.45rem;
+    height: 1.45rem;
+    border: 1px solid transparent;
     border-radius: .3rem;
     font-size: .8rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+    line-height: 1;
 }
 
-[data-sc-interface=admin] .player-record > span {
-    position: static !important;
-    line-height: 1 !important;
+/* The colours of the pieces the player had, whatever the theme. */
+[data-sc-interface=admin] .player-record-white {
+    background-color: #e8e6e1;
+    border-color: #e8e6e1;
+    color: #17191c;
 }
 
-[data-sc-interface=admin] .player-record.bg-white {
-    background-color: #e8e6e1 !important;
-    border-color: #e8e6e1 !important;
-    color: #17191c !important;
+[data-sc-interface=admin] .player-record-black {
+    background-color: #0d0e10;
+    border-color: #5a5f68;
+    color: #e8e6e1;
 }
 
-[data-sc-interface=admin] .player-record.bg-dark {
-    background-color: #0d0e10 !important;
-    border-color: #5a5f68 !important;
-    color: #e8e6e1 !important;
+[data-sc-interface=admin] .player-record-unknown {
+    background-color: #b02a37;
+    color: #fff;
 }
 
 .modal {
@@ -3497,6 +3503,34 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     left: 100%;
 }
 
+/* A triangle folded over the top right corner of the result button. */
+.sc-pending-advance-mark {
+    position: absolute;
+    top: calc(-1 * var(--bs-btn-border-width, 0px));
+    right: calc(-1 * var(--bs-btn-border-width, 0px));
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    border-top-right-radius: inherit;
+}
+
+.sc-pending-advance-mark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--bs-primary);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.sc-pending-advance-mark > i {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: .6rem;
+    line-height: 1;
+    color: var(--bs-body-bg);
+}
+
 [data-sc-interface=admin] .tag-badge {
     --bs-badge-color: var(--sc-tag-text-color);
     background-color: var(--sc-tag-color);
@@ -3542,6 +3576,13 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     display: flex;
     align-items: center;
     gap: .6rem;
+}
+
+/* A line of detail under a label (in a tooltip, an option), in italics
+   and smaller. */
+.sc-detail {
+    font-style: italic;
+    font-size: .85em;
 }
 
 .sc-icon-text {

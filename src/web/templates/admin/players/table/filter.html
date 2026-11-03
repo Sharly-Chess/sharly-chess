@@ -16,7 +16,7 @@
         icon='bi-funnel-fill' if is_active else 'bi-funnel',
         icon_only=true,
         class='dropdown-center',
-        toggle_class='m-0 p-0 ' ~ ('text-warning' if is_active else 'text-dark'),
+        toggle_class='m-0 p-0' ~ (' text-warning' if is_active else ''),
         toggle_attrs={'data-bs-auto-close': 'outside'},
         menu_class='table-dropdown-menu p-0',
     ) %}

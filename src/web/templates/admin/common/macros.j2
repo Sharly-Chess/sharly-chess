@@ -38,8 +38,7 @@
     <!-- player_record() -->
     <div class="d-flex gap-1 h-100 align-items-center">
         {% for pairing in player.single_tournament_player.pairings.values() %}
-            {% set _box_class='bg-white border border-white text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
-            {% set _text_style='line-height: 0;' %}
+            {% set _box_class='player-record-white' if pairing.color == 'W' else 'player-record-black' %}
             {% if pairing.zero_point_bye %}
                 {% set _text='<i class="bi bi-0-circle-fill"></i>' %}
                 {% set _class='text-secondary' %}
@@ -52,12 +51,10 @@
                 {% set _class=_box_class %}
             {% elif pairing.exempt %}
                 {% set _text='+' %}
-                {% set _text_style='position: relative; top: 0.1em;' %}
                 {% set _tooltip_text=_('Pairing Allocated Bye') %}
             {% elif pairing.loss %}
                 {% set _text='L' if pairing.unrated_loss else '0' %}
                 {% set _class=_box_class  %}
-                {% set _text_style='position: relative; top: 0.1em;' %}
                 {% set _tooltip_text=_('Unrated Loss') if pairing.unrated_loss else _('Loss') %}
             {% elif pairing.draw %}
                 {% set _text='D' if pairing.unrated_draw else '=' %}
@@ -66,7 +63,6 @@
             {% elif pairing.win %}
                 {% set _text='W' if pairing.unrated_gain else '1' %}
                 {% set _class=_box_class %}
-                {% set _text_style='position: relative; top: 0.1em;' %}
                 {% set _tooltip_text=_('Unrated Win') if pairing.unrated_gain else _('Win') %}
             {% elif pairing.half_point_bye %}
                 {% set _text='<i class="bi bi-circle-half"></i>' %}
@@ -86,18 +82,15 @@
                 {% set _tooltip_text=_('Forfeit Win') %}
             {% else %}
                 {% set _text='?' %}
-                {% set _class='bg-danger text-white' %}
+                {% set _class='player-record-unknown' %}
             {% endif %}
             <span
-                class="player-record text-center p-0 m-0 {{ _class }}"
+                class="player-record {{ _class }}"
                 {% if _tooltip_text %}
                     {{ tooltip_attributes('info', _tooltip_text) }}
                 {% endif %}
-                style="display: inline-flex; width: 1.5em; height: 1.5em; align-items: center; justify-content: center;"
             >
-                <span style="{{ _text_style }}">
-                    {{ _text|safe }}
-                </span>
+                {{ _text|safe }}
             </span>
         {% endfor %}
     </div>
@@ -258,7 +251,7 @@
                 const subtitle = $(data.element).attr('data-subtitle');
                 if (subtitle) {
                     $result.append($(
-                        '<div class="fst-italic" style="font-size: 70%">' + subtitle + '</div>'
+                        '<div class="sc-detail">' + subtitle + '</div>'
                     ));
                 }
                 const optionClass = $(data.element).data('class');
@@ -1679,8 +1672,7 @@ with_indicator: display a loading indicator, optional
                     {{ label }}
                     {% if value in tooltip_by_value %}
                         <i
-                            class="bi-info-circle-fill ps-1"
-                            style="font-size: 90%"
+                            class="bi-info-circle-fill ps-1 small"
                             {{ macros.tooltip_attributes('', tooltip_by_value[value]) }}
                         ></i>
                     {% endif %}

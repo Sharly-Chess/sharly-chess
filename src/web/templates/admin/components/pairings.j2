@@ -77,3 +77,11 @@
         class='sc-advance-mark' ~ (' sc-advance-mark-' ~ side if side else ''),
     ) }}
 {%- endmacro %}
+
+{# The corner of a result button whose tied game or match awaits the choice of
+   the side that advances; `tooltip` says what to do. #}
+{% macro pending_advance_mark(tooltip) -%}
+    <span class="sc-pending-advance-mark" {{ macros.tooltip_attributes('', tooltip, 'top') }}>
+        {{- components.icon('warning') -}}
+    </span>
+{%- endmacro %}

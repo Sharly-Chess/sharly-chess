@@ -67,7 +67,7 @@
                                 <div>{{ prize_group.name }}</div>
                                 {% if prize_group.total_monetary_value
                                     or prize_group.total_non_monetary_value %}
-                                    <div class="text-secondary mt-1" style="font-size: 0.85em;">
+                                    <div class="text-secondary mt-1 small">
                                         {{ macros.prize_totals_line(
                                             prize_group.format_total_monetary_value(prize_currency)
                                                 if prize_group.total_monetary_value else None,

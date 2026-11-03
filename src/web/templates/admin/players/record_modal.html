@@ -21,7 +21,7 @@
                             ) %}
                             {{ macros.tooltip_attributes('', (
                                 '<div class="fw-bold">' ~ status.name ~ '</div>'
-                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                                '<div class="sc-detail">' ~ click_detail ~ '</div>'
                             ), 'right') }}
                             hx-patch="{{ url_for(
                                 'records-check-in-player',
@@ -102,7 +102,7 @@
             {% set display_rating_change = tournament.uses_fide_ratings and tournament_player.tournament.started %}
             <table
                 id="record-table"
-                class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
+                class="table prominent table-striped table-sm w-100 mx-auto justify-content-center mt-2"
             >
                 <thead
                     id="record-table-header"

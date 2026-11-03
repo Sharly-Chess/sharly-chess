@@ -5,7 +5,7 @@
 
 <table
     id="upload-results"
-    class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
+    class="table prominent table-sm w-100 mx-auto justify-content-center"
     hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
     {# The swap replaces this table, so a second refresh started while one
