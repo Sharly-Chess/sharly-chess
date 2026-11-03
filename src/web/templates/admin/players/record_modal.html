@@ -1,12 +1,15 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/admin/components/pairings.j2' as pairing_components with context %}
 {% import "/admin/common/warning_macros.j2" as warning_macros with context %}
 {% set bye_definition_allowed=admin_player.single_tournament.pairing_system.allow_bye_definition %}
 {% set tournament_player=admin_player.single_tournament_player %}
-<div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
-    <div class="modal-content" data-player-id="{{ admin_player.id }}">
-        <div class="modal-header d-flex justify-content-between align-items-end position-relative">
-            <div class="flex flex-column gap-0 align-items-start">
-                <h2 class="modal-title">
+{% set tournament = tournament_player.tournament %}
+{% set modal_id = 'player-record-modal' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-record-edit-modal' %}
+{% set modal_close = true %}
+
+{% block title %}
                     {{ admin_player.display_title }} {{ admin_player.full_name }}
                     {% if not tournament_player.has_withdrawn and not admin_event.is_team_event %}
                         {% set status = tournament_player.check_in_status_no_bye %}
@@ -28,7 +31,9 @@
                             onclick="refreshMessagesIgnored += 1"
                         ></i>
                     {% endif %}
-                </h2>
+{% endblock %}
+
+{% block subtitle %}
                 <div>{{ admin_player.club }}</div>
                 {% if admin_event.is_team_event and admin_player.team %}
                     <div><strong>{{ _('%(string)s:', string=_('Team')) }}</strong> {{ admin_player.team.name }}</div>
@@ -44,82 +49,60 @@
                             {{ macros.tooltip_attributes('', _('Open the profile in a new tab.')) }}
                         ><i class="bi bi-box-arrow-up-right position-relative" style="top: -1px"></i></a>{% endif %}{% endfor %}
                 </div>
-            </div>
-            <div>
-                {% set tournament = tournament_player.tournament %}
-                {% if tournament.pairing_system.allow_bye_definition and not tournament.is_last_round %}
-                    {% if tournament_player.has_withdrawn %}
-                        <button
-                            class="btn btn-sm btn-outline-primary w-100"
-                            {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
-                                disabled
-                            {% else %}
-                                hx-patch="{{ url_for(
-                                    'records-return-player',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    player_id=admin_player.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% endif %}
-                        >
-                            {{ _('Return to tournament') }}
-                        </button>
-                    {% else %}
-                        <button
-                            class="btn btn-sm btn-outline-danger w-100"
-                            {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
-                                disabled
-                            {% else %}
-                                hx-patch="{{ url_for(
-                                    'records-withdraw-player',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    player_id=admin_player.id,
-                                ) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% endif %}
-                        >
-                            <i class="bi-sign-stop pe-1"></i>
-                            {{ _('Withdraw from tournament') }}
-                        </button>
-                    {% endif %}
-                {% endif %}
-            </div>
-            <button
-                type="button"
-                class="btn-close position-absolute top-0 end-0 mt-3 me-3"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
+{% endblock %}
+
+{% block header_actions %}
+    {% if tournament.pairing_system.allow_bye_definition and not tournament.is_last_round %}
+        {% set can_withdraw = client.can_set_zero_point_bye(tournament_player.tournament.id) %}
+        {% if tournament_player.has_withdrawn %}
+            {{ components.button(
+                _('Return to tournament'),
+                size='sm',
+                allowed=can_withdraw,
+                attrs={
+                    'hx-patch': url_for('records-return-player', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
+        {% else %}
+            {{ components.button(
+                _('Withdraw from tournament'),
+                kind='outline-danger',
+                icon='bi-sign-stop',
+                size='sm',
+                allowed=can_withdraw,
+                attrs={
+                    'hx-patch': url_for('records-withdraw-player', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% if client.can_update_players %}
                 <div class="d-flex justify-content-end mb-3">
-                    <button
-                        class="btn btn-outline-primary"
-                        hx-get="{{ url_for(
+                    {{ components.modal_button(
+                        url_for(
                             'admin-player-modal',
                             action='update',
                             event_uniq_id=admin_event.uniq_id,
                             player_id=admin_player.id
-                        ) }}?redirect_to={{ url_for(
+                        ) ~ '?redirect_to=' ~ url_for(
                             'admin-record-modal',
                             event_uniq_id=admin_event.uniq_id,
                             player_id=tournament_player.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        tabindex="0"
-                    >
-                        <i class="bi-pencil-fill pe-1"></i>
-                        {{ _('Edit Player') }}
-                    </button>
+                        ),
+                        _('Edit Player'),
+                        icon='edit',
+                        from_modal=true,
+                    ) }}
                 </div>
             {% endif %}
-             <h4>
-                {{ _('Tournament record') }}
-            </h4>
+            {{ components.section_heading(_('Tournament record')) }}
             {% set display_rating_change = tournament.uses_fide_ratings and tournament_player.tournament.started %}
             <table
                 id="record-table"
@@ -242,37 +225,23 @@
                                        is paired: the adjustment belongs to a game
                                        that has not been arranged yet. #}
                                     {% set _round_paired = tournament.round_has_pairings(round) %}
-                                    <span
-                                        class="d-inline-block"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            _('Bonus / penalty points')
-                                            if _round_paired else
-                                            _('The round must be paired first.'),
-                                            'top',
-                                        ) }}
-                                    >
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm compact-y-padding btn-outline-primary ms-1 px-1"
-                                            {% if _round_paired %}
-                                                hx-get="{{ url_for(
-                                                    'admin-player-point-adjustment-modal',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=tournament.id,
-                                                    round=round,
-                                                    player_id=tournament_player.id,
-                                                ) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-target="#modal-wrapper"
-                                            {% else %}
-                                                disabled
-                                            {% endif %}
-                                        >
-                                            <i class="bi-plus-slash-minus"></i>
-                                        </button>
-                                    </span>
+                                    {{ components.modal_button(
+                                        url_for(
+                                            'admin-player-point-adjustment-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            round=round,
+                                            player_id=tournament_player.id,
+                                        ),
+                                        _('Bonus / penalty points'),
+                                        icon='bi-plus-slash-minus',
+                                        size='sm',
+                                        icon_only=true,
+                                        allowed=_round_paired,
+                                        reason=_('The round must be paired first.'),
+                                        from_modal=true,
+                                        class='compact-y-padding ms-1 px-1',
+                                    ) }}
                                 {% endif %}
                                 {{ pairing_components.player_points_badge(tournament, tournament_player.id, round) }}
                             </td>
@@ -452,10 +421,11 @@
                     {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
                 </span>
             {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
 
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
 <script>
     if (window.location.pathname.includes('/players')) {
         $(document).one('hide.bs.modal', function (e) {
@@ -473,3 +443,4 @@
         requestRefresh();
     }
 </script>
+{% endblock %}

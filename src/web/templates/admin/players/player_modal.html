@@ -1,42 +1,35 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/admin/common/warning_macros.j2' as warning_macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
-<div id="player-modal" class="modal-dialog modal-dialog-scrollable admin-player-edit-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'create' %}
-                    {{ _('Create player') }}
-                {% elif action == 'update' %}
-                    {{ _('Edit player') }}
-                {% elif action == 'replace' %}
-                    {{ _('Replace player [%(player)s]', player=admin_player.full_name) }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% set modal_id = 'player-modal' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-player-edit-modal' %}
+
+{% block title %}
+    {% if action == 'create' %}
+        {{ _('Create player') }}
+    {% elif action == 'update' %}
+        {{ _('Edit player') }}
+    {% elif action == 'replace' %}
+        {{ _('Replace player [%(player)s]', player=admin_player.full_name) }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% if 'alert' in errors %}
-                {% with type='error', message=errors['alert'] %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner('error', errors['alert']) }}
             {% endif %}
             {% if action in ['create', 'replace'] %}
                 {% if previous_player %}
                     {% if warning_message %}
-                        {% with type='warning', auto_remove=true, message=warning_message %}
-                            {% include '/common/alert.html' %}
-                        {% endwith %}
+                        {{ components.banner('warning', warning_message, auto_remove=true) }}
                     {% else %}
-                        {% with type='success', auto_remove=true, message=_(
+                        {{ components.banner('success', _(
                             'Player [%(player)s] has been created.',
                             player=previous_player.full_name
-                        )  %}
-                            {% include '/common/alert.html' %}
-                        {% endwith %}
+                        ), auto_remove=true) }}
                     {% endif %}
                 {% endif %}
-                <h4>
-                    {{ pgettext('player search section title', 'Search') }}
-                </h4>
+                {{ components.section_heading(pgettext('player search section title', 'Search')) }}
                 {% with usage = 'player' %}
                     {% include '/admin/common/search_filter_form.html' %}
                     {% include '/admin/common/player_search.html' %}
@@ -71,9 +64,7 @@
                     {% endcall %}
                     <input type="hidden" name="regeneration_confirmed" value="on">
                 {% endif %}
-                <h4>
-                    {{ _('Identity') }}
-                </h4>
+                {{ components.section_heading(_('Identity')) }}
                 <input type="hidden" name="redirect_to" value="{{ data['redirect_to'] }}">
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6 col-xl-6">
@@ -226,7 +217,7 @@
                 </div>
 
                 {% if is_team_event %}
-                    <h4>{{ _('Team') }}</h4>
+                    {{ components.section_heading(_('Team')) }}
                     <div class="row gy-2 gx-3">
                         <div class="col-12">
                             {{ admin_macros.select_input(
@@ -243,9 +234,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <h4>
-                        {{ _('Tournament') }}
-                    </h4>
+                    {{ components.section_heading(_('Tournament')) }}
                     <div class="row gy-2 gx-3 align-items-center">
                         <div class="col-12">
                             {{ admin_macros.select_input(
@@ -316,7 +305,7 @@
 
                 </div>
 
-                <h4>
+                {% call components.section_heading(_('Ratings')) %}
                     {{ _('Ratings') }}
                     {% if current_period %}
                         <small class="text-muted">
@@ -324,7 +313,7 @@
                             · {{ current_period.rounds_str }}
                         </small>
                     {% endif %}
-                </h4>
+                {% endcall %}
                 {% if is_team_event %}
                     {% set _rating_context_key = team_tournament_ids.get(data['team_id'] or '', '') %}
                 {% else %}
@@ -524,34 +513,21 @@
                     </div>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <span id="submit-button-container">
-                {% if action == 'create' %}
-                    {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
-                {% else %}
-                    <button
-                        type="submit"
-                        form="modal-form"
-                        class="text-nowrap white btn btn-primary"
-                    >
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    </button>
-                {% endif %}
-            </span>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-{% if previous_player %}
-    <script>requestRefresh()</script>
-{% endif %}
+{% block footer %}
+    {{ components.cancel_button() }}
+    <span id="submit-button-container">
+        {% if action == 'create' %}
+            {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+        {% else %}
+            {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+        {% endif %}
+    </span>
+{% endblock %}
+
+{% block after_modal %}
+    {% if previous_player %}
+        <script>requestRefresh()</script>
+    {% endif %}
+{% endblock %}

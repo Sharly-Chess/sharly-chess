@@ -818,84 +818,33 @@
   "src/web/templates/admin/player_link.html": {
     "modal-trigger": 2
   },
-  "src/web/templates/admin/players/check_in_player_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/players/check_in_tournament_reset_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/players/check_in_tournaments_modal.html": {
-    "button": 1,
-    "fixed-colour": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/players/filter_columns.html": {
     "button": 2,
     "icon-spacing": 2,
     "menu-item": 2
   },
-  "src/web/templates/admin/players/player_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/players/players_diff.html": {
     "menu-item": 3,
     "modal-trigger": 2
   },
   "src/web/templates/admin/players/players_diff_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/players/players_import_diff_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/players/players_import_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/players/ratings_check_banner.html": {
     "button": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/players/ratings_check_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/players/record_modal.html": {
-    "button": 4,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/players/tab.html": {
     "button": 5,
@@ -934,11 +883,7 @@
     "fixed-colour": 1
   },
   "src/web/templates/admin/players/team_record_modal.html": {
-    "button": 1,
-    "fixed-colour": 1,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/plugins/_plugin_detail.html": {
     "button": 4,

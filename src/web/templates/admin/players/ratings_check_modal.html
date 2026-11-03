@@ -1,4 +1,7 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
+{% set modal_id = 'ratings-check-modal' %}
+{% set modal_size = 'wide' %}
 
 {% set show_tournament = not admin_tournament and admin_event.tournaments_by_id|length > 1 %}
 {% set changes = rating_check.changes %}
@@ -67,18 +70,15 @@
     </table>
 {% endmacro %}
 
-<div id="ratings-check-modal" class="modal-dialog modal-dialog-scrollable" style="max-width: min(95vw, 1100px);">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
-                    {{ _('Ratings update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
-                {% else %}
-                    {{ _('Ratings update') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% block title %}
+    {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
+        {{ _('Ratings update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+    {% else %}
+        {{ _('Ratings update') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% include '/admin/players/ratings_check_lists.html' %}
             <form
                 id="modal-form"
@@ -92,11 +92,11 @@
                 hx-disabled-elt="#update-ratings-button"
             >
                 {% if changes %}
-                    <h5>{{ _('Ratings the lists now give differently') }}</h5>
+                    {{ components.section_heading(_('Ratings the lists now give differently')) }}
                     {{ rows_table(changes, true) }}
                 {% endif %}
                 {% if arbiter_values %}
-                    <h5>{{ _('Ratings set by the arbiter') }}</h5>
+                    {{ components.section_heading(_('Ratings set by the arbiter')) }}
                     <p class="form-text">
                         {{ _('These players keep the value the arbiter entered, unless they are selected to take the value of the lists.') }}
                     </p>
@@ -112,22 +112,15 @@
                     </p>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="update-ratings-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-                {% if not rating_check.rows %}disabled{% endif %}
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Update') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Update'),
+        kind='primary',
+        icon='save',
+        type='submit',
+        attrs={'id': 'update-ratings-button', 'form': 'modal-form', 'disabled': not rating_check.rows},
+    ) }}
+{% endblock %}

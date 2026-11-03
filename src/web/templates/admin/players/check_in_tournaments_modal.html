@@ -1,24 +1,12 @@
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 800px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Check-in') }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'xl' %}
+{% set modal_close = true %}
+
+{% block title %}{{ _('Check-in') }}{% endblock %}
+
+{% block body %}
             {% if message %}
-                {% with type=message_type or 'success' %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner(message_type or 'success', message) }}
             {% endif %}
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto mb-0 justify-content-center"
@@ -112,22 +100,19 @@
                             </td>
                             <td class="d-flex gap-2 align-items-center">
                                 <div class="flex-grow-1"></div>
-                                <span {{ macros.tooltip_attributes('',
-                                    _('Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted).')
-                                ) }}>
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                                        hx-get="{{ url_for(
-                                            'check-in-tournament-reset-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=tournament.id,
-                                        ) }}"
-                                        hx-indicator="#please-wait"
-                                    >
-                                        <i class="bi-arrow-counterclockwise lh-1"></i>
-                                    </button>
-                                </span>
+                                {{ components.modal_button(
+                                    url_for(
+                                        'check-in-tournament-reset-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                    ),
+                                    _('Reset check-in'),
+                                    icon='bi-arrow-counterclockwise',
+                                    size='sm',
+                                    icon_only=true,
+                                    tooltip=_('Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted).'),
+                                    from_modal=true,
+                                ) }}
                             </td>
                         </tr>
                     {% endfor %}
@@ -147,10 +132,12 @@
                     {% endif %}
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>
-    requestRefresh();
-</script>
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>
+        requestRefresh();
+    </script>
+{% endblock %}

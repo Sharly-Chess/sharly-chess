@@ -1,14 +1,9 @@
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 600px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Players import') }}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+
+{% block title %}{{ _('Players import') }}{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -21,9 +16,7 @@
                 hx-indicator="#please-wait"
             >
                 {% if errors.alert %}
-                    {% with type='error', message=errors.alert %}
-                        {% include '/common/alert.html' %}
-                    {% endwith %}
+                    {{ components.banner('error', errors.alert) }}
                 {% endif %}
                 {% if is_team_event %}
                     {# Team events never show a tournament picker and import
@@ -173,25 +166,15 @@
                     </script>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="import-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-box-arrow-in-right pe-1"></i>
-                {{ _('Import') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Import'),
+        kind='primary',
+        icon='import',
+        type='submit',
+        attrs={'id': 'import-button', 'form': 'modal-form'},
+    ) }}
+{% endblock %}

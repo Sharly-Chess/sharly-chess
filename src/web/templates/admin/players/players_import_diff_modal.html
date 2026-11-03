@@ -1,19 +1,17 @@
-{% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'max' %}
+{% set modal_class = 'admin-players-update-modal' %}
+{% set selected_rows = row_count - import_errors_by_index|length %}
 
-<div class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if admin_tournament %}
-                    {{ _('Import players to tournament [%(tournament)s]', tournament=admin_tournament.name) }}
-                {% else %}
-                    {{ _('Import players to event [%(event)s]', event=admin_event.name) }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            {% set selected_rows = row_count - import_errors_by_index|length %}
+{% block title %}
+    {% if admin_tournament %}
+        {{ _('Import players to tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+    {% else %}
+        {{ _('Import players to event [%(event)s]', event=admin_event.name) }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% if overwrite_players and admin_tournament and admin_tournament.tournament_players %}
                 {{ components.note('danger', _(
                     'Warning: the %(player_count)d players in the tournament will be deleted.',
@@ -213,26 +211,15 @@
                     }
                 });
             </script>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                id="import-players-button"
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-                {% if not selected_rows %}disabled{% endif %}
-            >
-                <i class="bi-download pe-1"></i>
-                {{ _('Import') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Import'),
+        kind='primary',
+        icon='download',
+        type='submit',
+        attrs={'id': 'import-players-button', 'form': 'modal-form', 'disabled': not selected_rows},
+    ) }}
+{% endblock %}
