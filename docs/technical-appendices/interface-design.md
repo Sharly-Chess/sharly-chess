@@ -38,7 +38,9 @@ reference: when a pull request changes the look, it updates this guide too.
 | Client screen styles | `src/web/static/css/user.css` |
 | Page shell | `src/web/templates/common/base.html` |
 | Administration layout | `src/web/templates/admin/common/base.html`, `common/admin_cards_container.html` |
-| Form, title and modal macros | `src/web/templates/admin/common/macros.j2` |
+| Components (buttons, menus, notes, badges, …) | `src/web/templates/admin/components/macros.j2`, `components/pairings.j2` |
+| Modal shell | `src/web/templates/admin/components/modal.html` |
+| Form and title macros | `src/web/templates/admin/common/macros.j2` |
 | Collections | `src/web/admin/collection.py`, `src/web/admin/*/collection.py`, `*_components.j2`, `admin/common/collection.html` |
 | Toasts | `src/web/messages.py`, `common/messages.html`, `common/alert.html` |
 | Client screens | `src/web/templates/user/` |
@@ -48,7 +50,9 @@ with `data-sc-interface` (`admin`, `client`, or `app` for the pages embedded in 
 application window), and which theme with `data-bs-theme`. Scope administration rules to
 `[data-sc-interface=admin]`, never to a theme, and client screen rules to the screens
 (`#user-screen-content`, `.screen-top-nav`, `.input-screen`, or an element only they
-have), or they will leak into the other interface.
+have), or they will leak into the other interface. The rules of the components (the
+`sc-*` classes) are the exception: only the components emit those classes, and the
+plugins page also shows them in the application window, so they are not scoped.
 
 ## Administration
 
@@ -96,10 +100,10 @@ variables, `--pw-visibility-public-color` and `--pw-visibility-private-color`.
   to the documentation before it. It also names the browser tab ("Players · Spring Open ·
   Sharly Chess"), through its `data-page-title` and the event's `data-page-context`, so a
   page without it leaves its tab unnamed. On the right, in this order: the **Details** switch and
-  the list/card toggle (`collection_controls.html`), a settings button
-  (`btn-outline-primary`, `bi-gear-fill`), then the main action (`btn-primary`,
-  `bi-plus-lg`, "Create a …"). Each control has a tooltip. Below 768px the controls fold
-  behind a "more" button, except those marked `.top-nav-keep`.
+  the list/card toggle (`collection_controls.html`), a settings button (an outline
+  `components.button` or `modal_button` with `bi-gear-fill`), then the main action (kind
+  `primary`, `bi-plus-lg`, "Create a …"). Each control has a tooltip. Below 768px the
+  controls fold behind a "more" button, except those marked `.top-nav-keep`.
 - **Content.** `section.admin-cards-section > .container-fluid`, with wider side padding
   from 992px.
 
@@ -118,27 +122,42 @@ Lists of things (tournaments, players, screens, timers, …) are collections, de
   details out with `.collection-details-grid` and `section.collection-detail-section > h6`.
 - **Status.** A small dot before the name, in the status colour (`item_class` returns
   `collection-status-…`).
-- **Actions.** Small outline buttons with a tooltip: `bi-pencil` to edit, `bi-copy` to
-  duplicate, `bi-trash` (danger) to delete.
+- **Actions.** Small outline buttons with a tooltip, built with the components:
+  `bi-pencil` to edit, `bi-copy` to duplicate, `bi-trash` (danger) to delete. More
+  actions go in a `menu_button` or a `split_button`.
 - **Inline editing.** `collection_macros.column_edit_button`: a dotted underline and a
   faint pencil.
-- **Empty states.** `.admin-empty-state`, a dashed panel. A missing value inside an item
+- **Empty states.** `components.empty_state(title)`, a dashed panel with the explanation
+  given in its `{% call %}`. A missing value inside an item
   is shown in `text-danger` with `bi-exclamation-triangle-fill`, e.g. "No hours".
 
 ### Modals and forms
 
-Every modal has the same structure:
+Every modal extends the modal shell, `admin/components/modal.html`, and fills its blocks:
 
 ```
-.modal-dialog.modal-dialog-scrollable
-  .modal-header > h2.modal-title
-  .modal-body > form#modal-form, sections headed by h4
-  .modal-footer: Cancel (btn-secondary, bi-x-circle-fill), then the action
-                 (btn-primary, bi-floppy-fill, "Save" or "Create", form="modal-form")
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}            sm, md (default), lg, xl, wide, max or fit
+{% block title %}…{% endblock %}       the h2 of the header
+{% block subtitle %}…{% endblock %}    the object of the modal ("Tournament: …")
+{% block toolbar %}…{% endblock %}     buttons acting on the contents, top right of the body
+{% block body %}…{% endblock %}        form#modal-form, sections headed by section_heading
+{% block footer %}…{% endblock %}      Cancel (the default), then the action
 ```
 
-Deletions use `common/modal/delete_modal.html` (`btn-danger`, `bi-trash`). Section
-headings stay quiet so that the accent goes to the main button.
+- The header holds the title, the subtitle and the close button, nothing else. The line
+  naming the object of the modal always goes in `subtitle`, never at the top of the body.
+- Buttons acting on what the modal shows (Add, Generate, …) go in `toolbar`, never in the
+  header.
+- The footer is `components.cancel_button()` then the main action, a `components.button`
+  of kind `primary` with `form="modal-form"` ("Save" or "Create"). `footer_start` holds an
+  action set apart on the left, such as Print.
+- `modal_doc` sets an icon after the title, opening the modal's page of the documentation.
+
+Deletions use `common/modal/delete_modal.html`, itself on the shell: the object goes in
+its subtitle, and its button is set with the `delete_label` and `delete_icon` blocks.
+Section headings (`components.section_heading`) stay quiet so that the accent goes to the
+main button.
 
 Build fields with the macros of `admin/common/macros.j2` (`text_input`, `number_input`,
 `select_input`, `switch_input`, `checkbox_input`, `date_input`, …), which all go through
@@ -153,20 +172,45 @@ Build fields with the macros of `admin/common/macros.j2` (`text_input`, `number_
 
 ### Buttons and icons
 
-- `btn-primary` is the one main action of a page or modal: a tonal wash of the accent,
-  not a solid block. `btn-secondary` steps back behind it. Toolbar buttons are
-  `btn-outline-primary`; destructive ones `btn-outline-danger` or `btn-danger`.
-- Use `btn-sm` inside lists and cards.
-- Icons are Bootstrap Icons (`bi-…`), separated from their label with `pe-1`. An icon-only
-  button always has a tooltip.
+Build buttons with `components.button` rather than markup:
+
+- the kind says its role: `primary` is the one main action of a page or modal (a tonal
+  wash of the accent, not a solid block), `secondary` steps back behind it (Cancel),
+  `outline` is a toolbar action, `danger` and `outline-danger` destroy something, `link`
+  and `plain` have no frame;
+- `size='sm'` inside lists and cards;
+- `icon` takes a Bootstrap Icons class (`bi-…`) or a name of the icon list of
+  `macros.j2` (`save`, `cancel`, `delete`, `confirm`, `warning`, …), set at the same gap
+  from the label everywhere;
+- `icon_only=true` shows the icon alone: the label becomes its tooltip and its accessible
+  name;
+- `allowed=false` with a `reason` disables the button and shows why in a tooltip;
+- `href` makes it a link that looks like a button, for a page to open rather than an
+  action.
+
+`modal_button(url, label, …)` opens a modal (`modal_trigger_attrs(url)` gives the same
+attributes to a card or a row). Menus are a `menu_button` (icon-only too) or a
+`split_button` holding `menu_item`s, `submenu`s, `menu_header`s and `menu_divider`s; a
+menu of checkboxes in a form starts with `menu_select_all`. Choices joined in one group
+(All / In play, the view mode, a radio row) are a `segmented` control of `segment_radio`,
+`segment_checkbox` or `segment_button`.
+
+An icon before a text that is not a button is `components.icon_text(icon)`, which keeps
+the same gap and centres the icon on the text; an icon alone is `components.icon`.
 
 ### Feedback
 
 - **Toasts.** `Message.info/success/warning/error(request, …)`. They stack at the bottom
   right (full width on a phone). Information and success fade after ten seconds; warnings
   and errors stay until closed.
-- **Notes.** `.alert-info`, `-warning`, `-danger` and `-secondary` render as quiet raised
-  panels with the icon in the note's colour.
+- **Notes.** `components.note(level, body)` (`info`, `warning`, `danger`, `secondary`), a
+  quiet raised panel with the icon in the note's colour; `actions` sets buttons on its
+  right, `compact` makes it smaller. `components.banner` gives a dismissible message band.
+- **Badges.** `components.badge(kind, text)` (`primary`, `neutral`, `info`, `warning`,
+  `danger`, `success`) carries its own ground, readable in both themes; tags are
+  `tag_badge` and `tag_badges`. The pairings have their own in `components/pairings.j2`:
+  points, the side that advances in a knock-out, and the tie awaiting a choice.
+- **Legends.** `components.legend` and `legend_item(icon)` explain the icons of a list.
 - **Confirmations.** `warning_macros.j2` gives a one-step confirmation for risky actions
   and a two-step one, defaulting to Cancel, for the riskiest.
 - **Status bars.** A table can carry a `.table-status-bar` along its top, with a dot, an
@@ -253,6 +297,21 @@ in its hover state and may take the first tap as a hover only.
 - Put hover styles inside `@media (hover: hover)`.
 - Give tappable rows and buttons `touch-action: manipulation`.
 - Disable a button only while its request runs, with `hx-disabled-elt`, never for good.
+
+## Components and their guard
+
+The components are shown, in both themes, in a gallery at `/dev/components`, available
+when the application runs in development; its end-to-end test checks their contrast. Add
+a component there when you add it to `components/macros.j2`, with a unit test in
+`tests/unit/test_admin_components.py`.
+
+`scripts/lint/template_components.py`, run by pre-commit and by a unit test, counts the
+markup the components replace (buttons, modal triggers, menu items, icon spacing, fixed
+colour utilities, …) in the administration and plugin templates, against
+`template_components_baseline.json`. It fails when a count goes up, and when one goes down
+without the baseline being lowered (`--update-baseline`); `--report` gives the totals. What
+remains is written by hand on purpose: keyboard-driven search lists, the round navigation,
+buttons inside input groups.
 
 ## Checking a change
 
