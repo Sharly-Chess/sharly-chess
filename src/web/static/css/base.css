@@ -2383,6 +2383,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --pw-backdrop-opacity: 0.8;
     --pw-modal-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.6);
     --pw-warning-text: var(--bs-warning);
+    --pw-text-warning: var(--bs-warning);
     --pw-warning-dot-color: var(--bs-warning);
     --pw-btn-close-filter: var(--bs-btn-close-white-filter, invert(1) grayscale(100%) brightness(200%));
 }
@@ -2460,6 +2461,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --pw-backdrop-opacity: 0.3;
     --pw-modal-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.18);
     --pw-warning-text: #f3e6c4;
+    --pw-text-warning: #8f5f00;
     --pw-warning-dot-color: #f0c35a;
     --pw-btn-close-filter: none;
     --pw-warning-bg: #5b4a25;
@@ -3506,8 +3508,37 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     font-weight: 600;
 }
 
-[data-sc-interface=admin] * + .sc-section-heading {
+[data-sc-interface=admin] :is(* + .sc-section-heading, * + form > .sc-section-heading:first-child) {
     margin-top: 1.5rem;
+}
+
+/* The object of a modal ("Tournament: …") opening its body keeps its
+   distance from the form below it. */
+[data-sc-interface=admin] .modal-body h4 {
+    margin-bottom: 1.5rem;
+}
+
+/* Bootstrap's text colours fall short of a 4.5 contrast on the admin's
+   grounds (its yellow and cyan on white above all): they take the themes'
+   colours instead. */
+[data-sc-interface=admin] .text-warning {
+    color: var(--pw-text-warning) !important;
+}
+
+[data-sc-interface=admin] .text-danger {
+    color: var(--pw-danger-text) !important;
+}
+
+[data-sc-interface=admin] .text-success {
+    color: var(--pw-success-color) !important;
+}
+
+[data-sc-interface=admin] .text-info {
+    color: var(--pw-info-color) !important;
+}
+
+[data-sc-interface=admin] .text-secondary {
+    color: var(--bs-secondary-color) !important;
 }
 
 [data-sc-interface=admin] .sc-section-subheading {

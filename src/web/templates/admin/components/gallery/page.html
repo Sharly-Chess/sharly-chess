@@ -153,6 +153,21 @@
             </div>
         </section>
 
+        <section id="gallery-text" class="d-flex flex-column gap-2">
+            <h2 class="h4">Text colours</h2>
+            <table class="table table-sm w-auto">
+                <tbody>
+                    {% for colour in ['text-warning', 'text-danger', 'text-success', 'text-info', 'text-secondary', 'text-muted', 'text-body-secondary'] %}
+                        <tr data-gallery-sample="{{ colour }}">
+                            <td><code class="gallery-label">{{ colour }}</code></td>
+                            <td class="{{ colour }}">-13.20</td>
+                            <td class="{{ colour }} fw-bold">1386 F</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
         <section id="gallery-banners" class="d-flex flex-column gap-2" style="max-width: 40rem;">
             <h2 class="h4">Banners</h2>
             {% for type in ['debug', 'info', 'success', 'warning', 'error'] %}
