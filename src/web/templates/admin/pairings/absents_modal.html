@@ -81,11 +81,8 @@
                     <div class="mb-3">
                         {{ _('Select an action for absent players:') }}
                     </div>
-                    <div class="d-grid ms-3" style="grid-template-columns: 30px min-content;">
-                        <h5>
-                            <i class="bi-0-circle-fill"></i>
-                        </h5>
-                        <span class="text-nowrap">
+                    {% call components.legend(class='ms-3') %}
+                        {% call components.legend_item('bi-0-circle-fill') %}
                             {{
                                 _(
                                     'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
@@ -106,12 +103,9 @@
                                     }}
                                 ></i>
                             {% endif %}
-                        </span>
+                        {% endcall %}
                         {% if admin_round < admin_tournament.rounds %}
-                            <h5>
-                                <i class="bi-sign-stop"></i>
-                            </h5>
-                            <span class="text-nowrap">
+                            {% call components.legend_item('bi-sign-stop') %}
                                 {{
                                     _(
                                         'Definitive withdrawal'
@@ -129,12 +123,9 @@
                                         )
                                     }}
                                 ></i>
-                            </span>
+                            {% endcall %}
                         {% endif %}
-                        <h5>
-                            <i class="bi-check-circle-fill"></i>
-                        </h5>
-                        <span class="text-nowrap">
+                        {% call components.legend_item('bi-check-circle-fill') %}
                             {{
                                 _(
                                     'Pair at round %(pairing_round)d',
@@ -157,8 +148,8 @@
                                     {% endif %}
                                 ></i>
                             {% endif %}
-                        </span>
-                    </div>
+                        {% endcall %}
+                    {% endcall %}
                     <div class="d-flex align-items-center justify-content-end pe-2 pb-2 mt-3">
                         <span class="text-start flex-grow-1 fw-bold">
                             {{ _('Apply to all') }}

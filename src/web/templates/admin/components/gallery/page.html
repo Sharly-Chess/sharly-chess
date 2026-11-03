@@ -153,6 +153,15 @@
             </div>
         </section>
 
+        <section id="gallery-legend" class="d-flex flex-column gap-2">
+            <h2 class="h4">Legend</h2>
+            {% call components.legend() %}
+                {% call components.legend_item('bi-0-circle-fill') %}Do not pair at round 3 (Zero-Point Bye){% endcall %}
+                {% call components.legend_item('bi-sign-stop') %}Definitive withdrawal{% endcall %}
+                {% call components.legend_item('bi-check-circle-fill') %}Pair at round 3{% endcall %}
+            {% endcall %}
+        </section>
+
         <section id="gallery-text" class="d-flex flex-column gap-2">
             <h2 class="h4">Text colours</h2>
             <table class="table table-sm w-auto">

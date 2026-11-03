@@ -451,6 +451,20 @@ class TestOtherComponents:
         assert state.only('h5').text() == 'Nothing'
         assert state.only('p').text() == 'Explain.'
 
+    def test_legend(self) -> None:
+        root = _render(
+            '{% call components.legend() %}'
+            "{% call components.legend_item('bi-sign-stop') %}Withdrawal{% endcall %}"
+            "{% call components.legend_item('confirm') %}Pair{% endcall %}"
+            '{% endcall %}'
+        )
+        items = root.only('ul', 'sc-legend').find_all('li', 'sc-legend-item')
+        assert [item.only('i').classes for item in items] == [
+            ['bi-sign-stop'],
+            ['bi-check-circle-fill'],
+        ]
+        assert [item.only('span').text() for item in items] == ['Withdrawal', 'Pair']
+
     def test_section_heading(self) -> None:
         root = _render("{{ components.section_heading('Part') }}")
         assert root.only('h3', 'sc-section-heading').text() == 'Part'

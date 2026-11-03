@@ -3505,6 +3505,28 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     gap: .25rem;
 }
 
+[data-sc-interface=admin] .sc-legend {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+[data-sc-interface=admin] .sc-legend-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+[data-sc-interface=admin] .sc-legend-item > i:first-child {
+    flex-shrink: 0;
+    width: 1.25rem;
+    font-size: 1.15rem;
+    text-align: center;
+}
+
 [data-sc-interface=admin] .sc-section-heading {
     margin: 0 0 .75rem;
     color: var(--bs-emphasis-color);

@@ -392,6 +392,18 @@
     </div>
 {%- endmacro %}
 
+{# A legend of icons and what they stand for: `legend` holds the
+   `legend_item`s, each an icon with its text, given in `{% call %}`s. #}
+{% macro legend(class='') -%}
+    {%- set items = caller() -%}
+    <ul class="sc-legend{% if class %} {{ class }}{% endif %}">{{ items }}</ul>
+{%- endmacro %}
+
+{% macro legend_item(icon) -%}
+    {%- set content = caller() -%}
+    <li class="sc-legend-item">{{ _icon_tag(icon) }}<span>{{ content }}</span></li>
+{%- endmacro %}
+
 {# The heading of a part of a modal body or a form; `sub` for a part within
    a part. A `{% call %}` gives rich content in place of `text`. #}
 {% macro section_heading(text, sub=false, class='') -%}
