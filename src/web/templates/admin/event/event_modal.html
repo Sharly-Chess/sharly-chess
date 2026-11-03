@@ -1,22 +1,27 @@
-<div class="modal-dialog modal-dialog-scrollable admin-event-edit-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            {% if action == 'update' and client.can_update_event %}
-                {% include 'event_update_modal_header.html' %}
-            {% else %}
-                <h2 class="modal-title">
-                    {% if not client.can_update_event %}
-                        {{ admin_event.name }}
-                    {% elif action == 'clone' %}
-                        {{ _('Duplicate event [%(event)s]', event=admin_event.name) }}
-                    {% else %}
-                        {{ _('Create event') }}
-                        <span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
-                    {% endif %}
-                </h2>
-            {% endif %}
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-event-edit-modal' %}
+{% set modal_doc = 'events-create' if action == 'create' and client.can_update_event else none %}
+
+{% block title %}
+    {% if action == 'update' and client.can_update_event %}
+        {{ _('Edit event') }}
+    {% elif not client.can_update_event %}
+        {{ admin_event.name }}
+    {% elif action == 'clone' %}
+        {{ _('Duplicate event [%(event)s]', event=admin_event.name) }}
+    {% else %}
+        {{ _('Create event') }}
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}
+    {% if action == 'update' and client.can_update_event %}
+        {% include 'event_update_modal_header.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -56,9 +61,7 @@
                 {% endif %}
                 <input type="hidden" name="event_return_url" value="{{ event_return_url }}">
                 {% if action == 'clone' %}
-                    <h4>
-                        {{ _('Duplication settings') }}
-                    </h4>
+                    {{ components.section_heading(_('Duplication settings')) }}
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <div class="mb-2">
@@ -97,9 +100,7 @@
                         </div>
                     </div>
                 {% endif %}
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
+                {{ components.section_heading(_('Properties')) }}
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
@@ -361,12 +362,12 @@
                 </div>
 
                 <span id="plugins-container">
-                    <h4 class="mt-4">
+                    {% call components.section_heading(_('Plugins')) %}
                         {{ _('Plugins') }}
-                        <span class="ps-1" style="font-size:1.1rem">
+                        <span class="ps-1">
                             {{ macros.doc_icon('plugins') }}
                         </span>
-                    </h4>
+                    {% endcall %}
                     <div class="d-flex flex-column gap-3">
                         {% for plugin in plugins %}
                             <div
@@ -459,83 +460,56 @@
                     </script>
                 </span>
             </form>
-        </div>
+{% endblock %}
 
-        <div class="modal-footer">
-            {% if action == 'update' and (client.can_create_events or client.can_manage_events) %}
-                <div class="d-flex gap-2 me-auto">
-                    {% if client.can_create_events %}
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary text-nowrap"
-                            hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-copy pe-1"></i>
-                            {{ _('Duplicate') }}
-                        </button>
-                    {% endif %}
-                    {% if client.can_manage_events %}
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary text-nowrap"
-                            hx-get="{{ url_for('event-export-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-push-url="false"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {{ macros.tooltip_attributes('info', _('Export the event in SCE format.'), 'top') }}
-                        >
-                            <i class="bi-box-arrow-right pe-1"></i>
-                            {{ _('Export') }}
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary text-nowrap"
-                            hx-get="{{ url_for('event-snapshots-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-push-url="false"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('View the backups of the event.'),
-                                'top',
-                            ) }}
-                        >
-                            <i class="bi-clock-history pe-1"></i>
-                            {{ _('Backups') }}
-                        </button>
-                    {% endif %}
-                </div>
+{% block footer_start %}
+    {% if action == 'update' and (client.can_create_events or client.can_manage_events) %}
+        <div class="d-flex gap-2">
+            {% if client.can_create_events %}
+                {{ components.modal_button(
+                    url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id),
+                    _('Duplicate'),
+                    icon='copy',
+                    from_modal=true,
+                ) }}
             {% endif %}
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') if client.can_update_event else _('Close') }}
-            </button>
-            {% if client.can_update_event %}
-                <button
-                    type="submit"
-                    data-testid="event-form-submit-button"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    {% if action == 'clone' %}
-                        <i class="bi-copy pe-1"></i>
-                        {{ _('Duplicate') }}
-                    {% else %}
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') if action == 'update' else _('Create') }}
-                    {% endif %}
-                </button>
+            {% if client.can_manage_events %}
+                {{ components.modal_button(
+                    url_for('event-export-modal', event_uniq_id=admin_event.uniq_id),
+                    _('Export'),
+                    icon='bi-box-arrow-right',
+                    tooltip=_('Export the event in SCE format.'),
+                    from_modal=true,
+                    attrs={'hx-push-url': 'false'},
+                ) }}
+                {{ components.modal_button(
+                    url_for('event-snapshots-modal', event_uniq_id=admin_event.uniq_id),
+                    _('Backups'),
+                    icon='bi-clock-history',
+                    tooltip=_('View the backups of the event.'),
+                    from_modal=true,
+                    attrs={'hx-push-url': 'false'},
+                ) }}
             {% endif %}
         </div>
-    </div>
-</div>
+    {% endif %}
+{% endblock %}
 
-{% if action == 'update' %}
-    <script>requestRefresh()</script>
-{% endif %}
+{% block footer %}
+    {{ components.cancel_button(_('Cancel') if client.can_update_event else _('Close')) }}
+    {% if client.can_update_event %}
+        {{ components.button(
+            _('Duplicate') if action == 'clone' else (_('Save') if action == 'update' else _('Create')),
+            kind='primary',
+            icon='copy' if action == 'clone' else 'save',
+            type='submit',
+            attrs={'data-testid': 'event-form-submit-button', 'form': 'modal-form'},
+        ) }}
+    {% endif %}
+{% endblock %}
+
+{% block after_modal %}
+    {% if action == 'update' %}
+        <script>requestRefresh()</script>
+    {% endif %}
+{% endblock %}

@@ -1,30 +1,21 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% set roster = admin_team.players %}
-<div
-    class="modal-dialog modal-dialog-scrollable admin-team-roster-modal"
-    style="--bs-modal-width: min(95vw, 700px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Roster — %(team)s', team=admin_team.name) }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
-            <h5 class="mb-2">
+{% set modal_size = 'xl' %}
+{% set modal_class = 'admin-team-roster-modal' %}
+{% set modal_close = true %}
+
+{% block title %}{{ _('Roster — %(team)s', team=admin_team.name) }}{% endblock %}
+
+{% block body %}
+            {% call components.section_heading(_('Add a player')) %}
                 {{ _('Add a player') }}
                 {% if roster_max_size is not none %}
                     <span class="text-muted small">
                         ({{ roster|length }}/{{ roster_max_size }})
                     </span>
                 {% endif %}
-            </h5>
+            {% endcall %}
             {% if roster_at_cap %}
                 <div class="form-text mb-3">
                     {{ _(
@@ -55,14 +46,13 @@
                         data={}, errors={}
                     ) }}
                 </div>
-                <button
-                    type="submit"
-                    class="btn btn-primary text-nowrap"
-                    {% if not available_players %}disabled{% endif %}
-                >
-                    <i class="bi-plus-lg pe-1"></i>
-                    {{ _('Add') }}
-                </button>
+                {{ components.button(
+                    _('Add'),
+                    kind='primary',
+                    icon='add',
+                    type='submit',
+                    attrs={'disabled': not available_players},
+                ) }}
             </form>
             {% if not available_players %}
                 <div class="form-text mb-3">
@@ -72,10 +62,10 @@
             {% endif %}
             {% endif %}
 
-            <h5 class="mb-2">
+            {% call components.section_heading(_('Current roster')) %}
                 {{ _('Current roster') }}
                 <span class="text-muted small">({{ roster|length }})</span>
-            </h5>
+            {% endcall %}
             {% if not roster %}
                 <div class="text-muted">{{ _('No players in this team yet.') }}</div>
             {% else %}
@@ -126,54 +116,36 @@
                                         {{ macros.tooltip_attributes('info', _('Team captain.'), 'top') }}
                                     ></i>
                                 {% endif %}
-                                {% if player.id in paired_player_ids %}
-                                    {# Tooltip lives on a wrapper span — a
-                                       disabled button has pointer-events:none
-                                       so it can't trigger its own tooltip. #}
-                                    <span
-                                        class="d-inline-block"
-                                        tabindex="0"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            _(
-                                                'This player is paired in at least one round and cannot be removed from the roster (must be removed from the lineup first).'
-                                            ),
-                                            'top',
-                                        ) }}
-                                    >
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm btn-outline-danger text-nowrap"
-                                            style="pointer-events: none;"
-                                            disabled
-                                        >
-                                            <i class="bi-x-lg"></i>
-                                        </button>
-                                    </span>
-                                {% else %}
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-danger text-nowrap"
-                                        hx-delete="{{ url_for(
+                                {{ components.button(
+                                    _('Remove from team'),
+                                    kind='outline-danger',
+                                    icon='close',
+                                    size='sm',
+                                    icon_only=true,
+                                    allowed=player.id not in paired_player_ids,
+                                    reason=_(
+                                        'This player is paired in at least one round and cannot be removed from the roster (must be removed from the lineup first).'
+                                    ),
+                                    attrs={
+                                        'hx-delete': url_for(
                                             'admin-team-remove-player',
                                             event_uniq_id=admin_event.uniq_id,
                                             team_id=admin_team.id,
                                             player_id=player.id,
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        title="{{ _('Remove from team') }}"
-                                    >
-                                        <i class="bi-x-lg"></i>
-                                    </button>
-                                {% endif %}
+                                        ),
+                                        'hx-target': 'body',
+                                        'hx-indicator': '#please-wait',
+                                    },
+                                ) }}
                             </div>
                         </div>
                     {% endfor %}
                 </form>
             {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

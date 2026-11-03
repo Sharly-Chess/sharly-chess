@@ -1,22 +1,22 @@
-<div
-    id="admin-screen-set-form-modal"
-    class="modal-dialog modal-dialog-scrollable admin-screen-sets-modal"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit set') }}
-                {% else %}
-                    {{ _('Create set') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
-            <h4 class="mb-3">
-                {{ _('%(string)s:', string=_('Screen')) }}
-                {{ admin_screen.name }}
-            </h4>
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'admin-screen-set-form-modal' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-screen-sets-modal' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit set') }}
+    {% else %}
+        {{ _('Create set') }}
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Screen')) }}
+    {{ admin_screen.name }}
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -37,9 +37,7 @@
                     ) }}"
                 {% endif %}
             >
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
+                {{ components.section_heading(_('Properties')) }}
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6 mb-2">
                         {{ admin_macros.select_input(
@@ -69,9 +67,7 @@
                     {% set is_team_matches = is_team and admin_screen.screen_type.board_based %}
                     {% set sel = admin_screen.screen_type.selection_labels(is_team, is_team_matches) %}
                     {% set show_board_selection = admin_screen.screen_type.supports_fixed_boards and not is_team_matches %}
-                    <h4 class="mt-4">
-                        {{ sel.header }}
-                    </h4>
+                    {{ components.section_heading(sel.header) }}
                     <div class="row gy-2 gx-3">
                         {% if show_board_selection %}
                             <div class="col-12">
@@ -147,38 +143,29 @@
                     {% endif %}
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-screen-sets-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    screen_id=admin_screen.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-arrow-left-circle-fill pe-1"></i>
-                {{ _('Back') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                {% if action == 'update' %}
-                    <i class="bi bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% else %}
-                    <i class="bi-plus-lg pe-1"></i>
-                    {{ _('Create') }}
-                {% endif %}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}
+    {{ components.modal_button(
+        url_for(
+            'admin-screen-sets-modal',
+            event_uniq_id=admin_event.uniq_id,
+            screen_id=admin_screen.id,
+        ),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+    {{ components.button(
+        _('Save') if action == 'update' else _('Create'),
+        kind='primary',
+        icon='save' if action == 'update' else 'add',
+        type='submit',
+        attrs={'form': 'modal-form'},
+    ) }}
+{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

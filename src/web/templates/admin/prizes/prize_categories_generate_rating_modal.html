@@ -1,12 +1,9 @@
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(95vw, 600px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">{{ _('Generate rating categories') }}</h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+
+{% block title %}{{ _('Generate rating categories') }}{% endblock %}
+
+{% block body %}
             <p class="text-secondary">
                 {{ _(
                     'Define a rating range and how to split it. One category is created '
@@ -17,9 +14,7 @@
             </p>
             {% for field in ['rating', 'group_count', 'step', 'prizes'] %}
                 {% if errors[field] %}
-                    {% with type='danger', message=errors[field] %}
-                        {% include '/common/alert.html' %}
-                    {% endwith %}
+                    {{ components.banner('danger', errors[field]) }}
                 {% endif %}
             {% endfor %}
             <form
@@ -52,7 +47,7 @@
                         ) }}
                     </div>
                 </div>
-                <h4 class="mt-3 mb-2">{{ _('Split method') }}</h4>
+                {{ components.section_heading(_('Split method')) }}
                 <div class="form-check">
                     <input
                         class="form-check-input method-radio"
@@ -105,9 +100,7 @@
                         </div>
                     </div>
                 </div>
-                <h4 class="mt-3 mb-2">
-                    {{ _('Default prizes') }}
-                </h4>
+                {{ components.section_heading(_('Default prizes')) }}
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <label for="place_count" class="text-nowrap">
                         {{ _('%(string)s:', string=_('Number of prize places')) }}
@@ -142,28 +135,14 @@
                     {% endfor %}
                 </div>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-plus-lg pe-1"></i>
-                {{ _('Generate') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Generate'), kind='primary', icon='add', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}
+
+{% block after_modal %}
 <script>
     (function () {
         function applyMethod() {
@@ -198,3 +177,4 @@
     })();
     requestRefresh();
 </script>
+{% endblock %}

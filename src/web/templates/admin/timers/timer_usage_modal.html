@@ -1,11 +1,9 @@
-<div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Screens of timer [%(timer)s]', timer=admin_timer.name) }}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'wide' %}
+
+{% block title %}{{ _('Screens of timer [%(timer)s]', timer=admin_timer.name) }}{% endblock %}
+
+{% block body %}
             {% if not usage_sections %}
                 <p class="text-secondary fst-italic">{{ _('The event has no screens.') }}</p>
             {% else %}
@@ -70,24 +68,9 @@
                     input.indeterminate = true;
                 });
             </script>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}

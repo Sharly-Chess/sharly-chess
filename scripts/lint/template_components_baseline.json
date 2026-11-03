@@ -144,44 +144,10 @@
     "icon-spacing": 10,
     "modal-trigger": 4
   },
-  "src/web/templates/admin/accounts/account_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/accounts/account_permission_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/accounts/account_permissions_modal.html": {
-    "button": 3,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 2
-  },
   "src/web/templates/admin/accounts/tab.html": {
     "button": 2,
     "icon-spacing": 1,
     "modal-trigger": 2
-  },
-  "src/web/templates/admin/championship/category_modal.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/championship/category_rename_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/championship/championship_components.j2": {
     "button": 1,
@@ -197,42 +163,10 @@
     "button": 2,
     "icon-spacing": 1
   },
-  "src/web/templates/admin/championship/config_modal.html": {
-    "button": 3,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/championship/configuration.html": {
     "button": 10,
     "icon-spacing": 4,
     "modal-trigger": 8
-  },
-  "src/web/templates/admin/championship/create_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/championship/criteria_modal.html": {
-    "button": 3,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/championship/criterion_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/championship/documents_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/championship/layout.html": {
     "button": 1,
@@ -243,35 +177,10 @@
     "fixed-colour": 1,
     "icon-spacing": 1
   },
-  "src/web/templates/admin/championship/rule_delete_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/championship/rule_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/championship/source_coefficient_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/championship/source_components.j2": {
     "button": 3,
     "icon-spacing": 3,
     "modal-trigger": 2
-  },
-  "src/web/templates/admin/championship/source_modal.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/championship/sources.html": {
     "button": 1,
@@ -292,12 +201,7 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/common/database/database_modal.html": {
-    "button": 4,
-    "fixed-colour": 2,
-    "icon-spacing": 4,
-    "menu-item": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 2
   },
   "src/web/templates/admin/common/database/database_update_buttons.html": {
     "button": 4,
@@ -345,13 +249,6 @@
     "menu-item": 2,
     "modal-trigger": 2
   },
-  "src/web/templates/admin/display_controllers/display_controller_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/display_controllers/tab.html": {
     "button": 1,
     "empty-state": 1,
@@ -364,42 +261,14 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/event/event_age_category_sets_modal.html": {
-    "button": 5,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 5
+    "modal-trigger": 1
   },
   "src/web/templates/admin/event/event_backup_status.html": {
     "button": 1,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/event/event_export_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/event/event_modal.html": {
-    "button": 5,
-    "dead-white-class": 1,
-    "icon-spacing": 5,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/event/event_snapshot_restore_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/event/event_snapshots_modal.html": {
-    "button": 5,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 2
+    "icon-spacing": 1
   },
   "src/web/templates/admin/event/event_tags_form.html": {
     "button": 1,
@@ -407,21 +276,7 @@
     "modal-trigger": 1
   },
   "src/web/templates/admin/event/event_tags_modal.html": {
-    "button": 8,
-    "icon-spacing": 6,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 8
-  },
-  "src/web/templates/admin/event/event_update_modal_header.html": {
-    "button": 1
-  },
-  "src/web/templates/admin/event/print_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "modal-trigger": 2
   },
   "src/web/templates/admin/event/print_options/place_card_template.html": {
     "button": 1,
@@ -440,16 +295,6 @@
     "button": 4,
     "icon-spacing": 6,
     "modal-trigger": 3
-  },
-  "src/web/templates/admin/families/family_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/families/family_update_modal_header.html": {
-    "button": 1
   },
   "src/web/templates/admin/families/tab.html": {
     "button": 1,
@@ -506,19 +351,6 @@
   "src/web/templates/admin/menus/menu_items_form.html": {
     "button": 1,
     "modal-trigger": 1
-  },
-  "src/web/templates/admin/menus/menu_items_modal.html": {
-    "button": 4,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/menus/menu_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/menus/tab.html": {
     "button": 1,
@@ -682,20 +514,6 @@
   "src/web/templates/admin/place_card_templates/card_props_form.html": {
     "button": 2
   },
-  "src/web/templates/admin/place_card_templates/create_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/place_card_templates/duplicate_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/place_card_templates/item_props_form.html": {
     "button": 21,
     "icon-spacing": 6
@@ -786,95 +604,20 @@
     "button": 2,
     "icon-spacing": 2
   },
-  "src/web/templates/admin/prizes/prize_categories_generate_age_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prize_categories_generate_rating_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/prizes/prize_category_components.j2": {
     "button": 7,
     "icon-spacing": 6,
     "menu-item": 1,
     "modal-trigger": 6
   },
-  "src/web/templates/admin/prizes/prize_category_copy_modal.html": {
+  "src/web/templates/admin/prizes/prize_groups_modal.html": {
     "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prize_category_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prize_criteria_modal.html": {
-    "button": 4,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 2
-  },
-  "src/web/templates/admin/prizes/prize_criterion_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prize_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
+    "icon-spacing": 1,
+    "menu-item": 1,
     "modal-trigger": 1
   },
-  "src/web/templates/admin/prizes/prize_group_copy_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prize_groups_modal.html": {
-    "button": 5,
-    "icon-spacing": 2,
-    "menu-item": 1,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 3
-  },
   "src/web/templates/admin/prizes/prize_players_modal.html": {
-    "fixed-colour": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prizes_config_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/prizes/prizes_modal.html": {
-    "button": 4,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 2
+    "fixed-colour": 1
   },
   "src/web/templates/admin/prizes/tab.html": {
     "button": 5,
@@ -888,22 +631,9 @@
     "icon-spacing": 6,
     "modal-trigger": 3
   },
-  "src/web/templates/admin/rotators/rotator_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/rotators/rotator_screens_form.html": {
     "button": 1,
     "modal-trigger": 1
-  },
-  "src/web/templates/admin/rotators/rotator_screens_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/rotators/tab.html": {
     "button": 1,
@@ -925,40 +655,8 @@
   "src/web/templates/admin/screens/screen_eye_link.html": {
     "button": 1
   },
-  "src/web/templates/admin/screens/screen_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 4,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/screens/screen_set_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 3,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/screens/screen_sets_modal.html": {
-    "button": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
-  },
   "src/web/templates/admin/screens/screen_sets_modal_set_div.html": {
     "button": 3
-  },
-  "src/web/templates/admin/screens/screen_update_modal_header.html": {
-    "button": 1
-  },
-  "src/web/templates/admin/screens/screens_config_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
   },
   "src/web/templates/admin/screens/tab.html": {
     "button": 1,
@@ -974,18 +672,8 @@
     "menu-item": 1,
     "modal-trigger": 3
   },
-  "src/web/templates/admin/teams/team_affiliations_modal.html": {
-    "button": 2,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/teams/team_check_in_modal.html": {
-    "button": 2,
-    "fixed-colour": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "fixed-colour": 1
   },
   "src/web/templates/admin/teams/team_components.j2": {
     "button": 4,
@@ -997,29 +685,7 @@
     "icon-spacing": 5
   },
   "src/web/templates/admin/teams/team_lineups_modal.html": {
-    "button": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/teams/team_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/teams/team_roster_modal.html": {
-    "button": 3,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
-  "src/web/templates/admin/timers/default_timers_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "button": 2
   },
   "src/web/templates/admin/timers/tab.html": {
     "button": 2,
@@ -1032,35 +698,8 @@
     "icon-spacing": 5,
     "modal-trigger": 5
   },
-  "src/web/templates/admin/timers/timer_hour_form_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 1
-  },
-  "src/web/templates/admin/timers/timer_hours_modal.html": {
-    "button": 8,
-    "icon-spacing": 4,
-    "menu-item": 1,
-    "modal-dialog": 1,
-    "modal-header": 1,
-    "modal-trigger": 3
-  },
-  "src/web/templates/admin/timers/timer_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 1,
-    "modal-dialog": 1,
-    "modal-header": 1
-  },
   "src/web/templates/admin/timers/timer_usage_modal.html": {
-    "button": 2,
-    "dead-white-class": 1,
-    "icon-spacing": 2,
-    "modal-dialog": 1,
-    "modal-header": 1
+    "icon-spacing": 1
   },
   "src/web/templates/admin/tournaments/tab.html": {
     "button": 4,

@@ -1,28 +1,25 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
+{% set modal_id = 'event-tags-modal' %}
+{% set modal_size = 'wide' %}
+{% set modal_class = 'admin-event-edit-modal' %}
 
 {# The tag registry, opened from the event modal. That modal's in-progress
    fields ride along as hidden inputs, so Back restores a half-filled form
    rather than re-reading the stored event. #}
-<div
-    id="event-tags-modal"
-    class="modal-dialog modal-dialog-scrollable admin-event-edit-modal"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Tags') }}
-                <i
-                    class="bi-info-circle-fill"
-                    style="font-size: 70%"
-                    {{ macros.tooltip_attributes('', _(
-                        'These tags are shared by every event of this installation.'
-                    )) }}
-                ></i>
-            </h2>
-        </div>
-        <div class="modal-body">
+
+{% block title %}
+    {{ _('Tags') }}
+    <i
+        class="bi-info-circle-fill sc-modal-doc"
+        {{ macros.tooltip_attributes('', _(
+            'These tags are shared by every event of this installation.'
+        )) }}
+    ></i>
+{% endblock %}
+
+{% block body %}
             <form
                 id="tags-modal-form"
                 {% if tags_container_state == 'form' %}
@@ -46,13 +43,7 @@
                     {% endif %}
                 {% endfor %}
                 {% if tags_container_state == 'form' %}
-                    <h4>
-                        {% if edited_tag_id %}
-                            {{ _('Update tag') }}
-                        {% else %}
-                            {{ _('New tag') }}
-                        {% endif %}
-                    </h4>
+                    {{ components.section_heading(_('Update tag') if edited_tag_id else _('New tag')) }}
                     <div class="row gy-2 gx-3">
                         <div class="col-12 col-md-8">
                             {{ admin_macros.text_input(
@@ -114,26 +105,29 @@
                                         ) }}
                                     </div>
                                     <div class="flex-shrink-0 d-flex gap-2 align-items-center">
-                                        <button
-                                            class="btn btn-sm btn-outline-primary text-nowrap"
-                                            type="button"
-                                            hx-post="{{ url_for('tag-update-form', tag_id=tag.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-pencil-fill"></i>
-                                        </button>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger text-nowrap"
-                                            type="button"
-                                            hx-post="{{ url_for('tag-delete', tag_id=tag.id) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-trash-fill"></i>
-                                        </button>
+                                        {{ components.button(
+                                            _('Update tag'),
+                                            icon='bi-pencil-fill',
+                                            size='sm',
+                                            icon_only=true,
+                                            attrs={
+                                                'hx-post': url_for('tag-update-form', tag_id=tag.id),
+                                                'hx-target': 'body',
+                                                'hx-indicator': '#please-wait',
+                                            },
+                                        ) }}
+                                        {{ components.button(
+                                            _('Delete'),
+                                            kind='outline-danger',
+                                            icon='bi-trash-fill',
+                                            size='sm',
+                                            icon_only=true,
+                                            attrs={
+                                                'hx-post': url_for('tag-delete', tag_id=tag.id),
+                                                'hx-target': 'body',
+                                                'hx-indicator': '#please-wait',
+                                            },
+                                        ) }}
                                     </div>
                                 </div>
                             </div>
@@ -144,12 +138,9 @@
                        user to invent a vocabulary, propose ready-made sets
                        they can take whole. Tags already named the same are
                        skipped, so taking a set twice adds nothing. #}
-                    <h5 class="text-center mt-2 mb-1">
-                        {{ _('No tag has been created yet.') }}
-                    </h5>
-                    <p class="text-center text-secondary">
-                        {{ _('Start from one of these sets, or add your own tags.') }}
-                    </p>
+                    {% call components.empty_state(_('No tag has been created yet.'), class='mt-0 mb-3') %}
+                        <p>{{ _('Start from one of these sets, or add your own tags.') }}</p>
+                    {% endcall %}
                     <div class="d-flex flex-column gap-2">
                         {% for tag_set in default_tag_sets %}
                             <label
@@ -172,20 +163,19 @@
                         {% endfor %}
                     </div>
                     <div class="text-end mt-3">
-                        <button
-                            id="tag-sets-add-button"
-                            type="button"
-                            class="btn btn-outline-primary btn-sm text-nowrap"
-                            disabled
-                            hx-post="{{ url_for('tag-sets-add') }}"
-                            hx-include="#tags-modal-form"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-target="#modal-wrapper"
-                        >
-                            <i class="bi-plus-circle pe-1"></i>
-                            {{ _('Add the selected sets') }}
-                        </button>
+                        {{ components.button(
+                            _('Add the selected sets'),
+                            icon='bi-plus-circle',
+                            size='sm',
+                            attrs={
+                                'id': 'tag-sets-add-button',
+                                'disabled': true,
+                                'hx-post': url_for('tag-sets-add'),
+                                'hx-include': '#tags-modal-form',
+                                'hx-target': 'body',
+                                'hx-indicator': '#please-wait',
+                            },
+                        ) }}
                     </div>
                     <script>
                         // Scoped in an IIFE: this fragment is re-executed on
@@ -207,78 +197,75 @@
                     </script>
                 {% endif %}
             </form>
-        </div>
-        <div class="modal-footer">
-                {# Opened from an event, the modal goes back to it; opened
-                   from the tag filter of an event list, it just closes,
-                   reloading the list the renamed tags are shown on. #}
-                {% if event_form_data.get('event_return_url') %}
-                    <button
-                        class="btn btn-secondary text-nowrap me-auto"
-                        type="button"
-                        hx-post="{{ event_form_data.get('event_return_url') }}"
-                        hx-include="#tags-modal-form"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-arrow-left-circle-fill pe-1"></i>
-                        {{ _('Back') }}
-                    </button>
-                {% else %}
-                    <button
-                        class="btn btn-secondary text-nowrap me-auto"
-                        type="button"
-                        hx-get="{{ event_form_data.get('tags_close_url') }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-x-circle-fill pe-1"></i>
-                        {{ _('Close') }}
-                    </button>
-                {% endif %}
-                {% if tags_container_state == 'form' %}
-                    <button
-                        class="btn btn-secondary text-nowrap"
-                        type="button"
-                        hx-post="{{ url_for('tag-manager') }}"
-                        hx-include="#tags-modal-form"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-x-circle-fill pe-1"></i>
-                        {{ _('Cancel') }}
-                    </button>
-                    {% if edited_tag_id %}
-                        <button
-                            id="tag-form-submit-button"
-                            class="btn btn-primary text-nowrap"
-                            type="submit"
-                            form="tags-modal-form"
-                        >
-                            <i class="bi-floppy-fill pe-1"></i>
-                            {{ _('Save') }}
-                        </button>
-                    {% else %}
-                        {{ admin_macros.create_with_add_other_split_buttons(
-                            add_other_active, form_id='tags-modal-form'
-                        ) }}
-                    {% endif %}
-                {% else %}
-                    <button
-                        class="btn btn-primary text-nowrap"
-                        type="button"
-                        hx-post="{{ url_for('tag-add-form') }}"
-                        hx-include="#tags-modal-form"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-plus-circle pe-1"></i>
-                        {{ _('Add') }}
-                    </button>
-                {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{# Opened from an event, the modal goes back to it; opened from the tag
+   filter of an event list, it just closes, reloading the list the renamed
+   tags are shown on. #}
+{% block footer_start %}
+    {% if event_form_data.get('event_return_url') %}
+        {{ components.button(
+            _('Back'),
+            kind='secondary',
+            icon='back',
+            attrs={
+                'hx-post': event_form_data.get('event_return_url'),
+                'hx-include': '#tags-modal-form',
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+    {% else %}
+        {{ components.button(
+            _('Close'),
+            kind='secondary',
+            icon='cancel',
+            attrs={
+                'hx-get': event_form_data.get('tags_close_url'),
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {% if tags_container_state == 'form' %}
+        {{ components.button(
+            _('Cancel'),
+            kind='secondary',
+            icon='cancel',
+            attrs={
+                'hx-post': url_for('tag-manager'),
+                'hx-include': '#tags-modal-form',
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+        {% if edited_tag_id %}
+            {{ components.button(
+                _('Save'),
+                kind='primary',
+                icon='save',
+                type='submit',
+                attrs={'id': 'tag-form-submit-button', 'form': 'tags-modal-form'},
+            ) }}
+        {% else %}
+            {{ admin_macros.create_with_add_other_split_buttons(
+                add_other_active, form_id='tags-modal-form'
+            ) }}
+        {% endif %}
+    {% else %}
+        {{ components.button(
+            _('Add'),
+            kind='primary',
+            icon='bi-plus-circle',
+            attrs={
+                'hx-post': url_for('tag-add-form'),
+                'hx-include': '#tags-modal-form',
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+            },
+        ) }}
+    {% endif %}
+{% endblock %}

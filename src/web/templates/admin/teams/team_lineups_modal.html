@@ -1,22 +1,12 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
-{% import '/admin/components/macros.j2' as components with context %}
-<div
-    class="modal-dialog modal-dialog-scrollable admin-team-lineups-modal"
-    style="--bs-modal-width: min(95vw, 720px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Lineups — %(team)s', team=admin_team.name) }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
+{% set modal_size = 'xl' %}
+{% set modal_class = 'admin-team-lineups-modal' %}
+{% set modal_close = true %}
+
+{% block title %}{{ _('Lineups — %(team)s', team=admin_team.name) }}{% endblock %}
+
+{% block body %}
             {% if not rounds_data %}
                 <div class="text-muted">
                     {{ _('This team has no rounds to show a lineup for.') }}
@@ -177,9 +167,7 @@
                                     ) }}
                                 </p>
                             {% endif %}
-                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
-                                {{ _('Boards') }}
-                            </h6>
+                            {{ components.section_heading(_('Boards'), sub=true) }}
                             <div class="d-flex flex-column gap-1 mb-3">
                                 {% for slot_index in range(team_player_count) %}
                                     {% set slot_player = slots[slot_index] if slot_index < slots|length else none %}
@@ -225,9 +213,7 @@
                                     </div>
                                 {% endfor %}
                             </div>
-                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
-                                {{ _('Substitutes Bench') }}
-                            </h6>
+                            {{ components.section_heading(_('Substitutes Bench'), sub=true) }}
                             <div
                                 class="lineup-bench border border-secondary rounded p-2 d-flex flex-column gap-1"
                                 data-round="{{ round_num }}"
@@ -546,8 +532,10 @@
                     })();
                 </script>
             {% endif %}
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

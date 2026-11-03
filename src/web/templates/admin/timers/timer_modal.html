@@ -1,88 +1,75 @@
-<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit timer') }}
-                {% else %}
-                    {{ _('Create timer') }}
-                {% endif %}
-            </h2>
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit timer') }}
+    {% else %}
+        {{ _('Create timer') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        {% if action == 'create' %}
+            hx-post="{{ url_for(
+                'admin-timer-create', event_uniq_id=admin_event.uniq_id
+            ) }}"
+        {% elif action == 'clone' %}
+            hx-post="{{ url_for(
+                'admin-timer-clone',
+                event_uniq_id=admin_event.uniq_id,
+                timer_id=admin_timer.id,
+            ) }}"
+        {% elif action == 'update' %}
+            hx-patch="{{ url_for(
+                'admin-timer-update',
+                event_uniq_id=admin_event.uniq_id,
+                timer_id=admin_timer.id,
+            ) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {{ components.section_heading(_('Properties')) }}
+        <div class="row gy-2 gx-3">
+            <div class="col-12">
+                {{ admin_macros.text_input(
+                    name='name',
+                    label=_('%(string)s:', string=_('Name')),
+                    placeholder=_('E.g.: %(string)s', string=_('My timer')),
+                    data=data, errors=errors
+                ) }}
+            </div>
         </div>
-        <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-trigger="submit, enterKeypressFromModal"
-                {% if action == 'create' %}
-                    hx-post="{{ url_for(
-                        'admin-timer-create', event_uniq_id=admin_event.uniq_id
-                    ) }}"
-                {% elif action == 'clone' %}
-                    hx-post="{{ url_for(
-                        'admin-timer-clone',
-                        event_uniq_id=admin_event.uniq_id,
-                        timer_id=admin_timer.id,
-                    ) }}"
-                {% elif action == 'update' %}
-                    hx-patch="{{ url_for(
-                        'admin-timer-update',
-                        event_uniq_id=admin_event.uniq_id,
-                        timer_id=admin_timer.id,
-                    ) }}"
-                {% endif %}
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12">
-                        {{ admin_macros.text_input(
-                            name='name',
-                            label=_('%(string)s:', string=_('Name')),
-                            placeholder=_('E.g.: %(string)s', string=_('My timer')),
+        {{ components.section_heading(_('Delays')) }}
+        <div class="row gy-2 gx-3">
+            {% for num in [1, 2, 3] %}
+                <div class="col-12">
+                    {% with id='delay-'~num, name='delay_'~num %}
+                        {{ admin_macros.number_input(
+                            name='delay_'~num,
+                            label=_('Delay #%(num)d:', num=num),
+                            tooltip_text=timer_delay_texts[num],
+                            placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
                             data=data, errors=errors
                         ) }}
-                    </div>
+                    {% endwith %}
                 </div>
-                <h4>
-                    {{ _('Delays') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    {% for num in [1, 2, 3] %}
-                        <div class="col-12">
-                            {% with id='delay-'~num, name='delay_'~num %}
-                                {{ admin_macros.number_input(
-                                    name='delay_'~num,
-                                    label=_('Delay #%(num)d:', num=num),
-                                    tooltip_text=timer_delay_texts[num],
-                                    placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
-                                    data=data, errors=errors
-                                ) }}
-                            {% endwith %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </form>
+            {% endfor %}
         </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
-            </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-floppy-fill pe-1"></i>
-                {{ _('Save') if action == 'update' else _('Create') }}
-            </button>
-        </div>
-    </div>
-</div>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(
+        _('Save') if action == 'update' else _('Create'),
+        kind='primary',
+        icon='save',
+        type='submit',
+        attrs={'form': 'modal-form'},
+    ) }}
+{% endblock %}

@@ -1,25 +1,21 @@
-<div
-    class="modal-dialog modal-dialog-scrollable admin-team-edit-modal"
-    style="--bs-modal-width: min(92vw, 640px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit team') }}
-                {% else %}
-                    {{ _('Create team') }}
-                {% endif %}
-            </h2>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+{% set modal_class = 'admin-team-edit-modal' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        {{ _('Edit team') }}
+    {% else %}
+        {{ _('Create team') }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
             {% if previous_team %}
-                {% with type='success', message=_(
+                {{ components.banner('success', _(
                     'Team [%(team)s] successfully created!',
                     team=previous_team.name
-                ) %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                )) }}
             {% endif %}
             <form
                 id="modal-form"
@@ -105,34 +101,21 @@
                         this.value !== 'other';
                 });
             </script>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
-            </button>
-            <span id="submit-button-container">
-                {% if action == 'create' %}
-                    {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
-                {% else %}
-                    <button
-                        type="submit"
-                        form="modal-form"
-                        class="text-nowrap white btn btn-primary"
-                    >
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    </button>
-                {% endif %}
-            </span>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-{% if previous_team %}
-    <script>requestRefresh()</script>
-{% endif %}
+{% block footer %}
+    {{ components.cancel_button() }}
+    <span id="submit-button-container">
+        {% if action == 'create' %}
+            {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+        {% else %}
+            {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+        {% endif %}
+    </span>
+{% endblock %}
+
+{% block after_modal %}
+    {% if previous_team %}
+        <script>requestRefresh()</script>
+    {% endif %}
+{% endblock %}

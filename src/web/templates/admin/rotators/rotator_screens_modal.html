@@ -1,24 +1,12 @@
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Screens list') }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'sm' %}
+{% set modal_close = true %}
+
+{% block title %}{{ _('Screens list') }}{% endblock %}
+
+{% block body %}
             {% if success_message %}
-                {% with type='success', message=success_message %}
-                    {% include '/common/alert.html' %}
-                {% endwith %}
+                {{ components.banner('success', success_message) }}
             {% endif %}
             <div
                 id="screens-form-container"
@@ -56,40 +44,24 @@
                 ) }}
             </div>
             <div class="d-flex justify-content-end gap-2 mb-3">
-                <span
-                    {% if not screen_options %}
-                       {{ macros.tooltip_attributes(
-                            'info', _('No screens to add.'), 'top'
-                        ) }}
-                    {% endif %}
-                >
-                    <button
-                        id="screens-add-button"
-                        data-testid="screens-add-button"
-                        class="btn btn-primary text-nowrap rotating-screen-button"
-                        {% if not screen_options %}disabled{% endif %}
-                    >
-                        <i class="bi-plus-lg pe-1"></i>
-                        {{ _('Screens') }}
-                    </button>
-                </span>
-                <span
-                    {% if not family_options %}
-                       {{ macros.tooltip_attributes(
-                            'info', _('No multi-screens to add.'), 'top'
-                        ) }}
-                    {% endif %}
-                >
-                    <button
-                        id="families-add-button"
-                        data-testid="families-add-button"
-                        class="btn btn-primary text-nowrap rotating-screen-button"
-                        {% if not family_options %}disabled{% endif %}
-                    >
-                        <i class="bi-plus-lg pe-1"></i>
-                        {{ _('Multi-screens') }}
-                    </button>
-                </span>
+                {{ components.button(
+                    _('Screens'),
+                    kind='primary',
+                    icon='add',
+                    allowed=screen_options|length > 0,
+                    reason=_('No screens to add.'),
+                    class='rotating-screen-button',
+                    attrs={'id': 'screens-add-button', 'data-testid': 'screens-add-button'},
+                ) }}
+                {{ components.button(
+                    _('Multi-screens'),
+                    kind='primary',
+                    icon='add',
+                    allowed=family_options|length > 0,
+                    reason=_('No multi-screens to add.'),
+                    class='rotating-screen-button',
+                    attrs={'id': 'families-add-button', 'data-testid': 'families-add-button'},
+                ) }}
             </div>
             <script>
                 $('#screens-add-button').click(() => {
@@ -111,8 +83,10 @@
             </script>
 
             {% include 'rotator_screens_form.html' %}
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

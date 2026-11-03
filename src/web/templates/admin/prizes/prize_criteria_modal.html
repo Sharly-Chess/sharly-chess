@@ -1,116 +1,100 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_close = true %}
 
-<div
-    class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 500px);"
->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">
-                {{ _('Criteria list') }}
-            </h2>
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="{{ _('Close') }}"
-            ></button>
-        </div>
-        <div class="modal-body">
-            <div class="d-flex gap-2 mb-3 justify-content-end">
-                <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('Define the prizes of the category.'), 'top'
-                    ) }}
-                >
-                    <button
-                        class="btn btn-outline-primary"
-                        hx-get="{{ url_for(
-                            'admin-prizes-modal'
-                            if admin_prize_category.prizes else
-                            'admin-prize-create-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            prize_group_id=admin_prize_group.id,
-                            prize_category_id=admin_prize_category.id,
-                        ) }}"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-collection-fill pe-1"></i>
-                        {{ _('Prizes') }}
-                    </button>
-                </span>
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for(
-                        'admin-prize-criterion-create-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        prize_group_id=admin_prize_group.id,
-                        prize_category_id=admin_prize_category.id,
-                    ) }}"
-                    hx-indicator="#please-wait"
-                    {{ macros.tooltip_attributes('info', _('Add a criterion to the list.'), 'top') }}
-                >
-                    <i class="bi-plus-lg pe-1"></i>
-                    {{ _('Add') }}
-                </button>
-            </div>
-            <h4 class="mb-3">
-                {{ _('%(string)s:', string=_('Category')) }}
-                {{ admin_prize_category.name }}
-            </h4>
-            <div class="d-flex flex-column gap-2">
-                {% if not admin_prize_category.criteria %}
-                    <div class="text-danger">{{ _('No criteria.') }}</div>
-                {% endif %}
-                {% for criterion in admin_prize_category.criteria %}
-                    <div class="border border-secondary bg-body-tertiary">
-                        <div class="p-2 d-flex align-items-center gap-4">
-                            <div class="flex-grow-1">
-                                {{ criterion.name }}
-                            </div>
-                            <div class="flex-shrink-0 d-flex gap-2 align-items-center">
-                                <button
-                                    class="btn btn-sm btn-outline-primary text-nowrap"
-                                    hx-get="{{ url_for(
-                                        'admin-prize-criterion-update-modal',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=admin_tournament.id,
-                                        prize_group_id=admin_prize_group.id,
-                                        prize_category_id=admin_prize_category.id,
-                                        prize_criterion_id=criterion.id,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-target="#modal-wrapper"
-                                    {{ macros.tooltip_attributes('info', _('Edit'), 'top') }}
-                                >
-                                    <i class="bi-pencil-fill"></i>
-                                </button>
-                                <button
-                                    class="btn btn-sm btn-outline-danger text-nowrap"
-                                    hx-delete="{{ url_for(
-                                        'admin-prize-criterion-delete',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=admin_tournament.id,
-                                        prize_group_id=admin_prize_group.id,
-                                        prize_category_id=admin_prize_category.id,
-                                        prize_criterion_id=criterion.id,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-target="#modal-wrapper"
-                                    {{ macros.tooltip_attributes('info', _('Delete'), 'top') }}
-                                >
-                                    <i class="bi-trash-fill"></i>
-                                </button>
-                            </div>
-                        </div>
+{% block title %}{{ _('Criteria list') }}{% endblock %}
+
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Category')) }}
+    {{ admin_prize_category.name }}
+{% endblock %}
+
+{% block header_actions %}
+    {{ components.modal_button(
+        url_for(
+            'admin-prizes-modal'
+            if admin_prize_category.prizes else
+            'admin-prize-create-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=admin_prize_category.id,
+        ),
+        _('Prizes'),
+        icon='bi-collection-fill',
+        tooltip=_('Define the prizes of the category.'),
+        from_modal=true,
+    ) }}
+    {{ components.modal_button(
+        url_for(
+            'admin-prize-criterion-create-modal',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            prize_group_id=admin_prize_group.id,
+            prize_category_id=admin_prize_category.id,
+        ),
+        _('Add'),
+        kind='primary',
+        icon='add',
+        tooltip=_('Add a criterion to the list.'),
+        from_modal=true,
+    ) }}
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column gap-2">
+        {% if not admin_prize_category.criteria %}
+            <div class="text-danger">{{ _('No criteria.') }}</div>
+        {% endif %}
+        {% for criterion in admin_prize_category.criteria %}
+            <div class="border border-secondary bg-body-tertiary">
+                <div class="p-2 d-flex align-items-center gap-4">
+                    <div class="flex-grow-1">
+                        {{ criterion.name }}
                     </div>
-                {% endfor %}
+                    <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                        {{ components.modal_button(
+                            url_for(
+                                'admin-prize-criterion-update-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id,
+                                prize_category_id=admin_prize_category.id,
+                                prize_criterion_id=criterion.id,
+                            ),
+                            _('Edit'),
+                            icon='edit',
+                            size='sm',
+                            icon_only=true,
+                            from_modal=true,
+                        ) }}
+                        {{ components.button(
+                            _('Delete'),
+                            kind='outline-danger',
+                            icon='delete',
+                            size='sm',
+                            icon_only=true,
+                            attrs={
+                                'hx-delete': url_for(
+                                    'admin-prize-criterion-delete',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    prize_group_id=admin_prize_group.id,
+                                    prize_category_id=admin_prize_category.id,
+                                    prize_criterion_id=criterion.id,
+                                ),
+                                'hx-target': 'body',
+                                'hx-indicator': '#please-wait',
+                            },
+                        ) }}
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
-</div>
+{% endblock %}
 
-<script>requestRefresh()</script>
+{% block footer %}{% endblock %}
+
+{% block after_modal %}
+    <script>requestRefresh()</script>
+{% endblock %}

@@ -4,6 +4,7 @@
 {% set modal_size = 'lg' %}
 {% set modal_class = 'pairing-modal' %}
 {% set modal_scrollable = false %}
+{% set modal_footer_id = 'warning-buttons' %}
 
 {% set is_correction = admin_tournament.fide_mode and round_status == 'PREVIOUS' %}
 {% set shows_rounds = not (
@@ -140,7 +141,7 @@
         {{ components.button(
             _('Leave FIDE mode…'),
             kind='outline-danger',
-            attrs={'onclick': "$('#warning-explanation').addClass('d-none'); $(this).closest('.modal-footer').addClass('d-none'); $('#leave-fide-mode').removeClass('d-none');"},
+            attrs={'onclick': "$('#warning-explanation').addClass('d-none'); $('#warning-buttons').addClass('d-none'); $('#leave-fide-mode').removeClass('d-none');"},
         ) }}
     {% else %}
         {{ components.button(

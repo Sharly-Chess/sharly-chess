@@ -1,22 +1,22 @@
+{% extends '/admin/components/modal.html' %}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
-    <div class="modal-content">
-        <div class="modal-header">
-            <div class="vstack">
-                <h2 class="modal-title">{{ _('Base configuration') }}</h2>
+{% block title %}{{ _('Base configuration') }}{% endblock %}
+
+{% block subtitle %}
                 {% if client.can_rename_event %}
                     <div id="uniq-id-field" class="form-text pt-0 mt-0">
                         {{ _('Unique ID: [%(uniq_id)s]', uniq_id=championship.uniq_id) }}
-                        <span {{ macros.tooltip_attributes('info', _('Edit the unique ID.'), 'right') }}>
-                            <button
-                                id="uniq-id-update-button"
-                                data-testid="uniq-id-update-button"
-                                type="button"
-                                class="btn btn-sm text-primary text-nowrap"
-                            ><i class="bi-pencil"></i></button>
-                        </span>
+                        {{ components.button(
+                            _('Edit the unique ID.'),
+                            kind='link',
+                            icon='edit',
+                            size='sm',
+                            icon_only=true,
+                            tooltip_placement='right',
+                            attrs={'id': 'uniq-id-update-button', 'data-testid': 'uniq-id-update-button'},
+                        ) }}
                     </div>
                     <div
                         id="uniq-id-update-form-container"
@@ -44,9 +44,9 @@
                         });
                     </script>
                 {% endif %}
-            </div>
-        </div>
-        <div class="modal-body">
+{% endblock %}
+
+{% block body %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -98,14 +98,9 @@
                     {% endif %}
                 </div>
             </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
-                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
-            </button>
-            <button type="submit" form="modal-form" class="text-nowrap white btn btn-primary">
-                <i class="bi-check-circle-fill pe-1"></i>{{ _('Save') }}
-            </button>
-        </div>
-    </div>
-</div>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}
