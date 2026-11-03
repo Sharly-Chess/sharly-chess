@@ -72,6 +72,12 @@
     {%- endfor -%}
 {%- endmacro -%}
 
+{# The attributes of `attrs`, for the templates built on the components
+   (the modal shell). #}
+{%- macro html_attributes(attrs) -%}
+    {{- _attributes(attrs) -}}
+{%- endmacro -%}
+
 {# `content` in the tooltip of a disabled action (its reason) or of an
    enabled one. A disabled button fires no event, so the tooltip goes on a
    span around it. #}
@@ -180,6 +186,9 @@
     A button opening a menu of `menu_item`s, given in a `{% call %}`.
 
     align: start or end, the side of the button the menu lines up with.
+    toggle_class / toggle_attrs: classes and attributes of the toggle button
+        (data-bs-auto-close, data-bs-config...); menu_class: classes of the
+        menu.
 #}
 {% macro menu_button(
     label,
@@ -191,18 +200,23 @@
     reason=none,
     tooltip=none,
     tooltip_placement='top',
-    class=''
+    class='',
+    toggle_class='',
+    toggle_attrs={},
+    menu_class=''
 ) -%}
     {%- set items = caller() -%}
+    {%- set merged = {'data-bs-toggle': 'dropdown', 'aria-expanded': 'false'} -%}
+    {%- do merged.update(toggle_attrs) -%}
     {%- set markup -%}
         <div class="dropdown sc-menu{% if class %} {{ class }}{% endif %}">
             {{ button(
                 label, kind=kind, icon=icon, size=size, allowed=allowed,
-                class='dropdown-toggle',
-                attrs={'data-bs-toggle': 'dropdown', 'aria-expanded': 'false'},
+                class='dropdown-toggle' ~ (' ' ~ toggle_class if toggle_class else ''),
+                attrs=merged,
             ) }}
             {% if allowed %}
-                <ul class="dropdown-menu{% if align == 'end' %} dropdown-menu-end{% endif %}">
+                <ul class="dropdown-menu{% if align == 'end' %} dropdown-menu-end{% endif %}{% if menu_class %} {{ menu_class }}{% endif %}">
                     {{ items }}
                 </ul>
             {% endif %}

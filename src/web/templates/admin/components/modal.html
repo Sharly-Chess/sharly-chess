@@ -8,7 +8,8 @@
         {% block footer %}{{ components.cancel_button() }}...{% endblock %}
 
     The subtitle block holds the lines shown under the title (the event, the
-    tournament...), and header_actions the buttons on the right of the title. A modal without a title has no header, and one without a body (a bare
+    tournament...), and header_actions the buttons on the right of the title.
+    A modal without a title has no header, and one without a body (a bare
     question with its answers) no body.
 
     Settings, set in the extending template:
@@ -21,6 +22,10 @@
             footer's Cancel closes the modal).
         modal_scrollable: the body scrolls within the window (default true).
         modal_class: extra classes of the dialog.
+        modal_attrs: extra attributes of the dialog, as a dict (an hx-get that
+            refreshes the modal...).
+        modal_footer_id: the id of the footer, for the scripts that show or
+            hide its buttons.
 #}
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/components/macros.j2' as components with context %}
@@ -28,6 +33,7 @@
 <div
     {% if modal_id is defined and modal_id %}id="{{ modal_id }}"{% endif %}
     class="modal-dialog sc-modal sc-modal-{{ _size }}{% if modal_scrollable | default(true) %} modal-dialog-scrollable{% endif %}{% if modal_class is defined and modal_class %} {{ modal_class }}{% endif %}"
+    {{- components.html_attributes(modal_attrs | default({})) }}
 >
     <div class="modal-content">
         {% block before_header %}{% endblock %}
@@ -62,7 +68,7 @@
         {% set _footer %}{% block footer %}{{ components.cancel_button() }}{% endblock %}{% endset %}
         {% set _footer_start %}{% block footer_start %}{% endblock %}{% endset %}
         {% if _footer | trim or _footer_start | trim %}
-            <div class="modal-footer">
+            <div class="modal-footer"{% if modal_footer_id is defined and modal_footer_id %} id="{{ modal_footer_id }}"{% endif %}>
                 {% if _footer_start | trim %}
                     <div class="sc-modal-footer-start">{{ _footer_start }}</div>
                 {% endif %}

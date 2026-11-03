@@ -3534,7 +3534,12 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     font-weight: 600;
 }
 
-[data-sc-interface=admin] :is(* + .sc-section-heading, * + form > .sc-section-heading:first-child) {
+/* Space above a heading that follows content: hidden inputs, scripts and
+   styles show nothing, so a heading after them alone opens its container. */
+[data-sc-interface=admin] :is(
+    :not(input[type=hidden], script, style) + .sc-section-heading,
+    * + form > .sc-section-heading:first-child
+) {
     margin-top: 1.5rem;
 }
 
