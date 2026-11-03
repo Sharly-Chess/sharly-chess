@@ -2602,6 +2602,21 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --bs-gradient: none;
 }
 
+/* Bootstrap's grey does not read on the dark background: the quiet outline
+   button takes the theme's secondary text colour. */
+[data-sc-interface=admin] .btn-outline-secondary {
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-border-color: var(--pw-control-border-color);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: var(--pw-surface-raised-bg);
+    --bs-btn-hover-border-color: var(--pw-btn-hover-border-color);
+    --bs-btn-active-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: var(--pw-toggle-active-bg);
+    --bs-btn-active-border-color: var(--pw-btn-hover-border-color);
+    --bs-btn-disabled-color: var(--pw-btn-disabled-color);
+    --bs-btn-disabled-border-color: var(--pw-btn-disabled-border-color);
+}
+
 [data-sc-interface=admin] .card {
     --bs-card-bg: var(--pw-surface-bg);
     --bs-card-border-color: var(--bs-border-color);
@@ -2638,6 +2653,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --bs-dropdown-item-padding-y: .4rem;
     --bs-dropdown-divider-bg: var(--bs-border-color);
     --bs-dropdown-border-radius: var(--bs-border-radius);
+    --bs-dropdown-header-color: var(--bs-secondary-color);
 }
 
 [data-sc-interface=admin] .dropdown-menu .dropdown-item {
