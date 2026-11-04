@@ -52,7 +52,7 @@
       "build-commands": [
         "mkdir -p /app/share/sharly-chess",
         "pip3 install --prefix=/app . 2>&1 | tee /tmp/app-install.log; test ${PIPESTATUS[0]} -eq 0",
-        "pip3 install --prefix=/app --ignore-installed lxml",
+        "pip3 install --prefix=/app --ignore-installed lxml pygments",
         "pip3 install --prefix=/app pip-licenses",
         "sed -i \"s/IE_CONDITIONAL_PATTERN = re.compile('/IE_CONDITIONAL_PATTERN = re.compile(r'/\" /app/lib/python3.14/site-packages/AdvancedHTMLParser/utils.py",
         "cp -r src/* /app/lib/python3.14/site-packages/",
