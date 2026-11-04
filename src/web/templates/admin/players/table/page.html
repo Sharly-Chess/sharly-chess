@@ -3,6 +3,7 @@
 {% import '/admin/components/macros.j2' as components with context %}
 
 <tbody
+    data-page="{{ page }}"
     {% if page < pages %}
         hx-get="{{ url_for(
             'admin-event-players-page',

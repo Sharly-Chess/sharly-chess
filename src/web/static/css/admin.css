@@ -1210,3 +1210,18 @@
 [data-sc-interface=admin] table.prominent tr.team-block-header :is(.team-header-name-a, .team-header-name-b) {
     font-weight: 500;
 }
+
+/* Live updates: what a check-in or a result changed lights up briefly. */
+@keyframes live-updated-row {
+    from { box-shadow: inset 0 0 0 9999px rgba(var(--bs-primary-rgb), 0.22); }
+}
+
+tr.live-updated > td {
+    animation: live-updated-row 2.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    tr.live-updated > td {
+        animation: none;
+    }
+}

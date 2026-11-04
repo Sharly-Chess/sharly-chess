@@ -2,6 +2,8 @@
 
 from collections.abc import Iterator
 from datetime import date
+import json
+import re
 
 import pytest
 from litestar.testing import TestClient
@@ -10,7 +12,7 @@ from data.player import TournamentPlayer
 from utils.types import PlayerRating
 from data.tournament import Tournament
 from tests.unit.http.events import EventUnderTest
-from utils.enum import PlayerGender, PlayerTitle, Cadence
+from utils.enum import CheckInStatus, PlayerGender, PlayerTitle, Cadence
 
 EVENT_ID = 'test-players-http'
 TOURNAMENT_NAME = 'test-players-http-tournament'
@@ -306,3 +308,66 @@ def test_the_prescribed_rating_follows_the_date_of_birth(
 
     assert placeholder('2015-01-01') == '1299'
     assert placeholder('1990') == '1399'
+
+
+def _live_update(http: TestClient, shown: list[int], changed: list[int] | None):
+    response = http.post(
+        f'/event/{EVENT_ID}/players/live-update',
+        json={
+            'shown_player_ids': shown,
+            'changed_player_ids': changed,
+            'loaded_pages': 1,
+            'complete': True,
+        },
+    )
+    assert response.status_code == 200
+    order = re.search(
+        r'<script type="application/json" id="players-live-order">(.*?)</script>',
+        response.text,
+    )
+    assert order
+    rendered = [
+        int(player_id)
+        for player_id in re.findall(r'<tr id="player-(\d+)"', response.text)
+    ]
+    return json.loads(order.group(1)), rendered
+
+
+@pytest.mark.unit
+def test_a_live_update_renders_only_the_rows_the_page_lacks_or_that_changed(
+    http: TestClient, tournament: Tournament
+):
+    """A page showing every row but one gets that one, and the row of the
+    player named as changed; the others it already shows are not sent."""
+    order, rendered = _live_update(http, [], None)
+    assert sorted(order) == sorted(
+        player.id for player in tournament.tournament_players
+    )
+    assert rendered == order
+    missing, changed = order[3], order[5]
+    shown = [player_id for player_id in order if player_id != missing]
+    order_again, rendered = _live_update(http, shown, [changed])
+    assert order_again == order
+    assert rendered == sorted([missing, changed], key=order.index)
+
+
+@pytest.mark.unit
+def test_a_live_update_drops_the_players_the_filters_no_longer_keep(
+    http: TestClient, tournament: Tournament
+):
+    """Under a filter on the players not checked in, a player who checks in
+    leaves the order the page is told to show."""
+    player = first_player(tournament)
+    http.get(f'/event/{EVENT_ID}/players')
+    http.get(
+        f'/event/{EVENT_ID}/players/set-filter/check_in',
+        params={'filters': ['', str(CheckInStatus.ABSENT.value)]},
+    )
+    if player.check_in:
+        http.patch(f'/player-table/check-in-player/{EVENT_ID}/{player.id}')
+    order, _ = _live_update(http, [], None)
+    assert player.id in order
+    http.patch(f'/player-table/check-in-player/{EVENT_ID}/{player.id}')
+    order_after, rendered = _live_update(http, order, [player.id])
+    assert order_after == [player_id for player_id in order if player_id != player.id]
+    assert rendered == []

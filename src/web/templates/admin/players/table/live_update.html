@@ -1,0 +1,14 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+
+<script type="application/json" id="players-live-order">{{ order|tojson }}</script>
+<template id="players-live-rows">
+    {% for index, player in players_by_index.items() %}
+        {% include '/admin/players/table/row.html' %}
+    {% endfor %}
+</template>
+<template id="players-live-empty-row">
+    {% include '/admin/players/table/empty_row.html' %}
+</template>
+<span id="players-live-counters">{{ filtered_player_count }}/{{ allowed_players|length }}</span>
