@@ -1112,6 +1112,31 @@ class PrizesTestCase(TestCase):
         self.assert_has_no_prize(p3, prizes)
         self.assert_has_no_prize(p4, prizes)
 
+    def test_club_criterion_ignores_players_without_club(self):
+        """A blank club name in the selection never matches players without a
+        club."""
+        prizes = [
+            self.stored_prize(200),
+            self.stored_prize(100),
+        ]
+        filter_in = 'Filtered in club'
+        criterion = self.stored_criterion(
+            ClubPlayerFilter([ClubsFilterOption([filter_in, ''])])
+        )
+        category = self.stored_category(
+            stored_prizes=prizes, stored_prize_criteria=[criterion]
+        )
+
+        p1 = self.player(1000, 3, club=filter_in)
+        p2 = self.player(1000, 6)
+        players = [p1, p2]
+
+        prizes = self.assign_prizes([category], players)
+
+        first, _second = self.get_prizes()
+        self.assert_has_prize(p1, first, prizes)
+        self.assert_has_no_prize(p2, prizes)
+
     def test_federation_criterion_single(self):
         prizes = [
             self.stored_prize(200),

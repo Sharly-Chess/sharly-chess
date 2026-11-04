@@ -60,6 +60,7 @@
 ## Prizes
 
 - Prize brackets can be duplicated, prize brackets can be copied to the other tournaments of the event, and categories to any prize bracket of the event, the copy of a main category being a regular category when its tournament already has one; criteria selecting individual players stay with their own tournament. Cloning a tournament now keeps the ranking basis of the prize categories and the complementary value of the prizes (5.2.0)
+- Players without a club no longer win the prizes of club criteria: the club list of a criterion no longer offers an unnamed entry for them, and such an entry already selected is ignored (5.2.1)
 
 ## Documents
 

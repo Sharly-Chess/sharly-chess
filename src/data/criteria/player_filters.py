@@ -236,14 +236,14 @@ class ClubPlayerFilter(PlayerFilter):
 
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
-        clubs = self._get_option(ClubsFilterOption).value
+        clubs = self._get_option(ClubsFilterOption).club_names
         exclude = self._get_option(ExcludeFilterOption).value
         if exclude:
             return lambda player: player.club.name not in clubs
         return lambda player: player.club.name in clubs
 
     def full_name(self, tournament: 'Tournament') -> str:
-        clubs = self._get_option(ClubsFilterOption).value
+        clubs = self._get_option(ClubsFilterOption).club_names
         exclude = self._get_option(ExcludeFilterOption).value
         option_str = ', '.join(clubs)
         if exclude:

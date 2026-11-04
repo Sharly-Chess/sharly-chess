@@ -312,7 +312,9 @@ class ClubsFilterOption(SelectPlayerFilterOption[list[str], str]):
         return [name for name in sorted(event_club_names, key=normalized_key) if name]
 
     def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
-        return tournament.club_counts
+        counter = tournament.club_counts.copy()
+        del counter['']
+        return counter
 
     def get_key(self, object_: str) -> str:
         return object_
@@ -320,9 +322,14 @@ class ClubsFilterOption(SelectPlayerFilterOption[list[str], str]):
     def get_name(self, object_: str) -> str:
         return object_
 
+    @property
+    def club_names(self) -> list[str]:
+        """The selected club names, players without a club never matching."""
+        return [name for name in self.value if name]
+
     def validate(self) -> None:
         self._validate_list_type(str)
-        if not self.value:
+        if not self.club_names:
             raise OptionError(_('At least one value is expected.'), self)
 
 
