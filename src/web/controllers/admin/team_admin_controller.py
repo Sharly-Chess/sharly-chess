@@ -1,6 +1,8 @@
 from typing import Annotated, Any
 
 from litestar import delete, get, patch, post
+from litestar.channels import ChannelsPlugin
+from litestar.di import NamedDependency
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
 from litestar.params import Body, FromQuery, FromPath
@@ -27,6 +29,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard, SetByeGuard
 from web.messages import Message
@@ -531,12 +534,17 @@ class TeamAdminController(BaseEventAdminController):
         name='records-check-in-team',
         guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_records_check_in_team(self, request: HTMXRequest) -> Template:
+    async def htmx_records_check_in_team(
+        self, request: HTMXRequest, channels: NamedDependency[ChannelsPlugin]
+    ) -> Template:
         web_context = TeamAdminWebContext(request)
         team = web_context.get_admin_team()
         tournament = team.tournament
         if tournament is not None:
             tournament.check_in_team(team, not team.check_in)
+            PlayerAdminController.publish_new_checkin(
+                channels, tournament, [player.id for player in team.players]
+            )
         return self._render_team_record_modal(web_context)
 
     @get(
@@ -818,12 +826,17 @@ class TeamAdminController(BaseEventAdminController):
         name='admin-team-toggle-check-in',
         guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_admin_team_toggle_check_in(self, request: HTMXRequest) -> Template:
+    async def htmx_admin_team_toggle_check_in(
+        self, request: HTMXRequest, channels: NamedDependency[ChannelsPlugin]
+    ) -> Template:
         web_context = TeamAdminWebContext(request)
         tournament = web_context.get_admin_team().tournament
         team = web_context.get_admin_team()
         if tournament is not None:
             tournament.check_in_team(team, not team.check_in)
+            PlayerAdminController.publish_new_checkin(
+                channels, tournament, [player.id for player in team.players]
+            )
         return self._admin_event_teams_render(web_context)
 
     @get(
@@ -851,13 +864,18 @@ class TeamAdminController(BaseEventAdminController):
         guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_admin_team_check_in_reset(
-        self, request: HTMXRequest, tournament_id: FromPath[int], present: FromPath[int]
+        self,
+        request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
+        tournament_id: FromPath[int],
+        present: FromPath[int],
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
         tournament = event.tournaments_by_id.get(tournament_id)
         if tournament is not None and tournament.is_team_tournament:
             tournament.check_in_all_teams(bool(present))
+            PlayerAdminController.publish_new_checkin(channels, tournament, None)
         team_tournaments = [
             t for t in event.tournaments_by_id.values() if t.is_team_tournament
         ]

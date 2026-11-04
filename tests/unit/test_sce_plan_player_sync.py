@@ -12,6 +12,8 @@ Coverage targets the four recent bugs:
   * failed deletes silently retired from `deleted_player_ids`
 """
 
+from collections import defaultdict
+
 import dataclasses
 from unittest.mock import MagicMock
 
@@ -81,7 +83,7 @@ def make_session() -> SCESession:
     session = SCESession.__new__(SCESession)
     session.event = MagicMock()
     session.event.uniq_id = 'test-event'
-    session.new_check_ins_tournament_sce_ids = set()
+    session.new_check_in_player_ids_by_tournament_sce_id = defaultdict(set)
     return session
 
 

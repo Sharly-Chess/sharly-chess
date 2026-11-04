@@ -101,32 +101,7 @@
                 });
             })();
         </script>
-        <span {{ macros.tooltip_attributes('info', _('Next round') ~ ' <span class="text-nowrap"><i class="bi bi-shift pe-1"></i>+<i class="bi bi-arrow-right-square ps-1"></i></span>', 'bottom') }}>
-            <button
-                class="btn btn-outline-primary text-nowrap"
-                {% if not schedule_editing and admin_tournament.pairing_system.show_unfinished_round_modal and not (admin_tournament.finished and not admin_tournament.round_has_pairings(admin_round)) and (not (admin_tournament.round_has_pairings(admin_round) and admin_tournament.is_round_finished(admin_round)) or admin_tournament.board_operations.unboarded_holes(admin_round)) %}
-                    hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                {% elif admin_round < admin_tournament.rounds %}
-                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
-                    hx-replace-url="true"
-                {% else %}
-                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                    hx-replace-url="true"
-                {% endif %}
-                hx-target="body"
-                hx-indicator="#please-wait"
-                hx-on::after-request="window.scrollTo(0, 0)"
-                {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
-                    disabled
-                {% else %}
-                    hx-trigger="click, SC_Shift_ArrowRight from:body"
-                {% endif %}
-            >
-                <i class="bi-play-fill position-relative round-control-icon"></i>
-            </button>
-        </span>
+        {% include '/admin/pairings/round_next_button.html' %}
         <span {{ macros.tooltip_attributes('info', _('Current round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
@@ -209,6 +184,4 @@
         </span>
     </div>
 </div>
-<script>
-    preparePrintModal("{{ default_print_document }}", "{{ admin_tournament.id }}", "{{ admin_round }}" );
-</script>
+{% include '/admin/pairings/print_default_script.html' %}
