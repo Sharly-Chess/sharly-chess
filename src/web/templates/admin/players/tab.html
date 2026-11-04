@@ -1,19 +1,12 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
     <div
-        hx-get="{{ url_for('players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
-        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
-    <div
-        hx-get="{{ url_for('players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
-        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
-        hx-target="#refresh-message"
-        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
-        hx-swap="innerHTML"
-    >
-    </div>
+        id="live-update"
+        hidden
+        data-live-update="players"
+        data-url="{{ url_for('admin-event-players-live-update', event_uniq_id=admin_event.uniq_id) }}"
+        data-events="ws:new-user-results|{{ admin_event.uniq_id }} ws:new-checkins|{{ admin_event.uniq_id }}"
+        data-page-size="{{ page_size }}"
+    ></div>
 
     <div id="top-nav-wrapper">
         <div id="top-nav-content">

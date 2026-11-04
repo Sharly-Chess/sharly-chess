@@ -7,6 +7,8 @@ remote-only delete step, per-player planning, batch flush, and the
 event-level `deleted_player_ids` retry filter.
 """
 
+from collections import defaultdict
+
 import json
 from datetime import datetime, timedelta
 from unittest import TestCase
@@ -204,7 +206,7 @@ class TestSyncEventDeleteRetry(TestCase):
             return_value=canned_resp
         )
         # PublishNewCheckin would call into web channels; stub it out.
-        session.new_check_ins_tournament_sce_ids = set()
+        session.new_check_in_player_ids_by_tournament_sce_id = defaultdict(set)
         return session
 
     def _reload_event_plugin_data(self) -> SCEEventPluginData:

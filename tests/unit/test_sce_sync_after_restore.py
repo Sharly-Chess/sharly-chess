@@ -7,6 +7,8 @@ back, the players come back from the site — driven through `sync_event`
 with the HTTP boundary mocked.
 """
 
+from collections import defaultdict
+
 from unittest import TestCase
 from unittest.mock import MagicMock
 
@@ -174,7 +176,7 @@ class TestSynchronisingARestoredEvent(TestCase):
             return response
 
         session._run_with_token_validation = MagicMock(side_effect=run)  # type: ignore[method-assign]
-        session.new_check_ins_tournament_sce_ids = set()
+        session.new_check_in_player_ids_by_tournament_sce_id = defaultdict(set)
         session.sync_event()
         EventLoader.unload_event(EVENT_UNIQ_ID)
         return sent
