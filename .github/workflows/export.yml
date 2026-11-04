@@ -241,6 +241,15 @@ jobs:
             --subject="Version ${BUILD_VERSION}" \
             build-flatpak \
             scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json
+      - name: Check the application in the Platform runtime
+        shell: bash
+        run: |
+          flatpak --user remote-add --no-gpg-verify --if-not-exists staging repo-staging
+          flatpak --user install -y --noninteractive --arch=${{ matrix.flatpak_arch }} staging com.sharlychess.SharlyChess
+          flatpak run --arch=${{ matrix.flatpak_arch }} --command=python3 --filesystem="$GITHUB_WORKSPACE" \
+            com.sharlychess.SharlyChess "$GITHUB_WORKSPACE/scripts/export/linux/flatpak/scripts/check_runtime.py"
+          flatpak --user uninstall -y --noninteractive com.sharlychess.SharlyChess
+          flatpak --user remote-delete staging
       - name: Create .flatpak bundle
         shell: bash
         run: |

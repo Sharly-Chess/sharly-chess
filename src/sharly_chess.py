@@ -131,6 +131,7 @@ try:
         set_logging_config,
     )
     from web.server_engine import ServerEngine
+    from web.session import SessionAdminTheme
 
     logger = get_logger()
 
@@ -185,6 +186,16 @@ try:
         help=(
             'set the default federation of the events, which is set in the '
             'window of the application otherwise (required in console mode)'
+        ),
+    )
+    parser.add_argument(
+        '--theme',
+        type=str,
+        choices=SessionAdminTheme.THEMES,
+        help=(
+            'set the theme of the administration on this computer, which is '
+            'set in the window of the application otherwise: auto follows the '
+            'appearance of the system'
         ),
     )
     parser.add_argument(
@@ -475,10 +486,13 @@ try:
     from common.sharly_chess_config import SharlyChessConfig
     from database.sqlite.config.config_database import ConfigDatabase
 
-    def apply_settings(locale: str | None, federation: str | None) -> None:
-        """Sets the language and the federation of the application. They are
-        set in its window, but they can also be given on the command line, which
-        skips the settings the window asks for when they have not been set."""
+    def apply_settings(
+        locale: str | None, federation: str | None, theme: str | None = None
+    ) -> None:
+        """Sets the language, the federation and the theme of the application.
+        They are set in its window, but they can also be given on the command
+        line, which skips the settings the window asks for when they have not
+        been set."""
         config = SharlyChessConfig()
         if locale and locale not in locales:
             logger.error('Unknown language [%s], expected one of %s.', locale, locales)
@@ -486,11 +500,12 @@ try:
         if federation and federation not in config.federations:
             logger.error('Unknown federation [%s].', federation)
             sys.exit(1)
-        if not locale and not federation:
+        if not locale and not federation and not theme:
             return
         stored_config = config.stored_config
         stored_config.locale = locale or stored_config.locale
         stored_config.federation = federation or stored_config.federation
+        stored_config.admin_theme = theme or stored_config.admin_theme
         # The window only asks for the settings while they are missing.
         if stored_config.locale and stored_config.federation:
             stored_config.force_edit = False
@@ -511,7 +526,7 @@ try:
     if not TEST_ENV:
         DataRecovery.setup()
 
-    apply_settings(args.locale, args.federation)
+    apply_settings(args.locale, args.federation, args.theme)
 
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
