@@ -152,6 +152,26 @@ window.addEventListener('htmx:beforeRequest', function (evt) {
 
 const tooltipSelector = '[data-bs-toggle="tooltip"]';
 
+const TOOLTIP_ICONS = {
+    info: 'bi-info-circle-fill',
+    warning: 'bi-exclamation-triangle',
+    error: 'bi-exclamation-triangle-fill',
+};
+
+// The tooltips written by the tooltip_attributes() template function name
+// their kind in data-sc-tooltip, from which their style and icon are drawn.
+function getOrCreateTooltip(element) {
+    const kind = element.dataset.scTooltip;
+    if (kind === undefined) {
+        return bootstrap.Tooltip.getOrCreateInstance(element);
+    }
+    return bootstrap.Tooltip.getOrCreateInstance(element, {
+        html: true,
+        customClass: `sharly-chess-tooltip-${kind === 'warning' || kind === 'error' ? kind : 'info'}`,
+        title: () => `<i class='${TOOLTIP_ICONS[kind] || ''}'></i> ${element.getAttribute('data-bs-title') || ''}`,
+    });
+}
+
 // A tooltip goes as soon as the page or any part of it scrolls, rather than
 // staying behind or drifting with what it points at. None shows again until
 // the pointer moves: the browser hovers whatever scrolls under a still
@@ -183,6 +203,18 @@ window.addEventListener('scroll', () => {
     });
     $('body .tooltip').remove();
 }, {capture: true, passive: true});
+
+// A request the user sends from under a tooltip takes the open tooltips away
+// before the content they point at is swapped.
+document.addEventListener('htmx:beforeSend', (event) => {
+    if (
+        event.detail?.requestConfig?.triggeringEvent?.isTrusted
+        && event.target instanceof Element
+        && event.target.closest(tooltipSelector)
+    ) {
+        $('body .tooltip').remove();
+    }
+});
 
 function closeTooltips () {
     if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
@@ -228,7 +260,7 @@ window.addEventListener('click', function(event) {
     if (trigger && tooltip) {
         const reactivateTooltip = () => {
             if (trigger.isConnected) {
-                bootstrap.Tooltip.getOrCreateInstance(trigger);
+                getOrCreateTooltip(trigger);
             }
         };
         trigger.addEventListener('mouseleave', reactivateTooltip, { once: true });
@@ -267,9 +299,7 @@ function activateTooltips (root = document) {
     if (root.querySelectorAll) {
         tooltipTriggers.push(...root.querySelectorAll(tooltipSelector));
     }
-    tooltipTriggers.forEach((element) => {
-        bootstrap.Tooltip.getOrCreateInstance(element);
-    });
+    tooltipTriggers.forEach(getOrCreateTooltip);
 }
 
 function scrollToFirstError() {

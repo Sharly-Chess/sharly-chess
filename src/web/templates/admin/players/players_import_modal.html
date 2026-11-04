@@ -115,7 +115,7 @@
                                 || {{ started_tournament_ids|tojson }}.includes($(this).val());
 
                             $('#overwrite-players').prop('disabled', isStarted);
-                            const tooltip = new bootstrap.Tooltip(
+                            const tooltip = getOrCreateTooltip(
                                 document.getElementById('overwrite-players-container')
                             );
                             if (isStarted) {

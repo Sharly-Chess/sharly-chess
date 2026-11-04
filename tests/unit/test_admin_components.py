@@ -153,7 +153,7 @@ class TestButton:
     def test_enabled_button_tooltip(self) -> None:
         root = _render("{{ components.button('Add', tooltip='Adds one.') }}")
         wrapper = root.only('span', 'sc-tooltip-wrapper')
-        assert 'sharly-chess-tooltip-info' in wrapper['data-bs-custom-class']
+        assert wrapper['data-sc-tooltip'] == 'info'
         assert 'Adds one.' in wrapper['data-bs-title']
 
     def test_not_allowed_button_is_disabled_inert_and_explains_why(self) -> None:
@@ -168,7 +168,7 @@ class TestButton:
         assert not button.has('data-bs-toggle')
         assert button['id'] == 'b'
         wrapper = root.only('span', 'sc-tooltip-wrapper')
-        assert 'sharly-chess-tooltip-warning' in wrapper['data-bs-custom-class']
+        assert wrapper['data-sc-tooltip'] == 'warning'
         assert 'Not yours.' in wrapper['data-bs-title']
         assert 'Deletes.' not in wrapper['data-bs-title']
 
@@ -299,7 +299,7 @@ class TestMenu:
         item_wrapper = submenu.only('ul', 'dropdown-menu').only(
             'span', 'sc-tooltip-wrapper'
         )
-        assert 'sharly-chess-tooltip-warning' in item_wrapper['data-bs-custom-class']
+        assert item_wrapper['data-sc-tooltip'] == 'warning'
 
     def test_not_allowed_menu_has_no_items(self) -> None:
         root = _render(
