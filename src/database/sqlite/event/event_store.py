@@ -450,7 +450,7 @@ class StoredTournament:
     stored_rating_corrections: list[StoredRatingCorrection] = field(
         default_factory=list[StoredRatingCorrection]
     )
-    stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
+    stored_prohibited_pairing_groups: list[StoredProhibitedPairingGroup] = field(
         default_factory=list['StoredProhibitedPairingGroup']
     )
     stored_tournament_periods: list[StoredTournamentPeriod] = field(

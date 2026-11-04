@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from data.teams.team import Team
 
 
-def team_of(*genders: PlayerGender) -> 'Team':
+def team_of(*genders: PlayerGender) -> Team:
     players = [
         SimpleNamespace(full_name=f'Player {index}', gender=gender)
         for index, gender in enumerate(genders)
@@ -92,7 +92,7 @@ class GenderBalanceTestCase(TestCase):
         )
 
 
-def player_rated(value: int, rating_type: PlayerRatingType) -> 'Player':
+def player_rated(value: int, rating_type: PlayerRatingType) -> Player:
     return cast(
         'Player',
         SimpleNamespace(

@@ -1418,7 +1418,7 @@ class PlayerAdminController(BaseEventAdminController):
                 if not tournament_id:
                     raise ValueError('Tournament ID not supplied')
                 tournament = event.tournaments_by_id[tournament_id]
-            except (ValueError, KeyError):
+            except ValueError, KeyError:
                 errors[field] = _('Please choose the tournament.')
             if action != FormAction.CREATE and tournament is not None:
                 player = web_context.get_admin_player()

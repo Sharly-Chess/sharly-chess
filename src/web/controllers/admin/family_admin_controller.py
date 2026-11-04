@@ -60,7 +60,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         return self.admin_family
 
     @property
-    def family_type(self) -> 'ScreenType | None':
+    def family_type(self) -> ScreenType | None:
         if self.family_type_id is None:
             return None
         return ScreenTypeManager(self.get_admin_event()).get_object(self.family_type_id)

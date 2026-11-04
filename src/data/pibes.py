@@ -65,10 +65,10 @@ class Pibe:
     def label(self) -> str:
         return self.type.label
 
-    def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
+    def summary(self, tournament: Tournament, locale: str | None = None) -> str:
         return pibe_summary(self, tournament, locale)
 
-    def trf_comment_for(self, tournament: 'Tournament') -> str:
+    def trf_comment_for(self, tournament: Tournament) -> str:
         """The TRF comment, in the pairing numbers of today."""
         return (
             f'{self.type} @ Round {self.round_}: '
@@ -124,7 +124,7 @@ class RatingCorrection:
             return self.result
         return self.result.opposite_result
 
-    def recorded_board(self, tournament: 'Tournament') -> 'Board | None':
+    def recorded_board(self, tournament: Tournament) -> Board | None:
         """The board the two players are recorded on in the round."""
         return next(
             (
@@ -135,7 +135,7 @@ class RatingCorrection:
             None,
         )
 
-    def trf_comment_for(self, tournament: 'Tournament') -> str:
+    def trf_comment_for(self, tournament: Tournament) -> str:
         """The TRF comment, which gives the game as the pairings and the
         standings used it, the 001 records giving it as corrected."""
         number = _pairing_numbers(tournament)
@@ -159,7 +159,7 @@ class RatingCorrection:
             f'{used_game} {used_result} used for pairings and standings'
         )
 
-    def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
+    def summary(self, tournament: Tournament, locale: str | None = None) -> str:
         def name(player_id: int) -> str:
             player = tournament.tournament_players_by_id.get(player_id)
             return player.full_name if player is not None else f'#{player_id}'
@@ -192,7 +192,7 @@ class RatingCorrection:
         return format_datetime(self.date) if self.date else ''
 
 
-def _pairing_numbers(tournament: 'Tournament') -> Callable[[int], str]:
+def _pairing_numbers(tournament: Tournament) -> Callable[[int], str]:
     def number(player_id: int) -> str:
         player = tournament.tournament_players_by_id.get(player_id)
         return str(player.pairing_number or 0) if player is not None else '0'
@@ -288,7 +288,7 @@ class FullPointBye:
     def date_str(self) -> str:
         return ''
 
-    def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
+    def summary(self, tournament: Tournament, locale: str | None = None) -> str:
         if self.team_id is not None:
             team = tournament.event.teams_by_id.get(self.team_id)
             name = team.name if team is not None else f'#{self.team_id}'
@@ -297,7 +297,7 @@ class FullPointBye:
             name = player.full_name if player is not None else f'#{self.player_id}'
         return _('Full-Point Bye given to {name}.', locale).format(name=name)
 
-    def trf_comment_for(self, tournament: 'Tournament') -> str:
+    def trf_comment_for(self, tournament: Tournament) -> str:
         """The TRF comment, in the pairing numbers of today."""
         if self.team_id is not None:
             team = tournament.event.teams_by_id.get(self.team_id)
@@ -320,7 +320,7 @@ _BYE_LABELS: dict[Result, str] = {
 }
 
 
-def round_snapshot(tournament: 'Tournament', round_: int) -> dict[str, str]:
+def round_snapshot(tournament: Tournament, round_: int) -> dict[str, str]:
     """The pairings of *round_* by pairing number, each with its result:
     ``'6-17'`` → ``'1-0'`` for a game, ``'44=PAB'`` → ``''`` for a bye."""
     if tournament.is_team_tournament and tournament.pairing_system.paired_by_team:
@@ -344,7 +344,7 @@ def round_snapshot(tournament: 'Tournament', round_: int) -> dict[str, str]:
     return snapshot
 
 
-def _board_result(board: 'Board') -> str:
+def _board_result(board: Board) -> str:
     """The result of a game in TRF codes, white's then black's: ``'1-0'``,
     ``'=-='``, ``'+--'``, ``'*'`` while unplayed. TRF files are ASCII."""
     codes = [
@@ -359,7 +359,7 @@ def _bye_token(pairing_number: int | None, result: Result) -> str:
     return f'{pairing_number or 0}={_BYE_LABELS.get(result, result.to_trf)}'
 
 
-def _team_round_snapshot(tournament: 'Tournament', round_: int) -> dict[str, str]:
+def _team_round_snapshot(tournament: Tournament, round_: int) -> dict[str, str]:
     snapshot: dict[str, str] = {}
     for team_board in tournament.get_round_team_boards(round_):
         team_a_number = team_board.team_a.pairing_number or 0
@@ -372,7 +372,7 @@ def _team_round_snapshot(tournament: 'Tournament', round_: int) -> dict[str, str
     return snapshot
 
 
-def adjournment_description(tournament: 'Tournament', board: 'Board') -> str:
+def adjournment_description(tournament: Tournament, board: Board) -> str:
     """The result entered for the adjourned game of *board*, in the notation
     of the TRF comments: ``'17-5 1-0'``, or the team match and the results
     of its boards, ``'3-8: 1-0 =-= 0-1 1-0'``."""
@@ -434,9 +434,7 @@ _READABLE_RESULTS = {
 _PAIR_LIST_LIMIT = 3
 
 
-def pibe_summary(
-    pibe: Pibe, tournament: 'Tournament', locale: str | None = None
-) -> str:
+def pibe_summary(pibe: Pibe, tournament: Tournament, locale: str | None = None) -> str:
     """*pibe* as a sentence an arbiter reads: names rather than pairing
     numbers, a count rather than a long list of pairings."""
     name = _member_namer(pibe, tournament)
@@ -501,7 +499,7 @@ def pibe_summary(
     return pibe.description
 
 
-def pibe_trf_description(pibe: Pibe, tournament: 'Tournament') -> str:
+def pibe_trf_description(pibe: Pibe, tournament: Tournament) -> str:
     """The description of *pibe* in the pairing numbers of today: the
     players keep their place in it however the numbering has moved since."""
 
@@ -565,7 +563,7 @@ def _adjournment_parts(description: str) -> tuple[str, str]:
     return pair, results
 
 
-def _member_pairing_number(tournament: 'Tournament', member_id: int) -> int | None:
+def _member_pairing_number(tournament: Tournament, member_id: int) -> int | None:
     if tournament.is_team_tournament and tournament.pairing_system.paired_by_team:
         team = tournament.event.teams_by_id.get(member_id)
         return team.pairing_number if team is not None else None
@@ -573,7 +571,7 @@ def _member_pairing_number(tournament: 'Tournament', member_id: int) -> int | No
     return player.pairing_number if player is not None else None
 
 
-def _member_namer(pibe: Pibe, tournament: 'Tournament') -> Callable[[str], str]:
+def _member_namer(pibe: Pibe, tournament: Tournament) -> Callable[[str], str]:
     """Who a pairing number of *pibe* stood for when it was logged, by name."""
     team_paired = (
         tournament.is_team_tournament and tournament.pairing_system.paired_by_team
@@ -600,7 +598,7 @@ def _member_namer(pibe: Pibe, tournament: 'Tournament') -> Callable[[str], str]:
     return name
 
 
-def _tie_break_list(acronyms: str, tournament: 'Tournament') -> str:
+def _tie_break_list(acronyms: str, tournament: Tournament) -> str:
     """Tie-breaks listed by their TRF acronyms, by name where known."""
     from data.tie_breaks import TieBreakManager
 

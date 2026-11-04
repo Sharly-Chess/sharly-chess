@@ -34,7 +34,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
 
     @cached_property
     @abstractmethod
-    def migration_managers(self) -> list['DatabaseMigrationManager']:
+    def migration_managers(self) -> list[DatabaseMigrationManager]:
         """Managers to use for migrations.
         The order determines which migration timeline is migrated first."""
 

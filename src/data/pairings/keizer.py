@@ -75,7 +75,7 @@ class KeizerScorer:
     late entries and withdrawals need no special handling.
     """
 
-    def __init__(self, tournament: 'Tournament'):
+    def __init__(self, tournament: Tournament):
         self.tournament = tournament
         self._values_cache: dict[int, dict[int, float]] = {}
         self._start_attribution = KeizerStartAttributionSetting.get_value(tournament)
@@ -85,7 +85,7 @@ class KeizerScorer:
 
     # -- public API ---------------------------------------------------------
 
-    def total(self, player: 'TournamentPlayer', after_round: int) -> float:
+    def total(self, player: TournamentPlayer, after_round: int) -> float:
         """The player's Keizer total after round *after_round* (0 before
         the first round)."""
         return self.totals_after(after_round).get(player.id, 0.0)
@@ -166,8 +166,8 @@ class KeizerScorer:
 
     def _game_points(
         self,
-        player: 'TournamentPlayer',
-        pairing: 'Pairing',
+        player: TournamentPlayer,
+        pairing: Pairing,
         values: dict[int, float],
     ) -> float:
         result = pairing.result
@@ -200,10 +200,10 @@ class KeizerPairingSystem(PairingSystem['KeizerVariation']):
         return _('Keizer')
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager['KeizerVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[KeizerVariation]:
         return KeizerVariationManager(event)
 
-    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+    def pairing_numbers_are_frozen(self, tournament: Tournament) -> bool:
         # A Keizer pairs on the running Keizer score and reads the numbering
         # nowhere, so it is free to follow the field whenever the field
         # moves — players join one at a time here, and a Keizer score is
@@ -237,7 +237,7 @@ class KeizerPairingSystem(PairingSystem['KeizerVariation']):
         # fits.
         return SwissPairingSystem().permission_handler
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         return tournament.last_paired_round
 
 
@@ -283,7 +283,7 @@ class KeizerVariationManager(EventBoundEntityManager[KeizerVariation]):
 class KeizerPairingEngine(PairingEngine):
     MIN_PLAYERS = 2
 
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         if tournament.player_count < self.MIN_PLAYERS:
             return _(
                 'Too few players to generate the pairings (minimum: {min}).'
@@ -292,10 +292,10 @@ class KeizerPairingEngine(PairingEngine):
 
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         players = self._players_to_pair(tournament, round_)
         pairs, bye_player = self._pair(tournament, players, round_)
@@ -321,8 +321,8 @@ class KeizerPairingEngine(PairingEngine):
         return stored_boards
 
     def _players_to_pair(
-        self, tournament: 'Tournament', round_: int
-    ) -> list['TournamentPlayer']:
+        self, tournament: Tournament, round_: int
+    ) -> list[TournamentPlayer]:
         """Present players still needing a board this round, ordered by
         their current Keizer standing.
 
@@ -351,7 +351,7 @@ class KeizerPairingEngine(PairingEngine):
         )
 
     @staticmethod
-    def _is_present(tournament: 'Tournament', player: 'TournamentPlayer') -> bool:
+    def _is_present(tournament: Tournament, player: TournamentPlayer) -> bool:
         """Whether the player counts as present for pairing. Check-in only
         gates when the arbiter has opened it; otherwise everyone entered is
         paired."""
@@ -369,11 +369,11 @@ class KeizerPairingEngine(PairingEngine):
 
     def _pair(
         self,
-        tournament: 'Tournament',
-        players: list['TournamentPlayer'],
+        tournament: Tournament,
+        players: list[TournamentPlayer],
         round_: int,
     ) -> tuple[
-        list[tuple['TournamentPlayer', 'TournamentPlayer']], 'TournamentPlayer | None'
+        list[tuple[TournamentPlayer, TournamentPlayer]], TournamentPlayer | None
     ]:
         bye_player: TournamentPlayer | None = None
         if len(players) % 2 == 1:
@@ -386,10 +386,10 @@ class KeizerPairingEngine(PairingEngine):
 
     def _match(
         self,
-        players: list['TournamentPlayer'],
+        players: list[TournamentPlayer],
         round_: int,
         gap: int,
-    ) -> list[tuple['TournamentPlayer', 'TournamentPlayer']]:
+    ) -> list[tuple[TournamentPlayer, TournamentPlayer]]:
         """Exact minimum-cost perfect matching over the standings-ordered
         *players* (even count), by branch-and-bound.
 
@@ -440,8 +440,8 @@ class KeizerPairingEngine(PairingEngine):
 
     def _pair_cost(
         self,
-        a: 'TournamentPlayer',
-        b: 'TournamentPlayer',
+        a: TournamentPlayer,
+        b: TournamentPlayer,
         position: dict[int, int],
         round_: int,
         gap: int,
@@ -454,7 +454,7 @@ class KeizerPairingEngine(PairingEngine):
         return cost
 
     def _colour_residual(
-        self, a: 'TournamentPlayer', b: 'TournamentPlayer', round_: int
+        self, a: TournamentPlayer, b: TournamentPlayer, round_: int
     ) -> int:
         """Light colour cost: the smaller total colour imbalance the pair
         is left with once White is handed to whichever player it helps
@@ -469,8 +469,8 @@ class KeizerPairingEngine(PairingEngine):
 
     @staticmethod
     def _select_bye_player(
-        players: list['TournamentPlayer'],
-    ) -> 'TournamentPlayer':
+        players: list[TournamentPlayer],
+    ) -> TournamentPlayer:
         """Give the bye to the lowest-ranked present player who has not had
         one yet, falling back to the lowest-ranked player.
 
@@ -483,8 +483,8 @@ class KeizerPairingEngine(PairingEngine):
 
     @staticmethod
     def _met_recently(
-        player: 'TournamentPlayer',
-        opponent: 'TournamentPlayer',
+        player: TournamentPlayer,
+        opponent: TournamentPlayer,
         round_: int,
         gap: int,
     ) -> bool:
@@ -499,10 +499,10 @@ class KeizerPairingEngine(PairingEngine):
 
     @staticmethod
     def _order_colors(
-        higher: 'TournamentPlayer',
-        lower: 'TournamentPlayer',
+        higher: TournamentPlayer,
+        lower: TournamentPlayer,
         round_: int,
-    ) -> tuple['TournamentPlayer', 'TournamentPlayer']:
+    ) -> tuple[TournamentPlayer, TournamentPlayer]:
         """Return ``(white_player, black_player)``.
 
         The first round gives White to the lower-ranked player; later
@@ -521,7 +521,7 @@ class KeizerPairingEngine(PairingEngine):
         return lower, higher
 
     @staticmethod
-    def _color_balance(player: 'TournamentPlayer', round_: int) -> int:
+    def _color_balance(player: TournamentPlayer, round_: int) -> int:
         """Whites minus Blacks over the player's played rounds so far."""
         balance = 0
         for past_round, pairing in player.pairings.items():

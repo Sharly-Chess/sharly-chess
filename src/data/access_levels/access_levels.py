@@ -88,7 +88,7 @@ class AccessLevel(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def direct_sub_access_levels() -> set[type['AccessLevel']]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         """Access levels to inherit the permissions of."""
 
     @property
@@ -132,7 +132,7 @@ class AccessLevel(IdentifiableEntity, ABC):
 
     @classmethod
     @cache
-    def _sub_access_level_types(cls) -> set[type['AccessLevel']]:
+    def _sub_access_level_types(cls) -> set[type[AccessLevel]]:
         sub_access_level_types: set[type[AccessLevel]] = cls.direct_sub_access_levels()
         for direct_sub_access_level_type in cls.direct_sub_access_levels():
             sub_access_level_types |= (
@@ -142,7 +142,7 @@ class AccessLevel(IdentifiableEntity, ABC):
 
     @classmethod
     @cache
-    def sub_access_levels(cls) -> set['AccessLevel']:
+    def sub_access_levels(cls) -> set[AccessLevel]:
         """Set of all the access levels inherited by this access level."""
         return {type_() for type_ in cls._sub_access_level_types()}
 
@@ -151,7 +151,7 @@ class AccessLevel(IdentifiableEntity, ABC):
         return AuthAction.MANAGE_ACCOUNTS in cls.allowed_actions()
 
     @classmethod
-    def manageable_access_levels(cls) -> set['AccessLevel']:
+    def manageable_access_levels(cls) -> set[AccessLevel]:
         """Set of all the access levels which can be managed by this access level."""
         return cls.sub_access_levels() if cls.can_manage_access_levels() else set()
 

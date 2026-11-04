@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Sync the .desktop file Version field with project version from pyproject.toml."""
 
-from __future__ import annotations
-
 import re
 from pathlib import Path
 import tomllib

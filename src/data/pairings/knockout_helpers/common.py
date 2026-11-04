@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
-def seeded_players(tournament: 'Tournament') -> dict[int, 'TournamentPlayer']:
+def seeded_players(tournament: Tournament) -> dict[int, TournamentPlayer]:
     """The field in seed order, by seed. The pairing numbers hold that order:
     they are the starting order as it stood when the bracket was drawn, and
     the starting order itself until then. Reading the starting rank instead
@@ -20,7 +20,7 @@ def seeded_players(tournament: 'Tournament') -> dict[int, 'TournamentPlayer']:
     return tournament.tournament_players_by_pairing_number
 
 
-def seed_sort_key(player: 'TournamentPlayer') -> tuple:
+def seed_sort_key(player: TournamentPlayer) -> tuple:
     """Where a player sits in the seed order. A team's players are
     synthesised from its roster and hold no pairing number; they fall back to
     the starting rank, which is all they have."""
@@ -29,7 +29,7 @@ def seed_sort_key(player: 'TournamentPlayer') -> tuple:
     return (1, *player.starting_rank_sort_key)
 
 
-def loss_is_elimination(engine: Any, tournament: 'Tournament', board: Any) -> bool:
+def loss_is_elimination(engine: Any, tournament: Tournament, board: Any) -> bool:
     """Whether losing this match puts its loser out of the tournament. It does
     in a single elimination, where one loss is the whole story; a double
     elimination seats a first-time loser in its other bracket and says so
@@ -38,7 +38,7 @@ def loss_is_elimination(engine: Any, tournament: 'Tournament', board: Any) -> bo
     return not stays(tournament, board) if stays is not None else True
 
 
-def tie_resolution_message(tournament: 'Tournament', round_: int) -> str:
+def tie_resolution_message(tournament: Tournament, round_: int) -> str:
     """Why a round blocks the next knock-out pairing."""
     if tournament.knockout.advancement_has_manual:
         return _(
@@ -63,7 +63,7 @@ def tie_resolution_message(tournament: 'Tournament', round_: int) -> str:
     )
 
 
-def board_winner_player_id(board: 'Board') -> int | None:
+def board_winner_player_id(board: Board) -> int | None:
     """The player who advances from *board*, or ``None`` if undecided."""
     white = board.optional_white_tournament_player
     black = board.black_tournament_player
@@ -83,7 +83,7 @@ def board_winner_player_id(board: 'Board') -> int | None:
     return None
 
 
-def team_match_all_games_played(team_board: 'TeamBoard') -> bool:
+def team_match_all_games_played(team_board: TeamBoard) -> bool:
     """Whether every game of a team match has been played. A board with
     neither seat filled is a slot the teams left empty: it carries no result
     and never will, so the match is not waiting on it."""
@@ -95,9 +95,7 @@ def team_match_all_games_played(team_board: 'TeamBoard') -> bool:
     )
 
 
-def team_match_winner_id(
-    tournament: 'Tournament', team_board: 'TeamBoard'
-) -> int | None:
+def team_match_winner_id(tournament: Tournament, team_board: TeamBoard) -> int | None:
     """The team that advances from *team_board*, or ``None`` if undecided."""
     stb = team_board.stored_team_board
     if stb.team_b_id is None:
@@ -116,8 +114,8 @@ def team_match_winner_id(
 
 
 def find_knockout_board(
-    tournament: 'Tournament', round_: int, a_id: int | None, b_id: int
-) -> 'Board | None':
+    tournament: Tournament, round_: int, a_id: int | None, b_id: int
+) -> Board | None:
     """Find a knock-out board by its expected players.
 
     Prefer the exact pair, but fall back to whichever expected player is present
@@ -141,8 +139,8 @@ def find_knockout_board(
 
 
 def find_knockout_team_board(
-    tournament: 'Tournament', round_: int, a_id: int | None, b_id: int
-) -> 'TeamBoard | None':
+    tournament: Tournament, round_: int, a_id: int | None, b_id: int
+) -> TeamBoard | None:
     """Find a knock-out team board by its expected teams."""
     wanted = {a_id, b_id}
     best: TeamBoard | None = None

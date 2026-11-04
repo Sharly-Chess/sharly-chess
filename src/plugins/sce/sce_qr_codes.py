@@ -8,7 +8,7 @@ from plugins.sce.utils import SCEUtils
 
 class SCEEventQRCodeType(QRCodeType):
     @staticmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
+    def get_valid_option_types() -> list[type[PrintOption]]:
         return []
 
     @staticmethod

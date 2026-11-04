@@ -144,7 +144,7 @@ class FRASchool(PluginData):
             self.code or '',
         )
 
-    def __lt__(self, other: 'FRASchool') -> bool:
+    def __lt__(self, other: FRASchool) -> bool:
         if not isinstance(other, FRASchool):
             return NotImplemented
         return self.sort_key > other.sort_key

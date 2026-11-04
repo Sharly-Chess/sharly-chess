@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 class RoundRobinScheduleEditor:
     def __init__(
-        self, tournament: 'Tournament', played_games_unlocked: bool = False
+        self, tournament: Tournament, played_games_unlocked: bool = False
     ) -> None:
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, ScheduledRoundRobin)

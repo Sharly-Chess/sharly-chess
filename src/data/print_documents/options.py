@@ -2,7 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from functools import cached_property
 from types import UnionType
-from typing import TYPE_CHECKING, Optional, override, Any
+from typing import TYPE_CHECKING, override, Any
 
 from common.exception import OptionError
 from common.i18n import _
@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 class PrintOption[V](Option[V], ABC):
     """Parent class of all the options of print documents."""
 
-    def __init__(self, event: Optional['Event'], value: Any | None = None):
+    def __init__(self, event: Event | None, value: Any | None = None):
         super().__init__(value)
         self.event = event
 
@@ -248,7 +248,7 @@ class MatchSheetSelectionPrintOption(PrintOption[list[int]]):
 
     def match_options_by_tournament_round(
         self,
-    ) -> 'dict[int, dict[int, list[tuple[int, str]]]]':
+    ) -> dict[int, dict[int, list[tuple[int, str]]]]:
         """``{tournament_id: {round: [(id, label), ...]}}`` — every
         paired team match in every team tournament of the event. Used by
         the print modal to show only the rows matching the
@@ -278,7 +278,7 @@ class MatchSheetSelectionPrintOption(PrintOption[list[int]]):
                 result[tournament.id] = by_round
         return result
 
-    def default_round_by_tournament(self) -> 'dict[int, int]':
+    def default_round_by_tournament(self) -> dict[int, int]:
         """``{tournament_id: round}`` the selector falls back to when no
         round is entered — the current round, matching the document's
         ``at_round`` (``RoundPrintOption.value or current_round``). Without
@@ -323,7 +323,7 @@ class MatchSheetArbiterPrintOption(PrintOption[int | None]):
     def default_text(self) -> str:
         return _('Chief arbiter')
 
-    def arbiter_options(self) -> 'dict[str, str]':
+    def arbiter_options(self) -> dict[str, str]:
         """``{account_id: full_name}`` for all the arbiters
         of the event's team tournaments — the staff that can sign a sheet."""
         result: dict[str, str] = {}
@@ -992,7 +992,7 @@ class PlaceCardTemplatePrintOption(PrintOption[str | None]):
             raise OptionError(_('Please choose the template.'), self)
 
     @cached_property
-    def place_card_template(self) -> 'PlaceCardTemplate':
+    def place_card_template(self) -> PlaceCardTemplate:
         from data.print_documents.place_cards.template import PlaceCardTemplate
 
         # A template option with nothing chosen fails validation.
@@ -1162,7 +1162,7 @@ class IndividualTeamTypePrintOption(PrintOption[str]):
         return ClubIndividualTeamType.static_id()
 
     @property
-    def manager(self) -> 'PrintIndividualTeamTypeManager':
+    def manager(self) -> PrintIndividualTeamTypeManager:
         from data.print_documents import PrintIndividualTeamTypeManager
 
         return PrintIndividualTeamTypeManager(self.event)

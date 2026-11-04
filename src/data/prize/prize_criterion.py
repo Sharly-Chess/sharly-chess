@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class PrizeCriterion:
     def __init__(
         self,
-        prize_category: 'PrizeCategory',
+        prize_category: PrizeCategory,
         stored_prize_criterion: StoredPrizeCriterion,
     ):
         self._prize_category_ref: ReferenceType[PrizeCategory] = weakref.ref(
@@ -39,13 +39,13 @@ class PrizeCriterion:
         return filter_type(options)
 
     @property
-    def prize_category(self) -> 'PrizeCategory':
+    def prize_category(self) -> PrizeCategory:
         if (prize_category := self._prize_category_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return prize_category
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         return self.prize_category.prize_group.tournament
 
     @property

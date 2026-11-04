@@ -42,10 +42,10 @@ if TYPE_CHECKING:
 class SystemTieBreakSet:
     key: str
     name: str
-    tie_breaks: list['TieBreak']
+    tie_breaks: list[TieBreak]
 
 
-def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
+def _swiss_system_sets(event: Event) -> list[SystemTieBreakSet]:
     system_sets: list[SystemTieBreakSet] = [
         SystemTieBreakSet(
             key='swiss-sc-recommendation',
@@ -103,7 +103,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
     return system_sets
 
 
-def _round_robin_system_sets() -> list['SystemTieBreakSet']:
+def _round_robin_system_sets() -> list[SystemTieBreakSet]:
     system_sets: list[SystemTieBreakSet] = [
         SystemTieBreakSet(
             key='rr-fide-recommendation-2019',
@@ -120,7 +120,7 @@ def _round_robin_system_sets() -> list['SystemTieBreakSet']:
     return system_sets
 
 
-def _team_swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
+def _team_swiss_system_sets(event: Event) -> list[SystemTieBreakSet]:
     """
     Sharly Chess recommandations for team Swiss tournaments are:
     1. PTS
@@ -153,7 +153,7 @@ def _team_swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
     return system_sets
 
 
-def _team_round_robin_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
+def _team_round_robin_system_sets(event: Event) -> list[SystemTieBreakSet]:
     """
     Sharly Chess recommandations for team RR tournaments are:
     - when the primary score is MP
@@ -224,7 +224,7 @@ def _team_round_robin_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
     return system_sets
 
 
-def _team_scheveningen_system_sets() -> list['SystemTieBreakSet']:
+def _team_scheveningen_system_sets() -> list[SystemTieBreakSet]:
     """
     Sharly Chess recommandations for Scheveningen tournaments are:
     1. PTS
@@ -247,7 +247,7 @@ def _team_scheveningen_system_sets() -> list['SystemTieBreakSet']:
     return system_sets
 
 
-def build_system_tie_break_sets(tournament: 'Tournament') -> list['TieBreakSet']:
+def build_system_tie_break_sets(tournament: Tournament) -> list[TieBreakSet]:
     """Materialize all system tie-break set definitions into TieBreakSet objects."""
     from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
 

@@ -17,7 +17,7 @@ class DisplayController:
 
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_display_controller: StoredDisplayController,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
@@ -26,7 +26,7 @@ class DisplayController:
         )
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')

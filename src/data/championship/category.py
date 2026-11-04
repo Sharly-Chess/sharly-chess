@@ -25,7 +25,7 @@ logger: Logger = get_logger()
 class ChampionshipCriterion:
     """A prize-filter-compatible criterion applied to a GP participation."""
 
-    def __init__(self, stored_criterion: 'StoredChampionshipCriterion'):
+    def __init__(self, stored_criterion: StoredChampionshipCriterion):
         self.stored_criterion = stored_criterion
 
     @property
@@ -51,7 +51,7 @@ class ChampionshipCriterion:
 
     def matches(
         self,
-        participation: 'ReconciledParticipation',
+        participation: ReconciledParticipation,
         player_category: PlayerCategory | None = None,
     ) -> bool:
         tournament_player = participation.tournament_player
@@ -84,14 +84,14 @@ class ChampionshipCategory:
 
     def __init__(
         self,
-        championship: 'Championship',
-        stored_category: 'StoredChampionshipCategory',
+        championship: Championship,
+        stored_category: StoredChampionshipCategory,
     ):
         self._championship_ref = weakref.ref(championship)
         self.stored_category = stored_category
 
     @property
-    def championship(self) -> 'Championship':
+    def championship(self) -> Championship:
         if (championship := self._championship_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return championship
@@ -114,7 +114,7 @@ class ChampionshipCategory:
 
     def _matches(
         self,
-        participation: 'ReconciledParticipation',
+        participation: ReconciledParticipation,
         player_category: PlayerCategory,
     ) -> bool:
         return all(
@@ -125,8 +125,8 @@ class ChampionshipCategory:
     @staticmethod
     def _reference_participation(
         player: ReconciledPlayer,
-    ) -> 'ReconciledParticipation':
-        def start_date(participation: 'ReconciledParticipation') -> date:
+    ) -> ReconciledParticipation:
+        def start_date(participation: ReconciledParticipation) -> date:
             tournament = participation.source.tournament
             assert tournament is not None
             return tournament.start_date
@@ -136,7 +136,7 @@ class ChampionshipCategory:
     def _player_category(
         self,
         player: ReconciledPlayer,
-        participation: 'ReconciledParticipation',
+        participation: ReconciledParticipation,
     ) -> PlayerCategory:
         reference_date = self.championship.effective_age_category_base_date
         event = participation.source.event
@@ -163,5 +163,5 @@ class ChampionshipCategory:
         return players
 
     @cached_property
-    def ranking(self) -> list['RankingEntry']:
+    def ranking(self) -> list[RankingEntry]:
         return self.championship.build_ranking([*self.players])

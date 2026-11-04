@@ -36,37 +36,37 @@ if TYPE_CHECKING:
 
         def ranking_value(
             self,
-            tournament: 'Tournament',
-            player: 'TournamentPlayer',
+            tournament: Tournament,
+            player: TournamentPlayer,
             *,
             after_round: int,
         ) -> float: ...
 
         def standing_labels(
-            self, tournament: 'Tournament', *, after_round: int | None = ...
+            self, tournament: Tournament, *, after_round: int | None = ...
         ) -> dict[int, str]: ...
 
         def team_ranking_values(
-            self, tournament: 'Tournament', *, after_round: int
+            self, tournament: Tournament, *, after_round: int
         ) -> dict[int, float]: ...
 
         def team_standing_labels(
-            self, tournament: 'Tournament', *, after_round: int | None = ...
+            self, tournament: Tournament, *, after_round: int | None = ...
         ) -> dict[int, str]: ...
 
         def team_advancement(
-            self, tournament: 'Tournament', team_board: 'TeamBoard'
-        ) -> 'KnockoutAdvancement': ...
+            self, tournament: Tournament, team_board: TeamBoard
+        ) -> KnockoutAdvancement: ...
 
         def player_advancement(
-            self, tournament: 'Tournament', board: 'Board'
-        ) -> 'KnockoutAdvancement': ...
+            self, tournament: Tournament, board: Board
+        ) -> KnockoutAdvancement: ...
 
 
 class KnockoutView:
     """The knock-out-specific facet of a tournament (see the module docstring)."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self._t = tournament
 
     @cached_property
@@ -82,40 +82,40 @@ class KnockoutView:
         self.__dict__.pop('engine_cache', None)
 
     @property
-    def _engine(self) -> '_KnockoutEngineProtocol':
+    def _engine(self) -> _KnockoutEngineProtocol:
         """The pairing engine typed as a knock-out engine. Only reached from
         methods that run on a knock-out, where the engine really carries them."""
         return cast('_KnockoutEngineProtocol', self._t.pairing_variation.engine)
 
     # -- Advancement resolution (knock-out only) ----------------------------
 
-    def team_advancement(self, team_board: 'TeamBoard') -> 'KnockoutAdvancement':
+    def team_advancement(self, team_board: TeamBoard) -> KnockoutAdvancement:
         """Who advances from a level team match and why; see
         :meth:`KnockoutEngine.team_advancement`."""
         return self._engine.team_advancement(self._t, team_board)
 
-    def advancement_winner(self, team_board: 'TeamBoard') -> int | None:
+    def advancement_winner(self, team_board: TeamBoard) -> int | None:
         return self.team_advancement(team_board).winner_id
 
-    def player_advancement(self, board: 'Board') -> 'KnockoutAdvancement':
+    def player_advancement(self, board: Board) -> KnockoutAdvancement:
         """Who advances from a drawn individual game and why; see
         :meth:`KnockoutEngine.player_advancement`."""
         return self._engine.player_advancement(self._t, board)
 
-    def advancement_winner_player(self, board: 'Board') -> int | None:
+    def advancement_winner_player(self, board: Board) -> int | None:
         return self.player_advancement(board).winner_id
 
     # -- Advancement display (empty for any non-knock-out system) -----------
 
-    def board_advancement(self, board: 'Board') -> 'KnockoutAdvancement | None':
+    def board_advancement(self, board: Board) -> KnockoutAdvancement | None:
         """The advancement detail to show on an individual board — only for a
         knock-out game drawn between two players, else ``None``."""
         method = getattr(self._t.pairing_variation.engine, 'board_advancement', None)
         return method(self._t, board) if method is not None else None
 
     def team_board_advancement(
-        self, team_board: 'TeamBoard'
-    ) -> 'KnockoutAdvancement | None':
+        self, team_board: TeamBoard
+    ) -> KnockoutAdvancement | None:
         """The advancement detail to show on a team match — only for a finished
         knock-out match level on game points, else ``None``."""
         method = getattr(
@@ -123,7 +123,7 @@ class KnockoutView:
         )
         return method(self._t, team_board) if method is not None else None
 
-    def board_loser_id(self, board: 'Board') -> int | None:
+    def board_loser_id(self, board: Board) -> int | None:
         """The player a decided knock-out game puts out of the tournament, so
         the pairings can strike their name through. ``None`` for any other
         system, for a match still open, and inside a team match, which
@@ -131,7 +131,7 @@ class KnockoutView:
         method = getattr(self._t.pairing_variation.engine, 'board_loser_id', None)
         return method(self._t, board) if method is not None else None
 
-    def team_board_loser_id(self, team_board: 'TeamBoard') -> int | None:
+    def team_board_loser_id(self, team_board: TeamBoard) -> int | None:
         """The team a decided knock-out match puts out of the tournament."""
         method = getattr(self._t.pairing_variation.engine, 'team_board_loser_id', None)
         return method(self._t, team_board) if method is not None else None
@@ -154,7 +154,7 @@ class KnockoutView:
 
     # -- Standings (round reached, knock-out only) --------------------------
 
-    def ranking_value(self, player: 'TournamentPlayer', *, after_round: int) -> float:
+    def ranking_value(self, player: TournamentPlayer, *, after_round: int) -> float:
         """A knock-out's standing value for *player* — the round reached
         (bigger = better); see :meth:`KnockoutEngine.ranking_value`."""
         return self._engine.ranking_value(self._t, player, after_round=after_round)
@@ -174,13 +174,13 @@ class KnockoutView:
 
     # -- Bracket render / grouping preview ----------------------------------
 
-    def layout(self) -> 'BracketLayout | None':
+    def layout(self) -> BracketLayout | None:
         """A render-ready bracket diagram, or ``None`` for a system with no
         bracket to draw."""
         build = getattr(self._t.pairing_variation.engine, 'bracket_layout', None)
         return build(self._t) if build is not None else None
 
-    def grouping_preview(self, dimension_id: str) -> 'dict | None':
+    def grouping_preview(self, dimension_id: str) -> dict | None:
         """Preview of seeding a knock-out bracket by *dimension_id* (the groups
         and the bracket consequence). ``None`` for a non-knock-out or an unknown
         dimension."""
@@ -305,7 +305,7 @@ class KnockoutView:
         method = getattr(self._t.pairing_variation.engine, 'match_rounds', None)
         return method(self._t, round_) if method is not None else (round_,)
 
-    def forget_settled_winners(self, board: 'Board') -> None:
+    def forget_settled_winners(self, board: Board) -> None:
         """Drop the designations a result has settled. A match that is no
         longer level decides who advances by itself, and a cleared result
         leaves nothing to advance from — a designation kept either way would

@@ -5,8 +5,6 @@ compact schedule primitives stored in ``molter_recipes.mrec`` into uncoloured
 matches and renders coloured rounds as fixed-table rows.
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterator
 from functools import cache
 from typing import Any

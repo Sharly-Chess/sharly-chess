@@ -16,8 +16,6 @@ that returns is_met for specific subsets, verifying:
   * When nothing wins, the baseline (full game set) result is returned.
 """
 
-from __future__ import annotations
-
 from collections import Counter
 from dataclasses import dataclass, field
 from types import SimpleNamespace

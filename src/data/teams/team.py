@@ -24,12 +24,12 @@ class TeamGroup:
     Teams reference one by id; used to keep teams in the same group
     from being paired together."""
 
-    def __init__(self, event: 'Event', stored_team_group: StoredTeamGroup):
+    def __init__(self, event: Event, stored_team_group: StoredTeamGroup):
         self._event_ref: weakref.ReferenceType[Event] = weakref.ref(event)
         self.stored_team_group = stored_team_group
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         assert event is not None
         return event
@@ -48,7 +48,7 @@ class RosterFullError(Exception):
     """Raised by :meth:`Team.add_player` when the team is at its
     roster cap (set by the tournament's rule set)."""
 
-    def __init__(self, team: 'Team', max_size: int):
+    def __init__(self, team: Team, max_size: int):
         super().__init__(f'Roster full ({max_size} players) for team {team.name}')
         self.team = team
         self.max_size = max_size
@@ -57,12 +57,12 @@ class RosterFullError(Exception):
 class Team:
     """A team of players competing as a unit in a team tournament."""
 
-    def __init__(self, event: 'Event', stored_team: StoredTeam):
+    def __init__(self, event: Event, stored_team: StoredTeam):
         self._event_ref: weakref.ReferenceType[Event] = weakref.ref(event)
         self.stored_team = stored_team
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         if (event := self._event_ref()) is None:
             raise RuntimeError('Event reference has been garbage collected')
         return event
@@ -81,7 +81,7 @@ class Team:
         return self.stored_team.tournament_id
 
     @property
-    def tournament(self) -> 'Tournament | None':
+    def tournament(self) -> Tournament | None:
         if self.tournament_id is None:
             return None
         return self.event.tournaments_by_id.get(self.tournament_id)
@@ -108,7 +108,7 @@ class Team:
             return chr(ord('A') + number - 1)
         return f'#{number}'
 
-    def player_round_label(self, player: 'Player', round_: int) -> str | None:
+    def player_round_label(self, player: Player, round_: int) -> str | None:
         """Fixed-table code for ``player`` this round — the team letter plus
         the player's 1-based lineup slot (e.g. ``A1``, ``B3``). Derived from
         the player's actual seat in :meth:`effective_round_slots`, so it
@@ -132,7 +132,7 @@ class Team:
         return self.stored_team.federation or ''
 
     @property
-    def group(self) -> 'TeamGroup | None':
+    def group(self) -> TeamGroup | None:
         group_id = self.stored_team.group_id
         if group_id is None:
             return None
@@ -147,7 +147,7 @@ class Team:
         return self.stored_team.check_in
 
     @property
-    def captain(self) -> 'Player | None':
+    def captain(self) -> Player | None:
         """The playing captain, when one is set. ``None`` for a
         non-playing captain (see :attr:`captain_display_name`)."""
         captain_id = self.stored_team.captain_id
@@ -270,7 +270,7 @@ class Team:
         )
 
     @cached_property
-    def players(self) -> list['Player']:
+    def players(self) -> list[Player]:
         """Players belonging to this team, ordered by *team_index*.
         Players without an index are sorted last by id."""
         return sorted(
@@ -286,7 +286,7 @@ class Team:
         )
 
     @cached_property
-    def players_by_id(self) -> dict[int, 'Player']:
+    def players_by_id(self) -> dict[int, Player]:
         return {player.id: player for player in self.players}
 
     @property
@@ -363,7 +363,7 @@ class Team:
         )
 
     @property
-    def lineups_by_round(self) -> dict[int, list['Player']]:
+    def lineups_by_round(self) -> dict[int, list[Player]]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""
         result: dict[int, list[Player]] = {}
@@ -377,13 +377,13 @@ class Team:
             ]
         return result
 
-    def get_round_lineup(self, round_: int) -> list['Player']:
+    def get_round_lineup(self, round_: int) -> list[Player]:
         return self.lineups_by_round.get(round_, [])
 
     def has_explicit_round_lineup(self, round_: int) -> bool:
         return round_ in self.stored_team.stored_round_lineups
 
-    def effective_round_lineup(self, round_: int) -> list['Player']:
+    def effective_round_lineup(self, round_: int) -> list[Player]:
         """Lineup applied for *round_* as a compact (no-hole) list of
         players. The stored override if any; otherwise, for rounds after
         the first, the *previous* round's effective lineup (which chains
@@ -416,7 +416,7 @@ class Team:
 
     def effective_round_slots(
         self, round_: int, board_count: int | None = None
-    ) -> list['Player | None']:
+    ) -> list[Player | None]:
         """Lineup applied for *round_* as a list of length
         ``team_player_count``, with ``None`` at each board index where
         the team has a hole (no player on that slot for this round).
@@ -460,7 +460,7 @@ class Team:
             slots[i] = player
         return slots
 
-    def round_board_slots(self, round_: int) -> list['Player | None'] | None:
+    def round_board_slots(self, round_: int) -> list[Player | None] | None:
         """Per-board occupants for *round_* read from the actual paired
         boards — the source of truth once a round is paired. Length is
         ``team_player_count``, ``None`` at each board the team left as a
@@ -526,7 +526,7 @@ class Team:
 
     def _delete_boardless_player_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         database: EventDatabase,
     ) -> None:
         """Delete boardless player records when leaving ``tournament``.
@@ -794,7 +794,7 @@ class Team:
         tournament = self.tournament
         return tournament.roster_max_size if tournament else None
 
-    def add_player(self, player: 'Player', database: EventDatabase) -> None:
+    def add_player(self, player: Player, database: EventDatabase) -> None:
         """Add a player to the team's roster.
         Removes the player from any previous team (event-wide uniqueness).
         Appends at the end of the roster ordering.
@@ -836,7 +836,7 @@ class Team:
                 ):
                     previous_tournament.unregister_rostered_player(player.id)
 
-    def remove_player(self, player: 'Player', database: EventDatabase) -> None:
+    def remove_player(self, player: Player, database: EventDatabase) -> None:
         """Remove a player from this team. Compacts remaining indexes."""
         if player.stored_player.team_id != self.id:
             return

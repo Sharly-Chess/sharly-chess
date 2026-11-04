@@ -343,7 +343,7 @@ class Snapshot:
     reason_tournament_id: int | None = None
 
     @classmethod
-    def from_file(cls, file: Path, uniq_id: str) -> 'Snapshot | None':
+    def from_file(cls, file: Path, uniq_id: str) -> Snapshot | None:
         """Reads a snapshot from its file name, None if the name does not
         follow the convention."""
         fields = file.stem.split(_FIELD_SEPARATOR)
@@ -353,7 +353,7 @@ class Snapshot:
         try:
             taken_at = datetime.strptime(timestamp, _TIMESTAMP_FORMAT)
             parsed_version = Version(version)
-        except (ValueError, InvalidVersion):
+        except ValueError, InvalidVersion:
             return None
         # What the step was about rides along with the reason, as
         # `before_pairing-3-7`: the round, then the tournament. The reasons
@@ -393,7 +393,7 @@ class Snapshot:
         return format_datetime(self.taken_at)
 
     @property
-    def tournaments(self) -> 'list[SnapshotTournament] | None':
+    def tournaments(self) -> list[SnapshotTournament] | None:
         """The state of each tournament the snapshot holds, None when it could
         not be read.
 
@@ -437,7 +437,7 @@ class Snapshot:
         )
 
     @property
-    def stored_event(self) -> 'StoredEvent | None':
+    def stored_event(self) -> StoredEvent | None:
         """The event the backup holds, when it can be read as it stands."""
         from database.sqlite.event.event_database import EventDatabase
 
@@ -458,7 +458,7 @@ class Snapshot:
         """
         return self.version <= SHARLY_CHESS_VERSION
 
-    def restore_in_place(self) -> 'Snapshot | None':
+    def restore_in_place(self) -> Snapshot | None:
         """Replaces the event with this snapshot, keeping its uniq_id, and
         returns the snapshot taken of the state that was replaced.
 
@@ -530,7 +530,7 @@ class Snapshot:
         self._publish_event_restored()
         return replaced
 
-    def _carry_over_plugin_data(self, previous: 'StoredEvent | None') -> None:
+    def _carry_over_plugin_data(self, previous: StoredEvent | None) -> None:
         """Hands the plugins what the event held before it was replaced.
 
         A backup holds what they had recorded when it was taken, which is
@@ -654,11 +654,11 @@ class SnapshotTournament:
 #: The state read out of the snapshots, by file. A snapshot file is written
 #: once and never modified, so what is read from it can be kept for as long as
 #: the application runs.
-_content_cache: dict[Path, 'list[SnapshotTournament] | None'] = {}
+_content_cache: dict[Path, list[SnapshotTournament] | None] = {}
 _content_lock = Lock()
 
 
-def read_stored_event(uniq_id: str) -> 'StoredEvent | None':
+def read_stored_event(uniq_id: str) -> StoredEvent | None:
     """The event as it stands, or None when it cannot be read — which is one
     of the reasons to restore a backup over it."""
     from database.sqlite.event.event_database import EventDatabase

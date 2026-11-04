@@ -22,7 +22,7 @@ class IndividualTeam:
     entity: Any
     label: str
     players: list[TournamentPlayer]
-    type: 'IndividualTeamType'
+    type: IndividualTeamType
 
     @property
     def base_id(self) -> str:

@@ -112,7 +112,7 @@ class CRUtils:
         return event_plugin_data.remark or ''
 
     @staticmethod
-    def get_event_plugin_data(event: Event) -> 'ChessResultsEventPluginData':
+    def get_event_plugin_data(event: Event) -> ChessResultsEventPluginData:
         plugin_data = event.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, ChessResultsEventPluginData)
         return plugin_data
@@ -120,7 +120,7 @@ class CRUtils:
     @staticmethod
     def get_tournament_plugin_data(
         tournament: Tournament,
-    ) -> 'ChessResultsTournamentPluginData':
+    ) -> ChessResultsTournamentPluginData:
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, ChessResultsTournamentPluginData)
         return plugin_data
@@ -192,7 +192,7 @@ class CRUtils:
     @staticmethod
     def update_tournament_plugin_data(
         tournament: Tournament,
-        plugin_data: 'ChessResultsTournamentPluginData',
+        plugin_data: ChessResultsTournamentPluginData,
     ) -> None:
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             plugin_data.to_stored_value()
@@ -208,7 +208,7 @@ class CRUtils:
     @staticmethod
     def update_event_plugin_data(
         event: Event,
-        plugin_data: 'ChessResultsEventPluginData',
+        plugin_data: ChessResultsEventPluginData,
     ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data

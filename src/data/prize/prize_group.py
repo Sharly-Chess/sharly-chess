@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 class PrizeGroup:
     def __init__(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         stored_prize_group: StoredPrizeGroup,
     ):
         self._tournament_ref: ReferenceType[Tournament] = weakref.ref(tournament)
@@ -40,7 +40,7 @@ class PrizeGroup:
         return category_by_id
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         if (tournament := self._tournament_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tournament

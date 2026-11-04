@@ -49,12 +49,12 @@ class KnockoutColourRuleSetting(PairingSetting[KnockoutColourRule]):
         return {self.id: object_.value}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> KnockoutColourRule:
+    def default_value(cls, tournament: Tournament) -> KnockoutColourRule:
         return KnockoutColourRule.ALTERNATE
 
     @classmethod
@@ -66,7 +66,7 @@ class KnockoutColourRuleSetting(PairingSetting[KnockoutColourRule]):
         return object_.value
 
     @property
-    def options(self) -> 'dict[str, SelectOption]':
+    def options(self) -> dict[str, SelectOption]:
         from web.utils import SelectOption
 
         return {
@@ -94,7 +94,7 @@ class KnockoutColourRuleSetting(PairingSetting[KnockoutColourRule]):
 
 
 class _KnockoutColourHost(Protocol):
-    def _teams_for_tournament(self, tournament: 'Tournament') -> list[Any]: ...
+    def _teams_for_tournament(self, tournament: Tournament) -> list[Any]: ...
 
 
 class KnockoutColourMixin:
@@ -105,13 +105,13 @@ class KnockoutColourMixin:
 
     @staticmethod
     def _colour_order(
-        rule: 'KnockoutColourRule',
+        rule: KnockoutColourRule,
         round_: int,
         index: int,
         high: int,
         low: int,
-        high_previous: 'BoardColor | None',
-        low_previous: 'BoardColor | None',
+        high_previous: BoardColor | None,
+        low_previous: BoardColor | None,
     ) -> tuple[int, int]:
         if rule == KnockoutColourRule.DRAW_LOTS:
             return (high, low) if random.choice((True, False)) else (low, high)
@@ -127,11 +127,11 @@ class KnockoutColourMixin:
 
     def _apply_colours(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         pairs: list[tuple[int, int | None]],
-        stronger_first: Callable[['Tournament', int, int], tuple[int, int]],
-        previous_colour: Callable[['Tournament', int, int], 'BoardColor | None'],
+        stronger_first: Callable[[Tournament, int, int], tuple[int, int]],
+        previous_colour: Callable[[Tournament, int, int], BoardColor | None],
     ) -> list[tuple[int, int | None]]:
         """Reorder each contested pair as ``(white, black)`` per the rule."""
         rule = KnockoutColourRuleSetting.get_value(tournament)
@@ -156,7 +156,7 @@ class KnockoutColourMixin:
 
     def _coloured_player_pairs(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         pairs: list[tuple[int, int | None]],
     ) -> list[tuple[int, int | None]]:
@@ -170,7 +170,7 @@ class KnockoutColourMixin:
 
     @staticmethod
     def _stronger_players(
-        tournament: 'Tournament', a_id: int, b_id: int
+        tournament: Tournament, a_id: int, b_id: int
     ) -> tuple[int, int]:
         players = tournament.tournament_players_by_id
         a, b = players.get(a_id), players.get(b_id)
@@ -182,8 +182,8 @@ class KnockoutColourMixin:
 
     @staticmethod
     def _previous_player_colour(
-        tournament: 'Tournament', player_id: int, round_: int
-    ) -> 'BoardColor | None':
+        tournament: Tournament, player_id: int, round_: int
+    ) -> BoardColor | None:
         player = tournament.tournament_players_by_id.get(player_id)
         if player is None:
             return None
@@ -199,7 +199,7 @@ class KnockoutColourMixin:
 
     def _coloured_team_pairs(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         pairs: list[tuple[int, int | None]],
     ) -> list[tuple[int, int | None]]:
@@ -215,7 +215,7 @@ class KnockoutColourMixin:
         return [(w, b) if b is None else (b, w) for w, b in ordered]
 
     def _stronger_teams(
-        self, tournament: 'Tournament', a_id: int, b_id: int
+        self, tournament: Tournament, a_id: int, b_id: int
     ) -> tuple[int, int]:
         order = [
             team.id for team in self._colour_host()._teams_for_tournament(tournament)
@@ -225,8 +225,8 @@ class KnockoutColourMixin:
         return (a_id, b_id) if rank_a <= rank_b else (b_id, a_id)
 
     def _previous_team_colour(
-        self, tournament: 'Tournament', team_id: int, round_: int
-    ) -> 'BoardColor | None':
+        self, tournament: Tournament, team_id: int, round_: int
+    ) -> BoardColor | None:
         team_a_white = self._team_a_is_board_one_white(tournament)
         for previous in range(round_ - 1, 0, -1):
             for team_board in tournament.team_boards_by_round.get(previous, []):
@@ -244,6 +244,6 @@ class KnockoutColourMixin:
         return None
 
     @staticmethod
-    def _team_a_is_board_one_white(tournament: 'Tournament') -> bool:
+    def _team_a_is_board_one_white(tournament: Tournament) -> bool:
         pattern = tournament.color_pattern or ''
         return pattern[0] == BoardColor.WHITE.value if pattern else True

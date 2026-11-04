@@ -5,7 +5,7 @@ For a feature to implement the architecture:
     (location: /src/data/entity_managers.py)"""
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -79,5 +79,5 @@ class EntityManager[T: IdentifiableEntity](ABC):
 
 
 class EventBoundEntityManager[T: IdentifiableEntity](EntityManager[T], ABC):
-    def __init__(self, event: Optional['Event']):
+    def __init__(self, event: Event | None):
         self.event = event

@@ -169,7 +169,7 @@ class FRASchoolPlayerFilter(PlayerFilter):
             in school_ids
         )
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         school_ids = self._get_option(FRASchoolsFilterOption).value
         exclude = self._get_option(ExcludeFilterOption).value
         schools_by_id = FRASchoolsUtils.get_event_plugin_data(
@@ -200,14 +200,14 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[list[int], FRASchool]):
     def default_value(self) -> list[int]:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[FRASchool]:
+    def get_all_known_values(self, tournament: Tournament) -> list[FRASchool]:
         return sorted(
             FRASchoolsUtils.get_event_plugin_data(tournament.event).fra_schools,
             key=attrgetter('sort_key'),
         )
 
     def get_tournament_player_counter(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> Counter[FRASchool]:
         counter: Counter[FRASchool] = Counter[FRASchool]()
         for tournament_player in tournament.tournament_players:

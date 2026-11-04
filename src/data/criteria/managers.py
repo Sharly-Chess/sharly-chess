@@ -80,7 +80,7 @@ class TournamentCriterionManager(EventBoundEntityManager[TournamentCriterion]):
 
 
 class SearchFilterManager:
-    def __init__(self, event: 'Event'):
+    def __init__(self, event: Event):
         self.event = event
 
     @property

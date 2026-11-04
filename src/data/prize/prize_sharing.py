@@ -18,7 +18,7 @@ class PrizeSharing(IdentifiableEntity, ABC):
     @abstractmethod
     def calculate_prizes(
         self,
-        prizes: list['Prize'],
+        prizes: list[Prize],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -37,7 +37,7 @@ class NoPrizeSharing(PrizeSharing):
     @override
     def calculate_prizes(
         self,
-        prizes: list['Prize'],
+        prizes: list[Prize],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -70,7 +70,7 @@ class AveragePrizeSharing(PrizeSharing):
     @override
     def calculate_prizes(
         self,
-        prizes: list['Prize'],
+        prizes: list[Prize],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -140,7 +140,7 @@ class HortSystemPrizeSharing(PrizeSharing):
     @override
     def calculate_prizes(
         self,
-        prizes: list['Prize'],
+        prizes: list[Prize],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:

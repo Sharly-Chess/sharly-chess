@@ -60,7 +60,7 @@ class KnockoutEngine(
     MIN_PLAYERS = 2
 
     @override
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         if tournament.player_count < self.MIN_PLAYERS:
             return _(
                 'Too few players to generate the pairings (minimum: {min}).'
@@ -69,7 +69,7 @@ class KnockoutEngine(
 
     @override
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -88,39 +88,35 @@ class KnockoutEngine(
         return None
 
     def _bracket_pairs(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[tuple[int | None, int | None]]:
         return self._single_elim_bracket_pairs(tournament, round_)
 
-    def _round_loser_ids(
-        self, tournament: 'Tournament', round_: int
-    ) -> list[int] | None:
+    def _round_loser_ids(self, tournament: Tournament, round_: int) -> list[int] | None:
         return self._single_elim_round_loser_ids(tournament, round_)
 
     def _round_winner_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int | None] | None:
         return self._single_elim_round_winner_ids(tournament, round_)
 
     def _single_elim_first_round_pairs(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[tuple[int | None, int | None]]:
         return self._first_round_player_pairs(tournament)
 
     def _single_elim_pair_winner(
-        self, tournament: 'Tournament', round_: int, a_id: int | None, b_id: int | None
+        self, tournament: Tournament, round_: int, a_id: int | None, b_id: int | None
     ) -> int | None:
         return self._pair_winner(tournament, round_, a_id, b_id)
 
-    def _single_elim_third_place_enabled(self, tournament: 'Tournament') -> bool:
+    def _single_elim_third_place_enabled(self, tournament: Tournament) -> bool:
         return (
             KnockoutThirdPlaceSetting.get_value(tournament)
             and self._grouping_dimension(tournament) is None
         )
 
-    def board_section_label(
-        self, tournament: 'Tournament', board: 'Board'
-    ) -> str | None:
+    def board_section_label(self, tournament: Tournament, board: Board) -> str | None:
         """The round name of a board — Final, Semifinals, …, or 'Third-place
         playoff' for the bronze match sharing the final round."""
         rounds = tournament.rounds
@@ -140,7 +136,7 @@ class KnockoutEngine(
         return _single_elimination_round_name(board.round, rounds)
 
     def _pair_winner(
-        self, tournament: 'Tournament', round_: int, a_id: int | None, b_id: int | None
+        self, tournament: Tournament, round_: int, a_id: int | None, b_id: int | None
     ) -> int | None:
         """Winner of a single match (regardless of the rest of the round), or
         ``None`` while undecided. A bye advances its lone player."""
@@ -156,8 +152,8 @@ class KnockoutEngine(
 
     @staticmethod
     def _find_board(
-        tournament: 'Tournament', round_: int, a_id: int | None, b_id: int
-    ) -> 'Board | None':
+        tournament: Tournament, round_: int, a_id: int | None, b_id: int
+    ) -> Board | None:
         """The round's board that *a_id* and *b_id* were paired on. Prefer
         the board seating exactly the two of them, but a knock-out player
         has only one game per round, so if an earlier round's result was
@@ -169,10 +165,10 @@ class KnockoutEngine(
     @override
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         # A grouped bracket can carry all-virtual (None, None) phantom slots
         # for alignment; they seat no board, so drop them (and narrow the
@@ -186,7 +182,7 @@ class KnockoutEngine(
         return self._boards_from_pairs(pairs)
 
     def _first_round_player_pairs(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[tuple[int | None, int | None]]:
         """Round-one ``(white_id, black_id | None)`` pairs, seeded by starting
         rank (or by group when a grouping dimension is set). ``None`` marks a
@@ -239,10 +235,10 @@ class KnockoutTwoGameEngine(_TwoGameSingleElimMixin, KnockoutEngine):
     @override
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         level = self._level_of(round_)
         game = self._game_of(round_)
@@ -267,7 +263,7 @@ class KnockoutTwoGameEngine(_TwoGameSingleElimMixin, KnockoutEngine):
         return self._boards_from_pairs(pairs)
 
     @staticmethod
-    def _board_colours(board: 'Board | None') -> tuple[int, int] | None:
+    def _board_colours(board: Board | None) -> tuple[int, int] | None:
         """The ``(white_id, black_id)`` a board was played with, or ``None``
         for a board that seats no pair."""
         if board is None:
@@ -280,7 +276,7 @@ class KnockoutTwoGameEngine(_TwoGameSingleElimMixin, KnockoutEngine):
 
     @override
     def _pair_winner(
-        self, tournament: 'Tournament', round_: int, a_id: int | None, b_id: int | None
+        self, tournament: Tournament, round_: int, a_id: int | None, b_id: int | None
     ) -> int | None:
         """Winner of a *match* (bracket level ``round_``) on the aggregate of
         its two games, or ``None`` while either game is unplayed. A bye
@@ -322,17 +318,17 @@ class DoubleEliminationEngine(
     MIN_PLAYERS = 2
 
     @override
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         if tournament.player_count < self.MIN_PLAYERS:
             return _(
                 'Too few players to generate the pairings (minimum: {min}).'
             ).format(min=self.MIN_PLAYERS)
         return None
 
-    def _participant_count(self, tournament: 'Tournament') -> int:
+    def _participant_count(self, tournament: Tournament) -> int:
         return tournament.player_count
 
-    def _board_participant_ids(self, board: 'Board') -> set[int]:
+    def _board_participant_ids(self, board: Board) -> set[int]:
         return {
             player.id
             for player in (
@@ -342,7 +338,7 @@ class DoubleEliminationEngine(
             if player is not None
         }
 
-    def _seed_id(self, tournament: 'Tournament', seed: int) -> int | None:
+    def _seed_id(self, tournament: Tournament, seed: int) -> int | None:
         # A seed the field no longer holds — a player deleted while the
         # bracket was drawn for a larger one — seats nobody, as a bye does.
         player = seeded_players(tournament).get(seed)
@@ -350,7 +346,7 @@ class DoubleEliminationEngine(
 
     def _played_match_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         match: double_elimination.Match,
         a_id: int,
         b_id: int,
@@ -363,7 +359,7 @@ class DoubleEliminationEngine(
 
     @override
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -374,10 +370,10 @@ class DoubleEliminationEngine(
     @override
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         pairs = self._coloured_player_pairs(
             tournament, round_, self._round_match_pairs(tournament, round_)
@@ -393,7 +389,7 @@ class DoubleEliminationTwoGameEngine(_TwoGameDoubleElimMixin, DoubleEliminationE
     @override
     def _played_match_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         match: double_elimination.Match,
         a_id: int,
         b_id: int,
@@ -418,10 +414,10 @@ class DoubleEliminationTwoGameEngine(_TwoGameDoubleElimMixin, DoubleEliminationE
     @override
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         game = self._game_of(round_)
         pairs: list[tuple[int, int | None]] = []
@@ -460,7 +456,7 @@ class TeamKnockoutEngine(
         return False
 
     @override
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         if len(self._teams_for_tournament(tournament)) < self.MIN_TEAMS:
             return _('Too few teams to generate the pairings (minimum: {min}).').format(
                 min=self.MIN_TEAMS
@@ -469,7 +465,7 @@ class TeamKnockoutEngine(
 
     @override
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -488,38 +484,38 @@ class TeamKnockoutEngine(
         return None
 
     def _bracket_team_pairs(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[tuple[int | None, int | None]]:
         return self._single_elim_bracket_pairs(tournament, round_)
 
     def _round_loser_team_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int] | None:
         return self._single_elim_round_loser_ids(tournament, round_)
 
     def _round_winner_team_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int | None] | None:
         return self._single_elim_round_winner_ids(tournament, round_)
 
     def _single_elim_first_round_pairs(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[tuple[int | None, int | None]]:
         return self._first_round_team_pairs(tournament)
 
     def _single_elim_pair_winner(
-        self, tournament: 'Tournament', round_: int, a_id: int | None, b_id: int | None
+        self, tournament: Tournament, round_: int, a_id: int | None, b_id: int | None
     ) -> int | None:
         return self._team_pair_winner(tournament, round_, a_id, b_id)
 
-    def _single_elim_third_place_enabled(self, tournament: 'Tournament') -> bool:
+    def _single_elim_third_place_enabled(self, tournament: Tournament) -> bool:
         return (
             KnockoutThirdPlaceSetting.get_value(tournament)
             and self._grouping_dimension(tournament) is None
         )
 
     def board_section_label(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
+        self, tournament: Tournament, team_board: TeamBoard
     ) -> str | None:
         """The round name of a team match — Final, Semifinals, …, or
         'Third-place playoff' for the bronze match in the final round."""
@@ -534,7 +530,7 @@ class TeamKnockoutEngine(
         return _single_elimination_round_name(team_board.round, rounds)
 
     def _team_pair_winner(
-        self, tournament: 'Tournament', round_: int, a_id: int | None, b_id: int | None
+        self, tournament: Tournament, round_: int, a_id: int | None, b_id: int | None
     ) -> int | None:
         """Winning team of a single match, or ``None`` while undecided."""
         if b_id is None:
@@ -546,8 +542,8 @@ class TeamKnockoutEngine(
 
     @staticmethod
     def _find_team_board(
-        tournament: 'Tournament', round_: int, a_id: int | None, b_id: int
-    ) -> 'TeamBoard | None':
+        tournament: Tournament, round_: int, a_id: int | None, b_id: int
+    ) -> TeamBoard | None:
         """The round's match *a_id* and *b_id* were paired in. Prefer the
         one seating exactly the two teams, but a knock-out team plays a
         single match per round, so if an earlier round's result was edited
@@ -559,7 +555,7 @@ class TeamKnockoutEngine(
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -580,7 +576,7 @@ class TeamKnockoutEngine(
         return ''
 
     def _first_round_team_pairs(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[tuple[int | None, int | None]]:
         leaves = self._grouped_leaves(tournament)
         if leaves is not None:
@@ -604,7 +600,7 @@ class TeamKnockoutTwoGameEngine(_TwoGameSingleElimMixin, TeamKnockoutEngine):
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -625,7 +621,7 @@ class TeamKnockoutTwoGameEngine(_TwoGameSingleElimMixin, TeamKnockoutEngine):
 
     def _forced_team_pairs(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         game: int,
         seated: list[tuple[int, int | None]],
     ) -> list[tuple[int, int | None]]:
@@ -648,7 +644,7 @@ class TeamKnockoutTwoGameEngine(_TwoGameSingleElimMixin, TeamKnockoutEngine):
 
     @override
     def _team_pair_winner(
-        self, tournament: 'Tournament', round_: int, a_id: int | None, b_id: int | None
+        self, tournament: Tournament, round_: int, a_id: int | None, b_id: int | None
     ) -> int | None:
         """Winning team of a *match* (bracket level ``round_``) on the aggregate
         game points of its two legs, or ``None`` while either leg is unfinished.
@@ -710,29 +706,29 @@ class TeamDoubleEliminationEngine(
         return False
 
     @override
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         if len(self._teams_for_tournament(tournament)) < self.MIN_TEAMS:
             return _('Too few teams to generate the pairings (minimum: {min}).').format(
                 min=self.MIN_TEAMS
             )
         return None
 
-    def _participant_count(self, tournament: 'Tournament') -> int:
+    def _participant_count(self, tournament: Tournament) -> int:
         return len(self._teams_for_tournament(tournament))
 
-    def _board_participant_ids(self, team_board: 'TeamBoard') -> set[int]:
+    def _board_participant_ids(self, team_board: TeamBoard) -> set[int]:
         stb = team_board.stored_team_board
         return {
             team_id for team_id in (stb.team_a_id, stb.team_b_id) if team_id is not None
         }
 
-    def _seed_id(self, tournament: 'Tournament', seed: int) -> int | None:
+    def _seed_id(self, tournament: Tournament, seed: int) -> int | None:
         teams = self._teams_for_tournament(tournament)
         return teams[seed - 1].id if 1 <= seed <= len(teams) else None
 
     def _played_match_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         match: double_elimination.Match,
         a_id: int,
         b_id: int,
@@ -744,7 +740,7 @@ class TeamDoubleEliminationEngine(
 
     @override
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -755,7 +751,7 @@ class TeamDoubleEliminationEngine(
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -782,7 +778,7 @@ class TeamDoubleEliminationTwoGameEngine(
     @override
     def _played_match_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         match: double_elimination.Match,
         a_id: int,
         b_id: int,
@@ -817,7 +813,7 @@ class TeamDoubleEliminationTwoGameEngine(
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:

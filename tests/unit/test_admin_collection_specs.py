@@ -164,7 +164,7 @@ def test_admin_context_applies_collection_plugins_to_a_fresh_spec(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # Only identity matters here — the plugin manager is asserted against it.
-    event = cast('Event', object())
+    event = cast(Event, object())
 
     class PluginManager:
         def hook_for_event(self, hook_event, hook_name):

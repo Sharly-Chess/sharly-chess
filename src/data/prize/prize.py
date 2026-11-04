@@ -15,14 +15,14 @@ if TYPE_CHECKING:
 
 
 class Prize:
-    def __init__(self, prize_category: 'PrizeCategory', stored_prize: StoredPrize):
+    def __init__(self, prize_category: PrizeCategory, stored_prize: StoredPrize):
         self._prize_category_ref: ReferenceType[PrizeCategory] = weakref.ref(
             prize_category
         )
         self.stored_prize = stored_prize
 
     @property
-    def prize_category(self) -> 'PrizeCategory':
+    def prize_category(self) -> PrizeCategory:
         if (prize_category := self._prize_category_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return prize_category

@@ -26,14 +26,14 @@ class TimerHour:
 
     def __init__(
         self,
-        timer: 'Timer',
+        timer: Timer,
         stored_timer_hour: StoredTimerHour,
     ):
         self._timer_ref: ReferenceType[Timer] = weakref.ref(timer)
         self.stored_timer_hour: StoredTimerHour = stored_timer_hour
 
     @property
-    def timer(self) -> 'Timer':
+    def timer(self) -> Timer:
         _timer = self._timer_ref()
         if _timer is None:
             raise RuntimeError('Timer reference has been garbage collected')
@@ -140,7 +140,7 @@ class TimerHour:
 class Timer:
     """A data wrapper around a stored timer."""
 
-    def __init__(self, event: 'Event', stored_timer: StoredTimer):
+    def __init__(self, event: Event, stored_timer: StoredTimer):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_timer: StoredTimer = stored_timer
         self.timer_hours_by_id: dict[int, TimerHour] = self._get_timer_hours_by_id()
@@ -155,7 +155,7 @@ class Timer:
         return timer_hours_by_id
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -194,7 +194,7 @@ class Timer:
         }
 
     @property
-    def screens(self) -> list['Screen']:
+    def screens(self) -> list[Screen]:
         return [
             screen
             for screen in self.event.sorted_basic_screens
@@ -202,7 +202,7 @@ class Timer:
         ]
 
     @property
-    def families(self) -> list['Family']:
+    def families(self) -> list[Family]:
         return [
             family
             for family in self.event.sorted_families
@@ -210,7 +210,7 @@ class Timer:
         ]
 
     @property
-    def rotators(self) -> list['Rotator']:
+    def rotators(self) -> list[Rotator]:
         return [
             rotator
             for rotator in self.event.sorted_rotators

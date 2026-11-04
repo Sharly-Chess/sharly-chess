@@ -7,8 +7,6 @@ table engine can reject unsupported tournaments instead of falling back to live
 Molter search.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any

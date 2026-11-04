@@ -51,11 +51,11 @@ class SelectPlayerFilterOption[V, T](PlayerFilterOption[V]):
     """
 
     @abstractmethod
-    def get_all_known_values(self, tournament: 'Tournament') -> list[T]:
+    def get_all_known_values(self, tournament: Tournament) -> list[T]:
         """All the known values of type [T] for the tournament."""
 
     @abstractmethod
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[T]:
+    def get_tournament_player_counter(self, tournament: Tournament) -> Counter[T]:
         """The number of tournament players per object of type [T] in the tournament."""
 
     @abstractmethod
@@ -76,10 +76,10 @@ class SelectPlayerFilterOption[V, T](PlayerFilterOption[V]):
 
     def select_options(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         split_tournament_others: bool = True,
         include_unknown: bool = True,
-    ) -> dict[str, 'SelectOption'] | dict[str, dict[str, 'SelectOption']]:
+    ) -> dict[str, SelectOption] | dict[str, dict[str, SelectOption]]:
         """Build the select options for the tournament *tournament*.
         If *split_tournament_others*, the options will be split into 2 option groups:
             - one with the options matching players in the tournament, including the player count
@@ -147,11 +147,11 @@ class GenderOption(SelectPlayerFilterOption[str, PlayerGender]):
     def template_file_name(self) -> str:
         return 'gender'
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerGender]:
+    def get_all_known_values(self, tournament: Tournament) -> list[PlayerGender]:
         return [gender for gender in PlayerGender if gender != PlayerGender.NONE]
 
     def get_tournament_player_counter(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> Counter[PlayerGender]:
         return tournament.gender_counts
 
@@ -206,7 +206,7 @@ class AgeCategoryOption(SelectPlayerFilterOption[str | None, PlayerCategory], AB
         return None
 
     def get_tournament_player_counter(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> Counter[PlayerCategory]:
         counter = tournament.category_counts
         if NoCategory() in counter:
@@ -215,14 +215,14 @@ class AgeCategoryOption(SelectPlayerFilterOption[str | None, PlayerCategory], AB
 
     def age_select_options(
         self,
-        tournament: 'Tournament',
-    ) -> dict[str, 'SelectOption'] | dict[str, dict[str, 'SelectOption']]:
+        tournament: Tournament,
+    ) -> dict[str, SelectOption] | dict[str, dict[str, SelectOption]]:
         from web.utils import SelectOption
 
         options = super().select_options(tournament, False, False)
         return {'': SelectOption('-')} | options  # type: ignore[operator]
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerCategory]:
+    def get_all_known_values(self, tournament: Tournament) -> list[PlayerCategory]:
         categories = tournament.event.player_categories.copy()
         categories.pop(0)
         return categories
@@ -268,11 +268,11 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[list[int], PlayerRatingTy
         return []
 
     def get_tournament_player_counter(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> Counter[PlayerRatingType]:
         return tournament.rating_type_counts
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerRatingType]:
+    def get_all_known_values(self, tournament: Tournament) -> list[PlayerRatingType]:
         return list(PlayerRatingType)
 
     def get_key(self, object_: PlayerRatingType) -> str:
@@ -307,11 +307,11 @@ class ClubsFilterOption(SelectPlayerFilterOption[list[str], str]):
     def default_value(self) -> list[str]:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+    def get_all_known_values(self, tournament: Tournament) -> list[str]:
         event_club_names = {player.club.name for player in tournament.event.players}
         return [name for name in sorted(event_club_names, key=normalized_key) if name]
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+    def get_tournament_player_counter(self, tournament: Tournament) -> Counter[str]:
         counter = tournament.club_counts.copy()
         del counter['']
         return counter
@@ -346,10 +346,10 @@ class FederationsFilterOption(SelectPlayerFilterOption[list[str], str]):
     def default_value(self) -> list[str]:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+    def get_all_known_values(self, tournament: Tournament) -> list[str]:
         return list(SharlyChessConfig().federations.keys())
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+    def get_tournament_player_counter(self, tournament: Tournament) -> Counter[str]:
         return tournament.federation_counts
 
     def get_key(self, object_: str) -> str:
@@ -381,12 +381,12 @@ class CommentsFilterOption(SelectPlayerFilterOption[list[str], str]):
     def default_value(self) -> list[str]:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+    def get_all_known_values(self, tournament: Tournament) -> list[str]:
         return list(
             {player.comment for player in tournament.event.players if player.comment}
         )
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+    def get_tournament_player_counter(self, tournament: Tournament) -> Counter[str]:
         counter = Counter[str]()
         for player in tournament.tournament_players:
             if player.comment:
@@ -418,11 +418,11 @@ class PlayersFilterOption(SelectPlayerFilterOption[list[int], TournamentPlayer])
     def default_value(self) -> list[int]:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
+    def get_all_known_values(self, tournament: Tournament) -> list[TournamentPlayer]:
         return sorted(tournament.tournament_players, key=by('full_name'))
 
     def get_tournament_player_counter(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> Counter[TournamentPlayer]:
         return Counter[TournamentPlayer]()
 

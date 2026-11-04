@@ -33,12 +33,12 @@ class KnockoutThirdPlaceSetting(PairingSetting[bool]):
         return {self.id: 'on' if object_ else ''}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> bool:
+    def default_value(cls, tournament: Tournament) -> bool:
         return False
 
     @classmethod

@@ -186,7 +186,7 @@ class TournamentPeriod:
 
     def __init__(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         stored_period: StoredTournamentPeriod,
         index: int,
         last_round: int,

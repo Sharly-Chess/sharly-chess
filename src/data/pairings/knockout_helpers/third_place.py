@@ -23,19 +23,19 @@ def match_loser_of(
 
 
 class _SingleEliminationThirdPlaceHost(Protocol):
-    def _single_elim_third_place_enabled(self, tournament: 'Tournament') -> bool: ...
+    def _single_elim_third_place_enabled(self, tournament: Tournament) -> bool: ...
 
     def _single_elim_round_loser_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int] | None: ...
 
     def _single_elim_slot(
-        self, tournament: 'Tournament', round_: int, index: int, cache: dict
+        self, tournament: Tournament, round_: int, index: int, cache: dict
     ) -> tuple[int | None, int | None, int | None]: ...
 
     def _single_elim_pair_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         a_id: int | None,
         b_id: int | None,
@@ -54,7 +54,7 @@ class SingleEliminationThirdPlaceMixin:
 
     def _third_place_pairs(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         *,
         stage: int,
         final_stage: int,
@@ -72,12 +72,12 @@ class SingleEliminationThirdPlaceMixin:
 
     def _third_place_match_descriptor(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         *,
         final_stage: int,
         app_round: int,
         cache: dict,
-    ) -> 'MatchDescriptor | None':
+    ) -> MatchDescriptor | None:
         """The render descriptor for the bronze match, if it is enabled."""
         host = self._third_place_host()
         if final_stage < 2 or not host._single_elim_third_place_enabled(tournament):
@@ -109,7 +109,7 @@ class SingleEliminationThirdPlaceMixin:
 
     def _third_place_ranking_value(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         participant_id: int,
         *,
         final_stage: int,
@@ -132,7 +132,7 @@ class SingleEliminationThirdPlaceMixin:
 
     def _is_third_place_participant_pair(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         participant_ids: set[int],
         *,
         stage: int,

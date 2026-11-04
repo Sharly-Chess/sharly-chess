@@ -41,7 +41,7 @@ class Chess960ScreenType(ScreenType):
         return False
 
     @override
-    def default_screen_name(self, screen: 'Screen') -> str:
+    def default_screen_name(self, screen: Screen) -> str:
         return _('Chess960')
 
     @property
@@ -60,7 +60,7 @@ class Chess960ScreenType(ScreenType):
         return '/chess960_screen_form.html'
 
     @staticmethod
-    def _plugin_data(screen: 'Screen') -> 'Chess960ScreenPluginData':
+    def _plugin_data(screen: Screen) -> Chess960ScreenPluginData:
         from plugins.chess960.utils import Chess960ScreenPluginData
 
         plugin_data = screen.plugin_data.get(PLUGIN_NAME)
@@ -68,18 +68,18 @@ class Chess960ScreenType(ScreenType):
         return plugin_data
 
     @override
-    def create_form_data(self, event: 'Event') -> dict:
+    def create_form_data(self, event: Event) -> dict:
         return {
             'columns': 1,
             'chess960_number': '',
         }
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         return self._plugin_data(screen).to_form_data()
 
     @override
-    def content_context(self, screen: 'Screen') -> dict:
+    def content_context(self, screen: Screen) -> dict:
         from plugins.chess960.utils import board_svg
 
         plugin_data = self._plugin_data(screen)
@@ -94,9 +94,9 @@ class Chess960ScreenType(ScreenType):
         return '/chess960_screen_card.html'
 
     @override
-    def card_context(self, screen: 'Screen') -> dict:
+    def card_context(self, screen: Screen) -> dict:
         return self.content_context(screen)
 
     @override
-    def refresh_needed(self, screen: 'Screen', since: datetime) -> bool:
+    def refresh_needed(self, screen: Screen, since: datetime) -> bool:
         return screen.last_update > since

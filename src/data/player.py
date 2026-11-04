@@ -82,7 +82,7 @@ class PlayerProfileLink:
 class Player:
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_player: StoredPlayer,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
@@ -95,7 +95,7 @@ class Player:
         return dict(plugin_manager.hook.get_player_plugin_data_class())
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -324,7 +324,7 @@ class Player:
         return rating.value or None
 
     @cached_property
-    def event_default_rating_and_type(self) -> 'PlayerRatingAndType':
+    def event_default_rating_and_type(self) -> PlayerRatingAndType:
         """Rating + its source type for display in team/event contexts.
 
         Uses the cadence, rating preference and sequence of the team's
@@ -351,7 +351,7 @@ class Player:
         )
 
     @property
-    def team(self) -> 'Team | None':
+    def team(self) -> Team | None:
         if (team_id := self.team_id) is None:
             return None
         return self.event.teams_by_id.get(team_id)
@@ -403,22 +403,22 @@ class Player:
         return tournament_id
 
     @property
-    def single_tournament(self) -> 'Tournament':
+    def single_tournament(self) -> Tournament:
         return self.event.tournaments_by_id[self.single_tournament_id]
 
     @property
-    def optional_single_tournament(self) -> 'Tournament | None':
+    def optional_single_tournament(self) -> Tournament | None:
         tournament_id = self.optional_single_tournament_id
         if tournament_id is None:
             return None
         return self.event.tournaments_by_id[tournament_id]
 
     @property
-    def single_tournament_player(self) -> 'TournamentPlayer':
+    def single_tournament_player(self) -> TournamentPlayer:
         return self.single_tournament.tournament_players_by_id[self.id]
 
     @property
-    def optional_single_tournament_player(self) -> 'TournamentPlayer | None':
+    def optional_single_tournament_player(self) -> TournamentPlayer | None:
         tournament = self.optional_single_tournament
         if tournament is None:
             return None
@@ -460,7 +460,7 @@ class Player:
         return self._base_ratings
 
     def stored_period(
-        self, period: 'TournamentPeriod | None'
+        self, period: TournamentPeriod | None
     ) -> StoredPlayerPeriod | None:
         """What a rating period knew of the player, or None when it knew
         them as their own columns say.
@@ -484,7 +484,7 @@ class Player:
         return self.stored_player.periods[recorded[-1].id or 0]
 
     def ratings_for(
-        self, period: 'TournamentPeriod | None'
+        self, period: TournamentPeriod | None
     ) -> dict[Cadence, PlayerRating]:
         """The player's ratings as they stood in a rating period."""
         stored_period = self.stored_period(period)
@@ -498,7 +498,7 @@ class Player:
         }
 
     def titles_in(
-        self, period: 'TournamentPeriod | None'
+        self, period: TournamentPeriod | None
     ) -> tuple[PlayerTitle, PlayerTitle]:
         """The open and women titles the player held in a rating period,
         which is what a norm counts for a game played in it (B.01
@@ -511,9 +511,7 @@ class Player:
             PlayerTitle(stored_period.women_title),
         )
 
-    def held_titles_in(
-        self, period: 'TournamentPeriod | None'
-    ) -> frozenset[PlayerTitle]:
+    def held_titles_in(self, period: TournamentPeriod | None) -> frozenset[PlayerTitle]:
         return frozenset(
             title for title in self.titles_in(period) if title != PlayerTitle.NONE
         )
@@ -546,7 +544,7 @@ class Player:
         )
 
     @property
-    def rated_tournament(self) -> 'Tournament | None':
+    def rated_tournament(self) -> Tournament | None:
         """The tournament whose settings rate the player."""
         return self.optional_single_tournament
 
@@ -618,7 +616,7 @@ class Player:
     def update_ratings(
         self,
         ratings: dict[Cadence, PlayerRating],
-        period: 'TournamentPeriod | None' = None,
+        period: TournamentPeriod | None = None,
     ) -> None:
         """Record ratings, for the player or for one rating period.
 
@@ -672,7 +670,7 @@ class Player:
 class TournamentPlayer(Player):  # noqa: PLW1641
     def __init__(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         stored_tournament_player: StoredTournamentPlayer,
     ):
         player_id = stored_tournament_player.player_id
@@ -709,18 +707,18 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return self.ratings_for(self.tournament.current_period)
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         if (tournament := self._tournament_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
 
     @property
     @override
-    def rated_tournament(self) -> 'Tournament':
+    def rated_tournament(self) -> Tournament:
         return self.tournament
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         return self.tournament.event
 
     @property
@@ -774,7 +772,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             self.tournament.stop_date,
         )
 
-    def rating_and_type_in(self, period: 'TournamentPeriod') -> PlayerRatingAndType:
+    def rating_and_type_in(self, period: TournamentPeriod) -> PlayerRatingAndType:
         """The rating the tournament would use for this player in a period
         other than the one it has reached — what a report of that period,
         or a tie-break asked to read it, needs."""
@@ -850,7 +848,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return official_rating(self.ratings, self.tournament.cadence)
 
     def official_rating_in(
-        self, period: 'TournamentPeriod'
+        self, period: TournamentPeriod
     ) -> PlayerRatingAndType | None:
         return official_rating(self.ratings_for(period), self.tournament.cadence)
 
@@ -1160,11 +1158,11 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         self,
         after_round: int,
         next_round_pairings_as_zpb: bool,
-        rating_corrections: list['RatingCorrection'] | None = None,
+        rating_corrections: list[RatingCorrection] | None = None,
         for_engine: bool = False,
-        window: 'ReportWindow | None' = None,
+        window: ReportWindow | None = None,
         rating_report: bool = False,
-    ) -> 'TrfPlayer':
+    ) -> TrfPlayer:
         """The player's 001 record, with the games of *rating_corrections*
         as they were corrected, and their NRS records (see
         `_trf_national_players`).
@@ -1251,7 +1249,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         rating: PlayerRatingAndType,
         for_engine: bool,
         rating_report: bool,
-    ) -> dict[str, 'TrfNationalPlayer']:
+    ) -> dict[str, TrfNationalPlayer]:
         """The player's NRS records, by federation (TEC Manual 3.9.6).
 
         The pairing engine is given none, the starting ranks carrying the
@@ -1323,8 +1321,8 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return national_players
 
     def _to_trf_window(
-        self, window: 'ReportWindow', for_engine: bool, rating_report: bool
-    ) -> 'TrfPlayer':
+        self, window: ReportWindow, for_engine: bool, rating_report: bool
+    ) -> TrfPlayer:
         from data.input_output.trf.trf_data import TrfGame, TrfPlayer
         from data.input_output.trf.trf_mappers import TrfPlayerGender, TrfPlayerTitle
 
@@ -1395,7 +1393,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return not self.failing_tournament_criteria
 
     @cached_property
-    def failing_tournament_criteria(self) -> list['TournamentCriterion']:
+    def failing_tournament_criteria(self) -> list[TournamentCriterion]:
         """Return the list of tournament criteria that the player does not match."""
         return [
             criterion
@@ -1527,7 +1525,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         self,
         *,
         after_round: int,
-        tie_breaks: list['TieBreak'] | None = None,
+        tie_breaks: list[TieBreak] | None = None,
     ) -> None:
         if tie_breaks is None:
             tie_breaks = self.tournament.tie_breaks
@@ -1635,7 +1633,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def rank_sort_key(self) -> tuple:
         return (*self.rank_sort_key_without_pairing_number, self.pairing_number)
 
-    def __le__(self, other: 'TournamentPlayer') -> bool:
+    def __le__(self, other: TournamentPlayer) -> bool:
         # p1 <= p2 calls p1.__le__(p2)
         if not isinstance(other, TournamentPlayer):
             return NotImplemented
@@ -1719,7 +1717,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         )
         return voluntarily_unplayed * 2 > len(scheduled)
 
-    def game_counts_for_tie_breaks(self, pairing: 'Pairing') -> bool:
+    def game_counts_for_tie_breaks(self, pairing: Pairing) -> bool:
         """False when *pairing* is against a player excluded from the final
         standings — that game must not feed any of this player's tie-breaks
         or opponent points (FIDE 6.6). Byes and holes (no opponent) are left
@@ -1729,7 +1727,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         opponent = self.tournament.tournament_players_by_id.get(pairing.opponent_id)
         return opponent is None or not opponent.is_excluded_from_standings
 
-    def game_is_annulled(self, pairing: 'Pairing') -> bool:
+    def game_is_annulled(self, pairing: Pairing) -> bool:
         """Whether *pairing* no longer counts towards the standings (FIDE
         6.6) because either side was dropped from them. It stays in the
         tournament table, crossed out, and out of both players' totals."""

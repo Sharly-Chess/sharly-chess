@@ -272,7 +272,7 @@ class AgeCategoryTournamentCriterion(TournamentCriterion[dict[str, str | None]])
             data.get(self.form_key + '_min') or data.get(self.form_key + '_max')
         )
 
-    def get_select_options(self, event: 'Event') -> dict[str, str]:
+    def get_select_options(self, event: Event) -> dict[str, str]:
         return {
             category.id: category.name
             for category in event.player_categories

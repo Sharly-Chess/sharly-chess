@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class AssignedPrize:
-    prize: 'Prize'
+    prize: Prize
     priority: int
     place_index: int
     assigned_to: TournamentPlayer | None

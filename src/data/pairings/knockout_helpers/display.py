@@ -22,12 +22,12 @@ if TYPE_CHECKING:
 
 class _KnockoutDisplayHost(Protocol):
     def bracket_match_descriptors(
-        self, tournament: 'Tournament'
-    ) -> list['MatchDescriptor']: ...
+        self, tournament: Tournament
+    ) -> list[MatchDescriptor]: ...
 
-    def _grouping_dimension(self, tournament: 'Tournament') -> Any: ...
+    def _grouping_dimension(self, tournament: Tournament) -> Any: ...
 
-    def _teams_for_tournament(self, tournament: 'Tournament') -> list[Any]: ...
+    def _teams_for_tournament(self, tournament: Tournament) -> list[Any]: ...
 
 
 class KnockoutDisplayMixin:
@@ -36,7 +36,7 @@ class KnockoutDisplayMixin:
     def _display_host(self) -> _KnockoutDisplayHost:
         return cast(_KnockoutDisplayHost, self)
 
-    def bracket_layout(self, tournament: 'Tournament') -> 'BracketLayout':
+    def bracket_layout(self, tournament: Tournament) -> BracketLayout:
         from data.pairings.knockout_helpers.layout import (
             BracketColumn,
             BracketLayout,
@@ -65,7 +65,7 @@ class KnockoutDisplayMixin:
                 ),
             )
 
-        def build_match(descriptor: 'MatchDescriptor') -> BracketMatch:
+        def build_match(descriptor: MatchDescriptor) -> BracketMatch:
             score_a, score_b = self._slot_scores(
                 tournament, descriptor.app_round, descriptor.a_id, descriptor.b_id
             )
@@ -86,7 +86,7 @@ class KnockoutDisplayMixin:
                 source_bottom=descriptor.source_bottom,
             )
 
-        def _match_order(descriptor: 'MatchDescriptor') -> int:
+        def _match_order(descriptor: MatchDescriptor) -> int:
             parts = descriptor.id.split('.')
             return int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0
 
@@ -117,7 +117,7 @@ class KnockoutDisplayMixin:
         )
 
     @staticmethod
-    def _participant_name(tournament: 'Tournament', participant_id: int | None) -> str:
+    def _participant_name(tournament: Tournament, participant_id: int | None) -> str:
         if participant_id is None:
             return ''
         if tournament.pairing_system.paired_by_team:
@@ -127,9 +127,7 @@ class KnockoutDisplayMixin:
         return player.full_name if player is not None else ''
 
     @staticmethod
-    def _participant_detail(
-        tournament: 'Tournament', participant_id: int | None
-    ) -> str:
+    def _participant_detail(tournament: Tournament, participant_id: int | None) -> str:
         if participant_id is None or tournament.pairing_system.paired_by_team:
             return ''
         player = tournament.tournament_players_by_id.get(participant_id)
@@ -137,7 +135,7 @@ class KnockoutDisplayMixin:
 
     @staticmethod
     def _participant_group(
-        tournament: 'Tournament', participant_id: int | None, dimension: Any
+        tournament: Tournament, participant_id: int | None, dimension: Any
     ) -> str:
         if participant_id is None or dimension is None:
             return ''
@@ -149,7 +147,7 @@ class KnockoutDisplayMixin:
             return ''
         return dimension.group_key(entity) or ''
 
-    def _seed_by_id(self, tournament: 'Tournament') -> dict[int, int]:
+    def _seed_by_id(self, tournament: Tournament) -> dict[int, int]:
         if tournament.pairing_system.paired_by_team:
             return {
                 team.id: (
@@ -165,7 +163,7 @@ class KnockoutDisplayMixin:
 
     @staticmethod
     def _slot_scores(
-        tournament: 'Tournament',
+        tournament: Tournament,
         app_round: int,
         a_id: int | None,
         b_id: int | None,
@@ -192,7 +190,7 @@ class KnockoutDisplayMixin:
         return (black_score, white_score)
 
     def ranking_value(
-        self, tournament: 'Tournament', player: 'TournamentPlayer', *, after_round: int
+        self, tournament: Tournament, player: TournamentPlayer, *, after_round: int
     ) -> float:
         if tournament.pairing_system.paired_by_team:
             # A team knock-out eliminates teams, not players: a player who lost
@@ -232,7 +230,7 @@ class KnockoutDisplayMixin:
 
     @staticmethod
     def _player_lost(
-        tournament: 'Tournament', player: 'TournamentPlayer', pairing: 'Pairing'
+        tournament: Tournament, player: TournamentPlayer, pairing: Pairing
     ) -> bool:
         result = pairing.result
         if result.is_loss or result in (Result.FORFEIT_LOSS, Result.DOUBLE_FORFEIT):
@@ -249,7 +247,7 @@ class KnockoutDisplayMixin:
         return False
 
     def team_ranking_values(
-        self, tournament: 'Tournament', *, after_round: int
+        self, tournament: Tournament, *, after_round: int
     ) -> dict[int, float]:
         placement = getattr(self, 'knockout_placement_values', None)
         if placement is not None:
@@ -284,8 +282,8 @@ class KnockoutDisplayMixin:
 
     @staticmethod
     def _team_board(
-        tournament: 'Tournament', team_id: int, round_: int
-    ) -> 'TeamBoard | None':
+        tournament: Tournament, team_id: int, round_: int
+    ) -> TeamBoard | None:
         for team_board in tournament.team_boards_by_round.get(round_, []):
             stb = team_board.stored_team_board
             if team_id in (stb.team_a_id, stb.team_b_id):
@@ -293,7 +291,7 @@ class KnockoutDisplayMixin:
         return None
 
     def standing_labels(
-        self, tournament: 'Tournament', *, after_round: int | None = None
+        self, tournament: Tournament, *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
             after_round = tournament.ranking.ranked_after_round
@@ -306,7 +304,7 @@ class KnockoutDisplayMixin:
         )
 
     def team_standing_labels(
-        self, tournament: 'Tournament', *, after_round: int | None = None
+        self, tournament: Tournament, *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
             after_round = tournament.ranking.ranked_after_round

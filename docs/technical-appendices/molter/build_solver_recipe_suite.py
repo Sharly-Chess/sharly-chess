@@ -8,8 +8,6 @@ generated output: the source of truth is this deterministic pass list plus the
 builder source.
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json

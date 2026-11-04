@@ -136,7 +136,7 @@ class PluginUtils:
 
 
 class PluginContext:
-    def __init__(self, plugin: 'Plugin'):
+    def __init__(self, plugin: Plugin):
         from database.sqlite.config.config_database import ConfigDatabase
         from database.sqlite.config.config_store import StoredPlugin
 
@@ -184,7 +184,7 @@ class PluginData(ABC):
 class AccountPluginData(PluginData, ABC):
     @classmethod
     @abstractmethod
-    def from_stored_player(cls, stored_player: 'StoredPlayer') -> Self:
+    def from_stored_player(cls, stored_player: StoredPlayer) -> Self:
         """Initialize from a stored player (used for player search)."""
 
 
@@ -195,7 +195,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         self.context: PluginContext = PluginContext(self)
 
     @property
-    def dependencies(self) -> list[type['Plugin']]:
+    def dependencies(self) -> list[type[Plugin]]:
         """Types of the plugins that need to be enabled for this plugin to be enabled."""
         return []
 
@@ -282,7 +282,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return not self.federation or self.federation == federation
 
     @property
-    def depends_on_plugins(self) -> list['Plugin']:
+    def depends_on_plugins(self) -> list[Plugin]:
         """Lists of the dependencies as plugins."""
         from plugins.manager import plugin_manager
 
@@ -296,7 +296,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return [plugin.form_key for plugin in self.depends_on_plugins]
 
     @property
-    def required_by_plugins(self) -> list['Plugin']:
+    def required_by_plugins(self) -> list[Plugin]:
         """List of all the plugins that have this plugin as dependency."""
         from plugins.manager import plugin_manager
 
@@ -307,26 +307,26 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         ]
 
     @property
-    def required_by_enabled_plugins(self) -> list['Plugin']:
+    def required_by_enabled_plugins(self) -> list[Plugin]:
         """List of the enabled plugins that have this plugin as dependency,
         which prevent it from being disabled."""
         return [plugin for plugin in self.required_by_plugins if plugin.is_enabled]
 
     def used_by_events(
-        self, events_metadata: list['EventMetadata']
-    ) -> list['EventMetadata']:
+        self, events_metadata: list[EventMetadata]
+    ) -> list[EventMetadata]:
         return [event for event in events_metadata if self.id in event.enabled_plugins]
 
-    def used_by_events_count(self, events_metadata: list['EventMetadata']) -> int:
+    def used_by_events_count(self, events_metadata: list[EventMetadata]) -> int:
         return len(self.used_by_events(events_metadata))
 
     @abstractmethod
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         """Determines if the tournament uses the plugin or not."""
 
-    def used_by_tournaments_count(self, event: 'Event') -> int:
+    def used_by_tournaments_count(self, event: Event) -> int:
         return sum(
             [
                 self.used_by_stored_tournament(
@@ -373,7 +373,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return PLUGINS_DIR / self.id / 'static'
 
     @property
-    def controllers(self) -> list[type['BaseController']]:
+    def controllers(self) -> list[type[BaseController]]:
         """List of controllers for the plugin. Has to be passed this way instead
         of a hook as controllers are initialized at the start of the application."""
         return []
@@ -386,9 +386,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
             )
         return self.data_class.from_stored_value(raw_data)
 
-    def get_migration_manager(
-        self, database: 'EventDatabase'
-    ) -> 'PluginMigrationManager':
+    def get_migration_manager(self, database: EventDatabase) -> PluginMigrationManager:
         from plugins.migration import PluginMigrationManager
 
         assert self.base_migration_module is not None

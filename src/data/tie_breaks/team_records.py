@@ -131,7 +131,7 @@ class TeamRecord:
         ]
 
 
-def fore_round_is_paired(record: 'TeamRecord', after_round: int) -> bool:
+def fore_round_is_paired(record: TeamRecord, after_round: int) -> bool:
     """Whether Art. 8.3's hypothesis reaches ``record``."""
     return unplayed_rounds.fore_round_is_paired(
         record.rounds(ScoreType.MATCH_POINTS), after_round
@@ -139,7 +139,7 @@ def fore_round_is_paired(record: 'TeamRecord', after_round: int) -> bool:
 
 
 def adjust_opponent_total(
-    opponent: 'TeamRecord',
+    opponent: TeamRecord,
     score_type: ScoreType,
     *,
     after_round: int,
@@ -159,7 +159,7 @@ def adjust_opponent_total(
 
 
 def dummy_opponent_score(
-    own_record: 'TeamRecord',
+    own_record: TeamRecord,
     score_type: ScoreType,
     *,
     rounds: int,

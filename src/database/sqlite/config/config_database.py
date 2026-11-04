@@ -41,7 +41,7 @@ class ConfigDatabase(MigrationDatabase):
             self.setup()
 
     @cached_property
-    def migration_managers(self) -> list['DatabaseMigrationManager']:
+    def migration_managers(self) -> list[DatabaseMigrationManager]:
         from database.sqlite.migration import DatabaseMigrationManager
 
         return [DatabaseMigrationManager(self, migrations)]

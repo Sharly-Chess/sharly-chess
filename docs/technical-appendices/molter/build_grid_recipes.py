@@ -35,8 +35,6 @@ The merge keeps a new recipe only when it strictly improves the metric
 priority, and every candidate must pass the hard verifier.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys

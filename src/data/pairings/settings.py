@@ -38,14 +38,14 @@ class AccelerationRule:
     points_threshold: float = 0
     number_range: tuple[int | None, int | None] | None = None
 
-    def resolved_round_range(self, tournament: 'Tournament') -> tuple[int, int]:
+    def resolved_round_range(self, tournament: Tournament) -> tuple[int, int]:
         """The rounds this rule covers, with empty bounds filled in."""
         return (
             1 if self.first_round is None else self.first_round,
             tournament.rounds if self.last_round is None else self.last_round,
         )
 
-    def resolved_number_range(self, tournament: 'Tournament') -> tuple[int, int] | None:
+    def resolved_number_range(self, tournament: Tournament) -> tuple[int, int] | None:
         """The pairing numbers this rule covers, with empty bounds
         filled in. ``None`` for a rule that addresses a group instead."""
         if self.number_range is None:
@@ -79,12 +79,12 @@ class PairingSetting[T](IdentifiableEntity, ABC):
 
     @abstractmethod
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         """Check if one of the fields has an error."""
 
     def apply_action(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         """Handle a button of the setting's form being pressed, returning
         the form data to render back. Settings that offer no action of
@@ -93,7 +93,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
 
     @classmethod
     @abstractmethod
-    def default_value(cls, tournament: 'Tournament') -> T:
+    def default_value(cls, tournament: Tournament) -> T:
         """Get the default value of the setting from the tournament."""
 
     @classmethod
@@ -113,7 +113,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         return False
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
+    def is_valid(cls, tournament: Tournament) -> bool:
         if not cls.is_set(tournament):
             return False
         return cls.check_value(
@@ -122,26 +122,26 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         )
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: T) -> bool:
+    def check_value(cls, tournament: Tournament, value: T) -> bool:
         """Check if a value of type T is valid for pairing generation for a tournament.
         If False, pairing generation falls back to default settings."""
         return True
 
     @classmethod
-    def is_set(cls, tournament: 'Tournament') -> bool:
+    def is_set(cls, tournament: Tournament) -> bool:
         """Check if the value is set in the stored settings."""
         return cls.static_id() in tournament.stored_pairing_settings
 
-    def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
+    def default_form_data(self, tournament: Tournament) -> dict[str, str]:
         return self.to_form_data(self.default_value(tournament))
 
-    def get_form_data(self, tournament: 'Tournament') -> dict[str, str]:
+    def get_form_data(self, tournament: Tournament) -> dict[str, str]:
         if self.is_set(tournament):
             return self.to_form_data(self.get_value(tournament))
         return self.default_form_data(tournament)
 
     @classmethod
-    def get_value(cls, tournament: 'Tournament') -> T:
+    def get_value(cls, tournament: Tournament) -> T:
         if cls.is_set(tournament):
             value = cls.from_stored_value(
                 tournament.stored_pairing_settings[cls.static_id()]
@@ -182,16 +182,16 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
         return data.get(self.id) in (self.RANDOM_ID, '')
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> BoardColor:
+    def default_value(cls, tournament: Tournament) -> BoardColor:
         return cls._computed_value(tournament) or BoardColor.WHITE
 
     @classmethod
-    def _computed_value(cls, tournament: 'Tournament') -> BoardColor | None:
+    def _computed_value(cls, tournament: Tournament) -> BoardColor | None:
         """The colour of the highest ranked participant paired in the
         first round, which is what the seed colour means when it is not
         stated (TRF26 record 152).
@@ -227,7 +227,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
         )
 
     @classmethod
-    def _computed_team_value(cls, tournament: 'Tournament') -> BoardColor | None:
+    def _computed_team_value(cls, tournament: Tournament) -> BoardColor | None:
         for team_board in tournament.get_round_team_boards(1):
             stb = team_board.stored_team_board
             if stb.team_b_id is None or not team_board.boards:
@@ -256,7 +256,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     def to_stored_value(cls, object_: BoardColor) -> Any:
         return object_.value
 
-    def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
+    def default_form_data(self, tournament: Tournament) -> dict[str, str]:
         color = self._computed_value(tournament)
         return {self.id: color.value if color else ''}
 
@@ -298,7 +298,7 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         }
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         pairing_numbers: set[int] = set()
@@ -331,14 +331,14 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         }
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> dict[int, int]:
+    def default_value(cls, tournament: Tournament) -> dict[int, int]:
         return {
             tournament_player.id: rank
             for rank, tournament_player in tournament.tournament_players_by_starting_rank.items()
         }
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: dict[int, int]) -> bool:
+    def check_value(cls, tournament: Tournament, value: dict[int, int]) -> bool:
         berger_numbers = value
         if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
             return False
@@ -387,12 +387,12 @@ class ReverseLastRoundsSetting(PairingSetting[bool]):
         return {self.id: 'on' if object_ else ''}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> bool:
+    def default_value(cls, tournament: Tournament) -> bool:
         return True
 
     @classmethod
@@ -437,12 +437,12 @@ class KeizerStartAttributionSetting(PairingSetting[bool]):
         return {self.id: 'on' if object_ else ''}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> bool:
+    def default_value(cls, tournament: Tournament) -> bool:
         return True
 
     @classmethod
@@ -478,12 +478,12 @@ class KeizerRoundingSetting(PairingSetting[KeizerRounding]):
         return {self.id: object_.value}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> KeizerRounding:
+    def default_value(cls, tournament: Tournament) -> KeizerRounding:
         return KeizerRounding.NONE
 
     @classmethod
@@ -531,7 +531,7 @@ class KeizerRematchGapSetting(PairingSetting[int]):
         return {self.id: str(object_)}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         value = data.get(self.id, '')
         if not value or int(value) < 0:
@@ -539,7 +539,7 @@ class KeizerRematchGapSetting(PairingSetting[int]):
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> int:
+    def default_value(cls, tournament: Tournament) -> int:
         # As high as possible: never repeat a pairing until forced.
         return tournament.rounds
 
@@ -580,7 +580,7 @@ class KeizerAbsenceFractionSetting(PairingSetting[float]):
         return {self.id: str(round(object_ * 100))}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         value = data.get(self.id, '')
         try:
@@ -592,7 +592,7 @@ class KeizerAbsenceFractionSetting(PairingSetting[float]):
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> float:
+    def default_value(cls, tournament: Tournament) -> float:
         return 1 / 3
 
     @classmethod

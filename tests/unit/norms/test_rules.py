@@ -9,8 +9,6 @@ database or building synthetic tournaments. Integration scenarios
 (achieves_any_title_norm) live in test_norm_check.py.
 """
 
-from __future__ import annotations
-
 from unittest import TestCase
 
 import pytest

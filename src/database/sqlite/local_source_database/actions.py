@@ -14,7 +14,7 @@ class OutdatedAction(IdentifiableEntity, ABC):
     once a database turns outdated"""
 
     @abstractmethod
-    def on_outdated(self, database: 'LocalSourceDatabase') -> None:
+    def on_outdated(self, database: LocalSourceDatabase) -> None:
         """Action to execute."""
 
 
@@ -27,7 +27,7 @@ class NotifOutdatedAction(OutdatedAction):
     def static_name() -> str:
         return _('Notification')
 
-    def on_outdated(self, database: 'LocalSourceDatabase') -> None:
+    def on_outdated(self, database: LocalSourceDatabase) -> None:
         database.outdated_warning = True
 
 
@@ -40,7 +40,7 @@ class AutoUpdateOutdatedAction(OutdatedAction):
     def static_name() -> str:
         return _('Auto-update')
 
-    def on_outdated(self, database: 'LocalSourceDatabase') -> None:
+    def on_outdated(self, database: LocalSourceDatabase) -> None:
         if database.is_updating:
             return
         if not NetworkMonitor.connected():

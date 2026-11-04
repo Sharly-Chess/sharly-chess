@@ -40,15 +40,15 @@ def single_elimination_round_name(round_: int, rounds: int) -> str:
 
 
 class _SingleEliminationBracketHost(Protocol):
-    def _grouped_leaves(self, tournament: 'Tournament') -> list[int | None] | None: ...
+    def _grouped_leaves(self, tournament: Tournament) -> list[int | None] | None: ...
 
     def _single_elim_first_round_pairs(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[tuple[int | None, int | None]]: ...
 
     def _single_elim_pair_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         a_id: int | None,
         b_id: int | None,
@@ -62,7 +62,7 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
         return cast(_SingleEliminationBracketHost, self)
 
     def still_in_groups(
-        self, tournament: 'Tournament', from_round: int
+        self, tournament: Tournament, from_round: int
     ) -> list[tuple[str, list[int]]]:
         """Who is still in, in bracket order. A single elimination has one
         bracket and everyone in it plays every round, so the round's own
@@ -72,13 +72,13 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
             ids += [pid for pid in (high, low) if pid is not None]
         return [('', ids)] if ids else []
 
-    def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
+    def round_label(self, tournament: Tournament, round_: int) -> str | None:
         """The stage a whole round plays, for the round navigation. The
         third-place match shares the final round, which the final names."""
         return single_elimination_round_name(round_, tournament.rounds)
 
     def _single_elim_bracket_pairs(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[tuple[int | None, int | None]]:
         """The matches of *round_* in bracket order."""
         host = self._single_elim_host()
@@ -95,7 +95,7 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
         )
 
     def _single_elim_round_loser_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int] | None:
         """The losers of *round_*'s contested matches, in bracket order."""
         winners = self._single_elim_round_winner_ids(tournament, round_)
@@ -111,7 +111,7 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
         return losers
 
     def _single_elim_slot(
-        self, tournament: 'Tournament', round_: int, index: int, cache: dict
+        self, tournament: Tournament, round_: int, index: int, cache: dict
     ) -> tuple[int | None, int | None, int | None]:
         """``(a_id, b_id, winner_id)`` of a structural bracket match."""
         host = self._single_elim_host()
@@ -159,8 +159,8 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
         return all(leaf is None for leaf in leaves[index * span : (index + 1) * span])
 
     def bracket_match_descriptors(
-        self, tournament: 'Tournament'
-    ) -> list['MatchDescriptor']:
+        self, tournament: Tournament
+    ) -> list[MatchDescriptor]:
         """The whole single-elimination bracket as render-ready descriptors."""
         from data.pairings.knockout_helpers.layout import MatchDescriptor
 
@@ -199,7 +199,7 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
         return descriptors
 
     def _single_elim_round_winner_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int | None] | None:
         """The winners of *round_*, in bracket order."""
         pairs = self._single_elim_bracket_pairs(tournament, round_)

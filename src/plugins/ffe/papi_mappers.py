@@ -325,7 +325,7 @@ class PapiRound:
         return cls(PapiColor.BYE, None, PapiResult.UNPLAYED_OR_NOT_PAIRED)
 
     @staticmethod
-    def _result_to_papi_result(result: Result, pab_value: Result) -> 'PapiResult':
+    def _result_to_papi_result(result: Result, pab_value: Result) -> PapiResult:
         match result:
             case Result.WIN:
                 return PapiResult.WIN

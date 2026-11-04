@@ -30,7 +30,7 @@ RankKey = Callable[['TeamStanding'], tuple[float, ...]]
 class TeamStanding:
     """One team's line in the standings."""
 
-    team: 'Team'
+    team: Team
     mp: float = 0.0
     gp: float = 0.0
     played: int = 0
@@ -91,7 +91,7 @@ _BYE_MATCH_TYPE: dict[str, TeamMatchType] = {
 class TeamScoring:
     """The scores of one tournament's teams, tallied from its team boards."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     # -------------------------------------------------------------------------
@@ -514,7 +514,7 @@ class TeamScoring:
                 assert team_id is not None
                 matches_per_team[team_id].append(record)
 
-    def _flat_records(self, team: 'Team', after_round: int) -> list[TeamMatchRecord]:
+    def _flat_records(self, team: Team, after_round: int) -> list[TeamMatchRecord]:
         """One record per round the team's lineup was paired in, with a
         score and a rating per board slot: a slot left empty, or whose
         player sat the round out, scores nothing."""

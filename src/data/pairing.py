@@ -1,6 +1,6 @@
 import weakref
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from collections import namedtuple
 
 
@@ -32,7 +32,7 @@ class Pairing:
 
     def __init__(
         self,
-        tournament_player: 'TournamentPlayer',
+        tournament_player: TournamentPlayer,
         stored_pairing: StoredPairing,
         exists: bool = True,
     ):
@@ -50,7 +50,7 @@ class Pairing:
         self.exists = exists
 
     @property
-    def tournament_player(self) -> 'TournamentPlayer':
+    def tournament_player(self) -> TournamentPlayer:
         if (tournament_player := self._tournament_player_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tournament_player
@@ -245,9 +245,9 @@ class Pairing:
     def to_trf(
         self,
         round_number: int,
-        correction: Optional['RatingCorrection'] = None,
+        correction: RatingCorrection | None = None,
         for_engine: bool = False,
-    ) -> 'TrfGame':
+    ) -> TrfGame:
         """The game as a TRF round, or as *correction* gives it when it
         corrects this very game. The pairing engine reads an adjourned game
         as the draw it counts as; other readers get an unknown result for
@@ -314,7 +314,7 @@ class Pairing:
         return BoardColor.BLACK
 
     @property
-    def opponent(self) -> Optional['TournamentPlayer']:
+    def opponent(self) -> TournamentPlayer | None:
         board = self.board
         if not board:
             return None
@@ -322,7 +322,7 @@ class Pairing:
             return board.black_tournament_player
         return board.optional_white_tournament_player
 
-    def fide_rating_change(self, k_factor: int) -> 'RatingChange':
+    def fide_rating_change(self, k_factor: int) -> RatingChange:
         tournament_player = self.tournament_player
         opponent = self.opponent
         if self.unplayed:

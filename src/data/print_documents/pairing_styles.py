@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class PairingStyle(IdentifiableEntity, ABC):
     @property
     @abstractmethod
-    def print_document_type(self) -> type['PrintDocument']:
+    def print_document_type(self) -> type[PrintDocument]:
         """The type of document to use for printing."""
 
 
@@ -25,7 +25,7 @@ class BoardsPairingStyle(PairingStyle):
         return _('Boards')
 
     @property
-    def print_document_type(self) -> type['PrintDocument']:
+    def print_document_type(self) -> type[PrintDocument]:
         from data.print_documents.documents import BoardPairingPrintDocument
 
         return BoardPairingPrintDocument
@@ -41,7 +41,7 @@ class PlayersPairingStyleSorter(PairingStyle):
         return _('Players')
 
     @property
-    def print_document_type(self) -> type['PrintDocument']:
+    def print_document_type(self) -> type[PrintDocument]:
         from data.print_documents.documents import PlayerPairingPrintDocument
 
         return PlayerPairingPrintDocument

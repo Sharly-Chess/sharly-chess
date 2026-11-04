@@ -32,7 +32,7 @@ def _replace[T](rows: list[T], is_the_one: Callable[[T], bool], row: T | None) -
 class PointAdjustments:
     """The bonus and penalty points of one tournament."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     def stored(self, team_id: int, round_: int) -> StoredTeamPointAdjustment | None:
@@ -47,7 +47,7 @@ class PointAdjustments:
         adj = self.stored(team_id, round_)
         return (adj.mp_delta, adj.gp_delta) if adj else (0.0, 0.0)
 
-    def from_rule_set(self, team_id: int, round_: int) -> 'PointAdjustment | None':
+    def from_rule_set(self, team_id: int, round_: int) -> PointAdjustment | None:
         """Rule-set-imposed adjustment for (team, round), or None."""
         rule_set = self.tournament.rule_set
         if rule_set is None:
@@ -77,7 +77,7 @@ class PointAdjustments:
         mp_delta: float,
         gp_delta: float,
         reason: str | None,
-        database: 'EventDatabase',
+        database: EventDatabase,
     ) -> None:
         """Upsert the manual (MP, GP) adjustment for (team, round) and
         keep the in-memory stored list in sync."""
@@ -147,7 +147,7 @@ class PointAdjustments:
         round_: int,
         delta: float,
         reason: str | None,
-        database: 'EventDatabase',
+        database: EventDatabase,
     ) -> None:
         """Upsert the manual adjustment for (player, round) and keep the
         in-memory stored list in sync."""

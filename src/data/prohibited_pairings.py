@@ -89,7 +89,7 @@ def resolve_soft_protect_rank(
 
 def expand_groups_to_pairs(
     member_ids: Iterable[int],
-) -> list['frozenset[int]']:
+) -> list[frozenset[int]]:
     """Every unordered pair within a prohibited group (a group of N members
     forbids all N·(N−1)/2 internal pairings)."""
     members = list(member_ids)
@@ -105,7 +105,7 @@ class ProhibitedPairings:
     dimension and manual groups, the snapshot frozen for each paired
     round, and the 260 lines that snapshot regenerates."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     @property
@@ -131,7 +131,7 @@ class ProhibitedPairings:
             self.tournament.stored_tournament.prohibited_pairing_dimension_constraint
         )
 
-    def dimension(self) -> 'PairingDimension | None':
+    def dimension(self) -> PairingDimension | None:
         dimension_id = self.dimension_id
         if dimension_id is None:
             return None
@@ -144,7 +144,7 @@ class ProhibitedPairings:
         self,
         dimension_id: str | None,
         dimension_constraint: ProhibitedPairingConstraint,
-        database: 'EventDatabase',
+        database: EventDatabase,
     ) -> None:
         tournament = self.tournament
         tournament.stored_tournament.prohibited_pairing_dimension = dimension_id or None
@@ -164,7 +164,7 @@ class ProhibitedPairings:
 
     def manual_groups(
         self,
-    ) -> 'list[StoredProhibitedPairingGroup]':
+    ) -> list[StoredProhibitedPairingGroup]:
         return [
             group
             for group in self.tournament.stored_tournament.stored_prohibited_pairing_groups
@@ -174,7 +174,7 @@ class ProhibitedPairings:
     def set_manual_groups(
         self,
         groups: list[tuple[ProhibitedPairingConstraint, list[int]]],
-        database: 'EventDatabase',
+        database: EventDatabase,
     ) -> None:
         tournament = self.tournament
         database.replace_manual_prohibited_pairing_groups(
@@ -255,7 +255,7 @@ class ProhibitedPairings:
             )
         return groups
 
-    def snapshot(self, round_: int) -> 'list[StoredProhibitedPairingGroup]':
+    def snapshot(self, round_: int) -> list[StoredProhibitedPairingGroup]:
         return [
             group
             for group in self.tournament.stored_tournament.stored_prohibited_pairing_groups
@@ -332,7 +332,7 @@ class ProhibitedPairings:
         protect_rank: int,
         rank_by_member: dict[int, int],
         round_: int,
-    ) -> 'list[TrfProhibitedPairing]':
+    ) -> list[TrfProhibitedPairing]:
         """The round's effective 260 lines. Hard groups become one
         N-member line each. Each soft group is relaxed at ``protect_rank``:
         its members split into protected (rank ``<= protect_rank``) and
@@ -368,7 +368,7 @@ class ProhibitedPairings:
 
     def lowest_criterion_lines(
         self, groups: list[list[int]], round_: int
-    ) -> 'list[TrfProhibitedPairing]':
+    ) -> list[TrfProhibitedPairing]:
         """The SCS lines of the groups avoided as the lowest-priority
         criterion, one per group."""
         lines = self.applied_lines(groups, [], 0, {}, round_)
@@ -378,7 +378,7 @@ class ProhibitedPairings:
 
     def _soft_clique_lines(
         self, protected: list[int], unprotected: list[int], round_: int
-    ) -> 'list[TrfProhibitedPairing]':
+    ) -> list[TrfProhibitedPairing]:
         """The surviving prohibitions of one relaxed soft group, as cliques.
         Pairings incident to a protected member survive (a protected member
         must avoid everyone in the group); pairings between two unprotected
@@ -463,7 +463,7 @@ class ProhibitedPairings:
         return sorted(released, key=lambda member: ranks.get(member, bottom))
 
     def write_snapshot(
-        self, round_: int, protect_rank: int | None, database: 'EventDatabase'
+        self, round_: int, protect_rank: int | None, database: EventDatabase
     ) -> None:
         """Freeze the round's prohibited-pairing **groups** (the configured
         hard and soft groups that were the basis for this round's pairing)
@@ -486,7 +486,7 @@ class ProhibitedPairings:
             database.load_tournament_stored_prohibited_pairing_groups(tournament.id)
         )
 
-    def delete_snapshot(self, round_: int, database: 'EventDatabase') -> None:
+    def delete_snapshot(self, round_: int, database: EventDatabase) -> None:
         tournament = self.tournament
         database.delete_round_prohibited_pairing_snapshot(tournament.id, round_)
         tournament.stored_tournament.stored_prohibited_pairing_groups = [

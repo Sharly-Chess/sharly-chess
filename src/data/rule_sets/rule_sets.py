@@ -168,7 +168,7 @@ class RuleSet(IdentifiableEntity, ABC):
 
     def apply_defaults(
         self,
-        stored_tournament: 'StoredTournament',
+        stored_tournament: StoredTournament,
         pairing_system_id: str | None = None,
     ) -> None:
         """Populate the rule-set's default values on the given stored
@@ -264,14 +264,14 @@ class RuleSet(IdentifiableEntity, ABC):
         is first paired, then settled."""
         return None
 
-    def molter_table_overrides(self) -> dict[tuple[int, int], 'FixedPairingTable']:
+    def molter_table_overrides(self) -> dict[tuple[int, int], FixedPairingTable]:
         """Per-rule-set overrides for the fixed Molter pairing tables,
         keyed by ``(team_count, players_per_team)``. The Molter
         pairing system consults this map first and falls back to its
         own registry when no override is set. Default: empty."""
         return {}
 
-    def roster_warnings(self, team: 'Team') -> list[str]:
+    def roster_warnings(self, team: Team) -> list[str]:
         """Inspect ``team``'s roster and return zero or more warning
         messages — anything the regulations flag without hard-blocking
         (rating ceilings, composition rules, etc.). Empty list means
@@ -282,13 +282,13 @@ class RuleSet(IdentifiableEntity, ABC):
         agnostic of any one federation's rule shape."""
         return []
 
-    def player_rating_in_team_average(self, player: 'Player') -> int | None:
+    def player_rating_in_team_average(self, player: Player) -> int | None:
         """The rating ``player`` counts for in their team's average rating,
         which numbers the teams when they are sorted on it. Default: their
         event-default rating."""
         return player.event_default_rating
 
-    def team_average_rating_explanation(self, team: 'Team') -> str | None:
+    def team_average_rating_explanation(self, team: Team) -> str | None:
         """Why ``team``'s average rating differs from the mean of its
         players' ratings, shown next to it; ``None`` when it doesn't."""
         return None
@@ -306,9 +306,7 @@ class RuleSet(IdentifiableEntity, ABC):
         """The rule set's ranking criteria for a pairing system, in order."""
         return self.tie_break_overrides_by_pairing.get(pairing_id, [])
 
-    def team_point_adjustment(
-        self, team: 'Team', round_: int
-    ) -> 'PointAdjustment | None':
+    def team_point_adjustment(self, team: Team, round_: int) -> PointAdjustment | None:
         """Bonus / penalty points this rule set assigns to ``team`` for
         ``round_``, with a human-readable explanation. Returns ``None``
         when the rule set imposes no adjustment (the default). Added on

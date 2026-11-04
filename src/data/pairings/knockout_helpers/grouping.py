@@ -100,34 +100,34 @@ class KnockoutGroupingSetting(PairingSetting['str | None']):
     def template_path(self) -> str:
         return '/admin/pairings/settings/knockout_grouping.html'
 
-    def tooltip_representation(self, value: 'str | None') -> str | None:
+    def tooltip_representation(self, value: str | None) -> str | None:
         return _('Grouped') if value else None
 
-    def from_form_data(self, data: dict[str, str]) -> 'str | None':
+    def from_form_data(self, data: dict[str, str]) -> str | None:
         return data.get(self.id) or None
 
-    def to_form_data(self, object_: 'str | None') -> dict[str, str]:
+    def to_form_data(self, object_: str | None) -> dict[str, str]:
         return {self.id: object_ or self._NONE}
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         return {}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> 'str | None':
+    def default_value(cls, tournament: Tournament) -> str | None:
         return None
 
     @classmethod
-    def from_stored_value(cls, value: Any) -> 'str | None':
+    def from_stored_value(cls, value: Any) -> str | None:
         return str(value) or None if value else None
 
     @classmethod
-    def to_stored_value(cls, object_: 'str | None') -> Any:
+    def to_stored_value(cls, object_: str | None) -> Any:
         return object_ or None
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: 'str | None') -> bool:
+    def check_value(cls, tournament: Tournament, value: str | None) -> bool:
         if value is None:
             return True
         return any(
@@ -136,7 +136,7 @@ class KnockoutGroupingSetting(PairingSetting['str | None']):
 
 
 class _KnockoutGroupingHost(Protocol):
-    def _teams_for_tournament(self, tournament: 'Tournament') -> list[Any]: ...
+    def _teams_for_tournament(self, tournament: Tournament) -> list[Any]: ...
 
 
 class KnockoutGroupingMixin:
@@ -145,9 +145,7 @@ class KnockoutGroupingMixin:
     def _grouping_host(self) -> _KnockoutGroupingHost:
         return cast(_KnockoutGroupingHost, self)
 
-    def _grouping_dimension(
-        self, tournament: 'Tournament'
-    ) -> 'PairingDimension | None':
+    def _grouping_dimension(self, tournament: Tournament) -> PairingDimension | None:
         dimension_id = KnockoutGroupingSetting.get_value(tournament)
         if not dimension_id:
             return None
@@ -157,7 +155,7 @@ class KnockoutGroupingMixin:
         return None
 
     def _grouping_members(
-        self, tournament: 'Tournament', dimension: 'PairingDimension'
+        self, tournament: Tournament, dimension: PairingDimension
     ) -> list[tuple[int, str | None]]:
         """``(id, group_key)`` per participant in natural seed order."""
         if tournament.pairing_system.paired_by_team:
@@ -167,7 +165,7 @@ class KnockoutGroupingMixin:
             entities = [by_seed[seed] for seed in sorted(by_seed)]
         return [(entity.id, dimension.group_key(entity)) for entity in entities]
 
-    def _grouped_leaves(self, tournament: 'Tournament') -> list[int | None] | None:
+    def _grouped_leaves(self, tournament: Tournament) -> list[int | None] | None:
         """The grouped round-one seat order, or ``None`` when grouping is off."""
         dimension = self._grouping_dimension(tournament)
         if dimension is None:
@@ -175,7 +173,7 @@ class KnockoutGroupingMixin:
         groups = form_groups(self._grouping_members(tournament, dimension))
         return grouped_leaves(groups)
 
-    def _grouped_round_count(self, tournament: 'Tournament') -> int | None:
+    def _grouped_round_count(self, tournament: Tournament) -> int | None:
         dimension = self._grouping_dimension(tournament)
         if dimension is None:
             return None
@@ -183,7 +181,7 @@ class KnockoutGroupingMixin:
         return grouped_round_count(groups)
 
     def grouping_preview(
-        self, tournament: 'Tournament', dimension: Any
+        self, tournament: Tournament, dimension: Any
     ) -> dict[str, Any]:
         """A summary of what seeding by *dimension* would do to the bracket."""
         members = self._grouping_members(tournament, dimension)

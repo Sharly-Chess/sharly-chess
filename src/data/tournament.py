@@ -144,7 +144,7 @@ class Tournament:
 
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_tournament: StoredTournament,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
@@ -178,7 +178,7 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -495,7 +495,7 @@ class Tournament:
             self._computing_automatic_rounds = False
 
     @cached_property
-    def pairing_variation(self) -> 'PairingVariation':
+    def pairing_variation(self) -> PairingVariation:
         """The stored variation, or until the tournament is paired, the
         one its rule set picks for the teams entered."""
         from data.pairings import PairingVariationManager
@@ -533,7 +533,7 @@ class Tournament:
         )
 
     @cached_property
-    def pairing_system(self) -> 'PairingSystem':
+    def pairing_system(self) -> PairingSystem:
         return self.pairing_variation.system()
 
     @cached_property
@@ -614,7 +614,7 @@ class Tournament:
         return self.stored_tournament.rule_set
 
     @cached_property
-    def rule_set(self) -> 'RuleSet | None':
+    def rule_set(self) -> RuleSet | None:
         """Resolved :class:`RuleSet` object for this tournament, or
         ``None`` when no rule set is set or the stored id no longer
         maps to a registered rule set (plugin disabled, etc.)."""
@@ -702,7 +702,7 @@ class Tournament:
             self.rule_set_forced_team_sort_mode is not None or self._has_stored_pairings
         )
 
-    def resort_teams(self, database: 'EventDatabase') -> None:
+    def resort_teams(self, database: EventDatabase) -> None:
         """Re-assign team pairing numbers per the effective sort mode.
         No-op once any round is paired. MANUAL keeps the existing order and
         only fills in sequential numbers — appending teams that have none yet
@@ -745,7 +745,7 @@ class Tournament:
                 team.set_pairing_number(index, database)
 
     @staticmethod
-    def _random_team_order(teams: list['Team']) -> list['Team']:
+    def _random_team_order(teams: list[Team]) -> list[Team]:
         import random
 
         placed = sorted(
@@ -810,13 +810,13 @@ class Tournament:
         return self.point_system.match_points
 
     @property
-    def primary_score(self) -> 'ScoreType':
+    def primary_score(self) -> ScoreType:
         """Score basis used as primary (FIDE 1.2.1). Default: match points
         for team tournaments; not used for individual tournaments."""
         return self.point_system.primary_score
 
     @property
-    def secondary_score(self) -> 'ScoreType':
+    def secondary_score(self) -> ScoreType:
         return self.point_system.secondary_score
 
     @property
@@ -1215,18 +1215,18 @@ class Tournament:
         return PointAdjustments(self)
 
     @cached_property
-    def team_scoring(self) -> 'TeamScoring':
+    def team_scoring(self) -> TeamScoring:
         from data.teams.team_scoring import TeamScoring
 
         return TeamScoring(self)
 
-    def team_standings(self, *, after_round: int | None = None) -> list['TeamStanding']:
+    def team_standings(self, *, after_round: int | None = None) -> list[TeamStanding]:
         return self.team_scoring.standings(after_round=after_round)
 
-    def team_records(self, *, after_round: int | None = None) -> list['TeamRecord']:
+    def team_records(self, *, after_round: int | None = None) -> list[TeamRecord]:
         return self.team_scoring.records(after_round=after_round)
 
-    def team_tie_break_context(self) -> 'TeamTieBreakContext':
+    def team_tie_break_context(self) -> TeamTieBreakContext:
         return self.team_scoring.tie_break_context()
 
     def team_totals_after(self, after_round: int) -> dict[int, tuple[float, float]]:
@@ -1236,7 +1236,7 @@ class Tournament:
         return self.team_scoring.totals_in(rounds)
 
     @cached_property
-    def teams_by_id(self) -> dict[int, 'Team']:
+    def teams_by_id(self) -> dict[int, Team]:
         return {
             team.id: team
             for team in self.event.teams_by_id.values()
@@ -1244,7 +1244,7 @@ class Tournament:
         }
 
     @property
-    def teams(self) -> Collection['Team']:
+    def teams(self) -> Collection[Team]:
         return self.teams_by_id.values()
 
     @cached_property
@@ -1252,11 +1252,11 @@ class Tournament:
         return len(self.teams_by_id)
 
     @cached_property
-    def sorted_teams(self) -> list['Team']:
+    def sorted_teams(self) -> list[Team]:
         return sorted(self.teams, key=attrgetter('name'))
 
     @property
-    def teams_in_pairing_order(self) -> list['Team']:
+    def teams_in_pairing_order(self) -> list[Team]:
         """Teams ordered by pairing number then id — the same order the
         fixed-table letters (A, B, …) follow, so a letter-labelled list
         reads in sequence."""
@@ -1271,7 +1271,7 @@ class Tournament:
         )
 
     @cached_property
-    def teams_by_pairing_number(self) -> dict[int, 'Team']:
+    def teams_by_pairing_number(self) -> dict[int, Team]:
         return {
             team.pairing_number: team
             for team in self.teams
@@ -1286,7 +1286,7 @@ class Tournament:
     def prohibited_pairings(self) -> ProhibitedPairings:
         return ProhibitedPairings(self)
 
-    def pairing_dimensions(self) -> 'list[PairingDimension]':
+    def pairing_dimensions(self) -> list[PairingDimension]:
         """All grouping dimensions applicable to this tournament: the
         core ones plus any contributed by enabled plugins, filtered to
         match this tournament's individual/team nature."""
@@ -1918,7 +1918,7 @@ class Tournament:
         tournament_player.vpoints = tournament_player.points + vpoints
 
     @property
-    def keizer_scorer(self) -> 'KeizerScorer':
+    def keizer_scorer(self) -> KeizerScorer:
         """The whole-table Keizer scorer, rebuilt after the per-player
         compute caches are cleared so it always reflects current results."""
         if self._keizer_scorer is None:
@@ -2133,7 +2133,7 @@ class Tournament:
         ) and not self.is_round_finished(self.current_round)
 
     @cached_property
-    def knockout(self) -> 'KnockoutView':
+    def knockout(self) -> KnockoutView:
         """The knock-out-specific facet of this tournament — advancement, the
         round-reached standings, the bracket tie-resolution display and the
         manual-winner writers. See
@@ -2181,7 +2181,7 @@ class Tournament:
         self,
         round_: int | None = None,
         *,
-        only_players: 'list[TournamentPlayer] | None' = None,
+        only_players: list[TournamentPlayer] | None = None,
     ) -> None:
         """Prepare a round, optionally limiting point calculation to *only_players*.
 
@@ -2866,7 +2866,7 @@ class Tournament:
         player.stored_player.check_in = check_in
         player.__dict__.pop('check_in_status', None)
 
-    def check_in_team(self, team: 'Team', check_in: bool) -> None:
+    def check_in_team(self, team: Team, check_in: bool) -> None:
         """Stores the per-team check-in status."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             team.set_check_in(check_in, database)
@@ -2890,11 +2890,11 @@ class Tournament:
             database.set_players_check_in(player_ids, check_in)
 
     @property
-    def absent_teams(self) -> list['Team']:
+    def absent_teams(self) -> list[Team]:
         return [team for team in self.teams if not team.check_in]
 
     @property
-    def team_check_in_status_grouped_counts(self) -> 'Counter[CheckInStatus]':
+    def team_check_in_status_grouped_counts(self) -> Counter[CheckInStatus]:
         counter: Counter[CheckInStatus] = Counter()
         for team in self.teams:
             counter[
@@ -2916,11 +2916,11 @@ class Tournament:
         self,
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
-        prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
+        prohibited_pairing_override: list[TrfProhibitedPairing] | None = None,
         rating_report: bool = False,
         for_engine: bool = False,
         period: TournamentPeriod | None = None,
-    ) -> 'TrfTournament':
+    ) -> TrfTournament:
         """The tournament's TRF, or — given a *period* — the file for
         that period of it alone (see ``trf_window``)."""
         from data.input_output.trf.trf_export import TrfExport

@@ -77,7 +77,6 @@ class PlaceCardTemplate(PlaceCardItemStyle):
     ):
         from data.print_documents import PrintPlaceCardTypeManager
         from data.print_documents.place_cards.types import (
-            PlaceCardType,
             PlayerCardType,
         )
 

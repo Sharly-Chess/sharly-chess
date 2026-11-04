@@ -10,8 +10,6 @@ Each test below builds a deliberate scenario representing one regulatory
 clause and asserts the verdict matches the spec.
 """
 
-from __future__ import annotations
-
 from collections.abc import Mapping
 from types import SimpleNamespace
 from typing import cast

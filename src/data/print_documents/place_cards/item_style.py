@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from common.logger import get_logger
 from data.print_documents.place_cards.toml_container import TOMLContainer
@@ -18,7 +18,7 @@ class PlaceCardItemStyle:
         self,
         data: TOMLContainer,
         section: str = '',
-        template: Optional['PlaceCardTemplate'] = None,
+        template: PlaceCardTemplate | None = None,
     ):
         for prop in data.get_section_properties(section):
             if prop not in self.allowed_properties():

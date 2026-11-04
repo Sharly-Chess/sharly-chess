@@ -108,7 +108,7 @@ class ProgramVar(StrEnum):
         self.write_variables({self: value})
 
     @classmethod
-    def write_variables(cls, value_by_var: dict['ProgramVar', str]) -> None:
+    def write_variables(cls, value_by_var: dict[ProgramVar, str]) -> None:
         match sys.platform:
             case 'win32':  # Use windows registries
                 with winreg.CreateKey(winreg.HKEY_CURRENT_USER, WIN_REG_PATH) as key:
@@ -130,7 +130,7 @@ def _read_macos_data_plist() -> dict:
     try:
         with open(MACOS_DATA_PLIST, 'rb') as plist_file:
             return cast(dict[Any, Any], plistlib.load(plist_file))
-    except (FileNotFoundError, OSError, plistlib.InvalidFileException):
+    except FileNotFoundError, OSError, plistlib.InvalidFileException:
         return {}
 
 
@@ -142,7 +142,7 @@ def _write_macos_data_plist(data: dict) -> None:
 def _read_linux_data_file() -> dict[str, str]:
     try:
         data = json.loads(LINUX_DATA_FILE.read_text(encoding='utf-8'))
-    except (OSError, ValueError):
+    except OSError, ValueError:
         return {}
     return data if isinstance(data, dict) else {}
 

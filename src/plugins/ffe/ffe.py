@@ -2,7 +2,7 @@ import copy
 import re
 from collections import Counter, defaultdict
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional, cast
+from typing import Any, TYPE_CHECKING, cast
 from collections.abc import Iterable
 
 from packaging.version import Version
@@ -190,7 +190,7 @@ class FfePluginHooks:
     @hookspec
     def augment_stored_player_on_papi_import(
         self,
-        event: 'Event',
+        event: Event,
         importer: TournamentImporter,
         stored_player: StoredPlayer,
     ) -> None:
@@ -273,7 +273,7 @@ class FfePlugin(Plugin):
         return '/ffe_event_form_fields.html'
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         ffe_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         if ffe_data.get('ffe_id', None):
@@ -354,7 +354,7 @@ class FfePlugin(Plugin):
         return self.id, FfePlayerPluginData
 
     @hookimpl
-    def get_prohibited_pairing_dimensions(self) -> list['PairingDimension']:
+    def get_prohibited_pairing_dimensions(self) -> list[PairingDimension]:
         from data.pairing_dimensions import PairingDimension
 
         return [
@@ -369,7 +369,7 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
-    def get_team_affiliation_sources(self) -> list['TeamAffiliationSource']:
+    def get_team_affiliation_sources(self) -> list[TeamAffiliationSource]:
         from data.teams.team_affiliation import (
             TeamAffiliationSource,
             team_shared_player_value,
@@ -390,8 +390,8 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_round_prohibited_pairing_groups(
-        self, tournament: 'Tournament', round_: int
-    ) -> 'list[RoundProhibitedPairingGroup]':
+        self, tournament: Tournament, round_: int
+    ) -> list[RoundProhibitedPairingGroup]:
         # FFE cups: two teams that have won both of their first two matches
         # are not paired together in round 3 (hard). The no-protection cup
         # variants opt out. The exception (a single qualifying place for the
@@ -420,7 +420,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_player_form_template_context(
-        self, web_context: 'PlayerAdminWebContext'
+        self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
         return {
             'licence_options': {
@@ -588,14 +588,14 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
-    def get_forced_rating_preference(self, event: 'Event') -> RatingPreference:
+    def get_forced_rating_preference(self, event: Event) -> RatingPreference:
         # In France the FIDE rating is used if available, falling back to
         # the national rating
         return RatingPreference.FIDE_THEN_NATIONAL
 
     @hookimpl
     def get_forced_rating_sequence(
-        self, event: 'Event', cadence: Cadence
+        self, event: Event, cadence: Cadence
     ) -> RatingSequence:
         cadences = (
             (cadence,) if cadence == Cadence.STANDARD else (cadence, Cadence.STANDARD)
@@ -620,15 +620,15 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def get_prescribed_rating_rule(self, event: 'Event') -> PrescribedRatingRule:
+    def get_prescribed_rating_rule(self, event: Event) -> PrescribedRatingRule:
         return self.prescribed_rating_rule
 
     @hookimpl
     def get_prescribed_rating(
         self,
         tournament_rating: Cadence,
-        player: 'Player',
-        category: 'PlayerCategory',
+        player: Player,
+        category: PlayerCategory,
     ) -> int:
         """The FFE estimate by age. It is computed whenever a rating is read,
         never stored, so a change of these values would re-rank the players
@@ -647,7 +647,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def augment_trf_national_player(
-        self, player: 'Player', trf_national_player: 'TrfNationalPlayer'
+        self, player: Player, trf_national_player: TrfNationalPlayer
     ) -> None:
         plugin_data = FFEUtils.get_player_plugin_data(player)
         trf_national_player.classification = plugin_data.ffe_licence.value
@@ -656,8 +656,8 @@ class FfePlugin(Plugin):
     @hookimpl
     def augment_stored_player_from_trf_national_player(
         self,
-        stored_player: 'StoredPlayer',
-        trf_national_player: 'TrfNationalPlayer',
+        stored_player: StoredPlayer,
+        trf_national_player: TrfNationalPlayer,
     ) -> None:
         tnp = trf_national_player
         plugin_data = FfePlayerPluginData.from_stored_value(
@@ -792,7 +792,7 @@ class FfePlugin(Plugin):
         return self.id, FfeEventPluginData
 
     @hookimpl
-    def leave_fixed_board_holes(self, tournament: 'Tournament') -> bool:
+    def leave_fixed_board_holes(self, tournament: Tournament) -> bool:
         return FFEUtils.get_event_plugin_data(tournament.event).leave_fixed_board_holes
 
     @hookimpl
@@ -808,14 +808,14 @@ class FfePlugin(Plugin):
         return self.id, FfeTournamentPluginData
 
     @hookimpl
-    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+    def is_tournament_uploaded(self, tournament: Tournament) -> bool:
         return tournament.event.federation == 'FRA' and FFEUtils.is_configured(
             tournament
         )
 
     @hookimpl
     def on_tournament_data_updated(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> None:
         # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
@@ -845,7 +845,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(
-        self, event: 'Event', tournament: 'Tournament | None'
+        self, event: Event, tournament: Tournament | None
     ) -> tuple[str, dict[str, Any]] | None:
         from data.rule_sets import RuleSetManager
 
@@ -878,7 +878,7 @@ class FfePlugin(Plugin):
         }
 
     @staticmethod
-    def _division_hints(rule_set_type: type['RuleSet']) -> dict[str, str]:
+    def _division_hints(rule_set_type: type[RuleSet]) -> dict[str, str]:
         """Site division name per value of the rule set's phase field,
         keyed by the form value, for the form to pre-select the division
         the phase implies."""
@@ -897,7 +897,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_period_form_fields_template_and_data(
-        self, event: 'Event', tournament: 'Tournament'
+        self, event: Event, tournament: Tournament
     ) -> tuple[str, dict[str, Any]] | None:
         # Each period of a tournament reported in periods is submitted
         # under its own homologation number; the first period's is the
@@ -927,7 +927,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_connection_field(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> TournamentConnectionField | None:
         if not FFEUtils.supports_ffe_transfer(tournament):
             return None
@@ -942,8 +942,8 @@ class FfePlugin(Plugin):
     def extend_admin_collection(
         self,
         collection_key: str,
-        collection_spec: 'AdminCollectionSpec',
-        event: Optional['Event'],
+        collection_spec: AdminCollectionSpec,
+        event: Event | None,
     ) -> None:
         if collection_key != 'tournaments':
             return
@@ -958,7 +958,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_tie_breaks_warning_message(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
@@ -970,7 +970,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_tournament_pairing_warning_message(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
@@ -980,7 +980,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def signal_tournament_set(
-        self, event: 'Event', stored_tournament: 'StoredTournament'
+        self, event: Event, stored_tournament: StoredTournament
     ) -> str | None:
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
@@ -993,7 +993,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def signal_special_result_set(
-        self, tournament: 'Tournament', result: Result
+        self, tournament: Tournament, result: Result
     ) -> str | None:
         if FFEUtils.supports_team_transfer(tournament):
             return None
@@ -1001,7 +1001,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_tournament_criteria_types(
-        self, criteria_types: list[type['TournamentCriterion']]
+        self, criteria_types: list[type[TournamentCriterion]]
     ) -> None:
         licence: type[TournamentCriterion] = FfeLicenceTournamentCriterion
         league: type[TournamentCriterion] = FfeLeagueTournamentCriterion
@@ -1015,7 +1015,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_nav_data_transfer_items(
-        self, event: 'Event'
+        self, event: Event
     ) -> Iterable[NavDataTransferItem]:
         if not FFEUtils.event_supports_ffe_transfer(event):
             return []
@@ -1037,9 +1037,7 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_document(
-        self, print_documents: list[type['PrintDocument']]
-    ) -> None:
+    def insert_print_document(self, print_documents: list[type[PrintDocument]]) -> None:
         from data.print_documents.documents import MatchSheetsPrintDocument
 
         print_documents.append(FFEPrintDocument)
@@ -1051,7 +1049,7 @@ class FfePlugin(Plugin):
             print_documents.append(FfePairingSheetDocument)
 
     @hookimpl
-    def insert_print_option(self, print_options: list[type['PrintOption']]) -> None:
+    def insert_print_option(self, print_options: list[type[PrintOption]]) -> None:
         print_options.insert(0, FFEArbiterPrintOption)
         print_options.insert(0, FFEChiefArbiterPrintOption)
         print_options.insert(0, FFEWriterPrintOption)
@@ -1064,7 +1062,7 @@ class FfePlugin(Plugin):
     def alter_print_and_screen_player_columns(
         self,
         usage: ColumnUsage,
-        player_columns: list['TournamentPlayerTableColumn'],
+        player_columns: list[TournamentPlayerTableColumn],
     ) -> None:
         PluginUtils.insert_on_isinstance(
             player_columns,
@@ -1100,7 +1098,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_extra_statistics_sections(
-        self, document: PrintDocument, tournaments: list['Tournament']
+        self, document: PrintDocument, tournaments: list[Tournament]
     ) -> Iterable[ExtraStatisticsSection]:
         if isinstance(document, StatisticsPrintDocument):
             counter = Counter[str](
@@ -1163,14 +1161,14 @@ class FfePlugin(Plugin):
         tie_break_option_types.append(PapiBuchholzTypeOption)
 
     @hookimpl
-    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]) -> None:
+    def insert_rule_sets(self, rule_sets: list[type[RuleSet]]) -> None:
         rule_sets.append(CoupeJeanClaudeLoubatiereRuleSet)
         rule_sets.append(CoupeDeLaPariteRuleSet)
         rule_sets.append(ChampionnatFemininN1N2RuleSet)
 
     @hookimpl
     def insert_swiss_system_tie_break_sets(
-        self, system_sets: list['SystemTieBreakSet']
+        self, system_sets: list[SystemTieBreakSet]
     ) -> None:
         from plugins.ffe import ffe_tie_breaks
         from plugins.ffe.ffe_tie_breaks import (
@@ -1214,14 +1212,14 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_team_swiss_system_tie_break_sets(
-        self, system_sets: list['SystemTieBreakSet']
+        self, system_sets: list[SystemTieBreakSet]
     ) -> None:
         # TODO add the FFE-specific tie-breaks needed
         pass
 
     @hookimpl
     def insert_team_round_robin_system_tie_break_sets(
-        self, system_sets: list['SystemTieBreakSet']
+        self, system_sets: list[SystemTieBreakSet]
     ) -> None:
         # TODO add the FFE-specific tie-breaks needed
         pass
@@ -1262,7 +1260,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_player_filter_types(
-        self, player_filter_types: list[type['PlayerFilter']]
+        self, player_filter_types: list[type[PlayerFilter]]
     ) -> None:
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
@@ -1270,7 +1268,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_player_filter_option_types(
-        self, player_filter_option_types: list[type['PlayerFilterOption']]
+        self, player_filter_option_types: list[type[PlayerFilterOption]]
     ) -> None:
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption
         club: type[PlayerFilterOption] = ClubsFilterOption
@@ -1355,7 +1353,7 @@ class FfePlugin(Plugin):
     @hookimpl
     def augment_stored_player_from_sce_player_sync_data(
         self,
-        event: 'Event',
+        event: Event,
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
         database: EventDatabase | None,

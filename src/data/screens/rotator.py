@@ -1,5 +1,5 @@
 from operator import attrgetter
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 import weakref
 from _weakref import ReferenceType
 
@@ -20,14 +20,14 @@ ROTATOR_DEFAULT_DELAY: int = 15
 class RotatingScreen:
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_rotating_screen: StoredRotatingScreen,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_rotating_screen = stored_rotating_screen
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -39,7 +39,7 @@ class RotatingScreen:
         return self.stored_rotating_screen.id
 
     @property
-    def rotator(self) -> 'Rotator':
+    def rotator(self) -> Rotator:
         return self.event.rotators_by_id[self.stored_rotating_screen.rotator_id]
 
     @property
@@ -72,7 +72,7 @@ class Rotator:
 
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_rotator: StoredRotator,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
@@ -80,7 +80,7 @@ class Rotator:
         self.rotating_screens_by_id = self._get_rotating_screens_by_id()
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -120,7 +120,7 @@ class Rotator:
         return self.stored_rotator.timer_id
 
     @property
-    def timer(self) -> Optional['Timer']:
+    def timer(self) -> Timer | None:
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
     def set_timer(self, timer_id: int | None) -> None:

@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass, field
 from itertools import pairwise
 from pathlib import Path
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from common.logger import (
     get_logger,
@@ -37,7 +37,7 @@ class CheckerPlayer:
     def from_object(
         cls,
         tournament_player: TournamentPlayer,
-    ) -> Optional['CheckerPlayer']:
+    ) -> CheckerPlayer | None:
         return (
             CheckerPlayer(
                 tournament_player.id,
@@ -54,7 +54,7 @@ class CheckerPlayer:
     def from_dict(
         cls,
         d: dict,
-    ) -> Optional['CheckerPlayer']:
+    ) -> CheckerPlayer | None:
         return (
             CheckerPlayer(
                 d['id'],
@@ -91,7 +91,7 @@ class CheckerBoard:
     def from_object(
         cls,
         board: Board | None,
-    ) -> Optional['CheckerBoard']:
+    ) -> CheckerBoard | None:
         return (
             CheckerBoard(
                 board.id,
@@ -110,7 +110,7 @@ class CheckerBoard:
     def from_dict(
         cls,
         d: dict,
-    ) -> Optional['CheckerBoard']:
+    ) -> CheckerBoard | None:
         return (
             CheckerBoard(
                 d['id'],
@@ -140,7 +140,7 @@ class BoardDiff:
         cls,
         read_board: Board | None,
         expected_board: Board | None,
-    ) -> 'BoardDiff':
+    ) -> BoardDiff:
         return BoardDiff(
             CheckerBoard.from_object(read_board) if read_board else None,
             CheckerBoard.from_object(expected_board) if expected_board else None,
@@ -150,7 +150,7 @@ class BoardDiff:
     def from_dict(
         cls,
         d: dict,
-    ) -> 'BoardDiff':
+    ) -> BoardDiff:
         return BoardDiff(
             CheckerBoard.from_dict(d['read_board']),
             CheckerBoard.from_dict(d['expected_board']),
@@ -184,7 +184,7 @@ class StandingsDiff:
     next_player: CheckerPlayer
 
     @classmethod
-    def from_dict(cls, d: dict) -> 'StandingsDiff':
+    def from_dict(cls, d: dict) -> StandingsDiff:
         player = CheckerPlayer.from_dict(d['player'])
         next_player = CheckerPlayer.from_dict(d['next_player'])
         assert player is not None and next_player is not None
@@ -225,7 +225,7 @@ class TournamentCheck:
     def from_object(
         cls,
         tournament: Tournament,
-    ) -> 'TournamentCheck':
+    ) -> TournamentCheck:
         return TournamentCheck(
             tournament.name,
             tournament.player_count,
@@ -237,7 +237,7 @@ class TournamentCheck:
     def from_dict(
         cls,
         d: dict,
-    ) -> 'TournamentCheck':
+    ) -> TournamentCheck:
         return TournamentCheck(
             d['name'],
             d['player_count'],
@@ -263,7 +263,7 @@ class TournamentCheck:
     def load_from_file(
         cls,
         input_file: Path,
-    ) -> 'TournamentCheck':
+    ) -> TournamentCheck:
         with open(input_file, encoding='utf-8') as file:
             return TournamentCheck.from_dict(json.load(file))
 
@@ -417,8 +417,8 @@ class TournamentCheck:
 
 def check_standings(
     tournament: Tournament,
-    trf_tournament: 'TrfTournament',
-    event: 'Event',
+    trf_tournament: TrfTournament,
+    event: Event,
 ) -> tuple[list[StandingsDiff], list[str], list[str], int]:
     """Check the standings a TRF states against the order the tie-breaks it
     names produce (FIDE C.04.A Annex 3, question 21).

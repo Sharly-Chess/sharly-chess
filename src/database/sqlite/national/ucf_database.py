@@ -123,7 +123,7 @@ class UcfDatabase(NationalPlayerDatabase):
     def _cell_int(value: Any) -> int | None:
         try:
             return int(float(value)) or None
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None
 
     @classmethod

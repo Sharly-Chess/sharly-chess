@@ -42,7 +42,7 @@ class TransferProtocol(StrEnum):
     FTP = 'FTP'
 
     @classmethod
-    def parse(cls, value: str | None) -> 'TransferProtocol':
+    def parse(cls, value: str | None) -> TransferProtocol:
         try:
             return cls(value or '')
         except ValueError:
@@ -101,7 +101,7 @@ class CustomUploadUtils:
         return f'{(filename or "").replace("/", "")}'
 
     @staticmethod
-    def get_event_plugin_data(event: Event) -> 'CustomUploadEventPluginData':
+    def get_event_plugin_data(event: Event) -> CustomUploadEventPluginData:
         plugin_data = event.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, CustomUploadEventPluginData)
         return plugin_data
@@ -118,7 +118,7 @@ class CustomUploadUtils:
         return None
 
     @staticmethod
-    def get_document(event: Event, document_id: str) -> 'ConfiguredDocument | None':
+    def get_document(event: Event, document_id: str) -> ConfiguredDocument | None:
         for document in CustomUploadUtils.get_event_plugin_data(event).documents:
             if document.id == document_id:
                 return document
@@ -126,7 +126,7 @@ class CustomUploadUtils:
 
     @staticmethod
     def document_tournaments(
-        event: Event, document: 'ConfiguredDocument'
+        event: Event, document: ConfiguredDocument
     ) -> list[Tournament]:
         """The tournament(s) targeted by a document, resolved from the
         ``tournament``/``tournaments`` values stored in its options."""
@@ -151,7 +151,7 @@ class CustomUploadUtils:
         return paths
 
     @staticmethod
-    def document_name(event: Event, document: 'ConfiguredDocument') -> str:
+    def document_name(event: Event, document: ConfiguredDocument) -> str:
         from data.print_documents import PrintDocumentManager
 
         try:
@@ -163,7 +163,7 @@ class CustomUploadUtils:
 
     @staticmethod
     def save_event_plugin_data(
-        event: Event, plugin_data: 'CustomUploadEventPluginData'
+        event: Event, plugin_data: CustomUploadEventPluginData
     ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
@@ -172,7 +172,7 @@ class CustomUploadUtils:
 
     @classmethod
     def update_document_state(
-        cls, event_uniq_id: str, document: 'ConfiguredDocument'
+        cls, event_uniq_id: str, document: ConfiguredDocument
     ) -> None:
         """Persist the upload state of a single document, reloading the event's
         plugin data first so concurrent uploads of other documents aren't lost."""
@@ -190,7 +190,7 @@ class CustomUploadUtils:
 
     @classmethod
     def resolve_document_upload_statuses(
-        cls, event: Event, document: 'ConfiguredDocument'
+        cls, event: Event, document: ConfiguredDocument
     ) -> list[CustomUploadStatus]:
         from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 
@@ -304,7 +304,7 @@ class ConfiguredDocument:
         return file_name
 
     @classmethod
-    def from_stored_value(cls, stored_value: dict[str, Any]) -> 'ConfiguredDocument':
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> ConfiguredDocument:
         return cls(
             document_id=stored_value['document_id'],
             options=stored_value.get('options', ''),

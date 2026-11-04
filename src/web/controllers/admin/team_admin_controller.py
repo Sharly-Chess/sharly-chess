@@ -656,7 +656,7 @@ class TeamAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _team_round_result_value(team: Team, round_: int) -> 'Result':
+    def _team_round_result_value(team: Team, round_: int) -> Result:
         bye = team.round_bye_type(round_)
         if bye is None:
             return Result.NO_RESULT
@@ -670,7 +670,7 @@ class TeamAdminController(BaseEventAdminController):
 
     @staticmethod
     def _get_team_bye_options(
-        client: 'Client', team: Team, round_: int
+        client: Client, team: Team, round_: int
     ) -> dict[str, SelectOption]:
         tournament = team.tournament
         assert tournament is not None
@@ -1094,7 +1094,7 @@ class TeamAdminController(BaseEventAdminController):
     @classmethod
     def _reconcile_paired_round_lineup(
         cls,
-        event: 'Event',
+        event: Event,
         tournament: Tournament,
         team: Team,
         round_: int,
@@ -1195,7 +1195,7 @@ class TeamAdminController(BaseEventAdminController):
 
     @staticmethod
     def _reconcile_flat_round_lineup(
-        event: 'Event',
+        event: Event,
         tournament: Tournament,
         team: Team,
         round_: int,
@@ -1258,7 +1258,7 @@ class TeamAdminController(BaseEventAdminController):
                     old_slots[slot] = pid
                     break
 
-        def _hole_seat(slot: int) -> tuple['Board', str] | None:
+        def _hole_seat(slot: int) -> tuple[Board, str] | None:
             """The board seat the table assigns to this team slot,
             provided that seat is currently a hole (don't stomp an
             occupied seat; honors boards whose colours were permuted

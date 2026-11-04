@@ -80,7 +80,7 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
     @classmethod
     @abstractmethod
     def default_values_by_group(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         """Compute the default values of each group."""
 
@@ -109,8 +109,8 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
 
     @staticmethod
     def store_groups(
-        tournament: 'Tournament',
-        groups: dict[type['PairingGroupSetting'], tuple[int, int]],
+        tournament: Tournament,
+        groups: dict[type[PairingGroupSetting], tuple[int, int]],
     ) -> bool:
         """Store the bounds of the groups and return True if any of them
         has changed."""
@@ -140,7 +140,7 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
         }
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         for field in (self.min_field, self.max_field):
@@ -153,11 +153,11 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
         return errors
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
+    def default_value(cls, tournament: Tournament) -> tuple[int, int]:
         return cls.default_values_by_group(tournament)[cls.group()]
 
     @classmethod
-    def stored_max(cls, tournament: 'Tournament') -> int | None:
+    def stored_max(cls, tournament: Tournament) -> int | None:
         """The stored last number of the group, read without the validity
         fallback of ``get_value``: a change of the field leaves the stored
         ranges outside it precisely when they need shifting. None when
@@ -171,7 +171,7 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
         )
 
     @staticmethod
-    def _formed_at_first_pairing(tournament: 'Tournament') -> bool:
+    def _formed_at_first_pairing(tournament: Tournament) -> bool:
         """Groups the arbiter cannot edit are formed from the field as it
         stands at the first pairing; a value stored before then describes
         an earlier field."""
@@ -183,7 +183,7 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
         )
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
+    def check_value(cls, tournament: Tournament, value: tuple[int, int]) -> bool:
         if cls._formed_at_first_pairing(tournament):
             return value == cls.default_value(tournament)
         return value[0] < value[1] <= tournament.player_count
@@ -196,7 +196,7 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
 
     @classmethod
     def default_values_by_group(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         player_count = tournament.player_count
         if player_count < 3:
@@ -208,7 +208,7 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
         }
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         if errors := super().get_data_errors(tournament, data):
             return errors
@@ -242,7 +242,7 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
 
     @classmethod
     def default_values_by_group(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         """Recommended values for an ideal repartition of players.
         Ideal repartition:
@@ -266,7 +266,7 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
         }
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         if errors := super().get_data_errors(tournament, data):
             return errors
@@ -410,13 +410,11 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
         ]
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> list[AccelerationRule]:
+    def default_value(cls, tournament: Tournament) -> list[AccelerationRule]:
         return []
 
     @classmethod
-    def check_value(
-        cls, tournament: 'Tournament', value: list[AccelerationRule]
-    ) -> bool:
+    def check_value(cls, tournament: Tournament, value: list[AccelerationRule]) -> bool:
         covered: set[tuple[int, int]] = set()
         for rule in value:
             number_range = rule.resolved_number_range(tournament)
@@ -437,7 +435,7 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
         return True
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         covered: set[tuple[int, int]] = set()
@@ -591,18 +589,18 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
         return {int(player_id): float(score) for player_id, score in value.items()}
 
     @classmethod
-    def default_value(cls, tournament: 'Tournament') -> dict[int, float]:
+    def default_value(cls, tournament: Tournament) -> dict[int, float]:
         return {}
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: dict[int, float]) -> bool:
+    def check_value(cls, tournament: Tournament, value: dict[int, float]) -> bool:
         # Scores of players who have left the tournament are simply never
         # read, so they don't make the setting invalid: dropping the whole
         # set because of one of them would lose the arbiter's work.
         return all(0 <= score <= cls.MAX_SCORE for score in value.values())
 
     def get_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         for field in self._player_fields(data):
@@ -675,7 +673,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
         return options
 
     def get_source_tournament_options(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         source_event = self._get_source_event(tournament, data)
         if source_event is None:
@@ -702,7 +700,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
         }
 
     def apply_action(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         """Fill the scores from the chosen tournament. Players are matched
         by identity rather than by id: the same person entered in two
@@ -743,7 +741,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
         return updated
 
     def _get_source_scores(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[tuple, float]:
         """Final score of each player of the chosen tournament, keyed by
         every identity key that player can be recognised by."""
@@ -764,8 +762,8 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
         return scores_by_key
 
     def _get_source_event(
-        self, tournament: 'Tournament', data: dict[str, str]
-    ) -> 'Event | None':
+        self, tournament: Tournament, data: dict[str, str]
+    ) -> Event | None:
         from data.loader import EventLoader
 
         uniq_id = data.get(self.source_event_field)
@@ -811,7 +809,7 @@ class AcceleratedSwissVariation(SwissVariation, ABC):
         return '/admin/pairings/settings/acceleration_rules_link.html'
 
     @abstractmethod
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         """The rules of the system as they apply to the tournament's
         scoring, one paragraph per item."""
 
@@ -822,7 +820,7 @@ class AccelerationSwissVariation(AcceleratedSwissVariation, ABC):
 
     @abstractmethod
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]: ...
 
     @property
@@ -833,23 +831,23 @@ class AccelerationSwissVariation(AcceleratedSwissVariation, ABC):
     @classmethod
     @abstractmethod
     def _get_group_a_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         """Tooltip representing the group A."""
 
     @classmethod
     @abstractmethod
     def _get_group_b_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         """Tooltip representing the group B."""
 
     @classmethod
-    def get_group_a_tooltip(cls, tournament: 'Tournament') -> str:
+    def get_group_a_tooltip(cls, tournament: Tournament) -> str:
         return cls._build_tooltip(cls._get_group_a_tooltip_lines(tournament))
 
     @classmethod
-    def get_group_b_tooltip(cls, tournament: 'Tournament') -> str:
+    def get_group_b_tooltip(cls, tournament: Tournament) -> str:
         return cls._build_tooltip(cls._get_group_b_tooltip_lines(tournament))
 
     @staticmethod
@@ -886,7 +884,7 @@ class AccelerationSwissVariation(AcceleratedSwissVariation, ABC):
     @classmethod
     @abstractmethod
     def get_player_group(
-        cls, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
+        cls, tournament: Tournament, tournament_player: TournamentPlayer
     ) -> AccelerationGroup:
         """Get the acceleration group of a player in a tournament."""
 
@@ -898,7 +896,7 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @classmethod
     def get_player_group(
-        cls, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
+        cls, tournament: Tournament, tournament_player: TournamentPlayer
     ) -> AccelerationGroup:
         _, group_a_max = tournament.pairing_settings[GroupA2GroupsSetting.static_id()]
         if tournament_player.pairing_number <= group_a_max:
@@ -907,7 +905,7 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     def update_settings_from_deleted_pairing_numbers(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         pairing_numbers: Iterable[int],
     ) -> bool:
         max_a = GroupA2GroupsSetting.stored_max(tournament)
@@ -926,7 +924,7 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
         )
 
     def update_settings_from_added_pairing_number(
-        self, tournament: 'Tournament', pairing_number: int
+        self, tournament: Tournament, pairing_number: int
     ) -> bool:
         max_a = GroupA2GroupsSetting.stored_max(tournament)
         if max_a is None:
@@ -942,7 +940,7 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
         )
 
     @classmethod
-    def get_acceleration_group_max_numbers(cls, tournament: 'Tournament') -> list[int]:
+    def get_acceleration_group_max_numbers(cls, tournament: Tournament) -> list[int]:
         _, group_a_max = tournament.pairing_settings[GroupA2GroupsSetting().id]
         return [
             group_a_max,
@@ -950,7 +948,7 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @classmethod
     def get_acceleration_number_range_by_group(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         return {
             AccelerationGroup.A: tournament.pairing_settings[GroupA2GroupsSetting().id],
@@ -971,17 +969,17 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
     @classmethod
     @abstractmethod
     def _get_group_c_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         """Tooltip representing the group C."""
 
     @classmethod
-    def get_group_c_tooltip(cls, tournament: 'Tournament') -> str:
+    def get_group_c_tooltip(cls, tournament: Tournament) -> str:
         return cls._build_tooltip(cls._get_group_c_tooltip_lines(tournament))
 
     @classmethod
     def get_player_group(
-        cls, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
+        cls, tournament: Tournament, tournament_player: TournamentPlayer
     ) -> AccelerationGroup:
         _, group_a_max = tournament.pairing_settings[GroupA3GroupsSetting.static_id()]
         if tournament_player.pairing_number <= group_a_max:
@@ -993,7 +991,7 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     def update_settings_from_deleted_pairing_numbers(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         pairing_numbers: Iterable[int],
     ) -> bool:
         max_a = GroupA3GroupsSetting.stored_max(tournament)
@@ -1017,7 +1015,7 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
         )
 
     def update_settings_from_added_pairing_number(
-        self, tournament: 'Tournament', pairing_number: int
+        self, tournament: Tournament, pairing_number: int
     ) -> bool:
         max_a = GroupA3GroupsSetting.stored_max(tournament)
         max_b = GroupB3GroupsSetting.stored_max(tournament)
@@ -1037,7 +1035,7 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
         )
 
     @classmethod
-    def get_acceleration_group_max_numbers(cls, tournament: 'Tournament') -> list[int]:
+    def get_acceleration_group_max_numbers(cls, tournament: Tournament) -> list[int]:
         _, group_a_max = tournament.pairing_settings[GroupA3GroupsSetting.static_id()]
         _, group_b_max = tournament.pairing_settings[GroupB3GroupsSetting.static_id()]
         return [
@@ -1047,7 +1045,7 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @classmethod
     def get_acceleration_number_range_by_group(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         return {
             AccelerationGroup.A: tournament.pairing_settings[GroupA3GroupsSetting().id],
@@ -1122,7 +1120,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
     def are_groups_editable(self) -> bool:
         return False
 
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         return [
             _(
                 'The Baku acceleration method of the FIDE Handbook '
@@ -1147,7 +1145,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         ]
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return current_round <= cls.accelerated_rounds(tournament.rounds)
 
     @staticmethod
@@ -1161,8 +1159,8 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
-        tournament_player: 'TournamentPlayer',
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         if at_round > cls.accelerated_rounds(tournament.rounds):
@@ -1177,7 +1175,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         return 0
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         rounds = tournament.rounds
         draw_points = tournament.draw_points
@@ -1206,7 +1204,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def _get_group_a_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         win_points = tournament.win_points
         draw_points = tournament.draw_points
@@ -1221,7 +1219,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def _get_group_b_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         return []
 
@@ -1235,7 +1233,7 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
     def static_name() -> str:
         return _('Haley system')
 
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         return [
             _(
                 'The players are split by pairing number into two groups: '
@@ -1251,7 +1249,7 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
         ]
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         return [
             AccelerationRule(
@@ -1264,7 +1262,7 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def _get_group_a_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         win_points = tournament.win_points
         return [
@@ -1274,15 +1272,15 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def _get_group_b_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         return []
 
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
-        tournament_player: 'TournamentPlayer',
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         if at_round <= 2:
@@ -1292,7 +1290,7 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
         return 0.0
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return current_round <= 2
 
 
@@ -1305,7 +1303,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     def static_name() -> str:
         return _('Soft Haley system')
 
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         return [
             _(
                 'The players are split by pairing number into two groups: '
@@ -1325,7 +1323,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
         ]
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         return [
             AccelerationRule(
@@ -1344,7 +1342,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def _get_group_a_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         win_points = tournament.win_points
         return [
@@ -1354,7 +1352,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def _get_group_b_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         draw_points = tournament.draw_points
         return [
@@ -1366,8 +1364,8 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
-        tournament_player: 'TournamentPlayer',
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         # Round 1: Group A gets 1 vpoint
@@ -1381,7 +1379,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
         return 0.0
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return current_round <= 2
 
 
@@ -1394,7 +1392,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
     def static_name() -> str:
         return _('Progressive accelerated system')
 
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         win_points = tournament.win_points
         draw_points = tournament.draw_points
         return [
@@ -1429,7 +1427,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
         ]
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         rounds = tournament.rounds
         draw_points = tournament.draw_points
@@ -1474,7 +1472,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
 
     @classmethod
     def _get_group_a_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         win_points = tournament.win_points
         return [
@@ -1484,7 +1482,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
 
     @classmethod
     def _get_detailed_group_tooltip_lines(
-        cls, tournament: 'Tournament', group: AccelerationGroup
+        cls, tournament: Tournament, group: AccelerationGroup
     ) -> list[tuple[str, float | None]]:
         draw_points = tournament.draw_points
         win_points = tournament.win_points
@@ -1505,21 +1503,21 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
 
     @classmethod
     def _get_group_b_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.B)
 
     @classmethod
     def _get_group_c_tooltip_lines(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
         return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.C)
 
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
-        tournament_player: 'TournamentPlayer',
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         if at_round >= tournament.rounds - 1:
@@ -1562,7 +1560,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
         return min(2 * win_points, vpoints)
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return current_round <= tournament.rounds - 2
 
 
@@ -1580,7 +1578,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
     def static_name() -> str:
         return _('Custom accelerated system')
 
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         return [
             _('The arbiter defines the acceleration rule by rule.'),
             _(
@@ -1602,22 +1600,22 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
         return [*super().settings, CustomAccelerationSetting()]
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         return CustomAccelerationSetting.get_value(tournament)
 
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
-        tournament_player: 'TournamentPlayer',
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         rule = cls._get_rule(tournament, tournament_player.pairing_number, at_round)
         return rule.vpoints if rule else 0.0
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return any(
             rule.resolved_round_range(tournament)[0]
             <= current_round
@@ -1627,7 +1625,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
 
     @staticmethod
     def _get_rule(
-        tournament: 'Tournament', pairing_number: int | None, at_round: int
+        tournament: Tournament, pairing_number: int | None, at_round: int
     ) -> AccelerationRule | None:
         """The rule accelerating *pairing_number* at *at_round*, if any.
         Rules are validated not to overlap, so at most one applies."""
@@ -1647,7 +1645,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
 
     def update_settings_from_deleted_pairing_numbers(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         pairing_numbers: Iterable[int],
     ) -> bool:
         """Shift the rules down so that the players they accelerate keep
@@ -1674,7 +1672,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
         return self._store_rules(tournament, rules)
 
     def update_settings_from_added_pairing_number(
-        self, tournament: 'Tournament', pairing_number: int
+        self, tournament: Tournament, pairing_number: int
     ) -> bool:
         stored_rules = self._stored_rules(tournament)
         if not stored_rules:
@@ -1700,7 +1698,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
         return self._store_rules(tournament, rules)
 
     @staticmethod
-    def _stored_rules(tournament: 'Tournament') -> list[AccelerationRule] | None:
+    def _stored_rules(tournament: Tournament) -> list[AccelerationRule] | None:
         """The stored rules, read without the validity fallback of
         ``get_value``: the numbers are shifted precisely when a deletion
         has left the stored ranges outside the tournament."""
@@ -1712,7 +1710,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
         )
 
     @staticmethod
-    def _store_rules(tournament: 'Tournament', rules: list[AccelerationRule]) -> bool:
+    def _store_rules(tournament: Tournament, rules: list[AccelerationRule]) -> bool:
         setting = CustomAccelerationSetting()
         stored_value = CustomAccelerationSetting.to_stored_value(rules)
         if (
@@ -1738,7 +1736,7 @@ class InitialScoreSwissVariation(AcceleratedSwissVariation):
     def static_name() -> str:
         return _('Initial score accelerated system')
 
-    def rules_description(self, tournament: 'Tournament') -> list[str]:
+    def rules_description(self, tournament: Tournament) -> list[str]:
         return [
             _(
                 'The arbiter gives each player an initial score, typically '
@@ -1756,7 +1754,7 @@ class InitialScoreSwissVariation(AcceleratedSwissVariation):
         return [*super().settings, InitialPairingScoreSetting()]
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         """One rule per scored player, covering the whole tournament —
         each one written as a single-player TRF26 250 record."""
@@ -1780,8 +1778,8 @@ class InitialScoreSwissVariation(AcceleratedSwissVariation):
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
-        tournament_player: 'TournamentPlayer',
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         return InitialPairingScoreSetting.get_value(tournament).get(
@@ -1789,7 +1787,7 @@ class InitialScoreSwissVariation(AcceleratedSwissVariation):
         )
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         # The initial scores apply to every round, so the real points are
         # always worth showing next to the pairing ones.
         return any(InitialPairingScoreSetting.get_value(tournament).values())
@@ -1813,7 +1811,7 @@ ACCELERATED_SWISS_VARIATIONS: list[type[SwissVariation]] = [
 class AccelerationUtils:
     @classmethod
     def set_pairing_settings_from_rating_threshold(
-        cls, tournament: 'Tournament', rating_threshold: int
+        cls, tournament: Tournament, rating_threshold: int
     ) -> None:
         from operator import attrgetter
 
@@ -1843,7 +1841,7 @@ class AccelerationUtils:
     @classmethod
     def set_pairing_settings_from_dual_rating_thresholds(
         cls,
-        tournament: 'Tournament',
+        tournament: Tournament,
         upper_rating_threshold: int,
         lower_rating_threshold: int,
     ) -> None:

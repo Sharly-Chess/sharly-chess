@@ -63,7 +63,7 @@ class NzcfDatabase(NationalPlayerDatabase):
     def _cell_int(value: Any) -> int | None:
         try:
             return int(float(str(value).strip())) or None
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None
 
     @override

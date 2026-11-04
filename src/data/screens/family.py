@@ -3,7 +3,7 @@ import weakref
 from datetime import datetime
 from functools import cached_property
 from math import ceil
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
 from common.i18n import _
@@ -25,7 +25,7 @@ class Family:
 
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_family: StoredFamily,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
@@ -42,7 +42,7 @@ class Family:
         )
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -60,7 +60,7 @@ class Family:
         return self.stored_family.type
 
     @property
-    def screen_type(self) -> 'ScreenType':
+    def screen_type(self) -> ScreenType:
         """The screen-type entity for this family, resolved through the
         manager (so a plugin-defined type is honoured)."""
         from data.screens.manager import ScreenTypeManager
@@ -162,7 +162,7 @@ class Family:
         return self.stored_family.tournament_id
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         return self.event.tournaments_by_id[self.tournament_id]
 
     @property
@@ -193,7 +193,7 @@ class Family:
         return self.stored_family.timer_id
 
     @property
-    def timer(self) -> Optional['Timer']:
+    def timer(self) -> Timer | None:
         return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
     def set_timer(self, timer_id: int | None) -> None:

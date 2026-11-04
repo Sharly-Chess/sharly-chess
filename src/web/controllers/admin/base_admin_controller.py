@@ -205,7 +205,7 @@ class BaseAdminController(BaseController):
         try:
             record_illegal_moves = WebContext.form_data_to_int(data, field)
             assert record_illegal_moves is None or 0 <= record_illegal_moves <= 3
-        except (ValueError, AssertionError):
+        except ValueError, AssertionError:
             record_illegal_moves = None
             errors['record_illegal_moves'] = _('Invalid value [{value}].').format(
                 value=data[field]

@@ -53,7 +53,7 @@ class JcfDatabase(NationalPlayerDatabase):
             return False
         try:
             urls = [str(media['source_url']) for media in json.loads(page)]
-        except (ValueError, KeyError, TypeError):
+        except ValueError, KeyError, TypeError:
             return False
         dated = [
             (match.groups(), url)
@@ -70,7 +70,7 @@ class JcfDatabase(NationalPlayerDatabase):
     def _cell_int(value: Any) -> int | None:
         try:
             return int(float(value)) or None
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None
 
     @override

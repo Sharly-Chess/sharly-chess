@@ -262,7 +262,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
     @override
     def apply_defaults(
         self,
-        stored_tournament: 'StoredTournament',
+        stored_tournament: StoredTournament,
         pairing_system_id: str | None = None,
     ) -> None:
         stored_tournament.criteria[FfeLicenceTournamentCriterion.static_id()] = (
@@ -378,7 +378,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         }
 
     @override
-    def roster_warnings(self, team: 'Team') -> list[str]:
+    def roster_warnings(self, team: Team) -> list[str]:
         msgs: list[str] = []
         # The cups require an A (competition) FFE licence for every player.
         without_a_licence = [
@@ -411,14 +411,14 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         msgs.extend(self._lineup_sum_warnings(team))
         return msgs
 
-    def _lineup_sum_warnings(self, team: 'Team') -> list[str]:
+    def _lineup_sum_warnings(self, team: Team) -> list[str]:
         """Lineup-rating-sum cap warnings. Subclasses override when
         their regulations cap the fielded lineup's total rating.
         Default: no constraint."""
         return []
 
     @staticmethod
-    def _team_round_match(team: 'Team', round_: int) -> 'TeamBoard | None':
+    def _team_round_match(team: Team, round_: int) -> TeamBoard | None:
         """The team's real (non-bye) team-match for ``round_``, or
         ``None`` when the team sat out / wasn't paired that round."""
         tournament = team.tournament
@@ -428,7 +428,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
 
     @staticmethod
     def _team_board_breakdown(
-        team_board: 'TeamBoard', team_id: int
+        team_board: TeamBoard, team_id: int
     ) -> list[tuple[int, bool, bool]]:
         """Per individual board, in board order, a tuple of
         ``(index, team_forfeited, game_played)``:
@@ -460,9 +460,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
             rows.append((board.index, forfeited, played))
         return rows
 
-    def _round_breakdown(
-        self, team: 'Team', round_: int
-    ) -> list[tuple[int, bool, bool]]:
+    def _round_breakdown(self, team: Team, round_: int) -> list[tuple[int, bool, bool]]:
         """``(index, forfeited, played)`` per board for the team this round,
         for either pairing model: a team-vs-team match (Suisse / round-robin)
         or a flat fixed-table round (Molter), which has no team_board."""
@@ -472,9 +470,7 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         return self._flat_round_breakdown(team, round_)
 
     @staticmethod
-    def _flat_round_breakdown(
-        team: 'Team', round_: int
-    ) -> list[tuple[int, bool, bool]]:
+    def _flat_round_breakdown(team: Team, round_: int) -> list[tuple[int, bool, bool]]:
         """Flat fixed-table (Molter) counterpart of
         :meth:`_team_board_breakdown`: one row per team seat, holes
         included. Empty when the team isn't playing this round."""
@@ -512,15 +508,11 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         return rows
 
     @override
-    def team_point_adjustment(
-        self, team: 'Team', round_: int
-    ) -> 'PointAdjustment | None':
+    def team_point_adjustment(self, team: Team, round_: int) -> PointAdjustment | None:
         # -1 when a game was played on a board below a forfeited one.
         return self._following_board_played_penalty(team, round_)
 
-    def _forfeit_loss_penalty(
-        self, team: 'Team', round_: int
-    ) -> 'PointAdjustment | None':
+    def _forfeit_loss_penalty(self, team: Team, round_: int) -> PointAdjustment | None:
         """A game lost by forfeit counts −1 game point ("Une partie perdue
         par forfait sportif est comptée -1"). Applies to every pairing
         system, Molter included. In a team-vs-team match the score
@@ -554,8 +546,8 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         return PointAdjustment(gp=-penalty, explanation=explanation)
 
     def _following_board_played_penalty(
-        self, team: 'Team', round_: int
-    ) -> 'PointAdjustment | None':
+        self, team: Team, round_: int
+    ) -> PointAdjustment | None:
         """−1 for each board the team forfeited while a game was actually
         played on a following (lower) board — i.e. a hole above a board it
         did field (FFE 4.1.c, "pour les deux systèmes"). Works for Molter
@@ -710,9 +702,7 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
         }.get(self.phase)
 
     @override
-    def team_point_adjustment(
-        self, team: 'Team', round_: int
-    ) -> 'PointAdjustment | None':
+    def team_point_adjustment(self, team: Team, round_: int) -> PointAdjustment | None:
         # A game lost by forfeit counts -1 game point.
         return self._forfeit_loss_penalty(team, round_)
 
@@ -870,7 +860,7 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
         )
 
     @override
-    def roster_warnings(self, team: 'Team') -> list[str]:
+    def roster_warnings(self, team: Team) -> list[str]:
         # The parent's licence check applies; the rating-cap check is a
         # no-op here (no Elo cap on the Féminine divisions). Add the
         # women-only roster check on top.
@@ -971,13 +961,13 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
         return 6
 
     @override
-    def roster_warnings(self, team: 'Team') -> list[str]:
+    def roster_warnings(self, team: Team) -> list[str]:
         msgs = super().roster_warnings(team)
         msgs.extend(self._gender_balance_warnings(team))
         return msgs
 
     @staticmethod
-    def _gender_balance_warnings(team: 'Team') -> list[str]:
+    def _gender_balance_warnings(team: Team) -> list[str]:
         # The roster holds at most 3 men and 3 women,
         # and each match fields 2 men + 2 women — so a roster needs at
         # least 2 of each gender to field a legal lineup, and no more
@@ -1004,7 +994,7 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
         return msgs
 
     @override
-    def _lineup_sum_warnings(self, team: 'Team') -> list[str]:
+    def _lineup_sum_warnings(self, team: Team) -> list[str]:
         tournament = team.tournament
         if tournament is None or not tournament.team_player_count:
             return []

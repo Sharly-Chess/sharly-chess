@@ -162,7 +162,7 @@ class Event:
         return RatingPreference.FIDE
 
     @cached_property
-    def national_rating_source(self) -> 'DataSource | None':
+    def national_rating_source(self) -> DataSource | None:
         """The installed list the national ratings of the event's
         federation come from."""
         from data.input_output import DataSourceManager
@@ -283,7 +283,7 @@ class Event:
         cadence: Cadence,
         player: Player,
         category: PlayerCategory,
-        tournament: 'Tournament | None',
+        tournament: Tournament | None,
     ) -> int:
         """The rating a player no list rates is ranked on when the arbiter
         typed none: the one a plugin prescribes, else the tournament's, else
@@ -296,7 +296,7 @@ class Event:
         return self.unrated_rating
 
     def rating_resolution(
-        self, tournament: 'Tournament | None'
+        self, tournament: Tournament | None
     ) -> tuple[Cadence, RatingPreference, RatingSequence]:
         """How the rating of a player of *tournament* is chosen, or of a
         player outside any tournament: the cadence, the rating preference
@@ -399,7 +399,7 @@ class Event:
         return self.stored_event.tag_ids
 
     @property
-    def tags(self) -> list['Tag']:
+    def tags(self) -> list[Tag]:
         """The tags of the event; unknown ids are ignored (see data.tag)."""
         return SharlyChessConfig().resolve_tags(self.stored_event.tag_ids)
 
@@ -1002,7 +1002,7 @@ class Event:
                 return group
         return self.add_team_group(name)
 
-    def team_affiliation_sources(self) -> 'list[TeamAffiliationSource]':
+    def team_affiliation_sources(self) -> list[TeamAffiliationSource]:
         """The ways a team's affiliation can be derived from its players —
         core (the players' common club) plus any contributed by plugins."""
         from data.teams.team_affiliation import core_team_affiliation_sources
@@ -1084,7 +1084,7 @@ class Event:
 
     def get_unused_screen_uniq_id(
         self,
-        screen_type: 'ScreenType | None' = None,
+        screen_type: ScreenType | None = None,
         base_uniq_id: str | None = None,
     ) -> str:
         """Returns the first unused screen uniq_id looking like base_uniq_id:
@@ -1105,7 +1105,7 @@ class Event:
 
     def get_unused_screen_name(
         self,
-        screen_type: 'ScreenType',
+        screen_type: ScreenType,
         base_name: str | None = None,
     ) -> str:
         """Returns the first unused screen name looking like base_name:
@@ -1176,7 +1176,7 @@ class Event:
 
     def get_unused_family_uniq_id(
         self,
-        family_type: 'ScreenType | None' = None,
+        family_type: ScreenType | None = None,
         base_uniq_id: str | None = None,
     ) -> str:
         """Returns the first unused family uniq_id looking like base_uniq_id:
@@ -1196,7 +1196,7 @@ class Event:
 
     def get_unused_family_name(
         self,
-        family_type: 'ScreenType',
+        family_type: ScreenType,
         base_name: str | None = None,
     ) -> str:
         """Returns the first unused family name looking like base_name:
@@ -1587,7 +1587,7 @@ class Event:
     # Plugins
     # -------------------------------------------------------------------------
 
-    def __lt__(self, other: 'Event') -> bool:
+    def __lt__(self, other: Event) -> bool:
         # p1 < p2 calls p1.__lt__(p2)
         return self.uniq_id > other.uniq_id
 

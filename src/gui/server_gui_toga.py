@@ -5,8 +5,6 @@ This module provides a Toga-based GUI that can display server logs and control
 the server without duplicating server logic.
 """
 
-from __future__ import annotations
-
 import asyncio
 import ctypes
 import io

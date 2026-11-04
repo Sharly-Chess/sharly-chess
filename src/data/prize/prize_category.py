@@ -30,7 +30,7 @@ logger: Logger = get_logger()
 
 class PrizeCategory:
     def __init__(
-        self, prize_group: 'PrizeGroup', stored_prize_category: StoredPrizeCategory
+        self, prize_group: PrizeGroup, stored_prize_category: StoredPrizeCategory
     ):
         self._prize_group_ref: ReferenceType[PrizeGroup] = weakref.ref(prize_group)
         self.stored_prize_category = stored_prize_category
@@ -63,7 +63,7 @@ class PrizeCategory:
         return prizes_by_id
 
     @property
-    def prize_group(self) -> 'PrizeGroup':
+    def prize_group(self) -> PrizeGroup:
         if (prize_group := self._prize_group_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return prize_group

@@ -52,7 +52,7 @@ if TYPE_CHECKING:
 class TrfExport:
     """Builds the TRF of one tournament, as it stands after a round."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     def build(
@@ -447,7 +447,7 @@ class TrfExport:
         return rosters
 
     def _window_team_ranks(
-        self, teams: list['Team'], team_totals: dict[int, tuple[float, float]]
+        self, teams: list[Team], team_totals: dict[int, tuple[float, float]]
     ) -> dict[int, int]:
         """The standings a period's file states: the teams it holds ranked
         on the points of the matches it holds, ties sharing a place."""
@@ -455,7 +455,7 @@ class TrfExport:
             self.tournament.primary_score == ScoreType.MATCH_POINTS
         )
 
-        def score(team: 'Team') -> tuple[float, float]:
+        def score(team: Team) -> tuple[float, float]:
             match_points, game_points = team_totals.get(team.id, (0.0, 0.0))
             return (
                 (-match_points, -game_points)

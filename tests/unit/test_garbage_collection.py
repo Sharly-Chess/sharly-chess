@@ -8,7 +8,7 @@ from web.garbage_collection import RequestGarbageCollectionMiddleware
 
 
 class CyclicObject:
-    reference: 'CyclicObject'
+    reference: CyclicObject
 
 
 def test_request_garbage_collection_releases_request_cycles():

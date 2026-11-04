@@ -212,7 +212,7 @@ def already_checked(out_path: Path) -> set[str]:
             continue
         try:
             done.add(json.loads(line)['file'])
-        except (json.JSONDecodeError, KeyError):
+        except json.JSONDecodeError, KeyError:
             continue
     return done
 

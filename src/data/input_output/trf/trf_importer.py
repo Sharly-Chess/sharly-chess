@@ -383,7 +383,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         its version lacks."""
         return self._adjustments
 
-    def _apply_prohibited_pairings(self, tournament: 'Tournament') -> None:
+    def _apply_prohibited_pairings(self, tournament: Tournament) -> None:
         """Resolve the parsed 260 and SCS pairing numbers to member ids
         (players for an individual tournament, teams for a team one) and
         write them as per-round prohibited-pairing snapshots. 260 groups
@@ -791,7 +791,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             result.append((stored_team, list(trf_team.player_ids)))
         return result
 
-    def _check_imported_rounds(self, tournament: 'Tournament') -> None:
+    def _check_imported_rounds(self, tournament: Tournament) -> None:
         """Check the imported rounds against the pairing engine, where the
         pairing integrity breaches are logged, and log the ones that differ
         as import breaches."""

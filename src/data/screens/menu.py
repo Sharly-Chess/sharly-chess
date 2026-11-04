@@ -95,9 +95,9 @@ def _dropdown_family_label(family: Family, range_screen: Screen | None) -> str:
 
 def group_menu_nav_entries(
     screens: list[Screen],
-    menu: 'Menu | None' = None,
+    menu: Menu | None = None,
     current_screen: Screen | None = None,
-) -> list['MenuNavEntry']:
+) -> list[MenuNavEntry]:
     """Build the navigation entries for a menu's screens. When the menu uses
     submenus, each family's screens (kept in first-appearance order) are
     collapsed into a single dropdown entry; otherwise every screen is a
@@ -144,14 +144,14 @@ def group_menu_nav_entries(
 class MenuItem:
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_menu_item: StoredMenuItem,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_menu_item = stored_menu_item
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -163,7 +163,7 @@ class MenuItem:
         return self.stored_menu_item.id
 
     @property
-    def menu(self) -> 'Menu':
+    def menu(self) -> Menu:
         return self.event.menus_by_id[self.stored_menu_item.menu_id]
 
     @property
@@ -183,7 +183,7 @@ class MenuItem:
         return self.stored_menu_item.screen_type or None
 
     @property
-    def screen_type_object(self) -> 'ScreenType | None':
+    def screen_type_object(self) -> ScreenType | None:
         if not self.screen_type:
             return None
         return ScreenTypeManager(self.event).get_object(self.screen_type)
@@ -221,7 +221,7 @@ class Menu:
 
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_menu: StoredMenu,
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
@@ -229,7 +229,7 @@ class Menu:
         self.menu_items_by_id = self._get_menu_items_by_id()
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
@@ -302,7 +302,7 @@ class Menu:
         return [item.screen_type for item in self.sorted_menu_items if item.screen_type]
 
     @property
-    def screen_type_objects(self) -> list['ScreenType']:
+    def screen_type_objects(self) -> list[ScreenType]:
         manager = ScreenTypeManager(self.event)
         return [manager.get_object(screen_type) for screen_type in self.screen_types]
 

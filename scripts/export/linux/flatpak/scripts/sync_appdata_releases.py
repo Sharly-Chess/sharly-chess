@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Generate the <releases> section of the appdata XML from git annotated tags."""
 
-from __future__ import annotations
-
 import re
 import subprocess
 from datetime import datetime, UTC

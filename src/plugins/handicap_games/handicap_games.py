@@ -89,7 +89,7 @@ class HandicapGamesPlugin(Plugin):
         return False
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         handicap_games_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         return bool(
@@ -109,7 +109,7 @@ class HandicapGamesPlugin(Plugin):
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(
-        self, event: 'Event', tournament: 'Tournament | None'
+        self, event: Event, tournament: Tournament | None
     ) -> tuple[str, dict[str, Any]]:
         return (
             '/handicap_games_tournament_form_fields.html',
@@ -156,7 +156,7 @@ class HandicapGamesPlugin(Plugin):
         return '/handicap_games_tournament_card_time_control.html'
 
     @hookimpl
-    def set_for_round(self, tournament: 'Tournament', round_: int) -> None:
+    def set_for_round(self, tournament: Tournament, round_: int) -> None:
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:
             return
@@ -206,7 +206,7 @@ class HandicapGamesPlugin(Plugin):
         self,
         usage: ColumnUsage,
         board_columns: list[BoardColumn],
-        tournament: 'Tournament',
+        tournament: Tournament,
     ) -> None:
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:

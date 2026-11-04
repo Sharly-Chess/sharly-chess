@@ -32,7 +32,7 @@ class _KnockoutSystemMixin:
         # Losing knocks a participant out; the field halves each round.
         return True
 
-    def round_is_locked(self, tournament: 'Tournament', round_: int) -> bool:
+    def round_is_locked(self, tournament: Tournament, round_: int) -> bool:
         # A round is read-only once the next match is paired from its
         # results — changing them would invalidate the drawn bracket. The
         # games of one match are not each other's next match: the second is
@@ -43,7 +43,7 @@ class _KnockoutSystemMixin:
             last_game + 1
         )
 
-    def tournament_is_over(self, tournament: 'Tournament') -> bool:
+    def tournament_is_over(self, tournament: Tournament) -> bool:
         # Only double elimination ends early (its reset round is skipped when
         # no reset is due); the engine holds that rule. A single elimination
         # has no such round, so its engine does not answer and it ends the
@@ -126,7 +126,7 @@ class _KnockoutSystemMixin:
             protect_unpairing=False, unpair_boards=False
         )
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         return tournament.last_paired_round
 
 
@@ -151,7 +151,7 @@ class KnockoutPairingSystem(_KnockoutSystemMixin, PairingSystem['KnockoutVariati
         return _('Knock-out')
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager['KnockoutVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[KnockoutVariation]:
         from data.pairings.knockout_helpers.variations import KnockoutVariationManager
 
         return KnockoutVariationManager(event)
@@ -177,9 +177,7 @@ class TeamKnockoutPairingSystem(
         return _('Team Knock-out')
 
     @override
-    def variation_manager(
-        self, event: 'Event'
-    ) -> EntityManager['TeamKnockoutVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[TeamKnockoutVariation]:
         from data.pairings.knockout_helpers.variations import (
             TeamKnockoutVariationManager,
         )

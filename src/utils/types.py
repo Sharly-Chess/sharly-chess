@@ -2,7 +2,7 @@ import weakref
 from collections import Counter
 from dataclasses import dataclass, field, replace
 from functools import total_ordering
-from typing import Any, NamedTuple, Optional, Self, SupportsFloat, TYPE_CHECKING
+from typing import Any, NamedTuple, Self, SupportsFloat, TYPE_CHECKING
 
 from markupsafe import Markup, escape
 
@@ -233,7 +233,7 @@ class PlayerRatingAndType:
         return Markup('{}<sup>{}</sup>').format(self.suffix, self.cadence_marker)
 
     @property
-    def text(self) -> 'RatingText':
+    def text(self) -> RatingText:
         if not self.value:
             return RatingText('-')
         text = f'{self.value}\xa0{self.suffix}'
@@ -318,13 +318,13 @@ class NormCheckResult:
     fid_count: int = 0
     num_title_holders: int = 0
     title_counts: Counter[PlayerTitle] | None = None
-    federations_counter: Counter['Federation'] | None = None
+    federations_counter: Counter[Federation] | None = None
     required_titles: list[PlayerTitle] = field(default_factory=list)
     required_titles_met: int = 0
     num_rated_players: int = 0
     score: float = 0
     average_rating: float = 0
-    adjusted_player: Optional['NormOpponent'] = None
+    adjusted_player: NormOpponent | None = None
     adjusted_player_rating: int | None = None
     performance: float = 0
     performance_diff: float | None = None
@@ -362,7 +362,7 @@ class NormCheckResult:
     # NormCheckResult — populated so the calculation-details view can show
     # both Rps side by side. None when 1.4.2c did not apply (1.4.1c won
     # outright, or no last-round forfeit existed).
-    alternate_142c: Optional['NormCheckResult'] = None
+    alternate_142c: NormCheckResult | None = None
 
     # 1.4.1e / 1.4.1f — rounds the subset searcher dropped to satisfy the
     # norm. Empty when no search ran or when no winning subset was found.
@@ -423,13 +423,13 @@ class NormCheckResult:
 
 
 class TieBreakValue:
-    def __init__(self, tie_break: 'TieBreak', value: SupportsFloat):
+    def __init__(self, tie_break: TieBreak, value: SupportsFloat):
         self._tie_break_ref: ReferenceType[TieBreak] = weakref.ref(tie_break)
         self.value = value
         self.rank_progress: int | None = None
 
     @property
-    def tie_break(self) -> 'TieBreak':
+    def tie_break(self) -> TieBreak:
         if (tie_break := self._tie_break_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tie_break

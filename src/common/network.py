@@ -1,6 +1,5 @@
 """Common network code"""
 
-from __future__ import annotations
 from typing import cast
 import ipaddress
 import subprocess
@@ -403,7 +402,7 @@ class NetworkMonitor:
                 return cast(
                     bool, resp.read(len(expected_body)).startswith(expected_body)
                 )
-        except (URLError, OSError, ValueError):
+        except URLError, OSError, ValueError:
             return False
 
     @classmethod

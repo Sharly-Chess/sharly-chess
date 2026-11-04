@@ -42,7 +42,7 @@ class KnockoutAdvancement:
     winner_id: int | None
     reason: str | None
     manual_pending: bool
-    breakdown: tuple['AdvancementValue', ...] = ()
+    breakdown: tuple[AdvancementValue, ...] = ()
     manual_reached: bool = False
 
 
@@ -50,8 +50,8 @@ class KnockoutAdvancementMixin:
     """Resolve tied knock-out matches through configured advancement criteria."""
 
     def team_advancement(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
-    ) -> 'KnockoutAdvancement':
+        self, tournament: Tournament, team_board: TeamBoard
+    ) -> KnockoutAdvancement:
         stb = team_board.stored_team_board
         if stb.team_b_id is None:
             return KnockoutAdvancement(stb.team_a_id, None, False)
@@ -128,8 +128,8 @@ class KnockoutAdvancementMixin:
         )
 
     def player_advancement(
-        self, tournament: 'Tournament', board: 'Board'
-    ) -> 'KnockoutAdvancement':
+        self, tournament: Tournament, board: Board
+    ) -> KnockoutAdvancement:
         player_a = board.optional_white_tournament_player
         player_b = board.black_tournament_player
         if player_a is None or player_b is None:
@@ -194,8 +194,8 @@ class KnockoutAdvancementMixin:
         )
 
     def board_advancement(
-        self, tournament: 'Tournament', board: 'Board'
-    ) -> 'KnockoutAdvancement | None':
+        self, tournament: Tournament, board: Board
+    ) -> KnockoutAdvancement | None:
         if (
             board.optional_white_tournament_player is None
             or board.black_tournament_player is None
@@ -208,8 +208,8 @@ class KnockoutAdvancementMixin:
         return self.player_advancement(tournament, board)
 
     def team_board_advancement(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
-    ) -> 'KnockoutAdvancement | None':
+        self, tournament: Tournament, team_board: TeamBoard
+    ) -> KnockoutAdvancement | None:
         stb = team_board.stored_team_board
         if stb.team_b_id is None or not team_match_all_games_played(team_board):
             return None
@@ -218,7 +218,7 @@ class KnockoutAdvancementMixin:
             return None
         return self.team_advancement(tournament, team_board)
 
-    def board_loser_id(self, tournament: 'Tournament', board: 'Board') -> int | None:
+    def board_loser_id(self, tournament: Tournament, board: Board) -> int | None:
         """The player this game knocks out of the bracket, or ``None`` while
         it is undecided. A team match eliminates as a whole, so the games
         inside one name nobody."""
@@ -236,7 +236,7 @@ class KnockoutAdvancementMixin:
         return black.id if winner == white.id else white.id
 
     def team_board_loser_id(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
+        self, tournament: Tournament, team_board: TeamBoard
     ) -> int | None:
         """The team this match knocks out of the bracket, or ``None`` while it
         is undecided."""
@@ -248,13 +248,13 @@ class KnockoutAdvancementMixin:
             return None
         return stb.team_b_id if winner == stb.team_a_id else stb.team_a_id
 
-    def advancement_has_manual(self, tournament: 'Tournament') -> bool:
+    def advancement_has_manual(self, tournament: Tournament) -> bool:
         return any(
             tie_break.is_manual for tie_break in tournament.advancement_tie_breaks
         )
 
     def unresolved_matches(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[dict[str, Any]]:
         matches: list[dict[str, Any]] = []
         if tournament.pairing_system.paired_by_team:

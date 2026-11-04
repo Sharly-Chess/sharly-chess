@@ -12,7 +12,7 @@ def build_gui_handler() -> logging.Handler:
 class GUILogHandler(logging.Handler):
     """Custom logging handler that forwards to GUI."""
 
-    instance: 'GUILogHandler | None' = None
+    instance: GUILogHandler | None = None
 
     def __init__(self, gui_instance: Any) -> None:
         super().__init__()

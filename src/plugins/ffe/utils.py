@@ -215,7 +215,7 @@ def regional_league(league: str | None) -> str | None:
 class FFEUtils:
     @staticmethod
     def system_supports_ffe_transfer(
-        event: Event, pairing_system: 'PairingSystem'
+        event: Event, pairing_system: PairingSystem
     ) -> bool:
         """Whether the Papi upload (and its fields) is offered for a
         tournament of ``event`` paired with this system: it needs a
@@ -227,7 +227,7 @@ class FFEUtils:
         return not event.is_team_event
 
     @staticmethod
-    def rule_set_team_competition_id(rule_set: 'RuleSet | None') -> int | None:
+    def rule_set_team_competition_id(rule_set: RuleSet | None) -> int | None:
         """The FFE team-module competition of *rule_set*, ``None`` when it
         is not an FFE team competition."""
         from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet
@@ -297,21 +297,21 @@ class FFEUtils:
         return bool(pd.ffe_id and pd.password)
 
     @staticmethod
-    def get_event_plugin_data(event: Event) -> 'FfeEventPluginData':
+    def get_event_plugin_data(event: Event) -> FfeEventPluginData:
         plugin_data = event.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfeEventPluginData)
         return plugin_data
 
     @staticmethod
-    def get_tournament_plugin_data(tournament: Tournament) -> 'FfeTournamentPluginData':
+    def get_tournament_plugin_data(tournament: Tournament) -> FfeTournamentPluginData:
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfeTournamentPluginData)
         return plugin_data
 
     @staticmethod
     def get_period_own_plugin_data(
-        period: 'TournamentPeriod',
-    ) -> 'FfeTournamentPluginData':
+        period: TournamentPeriod,
+    ) -> FfeTournamentPluginData:
         """What the period itself holds — its own registration and the
         outcome of its own uploads, with nothing borrowed from the
         tournament."""
@@ -320,7 +320,7 @@ class FFEUtils:
         return plugin_data
 
     @staticmethod
-    def get_period_plugin_data(period: 'TournamentPeriod') -> 'FfeTournamentPluginData':
+    def get_period_plugin_data(period: TournamentPeriod) -> FfeTournamentPluginData:
         """What a rating period is submitted under.
 
         Each period has its own homologation number; the first period
@@ -335,13 +335,13 @@ class FFEUtils:
         return FFEUtils.get_tournament_plugin_data(period.tournament)
 
     @staticmethod
-    def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
+    def get_player_plugin_data(player: Player) -> FfePlayerPluginData:
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
         return plugin_data
 
     @staticmethod
-    def get_account_plugin_data(account: Account) -> 'FfeAccountPluginData':
+    def get_account_plugin_data(account: Account) -> FfeAccountPluginData:
         plugin_data = account.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfeAccountPluginData)
         return plugin_data
@@ -392,7 +392,7 @@ class FFEUtils:
     @staticmethod
     def update_tournament_plugin_data(
         tournament: Tournament,
-        plugin_data: 'FfeTournamentPluginData',
+        plugin_data: FfeTournamentPluginData,
     ) -> None:
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             plugin_data.to_stored_value()
@@ -408,7 +408,7 @@ class FFEUtils:
     @staticmethod
     def update_event_plugin_data(
         event: Event,
-        plugin_data: 'FfeEventPluginData',
+        plugin_data: FfeEventPluginData,
     ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
@@ -451,7 +451,7 @@ class FFEUtils:
         return player.national_id
 
     @classmethod
-    def licence(cls, player: Player) -> 'PlayerFFELicence':
+    def licence(cls, player: Player) -> PlayerFFELicence:
         """The licence of a player: a licence type without a licence
         number means none."""
         if not cls.licence_number(player):
@@ -501,7 +501,7 @@ class FFEUtils:
 
     @classmethod
     def resolve_period_upload_statuses(
-        cls, period: 'TournamentPeriod'
+        cls, period: TournamentPeriod
     ) -> list[FFEUploadStatus]:
         """How the submission of one period stands.
 

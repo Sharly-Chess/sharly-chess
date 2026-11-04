@@ -193,7 +193,7 @@ class Result(IntEnum):
             case _:
                 raise ValueError(f'{self=}')
 
-    def points(self, values: dict['Result', float] | None = None) -> float:
+    def points(self, values: dict[Result, float] | None = None) -> float:
         """
         The value in points, according to rules defined in *values*.
         If a result instance is not included in *values*, the closest result's
@@ -238,7 +238,7 @@ class Result(IntEnum):
         return value or self.point_value
 
     @property
-    def opposite_result(self) -> 'Result':
+    def opposite_result(self) -> Result:
         """Given a `Result` instance (white result), returns the result of the
         opponent.
 
@@ -602,13 +602,13 @@ class Result(IntEnum):
         )
 
     @classmethod
-    def user_imputable_results(cls) -> tuple['Result', ...]:
+    def user_imputable_results(cls) -> tuple[Result, ...]:
         """Imputable results are the ones that a player can
         input by themselves, namely a win, a draw, or a loss or forfeits."""
         return cls.WIN, cls.DRAW, cls.LOSS
 
     @classmethod
-    def admin_imputable_results(cls) -> tuple['Result', ...]:
+    def admin_imputable_results(cls) -> tuple[Result, ...]:
         """Admin imputable results are the ones that only arbiters can input."""
         return (
             *cls.user_imputable_results(),
@@ -733,7 +733,7 @@ class PlayerGender(StrEnum):
     MAN = 'M'
 
     @classmethod
-    def from_fide_value(cls, value: str) -> 'PlayerGender':
+    def from_fide_value(cls, value: str) -> PlayerGender:
         match value.upper():
             case 'F' | 'W':
                 return cls.WOMAN
@@ -968,7 +968,7 @@ class PlayerTitle(StrEnum):
         return list(PlayerTitle).index(self)
 
     @classmethod
-    def from_fide_value(cls, value: str) -> 'PlayerTitle':
+    def from_fide_value(cls, value: str) -> PlayerTitle:
         try:
             return cls(value)
         except ValueError:
@@ -985,12 +985,12 @@ class PlayerTitle(StrEnum):
         )
 
     @classmethod
-    def open_titles(cls) -> list['PlayerTitle']:
+    def open_titles(cls) -> list[PlayerTitle]:
         """NONE + the open titles (CM, FM, IM, GM), weakest-to-strongest."""
         return [title for title in cls if not title.is_women]
 
     @classmethod
-    def women_titles(cls) -> list['PlayerTitle']:
+    def women_titles(cls) -> list[PlayerTitle]:
         """NONE + the women titles (WCM, WFM, WIM, WGM), weakest-to-strongest."""
         return [cls.NONE] + [title for title in cls if title.is_women]
 
@@ -1099,7 +1099,7 @@ class FideArbiterTitle(StrEnum):
         return list(FideArbiterTitle).index(self)
 
     @classmethod
-    def from_fide_value(cls, value: str) -> 'FideArbiterTitle':
+    def from_fide_value(cls, value: str) -> FideArbiterTitle:
         for string in value.split(','):
             match string:
                 case 'NA':
@@ -1373,7 +1373,7 @@ class TitleNorm(Enum):
     GM = auto()
 
     @classmethod
-    def values(cls) -> Iterator['TitleNorm']:
+    def values(cls) -> Iterator[TitleNorm]:
         yield cls.WIM
         yield cls.WGM
         yield cls.IM
@@ -1443,7 +1443,7 @@ class TitleNorm(Enum):
                 raise ValueError(f'Invalid title norm value: {self}')
 
     @staticmethod
-    def minimum_rounds(tournament: 'Tournament') -> int:
+    def minimum_rounds(tournament: Tournament) -> int:
         if tournament.pairing_variation.is_double_round_robin:
             return 10  # 1.4.5.f -> 6 players -> 10 rounds
         return 9
@@ -1457,7 +1457,7 @@ class TitleNorm(Enum):
         return ceil(rounds / 2)
 
     @staticmethod
-    def minimum_required_titles(tournament: 'Tournament', played_games: int) -> int:
+    def minimum_required_titles(tournament: Tournament, played_games: int) -> int:
         """1.4.5b–e: "at least 1/3 of the opponents, minimum 3" (or 1/2 in DRR).
 
         Threshold scales with the size of the opponent mix (`played_games`),
@@ -1567,7 +1567,7 @@ class TeamByeType(StrEnum):
     ZPB = 'ZPB'
 
     @classmethod
-    def manual_bye_types(cls) -> tuple['TeamByeType', ...]:
+    def manual_bye_types(cls) -> tuple[TeamByeType, ...]:
         return (cls.HPB, cls.FPB, cls.ZPB)
 
 
@@ -1630,7 +1630,7 @@ class PlayersScreenPlayerFormat(IntEnum):
 
     def header(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
     ) -> str:
         match self:
             case PlayersScreenPlayerFormat.NAME:
@@ -1664,7 +1664,7 @@ class PlayersScreenPlayerFormat(IntEnum):
 
     def format(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
     ) -> str:
         return self.format_string.format(
             title=player.display_title,
@@ -1697,7 +1697,7 @@ class PlayersScreenBoardFormat(IntEnum):
 
     def header(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
     ) -> str:
         if not tournament.current_round:
             return ''
@@ -1722,7 +1722,7 @@ class PlayersScreenBoardFormat(IntEnum):
 
     def format(
         self,
-        tournament_player: 'TournamentPlayer',
+        tournament_player: TournamentPlayer,
     ) -> str:
         return self.format_string.format(
             board_number=tournament_player.board_number,
@@ -1755,7 +1755,7 @@ class PlayersScreenOpponentFormat(IntEnum):
 
     def header(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
     ) -> str:
         match self:
             case PlayersScreenOpponentFormat.NONE:
@@ -1794,7 +1794,7 @@ class PlayersScreenOpponentFormat(IntEnum):
 
     def format(
         self,
-        tournament_player: 'TournamentPlayer',
+        tournament_player: TournamentPlayer,
     ) -> str:
         return self.format_string.format(
             title=tournament_player.display_title,

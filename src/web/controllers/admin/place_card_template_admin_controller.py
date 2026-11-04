@@ -410,7 +410,7 @@ class PlaceCardTemplateAdminController(BaseAdminController):
                     parts = json.loads(
                         WebContext.form_data_to_str(data, 'content') or '[]'
                     )
-                except (ValueError, TypeError):
+                except ValueError, TypeError:
                     parts = []
                 updates['text'] = serialize_content(parts)
             else:

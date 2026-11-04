@@ -172,7 +172,7 @@ class Match:
         return white_team_id, black_team_id
 
     @classmethod
-    def from_team_board(cls, team_board: TeamBoard) -> 'Match | None':
+    def from_team_board(cls, team_board: TeamBoard) -> Match | None:
         team_b = team_board.team_b
         if team_b is None:
             return None
@@ -194,7 +194,7 @@ class Match:
         team_b: Team,
         boards: list[Board],
         adjustments: tuple[float, float] = (0.0, 0.0),
-    ) -> 'Match':
+    ) -> Match:
         """The match two teams play over *boards*, scored like a team
         board: the tournament's team game points, plus the teams' point
         *adjustments* for the match, then match points from the result."""
