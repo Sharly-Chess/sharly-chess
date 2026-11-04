@@ -1,3 +1,4 @@
+{% filter compact_html %}
 <tr
     id="player-{{ player.id }}"
     {% if swap_oob %}
@@ -91,3 +92,4 @@
         </td>
     {% endfor %}
 </tr>
+{% endfilter %}

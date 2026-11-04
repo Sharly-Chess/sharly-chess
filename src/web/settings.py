@@ -46,6 +46,11 @@ from data.input_output import OnlineDataSourceManager
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 
 from plugins.manager import plugin_manager
+from web.template_functions import (
+    compact_html,
+    player_record_marks,
+    tooltip_attributes,
+)
 from web.controllers.admin.display_controller_admin_controller import (
     DisplayControllerAdminController,
 )
@@ -339,9 +344,19 @@ class SharlyChessEnvironment(Environment):
         self.add_extension('jinja2.ext.do')
         self.filters['raise_ordinal_suffix'] = raise_ordinal_suffix
         self.filters['raise_ordinal_suffix_svg'] = raise_ordinal_suffix_svg
+        self.filters['compact_html'] = compact_html
+        self.globals['tooltip_attributes_markup'] = tooltip_attributes
+        self.globals['player_record_marks'] = player_record_marks
 
     def join_path(self, template: str, parent: str) -> str:
-        return str(PurePosixPath(parent).parent / template)
+        return _joined_template_path(template, parent)
+
+
+@lru_cache(maxsize=4096)
+def _joined_template_path(template: str, parent: str) -> str:
+    """The path of a template included by another, worked out once: a row of
+    a table includes a template per cell."""
+    return str(PurePosixPath(parent).parent / template)
 
 
 template_dirs: list[Path] = [
