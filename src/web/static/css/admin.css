@@ -664,7 +664,7 @@
 }
 
 [data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
-    color: white;
+    color: var(--bs-body-color);
     background-color: var(--pw-nav-bg);
 }
 [data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected,
