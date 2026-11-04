@@ -14,6 +14,7 @@ from litestar.testing import TestClient
 
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-ffe-period-buttons'
@@ -80,9 +81,20 @@ def test_a_period_with_no_registration_offers_nothing(http: TestClient, event: s
 
 
 @pytest.mark.unit
-def test_sending_a_period_answers_with_the_rows(http: TestClient, event: str):
-    """The upload runs in a thread of its own and the rows come back at
-    once, so the period's own badge reports it as the tournament's does."""
+def test_sending_a_period_answers_with_the_rows(
+    http: TestClient, event: str, monkeypatch: pytest.MonkeyPatch
+):
+    """The upload is handed to the background uploader and the rows come
+    back at once, so the period's own badge reports it as the
+    tournament's does."""
+    sent: list[tuple[int, int]] = []
+    monkeypatch.setattr(
+        FfeBackgroundUploader,
+        'upload_period',
+        classmethod(
+            lambda cls, tournament, period_id: sent.append((tournament.id, period_id))
+        ),
+    )
     tournament_id = _create(configured=True)
     with EventDatabase(EVENT_ID) as database:
         period = database.load_tournament_stored_periods(tournament_id)[1]
@@ -91,6 +103,7 @@ def test_sending_a_period_answers_with_the_rows(http: TestClient, event: str):
     )
     assert response.status_code == 200
     assert 'id="upload-results"' in response.text
+    assert sent == [(tournament_id, period.id)]
 
 
 @pytest.mark.unit
