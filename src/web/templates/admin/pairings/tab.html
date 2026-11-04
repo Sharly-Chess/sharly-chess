@@ -21,55 +21,42 @@
 </div>
 
 {% if admin_tournament %}
-    <div
-        hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
-        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
-        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
-    <div
-        hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
-        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
-        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
-        hx-target="#refresh-message"
-        hx-swap="innerHTML"
-    >
-    </div>
+    {# While the pairings or the schedule are edited by hand, the arbiter is
+       told about new results and check-ins rather than having them put in
+       place. #}
+    {% if schedule_editing or unsafe_editing %}
+        <div
+            hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
+            hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
+            hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+        <div
+            hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
+            hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
+            hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
+            hx-target="#refresh-message"
+            hx-swap="innerHTML"
+        >
+        </div>
+    {% else %}
+        <div
+            id="live-update"
+            hidden
+            data-live-update="pairings"
+            data-url="{{ url_for('admin-event-pairings-live-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+            data-tab-url="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+            data-events="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_round }} ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}"
+        ></div>
+    {% endif %}
     {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
     {% set is_flat_team_mode = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
     {# A locked round is read-only (the pairing system decides — e.g. a
        knock-out locks a round once the next is paired). Set once at the top
        so both the individual and team pairing tables see it. #}
     {% set round_locked = admin_tournament.round_is_locked(admin_round) %}
-    {% if display_rankings %}
-        {# Rankings never render an unpaired sidebar, so their controls should
-           use the full width and no sidebar data needs to be prepared. #}
-        {% set has_unpaired = false %}
-    {% elif is_team_paired_mode %}
-        {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 or admin_team_absent|length > 0 %}
-        {# Before a round is paired, show the team column so lineups can be set
-           — round-robin has no "to pair" list, so it would otherwise stay
-           hidden. Once paired, lineups are edited from the match headers.
-           A knock-out keeps its column throughout: it names who is still in,
-           by bracket, and folds the eliminated away. #}
-        {% if admin_tournament.pairing_system.eliminates_participants %}
-            {% set has_unpaired = admin_waiting_groups|length > 0 %}
-        {% elif not admin_tournament.round_has_pairings(admin_round) and admin_tournament.teams|length > 0 %}
-            {% set has_unpaired = true %}
-        {% endif %}
-    {% elif is_flat_team_mode %}
-        {# Flat team systems keep the team column visible even once the
-           round is paired so lineups can still be changed. #}
-        {% set has_unpaired = admin_tournament.teams|length > 0 %}
-    {% else %}
-        {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0
-            or admin_absent_players|length > 0 or admin_waiting_groups|length > 0 %}
-    {% endif %}
-    {% if schedule_editing %}
-        {% set has_unpaired = false %}
-    {% endif %}
 
     {% if admin_tournament.manual_pairing_round %}
         <div class="table-status-bar page-status-bar" role="status">
@@ -320,95 +307,11 @@
                     </div>
                 {% endif %}
             </div>
-            {# Why the round cannot be paired. The buttons carry it as a
-               tooltip too, but a disabled button is not somewhere an arbiter
-               thinks to hover — the reason has to be on the page. Its own
-               column in the row, so it sits under the buttons and lines up
-               with the table below. A round with nobody left to pair needs
-               no explaining. #}
-            {% set round_fully_paired = (
-                admin_tournament.round_has_pairings(admin_round)
-                and not admin_unpaired
-                and not admin_team_unpaired
-            ) %}
-            {% if not display_rankings and not schedule_editing and pairings_generation_disabled_message and not round_fully_paired %}
-                {% if has_unpaired %}
-                    <div class="col-12 col-lg-3 d-none d-lg-block"></div>
-                {% endif %}
-                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
-                    <div class="table-status-bar mb-2" role="status">
-                        <span class="table-status-bar-dot" aria-hidden="true"></span>
-                        <div class="flex-grow-1">{{ pairings_generation_disabled_message | safe }}</div>
-                    </div>
-                </div>
-            {% endif %}
+            {% include '/admin/pairings/status_bar.html' %}
 
             {% if not display_rankings %}
                 {% if has_unpaired %}
-                    <div class="col-12 col-lg-3 order-last order-lg-0">
-                        {% if is_team_paired_mode %}
-                            {% with title=pgettext('byes column header', 'Byes'), teams=admin_team_bye, table_id='bye-teams-table' %}
-                                {% include '/admin/pairings/team_unpaired_table.html' %}
-                            {% endwith %}
-                            {% with title=_('Absents'), teams=admin_team_absent, table_id='absent-teams-table' %}
-                                {% include '/admin/pairings/team_unpaired_table.html' %}
-                            {% endwith %}
-                            {# Round-robin pairs every team from the Berger
-                               table — there's no manual "to pair" step, so
-                               only show it for systems that support it. #}
-                            {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
-                                {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}
-                                    {% include '/admin/pairings/team_unpaired_table.html' %}
-                                {% endwith %}
-                            {% endif %}
-                            {% if admin_tournament.pairing_system.eliminates_participants %}
-                                {% for section in admin_waiting_groups %}
-                                    {% with title=section.label or _('To pair'),
-                                        teams=section.members,
-                                        collapsed=section.collapsed,
-                                        lineup=not section.collapsed,
-                                        table_id='lineup-teams-table-' ~ loop.index %}
-                                        {% include '/admin/pairings/team_lineup_table.html' %}
-                                    {% endwith %}
-                                {% endfor %}
-                            {% else %}
-                                {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
-                                    {% include '/admin/pairings/team_lineup_table.html' %}
-                                {% endwith %}
-                            {% endif %}
-                        {% elif is_flat_team_mode %}
-                            {# Only once the round is paired — before that the
-                               arbiter generates pairings, not pairs by hand. #}
-                            {% if admin_tournament.round_has_pairings(admin_round) %}
-                                {% with title=_('To pair'), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
-                                    {% include '/admin/pairings/unpaired_table.html' %}
-                                {% endwith %}
-                            {% endif %}
-                            {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
-                                {% include '/admin/pairings/team_lineup_table.html' %}
-                            {% endwith %}
-                        {% else %}
-                            {% with title=pgettext('byes column header', 'Byes'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                            {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                            {% with title=(
-                                _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
-                            ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                            {% for section in admin_waiting_groups %}
-                                {% with title=section.label or _('To pair'),
-                                    unpaired_players=section.members,
-                                    collapsed=section.collapsed,
-                                    table_id='waiting-players-table-' ~ loop.index %}
-                                    {% include '/admin/pairings/unpaired_table.html' %}
-                                {% endwith %}
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+                    {% include '/admin/pairings/sidebar.html' %}
                 {% endif %}
 
                 <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
@@ -899,6 +802,15 @@
             });
             $(document).on("input.search", "#search-player", searchPlayerHandler);
             syncTeamBlockChevrons();
+
+            $(document).off("live-update.pairings");
+            $(document).on("live-update.pairings", function () {
+                restoreLineupEditState();
+                syncTeamBlockChevrons();
+                if ($("#search-player").val()) {
+                    searchPlayerHandler();
+                }
+            });
 
             $(document).off("click.team-block-collapse");
             $(document).on("click.team-block-collapse", "tr.team-block-header", function(e) {

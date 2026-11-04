@@ -1,4 +1,10 @@
-<div id="round-controls" class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end">
+<div
+    id="round-controls"
+    class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
     <div class="d-inline-flex gap-1 round-controls-group">
         <span {{ macros.tooltip_attributes('info', _('First round'), 'bottom') }}>
             <button

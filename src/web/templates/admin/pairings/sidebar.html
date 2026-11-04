@@ -1,0 +1,73 @@
+{# The column of the players or teams to pair, the absents and the byes. #}
+<div
+    id="pairings-sidebar"
+    class="col-12 col-lg-3 order-last order-lg-0"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    {% with swap_oob=false %}
+        {% if is_team_paired_mode %}
+            {% with title=pgettext('byes column header', 'Byes'), teams=admin_team_bye, table_id='bye-teams-table' %}
+                {% include '/admin/pairings/team_unpaired_table.html' %}
+            {% endwith %}
+            {% with title=_('Absents'), teams=admin_team_absent, table_id='absent-teams-table' %}
+                {% include '/admin/pairings/team_unpaired_table.html' %}
+            {% endwith %}
+            {# Round-robin pairs every team from the Berger
+               table — there's no manual "to pair" step, so
+               only show it for systems that support it. #}
+            {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
+                {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}
+                    {% include '/admin/pairings/team_unpaired_table.html' %}
+                {% endwith %}
+            {% endif %}
+            {% if admin_tournament.pairing_system.eliminates_participants %}
+                {% for section in admin_waiting_groups %}
+                    {% with title=section.label or _('To pair'),
+                        teams=section.members,
+                        collapsed=section.collapsed,
+                        lineup=not section.collapsed,
+                        table_id='lineup-teams-table-' ~ loop.index %}
+                        {% include '/admin/pairings/team_lineup_table.html' %}
+                    {% endwith %}
+                {% endfor %}
+            {% else %}
+                {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
+                    {% include '/admin/pairings/team_lineup_table.html' %}
+                {% endwith %}
+            {% endif %}
+        {% elif is_flat_team_mode %}
+            {# Only once the round is paired — before that the
+               arbiter generates pairings, not pairs by hand. #}
+            {% if admin_tournament.round_has_pairings(admin_round) %}
+                {% with title=_('To pair'), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
+                    {% include '/admin/pairings/unpaired_table.html' %}
+                {% endwith %}
+            {% endif %}
+            {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
+                {% include '/admin/pairings/team_lineup_table.html' %}
+            {% endwith %}
+        {% else %}
+            {% with title=pgettext('byes column header', 'Byes'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
+                {% include '/admin/pairings/unpaired_table.html' %}
+            {% endwith %}
+            {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
+                {% include '/admin/pairings/unpaired_table.html' %}
+            {% endwith %}
+            {% with title=(
+                _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
+            ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
+                {% include '/admin/pairings/unpaired_table.html' %}
+            {% endwith %}
+            {% for section in admin_waiting_groups %}
+                {% with title=section.label or _('To pair'),
+                    unpaired_players=section.members,
+                    collapsed=section.collapsed,
+                    table_id='waiting-players-table-' ~ loop.index %}
+                    {% include '/admin/pairings/unpaired_table.html' %}
+                {% endwith %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>

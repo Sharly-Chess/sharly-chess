@@ -1,0 +1,37 @@
+{# Why the round cannot be paired. The buttons carry it as a tooltip too, but
+   a disabled button is not somewhere an arbiter thinks to hover: the reason
+   has to be on the page. Its columns sit in the row of the page, under the
+   buttons and lined up with the table below, and are hidden when there is
+   nothing to say. A round with nobody left to pair needs no explaining. #}
+{% set round_fully_paired = (
+    admin_tournament.round_has_pairings(admin_round)
+    and not admin_unpaired
+    and not admin_team_unpaired
+) %}
+{% set status_shown = (
+    not display_rankings
+    and not schedule_editing
+    and pairings_generation_disabled_message
+    and not round_fully_paired
+) %}
+<div
+    id="pairings-status-bar-spacer"
+    class="col-12 col-lg-3 d-none {% if status_shown and has_unpaired %}d-lg-block{% endif %}"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+></div>
+<div
+    id="pairings-status-bar"
+    class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} {% if not status_shown %}d-none{% endif %}"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    {% if status_shown %}
+        <div class="table-status-bar mb-2" role="status">
+            <span class="table-status-bar-dot" aria-hidden="true"></span>
+            <div class="flex-grow-1">{{ pairings_generation_disabled_message | safe }}</div>
+        </div>
+    {% endif %}
+</div>

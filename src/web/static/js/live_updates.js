@@ -22,7 +22,7 @@ let livePointerIsDown = false;
 const liveUpdateHolds = new Map();
 
 function newLiveUpdateChanges() {
-    return {all: false, playerIds: new Set(), boardIds: new Set()};
+    return {all: false, checkIns: false, playerIds: new Set(), boardIds: new Set()};
 }
 
 function holdLiveUpdate(elementId, duration) {
@@ -56,7 +56,9 @@ function arbiterIsBusy() {
             'textarea, select, [contenteditable], input:not([type=search])'
         ))
         || window.getSelection().toString() !== ''
-        || (typeof keyQueue !== 'undefined' && keyQueue.length > 0);
+        || document.querySelector('tr.highlight-warning') !== null
+        || (typeof keyQueue !== 'undefined' && keyQueue.length > 0)
+        || (typeof requestInFlight !== 'undefined' && requestInFlight === true);
 }
 
 function scheduleLiveUpdate(delay) {
@@ -66,6 +68,9 @@ function scheduleLiveUpdate(delay) {
 
 function onLiveUpdateMessage(event) {
     const detail = event.detail || {};
+    if (event.type.startsWith('ws:new-checkins')) {
+        liveUpdateChanges.checkIns = true;
+    }
     if (!Array.isArray(detail.player_ids)) {
         liveUpdateChanges.all = true;
     } else {
@@ -77,6 +82,7 @@ function onLiveUpdateMessage(event) {
 
 function requeueLiveUpdateChanges(changes) {
     liveUpdateChanges.all ||= changes.all;
+    liveUpdateChanges.checkIns ||= changes.checkIns;
     changes.playerIds.forEach((id) => liveUpdateChanges.playerIds.add(id));
     changes.boardIds.forEach((id) => liveUpdateChanges.boardIds.add(id));
     scheduleLiveUpdate(LIVE_UPDATE_RETRY_DELAY);
@@ -277,6 +283,67 @@ liveUpdateAppliers.players = async (source, changes) => {
     }
     restoreLiveScrollAnchor(anchor);
     flashLiveUpdated(added);
+    return true;
+};
+
+// Pairings tab: the rows of the boards whose results changed are put in
+// place, with the controls, the column of the players to pair and the reason
+// the round cannot be paired around them; the boards the "In play" filter no
+// longer keeps are taken away. When the change cannot be put in place, the
+// tab is loaded again where it stood.
+liveUpdateAppliers.pairings = async (source, changes) => {
+    const boardRows = () => [...document.querySelectorAll('#main-wrapper tr[data-board-id]')];
+    const shownIds = boardRows().map((row) => Number(row.dataset.boardId));
+    const fresh = await fetchLiveUpdate(source, {
+        shown_board_ids: shownIds,
+        changed_board_ids: changes.all ? null : [...changes.boardIds],
+        changed_player_ids: changes.all ? null : [...changes.playerIds],
+        check_ins_changed: changes.checkIns,
+        has_unpaired: document.getElementById('pairings-sidebar') !== null,
+    });
+    if (!fresh) {
+        return true;
+    }
+    if (
+        arbiterIsBusy()
+        || boardRows().map((row) => Number(row.dataset.boardId)).join() !== shownIds.join()
+    ) {
+        return false;
+    }
+    const live = fresh.getElementById('pairings-live');
+    if (live.dataset.action === 'reload') {
+        const scrollY = window.scrollY;
+        await htmx.ajax('GET', source.dataset.tabUrl, {target: 'body', swap: 'innerHTML'});
+        window.scrollTo(0, scrollY);
+        return true;
+    }
+    const anchor = liveScrollAnchor(boardRows());
+    JSON.parse(live.dataset.removedBoardIds).forEach((id) => {
+        document.querySelectorAll(`#main-wrapper tr[data-board-id="${id}"]`).forEach((row) => {
+            disposeTooltipsOf(row);
+            row.remove();
+        });
+    });
+    // The rows replaced lose the board the keyboard is on, and light up only
+    // when what they show changed.
+    const highlighted = [...document.querySelectorAll('#main-wrapper tr.highlight[id]')].map((row) => row.id);
+    const updatedIds = JSON.parse(live.dataset.updatedBoardIds);
+    const signatures = new Map(updatedIds.map((id) => {
+        const row = document.querySelector(`#main-wrapper tr[data-board-id="${id}"]`);
+        return [id, row ? liveRowSignature(row) : null];
+    }));
+    boardRows()
+        .filter((row) => updatedIds.includes(Number(row.dataset.boardId)))
+        .forEach(disposeTooltipsOf);
+    htmx.swap(source, fresh.body.innerHTML, {swapStyle: 'innerHTML'});
+    highlighted.forEach((id) => document.getElementById(id)?.classList.add('highlight'));
+    const flashed = updatedIds
+        .map((id) => document.querySelector(`#main-wrapper tr[data-board-id="${id}"]`))
+        .filter((row) => row && liveRowSignature(row) !== signatures.get(Number(row.dataset.boardId)));
+    activateTooltips(document.getElementById('main-wrapper'));
+    restoreLiveScrollAnchor(anchor);
+    flashLiveUpdated(flashed);
+    document.dispatchEvent(new CustomEvent('live-update'));
     return true;
 };
 
