@@ -50,8 +50,12 @@
     "button": 1
   },
   "src/web/templates/admin/pairings/round_controls.html": {
-    "button": 6,
-    "icon-spacing": 4,
+    "button": 5,
+    "icon-spacing": 3
+  },
+  "src/web/templates/admin/pairings/round_next_button.html": {
+    "button": 1,
+    "icon-spacing": 1,
     "modal-trigger": 1
   },
   "src/web/templates/admin/pairings/team_block_header.html": {

@@ -1405,7 +1405,7 @@ class PairingsAdminController(BaseEventAdminController):
                 | {
                     'messages': Message.messages(web_context.request),
                 },
-                re_target='#round-controls',
+                re_target='#round-next-button',
                 re_swap='outerHTML',
                 trigger_event=trigger_event,
                 after='receive',

@@ -434,7 +434,7 @@ def test_a_live_update_sends_the_rows_of_the_boards_that_changed(
     http: TestClient, tournament: Tournament
 ):
     """Only the row of the board whose result came in is sent, with the
-    controls of the round around it."""
+    button to the next round, which the result can change."""
     board = board_of_round_one(http, tournament)
     boards = EVENT.tournament().get_round_boards(1)
     shown = [b.identifier for b in boards]
@@ -442,7 +442,7 @@ def test_a_live_update_sends_the_rows_of_the_boards_that_changed(
     assert 'data-action="patch"' in text
     assert f'id="pairing-row-{board.identifier}"' in text
     assert f'id="pairing-row-{boards[1].identifier}"' not in text
-    assert 'id="round-controls"' in text
+    assert 'id="round-next-button"' in text
 
 
 @pytest.mark.unit

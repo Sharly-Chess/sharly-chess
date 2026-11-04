@@ -24,8 +24,9 @@
             {% include '/admin/pairings/board_rows.html' %}
         {% endwith %}
     {% endfor %}
+    {% include '/admin/pairings/print_default_script.html' %}
     {% with swap_oob=True %}
-        {% include '/admin/pairings/round_controls.html' %}
+        {% include '/admin/pairings/round_next_button.html' %}
         <template>
             {% include '/admin/pairings/pairing_table_header.html' %}
         </template>
