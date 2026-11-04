@@ -35,7 +35,6 @@
                     player_id=player_id,
                 ) }}"
                 hx-on::before-request="$('#player-{{ player_id }} td,#player-{{ player_id }} .player-link').addClass('text-secondary');"
-                onclick="refreshMessagesIgnored += 1"
                 hx-swap="multi:#players-table-header,#player-{{ player_id }}:outerHTML,#players-table-empty-row:outerHTML"
             {% else %}
                 hx-get="{{ url_for(

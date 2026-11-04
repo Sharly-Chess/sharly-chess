@@ -26,6 +26,7 @@
        place. #}
     {% if schedule_editing or unsafe_editing %}
         <div
+            data-refresh-message-source
             hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
             hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
             hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
@@ -34,6 +35,7 @@
         >
         </div>
         <div
+            data-refresh-message-source
             hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
             hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
             hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
@@ -562,7 +564,7 @@
             const { code, pairing_board_id: board_id } = keyQueue.shift();
             const validateResult = $('button[id=\'highlight-mode\']').hasClass('active');
             if (!validateResult) {
-                refreshMessagesIgnored += 1;
+                ignoreNextRefreshMessage();
             }
 
             htmx.ajax('PUT',
