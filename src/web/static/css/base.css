@@ -2768,7 +2768,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
 }
 
 [data-sc-interface=admin] table.prominent.table-danger-warning #players-table-counters {
-    color: var(--bs-warning);
+    color: var(--pw-text-warning);
     font-weight: 700;
 }
 
