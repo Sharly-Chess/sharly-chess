@@ -1,0 +1,42 @@
+{% if live_action == 'reload' %}
+    <div id="pairings-live" data-action="reload"></div>
+{% else %}
+    {% import '/admin/components/macros.j2' as components with context %}
+    {% import '/admin/components/pairings.j2' as pairing_components with context %}
+    {% import '/common/macros.j2' as macros with context %}
+    {% import '/admin/common/macros.j2' as admin_macros with context %}
+
+    {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+    {% set is_flat_team_mode = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+    {% set round_locked = admin_tournament.round_is_locked(admin_round) %}
+    <div
+        id="pairings-live"
+        data-action="patch"
+        data-removed-board-ids="{{ removed_board_ids|tojson }}"
+        data-updated-board-ids="{{ live_boards|map(attribute='identifier')|list|tojson }}"
+    ></div>
+    {% for live_board in live_boards %}
+        {% with
+            board=live_board,
+            wtp=live_board.optional_white_tournament_player,
+            btp=live_board.black_tournament_player
+        %}
+            {% include '/admin/pairings/board_rows.html' %}
+        {% endwith %}
+    {% endfor %}
+    {% include '/admin/pairings/print_default_script.html' %}
+    {% with swap_oob=True %}
+        {% include '/admin/pairings/round_next_button.html' %}
+        <template>
+            {% include '/admin/pairings/pairing_table_header.html' %}
+        </template>
+        <template>
+            {% include admin_tournament.pairing_system.pairing_buttons_template %}
+        </template>
+        {# Results leave the column of the players to pair as it is. #}
+        {% if has_unpaired and check_ins_changed %}
+            {% include '/admin/pairings/sidebar.html' %}
+        {% endif %}
+        {% include '/admin/pairings/status_bar.html' %}
+    {% endwith %}
+{% endif %}

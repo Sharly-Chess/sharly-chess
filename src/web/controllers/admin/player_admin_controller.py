@@ -4,7 +4,7 @@ import csv
 from collections import defaultdict, Counter
 from collections.abc import Callable
 from contextlib import suppress
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import date
 from functools import cached_property
 from itertools import islice
@@ -261,6 +261,19 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         }
 
 
+@dataclass
+class PlayersLiveUpdate:
+    """What a page tells of its players table when it asks for a live update:
+    the players it shows, in order, the players whose check-in or results
+    changed (None when not known), the number of pages of the table it has
+    loaded, and whether it has loaded them all."""
+
+    shown_player_ids: list[int]
+    changed_player_ids: list[int] | None
+    loaded_pages: int
+    complete: bool
+
+
 class PlayerAdminController(BaseEventAdminController):
     PAGE_SIZE = 25
     search_results_by_session: ClassVar[dict[int, list[int]]] = {}
@@ -487,6 +500,7 @@ class PlayerAdminController(BaseEventAdminController):
             'enabled_columns': web_context.column_handler.enabled_columns,
             'searchable_column_names': searchable_column_names,
             'player_exporters': PlayerExporterManager().objects(),
+            'page_size': cls.PAGE_SIZE,
         }
         return cls._admin_base_event_render(template_context)
 
@@ -694,6 +708,43 @@ class PlayerAdminController(BaseEventAdminController):
         return HTMXTemplate(
             template_name='/admin/players/table/page.html',
             context=web_context.template_context | template_context,
+        )
+
+    @post(
+        path='/event/{event_uniq_id:str}/players/live-update',
+        name='admin-event-players-live-update',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_event_players_live_update(
+        self, request: HTMXRequest, data: Annotated[PlayersLiveUpdate, Body()]
+    ) -> Template:
+        """What check-ins or results that came in bring to the rows of the
+        table on a page: the players the filters now keep, in their order, as
+        far down as the page has loaded, and the rows to render for those the
+        page does not show or whose players changed."""
+        web_context = PlayerAdminWebContext(request)
+        search_results = self.set_players_search_results(web_context)
+        order = (
+            search_results
+            if data.complete
+            else search_results[: data.loaded_pages * self.PAGE_SIZE]
+        )
+        shown = set(data.shown_player_ids)
+        changed = (
+            None if data.changed_player_ids is None else set(data.changed_player_ids)
+        )
+        allowed_players_by_id = web_context.client.allowed_players_by_id
+        players_by_index = {
+            index: allowed_players_by_id[player_id]
+            for index, player_id in enumerate(order, start=1)
+            if player_id not in shown or changed is None or player_id in changed
+        }
+        return HTMXTemplate(
+            template_name='/admin/players/table/live_update.html',
+            context=web_context.template_context
+            | self._player_table_header_context(web_context)
+            | self._player_table_row_context(web_context)
+            | {'order': order, 'players_by_index': players_by_index},
         )
 
     @get(
@@ -2180,7 +2231,7 @@ class PlayerAdminController(BaseEventAdminController):
         player = web_context.get_admin_tournament_player()
         tournament = player.tournament
         tournament.check_in_player(player, not player.check_in)
-        self.publish_new_checkin(channels, tournament)
+        self.publish_new_checkin(channels, tournament, [player.id])
         return self._render_player_records_modal(web_context)
 
     @patch(
@@ -2293,15 +2344,25 @@ class PlayerAdminController(BaseEventAdminController):
 
     @classmethod
     def publish_new_checkin(
-        cls, channels: ChannelsPlugin, tournament: Tournament
+        cls,
+        channels: ChannelsPlugin,
+        tournament: Tournament,
+        player_ids: Iterable[int] | None,
     ) -> None:
+        """Tell the pages that check-ins changed: those of the players named,
+        or of any player of the tournament when they are not known."""
         event = tournament.event
+        data = (
+            {'detail': {'player_ids': sorted(player_ids)}}
+            if player_ids is not None
+            else ''
+        )
         channels.publish(
-            {'event': f'new-checkins|{event.uniq_id}', 'data': ''},
+            {'event': f'new-checkins|{event.uniq_id}', 'data': data},
             ['ws'],
         )
         channels.publish(
-            {'event': f'new-checkins|{event.uniq_id}|{tournament.id}', 'data': ''},
+            {'event': f'new-checkins|{event.uniq_id}|{tournament.id}', 'data': data},
             ['ws'],
         )
 
@@ -2329,7 +2390,7 @@ class PlayerAdminController(BaseEventAdminController):
                 player, {tournament.current_round + 1: Result.NO_RESULT}
             )
             tournament.check_in_player(player, True)
-        self.publish_new_checkin(channels, tournament)
+        self.publish_new_checkin(channels, tournament, [player.id])
         return self._render_player_table_row(web_context, after_check_in=True)
 
     @get(
@@ -3524,30 +3585,6 @@ class PlayerAdminController(BaseEventAdminController):
             'tab': tab,
         }
         return self._admin_base_event_render(template_context)
-
-    @get(
-        path='/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
-        name='players-needs-refresh-message',
-    )
-    async def htmx_admin_players_refresh_message(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: FromPath[str],
-        reason: FromPath[str],
-        ignore: FromQuery[bool] = False,
-    ) -> Template:
-        if ignore:
-            return HTMXTemplate(template_name='/common/empty.html')
-        return HTMXTemplate(
-            template_name='/admin/common/needs_refresh.html',
-            context={
-                'url': request.app.route_reverse(
-                    'admin-event-players-tab', event_uniq_id=event_uniq_id
-                ),
-                'event_uniq_id': event_uniq_id,
-                'reason': reason,
-            },
-        )
 
     @get(
         path=[

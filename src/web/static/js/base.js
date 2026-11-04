@@ -146,7 +146,7 @@ window.addEventListener("htmx:wsBeforeMessage", function(evt) {
 window.addEventListener('htmx:beforeRequest', function (evt) {
     const path = evt.detail.requestConfig?.path || '';
     if (path.includes('/pairing/set-result/')) {
-        refreshMessagesIgnored += 1;
+        ignoreNextRefreshMessage();
     }
 });
 
@@ -892,6 +892,14 @@ function setPrintTournamentTeamSelectOptions(
 }
 
 var refreshMessagesIgnored = 0;
+
+// A page that tells the arbiter about new results or check-ins, rather than
+// putting them in place, leaves out the message their own action brings.
+function ignoreNextRefreshMessage() {
+    if (document.querySelector('[data-refresh-message-source]')) {
+        refreshMessagesIgnored += 1;
+    }
+}
 function getIsNextRefreshMessageIgnored() {
     if (refreshMessagesIgnored > 0) {
         refreshMessagesIgnored -= 1;

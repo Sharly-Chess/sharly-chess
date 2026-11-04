@@ -216,16 +216,23 @@ def test_a_second_entry_that_disagrees_is_not_taken(
 
 
 @pytest.fixture
-def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int]]:
-    """The websocket events sent out for new results, as
-    (event, tournament, round) triples."""
-    calls: list[tuple[str, int, int]] = []
+def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int, list[int]]]:
+    """The websocket events sent out for new results, as (event, tournament,
+    round, board identifiers) tuples."""
+    calls: list[tuple[str, int, int, list[int]]] = []
     monkeypatch.setattr(
         PairingsAdminController,
         'publish_new_user_results',
         classmethod(
-            lambda cls, channels, event_uniq_id, tournament_id, round_: calls.append(
-                (event_uniq_id, tournament_id, round_)
+            lambda cls, channels, event_uniq_id, tournament_id, round_, boards: (
+                calls.append(
+                    (
+                        event_uniq_id,
+                        tournament_id,
+                        round_,
+                        [board.identifier for board in boards],
+                    )
+                )
             )
         ),
     )
@@ -234,7 +241,9 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int]]:
 
 @pytest.mark.unit
 def test_a_result_entered_by_the_arbiter_is_announced(
-    http: TestClient, tournament: Tournament, published: list[tuple[str, int, int]]
+    http: TestClient,
+    tournament: Tournament,
+    published: list[tuple[str, int, int, list[int]]],
 ):
     """Other administration screens learn of a result whether it came
     from a player on an input screen or from the arbiter on the pairings
@@ -248,12 +257,14 @@ def test_a_result_entered_by_the_arbiter_is_announced(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
         data={'board_id': str(board.id), 'key': 'Digit3', 'validate_result': 'false'},
     )
-    assert published == [(EVENT_ID, tournament.id, 1)] * 2
+    assert published == [(EVENT_ID, tournament.id, 1, [board.identifier])] * 2
 
 
 @pytest.mark.unit
 def test_checking_a_result_announces_nothing(
-    http: TestClient, tournament: Tournament, published: list[tuple[str, int, int]]
+    http: TestClient,
+    tournament: Tournament,
+    published: list[tuple[str, int, int, list[int]]],
 ):
     """The second, checking pass writes nothing, so there is nothing to
     tell the other screens about."""
@@ -394,3 +405,60 @@ def test_pairing_again_after_unpairing_fills_the_vacated_table(
     repaired = next(board_id for board_id in after if board_id not in before)
     assert after.pop(repaired) == table
     assert after == before
+
+
+def _pairings_live_update(
+    http: TestClient,
+    tournament: Tournament,
+    shown: list[int],
+    changed: list[int] | None,
+    has_unpaired: bool = False,
+) -> str:
+    http.get(f'/event/{EVENT_ID}/pairings/{tournament.id}/1')
+    response = http.post(
+        f'/event/{EVENT_ID}/pairings/live-update/{tournament.id}/1',
+        json={
+            'shown_board_ids': shown,
+            'changed_board_ids': changed,
+            'changed_player_ids': [] if changed is not None else None,
+            'check_ins_changed': False,
+            'has_unpaired': has_unpaired,
+        },
+    )
+    assert response.status_code == 200
+    return response.text
+
+
+@pytest.mark.unit
+def test_a_live_update_sends_the_rows_of_the_boards_that_changed(
+    http: TestClient, tournament: Tournament
+):
+    """Only the row of the board whose result came in is sent, with the
+    button to the next round, which the result can change."""
+    board = board_of_round_one(http, tournament)
+    boards = EVENT.tournament().get_round_boards(1)
+    shown = [b.identifier for b in boards]
+    text = _pairings_live_update(http, tournament, shown, [board.identifier])
+    assert 'data-action="patch"' in text
+    assert f'id="pairing-row-{board.identifier}"' in text
+    assert f'id="pairing-row-{boards[1].identifier}"' not in text
+    assert 'id="round-next-button"' in text
+
+
+@pytest.mark.unit
+def test_a_live_update_asks_for_a_reload_when_it_cannot_put_the_change_in_place(
+    http: TestClient, tournament: Tournament
+):
+    """A board the page does not show, a change that is not known, or the
+    column of the players to pair coming or going, reload the page."""
+    board = board_of_round_one(http, tournament)
+    shown = [b.identifier for b in EVENT.tournament().get_round_boards(1)]
+    assert 'data-action="reload"' in _pairings_live_update(
+        http, tournament, [], [board.identifier]
+    )
+    assert 'data-action="reload"' in _pairings_live_update(
+        http, tournament, shown, None
+    )
+    assert 'data-action="reload"' in _pairings_live_update(
+        http, tournament, shown, [board.identifier], has_unpaired=True
+    )

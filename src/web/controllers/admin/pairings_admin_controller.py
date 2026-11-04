@@ -6,7 +6,8 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-from collections.abc import Callable
+from dataclasses import dataclass
+from collections.abc import Callable, Iterable
 from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
@@ -395,6 +396,41 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.requires_refresh = True
 
     @property
+    def has_unpaired(self) -> bool:
+        """Whether the page shows the column of the players or teams to pair,
+        the absents and the byes."""
+        tournament = self.admin_tournament
+        if (
+            tournament is None
+            or self.display_rankings
+            or (self.schedule_editor is not None and self.schedule_editor.editing)
+        ):
+            return False
+        if self.get_admin_event().is_team_event:
+            if not tournament.pairing_system.paired_by_team:
+                # The team column stays once the round is paired, so that
+                # line-ups can still be changed.
+                return len(tournament.teams) > 0
+            # A knock-out names who is still in, by bracket. Before a round
+            # is paired, the column lets line-ups be set; once paired, they
+            # are edited from the match headers.
+            if tournament.pairing_system.eliminates_participants:
+                return len(self.admin_waiting_groups) > 0
+            if not tournament.round_has_pairings(self.admin_round) and tournament.teams:
+                return True
+            return bool(
+                self.admin_team_bye
+                or self.admin_team_unpaired
+                or self.admin_team_absent
+            )
+        return bool(
+            self.admin_unpaired
+            or self.admin_bye_players
+            or self.admin_absent_players
+            or self.admin_waiting_groups
+        )
+
+    @property
     def _manual_pairing_pending_message(self) -> str | None:
         if (
             self.admin_tournament is None
@@ -730,6 +766,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else []
             ),
             'admin_unpaired': self.admin_unpaired,
+            'has_unpaired': self.has_unpaired,
             'admin_waiting_groups': self.admin_waiting_groups,
             'admin_unpaired_holes': self.admin_unpaired_holes,
             'admin_bye_players': self.admin_bye_players,
@@ -795,6 +832,20 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         return self.admin_player
 
 
+@dataclass
+class PairingsLiveUpdate:
+    """What a page tells of its pairings when it asks for a live update: the
+    boards it shows, the boards and the players whose results or check-ins
+    changed (None when not known), whether check-ins are among the changes,
+    and whether it shows the column of the players to pair."""
+
+    shown_board_ids: list[int]
+    changed_board_ids: list[int] | None
+    changed_player_ids: list[int] | None
+    check_ins_changed: bool
+    has_unpaired: bool
+
+
 class PairingsAdminController(BaseEventAdminController):
     # Litestar declares `guards` on `Controller` as an instance variable, so
     # it cannot be narrowed to a class variable here.
@@ -848,6 +899,92 @@ class PairingsAdminController(BaseEventAdminController):
 
         return self._admin_event_pairings_render(
             web_context, {'skip_ratings_warning': skip_ratings_warning}
+        )
+
+    @post(
+        path='/event/{event_uniq_id:str}/pairings/live-update/{tournament_id:int}/{round:int}',
+        name='admin-event-pairings-live-update',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_pairings_live_update(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        data: Annotated[PairingsLiveUpdate, Body()],
+    ) -> Template:
+        """What check-ins or results that came in bring to the pairings of a
+        round on a page: the rows of the boards that changed and the parts of
+        the page around them, the boards to take away, or the page to load
+        again when the change cannot be put in place (a board or a match to
+        add, the column of the players to pair coming or going, the rankings
+        shown, or the change not being known)."""
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.admin_tournament
+        if (
+            tournament is None
+            or web_context.display_rankings
+            or data.changed_board_ids is None
+            or data.changed_player_ids is None
+            or web_context.has_unpaired != data.has_unpaired
+        ):
+            return self._pairings_live_update_reload()
+        context = web_context.template_context
+        team_paired = (
+            web_context.get_admin_event().is_team_event
+            and tournament.pairing_system.paired_by_team
+        )
+        if team_paired:
+            filtered_ids = {
+                board.identifier
+                for team_board in context['admin_team_boards']
+                for board in team_board.boards
+            }
+        else:
+            filtered_ids = {
+                board.identifier for board in web_context.admin_filtered_boards
+            }
+        shown = set(data.shown_board_ids)
+        boards_by_id = {
+            board.identifier: board for board in tournament.get_round_boards(round)
+        }
+        changed = [
+            boards_by_id[board_id]
+            for board_id in data.changed_board_ids
+            if board_id in boards_by_id
+        ]
+        if any(
+            board.identifier in filtered_ids and board.identifier not in shown
+            for board in changed
+        ):
+            return self._pairings_live_update_reload()
+        removed = [
+            board.identifier
+            for board in changed
+            if board.identifier in shown and board.identifier not in filtered_ids
+        ]
+        # A match is shown or hidden as a whole, and a table emptied of its
+        # boards says why: both are left to a reload.
+        if removed and (team_paired or shown <= set(removed)):
+            return self._pairings_live_update_reload()
+        return HTMXTemplate(
+            template_name='/admin/pairings/live_update.html',
+            context=context
+            | {
+                'live_action': 'patch',
+                'live_boards': [
+                    board for board in changed if board.identifier in filtered_ids
+                ],
+                'removed_board_ids': removed,
+                'check_ins_changed': data.check_ins_changed,
+            },
+        )
+
+    @staticmethod
+    def _pairings_live_update_reload() -> Template:
+        return HTMXTemplate(
+            template_name='/admin/pairings/live_update.html',
+            context={'live_action': 'reload'},
         )
 
     @get(
@@ -1264,7 +1401,7 @@ class PairingsAdminController(BaseEventAdminController):
             if breaches_adjournment:
                 web_context.log_adjournment(board.identifier)
             self.publish_new_user_results(
-                channels, event.uniq_id, tournament.id, round_
+                channels, event.uniq_id, tournament.id, round_, [board]
             )
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
@@ -1279,7 +1416,7 @@ class PairingsAdminController(BaseEventAdminController):
                 | {
                     'messages': Message.messages(web_context.request),
                 },
-                re_target='#round-controls',
+                re_target='#round-next-button',
                 re_swap='outerHTML',
                 trigger_event=trigger_event,
                 after='receive',
@@ -1874,7 +2011,7 @@ class PairingsAdminController(BaseEventAdminController):
         player = web_context.get_admin_player()
         tournament = player.single_tournament
         tournament.check_in_player(player, not player.check_in)
-        PlayerAdminController.publish_new_checkin(channels, tournament)
+        PlayerAdminController.publish_new_checkin(channels, tournament, [player.id])
         message = _('Player [{player}] marked as "{status}".').format(
             player=player.full_name,
             status=_('Present') if player.check_in else _('Absent'),
@@ -2456,7 +2593,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament.check_in_all_players(True)
-        PlayerAdminController.publish_new_checkin(channels, tournament)
+        PlayerAdminController.publish_new_checkin(channels, tournament, None)
         Message.success(request, _('All players marked as "Present".'))
         web_context.reload_unpaired_player_lists()
         return self._admin_event_pairings_render(web_context)
@@ -3458,6 +3595,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_team_toggle_check_in(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         team_id: FromPath[int],
@@ -3468,6 +3606,9 @@ class PairingsAdminController(BaseEventAdminController):
         if team is None:
             raise NotFoundException(f'Team {team_id} not found.')
         tournament.check_in_team(team, not team.check_in)
+        PlayerAdminController.publish_new_checkin(
+            channels, tournament, [player.id for player in team.players]
+        )
         web_context = PairingsAdminWebContext(
             request, tournament_id, round, reload_event=True
         )
@@ -3481,12 +3622,14 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_set_all_teams_present(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
         tournament.check_in_all_teams(True)
+        PlayerAdminController.publish_new_checkin(channels, tournament, None)
         return self._admin_event_pairings_render(web_context)
 
     @post(
@@ -3497,6 +3640,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_validate_team_absents(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -3508,9 +3652,19 @@ class PairingsAdminController(BaseEventAdminController):
             request, tournament_id=tournament_id, round_=round
         )
         tournament = web_context.get_admin_tournament()
-        for team in list(web_context.admin_team_absent):
-            if data.get(f'team_{team.id}') == 'present':
-                tournament.check_in_team(team, True)
+        present_teams = [
+            team
+            for team in web_context.admin_team_absent
+            if data.get(f'team_{team.id}') == 'present'
+        ]
+        for team in present_teams:
+            tournament.check_in_team(team, True)
+        if present_teams:
+            PlayerAdminController.publish_new_checkin(
+                channels,
+                tournament,
+                [player.id for team in present_teams for player in team.players],
+            )
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
         return await self._generate_round_pairings(web_context)
@@ -4482,18 +4636,33 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round_: int,
+        boards: Iterable[Board],
     ) -> None:
+        """Tell the pages that the results of these boards changed, naming
+        the boards and their players."""
+        boards = list(boards)
+        data = {
+            'detail': {
+                'board_ids': sorted(board.identifier for board in boards),
+                'player_ids': sorted(
+                    player_id
+                    for board in boards
+                    for player_id in (board.white_player_id, board.black_player_id)
+                    if player_id is not None
+                ),
+            }
+        }
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
-                'data': '',
+                'data': data,
             },
             ['ws'],
         )
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}',
-                'data': '',
+                'data': data,
             },
             ['ws'],
         )
