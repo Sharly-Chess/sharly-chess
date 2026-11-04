@@ -3571,6 +3571,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_team_toggle_check_in(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         team_id: FromPath[int],
@@ -3581,6 +3582,9 @@ class PairingsAdminController(BaseEventAdminController):
         if team is None:
             raise NotFoundException(f'Team {team_id} not found.')
         tournament.check_in_team(team, not team.check_in)
+        PlayerAdminController.publish_new_checkin(
+            channels, tournament, [player.id for player in team.players]
+        )
         web_context = PairingsAdminWebContext(
             request, tournament_id, round, reload_event=True
         )
@@ -3594,12 +3598,14 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_set_all_teams_present(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
         tournament.check_in_all_teams(True)
+        PlayerAdminController.publish_new_checkin(channels, tournament, None)
         return self._admin_event_pairings_render(web_context)
 
     @post(
@@ -3610,6 +3616,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_validate_team_absents(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -3621,9 +3628,19 @@ class PairingsAdminController(BaseEventAdminController):
             request, tournament_id=tournament_id, round_=round
         )
         tournament = web_context.get_admin_tournament()
-        for team in list(web_context.admin_team_absent):
-            if data.get(f'team_{team.id}') == 'present':
-                tournament.check_in_team(team, True)
+        present_teams = [
+            team
+            for team in web_context.admin_team_absent
+            if data.get(f'team_{team.id}') == 'present'
+        ]
+        for team in present_teams:
+            tournament.check_in_team(team, True)
+        if present_teams:
+            PlayerAdminController.publish_new_checkin(
+                channels,
+                tournament,
+                [player.id for team in present_teams for player in team.players],
+            )
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
         return await self._generate_round_pairings(web_context)
