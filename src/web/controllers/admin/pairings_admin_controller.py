@@ -6,7 +6,7 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
@@ -1253,7 +1253,7 @@ class PairingsAdminController(BaseEventAdminController):
             if breaches_adjournment:
                 web_context.log_adjournment(board.identifier)
             self.publish_new_user_results(
-                channels, event.uniq_id, tournament.id, round_
+                channels, event.uniq_id, tournament.id, round_, [board]
             )
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
@@ -1863,7 +1863,7 @@ class PairingsAdminController(BaseEventAdminController):
         player = web_context.get_admin_player()
         tournament = player.single_tournament
         tournament.check_in_player(player, not player.check_in)
-        PlayerAdminController.publish_new_checkin(channels, tournament)
+        PlayerAdminController.publish_new_checkin(channels, tournament, [player.id])
         message = _('Player [{player}] marked as "{status}".').format(
             player=player.full_name,
             status=_('Present') if player.check_in else _('Absent'),
@@ -2445,7 +2445,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament.check_in_all_players(True)
-        PlayerAdminController.publish_new_checkin(channels, tournament)
+        PlayerAdminController.publish_new_checkin(channels, tournament, None)
         Message.success(request, _('All players marked as "Present".'))
         web_context.reload_unpaired_player_lists()
         return self._admin_event_pairings_render(web_context)
@@ -4458,18 +4458,33 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round_: int,
+        boards: Iterable[Board],
     ) -> None:
+        """Tell the pages that the results of these boards changed, naming
+        the boards and their players."""
+        boards = list(boards)
+        data = {
+            'detail': {
+                'board_ids': sorted(board.identifier for board in boards),
+                'player_ids': sorted(
+                    player_id
+                    for board in boards
+                    for player_id in (board.white_player_id, board.black_player_id)
+                    if player_id is not None
+                ),
+            }
+        }
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
-                'data': '',
+                'data': data,
             },
             ['ws'],
         )
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}',
-                'data': '',
+                'data': data,
             },
             ['ws'],
         )

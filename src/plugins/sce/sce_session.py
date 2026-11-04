@@ -6,6 +6,7 @@ from json import JSONDecodeError
 from logging import Logger
 from threading import Lock
 from typing import Any, cast
+from collections import defaultdict
 from collections.abc import Callable
 from weakref import WeakValueDictionary
 
@@ -125,7 +126,10 @@ class SCESession(Session):
     def __init__(self, event: Event):
         super().__init__()
         self.event = event
-        self.new_check_ins_tournament_sce_ids: set[str] = set()
+        # The players whose check-in a sync brought in, by tournament
+        self.new_check_in_player_ids_by_tournament_sce_id: defaultdict[
+            str, set[int]
+        ] = defaultdict(set)
         # Ops of the last sync refused because another computer changed the
         # registration first
         self.stale_count: int = 0
@@ -763,7 +767,9 @@ class SCESession(Session):
             if local_check_in_updated:
                 tid = getattr(pd.last_sync_data, 'tournament_id', None)
                 if tid:
-                    self.new_check_ins_tournament_sce_ids.add(tid)
+                    self.new_check_in_player_ids_by_tournament_sce_id[tid].add(
+                        player.id
+                    )
 
         if local_sync_data == sce_sync_data:
             force_tournament()
@@ -1438,9 +1444,15 @@ class SCESession(Session):
         self.stale_count = batch_counters.stale_count
         conflict_count = batch_counters.conflict_count
         duplicate_count += batch_counters.duplicate_count
-        for sce_id in self.new_check_ins_tournament_sce_ids:
+        for (
+            sce_id,
+            player_ids,
+        ) in self.new_check_in_player_ids_by_tournament_sce_id.items():
             tournament = SCEUtils.get_tournament_by_sce_id(self.event, sce_id)
-            PlayerAdminController.publish_new_checkin(channels_plugin, tournament)
+            PlayerAdminController.publish_new_checkin(
+                channels_plugin, tournament, player_ids
+            )
+        self.new_check_in_player_ids_by_tournament_sce_id.clear()
 
         event_plugin_data.deleted_player_ids = [
             pid

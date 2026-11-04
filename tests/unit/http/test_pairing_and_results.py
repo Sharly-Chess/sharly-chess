@@ -216,16 +216,23 @@ def test_a_second_entry_that_disagrees_is_not_taken(
 
 
 @pytest.fixture
-def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int]]:
-    """The websocket events sent out for new results, as
-    (event, tournament, round) triples."""
-    calls: list[tuple[str, int, int]] = []
+def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int, list[int]]]:
+    """The websocket events sent out for new results, as (event, tournament,
+    round, board identifiers) tuples."""
+    calls: list[tuple[str, int, int, list[int]]] = []
     monkeypatch.setattr(
         PairingsAdminController,
         'publish_new_user_results',
         classmethod(
-            lambda cls, channels, event_uniq_id, tournament_id, round_: calls.append(
-                (event_uniq_id, tournament_id, round_)
+            lambda cls, channels, event_uniq_id, tournament_id, round_, boards: (
+                calls.append(
+                    (
+                        event_uniq_id,
+                        tournament_id,
+                        round_,
+                        [board.identifier for board in boards],
+                    )
+                )
             )
         ),
     )
@@ -234,7 +241,9 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int]]:
 
 @pytest.mark.unit
 def test_a_result_entered_by_the_arbiter_is_announced(
-    http: TestClient, tournament: Tournament, published: list[tuple[str, int, int]]
+    http: TestClient,
+    tournament: Tournament,
+    published: list[tuple[str, int, int, list[int]]],
 ):
     """Other administration screens learn of a result whether it came
     from a player on an input screen or from the arbiter on the pairings
@@ -248,12 +257,14 @@ def test_a_result_entered_by_the_arbiter_is_announced(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
         data={'board_id': str(board.id), 'key': 'Digit3', 'validate_result': 'false'},
     )
-    assert published == [(EVENT_ID, tournament.id, 1)] * 2
+    assert published == [(EVENT_ID, tournament.id, 1, [board.identifier])] * 2
 
 
 @pytest.mark.unit
 def test_checking_a_result_announces_nothing(
-    http: TestClient, tournament: Tournament, published: list[tuple[str, int, int]]
+    http: TestClient,
+    tournament: Tournament,
+    published: list[tuple[str, int, int, list[int]]],
 ):
     """The second, checking pass writes nothing, so there is nothing to
     tell the other screens about."""

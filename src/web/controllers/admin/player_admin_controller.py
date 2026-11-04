@@ -2174,7 +2174,7 @@ class PlayerAdminController(BaseEventAdminController):
         player = web_context.get_admin_tournament_player()
         tournament = player.tournament
         tournament.check_in_player(player, not player.check_in)
-        self.publish_new_checkin(channels, tournament)
+        self.publish_new_checkin(channels, tournament, [player.id])
         return self._render_player_records_modal(web_context)
 
     @patch(
@@ -2287,15 +2287,25 @@ class PlayerAdminController(BaseEventAdminController):
 
     @classmethod
     def publish_new_checkin(
-        cls, channels: ChannelsPlugin, tournament: Tournament
+        cls,
+        channels: ChannelsPlugin,
+        tournament: Tournament,
+        player_ids: Iterable[int] | None,
     ) -> None:
+        """Tell the pages that check-ins changed: those of the players named,
+        or of any player of the tournament when they are not known."""
         event = tournament.event
+        data = (
+            {'detail': {'player_ids': sorted(player_ids)}}
+            if player_ids is not None
+            else ''
+        )
         channels.publish(
-            {'event': f'new-checkins|{event.uniq_id}', 'data': ''},
+            {'event': f'new-checkins|{event.uniq_id}', 'data': data},
             ['ws'],
         )
         channels.publish(
-            {'event': f'new-checkins|{event.uniq_id}|{tournament.id}', 'data': ''},
+            {'event': f'new-checkins|{event.uniq_id}|{tournament.id}', 'data': data},
             ['ws'],
         )
 
@@ -2323,7 +2333,7 @@ class PlayerAdminController(BaseEventAdminController):
                 player, {tournament.current_round + 1: Result.NO_RESULT}
             )
             tournament.check_in_player(player, True)
-        self.publish_new_checkin(channels, tournament)
+        self.publish_new_checkin(channels, tournament, [player.id])
         return self._render_player_table_row(web_context, after_check_in=True)
 
     @get(

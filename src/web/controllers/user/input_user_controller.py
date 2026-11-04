@@ -156,7 +156,7 @@ class InputUserController(BaseScreenUserController):
         tournament = web_context.tournament
         player = web_context.tournament_player
         tournament.check_in_player(player, not player.check_in)
-        PlayerAdminController.publish_new_checkin(channels, tournament)
+        PlayerAdminController.publish_new_checkin(channels, tournament, [player.id])
         SessionLastCheckInUpdated(request).set(
             LastPlayerUpdated(
                 tournament_id=tournament.id,
@@ -195,7 +195,9 @@ class InputUserController(BaseScreenUserController):
         team = web_context.team
         with EventDatabase(tournament.event.uniq_id, True) as database:
             team.set_check_in(not team.check_in, database)
-        PlayerAdminController.publish_new_checkin(channels, tournament)
+        PlayerAdminController.publish_new_checkin(
+            channels, tournament, [player.id for player in team.players]
+        )
         return self._user_screen_render(web_context)
 
     def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
@@ -300,7 +302,7 @@ class InputUserController(BaseScreenUserController):
         else:
             tournament.add_result(board, result)
         PairingsAdminController.publish_new_user_results(
-            channels, event.uniq_id, tournament.id, round_
+            channels, event.uniq_id, tournament.id, round_, [board]
         )
         SessionLastResultUpdated(web_context.request).set(
             LastBoardUpdated(

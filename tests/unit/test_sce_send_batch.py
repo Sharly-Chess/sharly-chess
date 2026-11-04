@@ -6,6 +6,8 @@ batch responses are dispatched back to per-op callbacks.
 out of scope here (tested separately if needed).
 """
 
+from collections import defaultdict
+
 from collections.abc import Callable
 from typing import Any
 from unittest.mock import MagicMock
@@ -24,7 +26,7 @@ def make_session_for_batch(monkeypatch) -> SCESession:
     session = SCESession.__new__(SCESession)
     session.event = MagicMock()
     session.event.uniq_id = 'test-event'
-    session.new_check_ins_tournament_sce_ids = set()
+    session.new_check_in_player_ids_by_tournament_sce_id = defaultdict(set)
 
     # Override the property that would otherwise read plugin_data.tokens.
     monkeypatch.setattr(
