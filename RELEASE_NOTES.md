@@ -15,6 +15,7 @@
 - The single screens are filtered by type with a row of chips instead of being folded away by type (5.2.0)
 - The administration pages have been reworked with a more modern look (5.2.0)
 - In the light admin view, the filtered players counter and the highlighted option of the drop-down lists are readable (5.2.1)
+- Fix libraries missing in Linux Flatpak build (5.2.1)
 
 ## Tournaments
 
