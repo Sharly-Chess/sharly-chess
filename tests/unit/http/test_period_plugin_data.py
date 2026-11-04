@@ -14,6 +14,7 @@ from litestar.testing import TestClient
 
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from tests.test_config import TestUtils
 from utils.date_time import format_date_range, format_datetime
 
@@ -98,10 +99,17 @@ def test_a_period_keeps_its_own_registration(http: TestClient, event: str):
 
 
 @pytest.mark.unit
-def test_the_tournament_keeps_its_own(http: TestClient, event: str):
+def test_the_tournament_keeps_its_own(
+    http: TestClient, event: str, monkeypatch: pytest.MonkeyPatch
+):
     """The fields without a period belong to the tournament, which is the
     first period's registration — where the FFE publishes the whole
     tournament for the players."""
+    monkeypatch.setattr(
+        FfeBackgroundUploader,
+        'should_schedule_tournament_upload',
+        classmethod(lambda cls, stored_event, stored_tournament: False),
+    )
     _update(
         http,
         event,
