@@ -258,11 +258,29 @@ liveUpdateAppliers.players = async (source, changes) => {
         }
     });
 
+    // Only the rows out of place are moved: moving the others would have
+    // the browser lay the whole table out again, which on a large table
+    // takes long enough to be felt.
     const pageSize = Number(source.dataset.pageSize);
     const tbodies = pages();
     tbodies.forEach((tbody, index) => {
         const last = index === tbodies.length - 1;
-        tbody.append(...placed.slice(index * pageSize, last ? undefined : (index + 1) * pageSize));
+        let previous = null;
+        placed.slice(index * pageSize, last ? undefined : (index + 1) * pageSize).forEach((row) => {
+            const expected = previous
+                ? previous.nextElementSibling
+                : tbody.querySelector(':scope > tr[id^="player-"]');
+            if (row !== expected) {
+                if (previous) {
+                    previous.after(row);
+                } else if (expected) {
+                    expected.before(row);
+                } else {
+                    tbody.append(row);
+                }
+            }
+            previous = row;
+        });
     });
 
     added.forEach((row) => {
