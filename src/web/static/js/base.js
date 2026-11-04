@@ -172,6 +172,38 @@ function getOrCreateTooltip(element) {
     });
 }
 
+// A tooltip goes as soon as the page or any part of it scrolls, rather than
+// staying behind or drifting with what it points at. None shows again until
+// the pointer moves: the browser hovers whatever scrolls under a still
+// pointer, sending moves that leave the pointer where it was.
+let tooltipsHeldByScroll = false;
+let pointerPosition = null;
+let pointerPositionAtScroll = null;
+
+window.addEventListener('mousemove', (event) => {
+    pointerPosition = {x: event.clientX, y: event.clientY};
+    if (
+        tooltipsHeldByScroll
+        && (pointerPositionAtScroll === null
+            || pointerPosition.x !== pointerPositionAtScroll.x
+            || pointerPosition.y !== pointerPositionAtScroll.y)
+    ) {
+        tooltipsHeldByScroll = false;
+    }
+}, {capture: true, passive: true});
+
+window.addEventListener('scroll', () => {
+    tooltipsHeldByScroll = true;
+    pointerPositionAtScroll = pointerPosition;
+    if (!document.querySelector('.tooltip') || typeof bootstrap === 'undefined') {
+        return;
+    }
+    document.querySelectorAll('[aria-describedby^="tooltip"]').forEach((element) => {
+        bootstrap.Tooltip.getInstance(element)?.hide();
+    });
+    $('body .tooltip').remove();
+}, {capture: true, passive: true});
+
 // A request sent from under a tooltip takes the open tooltips away before
 // the content they point at is swapped.
 document.addEventListener('htmx:beforeSend', (event) => {
@@ -338,6 +370,10 @@ window.addEventListener("renumber_players", function(event) {
 });
 
 window.addEventListener("show.bs.tooltip", function(event) {
+    if (tooltipsHeldByScroll) {
+        event.preventDefault();
+        return;
+    }
     if ($(event.target).hasClass('sidebar-tooltip') && !$('body').hasClass('compact-sidebar')) {
         event.preventDefault();
     }
