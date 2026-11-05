@@ -31,7 +31,7 @@
                 hx-vals='js:{
                     data_source_id: $("#data-source-select").val(),
                     usage: "{{ usage }}",
-                    filters: getFilters(),
+                    {% if search_filters %}filters: getFilters(),{% endif %}
                     {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
                 }'
                 hx-on::before-request="refreshSearchResultsVisibility();"
@@ -40,7 +40,9 @@
                 hx-indicator="#player-search-indicator"
                 autocomplete="off"
             />
-            {% include 'search_filter.html' %}
+            {% if search_filters %}
+                {% include 'search_filter.html' %}
+            {% endif %}
         </div>
         <ul
             id="search-results"
@@ -75,7 +77,9 @@
             searchInput[0].dispatchEvent(
                 new CustomEvent('data_source_change', {bubbles: true, cancelable: true})
             );
-            filterInit();
+            {% if search_filters %}
+                filterInit();
+            {% endif %}
         });
         $('#data-source-select').trigger('change');
 
