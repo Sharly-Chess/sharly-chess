@@ -95,11 +95,11 @@ class PerformanceMiddleware:
 
     SLOW_REQUEST_SECONDS: float = 3.0
 
-    def __init__(self, app: 'ASGIApp', log_all: bool = False) -> None:
+    def __init__(self, app: ASGIApp, log_all: bool = False) -> None:
         self.app = app
         self.log_all = log_all
 
-    async def __call__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope['type'] != ScopeType.HTTP or scope.get('path', '').startswith(
             '/static/'
         ):
@@ -112,7 +112,7 @@ class PerformanceMiddleware:
         start_cpu = process_time()
         status_code = 500
 
-        async def send_with_measurement(message: 'Message') -> None:
+        async def send_with_measurement(message: Message) -> None:
             nonlocal status_code
             if message['type'] == 'http.response.start':
                 status_code = message['status']
@@ -145,7 +145,7 @@ class PerformanceMiddleware:
 
     @staticmethod
     def _log_profile(
-        scope: 'Scope',
+        scope: Scope,
         profile: RequestPerformance,
         status_code: int,
         wall_seconds: float,

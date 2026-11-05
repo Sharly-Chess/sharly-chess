@@ -79,7 +79,7 @@ class RatingCheckRow:
     (see `arbiter_value`)."""
 
     player: Player
-    period: 'TournamentPeriod | None'
+    period: TournamentPeriod | None
     cadence: Cadence
     preference: RatingPreference
     sequence: RatingSequence
@@ -179,7 +179,7 @@ class RatingCheck:
 
     rows: list[RatingCheckRow]
     not_found: list[Player]
-    lists: list['DataSource']
+    lists: list[DataSource]
 
     @property
     def attention_count(self) -> int:
@@ -218,7 +218,7 @@ class RatingCheck:
         ]
 
 
-def _recorded_period(player: Player) -> 'TournamentPeriod | None':
+def _recorded_period(player: Player) -> TournamentPeriod | None:
     tournament = player.optional_single_tournament
     return None if tournament is None else tournament.current_period
 
@@ -267,7 +267,7 @@ class ListStatus:
     warning: bool
 
 
-def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
+def list_statuses(event: Event, players: list[Player]) -> list[ListStatus]:
     """The state of each list the rating lists of the players' tournaments
     name: installed (and how current), read online, or missing, and the
     cadences it does not publish."""
@@ -422,7 +422,7 @@ def list_statuses(event: 'Event', players: list[Player]) -> list[ListStatus]:
     return statuses
 
 
-def _category(player: Player) -> 'PlayerCategory':
+def _category(player: Player) -> PlayerCategory:
     tournament_player = player.optional_single_tournament_player
     return (
         tournament_player.category if tournament_player is not None else player.category
@@ -437,7 +437,7 @@ def _prescribed(player: Player, cadence: Cadence) -> int | None:
 
 
 async def _match_list(
-    data_source: 'DataSource', players: list[Player]
+    data_source: DataSource, players: list[Player]
 ) -> list[StoredPlayer] | None:
     """The players of a national list matching *players*, read from the
     installed copy or the online version as the user set the list to try
@@ -453,14 +453,14 @@ async def _match_list(
 
 
 async def check_ratings(
-    event: 'Event', players: list[Player], installed_only: bool = False
+    event: Event, players: list[Player], installed_only: bool = False
 ) -> RatingCheck:
     """Compare the ratings of *players* with what the lists give them
     now, in the period of their tournament being played; each national
     list is read from the source the user chose for it, its installed
     copy alone with *installed_only*."""
     from data.input_output import DataSourceManager
-    from data.input_output.data_source import DataSource, FideDataSource
+    from data.input_output.data_source import FideDataSource
 
     fide_players = _fide_list(players)
     fide_database = FideDatabase()
@@ -587,7 +587,7 @@ def list_versions() -> dict[str, float]:
     }
 
 
-def stale_lists(lists: list['DataSource']) -> list['LocalSourceDatabase']:
+def stale_lists(lists: list[DataSource]) -> list[LocalSourceDatabase]:
     """The installed copies of *lists* their source has a newer list than,
     or whose outdate delay has run out: a check against them would report
     against a stale list (TEC Manual 3.9.5.11.f, VCL Q141). Asks the
@@ -616,7 +616,7 @@ _automatic_checks: OrderedDict[str, _AutomaticCheck] = OrderedDict()
 _AUTOMATIC_CHECKS_KEPT = 16
 
 
-async def automatic_check(event: 'Event') -> int:
+async def automatic_check(event: Event) -> int:
     """How many players of *event* the installed lists would give another
     rating (VCL Q139–140): checked when the event is first opened, then
     again once a list has changed or a player was updated. No server is
@@ -637,7 +637,7 @@ async def automatic_check(event: 'Event') -> int:
     return rating_check.attention_count
 
 
-def forget_automatic_check(event: 'Event') -> None:
+def forget_automatic_check(event: Event) -> None:
     """Have the next automatic check made again, the players having
     changed."""
     if (cached := _automatic_checks.get(event.uniq_id)) is not None:

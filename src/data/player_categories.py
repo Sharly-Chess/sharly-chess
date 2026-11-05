@@ -32,24 +32,24 @@ class PlayerCategory(ABC):
         """Get an age that always is in the category."""
 
     @staticmethod
-    def get_junior_categories(age_limits: list[int]) -> list['JuniorCategory']:
+    def get_junior_categories(age_limits: list[int]) -> list[JuniorCategory]:
         return [JuniorCategory(age_limit) for age_limit in age_limits]
 
     @staticmethod
-    def get_senior_categories(age_limits: list[int]) -> list['SeniorCategory']:
+    def get_senior_categories(age_limits: list[int]) -> list[SeniorCategory]:
         return [SeniorCategory(age_limit) for age_limit in age_limits]
 
     @classmethod
     def get_categories(
         cls, junior_age_limits: list[int], senior_age_limits: list[int]
-    ) -> list['PlayerCategory']:
+    ) -> list[PlayerCategory]:
         categories: list[PlayerCategory] = []
         categories += cls.get_junior_categories(junior_age_limits)
         categories += cls.get_senior_categories(senior_age_limits)
         return categories
 
     @classmethod
-    def from_id(cls, category_id: str) -> 'PlayerCategory':
+    def from_id(cls, category_id: str) -> PlayerCategory:
         if category_id == NoCategory().id:
             return NoCategory()
         if not re.match(r'^[UO]\d+$', category_id):
@@ -61,7 +61,7 @@ class PlayerCategory(ABC):
 
     @staticmethod
     def _reference_year(
-        event: 'Event',
+        event: Event,
         tournament_start: date,
         tournament_stop: date,
     ) -> int:
@@ -86,13 +86,13 @@ class PlayerCategory(ABC):
     @classmethod
     def from_year_of_birth(
         cls,
-        event: 'Event',
+        event: Event,
         year_of_birth: int | None,
         tournament_start: date,
         tournament_stop: date,
-        junior_categories: list['JuniorCategory'] | None = None,
-        senior_categories: list['SeniorCategory'] | None = None,
-    ) -> 'PlayerCategory':
+        junior_categories: list[JuniorCategory] | None = None,
+        senior_categories: list[SeniorCategory] | None = None,
+    ) -> PlayerCategory:
         if not year_of_birth:
             return NoCategory()
         if not junior_categories:
@@ -111,12 +111,12 @@ class PlayerCategory(ABC):
     @classmethod
     def from_year_of_birth_at_date(
         cls,
-        event: 'Event',
+        event: Event,
         year_of_birth: int | None,
         reference_date: date,
-        junior_categories: list['JuniorCategory'] | None = None,
-        senior_categories: list['SeniorCategory'] | None = None,
-    ) -> 'PlayerCategory':
+        junior_categories: list[JuniorCategory] | None = None,
+        senior_categories: list[SeniorCategory] | None = None,
+    ) -> PlayerCategory:
         """Classify a player on an explicit date, independently of the event's
         sporting-season settings."""
         return cls._from_year_of_birth_and_reference_year(
@@ -130,12 +130,12 @@ class PlayerCategory(ABC):
     @classmethod
     def _from_year_of_birth_and_reference_year(
         cls,
-        event: 'Event',
+        event: Event,
         year_of_birth: int | None,
         ref_year: int,
-        junior_categories: list['JuniorCategory'] | None = None,
-        senior_categories: list['SeniorCategory'] | None = None,
-    ) -> 'PlayerCategory':
+        junior_categories: list[JuniorCategory] | None = None,
+        senior_categories: list[SeniorCategory] | None = None,
+    ) -> PlayerCategory:
         if not year_of_birth:
             return NoCategory()
         if not junior_categories:
@@ -155,7 +155,7 @@ class PlayerCategory(ABC):
 
     def representative_year(
         self,
-        event: 'Event',
+        event: Event,
         tournament_start: date,
         tournament_stop: date,
     ) -> int:

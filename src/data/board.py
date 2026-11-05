@@ -1,7 +1,7 @@
 import weakref
 from datetime import datetime
 from functools import total_ordering
-from typing import TYPE_CHECKING, Optional, Literal
+from typing import TYPE_CHECKING, Literal
 
 from common.i18n import _
 from database.sqlite.event.event_store import StoredBoard, set_stored_fields
@@ -80,9 +80,7 @@ class Board:  # noqa: PLW1641
     display number (fixed tables).
     Stores both tournament players and the result of the match between the two."""
 
-    def __init__(
-        self, tournament: 'Tournament', round_: int, stored_board: StoredBoard
-    ):
+    def __init__(self, tournament: Tournament, round_: int, stored_board: StoredBoard):
         self.round = round_
         self.stored_board = stored_board
         self._tournament_ref: ReferenceType[Tournament] = weakref.ref(tournament)
@@ -109,20 +107,20 @@ class Board:  # noqa: PLW1641
 
     def _player_ref(
         self, player_id: int | None
-    ) -> Optional['ReferenceType[TournamentPlayer]']:
+    ) -> ReferenceType[TournamentPlayer] | None:
         if not player_id:
             return None
         player = self.tournament.tournament_players_by_id.get(player_id)
         return weakref.ref(player) if player is not None else None
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         if (tournament := self._tournament_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
 
     @property
-    def white_tournament_player(self) -> 'TournamentPlayer':
+    def white_tournament_player(self) -> TournamentPlayer:
         """Player on the physical white side. Raises if the slot is a
         hole — use ``optional_white_tournament_player`` from hole-aware
         code."""
@@ -132,7 +130,7 @@ class Board:  # noqa: PLW1641
         return player
 
     @property
-    def optional_white_tournament_player(self) -> Optional['TournamentPlayer']:
+    def optional_white_tournament_player(self) -> TournamentPlayer | None:
         """Player on the physical white side, or ``None`` when the
         slot is a lineup hole (only possible inside a team match)."""
         if not self._white_player_ref:
@@ -142,7 +140,7 @@ class Board:  # noqa: PLW1641
         return player
 
     @property
-    def black_tournament_player(self) -> Optional['TournamentPlayer']:
+    def black_tournament_player(self) -> TournamentPlayer | None:
         if not self._black_player_ref:
             return None
         if (player := self._black_player_ref()) is None:
@@ -150,23 +148,23 @@ class Board:  # noqa: PLW1641
         return player
 
     @property
-    def white_pairing(self) -> 'Pairing':
+    def white_pairing(self) -> Pairing:
         return self.white_tournament_player.pairings_by_round[self.round]
 
     @property
-    def optional_white_pairing(self) -> Optional['Pairing']:
+    def optional_white_pairing(self) -> Pairing | None:
         player = self.optional_white_tournament_player
         if player is None:
             return None
         return player.pairings_by_round[self.round]
 
     @property
-    def black_pairing(self) -> 'Pairing':
+    def black_pairing(self) -> Pairing:
         assert self.black_tournament_player is not None
         return self.black_tournament_player.pairings_by_round[self.round]
 
     @property
-    def optional_black_pairing(self) -> Optional['Pairing']:
+    def optional_black_pairing(self) -> Pairing | None:
         if self.black_tournament_player is None:
             return None
         return self.black_tournament_player.pairings_by_round[self.round]
@@ -243,7 +241,7 @@ class Board:  # noqa: PLW1641
         return str(self.number)
 
     @property
-    def team_board(self) -> 'TeamBoard | None':
+    def team_board(self) -> TeamBoard | None:
         """The team match this board belongs to, or ``None`` for an
         individual board (no envelope)."""
         team_board_id = self.stored_board.team_board_id
@@ -330,7 +328,7 @@ class Board:  # noqa: PLW1641
         return format_time(self.last_result_update) if self.last_result_update else ''
 
     def replace_player(
-        self, new_player: 'TournamentPlayer', player_color: Literal['white', 'black']
+        self, new_player: TournamentPlayer, player_color: Literal['white', 'black']
     ) -> None:
         if player_color == 'white':
             self.white_player_id = new_player.id
@@ -401,14 +399,14 @@ class Board:  # noqa: PLW1641
         )
 
     @staticmethod
-    def _pgn_name(tournament_player: 'TournamentPlayer') -> str:
+    def _pgn_name(tournament_player: TournamentPlayer) -> str:
         if tournament_player.first_name:
             return f'{tournament_player.last_name}, {tournament_player.first_name}'
         return tournament_player.last_name
 
     @staticmethod
     def _pgn_player_tags(
-        tournament_player: 'TournamentPlayer', prefix: str
+        tournament_player: TournamentPlayer, prefix: str
     ) -> list[tuple[str, str | int]]:
         tags: list[tuple[str, str | int]] = []
         if tournament_player.strongest_title != PlayerTitle.NONE:

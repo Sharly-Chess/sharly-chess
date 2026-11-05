@@ -30,7 +30,7 @@ class DatasheetColumn(ABC):
     def id(self) -> str:
         """Identifier of the column."""
 
-    def update_from_used_columns(self, used_columns: list['DatasheetColumn']) -> None:
+    def update_from_used_columns(self, used_columns: list[DatasheetColumn]) -> None:
         """Update the column from the other used columns."""
 
     @abstractmethod
@@ -464,7 +464,7 @@ class RatingColumn(DatasheetColumn):
             return player.optional_single_tournament_player.rating
         return 0
 
-    def update_from_used_columns(self, used_columns: list['DatasheetColumn']) -> None:
+    def update_from_used_columns(self, used_columns: list[DatasheetColumn]) -> None:
         for column in used_columns:
             if isinstance(column, TypedRatingColumn):
                 self.is_informative = True
@@ -506,7 +506,7 @@ class RatingTypeColumn(DatasheetColumn):
             return player.optional_single_tournament_player.rating_type.key.upper()
         return ''
 
-    def update_from_used_columns(self, used_columns: list['DatasheetColumn']) -> None:
+    def update_from_used_columns(self, used_columns: list[DatasheetColumn]) -> None:
         for column in used_columns:
             if isinstance(column, TypedRatingColumn):
                 self.is_informative = True

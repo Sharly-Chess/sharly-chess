@@ -65,7 +65,7 @@ def _dropbox_dirs() -> list[Path]:
             accounts = json.loads(
                 (Path(value) / 'Dropbox' / 'info.json').read_text(encoding='utf-8')
             )
-        except (OSError, ValueError):
+        except OSError, ValueError:
             continue
         if isinstance(accounts, dict):
             directories += [
@@ -420,7 +420,7 @@ def complete_requested_move(
         if data_dir.exists():
             data_dir.rmdir()
         staging_dir.rename(data_dir)
-    except (OSError, sqlite3.Error):
+    except OSError, sqlite3.Error:
         shutil.rmtree(staging_dir, ignore_errors=True)
         data_dir.mkdir(parents=True, exist_ok=True)
         raise

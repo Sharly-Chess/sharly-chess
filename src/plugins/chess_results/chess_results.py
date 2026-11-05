@@ -96,7 +96,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         return '/chess_results_event_form_fields.html'
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         cr_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         return cr_data.get('tnr', None) is not None
@@ -143,7 +143,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def on_event_restored(
         self,
         event_database: EventDatabase,
-        previous_stored_event: 'StoredEvent | None',
+        previous_stored_event: StoredEvent | None,
     ) -> None:
         """Gives the restored tournaments back the Chess-Results tournament
         they were uploaded to.
@@ -188,14 +188,14 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         return self.id, ChessResultsTournamentPluginData
 
     @hookimpl
-    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+    def is_tournament_uploaded(self, tournament: Tournament) -> bool:
         return self.used_by_stored_tournament(
             tournament.event.stored_event, tournament.stored_tournament
         )
 
     @hookimpl
     def on_tournament_data_updated(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> None:
         # This hook being called for most database writes, it needs to be optimized
         if not CRBackgroundUploader.should_schedule_tournament_upload(
@@ -210,7 +210,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(
-        self, event: 'Event', tournament: 'Tournament | None'
+        self, event: Event, tournament: Tournament | None
     ) -> tuple[str, dict[str, Any]]:
         return '/chess_results_tournament_form_fields.html', {}
 
@@ -220,7 +220,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
 
     @hookimpl
     def get_tournament_connection_field(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> TournamentConnectionField | None:
         if not CRUtils.get_tournament_plugin_data(tournament).tnr:
             return None
@@ -233,8 +233,8 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def extend_admin_collection(
         self,
         collection_key: str,
-        collection_spec: 'AdminCollectionSpec',
-        event: 'Event | None',
+        collection_spec: AdminCollectionSpec,
+        event: Event | None,
     ) -> None:
         if collection_key != 'tournaments':
             return
@@ -249,7 +249,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
 
     @hookimpl
     def get_tournament_tie_breaks_warning_message(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> str | None:
         if not CRUtils.get_tournament_plugin_data(tournament).tnr:
             return None
@@ -266,7 +266,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
 
     @hookimpl
     def get_nav_data_transfer_items(
-        self, event: 'Event'
+        self, event: Event
     ) -> Iterable[NavDataTransferItem]:
         return [
             NavDataTransferItem(

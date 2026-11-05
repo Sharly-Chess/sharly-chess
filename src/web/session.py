@@ -569,17 +569,17 @@ class SessionTieBreaksUnlocked(SessionVariable[list[str]]):
         return []
 
     @staticmethod
-    def _tournament_key(tournament: 'Tournament') -> str:
+    def _tournament_key(tournament: Tournament) -> str:
         return f'{tournament.event.uniq_id}/{tournament.id}'
 
-    def contains(self, tournament: 'Tournament') -> bool:
+    def contains(self, tournament: Tournament) -> bool:
         return self._tournament_key(tournament) in self.get()
 
-    def add(self, tournament: 'Tournament') -> None:
+    def add(self, tournament: Tournament) -> None:
         if not self.contains(tournament):
             self.set([*self.get(), self._tournament_key(tournament)])
 
-    def discard(self, tournament: 'Tournament') -> None:
+    def discard(self, tournament: Tournament) -> None:
         key = self._tournament_key(tournament)
         self.set([value for value in self.get() if value != key])
 

@@ -563,7 +563,7 @@ class KnockoutBracketPrintDocument(PrintDocument):
             context['svg'] = build_svg(layout) if layout is not None else None
         return context
 
-    def _schedule_rounds(self, layout: 'BracketLayout | None') -> list[dict[str, Any]]:
+    def _schedule_rounds(self, layout: BracketLayout | None) -> list[dict[str, Any]]:
         """The bracket as a chronological list: one entry per app round, each
         grouping its matches by bracket round (a round can hold both a
         winners' and a losers' game), with the round's scheduled date/time when

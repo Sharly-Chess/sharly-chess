@@ -407,7 +407,7 @@ class WebContext:
 
     @staticmethod
     def resolve_add_other(
-        data: dict[str, str], session_variable: 'BoolSessionVariable'
+        data: dict[str, str], session_variable: BoolSessionVariable
     ) -> bool:
         if 'add_other' in data:
             add_other = True

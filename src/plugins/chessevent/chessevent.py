@@ -44,7 +44,7 @@ class ChessEventPluginHooks:
     @hookspec
     def augment_stored_player_from_chessevent_player(
         self,
-        event: 'Event',
+        event: Event,
         importer: TournamentImporter,
         stored_player: StoredPlayer,
         chessevent_player: ChessEventPlayer,
@@ -182,7 +182,7 @@ class ChessEventPlugin(Plugin):
     def validate_event_form_fields(
         self,
         action: str,
-        event: 'Event | None',
+        event: Event | None,
         data: dict[str, str],
         errors: dict[str, str],
     ) -> None:
@@ -225,8 +225,8 @@ class ChessEventPlugin(Plugin):
     def extend_admin_collection(
         self,
         collection_key: str,
-        collection_spec: 'AdminCollectionSpec',
-        event: 'Event | None',
+        collection_spec: AdminCollectionSpec,
+        event: Event | None,
     ) -> None:
         if collection_key != 'tournaments':
             return
@@ -237,7 +237,7 @@ class ChessEventPlugin(Plugin):
 
     @hookimpl(trylast=True)
     def get_nav_data_transfer_items(
-        self, event: 'Event'
+        self, event: Event
     ) -> Iterable[NavDataTransferItem]:
         if all(tournament.started for tournament in event.tournaments):
             return []

@@ -23,11 +23,11 @@ class PairingNumbers:
     """The pairing numbers of one tournament's players, assigned on first
     read and kept until the field changes."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     @cached_property
-    def by_number(self) -> dict[int, 'TournamentPlayer']:
+    def by_number(self) -> dict[int, TournamentPlayer]:
         """Every player by pairing number, in number order; the numbers
         are assigned first if they are not yet."""
         self._assign()
@@ -43,7 +43,7 @@ class PairingNumbers:
         __ = self.by_number
 
     def _update_settings_from_moved_players(
-        self, sorted_tournament_players: list['TournamentPlayer']
+        self, sorted_tournament_players: list[TournamentPlayer]
     ) -> bool:
         """Shift the settings that address numbers so that they follow the
         players whose starting rank has changed (a new rating, say): each
@@ -244,8 +244,8 @@ class PairingNumbers:
 
     def _regeneration(
         self,
-        numbered_tournament_players: list['TournamentPlayer'],
-        renumbered_tournament_players: list['TournamentPlayer'],
+        numbered_tournament_players: list[TournamentPlayer],
+        renumbered_tournament_players: list[TournamentPlayer],
     ) -> str:
         """How renumbering the players reorders the ones already numbered,
         in their former numbers: ``'18 19 21 => 21 18 19'``. Empty when the

@@ -92,7 +92,7 @@ class InstanceLock:
         try:
             with open(self.file, 'rb') as file:
                 data = json.loads(file.read(_INFO_SIZE).decode('utf-8').strip())
-        except (OSError, ValueError):
+        except OSError, ValueError:
             return {}
         return data if isinstance(data, dict) else {}
 

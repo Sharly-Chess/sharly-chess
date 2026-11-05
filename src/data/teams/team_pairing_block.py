@@ -14,7 +14,7 @@ class TeamPairingBlock:
 
     def __init__(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         stored_block: StoredTeamPairingBlock,
     ):
         self._tournament_ref: weakref.ReferenceType[Tournament] = weakref.ref(
@@ -23,7 +23,7 @@ class TeamPairingBlock:
         self.stored_block = stored_block
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         if (tournament := self._tournament_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
@@ -38,11 +38,11 @@ class TeamPairingBlock:
         return self.stored_block.round_
 
     @property
-    def team_a(self) -> 'Team':
+    def team_a(self) -> Team:
         return self.tournament.event.teams_by_id[self.stored_block.team_a_id]
 
     @property
-    def team_b(self) -> 'Team':
+    def team_b(self) -> Team:
         return self.tournament.event.teams_by_id[self.stored_block.team_b_id]
 
     @property

@@ -40,7 +40,7 @@ def _family_name(file: Path) -> str | None:
     """The human-readable family name of a font file, or None if unreadable."""
     try:
         font = TTFont(file, fontNumber=0, lazy=True)
-    except (TTLibError, OSError, ValueError):
+    except TTLibError, OSError, ValueError:
         return None
     try:
         name_table = font['name']
@@ -49,7 +49,7 @@ def _family_name(file: Path) -> str | None:
         return cast(
             str | None, name_table.getDebugName(16) or name_table.getDebugName(1)
         )
-    except (KeyError, AttributeError):
+    except KeyError, AttributeError:
         return None
     finally:
         font.close()

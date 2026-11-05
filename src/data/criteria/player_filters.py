@@ -35,7 +35,7 @@ class PlayerFilter(OptionHandler[PlayerFilterOption], ABC):
     """Abstract class representing ways to filter the players."""
 
     @abstractmethod
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         """Full name of the filter, including the options."""
 
     @abstractmethod
@@ -71,7 +71,7 @@ class GenderPlayerFilter(PlayerFilter):
         gender = self.get_gender()
         return lambda player: player.gender == gender
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         return _('Gender ({gender})').format(gender=self.get_gender().short_name)
 
 
@@ -100,7 +100,7 @@ class RatingPlayerFilter(PlayerFilter):
             return lambda player: player.rating >= min_rating
         return lambda player: min_rating <= player.rating <= max_rating
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         min_rating = self._get_option(MinRatingOption).value
         max_rating = self._get_option(MaxRatingOption).value
         return Utils.get_rating_range_label(min_rating, max_rating)
@@ -158,7 +158,7 @@ class AgePlayerFilter(PlayerFilter):
             return lambda player: player.category == max_category
         return lambda player: min_category <= player.category <= max_category
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         min_category, max_category = self.category_range
         if not min_category:
             # One of the two is always set; only the other can be None here.
@@ -211,7 +211,7 @@ class RatingTypePlayerFilter(PlayerFilter):
         rating_types = self.get_rating_types()
         return lambda player: player.rating_type in rating_types
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         option_str = ', '.join(
             rating_type.short_name for rating_type in self.get_rating_types()
         )
@@ -242,7 +242,7 @@ class ClubPlayerFilter(PlayerFilter):
             return lambda player: player.club.name not in clubs
         return lambda player: player.club.name in clubs
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         clubs = self._get_option(ClubsFilterOption).club_names
         exclude = self._get_option(ExcludeFilterOption).value
         option_str = ', '.join(clubs)
@@ -275,7 +275,7 @@ class FederationPlayerFilter(PlayerFilter):
             return lambda player: player.federation.name not in federations
         return lambda player: player.federation.name in federations
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         federations = self._get_option(FederationsFilterOption).value
         exclude = self._get_option(ExcludeFilterOption).value
         option_str = ', '.join(federations)
@@ -308,7 +308,7 @@ class CommentPlayerFilter(PlayerFilter):
             return lambda player: player.comment not in comments
         return lambda player: player.comment in comments
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         comments = self._get_option(CommentsFilterOption).value
         exclude = self._get_option(ExcludeFilterOption).value
         option_str = ', '.join(comments)
@@ -345,7 +345,7 @@ class PlayerIdPlayerFilter(PlayerFilter):
             return lambda player: player.id not in player_ids
         return lambda player: player.id in player_ids
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         player_ids = self._get_option(PlayersFilterOption).value
         exclude = self._get_option(ExcludeFilterOption).value
         player_names = [

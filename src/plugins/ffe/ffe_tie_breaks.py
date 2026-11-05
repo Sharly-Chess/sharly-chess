@@ -151,7 +151,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         return bonus
 
     def get_player_variables(
-        self, tournament: 'Tournament', after_round: int
+        self, tournament: Tournament, after_round: int
     ) -> dict[int, Any]:
         """Add the papi estimation as a variable."""
         if after_round < 1 or not any(
@@ -242,13 +242,13 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
                 estimation_by_player_id[player.id] = estimation
         return estimation_by_player_id
 
-    def _get_player_estimation(self, player: 'TournamentPlayer') -> int:
+    def _get_player_estimation(self, player: TournamentPlayer) -> int:
         if not player.estimated:
             return player.rating
         return cast(int, player.tie_break_variables.get(self.id, player.rating))
 
     def compute_player_value(
-        self, player: 'TournamentPlayer', *, after_round: int
+        self, player: TournamentPlayer, *, after_round: int
     ) -> float:
         tournament: Tournament = player.tournament
         pairings: list[Pairing] = [
@@ -300,7 +300,7 @@ class PapiKashdanTieBreak(BasePapiTieBreak):
         return False
 
     def compute_player_value(
-        self, player: 'TournamentPlayer', *, after_round: int
+        self, player: TournamentPlayer, *, after_round: int
     ) -> float:
         """Legacy: unplayed rounds are counted"""
 
@@ -541,7 +541,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
 
     @staticmethod
     def _papi_adjusted_score(
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         *,
         after_round: int,
     ) -> float:
@@ -580,7 +580,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
 
     @staticmethod
     def _papi_dummy_score(
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -696,7 +696,7 @@ class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
         return False
 
     def compute_player_value(
-        self, player: 'TournamentPlayer', *, after_round: int
+        self, player: TournamentPlayer, *, after_round: int
     ) -> float:
         tournament: Tournament = player.tournament
         opponents: list[TournamentPlayer | None] = [

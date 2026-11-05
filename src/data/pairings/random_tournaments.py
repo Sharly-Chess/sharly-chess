@@ -81,7 +81,7 @@ class Frequency:
     rate: float | None = None
 
     @classmethod
-    def parse(cls, value: str | float | None) -> 'Frequency | None':
+    def parse(cls, value: str | float | None) -> Frequency | None:
         """``4``, ``5%`` or ``0.05``; None when nothing was asked for."""
         if value is None or value == '':
             return None
@@ -235,7 +235,7 @@ class TournamentSettings:
 
     def settled(
         self, chance: random.Random, team_event: bool = False
-    ) -> 'TournamentSettings':
+    ) -> TournamentSettings:
         """The same settings with a value drawn for everything unstated.
 
         In a team event the field is the teams and the players fill their
@@ -338,11 +338,11 @@ class NameSource:
     again.
     """
 
-    def __init__(self, faker: 'Faker') -> None:
+    def __init__(self, faker: Faker) -> None:
         self.faker = faker
         self._taken: set[str] = set()
 
-    def _fresh(self, make: 'Callable[[], str]') -> str:
+    def _fresh(self, make: Callable[[], str]) -> str:
         for _attempt in range(100):
             candidate = make()
             if candidate not in self._taken:
@@ -507,7 +507,7 @@ class RandomTournamentGenerator:
                 )
         return tournament_id
 
-    def _names(self, settled: TournamentSettings) -> 'NameSource | None':
+    def _names(self, settled: TournamentSettings) -> NameSource | None:
         """Where the players and teams get their names, or None to number
         them.
 
@@ -626,7 +626,7 @@ class RandomTournamentGenerator:
         shares = self._planned.get(name) or []
         return shares[round_ - 1] if shares else None
 
-    def _tournament(self, uniq_id: str, tournament_id: int) -> 'Tournament':
+    def _tournament(self, uniq_id: str, tournament_id: int) -> Tournament:
         from data.loader import EventLoader
 
         EventLoader.unload_event(uniq_id)
@@ -676,7 +676,7 @@ class RandomTournamentGenerator:
         return ''
 
     def _give_byes(
-        self, tournament: 'Tournament', round_: int, settings: TournamentSettings
+        self, tournament: Tournament, round_: int, settings: TournamentSettings
     ) -> None:
         """Each player's chance of sitting this round out."""
         kinds = (
@@ -699,7 +699,7 @@ class RandomTournamentGenerator:
             free = free[taking:]
 
     @staticmethod
-    def _round_is_paired(tournament: 'Tournament', round_: int) -> bool:
+    def _round_is_paired(tournament: Tournament, round_: int) -> bool:
         """Whether the round holds a match, as against nothing but byes."""
         return any(
             team_board.stored_team_board.team_b_id is not None
@@ -707,7 +707,7 @@ class RandomTournamentGenerator:
         )
 
     @staticmethod
-    def _clear_team_byes(uniq_id: str, tournament: 'Tournament', round_: int) -> None:
+    def _clear_team_byes(uniq_id: str, tournament: Tournament, round_: int) -> None:
         """Take back every bye given for the round, leaving the whole field
         to be paired."""
         manual = {bye_type.value for bye_type in TeamByeType.manual_bye_types()}
@@ -724,7 +724,7 @@ class RandomTournamentGenerator:
     def _give_team_byes(
         self,
         uniq_id: str,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         settings: TournamentSettings,
     ) -> bool:
@@ -764,7 +764,7 @@ class RandomTournamentGenerator:
         return resting
 
     def _enter_results(
-        self, tournament: 'Tournament', round_: int, settings: TournamentSettings
+        self, tournament: Tournament, round_: int, settings: TournamentSettings
     ) -> None:
         """One result per board, drawn from the two ratings."""
         played = [

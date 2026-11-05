@@ -165,7 +165,7 @@ class RoundRobinSchedule:
         members[side] = member
         schedule_round.tables[table] = members[0], members[1]
 
-    def copy(self) -> 'RoundRobinSchedule':
+    def copy(self) -> RoundRobinSchedule:
         return RoundRobinSchedule.from_json(self.to_json())
 
     @property
@@ -193,7 +193,7 @@ class RoundRobinSchedule:
 
     def resized(
         self, member_ids: Collection[int], encounters: int
-    ) -> 'RoundRobinSchedule':
+    ) -> RoundRobinSchedule:
         """The schedule of a round-robin of the members *member_ids* meeting
         *encounters* times, keeping as much of this one as fits: the games
         and the rest of each of its rounds, between members still in the
@@ -216,7 +216,7 @@ class RoundRobinSchedule:
                 schedule_round.rest = kept(own_round.rest)
         return schedule
 
-    def adapted(self, member_ids: Collection[int]) -> 'RoundRobinSchedule | None':
+    def adapted(self, member_ids: Collection[int]) -> RoundRobinSchedule | None:
         """The schedule for the members *member_ids*, when they differ from
         its own by one member who can take or leave the rest seats: a
         newcomer to an odd field plays the member resting in each round,
@@ -233,7 +233,7 @@ class RoundRobinSchedule:
             return self._without_member(removed.pop())
         return None
 
-    def _with_newcomer(self, newcomer: int) -> 'RoundRobinSchedule | None':
+    def _with_newcomer(self, newcomer: int) -> RoundRobinSchedule | None:
         if any(round_.rest is None for round_ in self.rounds.values()):
             return None
         schedule = self.copy()
@@ -259,7 +259,7 @@ class RoundRobinSchedule:
             newcomer_colours.append(newcomer_white)
         return schedule
 
-    def _without_member(self, member: int) -> 'RoundRobinSchedule | None':
+    def _without_member(self, member: int) -> RoundRobinSchedule | None:
         if any(round_.rest is not None for round_ in self.rounds.values()):
             return None
         schedule = self.copy()
@@ -634,14 +634,14 @@ class ScheduleBreach:
             locale,
         )
 
-    def summary(self, tournament: 'Tournament', locale: str | None = None) -> str:
+    def summary(self, tournament: Tournament, locale: str | None = None) -> str:
         from data.pairings.engines import ScheduledRoundRobin
 
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, ScheduledRoundRobin)
         return self._describe(engine.member_namer(tournament), locale)
 
-    def trf_comment_for(self, tournament: 'Tournament') -> str:
+    def trf_comment_for(self, tournament: Tournament) -> str:
         """The TRF comment, in the pairing numbers of today."""
         if tournament.is_team_tournament and tournament.pairing_system.paired_by_team:
             teams = tournament.event.teams_by_id

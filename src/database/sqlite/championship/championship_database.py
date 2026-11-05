@@ -55,7 +55,7 @@ class ChampionshipDatabase(MigrationDatabase):
         super().__init__(file_path, write, enable_foreign_keys=enable_foreign_keys)
 
     @cached_property
-    def migration_managers(self) -> list['DatabaseMigrationManager']:
+    def migration_managers(self) -> list[DatabaseMigrationManager]:
         from database.sqlite.migration import DatabaseMigrationManager
 
         return [DatabaseMigrationManager(self, migrations)]

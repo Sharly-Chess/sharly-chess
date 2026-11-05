@@ -163,7 +163,7 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
             # Extract points (column 2)
             try:
                 points = float(parts[1].strip())
-            except (ValueError, IndexError):
+            except ValueError, IndexError:
                 continue
 
             # Extract color history (column 3) - like "  WB", "   B", "    " (spaces = didn't play)

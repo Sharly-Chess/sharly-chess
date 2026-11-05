@@ -530,7 +530,7 @@ class LocalDataSource(DataSource, ABC):
     #: The online version of the list, which the lookups the application
     #: makes on its own read first when the user sets it to, and fall back
     #: on otherwise.
-    online_version_type: ClassVar[type['OnlineDataSource'] | None] = None
+    online_version_type: ClassVar[type[OnlineDataSource] | None] = None
 
     @property
     @abstractmethod
@@ -538,7 +538,7 @@ class LocalDataSource(DataSource, ABC):
         """The type of the local database used for this source."""
 
     @property
-    def online_version(self) -> 'OnlineDataSource | None':
+    def online_version(self) -> OnlineDataSource | None:
         if self.online_version_type is None:
             return None
         from data.input_output import DataSourceManager
@@ -560,7 +560,7 @@ class LocalDataSource(DataSource, ABC):
     async def first_answer[T](
         self,
         installed: Callable[[], Awaitable[T | None]],
-        online: Callable[['OnlineDataSource'], Awaitable[T | None]],
+        online: Callable[[OnlineDataSource], Awaitable[T | None]],
     ) -> T | None:
         """What the installed copy or the online version gives, for a
         lookup the application makes on its own: the one the user set

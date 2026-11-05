@@ -3,7 +3,7 @@ import weakref
 from collections.abc import Collection
 from datetime import datetime
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
@@ -32,9 +32,9 @@ class Screen:
 
     def __init__(
         self,
-        event: 'Event',
+        event: Event,
         stored_screen: StoredScreen | None = None,
-        family: Optional['Family'] = None,
+        family: Family | None = None,
         family_part: int | None = None,
     ):
         if stored_screen is None:
@@ -53,14 +53,14 @@ class Screen:
         self.family_part: int | None = family_part
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         event = self._event_ref()
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
         return event
 
     @property
-    def family(self) -> 'Family | None':
+    def family(self) -> Family | None:
         return self._family_ref() if self._family_ref else None
 
     @cached_property
@@ -106,7 +106,7 @@ class Screen:
         return self.family.type
 
     @property
-    def screen_type(self) -> 'ScreenType':
+    def screen_type(self) -> ScreenType:
         """The screen-type entity for this screen, resolved through the
         manager (so a plugin-defined type is honoured)."""
         from data.screens.manager import ScreenTypeManager
@@ -261,7 +261,7 @@ class Screen:
         first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
         return format_range(first, last)
 
-    def _menu_and_screens(self, admin: bool) -> tuple['Menu | None', list['Screen']]:
+    def _menu_and_screens(self, admin: bool) -> tuple[Menu | None, list[Screen]]:
         """The menu this screen belongs to and the screens it navigates to. A
         screen belongs to at most one menu; the menu is only displayed when it
         holds more than one screen visible to the viewer."""
@@ -275,29 +275,29 @@ class Screen:
             return (menu, entries) if len(entries) > 1 else (None, [])
         return None, []
 
-    def _menu_screens(self, admin: bool) -> list['Screen']:
+    def _menu_screens(self, admin: bool) -> list[Screen]:
         return self._menu_and_screens(admin)[1]
 
     @cached_property
-    def public_menu_screens(self) -> list['Screen']:
+    def public_menu_screens(self) -> list[Screen]:
         return self._menu_screens(False)
 
     @cached_property
-    def admin_menu_screens(self) -> list['Screen']:
+    def admin_menu_screens(self) -> list[Screen]:
         return self._menu_screens(True)
 
-    def _menu_nav_entries(self, admin: bool) -> list['MenuNavEntry']:
+    def _menu_nav_entries(self, admin: bool) -> list[MenuNavEntry]:
         from data.screens.menu import group_menu_nav_entries
 
         menu, screens = self._menu_and_screens(admin)
         return group_menu_nav_entries(screens, menu, current_screen=self)
 
     @cached_property
-    def public_menu_nav_entries(self) -> list['MenuNavEntry']:
+    def public_menu_nav_entries(self) -> list[MenuNavEntry]:
         return self._menu_nav_entries(False)
 
     @cached_property
-    def admin_menu_nav_entries(self) -> list['MenuNavEntry']:
+    def admin_menu_nav_entries(self) -> list[MenuNavEntry]:
         return self._menu_nav_entries(True)
 
     @property

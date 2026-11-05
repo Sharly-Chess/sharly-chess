@@ -38,13 +38,13 @@ class Role:
         stored_tournament_ids = self.stored_role.tournament_ids
         return set(stored_tournament_ids) if stored_tournament_ids else None
 
-    def tournaments_tooltip_message(self, event: 'Event') -> str:
+    def tournaments_tooltip_message(self, event: Event) -> str:
         return ''.join(
             f'<div class="text-center text-nowrap">{name}</div>'
             for name in self.tournament_names(event)
         )
 
-    def tournament_names(self, event: 'Event') -> list[str]:
+    def tournament_names(self, event: Event) -> list[str]:
         if not self.tournament_ids:
             return []
         return sorted(
@@ -74,13 +74,13 @@ class Permission:
         stored_tournament_ids = self.stored_permission.tournament_ids
         return set(stored_tournament_ids) if stored_tournament_ids else None
 
-    def tournaments_tooltip_message(self, event: 'Event') -> str:
+    def tournaments_tooltip_message(self, event: Event) -> str:
         return ''.join(
             f'<div class="text-center text-nowrap">{name}</div>'
             for name in self.tournament_names(event)
         )
 
-    def tournament_names(self, event: 'Event') -> list[str]:
+    def tournament_names(self, event: Event) -> list[str]:
         if not self.tournament_ids:
             return []
         return sorted(
@@ -250,7 +250,7 @@ class Account:
             arbiter += f' ({", ".join(suffixes)})'
         return arbiter
 
-    def get_card_title(self, event: 'Event') -> str:
+    def get_card_title(self, event: Event) -> str:
         card_title = self.full_name
         suffixes: list[str] = []
         title = self.fide_arbiter_title
@@ -346,7 +346,7 @@ class Account:
     # instances that can be used when no events are available (welcome page, ...)
 
     @classmethod
-    def predefined_administrator_account(cls) -> 'Account':
+    def predefined_administrator_account(cls) -> Account:
         return cls(
             StoredAccount(
                 id=cls.ADMINISTRATOR_ID,
@@ -363,7 +363,7 @@ class Account:
         )
 
     @classmethod
-    def predefined_anonymous_account(cls) -> 'Account':
+    def predefined_anonymous_account(cls) -> Account:
         return cls(
             StoredAccount(
                 id=cls.ANONYMOUS_ID,

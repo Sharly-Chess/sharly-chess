@@ -87,7 +87,7 @@ class KnockoutVariation(_KnockoutVariationMixin, PairingVariation):
         return KnockoutEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.player_count < 2:
             return None
         # A grouped bracket spans log2(K*M) rounds (larger than the field).
@@ -123,7 +123,7 @@ class DoubleEliminationVariation(_KnockoutVariationMixin, PairingVariation):
         return DoubleEliminationEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.player_count < 2:
             return None
         # The reset round is reserved up front when the option is on (so its
@@ -161,7 +161,7 @@ class KnockoutTwoGameVariation(_KnockoutVariationMixin, PairingVariation):
         return KnockoutTwoGameEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.player_count < 2:
             return None
         grouped = KnockoutTwoGameEngine()._grouped_round_count(tournament)
@@ -191,7 +191,7 @@ class DoubleEliminationTwoGameVariation(_KnockoutVariationMixin, PairingVariatio
         return DoubleEliminationTwoGameEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.player_count < 2:
             return None
         de_rounds = double_elimination.round_count(
@@ -227,7 +227,7 @@ class TeamKnockoutVariation(_KnockoutVariationMixin, PairingVariation):
         return TeamKnockoutEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.team_count < 2:
             return None
         grouped = TeamKnockoutEngine()._grouped_round_count(tournament)
@@ -258,7 +258,7 @@ class TeamKnockoutTwoGameVariation(_KnockoutVariationMixin, PairingVariation):
         return TeamKnockoutTwoGameEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.team_count < 2:
             return None
         grouped = TeamKnockoutTwoGameEngine()._grouped_round_count(tournament)
@@ -292,7 +292,7 @@ class TeamDoubleEliminationVariation(_KnockoutVariationMixin, PairingVariation):
         return TeamDoubleEliminationEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.team_count < 2:
             return None
         # The reset round is reserved up front (see
@@ -326,7 +326,7 @@ class TeamDoubleEliminationTwoGameVariation(_KnockoutVariationMixin, PairingVari
         return TeamDoubleEliminationTwoGameEngine()
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         if tournament.team_count < 2:
             return None
         de_rounds = double_elimination.round_count(

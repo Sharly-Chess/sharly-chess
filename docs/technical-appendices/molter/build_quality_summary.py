@@ -11,8 +11,6 @@ data, but also adds matrix views and rollups so weak ideals and slow cases are
 visible without manually filtering thousands of rows.
 """
 
-from __future__ import annotations
-
 import argparse
 import multiprocessing
 import os

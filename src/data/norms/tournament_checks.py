@@ -11,8 +11,6 @@ view; they're not used on the hot path. Both `compute_*` functions and
 their `_trail` siblings share the eligibility filter via private helpers.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 

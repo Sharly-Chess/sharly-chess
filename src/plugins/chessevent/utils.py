@@ -80,7 +80,7 @@ class ChessEventUtils:
         return _ChessEventRequestStatusManager().get_object(status)
 
     @staticmethod
-    def get_event_plugin_data(event: Event) -> 'ChessEventEventPluginData':
+    def get_event_plugin_data(event: Event) -> ChessEventEventPluginData:
         plugin_data = event.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, ChessEventEventPluginData)
         return plugin_data
@@ -88,7 +88,7 @@ class ChessEventUtils:
     @staticmethod
     def get_tournament_plugin_data(
         tournament: Tournament,
-    ) -> 'ChessEventTournamentPluginData':
+    ) -> ChessEventTournamentPluginData:
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, ChessEventTournamentPluginData)
         return plugin_data

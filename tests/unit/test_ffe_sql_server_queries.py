@@ -22,7 +22,7 @@ class _QueryCapture(FFESqlServer):
     def __init__(self) -> None:
         self.cancelled = False
 
-    async def __aenter__(self) -> '_QueryCapture':
+    async def __aenter__(self) -> _QueryCapture:
         return self
 
     async def __aexit__(self, *args: Any) -> None:

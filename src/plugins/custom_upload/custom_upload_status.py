@@ -12,9 +12,7 @@ if TYPE_CHECKING:
 
 class CustomUploadStatus(IdentifiableEntity, ABC):
     @abstractmethod
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         """Tooltip explaining the upload status of the document."""
 
     @property
@@ -32,9 +30,7 @@ class NeverUploadedCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Never uploaded')
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         return None
 
     @property
@@ -51,9 +47,7 @@ class UpToDateCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Up to date')
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         return _('No changes detected since the last upload.')
 
     @property
@@ -70,9 +64,7 @@ class ModifiedCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Modified')
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         return _('Data has been modified since the last upload.')
 
     @property
@@ -89,9 +81,7 @@ class PendingCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Pending')
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         return _('Document upload has been planned.')
 
     @property
@@ -108,9 +98,7 @@ class OngoingCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Ongoing')
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         return _('Document is currently being uploaded.')
 
     @property
@@ -127,9 +115,7 @@ class NotConfiguredCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Not configured')
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         from plugins.custom_upload.utils import CustomUploadUtils
 
         return CustomUploadUtils.event_connection_message(event)
@@ -153,9 +139,7 @@ class FailureCustomUploadStatus(CustomUploadStatus, ABC):
     def details(self) -> str:
         """Reason why the upload failed, displayed in the tooltip."""
 
-    def tooltip_message(
-        self, event: Event, document: 'ConfiguredDocument'
-    ) -> str | None:
+    def tooltip_message(self, event: Event, document: ConfiguredDocument) -> str | None:
         last_attempt_at = document.last_upload_attempt_at
         assert last_attempt_at is not None
         return _(

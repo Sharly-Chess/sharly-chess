@@ -98,7 +98,7 @@ class Paragraph(msgspec.Struct, tag_field='type', tag='paragraph'):
 class Cell(msgspec.Struct):
     row: Index
     column: Index
-    blocks: list['Block']
+    blocks: list[Block]
     column_span: Count = 1
     row_span: Count = 1
     borders: Borders | None = None
@@ -424,7 +424,7 @@ def _decode_image(src: str) -> BytesIO | None:
         with Image.open(BytesIO(content)) as image:
             if image.format not in ('PNG', 'JPEG', 'GIF', 'BMP'):
                 return None
-    except (binascii.Error, UnidentifiedImageError, OSError):
+    except binascii.Error, UnidentifiedImageError, OSError:
         return None
     return BytesIO(content)
 

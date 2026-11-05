@@ -43,8 +43,6 @@ layers are arithmetic once the one-odd factors exist. So
 faithful re-implementation in any language can reproduce exactly.
 """
 
-from __future__ import annotations
-
 from functools import lru_cache, cache
 from heapq import heappop, heappush
 from itertools import combinations, permutations, product

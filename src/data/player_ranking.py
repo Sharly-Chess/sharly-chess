@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class PlayerRanking:
     """The players of one tournament by rank, as last computed."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
         self.by_rank: dict[int, TournamentPlayer] | None = None
         #: The rank shown for each player: tied players share the rank of
@@ -42,9 +42,7 @@ class PlayerRanking:
             return max_ranking_round
         return max(0, min(ranking_round, max_ranking_round))
 
-    def compute(
-        self, *, after_round: int | None = None
-    ) -> dict[int, 'TournamentPlayer']:
+    def compute(self, *, after_round: int | None = None) -> dict[int, TournamentPlayer]:
         """Rank every player after ``after_round``, the last ranking round
         by default, and return them by rank."""
         tournament = self.tournament
@@ -66,7 +64,7 @@ class PlayerRanking:
             self.compute()
 
     @property
-    def players_by_rank(self) -> dict[int, 'TournamentPlayer']:
+    def players_by_rank(self) -> dict[int, TournamentPlayer]:
         assert self.by_rank is not None, (
             'The ranks are not computed; call compute() first.'
         )

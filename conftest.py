@@ -220,7 +220,7 @@ class BackendServer:
         signal_number = signal.SIGKILL if force else signal.SIGTERM
         try:
             os.killpg(os.getpgid(self.process.pid), signal_number)
-        except (ProcessLookupError, PermissionError):
+        except ProcessLookupError, PermissionError:
             # Already gone, or not ours to signal as a group.
             self.process.send_signal(signal_number)
 

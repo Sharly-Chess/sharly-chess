@@ -615,7 +615,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             return None
         try:
             return parsedate_to_datetime(last_modified)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             logger.debug(
                 self.log_prefix + 'Unreadable date [%s] for [%s].', last_modified, url
             )

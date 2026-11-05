@@ -30,7 +30,7 @@ class TieBreakConfiguration:
     """The ranking criteria of one tournament: those stored, those in
     force, and the changes the arbiter makes to them."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     def _from_stored(self, stored_tie_break: StoredTieBreak) -> TieBreak | None:

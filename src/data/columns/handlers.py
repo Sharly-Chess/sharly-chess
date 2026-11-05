@@ -1,5 +1,5 @@
 from functools import partial
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from collections.abc import Callable, Collection
 
 from data.columns import player_table as pt, board_table as bt
@@ -310,7 +310,7 @@ class PlayersTabColumnHandler:
 
 
 class PlayerDatasheetColumnHandler:
-    def __init__(self, event: Event, data_source: Optional['DataSource'] = None):
+    def __init__(self, event: Event, data_source: DataSource | None = None):
         self._event = event
         columns = self._base_columns
         plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(

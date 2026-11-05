@@ -47,7 +47,7 @@ class EventMetadata(BaseStoredEvent):
         return self.event_type == EventType.TEAM
 
     @property
-    def tags(self) -> list['Tag']:
+    def tags(self) -> list[Tag]:
         """The tags of the event; unknown ids are ignored (see data.tag)."""
         from common.sharly_chess_config import SharlyChessConfig
 

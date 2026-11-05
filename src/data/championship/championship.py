@@ -25,7 +25,7 @@ class RankingEntry:
     def __init__(
         self,
         rank: int,
-        competitor: 'ReconciledPlayer | ReconciledTeam',
+        competitor: ReconciledPlayer | ReconciledTeam,
         tied: bool,
     ):
         self.rank: int = rank
@@ -48,8 +48,8 @@ class ChampionshipSource:
     def __init__(
         self,
         stored_source: StoredChampionshipSource,
-        event: 'Event | None',
-        tournament: 'Tournament | None',
+        event: Event | None,
+        tournament: Tournament | None,
         broken_reason: str | None,
     ):
         self.stored_source: StoredChampionshipSource = stored_source
@@ -151,7 +151,7 @@ class Championship:
     def effective_age_category_base_date(self) -> date | None:
         return self.age_category_base_date or self.default_age_category_base_date
 
-    def player_age_category(self, player: 'ReconciledPlayer') -> str:
+    def player_age_category(self, player: ReconciledPlayer) -> str:
         """The player's age category for the whole championship: their category by
         year of birth at the effective reference date — the same basis the
         category rankings filter on. Empty when it cannot be determined."""
@@ -206,13 +206,13 @@ class Championship:
         return self.stop_date is not None and self.stop_date < date.today()
 
     @property
-    def competitor_type(self) -> 'ChampionshipCompetitorType':
+    def competitor_type(self) -> ChampionshipCompetitorType:
         from data.championship.options import ChampionshipCompetitorType
 
         return ChampionshipCompetitorType(self.stored_championship.competitor_type)
 
     @property
-    def team_score_basis(self) -> 'TeamScoreBasis':
+    def team_score_basis(self) -> TeamScoreBasis:
         from data.championship.options import TeamScoreBasis
 
         return TeamScoreBasis(self.stored_championship.team_score_basis)
@@ -222,7 +222,6 @@ class Championship:
         """Resolve every stored source against the events on disk, loading each
         distinct event only once. Broken references are kept (not dropped) so
         the caller can surface them."""
-        from data.event import Event
         from data.loader import EventLoader
         from database.sqlite.event.event_database import EventDatabase
 
@@ -305,7 +304,7 @@ class Championship:
         }
 
     @cached_property
-    def players(self) -> list['ReconciledPlayer']:
+    def players(self) -> list[ReconciledPlayer]:
         """The distinct humans across all sources, matched live by identity and
         manual overrides. Recomputed on load (sources are read live)."""
         from data.championship.options import ChampionshipCompetitorType
@@ -316,7 +315,7 @@ class Championship:
         return reconcile_players(self.sources, self._overrides_by_ref)
 
     @cached_property
-    def teams(self) -> list['ReconciledTeam']:
+    def teams(self) -> list[ReconciledTeam]:
         from data.championship.options import ChampionshipCompetitorType
         from data.championship.reconciliation import reconcile_teams
 
@@ -327,7 +326,7 @@ class Championship:
         return reconcile_teams(self.sources, self._team_overrides_by_ref)
 
     @cached_property
-    def competitors(self) -> list['ReconciledPlayer | ReconciledTeam']:
+    def competitors(self) -> list[ReconciledPlayer | ReconciledTeam]:
         from data.championship.options import ChampionshipCompetitorType
 
         if self.competitor_type == ChampionshipCompetitorType.TEAM:
@@ -335,7 +334,7 @@ class Championship:
         return [*self.players]
 
     @cached_property
-    def rules(self) -> list['ChampionshipRule']:
+    def rules(self) -> list[ChampionshipRule]:
         from data.championship.scoring import build_rule
 
         return [
@@ -347,7 +346,7 @@ class Championship:
         ]
 
     @cached_property
-    def categories(self) -> list['ChampionshipCategory']:
+    def categories(self) -> list[ChampionshipCategory]:
         from data.championship.category import ChampionshipCategory
         from data.championship.options import ChampionshipCompetitorType
 
@@ -372,7 +371,7 @@ class Championship:
 
         return any(isinstance(rule, ManualRule) for rule in self.rules)
 
-    def _rules_before_manual(self) -> list['ChampionshipRule']:
+    def _rules_before_manual(self) -> list[ChampionshipRule]:
         from data.championship.scoring import ManualRule
 
         rules: list[ChampionshipRule] = []
@@ -383,8 +382,8 @@ class Championship:
         return rules
 
     def manual_tie_groups(
-        self, competitors: list['ReconciledPlayer | ReconciledTeam']
-    ) -> list[list['ReconciledPlayer | ReconciledTeam']]:
+        self, competitors: list[ReconciledPlayer | ReconciledTeam]
+    ) -> list[list[ReconciledPlayer | ReconciledTeam]]:
         """Ordered tie groups formed by the rules that run before the manual
         tie-break — the groups within which competitors may be dragged."""
         from data.championship.scoring import rank_competitors
@@ -396,7 +395,7 @@ class Championship:
         )
 
     def build_ranking(
-        self, competitors: list['ReconciledPlayer | ReconciledTeam']
+        self, competitors: list[ReconciledPlayer | ReconciledTeam]
     ) -> list[RankingEntry]:
         """Rank an arbitrary eligible player set with this GP's rules.
 

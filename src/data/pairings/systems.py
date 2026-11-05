@@ -117,7 +117,7 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     Each system can have different variations."""
 
     @abstractmethod
-    def variation_manager(self, event: 'Event') -> EntityManager[PV]:
+    def variation_manager(self, event: Event) -> EntityManager[PV]:
         """Manager of all the variations of the system."""
 
     @property
@@ -139,7 +139,7 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         """Handler of permissions for the pairing system."""
 
     @abstractmethod
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         """The round in play for the arbiter."""
 
     @property
@@ -159,11 +159,11 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         """Determines if players can be added on a tournament with pairings."""
         return True
 
-    def allows_player_addition(self, tournament: 'Tournament') -> bool:
+    def allows_player_addition(self, tournament: Tournament) -> bool:
         """Whether players can be added to *tournament* as it stands."""
         return not tournament.has_pairings or self.allow_player_addition_once_paired
 
-    def players_joined(self, tournament: 'Tournament') -> None:
+    def players_joined(self, tournament: Tournament) -> None:
         """Players have just been added to *tournament*."""
 
     @property
@@ -274,7 +274,7 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         one that ranks on how far a participant went does not."""
         return True
 
-    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+    def pairing_numbers_are_frozen(self, tournament: Tournament) -> bool:
         """Whether the numbering stands as it is when the field changes — a
         rating corrected, a player added.
 
@@ -286,14 +286,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         """
         return tournament.has_pairings
 
-    def round_is_locked(self, tournament: 'Tournament', round_: int) -> bool:
+    def round_is_locked(self, tournament: Tournament, round_: int) -> bool:
         """Whether a round's results are read-only. Default False — most
         systems let a result be corrected at any time. A knock-out locks a
         round once the next has been paired from it, since changing a result
         would invalidate the bracket that was drawn."""
         return False
 
-    def tournament_is_over(self, tournament: 'Tournament') -> bool:
+    def tournament_is_over(self, tournament: Tournament) -> bool:
         """Whether the tournament has ended before its last reserved round is
         reached. Default False — a tournament ends when its final round is
         played. A double elimination reserves a reset round that is skipped
@@ -430,12 +430,12 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
         return True
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager['SwissVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[SwissVariation]:
         from data.pairings.managers import SwissVariationManager
 
         return SwissVariationManager(event)
 
-    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+    def pairing_numbers_are_frozen(self, tournament: Tournament) -> bool:
         # The numbering orders the players within a score group, so it has
         # its say in who meets whom. FIDE Handbook C.04.2.B.3 lets it follow
         # the field up to the fourth round all the same, and holds it from
@@ -455,7 +455,7 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return swiss_style_permission_handler()
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         return tournament.last_paired_round
 
 
@@ -489,7 +489,7 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         return True
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager['RoundRobinVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[RoundRobinVariation]:
         from data.pairings.managers import RoundRobinVariationManager
 
         return RoundRobinVariationManager(event)
@@ -503,7 +503,7 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         return False
 
     @override
-    def allows_player_addition(self, tournament: 'Tournament') -> bool:
+    def allows_player_addition(self, tournament: Tournament) -> bool:
         """The Berger tables are paired whole, so players join before the
         pairing; a custom schedule goes back to its editing until the first
         result."""
@@ -519,7 +519,7 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         )
 
     @override
-    def players_joined(self, tournament: 'Tournament') -> None:
+    def players_joined(self, tournament: Tournament) -> None:
         from data.pairings.round_robin_editor import RoundRobinScheduleEditor
 
         RoundRobinScheduleEditor(tournament).admit_newcomers()
@@ -570,7 +570,7 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         ]
         return PermissionHandler(permissions)
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         # Every round is paired at once: the round in play is the last one
         # published.
         return tournament.published_round or (1 if tournament.has_pairings else 0)
@@ -602,7 +602,7 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     def logs_pairing_breaches(self) -> bool:
         return True
 
-    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+    def pairing_numbers_are_frozen(self, tournament: Tournament) -> bool:
         # The numbering orders the players within a score group, so it has
         # its say in who meets whom. FIDE Handbook C.04.2.B.3 lets it follow
         # the field up to the fourth round all the same, and holds it from
@@ -621,7 +621,7 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
         return True
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager['TeamSwissVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[TeamSwissVariation]:
         from data.pairings.managers import TeamSwissVariationManager
 
         return TeamSwissVariationManager(event)
@@ -642,7 +642,7 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     def allow_bye_definition(self) -> bool:
         return False
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         return tournament.last_paired_round
 
 
@@ -678,9 +678,7 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
         return True
 
     @override
-    def variation_manager(
-        self, event: 'Event'
-    ) -> EntityManager['TeamRoundRobinVariation']:
+    def variation_manager(self, event: Event) -> EntityManager[TeamRoundRobinVariation]:
         from data.pairings.managers import TeamRoundRobinVariationManager
 
         return TeamRoundRobinVariationManager(event)
@@ -734,7 +732,7 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
         # safe because the Berger table can regenerate the same pairings.
         return swiss_style_permission_handler(protect_unpairing=False)
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         # Swiss semantics (last PAIRED round), matching the round-by-round
         # pairing flow and the Swiss permission set above: a freshly
         # paired round must be CURRENT for its results to be enterable.

@@ -41,7 +41,7 @@ class MolterPairingSystem(FixedTablePairingSystem):
         return _('Molter')
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager[FixedTableVariation]:
+    def variation_manager(self, event: Event) -> EntityManager[FixedTableVariation]:
         return MolterVariationManager(event)
 
     @property
@@ -64,7 +64,7 @@ class MolterPairingSystem(FixedTablePairingSystem):
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return swiss_style_permission_handler(protect_unpairing=False)
 
-    def current_round(self, tournament: 'Tournament') -> int:
+    def current_round(self, tournament: Tournament) -> int:
         return tournament.last_paired_round
 
     @override
@@ -72,7 +72,7 @@ class MolterPairingSystem(FixedTablePairingSystem):
         self,
         team_count: int,
         players_per_team: int,
-        tournament: 'Tournament | None' = None,
+        tournament: Tournament | None = None,
     ) -> FixedPairingTable | None:
         # A rule set may ship its own official table for a specific size; it
         # takes precedence over the generated one.
@@ -108,7 +108,7 @@ class MolterEngine(FixedTablePairingEngine):
 
 class MolterVariation(FixedTableVariation):
     @staticmethod
-    def system() -> 'MolterPairingSystem':
+    def system() -> MolterPairingSystem:
         return MolterPairingSystem()
 
     @property

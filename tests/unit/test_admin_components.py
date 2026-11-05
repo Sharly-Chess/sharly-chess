@@ -16,7 +16,7 @@ _VOID_ELEMENTS = {'area', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'so
 class Node:
     tag: str
     attrs: dict[str, str | None] = field(default_factory=dict)
-    children: list['Node | str'] = field(default_factory=list)
+    children: list[Node | str] = field(default_factory=list)
 
     @property
     def classes(self) -> list[str]:
@@ -38,7 +38,7 @@ class Node:
             ).split()
         )
 
-    def find_all(self, tag: str | None = None, cls: str | None = None) -> list['Node']:
+    def find_all(self, tag: str | None = None, cls: str | None = None) -> list[Node]:
         """The descendants with this tag and class, in document order."""
         found: list[Node] = []
         for child in self.children:
@@ -50,7 +50,7 @@ class Node:
                 found.extend(child.find_all(tag, cls))
         return found
 
-    def only(self, tag: str | None = None, cls: str | None = None) -> 'Node':
+    def only(self, tag: str | None = None, cls: str | None = None) -> Node:
         found = self.find_all(tag, cls)
         assert len(found) == 1, f'{len(found)} elements match {tag}.{cls}'
         return found[0]

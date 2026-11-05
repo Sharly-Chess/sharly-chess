@@ -24,7 +24,7 @@ class ChampionshipPrintOption[V](Option[V], ABC):
     ``PrintOption`` but is bound to a ``Championship`` (its value or default may
     depend on the sources) rather than an ``Event``."""
 
-    def __init__(self, championship: 'Championship', value: Any | None = None):
+    def __init__(self, championship: Championship, value: Any | None = None):
         # Set before super().__init__: default_value may read the championship.
         self.championship = championship
         super().__init__(value)
@@ -139,7 +139,7 @@ class ChampionshipPrintDocument(ABC):
 
     def __init__(
         self,
-        championship: 'Championship',
+        championship: Championship,
         options: list[ChampionshipPrintOption] | None = None,
     ):
         self.championship = championship
@@ -152,7 +152,7 @@ class ChampionshipPrintDocument(ABC):
 
     @staticmethod
     @abstractmethod
-    def label(championship: 'Championship') -> str:
+    def label(championship: Championship) -> str:
         """Translated name for the picker (may depend on individual vs team)."""
 
     @staticmethod
@@ -175,7 +175,7 @@ class ChampionshipPrintDocument(ABC):
         return self._get_option(option_type).value
 
     @classmethod
-    def is_available(cls, championship: 'Championship') -> bool:
+    def is_available(cls, championship: Championship) -> bool:
         return True
 
     @property
@@ -202,7 +202,7 @@ class ChampionshipTournamentListPrintDocument(ChampionshipPrintDocument):
         return 'tournaments'
 
     @staticmethod
-    def label(championship: 'Championship') -> str:
+    def label(championship: Championship) -> str:
         return _('Tournament list')
 
     @staticmethod
@@ -218,7 +218,7 @@ class ChampionshipCompetitorListPrintDocument(ChampionshipPrintDocument):
         return 'competitors'
 
     @staticmethod
-    def label(championship: 'Championship') -> str:
+    def label(championship: Championship) -> str:
         if championship.competitor_type == ChampionshipCompetitorType.TEAM:
             return _('Team list')
         return _('Player list')
@@ -237,7 +237,7 @@ class ChampionshipRankingsPrintDocument(ChampionshipPrintDocument):
         return 'rankings'
 
     @staticmethod
-    def label(championship: 'Championship') -> str:
+    def label(championship: Championship) -> str:
         return _('Rankings')
 
     @staticmethod
@@ -269,7 +269,7 @@ _DOCUMENT_TYPES: tuple[type[ChampionshipPrintDocument], ...] = (
 
 
 def championship_print_documents(
-    championship: 'Championship',
+    championship: Championship,
 ) -> list[type[ChampionshipPrintDocument]]:
     """The document types available for this Championship, picker order."""
     return [

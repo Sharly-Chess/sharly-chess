@@ -151,7 +151,7 @@ class FRASchoolsPlugin(Plugin):
         return 'FRA'
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: StoredTournament
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         tournament_players = stored_tournament.stored_tournament_players
         for stored_tournament_player in tournament_players:
@@ -213,10 +213,10 @@ class FRASchoolsPlugin(Plugin):
         return self.id, FRASchoolsPlayerPluginData
 
     @hookimpl
-    def get_prohibited_pairing_dimensions(self) -> list['PairingDimension']:
+    def get_prohibited_pairing_dimensions(self) -> list[PairingDimension]:
         from data.pairing_dimensions import PairingDimension
 
-        def school_key(player: 'TournamentPlayer') -> str | None:
+        def school_key(player: TournamentPlayer) -> str | None:
             school = FRASchoolsUtils.get_player_school(player)
             return str(school.id) if school and school.id is not None else None
 
@@ -230,13 +230,13 @@ class FRASchoolsPlugin(Plugin):
         ]
 
     @hookimpl
-    def get_team_affiliation_sources(self) -> list['TeamAffiliationSource']:
+    def get_team_affiliation_sources(self) -> list[TeamAffiliationSource]:
         from data.teams.team_affiliation import (
             TeamAffiliationSource,
             team_shared_player_value,
         )
 
-        def school_name(player: 'TournamentPlayer') -> str | None:
+        def school_name(player: TournamentPlayer) -> str | None:
             school = FRASchoolsUtils.get_player_school(player)
             return school.name if school else None
 
@@ -250,7 +250,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def get_player_form_template_context(
-        self, web_context: 'PlayerAdminWebContext'
+        self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
         return FRASchoolsController.get_fra_school_template_context(web_context)
 
@@ -318,15 +318,13 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_document(
-        self, print_documents: list[type['PrintDocument']]
-    ) -> None:
+    def insert_print_document(self, print_documents: list[type[PrintDocument]]) -> None:
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
         pps: type[PrintDocument] = IndividuelTeamRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
 
     @hookimpl
-    def insert_print_option(self, print_options: list[type['PrintOption']]) -> None:
+    def insert_print_option(self, print_options: list[type[PrintOption]]) -> None:
         print_options.append(FRASchoolsCategoryPrintOption)
         print_options.append(FRASchoolsIndividualTeamMaxPerSchoolPrintOption)
         print_options.append(FRASchoolsIndividualTeamDisplayIncompletePrintOption)
@@ -335,7 +333,7 @@ class FRASchoolsPlugin(Plugin):
     def alter_print_and_screen_player_columns(
         self,
         usage: ColumnUsage,
-        player_columns: list['TournamentPlayerTableColumn'],
+        player_columns: list[TournamentPlayerTableColumn],
     ) -> None:
         # Remove FederationColumn and LeagueColumn
         player_columns[:] = [
@@ -367,7 +365,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def get_extra_statistics_sections(
-        self, document: PrintDocument, tournaments: list['Tournament']
+        self, document: PrintDocument, tournaments: list[Tournament]
     ) -> Iterable[ExtraStatisticsSection]:
         if isinstance(document, StatisticsPrintDocument):
             counter = Counter[int](
@@ -415,7 +413,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def insert_player_filter_types(
-        self, player_filter_types: list[type['PlayerFilter']]
+        self, player_filter_types: list[type[PlayerFilter]]
     ) -> None:
         school: type[PlayerFilter] = FRASchoolPlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
@@ -423,7 +421,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def insert_player_filter_option_types(
-        self, player_filter_option_types: list[type['PlayerFilterOption']]
+        self, player_filter_option_types: list[type[PlayerFilterOption]]
     ) -> None:
         school: type[PlayerFilterOption] = FRASchoolsFilterOption
         club: type[PlayerFilterOption] = ClubsFilterOption
@@ -434,7 +432,7 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]) -> None:
+    def insert_rule_sets(self, rule_sets: list[type[RuleSet]]) -> None:
         from plugins.fra_schools.fra_schools_rule_sets import (
             ChampionnatScolaireRuleSet,
         )
@@ -442,7 +440,7 @@ class FRASchoolsPlugin(Plugin):
         rule_sets.append(ChampionnatScolaireRuleSet)
 
     @hookimpl
-    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]) -> None:
+    def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]) -> None:
         from plugins.fra_schools.fra_schools_tie_breaks import (
             BoardOrderWinsTieBreak,
         )
@@ -451,7 +449,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl(trylast=True)
     def insert_swiss_system_tie_break_sets(
-        self, system_sets: list['SystemTieBreakSet']
+        self, system_sets: list[SystemTieBreakSet]
     ) -> None:
         from data.tie_breaks import tie_breaks
         from plugins.ffe import ffe_tie_breaks

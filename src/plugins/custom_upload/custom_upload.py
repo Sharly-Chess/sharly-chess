@@ -70,7 +70,7 @@ class CustomUploadPlugin(Plugin):
         return Version('0.1.0')
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         return False
 
@@ -99,7 +99,7 @@ class CustomUploadPlugin(Plugin):
         return self.id, CustomUploadEventPluginData
 
     @hookimpl
-    def on_event_duplicated(self, event_database: 'EventDatabase') -> None:
+    def on_event_duplicated(self, event_database: EventDatabase) -> None:
         stored_event = event_database.load_stored_event()
         event_plugin_data = CustomUploadEventPluginData.from_stored_value(
             stored_event.plugin_data.get(PLUGIN_NAME, {})
@@ -113,7 +113,7 @@ class CustomUploadPlugin(Plugin):
         event_database.update_stored_event(stored_event)
 
     @hookimpl
-    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+    def is_tournament_uploaded(self, tournament: Tournament) -> bool:
         event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
         if not (event_plugin_data.ftp_host and event_plugin_data.ftp_username):
             return False
@@ -124,7 +124,7 @@ class CustomUploadPlugin(Plugin):
 
     @hookimpl
     def on_tournament_data_updated(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> None:
         """Schedule an automatic upload of the documents targeting a tournament
         whose data just changed, for documents that have auto-upload enabled."""
@@ -185,7 +185,7 @@ class CustomUploadPlugin(Plugin):
 
     @hookimpl
     def get_tournament_connection_field(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> TournamentConnectionField | None:
         event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
         targets_tournament = any(
@@ -205,7 +205,7 @@ class CustomUploadPlugin(Plugin):
 
     @hookimpl
     def get_nav_data_transfer_items(
-        self, event: 'Event'
+        self, event: Event
     ) -> Iterable[NavDataTransferItem]:
         has_upload_error = any(
             document.upload_failure_id

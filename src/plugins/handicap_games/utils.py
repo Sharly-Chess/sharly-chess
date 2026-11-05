@@ -21,7 +21,7 @@ class HandicapGameUtils:
     @staticmethod
     def get_tournament_plugin_data(
         tournament: Tournament,
-    ) -> 'HandicapGamesTournamentPluginData':
+    ) -> HandicapGamesTournamentPluginData:
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, HandicapGamesTournamentPluginData)
         return plugin_data
@@ -29,7 +29,7 @@ class HandicapGameUtils:
     @staticmethod
     def get_transient_player_plugin_data(
         tournament_player: TournamentPlayer,
-    ) -> 'HandicapGamesTransientPlayerPluginData':
+    ) -> HandicapGamesTransientPlayerPluginData:
         plugin_data = tournament_player.transient_plugin_data.get(
             PLUGIN_NAME, HandicapGamesTransientPlayerPluginData()
         )

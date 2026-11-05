@@ -2,7 +2,7 @@ import math
 import weakref
 from collections.abc import Iterable
 from itertools import chain
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING
 from _weakref import ReferenceType
 
 from common.i18n import _
@@ -35,9 +35,9 @@ class ScreenSet:
 
     def __init__(
         self,
-        screen: 'Screen',
+        screen: Screen,
         stored_screen_set: StoredScreenSet | None = None,
-        family: Optional['Family'] = None,
+        family: Family | None = None,
         family_part: int | None = None,
     ):
         if stored_screen_set is None:
@@ -146,14 +146,14 @@ class ScreenSet:
         self._team_items_lists: list[list[Any]] | None = None
 
     @property
-    def screen(self) -> 'Screen':
+    def screen(self) -> Screen:
         screen = self._screen_ref()
         if screen is None:
             raise RuntimeError('Screen reference has been garbage collected')
         return screen
 
     @property
-    def family(self) -> 'Family | None':
+    def family(self) -> Family | None:
         return self._family_ref() if self._family_ref else None
 
     @property
@@ -165,11 +165,11 @@ class ScreenSet:
         return self.screen.type
 
     @property
-    def screen_type(self) -> 'ScreenType':
+    def screen_type(self) -> ScreenType:
         return self.screen.screen_type
 
     @property
-    def _config(self) -> 'StoredScreen | StoredFamily':
+    def _config(self) -> StoredScreen | StoredFamily:
         """The stored record carrying this set's screen configuration (the
         screen's own record, or its family's for a family-generated screen)."""
         if self.screen.stored_screen is not None:
@@ -182,7 +182,7 @@ class ScreenSet:
         return self.stored_screen_set.order if self.stored_screen_set else None
 
     @property
-    def event(self) -> 'Event':
+    def event(self) -> Event:
         return self.screen.event
 
     @property
@@ -194,7 +194,7 @@ class ScreenSet:
         return self.family.tournament_id
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         return self.event.tournaments_by_id[self.tournament_id]
 
     @property
@@ -483,19 +483,19 @@ class ScreenSet:
             self._extract_team_data(items=matches)
 
     @property
-    def team_matches_lists(self) -> 'list[list[TeamBoard]]':
+    def team_matches_lists(self) -> list[list[TeamBoard]]:
         self._extract_team_matches()
         if TYPE_CHECKING:
             assert isinstance(self._team_items_lists, list)
         return self._team_items_lists
 
     @property
-    def first_team_match(self) -> 'TeamBoard | None':
+    def first_team_match(self) -> TeamBoard | None:
         self._extract_team_matches()
         return self._team_first_item
 
     @property
-    def last_team_match(self) -> 'TeamBoard | None':
+    def last_team_match(self) -> TeamBoard | None:
         self._extract_team_matches()
         return self._team_last_item
 
@@ -614,7 +614,7 @@ class ScreenSet:
         return self._team_items_lists
 
     @property
-    def teams_by_name_tuple_lists(self) -> 'Iterable[tuple[list[Any], list[Any]]]':
+    def teams_by_name_tuple_lists(self) -> Iterable[tuple[list[Any], list[Any]]]:
         """Per screen column, the column's teams split into two halves
         (mirroring :attr:`tournament_players_by_name_tuple_lists`)."""
         self._extract_teams_by_name()
@@ -637,12 +637,12 @@ class ScreenSet:
         return self._team_last_item
 
     @property
-    def first_team_standing(self) -> 'TeamStanding | None':
+    def first_team_standing(self) -> TeamStanding | None:
         self._extract_team_standings()
         return self._team_first_item
 
     @property
-    def last_team_standing(self) -> 'TeamStanding | None':
+    def last_team_standing(self) -> TeamStanding | None:
         self._extract_team_standings()
         return self._team_last_item
 

@@ -37,7 +37,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         self,
         data: TOMLContainer,
         section: str,
-        template: 'PlaceCardTemplate',
+        template: PlaceCardTemplate,
     ):
         self.id: str = section
         super().__init__(
@@ -264,7 +264,7 @@ class PlaceCardText(PlaceCardItem):
         self,
         data: TOMLContainer,
         section: str,
-        template: 'PlaceCardTemplate',
+        template: PlaceCardTemplate,
     ):
         super().__init__(data, section, template)
         self.raw_text: str = data.get_str(
@@ -392,7 +392,7 @@ class PlaceCardImage(PlaceCardItem):
         self,
         data: TOMLContainer,
         section: str,
-        template: 'PlaceCardTemplate',
+        template: PlaceCardTemplate,
     ):
         super().__init__(data, section, template)
         self.image_paths: list[Path] = template.image_paths

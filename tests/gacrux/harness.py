@@ -156,7 +156,7 @@ class KnownIssue:
     #: An edit of the TRF text that sidesteps the issue.
     workaround: Callable[[str], str] | None = None
 
-    def applies_to(self, run: 'CheckerRun') -> bool:
+    def applies_to(self, run: CheckerRun) -> bool:
         return run.failed and re.search(self.signature, run.traceback) is not None
 
     def work_around(
@@ -189,7 +189,7 @@ KNOWN_ISSUES = (
 )
 
 
-def known_issue(run: 'CheckerRun') -> KnownIssue | None:
+def known_issue(run: CheckerRun) -> KnownIssue | None:
     return next((issue for issue in KNOWN_ISSUES if issue.applies_to(run)), None)
 
 
@@ -428,7 +428,7 @@ def check_pairings(trf_path: Path, *args: str) -> PairingCheck:
     return check
 
 
-def _board_pair(board: 'Board | None') -> str:
+def _board_pair(board: Board | None) -> str:
     if board is None:
         return '-'
     white = board.white_tournament_player.pairing_number

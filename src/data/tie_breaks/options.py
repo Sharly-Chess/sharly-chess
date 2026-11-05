@@ -32,7 +32,7 @@ class TieBreakOption[V](Option[V], ABC):
         """Defines if the option value is the default for the tie-break or if it is a variation."""
         return self.value != self.default_value
 
-    def is_compatible_with(self, pairing_system: 'PairingSystem') -> bool:
+    def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
         """Whether this option's current value can be evaluated on the
         given pairing system. Default: always. Override on options
         whose value relies on a pairing-system capability (e.g.
@@ -69,7 +69,7 @@ class TieBreakOption[V](Option[V], ABC):
         Tie-breaks with legacy options can no longer be modified."""
         return False
 
-    def tooltips_by_tie_break(self, event: 'Event | None') -> dict[str, str]:
+    def tooltips_by_tie_break(self, event: Event | None) -> dict[str, str]:
         """The option's tooltip for each tie-break of the event that has
         one for it, keyed by tie-break id."""
         from data.tie_breaks.managers import TieBreakManager
@@ -118,7 +118,7 @@ class BaseCutterTieBreakOption(TieBreakOption[str], ABC):
         return NoCutTieBreakCutter.static_id()
 
     @property
-    def cutter_manager(self) -> 'TieBreakCutterManager':
+    def cutter_manager(self) -> TieBreakCutterManager:
         from data.tie_breaks.managers import TieBreakCutterManager
 
         return TieBreakCutterManager(self.include_median)
@@ -138,7 +138,7 @@ class BaseCutterTieBreakOption(TieBreakOption[str], ABC):
         return True
 
     @property
-    def cutter_options(self) -> dict[str, 'SelectOption']:
+    def cutter_options(self) -> dict[str, SelectOption]:
         from web.utils import SelectOption
 
         return {
@@ -602,7 +602,7 @@ class TeamScoreTieBreakOption(TieBreakOption[str]):
         self.value = acronym[1:]
         return True
 
-    def is_compatible_with(self, pairing_system: 'PairingSystem') -> bool:
+    def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
         # The match-point variant needs the pairing system to expose
         # match points. GP-only systems can't compute it.
         if self.value != self.VALUE_MP:
@@ -617,7 +617,7 @@ class TeamScoreTieBreakOption(TieBreakOption[str]):
         return self.value != self.default_value
 
     @property
-    def score_options(self) -> 'dict[str, Any]':
+    def score_options(self) -> dict[str, Any]:
         """Select-input dict consumed by ``team_score.html``."""
         from web.utils import SelectOption
 

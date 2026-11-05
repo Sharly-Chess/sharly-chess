@@ -16,7 +16,7 @@ def _color_chip(color: str) -> str:
     return f'<span class="board-color-chip {color}"></span>'
 
 
-def _flat_team(board: Board, player: TournamentPlayer) -> 'Team | None':
+def _flat_team(board: Board, player: TournamentPlayer) -> Team | None:
     """The player's team when the board is a flat team board (a team
     system that seats boards without grouping them by match)."""
     tournament = board.tournament

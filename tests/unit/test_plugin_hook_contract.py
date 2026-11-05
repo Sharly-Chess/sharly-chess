@@ -7,6 +7,7 @@ return what no caller expects. And the application names hooks by string
 at its call sites, which nothing checks at all until the line runs.
 """
 
+import annotationlib
 import ast
 import inspect
 import re
@@ -24,6 +25,7 @@ from plugins.utils import Plugin
 SPEC_MARK = f'{APP_NAME}_spec'
 IMPL_MARK = f'{APP_NAME}_impl'
 SRC_DIR = BASE_DIR / 'src'
+STRING = annotationlib.Format.STRING
 
 
 def _marked(cls: type, mark: str) -> Iterator[tuple[str, Callable[..., Any]]]:
@@ -39,7 +41,7 @@ def _specs() -> dict[str, inspect.Signature]:
         plugin.hookspecs for plugin in plugin_manager.all_plugins if plugin.hookspecs
     )
     return {
-        name: inspect.signature(function)
+        name: inspect.signature(function, annotation_format=STRING)
         for holder in holders
         for name, function in _marked(holder, SPEC_MARK)
     }
@@ -48,29 +50,18 @@ def _specs() -> dict[str, inspect.Signature]:
 def _implementations() -> Iterator[tuple[Plugin, str, inspect.Signature]]:
     for plugin in plugin_manager.all_plugins:
         for name, function in _marked(type(plugin), IMPL_MARK):
-            yield plugin, name, inspect.signature(function)
+            yield plugin, name, inspect.signature(function, annotation_format=STRING)
 
 
 def _members(annotation: Any) -> set[str]:
     """The top-level members of an annotation's union, spelled the same
-    whether they came as a string, a class or a typing construct."""
+    whether or not the class is named with its module."""
     if annotation is inspect.Parameter.empty:
         return set()
-    text = annotation if isinstance(annotation, str) else repr(annotation)
-    text = re.sub(r'ForwardRef\(([^)]*)\)', r'\1', text)
-    text = re.sub(r'<\w+ ([^>]*)>', r'\1', text)
-    text = text.replace("'", '').replace('"', '').replace(' ', '')
+    text = annotation.replace(' ', '')
     # A module path in front of a name says where the class lives, not
-    # what it is: `data.player.Player` and `'Player'` name the same thing.
+    # what it is: `data.player.Player` and `Player` name the same thing.
     text = re.sub(r'\b(?:[a-z_][a-z0-9_]*\.)+(?=[A-Za-z_])', '', text)
-    while match := re.search(r'Optional\[((?:[^\[\]]|\[[^\[\]]*\])*)\]', text):
-        text = text[: match.start()] + f'{match.group(1)}|None' + text[match.end() :]
-    while match := re.search(r'Union\[((?:[^\[\]]|\[[^\[\]]*\])*)\]', text):
-        text = (
-            text[: match.start()]
-            + match.group(1).replace(',', '|')
-            + text[match.end() :]
-        )
     members: set[str] = set()
     depth = 0
     start = 0

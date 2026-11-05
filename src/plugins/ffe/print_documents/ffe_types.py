@@ -34,12 +34,12 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     def set_ffe_document(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> None:
         self._ffe_document = ffe_document
 
     @property
-    def ffe_document(self) -> 'FFEPrintDocument':
+    def ffe_document(self) -> FFEPrintDocument:
         assert self._ffe_document is not None, 'set_ffe_document() has not been called.'
         return self._ffe_document
 
@@ -58,7 +58,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     def validate_options(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> None:
         self.set_ffe_document(ffe_document)
 
@@ -204,7 +204,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         self.set_ffe_document(ffe_document)
         return {
@@ -296,7 +296,7 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'event_name': self.tournaments_name,
@@ -349,7 +349,7 @@ class FFETrainingCertificateType(FFETournamentsDocumentType, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         self.set_ffe_document(ffe_document)
         return super().template_context(ffe_document) | {
@@ -562,7 +562,7 @@ class FFET1Type(FFETournamentsDocumentType):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'chief_arbiter': self.chief_arbiter,
@@ -623,7 +623,7 @@ class FFET2Type(FFETournamentsDocumentType):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'report_text': self.report_text
@@ -660,7 +660,7 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'arbiter': self.arbiter,
@@ -696,7 +696,7 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'tournament': self.tournament,
@@ -713,7 +713,7 @@ class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'players': self.players,
@@ -738,7 +738,7 @@ class FFET3T4Type(FFEPlayersDocumentType, ABC):
 
     @staticmethod
     @abstractmethod
-    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+    def players_print_option() -> type[FFENoLicencePlayersPrintOption]:
         """Returns the type of the option used."""
 
     @staticmethod
@@ -764,7 +764,7 @@ class FFET3T4Type(FFEPlayersDocumentType, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'ffe_licence': self.ffe_licence(),
@@ -782,7 +782,7 @@ class FFET3Type(FFET3T4Type):
         return _('T3 Licence A certificate')
 
     @staticmethod
-    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+    def players_print_option() -> type[FFENoLicencePlayersPrintOption]:
         from plugins.ffe.print_documents import ffe_options
 
         return ffe_options.FFET3NoLicencePlayersPrintOption
@@ -806,7 +806,7 @@ class FFET4Type(FFET3T4Type):
         return _('T4 Licence B certificate')
 
     @staticmethod
-    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+    def players_print_option() -> type[FFENoLicencePlayersPrintOption]:
         from plugins.ffe.print_documents import ffe_options
 
         return ffe_options.FFET4NoLicencePlayersPrintOption
@@ -850,7 +850,7 @@ class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'player': self.player,
@@ -905,7 +905,7 @@ class FFET5Type(FFEMandatoryPlayerDocumentType):
 
     def template_context(
         self,
-        ffe_document: 'FFEPrintDocument',
+        ffe_document: FFEPrintDocument,
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'response_date': self.response_date,

@@ -1930,7 +1930,7 @@ class ChampionshipAdminController(BaseAdminController):
             stored_source = ChampionshipLoader().add_source(
                 championship_uniq_id, event_uniq_id, tournament_id
             )
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             errors['tournament_id'] = _('Please select a valid tournament.')
             return self._render_source_modal(request, championship, data, errors)
 

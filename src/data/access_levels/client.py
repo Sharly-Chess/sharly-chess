@@ -1,5 +1,5 @@
 from functools import cached_property, cache
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from collections.abc import Collection
 
 from litestar_htmx import HTMXRequest
@@ -33,7 +33,7 @@ class Client:
     def __init__(
         self,
         request: HTMXRequest,
-        event: Optional['Event'] = None,
+        event: Event | None = None,
     ):
         self.request = request
         self.host = (
@@ -75,7 +75,7 @@ class Client:
         return account
 
     @classmethod
-    def for_event_administrator(cls, event: 'Event') -> 'Client':
+    def for_event_administrator(cls, event: Event) -> Client:
         """Build a request-less client with the event administrator account, for
         background tasks (e.g. plugin auto-uploads) that need to render documents
         or check permissions outside of an HTTP request."""

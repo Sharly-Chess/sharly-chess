@@ -1,7 +1,5 @@
 """`TitleNormSubsetSearcher` — subset search implementing FIDE 1.4.1e/f."""
 
-from __future__ import annotations
-
 from itertools import combinations
 from typing import TYPE_CHECKING
 from collections.abc import Iterable

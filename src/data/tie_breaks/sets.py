@@ -12,7 +12,7 @@ import copy
 from dataclasses import dataclass, field
 from enum import StrEnum
 from logging import Logger
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from common.logger import get_logger
@@ -59,16 +59,14 @@ class TieBreakSet:
     custom_set_id: int | None = None
     tie_break_acronyms: list[str] = field(default_factory=list)
 
-    def instantiate_tie_breaks(
-        self, event: Optional['Event']
-    ) -> list['TieBreak | None']:
+    def instantiate_tie_breaks(self, event: Event | None) -> list[TieBreak | None]:
         """Materialize fresh TieBreak instances from the stored payload."""
         return [
             instantiate_tie_break(stored_tb, event)
             for stored_tb in self.stored_tie_breaks
         ]
 
-    def tooltip_message(self, event: Optional['Event'] = None) -> str:
+    def tooltip_message(self, event: Event | None = None) -> str:
         return ''.join(
             [
                 f'<div class="text-start">{index}. {tie_break.full_name}</div>'
@@ -82,8 +80,8 @@ class TieBreakSet:
 
 
 def instantiate_tie_break(
-    stored_tie_break: StoredTieBreak, event: Optional['Event']
-) -> 'TieBreak | None':
+    stored_tie_break: StoredTieBreak, event: Event | None
+) -> TieBreak | None:
     """Materialize a single TieBreak from its stored value.
     Returns None if the type is unknown for this event (e.g. plugin disabled)."""
     try:
@@ -106,7 +104,7 @@ def instantiate_tie_break(
     return tie_break_type(options)
 
 
-def _all_tie_break_subclasses() -> 'list[type[TieBreak]]':
+def _all_tie_break_subclasses() -> list[type[TieBreak]]:
     """Collect every concrete TieBreak subclass loaded in the process,
     ignoring abstract intermediates."""
     from data.tie_breaks.tie_breaks import TieBreak
@@ -122,7 +120,7 @@ def _all_tie_break_subclasses() -> 'list[type[TieBreak]]':
         stack.extend(cls.__subclasses__())
         try:
             cls.static_id()
-        except (NotImplementedError, TypeError):
+        except NotImplementedError, TypeError:
             continue
         result.append(cls)
     return result
@@ -135,7 +133,7 @@ def friendly_name_for_tie_break_type(type_id: str) -> str:
         try:
             if cls.static_id() == type_id:
                 return cls.static_name()
-        except (NotImplementedError, TypeError):
+        except NotImplementedError, TypeError:
             continue
     return type_id
 
@@ -149,7 +147,7 @@ def stored_tie_break_to_dict(stored_tie_break: StoredTieBreak) -> dict[str, obje
 
 
 def evaluate_set_against_tournament(
-    tie_break_set: TieBreakSet, tournament: 'Tournament'
+    tie_break_set: TieBreakSet, tournament: Tournament
 ) -> tuple[bool, str | None]:
     """Return (disabled, reason). A set is disabled if any TB returns an
     invalid message, or if the set contains an internal duplicate."""
@@ -179,7 +177,7 @@ def evaluate_set_against_tournament(
     return False, None
 
 
-def fill_acronyms(tie_break_set: TieBreakSet, event: 'Event | None') -> None:
+def fill_acronyms(tie_break_set: TieBreakSet, event: Event | None) -> None:
     """Populate `tie_break_acronyms` on the set for UI display."""
     acronyms: list[str] = []
     for tie_break in tie_break_set.instantiate_tie_breaks(event):
@@ -190,8 +188,8 @@ def fill_acronyms(tie_break_set: TieBreakSet, event: 'Event | None') -> None:
 
 
 def sibling_tournaments_with_tie_breaks(
-    tournament: 'Tournament',
-) -> list['Tournament']:
+    tournament: Tournament,
+) -> list[Tournament]:
     """Return tournaments of the same event with the same pairing system
     and at least one tie-break (excluding the current tournament)."""
     return [
@@ -203,7 +201,7 @@ def sibling_tournaments_with_tie_breaks(
     ]
 
 
-def tie_break_set_from_tournament(source_tournament: 'Tournament') -> TieBreakSet:
+def tie_break_set_from_tournament(source_tournament: Tournament) -> TieBreakSet:
     """Build a snapshot TieBreakSet from a tournament's current tie-breaks."""
     stored_tie_breaks = [
         StoredTieBreak(
@@ -227,7 +225,7 @@ def tie_break_set_from_tournament(source_tournament: 'Tournament') -> TieBreakSe
 
 
 def available_tie_break_sets(
-    tournament: 'Tournament',
+    tournament: Tournament,
 ) -> dict[TieBreakSetSource, list[TieBreakSet]]:
     """Return all tie-break sets available for the tournament, grouped by source.
     Each set's `disabled` and `disabled_reason` are evaluated against the tournament."""
@@ -263,7 +261,7 @@ def available_tie_break_sets(
 
 
 def get_tie_break_set(
-    tournament: 'Tournament', source: str, key: str
+    tournament: Tournament, source: str, key: str
 ) -> TieBreakSet | None:
     """Look up a single tie-break set by source + key."""
     try:

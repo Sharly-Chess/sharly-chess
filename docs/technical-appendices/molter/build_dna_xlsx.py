@@ -15,8 +15,6 @@ This is useful for comparing complete old and new artifacts while retaining the
 README, filterable quality index, hyperlinks, and one sheet per team count.
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from dataclasses import dataclass

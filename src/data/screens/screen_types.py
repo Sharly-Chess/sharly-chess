@@ -32,8 +32,8 @@ if TYPE_CHECKING:
 
 
 def _build_board_columns(
-    tournament: 'Tournament', show_illegal_moves: bool
-) -> 'list[BoardColumn] | None':
+    tournament: Tournament, show_illegal_moves: bool
+) -> list[BoardColumn] | None:
     """Pairings-by-board columns for *tournament*, or ``None`` before the
     first round is paired."""
     from data.columns.board_table import ScreenResultColumn
@@ -51,7 +51,7 @@ def _build_board_columns(
     )
 
 
-def _board_range_bounds(screen_set: 'ScreenSet') -> tuple[str, str]:
+def _board_range_bounds(screen_set: ScreenSet) -> tuple[str, str]:
     """First/last display values for a boards/input set that has a paired
     round: match table numbers in team mode, board numbers otherwise."""
     dash = '-'
@@ -80,7 +80,7 @@ def _board_range_bounds(screen_set: 'ScreenSet') -> tuple[str, str]:
     )
 
 
-def _board_numbers_str(screen_set: 'ScreenSet') -> str:
+def _board_numbers_str(screen_set: ScreenSet) -> str:
     """Human-readable range label for a boards/input set."""
     if screen_set.fixed_board_numbers:
         return _('boards {board_numbers}').format(
@@ -126,7 +126,7 @@ def _board_numbers_str(screen_set: 'ScreenSet') -> str:
             )
 
 
-def _players_numbers_str(screen_set: 'ScreenSet') -> str:
+def _players_numbers_str(screen_set: ScreenSet) -> str:
     """Human-readable range label for a players/check-in set (players in an
     individual event, teams in a team event)."""
     first, last = screen_set.first, screen_set.last
@@ -166,7 +166,7 @@ class FamilyItemRange(NamedTuple):
     number_per_column: bool
 
 
-def _family_range_from_total(family: 'Family', total: int) -> tuple[int, int, int]:
+def _family_range_from_total(family: Family, total: int) -> tuple[int, int, int]:
     """First/last/count for a family that honours its ``first``/``last`` window
     over *total* items."""
     if not total:
@@ -176,7 +176,7 @@ def _family_range_from_total(family: 'Family', total: int) -> tuple[int, int, in
     return first, last, last - first + 1
 
 
-def _board_family_item_range(family: 'Family') -> FamilyItemRange:
+def _board_family_item_range(family: Family) -> FamilyItemRange:
     """Family item range for a boards/input family: matches or boards once a
     round is paired, otherwise the registered players."""
     tournament = family.tournament
@@ -200,7 +200,7 @@ def _board_family_item_range(family: 'Family') -> FamilyItemRange:
     return FamilyItemRange(1 if count else 0, count, count, True, False)
 
 
-def _board_family_screen_label(screen_set: 'ScreenSet') -> str:
+def _board_family_screen_label(screen_set: ScreenSet) -> str:
     """Per-screen range label shown on a boards/input family card."""
     tournament = screen_set.tournament
     if tournament.current_round and screen_set.shows_team_matches:
@@ -231,7 +231,7 @@ def _board_family_screen_label(screen_set: 'ScreenSet') -> str:
     return _players_family_screen_label(screen_set)
 
 
-def _players_family_screen_label(screen_set: 'ScreenSet') -> str:
+def _players_family_screen_label(screen_set: ScreenSet) -> str:
     """Per-screen range label shown on a players/check-in family card (also
     the round-0 fallback for boards/input)."""
     if screen_set.tournament.is_team_tournament:
@@ -254,7 +254,7 @@ def _players_family_screen_label(screen_set: 'ScreenSet') -> str:
 
 
 def _players_family_number_strings(
-    family: 'Family',
+    family: Family,
 ) -> tuple[dict[str, str], int]:
     """Family selection-label strings for a players/check-in/ranking family
     (teams in a team event, players otherwise)."""
@@ -295,7 +295,7 @@ def _players_family_number_strings(
     )
 
 
-def _board_family_number_strings(family: 'Family') -> tuple[dict[str, str], int]:
+def _board_family_number_strings(family: Family) -> tuple[dict[str, str], int]:
     """Family selection-label strings for a boards/input family (matches in
     team-vs-team mode, boards otherwise)."""
     if family.shows_team_matches:
@@ -439,7 +439,7 @@ def _name_or_rank_selection_labels(is_team: bool, header: str) -> dict:
     }
 
 
-def _config_record(screen: 'Screen') -> 'StoredScreen | StoredFamily':
+def _config_record(screen: Screen) -> StoredScreen | StoredFamily:
     """The stored record carrying *screen*'s configuration: the screen's own
     record, or its family's for a family-generated screen."""
     if screen.stored_screen is not None:
@@ -483,7 +483,7 @@ class ScreenType(IdentifiableEntity, ABC):
         """Whether multi-column layout is allowed."""
         return True
 
-    def default_screen_name(self, screen: 'Screen') -> str:
+    def default_screen_name(self, screen: Screen) -> str:
         """The screen's automatic name when it has no stored name. A plugin
         type overrides this (or ``default_family_screen_name``) to name its
         screens."""
@@ -497,11 +497,11 @@ class ScreenType(IdentifiableEntity, ABC):
             return ' / '.join(names) if names else _('Screen')
         return self.default_family_screen_name(screen)
 
-    def default_family_screen_name(self, screen: 'Screen') -> str:
+    def default_family_screen_name(self, screen: Screen) -> str:
         """The automatic name for a family-generated screen of this type."""
         return self.name
 
-    def shows_unpaired_players(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: Screen) -> bool:
         """Whether unpaired players are shown for a screen of this type."""
         return False
 
@@ -556,13 +556,13 @@ class ScreenType(IdentifiableEntity, ABC):
         full-screen image type)."""
         return True
 
-    def type_str(self, screen: 'Screen') -> str:
+    def type_str(self, screen: Screen) -> str:
         """Human-readable label for the screen's type (may depend on the
         screen's own configuration)."""
         return self.name
 
     def range_bounds(
-        self, screen_set: 'ScreenSet', abbreviated: bool = False
+        self, screen_set: ScreenSet, abbreviated: bool = False
     ) -> tuple[str, str]:
         """First (``%f``) and last (``%l``) display values shown by *screen_set*.
         The default is the players-by-name range; set-based types override.
@@ -572,14 +572,14 @@ class ScreenType(IdentifiableEntity, ABC):
         first = screen_set.first_tournament_player_by_name
         last = screen_set.last_tournament_player_by_name
 
-        def player_label(player: 'TournamentPlayer | None') -> str:
+        def player_label(player: TournamentPlayer | None) -> str:
             if player is None:
                 return dash
             return player.last_name[:3].upper() if abbreviated else player.last_name[:8]
 
         return player_label(first), player_label(last)
 
-    def numbers_str(self, screen_set: 'ScreenSet') -> str:
+    def numbers_str(self, screen_set: ScreenSet) -> str:
         """Human-readable range label for *screen_set*. The default is the
         ranking wording; set-based types override."""
         match (screen_set.first, screen_set.last):
@@ -595,21 +595,21 @@ class ScreenType(IdentifiableEntity, ABC):
                 )
 
     def build_columns(
-        self, screen: 'Screen', tournament: 'Tournament', event: 'Event'
-    ) -> 'list[TournamentPlayerTableColumn] | list[BoardColumn] | None':
+        self, screen: Screen, tournament: Tournament, event: Event
+    ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         """Table columns rendered for *tournament* in this screen, or ``None``
         when the type has no per-tournament column table. Also performs any
         per-tournament setup the type's view needs."""
         tournament.set_for_round()
         return None
 
-    def set_refresh_needed(self, screen_set: 'ScreenSet', since: datetime) -> bool:
+    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
         """Whether one of the screen's sets changed since *since* and needs a
         refresh."""
         tournament = screen_set.tournament
         return max(tournament.last_update, tournament.last_player_update) > since
 
-    def refresh_needed(self, screen: 'Screen', since: datetime) -> bool:
+    def refresh_needed(self, screen: Screen, since: datetime) -> bool:
         """Whether the screen changed since *since* (the caller already checks
         the event/screen/family timestamps)."""
         return any(
@@ -649,33 +649,33 @@ class ScreenType(IdentifiableEntity, ABC):
         return None
 
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         """Extract this type's ``StoredScreen`` fields from the submitted form
         *data*, adding any validation messages to *errors*."""
         return {}
 
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         """This type's stored fields as form values, to pre-fill the edit
         form."""
         return {}
 
-    def default_family_form_data(self, family: 'Family') -> dict:
+    def default_family_form_data(self, family: Family) -> dict:
         """This type's stored fields as form values, to pre-fill the family
         edit form."""
         return {}
 
-    def create_form_data(self, event: 'Event') -> dict:
+    def create_form_data(self, event: Event) -> dict:
         """This type's default field values for a new screen/family."""
         return {}
 
-    def set_context(self, screen_set: 'ScreenSet') -> dict:
+    def set_context(self, screen_set: ScreenSet) -> dict:
         """The data injected into ``set_template`` for one of the screen's
         sets. The type owns what its template needs, so the template reads
         ``data.*`` rather than reaching into the screen."""
         return {}
 
-    def content_context(self, screen: 'Screen') -> dict:
+    def content_context(self, screen: Screen) -> dict:
         """The data injected into ``content_template`` for a standalone
         type."""
         return {}
@@ -708,28 +708,28 @@ class ScreenType(IdentifiableEntity, ABC):
         the type contributes no extra buttons."""
         return None
 
-    def card_context(self, screen: 'Screen') -> dict | None:
+    def card_context(self, screen: Screen) -> dict | None:
         """The data injected into ``card_detail_template`` for a screen card,
         ``None`` to leave the detail out."""
         return {}
 
-    def family_card_context(self, family: 'Family') -> dict | None:
+    def family_card_context(self, family: Family) -> dict | None:
         """The data injected into ``card_detail_template`` for a family card
         (same fragment as ``card_context``, read from the family's record),
         ``None`` to leave the detail out."""
         return {}
 
-    def family_type_str(self, family: 'Family') -> str:
+    def family_type_str(self, family: Family) -> str:
         """Human-readable label for a family's type (may depend on the
         family's configuration)."""
         return self.name
 
-    def family_item_range(self, family: 'Family') -> FamilyItemRange:
+    def family_item_range(self, family: Family) -> FamilyItemRange:
         """How a family of this type splits into screens. Only the
         family-capable types implement this."""
         raise NotImplementedError(f'{type(self).__name__} does not back a family')
 
-    def family_screen_label(self, screen_set: 'ScreenSet') -> str:
+    def family_screen_label(self, screen_set: ScreenSet) -> str:
         """The range label for one generated screen of a family, shown on the
         family card. Only the family-capable types implement this."""
         raise NotImplementedError(f'{type(self).__name__} does not back a family')
@@ -740,12 +740,12 @@ class ScreenType(IdentifiableEntity, ABC):
         the family-capable types implement this."""
         raise NotImplementedError(f'{type(self).__name__} does not back a family')
 
-    def family_number_strings(self, family: 'Family') -> tuple[dict[str, str], int]:
+    def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
         """The selection-label string table and board-number offset for a
         family of this type (see ``Family.numbers_str``)."""
         return _players_family_number_strings(family)
 
-    def depends_on_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
+    def depends_on_tournament(self, screen: Screen, tournament: Tournament) -> bool:
         """Whether the screen is a dedicated view of *tournament* (used to
         decide which screens a tournament change must refresh)."""
         return all(
@@ -753,7 +753,7 @@ class ScreenType(IdentifiableEntity, ABC):
             for screen_set in screen.screen_sets
         )
 
-    def relates_to_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
+    def relates_to_tournament(self, screen: Screen, tournament: Tournament) -> bool:
         """Whether the screen shows *tournament* among others."""
         return any(
             screen_set.tournament.id == tournament.id
@@ -780,7 +780,7 @@ class CheckInScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -789,23 +789,23 @@ class CheckInScreenType(ScreenType):
         }
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
         return {'input_exit_button': screen.stored_screen.input_exit_button}
 
     @override
-    def default_family_form_data(self, family: 'Family') -> dict:
+    def default_family_form_data(self, family: Family) -> dict:
         return {'input_exit_button': family.stored_family.input_exit_button}
 
     @override
-    def default_family_screen_name(self, screen: 'Screen') -> str:
+    def default_family_screen_name(self, screen: Screen) -> str:
         first_set = screen.sorted_screen_sets[0]
         if first_set.tournament.is_team_tournament:
             return first_set.name_for_teams
         return first_set.name_for_players
 
     @override
-    def shows_unpaired_players(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: Screen) -> bool:
         return True
 
     @property
@@ -829,12 +829,12 @@ class CheckInScreenType(ScreenType):
         return '/admin/screens/forms/exit_button_form.html'
 
     @override
-    def create_form_data(self, event: 'Event') -> dict:
+    def create_form_data(self, event: Event) -> dict:
         return {'input_exit_button': False}
 
     @override
     def range_bounds(
-        self, screen_set: 'ScreenSet', abbreviated: bool = False
+        self, screen_set: ScreenSet, abbreviated: bool = False
     ) -> tuple[str, str]:
         if screen_set.tournament.is_team_tournament:
             dash = '-'
@@ -847,11 +847,11 @@ class CheckInScreenType(ScreenType):
         return super().range_bounds(screen_set, abbreviated)
 
     @override
-    def numbers_str(self, screen_set: 'ScreenSet') -> str:
+    def numbers_str(self, screen_set: ScreenSet) -> str:
         return _players_numbers_str(screen_set)
 
     @override
-    def family_item_range(self, family: 'Family') -> FamilyItemRange:
+    def family_item_range(self, family: Family) -> FamilyItemRange:
         tournament = family.tournament
         if tournament.is_team_tournament:
             count = len(
@@ -866,7 +866,7 @@ class CheckInScreenType(ScreenType):
         return FamilyItemRange(1 if count else 0, count, count, True, False)
 
     @override
-    def family_screen_label(self, screen_set: 'ScreenSet') -> str:
+    def family_screen_label(self, screen_set: ScreenSet) -> str:
         return _players_family_screen_label(screen_set)
 
     @override
@@ -912,7 +912,7 @@ class InputScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -921,20 +921,20 @@ class InputScreenType(ScreenType):
         }
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
         return {'input_exit_button': screen.stored_screen.input_exit_button}
 
     @override
-    def default_family_form_data(self, family: 'Family') -> dict:
+    def default_family_form_data(self, family: Family) -> dict:
         return {'input_exit_button': family.stored_family.input_exit_button}
 
     @override
-    def default_family_screen_name(self, screen: 'Screen') -> str:
+    def default_family_screen_name(self, screen: Screen) -> str:
         return screen.sorted_screen_sets[0].name_for_boards
 
     @override
-    def shows_unpaired_players(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: Screen) -> bool:
         return True
 
     @property
@@ -968,18 +968,18 @@ class InputScreenType(ScreenType):
         return '/admin/screens/forms/exit_button_form.html'
 
     @override
-    def create_form_data(self, event: 'Event') -> dict:
+    def create_form_data(self, event: Event) -> dict:
         return {'input_exit_button': False}
 
     @override
     def build_columns(
-        self, screen: 'Screen', tournament: 'Tournament', event: 'Event'
-    ) -> 'list[TournamentPlayerTableColumn] | list[BoardColumn] | None':
+        self, screen: Screen, tournament: Tournament, event: Event
+    ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         show_illegal_moves = tournament.record_illegal_moves > 0
         return _build_board_columns(tournament, show_illegal_moves)
 
     @override
-    def set_refresh_needed(self, screen_set: 'ScreenSet', since: datetime) -> bool:
+    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
         return (
             super().set_refresh_needed(screen_set, since)
             or screen_set.tournament.last_pairing_update > since
@@ -987,22 +987,22 @@ class InputScreenType(ScreenType):
 
     @override
     def range_bounds(
-        self, screen_set: 'ScreenSet', abbreviated: bool = False
+        self, screen_set: ScreenSet, abbreviated: bool = False
     ) -> tuple[str, str]:
         if not screen_set.tournament.current_round:
             return super().range_bounds(screen_set, abbreviated)
         return _board_range_bounds(screen_set)
 
     @override
-    def numbers_str(self, screen_set: 'ScreenSet') -> str:
+    def numbers_str(self, screen_set: ScreenSet) -> str:
         return _board_numbers_str(screen_set)
 
     @override
-    def family_item_range(self, family: 'Family') -> FamilyItemRange:
+    def family_item_range(self, family: Family) -> FamilyItemRange:
         return _board_family_item_range(family)
 
     @override
-    def family_screen_label(self, screen_set: 'ScreenSet') -> str:
+    def family_screen_label(self, screen_set: ScreenSet) -> str:
         return _board_family_screen_label(screen_set)
 
     @override
@@ -1010,7 +1010,7 @@ class InputScreenType(ScreenType):
         return _board_selection_labels(is_team_matches)
 
     @override
-    def family_number_strings(self, family: 'Family') -> tuple[dict[str, str], int]:
+    def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
         return _board_family_number_strings(family)
 
 
@@ -1033,7 +1033,7 @@ class BoardsScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -1044,24 +1044,24 @@ class BoardsScreenType(ScreenType):
         }
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
         return {'boards_hide_players': screen.stored_screen.boards_hide_players}
 
     @override
-    def default_family_form_data(self, family: 'Family') -> dict:
+    def default_family_form_data(self, family: Family) -> dict:
         return {'boards_hide_players': family.stored_family.boards_hide_players}
 
     @override
-    def default_family_screen_name(self, screen: 'Screen') -> str:
+    def default_family_screen_name(self, screen: Screen) -> str:
         return screen.sorted_screen_sets[0].name_for_boards
 
     @override
-    def shows_unpaired_players(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: Screen) -> bool:
         # Shown so players appear before the first round is paired.
         return True
 
-    def hides_players(self, screen: 'Screen') -> bool:
+    def hides_players(self, screen: Screen) -> bool:
         """Whether the matches of team tournaments are shown without the
         players of their boards."""
         return bool(_config_record(screen).boards_hide_players)
@@ -1077,7 +1077,7 @@ class BoardsScreenType(ScreenType):
         return '/admin/screens/forms/boards_form.html'
 
     @override
-    def set_context(self, screen_set: 'ScreenSet') -> dict:
+    def set_context(self, screen_set: ScreenSet) -> dict:
         return {'hide_players': self.hides_players(screen_set.screen)}
 
     @property
@@ -1086,13 +1086,13 @@ class BoardsScreenType(ScreenType):
         return '/admin/screens/cards/boards_card.html'
 
     @override
-    def card_context(self, screen: 'Screen') -> dict | None:
+    def card_context(self, screen: Screen) -> dict | None:
         if not screen.event.is_team_event:
             return None
         return {'hide_players': self.hides_players(screen)}
 
     @override
-    def family_card_context(self, family: 'Family') -> dict | None:
+    def family_card_context(self, family: Family) -> dict | None:
         if not family.event.is_team_event:
             return None
         return {'hide_players': bool(family.stored_family.boards_hide_players)}
@@ -1109,12 +1109,12 @@ class BoardsScreenType(ScreenType):
 
     @override
     def build_columns(
-        self, screen: 'Screen', tournament: 'Tournament', event: 'Event'
-    ) -> 'list[TournamentPlayerTableColumn] | list[BoardColumn] | None':
+        self, screen: Screen, tournament: Tournament, event: Event
+    ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         return _build_board_columns(tournament, show_illegal_moves=False)
 
     @override
-    def set_refresh_needed(self, screen_set: 'ScreenSet', since: datetime) -> bool:
+    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
         return (
             super().set_refresh_needed(screen_set, since)
             or screen_set.tournament.last_pairing_update > since
@@ -1122,22 +1122,22 @@ class BoardsScreenType(ScreenType):
 
     @override
     def range_bounds(
-        self, screen_set: 'ScreenSet', abbreviated: bool = False
+        self, screen_set: ScreenSet, abbreviated: bool = False
     ) -> tuple[str, str]:
         if not screen_set.tournament.current_round:
             return super().range_bounds(screen_set, abbreviated)
         return _board_range_bounds(screen_set)
 
     @override
-    def numbers_str(self, screen_set: 'ScreenSet') -> str:
+    def numbers_str(self, screen_set: ScreenSet) -> str:
         return _board_numbers_str(screen_set)
 
     @override
-    def family_item_range(self, family: 'Family') -> FamilyItemRange:
+    def family_item_range(self, family: Family) -> FamilyItemRange:
         return _board_family_item_range(family)
 
     @override
-    def family_screen_label(self, screen_set: 'ScreenSet') -> str:
+    def family_screen_label(self, screen_set: ScreenSet) -> str:
         return _board_family_screen_label(screen_set)
 
     @override
@@ -1145,7 +1145,7 @@ class BoardsScreenType(ScreenType):
         return _board_selection_labels(is_team_matches)
 
     @override
-    def family_number_strings(self, family: 'Family') -> tuple[dict[str, str], int]:
+    def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
         return _board_family_number_strings(family)
 
 
@@ -1168,7 +1168,7 @@ class PlayersScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -1188,7 +1188,7 @@ class PlayersScreenType(ScreenType):
         }
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         stored = screen.stored_screen
         assert stored is not None
         return self._players_form_data(
@@ -1199,7 +1199,7 @@ class PlayersScreenType(ScreenType):
         )
 
     @override
-    def default_family_form_data(self, family: 'Family') -> dict:
+    def default_family_form_data(self, family: Family) -> dict:
         stored = family.stored_family
         return self._players_form_data(
             stored.players_show_unpaired,
@@ -1223,7 +1223,7 @@ class PlayersScreenType(ScreenType):
         }
 
     @staticmethod
-    def default_player_format(event: 'Event') -> PlayersScreenPlayerFormat:
+    def default_player_format(event: Event) -> PlayersScreenPlayerFormat:
         return (
             plugin_manager.hook_for_event(
                 event, 'get_default_players_screen_player_format'
@@ -1232,7 +1232,7 @@ class PlayersScreenType(ScreenType):
         )
 
     @staticmethod
-    def default_board_format(event: 'Event') -> PlayersScreenBoardFormat:
+    def default_board_format(event: Event) -> PlayersScreenBoardFormat:
         return (
             plugin_manager.hook_for_event(
                 event, 'get_default_players_screen_board_format'
@@ -1241,7 +1241,7 @@ class PlayersScreenType(ScreenType):
         )
 
     @staticmethod
-    def default_opponent_format(event: 'Event') -> PlayersScreenOpponentFormat:
+    def default_opponent_format(event: Event) -> PlayersScreenOpponentFormat:
         return (
             plugin_manager.hook_for_event(
                 event, 'get_default_players_screen_opponent_format'
@@ -1250,7 +1250,7 @@ class PlayersScreenType(ScreenType):
         )
 
     @staticmethod
-    def default_columns(event: 'Event') -> int | None:
+    def default_columns(event: Event) -> int | None:
         return cast(
             int | None,
             plugin_manager.hook_for_event(
@@ -1259,7 +1259,7 @@ class PlayersScreenType(ScreenType):
         )
 
     @override
-    def create_form_data(self, event: 'Event') -> dict:
+    def create_form_data(self, event: Event) -> dict:
         return {
             'players_show_unpaired': True,
             'columns': self.default_columns(event),
@@ -1269,11 +1269,11 @@ class PlayersScreenType(ScreenType):
         }
 
     @override
-    def default_family_screen_name(self, screen: 'Screen') -> str:
+    def default_family_screen_name(self, screen: Screen) -> str:
         return screen.sorted_screen_sets[0].name_for_players
 
     @override
-    def shows_unpaired_players(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: Screen) -> bool:
         value = _config_record(screen).players_show_unpaired
         assert value is not None
         return value
@@ -1295,26 +1295,26 @@ class PlayersScreenType(ScreenType):
         return event_type == EventType.INDIVIDUAL
 
     @override
-    def numbers_str(self, screen_set: 'ScreenSet') -> str:
+    def numbers_str(self, screen_set: ScreenSet) -> str:
         return _players_numbers_str(screen_set)
 
-    def player_format(self, screen: 'Screen') -> PlayersScreenPlayerFormat:
+    def player_format(self, screen: Screen) -> PlayersScreenPlayerFormat:
         value = _config_record(screen).players_player_format
         assert value is not None
         return PlayersScreenPlayerFormat(value)
 
-    def board_format(self, screen: 'Screen') -> PlayersScreenBoardFormat:
+    def board_format(self, screen: Screen) -> PlayersScreenBoardFormat:
         value = _config_record(screen).players_board_format
         assert value is not None
         return PlayersScreenBoardFormat(value)
 
-    def opponent_format(self, screen: 'Screen') -> PlayersScreenOpponentFormat:
+    def opponent_format(self, screen: Screen) -> PlayersScreenOpponentFormat:
         value = _config_record(screen).players_opponent_format
         assert value is not None
         return PlayersScreenOpponentFormat(value)
 
     @override
-    def set_context(self, screen_set: 'ScreenSet') -> dict:
+    def set_context(self, screen_set: ScreenSet) -> dict:
         screen = screen_set.screen
         return {
             'player_format': self.player_format(screen),
@@ -1328,7 +1328,7 @@ class PlayersScreenType(ScreenType):
         return '/admin/screens/cards/players_card.html'
 
     @override
-    def card_context(self, screen: 'Screen') -> dict:
+    def card_context(self, screen: Screen) -> dict:
         return {
             'show_unpaired': self.shows_unpaired_players(screen),
             'player_format': self.player_format(screen),
@@ -1338,7 +1338,7 @@ class PlayersScreenType(ScreenType):
         }
 
     @override
-    def family_card_context(self, family: 'Family') -> dict:
+    def family_card_context(self, family: Family) -> dict:
         stored = family.stored_family
         player_format = stored.players_player_format
         board_format = stored.players_board_format
@@ -1357,7 +1357,7 @@ class PlayersScreenType(ScreenType):
         }
 
     @override
-    def family_item_range(self, family: 'Family') -> FamilyItemRange:
+    def family_item_range(self, family: Family) -> FamilyItemRange:
         tournament = family.tournament
         if tournament.current_round:
             if family.stored_family.players_show_unpaired:
@@ -1370,7 +1370,7 @@ class PlayersScreenType(ScreenType):
         return FamilyItemRange(first, last, count, False, False)
 
     @override
-    def family_screen_label(self, screen_set: 'ScreenSet') -> str:
+    def family_screen_label(self, screen_set: ScreenSet) -> str:
         return _players_family_screen_label(screen_set)
 
     @override
@@ -1413,7 +1413,7 @@ class ResultsScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -1438,7 +1438,7 @@ class ResultsScreenType(ScreenType):
         return values
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         stored = screen.stored_screen
         assert stored is not None
         return {
@@ -1448,7 +1448,7 @@ class ResultsScreenType(ScreenType):
         }
 
     @override
-    def default_screen_name(self, screen: 'Screen') -> str:
+    def default_screen_name(self, screen: Screen) -> str:
         names: list[str] = []
         for tournament_id in self.tournament_ids(screen):
             name = screen.event.tournaments_by_id[tournament_id].name
@@ -1471,7 +1471,7 @@ class ResultsScreenType(ScreenType):
     def form_template(self) -> str | None:
         return '/admin/screens/forms/results_form.html'
 
-    def limit(self, screen: 'Screen') -> int:
+    def limit(self, screen: Screen) -> int:
         assert screen.stored_screen is not None
         columns = screen.columns
         stored_limit = screen.stored_screen.results_limit
@@ -1486,14 +1486,14 @@ class ResultsScreenType(ScreenType):
             return results_limit
         return stored_limit
 
-    def max_age(self, screen: 'Screen') -> int:
+    def max_age(self, screen: Screen) -> int:
         assert screen.stored_screen is not None
         return (
             screen.stored_screen.results_max_age
             or SharlyChessConfig.default_results_screen_max_age
         )
 
-    def tournament_ids(self, screen: 'Screen') -> list[int]:
+    def tournament_ids(self, screen: Screen) -> list[int]:
         assert screen.stored_screen is not None
         return [
             tournament_id
@@ -1501,7 +1501,7 @@ class ResultsScreenType(ScreenType):
             if tournament_id in screen.event.tournaments_by_id
         ]
 
-    def tournament_names(self, screen: 'Screen') -> str:
+    def tournament_names(self, screen: Screen) -> str:
         from common.i18n.utils import normalized_key
 
         return ', '.join(
@@ -1514,7 +1514,7 @@ class ResultsScreenType(ScreenType):
             )
         )
 
-    def _results(self, screen: 'Screen') -> 'list[Board]':
+    def _results(self, screen: Screen) -> list[Board]:
         boards: list[Board] = []
         oldest = datetime.now() - timedelta(minutes=self.max_age(screen))
         tournament_ids = self.tournament_ids(screen)
@@ -1529,7 +1529,7 @@ class ResultsScreenType(ScreenType):
         boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
         return boards
 
-    def results_lists(self, screen: 'Screen') -> 'list[list[Board]]':
+    def results_lists(self, screen: Screen) -> list[list[Board]]:
         results = self._results(screen)
         limit = self.limit(screen)
         column_size: int = (limit if limit else len(results)) // screen.columns
@@ -1539,7 +1539,7 @@ class ResultsScreenType(ScreenType):
         ]
 
     @override
-    def content_context(self, screen: 'Screen') -> dict:
+    def content_context(self, screen: Screen) -> dict:
         return {
             'title': screen.name,
             'results_lists': self.results_lists(screen),
@@ -1556,7 +1556,7 @@ class ResultsScreenType(ScreenType):
         return '/admin/screens/cards/results_card.html'
 
     @override
-    def card_context(self, screen: 'Screen') -> dict:
+    def card_context(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
         return {
             'results_limit': self.limit(screen),
@@ -1567,16 +1567,16 @@ class ResultsScreenType(ScreenType):
         }
 
     @override
-    def depends_on_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
+    def depends_on_tournament(self, screen: Screen, tournament: Tournament) -> bool:
         return self.tournament_ids(screen) == [tournament.id]
 
     @override
-    def relates_to_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
+    def relates_to_tournament(self, screen: Screen, tournament: Tournament) -> bool:
         tournament_ids = self.tournament_ids(screen)
         return not tournament_ids or tournament.id in tournament_ids
 
     @override
-    def refresh_needed(self, screen: 'Screen', since: datetime) -> bool:
+    def refresh_needed(self, screen: Screen, since: datetime) -> bool:
         event = screen.event
         tournament_ids = self.tournament_ids(screen) or list(
             event.tournaments_by_id.keys()
@@ -1608,7 +1608,7 @@ class RankingScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -1636,7 +1636,7 @@ class RankingScreenType(ScreenType):
         return values
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         stored = screen.stored_screen
         assert stored is not None
         return self._ranking_form_data(
@@ -1647,7 +1647,7 @@ class RankingScreenType(ScreenType):
         )
 
     @override
-    def default_family_form_data(self, family: 'Family') -> dict:
+    def default_family_form_data(self, family: Family) -> dict:
         stored = family.stored_family
         return self._ranking_form_data(
             stored.ranking_crosstable,
@@ -1671,11 +1671,11 @@ class RankingScreenType(ScreenType):
         }
 
     @override
-    def create_form_data(self, event: 'Event') -> dict:
+    def create_form_data(self, event: Event) -> dict:
         return {'ranking_crosstable': False}
 
     @override
-    def default_family_screen_name(self, screen: 'Screen') -> str:
+    def default_family_screen_name(self, screen: Screen) -> str:
         return screen.sorted_screen_sets[0].name_for_ranking
 
     @property
@@ -1689,31 +1689,31 @@ class RankingScreenType(ScreenType):
         return '/admin/screens/forms/ranking_form.html'
 
     @override
-    def type_str(self, screen: 'Screen') -> str:
+    def type_str(self, screen: Screen) -> str:
         return _('Crosstable') if self.ranking_crosstable(screen) else _('Ranking')
 
     @override
-    def family_type_str(self, family: 'Family') -> str:
+    def family_type_str(self, family: Family) -> str:
         return (
             _('Crosstable') if family.stored_family.ranking_crosstable else _('Ranking')
         )
 
-    def ranking_crosstable(self, screen: 'Screen') -> bool:
+    def ranking_crosstable(self, screen: Screen) -> bool:
         return _config_record(screen).ranking_crosstable
 
-    def ranking_round(self, screen: 'Screen') -> int | None:
+    def ranking_round(self, screen: Screen) -> int | None:
         return _config_record(screen).ranking_round
 
-    def ranking_min_points(self, screen: 'Screen') -> float | None:
+    def ranking_min_points(self, screen: Screen) -> float | None:
         return _config_record(screen).ranking_min_points
 
-    def ranking_max_points(self, screen: 'Screen') -> float | None:
+    def ranking_max_points(self, screen: Screen) -> float | None:
         return _config_record(screen).ranking_max_points
 
     @override
     def build_columns(
-        self, screen: 'Screen', tournament: 'Tournament', event: 'Event'
-    ) -> 'list[TournamentPlayerTableColumn] | list[BoardColumn] | None':
+        self, screen: Screen, tournament: Tournament, event: Event
+    ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         from data.columns.handlers import PlayerColumnHandler
         from data.columns.column import ColumnUsage
 
@@ -1727,14 +1727,14 @@ class RankingScreenType(ScreenType):
         return column_handler.get_player_ranking_columns(tournament)
 
     @override
-    def set_refresh_needed(self, screen_set: 'ScreenSet', since: datetime) -> bool:
+    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
         return (
             super().set_refresh_needed(screen_set, since)
             or screen_set.tournament.last_pairing_update > since
         )
 
     @override
-    def set_context(self, screen_set: 'ScreenSet') -> dict:
+    def set_context(self, screen_set: ScreenSet) -> dict:
         return {'ranking_round': self.ranking_round(screen_set.screen)}
 
     @property
@@ -1743,7 +1743,7 @@ class RankingScreenType(ScreenType):
         return '/admin/screens/cards/ranking_card.html'
 
     @override
-    def card_context(self, screen: 'Screen') -> dict:
+    def card_context(self, screen: Screen) -> dict:
         return self._card_context(
             self.ranking_round(screen),
             self.ranking_min_points(screen),
@@ -1751,7 +1751,7 @@ class RankingScreenType(ScreenType):
         )
 
     @override
-    def family_card_context(self, family: 'Family') -> dict:
+    def family_card_context(self, family: Family) -> dict:
         stored = family.stored_family
         return self._card_context(
             stored.ranking_round,
@@ -1777,7 +1777,7 @@ class RankingScreenType(ScreenType):
         }
 
     @override
-    def family_item_range(self, family: 'Family') -> FamilyItemRange:
+    def family_item_range(self, family: Family) -> FamilyItemRange:
         tournament = family.tournament
         stored = family.stored_family
         ranking_round = tournament.ranking.correct_round(stored.ranking_round)
@@ -1815,7 +1815,7 @@ class RankingScreenType(ScreenType):
         return FamilyItemRange(first, last, count, False, False)
 
     @override
-    def family_screen_label(self, screen_set: 'ScreenSet') -> str:
+    def family_screen_label(self, screen_set: ScreenSet) -> str:
         if screen_set.tournament.is_team_tournament:
             first_standing = screen_set.first_team_standing
             last_standing = screen_set.last_team_standing
@@ -1856,7 +1856,7 @@ class RankingScreenType(ScreenType):
 
     @override
     def range_bounds(
-        self, screen_set: 'ScreenSet', abbreviated: bool = False
+        self, screen_set: ScreenSet, abbreviated: bool = False
     ) -> tuple[str, str]:
         dash = '-'
         if screen_set.tournament.is_team_tournament:
@@ -1893,7 +1893,7 @@ class ImageScreenType(ScreenType):
 
     @override
     def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: 'Event'
+        self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
@@ -1914,7 +1914,7 @@ class ImageScreenType(ScreenType):
         return values
 
     @override
-    def default_form_data(self, screen: 'Screen') -> dict:
+    def default_form_data(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
         stored_image = screen.stored_screen.background_image or ''
         is_upload = stored_image.startswith('data:')
@@ -1927,7 +1927,7 @@ class ImageScreenType(ScreenType):
         }
 
     @override
-    def default_screen_name(self, screen: 'Screen') -> str:
+    def default_screen_name(self, screen: Screen) -> str:
         return _('Image')
 
     @property
@@ -1966,7 +1966,7 @@ class ImageScreenType(ScreenType):
         return '/admin/screens/cards/image_card.html'
 
     @override
-    def card_context(self, screen: 'Screen') -> dict:
+    def card_context(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
         return {
             'image': screen.stored_screen.background_image,
@@ -1976,13 +1976,13 @@ class ImageScreenType(ScreenType):
         }
 
     @override
-    def refresh_needed(self, screen: 'Screen', since: datetime) -> bool:
+    def refresh_needed(self, screen: Screen, since: datetime) -> bool:
         return False
 
     @override
-    def depends_on_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
+    def depends_on_tournament(self, screen: Screen, tournament: Tournament) -> bool:
         return False
 
     @override
-    def relates_to_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
+    def relates_to_tournament(self, screen: Screen, tournament: Tournament) -> bool:
         return False

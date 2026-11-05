@@ -49,7 +49,7 @@ class PairingEngineError(SharlyChessException):
 class OptionError(SharlyChessException):
     """Error raised when validating an option."""
 
-    def __init__(self, message: str, option: 'Option'):
+    def __init__(self, message: str, option: Option):
         super().__init__(message)
         self.option = option
 

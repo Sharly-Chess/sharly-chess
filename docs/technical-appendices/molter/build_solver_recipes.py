@@ -12,8 +12,6 @@ The JSON produced here is resumable research/audit state. The adjacent ``.mrec``
 file is the compact replay artifact; it is also not a cache of final pairings.
 """
 
-from __future__ import annotations
-
 import argparse
 import base64
 import copy

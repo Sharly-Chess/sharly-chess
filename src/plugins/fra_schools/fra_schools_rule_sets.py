@@ -156,7 +156,7 @@ def _fmt(value: float) -> str:
     return str(int(value)) if value == int(value) else str(value)
 
 
-def _round_breakdown(team: 'Team', round_: int) -> list[tuple[int, bool, bool]]:
+def _round_breakdown(team: Team, round_: int) -> list[tuple[int, bool, bool]]:
     """``(board index, team forfeited, game played)`` per board for the
     team this round, empty when it didn't play.
 
@@ -295,7 +295,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     @override
     def apply_defaults(
         self,
-        stored_tournament: 'StoredTournament',
+        stored_tournament: StoredTournament,
         pairing_system_id: str | None = None,
     ) -> None:
         # Art. 5.1.3: the players are rated on the national rapid list.
@@ -397,7 +397,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         return self.category_format.roster_max_size
 
     @override
-    def player_rating_in_team_average(self, player: 'Player') -> int | None:
+    def player_rating_in_team_average(self, player: Player) -> int | None:
         # Art. 5.1.5: the teams are numbered on their average rating, in
         # which every estimated rating counts for the category's value.
         rating = player.event_default_rating_and_type
@@ -406,7 +406,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         return rating.value or None
 
     @override
-    def team_average_rating_explanation(self, team: 'Team') -> str | None:
+    def team_average_rating_explanation(self, team: Team) -> str | None:
         estimated = sum(
             1
             for player in team.players
@@ -425,7 +425,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     # -----------------------------------------------------------------
 
     @override
-    def roster_warnings(self, team: 'Team') -> list[str]:
+    def roster_warnings(self, team: Team) -> list[str]:
         return [
             *self._licence_warnings(team),
             *self._gender_balance_warnings(team),
@@ -433,7 +433,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         ]
 
     @staticmethod
-    def _licence_warnings(team: 'Team') -> list[str]:
+    def _licence_warnings(team: Team) -> list[str]:
         # Art. 1.5: an A or B FFE licence, on pain of an administrative
         # forfeit and 2 game points off the team total.
         without_licence = [
@@ -447,7 +447,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         names = ', '.join(player.full_name for player in without_licence)
         return [_('Player without an A or B FFE licence: {names}.').format(names=names)]
 
-    def _gender_balance_warnings(self, team: 'Team') -> list[str]:
+    def _gender_balance_warnings(self, team: Team) -> list[str]:
         # Art. 5.1.1: a team holds a minimum of girls and of boys — so a
         # roster short of either can't field a legal match sheet (art.
         # 5.2.4).
@@ -474,7 +474,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         return msgs
 
     @classmethod
-    def _fide_order_warnings(cls, team: 'Team') -> list[str]:
+    def _fide_order_warnings(cls, team: Team) -> list[str]:
         # Art. 5.1.4: players holding a FIDE rating come before all the
         # others; getting it wrong is an administrative forfeit on the
         # offending boards.
@@ -496,7 +496,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         ]
 
     @staticmethod
-    def _has_fide_rating(team: 'Team', player: 'Player') -> bool:
+    def _has_fide_rating(team: Team, player: Player) -> bool:
         """Whether the player holds a FIDE rating — a fact about the player,
         independent of the rating the tournament ranks on. Art. 5.1.3 has
         the championship use the national rapid list, so the tournament's
@@ -511,9 +511,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
     # -----------------------------------------------------------------
 
     @override
-    def team_point_adjustment(
-        self, team: 'Team', round_: int
-    ) -> 'PointAdjustment | None':
+    def team_point_adjustment(self, team: Team, round_: int) -> PointAdjustment | None:
         parts = [
             adjustment
             for adjustment in (self._forfeit_loss_penalty(team, round_),)
@@ -545,7 +543,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         )
 
     @staticmethod
-    def _own_board_game_points(team: 'Team', round_: int) -> float | None:
+    def _own_board_game_points(team: Team, round_: int) -> float | None:
         """The team's own board game points for the round, before any
         adjustment. ``None`` when it didn't play a match that round.
 
@@ -561,7 +559,7 @@ class ChampionnatScolaireRuleSet(FfeTeamCompetitionRuleSet):
         )
 
     @staticmethod
-    def _forfeit_loss_penalty(team: 'Team', round_: int) -> 'PointAdjustment | None':
+    def _forfeit_loss_penalty(team: Team, round_: int) -> PointAdjustment | None:
         """Art. 5.3.1: a game lost by sporting forfeit counts -1 "si une
         partie a été effectivement jouée sur l'un des échiquiers suivant
         l'échiquier concerné", and 0 otherwise."""

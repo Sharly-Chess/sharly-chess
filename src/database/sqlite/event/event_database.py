@@ -175,7 +175,7 @@ class EventDatabase(MigrationDatabase):
             SnapshotScheduler.notify_changed(self.uniq_id)
 
     @cached_property
-    def migration_managers(self) -> list['DatabaseMigrationManager']:
+    def migration_managers(self) -> list[DatabaseMigrationManager]:
         from database.sqlite.migration import DatabaseMigrationManager
 
         return cast(
@@ -291,7 +291,7 @@ class EventDatabase(MigrationDatabase):
 
         self.copy_to(EventDatabase(new_uniq_id).file)
 
-    def create_backup(self) -> 'EventBackup':
+    def create_backup(self) -> EventBackup:
         """Creates a backup of the event database.
         If a backup already exists for the same version, overwrite it."""
         from data.loader import EventBackup

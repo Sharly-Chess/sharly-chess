@@ -25,11 +25,11 @@ class TeamAffiliationSource:
 
     id: str
     label: str
-    resolve: Callable[['Team'], str | None]
+    resolve: Callable[[Team], str | None]
 
 
 def team_shared_player_value(
-    team: 'Team', getter: Callable[[Any], str | None]
+    team: Team, getter: Callable[[Any], str | None]
 ) -> str | None:
     """The value ``getter`` returns for *every* player of ``team`` when they
     all share a single non-empty one; ``None`` otherwise (empty team, a

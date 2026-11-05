@@ -131,7 +131,7 @@ def already_done(out_path: Path) -> set[int]:
             continue
         try:
             done.add(json.loads(line)['seed'])
-        except (json.JSONDecodeError, KeyError):
+        except json.JSONDecodeError, KeyError:
             continue
     return done
 

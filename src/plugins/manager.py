@@ -1,7 +1,7 @@
 import copy
 from functools import cached_property
 from pathlib import Path
-from typing import Any, TypeVar, TYPE_CHECKING, Optional
+from typing import Any, TypeVar, TYPE_CHECKING
 
 from apluggy import PluginManager
 
@@ -129,7 +129,7 @@ class AppPluginManager(PluginManager):
                 database.update_stored_plugin(stored_plugin)
         self.reload_register()
 
-    def enable_missing_plugins(self, enabled_plugin_ids: list[str]) -> list['Plugin']:
+    def enable_missing_plugins(self, enabled_plugin_ids: list[str]) -> list[Plugin]:
         from database.sqlite.config.config_database import ConfigDatabase
 
         requested_plugins = [
@@ -172,7 +172,7 @@ class AppPluginManager(PluginManager):
             database.update_stored_plugin(stored_plugin)
         plugin.reload_context()
 
-    def hook_for_event(self, event: Optional['Event'], hook_name: str) -> Any:
+    def hook_for_event(self, event: Event | None, hook_name: str) -> Any:
         remove_plugins = []
         if event:
             # event.enabled_plugins (not the raw stored list) so plugins
@@ -185,7 +185,7 @@ class AppPluginManager(PluginManager):
             ]
         return self.subset_hook_caller(hook_name, remove_plugins)
 
-    def hook_for_plugins(self, hook_name: str, plugins: list['Plugin']) -> Any:
+    def hook_for_plugins(self, hook_name: str, plugins: list[Plugin]) -> Any:
         return self.subset_hook_caller(
             hook_name,
             remove_plugins=[

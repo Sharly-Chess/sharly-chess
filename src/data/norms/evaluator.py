@@ -1,7 +1,5 @@
 """`TitleNormEvaluator` — per-applicant FIDE title-norm evaluator."""
 
-from __future__ import annotations
-
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any
 

@@ -60,7 +60,7 @@ class SCEPluginHooks:
     @hookspec
     def augment_sce_player_sync_data_from_player(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         sync_data: SCEPlayerSyncData,
     ) -> None:
         """Augment SCE player shared data from a player."""
@@ -77,7 +77,7 @@ class SCEPluginHooks:
     def augment_stored_player_from_sce_player_sync_data(
         self,
         event: Event,
-        stored_player: 'StoredPlayer',
+        stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
         database: EventDatabase | None,
     ) -> None:
@@ -91,7 +91,7 @@ class SCEPluginHooks:
 
     @hookspec
     def add_sce_upload_player_custom_fields(
-        self, custom_fields: dict[str, Any], player: 'TournamentPlayer'
+        self, custom_fields: dict[str, Any], player: TournamentPlayer
     ) -> None:
         """Add custom fields to the SCE uploaded players."""
 
@@ -181,7 +181,7 @@ class SCEPlugin(Plugin):
         return [SCEAdminController]
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         return bool(stored_tournament.plugin_data.get(PLUGIN_NAME, {}).get('id'))
 
@@ -226,7 +226,7 @@ class SCEPlugin(Plugin):
     def on_event_restored(
         self,
         event_database: EventDatabase,
-        previous_stored_event: 'StoredEvent | None',
+        previous_stored_event: StoredEvent | None,
     ) -> None:
         """Carries what Sharly-Chess.com knows of the event onto the backup
         put in its place.
@@ -315,7 +315,7 @@ class SCEPlugin(Plugin):
             update(stored_object)
 
     @hookimpl
-    def get_event_restore_warning(self, stored_event: 'StoredEvent') -> str | None:
+    def get_event_restore_warning(self, stored_event: StoredEvent) -> str | None:
         event_data = SCEEventPluginData.from_stored_value(
             stored_event.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -333,7 +333,7 @@ class SCEPlugin(Plugin):
         )
 
     @hookimpl
-    def get_event_copy_warning(self, stored_event: 'StoredEvent') -> str | None:
+    def get_event_copy_warning(self, stored_event: StoredEvent) -> str | None:
         event_data = SCEEventPluginData.from_stored_value(
             stored_event.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -359,7 +359,7 @@ class SCEPlugin(Plugin):
 
     @hookimpl
     def get_tournament_connection_field(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> TournamentConnectionField | None:
         if not SCEUtils.get_tournament_plugin_data(tournament).id:
             return None
@@ -372,8 +372,8 @@ class SCEPlugin(Plugin):
     def extend_admin_collection(
         self,
         collection_key: str,
-        collection_spec: 'AdminCollectionSpec',
-        event: 'Event | None',
+        collection_spec: AdminCollectionSpec,
+        event: Event | None,
     ) -> None:
         if collection_key != 'tournaments':
             return
@@ -383,14 +383,14 @@ class SCEPlugin(Plugin):
         )
 
     @hookimpl
-    def is_tournament_uploaded(self, tournament: 'Tournament') -> bool:
+    def is_tournament_uploaded(self, tournament: Tournament) -> bool:
         return self.used_by_stored_tournament(
             tournament.event.stored_event, tournament.stored_tournament
         )
 
     @hookimpl
     def on_tournament_data_updated(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> None:
         # This hook being called for most database writes, it needs to be optimized
         if not should_schedule_auto_upload(stored_event, stored_tournament):
@@ -402,7 +402,7 @@ class SCEPlugin(Plugin):
         schedule_upload(tournament)
 
     @hookimpl
-    def load_tournament_check_in_data(self, tournament: 'Tournament') -> None:
+    def load_tournament_check_in_data(self, tournament: Tournament) -> None:
         event = tournament.event
         epd = SCEUtils.get_event_plugin_data(event)
         tpd = SCEUtils.get_tournament_plugin_data(tournament)
@@ -421,7 +421,7 @@ class SCEPlugin(Plugin):
         return self.id, SCEPlayerPluginData
 
     @hookimpl
-    def on_player_deleted(self, player: 'Player') -> None:
+    def on_player_deleted(self, player: Player) -> None:
         for tournament in player.event.tournaments:
             t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
             if not t_plugin_data.id:
@@ -444,7 +444,7 @@ class SCEPlugin(Plugin):
         SCEUtils.update_event_plugin_data(event, plugin_data)
 
     @hookimpl
-    def get_check_in_table_column(self) -> 'Column[Tournament]':
+    def get_check_in_table_column(self) -> Column[Tournament]:
         return SCECheckInColumn()
 
     @hookimpl
@@ -457,7 +457,7 @@ class SCEPlugin(Plugin):
 
     @hookimpl
     def validate_player_tournament_move(
-        self, tournament: 'Tournament', player: 'TournamentPlayer'
+        self, tournament: Tournament, player: TournamentPlayer
     ) -> None:
         src_id = SCEUtils.get_tournament_plugin_data(player.tournament).id
         dst_id = SCEUtils.get_tournament_plugin_data(tournament).id
@@ -469,7 +469,7 @@ class SCEPlugin(Plugin):
             raise ValueError(message)
 
     @hookimpl
-    def player_distribution_error_message(self, event: 'Event') -> str | None:
+    def player_distribution_error_message(self, event: Event) -> str | None:
         sce_ids = [
             SCEUtils.get_tournament_plugin_data(tournament).id
             for tournament in event.tournaments
@@ -501,7 +501,7 @@ class SCEPlugin(Plugin):
 
     @hookimpl(tryfirst=True)
     def get_nav_data_transfer_items(
-        self, event: 'Event'
+        self, event: Event
     ) -> Iterable[NavDataTransferItem]:
         return [
             NavDataTransferItem(

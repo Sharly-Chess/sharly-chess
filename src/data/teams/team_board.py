@@ -21,7 +21,7 @@ class TeamBoard:
 
     def __init__(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         stored_team_board: StoredTeamBoard,
     ):
         self._tournament_ref: weakref.ReferenceType[Tournament] = weakref.ref(
@@ -30,7 +30,7 @@ class TeamBoard:
         self.stored_team_board = stored_team_board
 
     @property
-    def tournament(self) -> 'Tournament':
+    def tournament(self) -> Tournament:
         if (tournament := self._tournament_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
@@ -71,11 +71,11 @@ class TeamBoard:
         )
 
     @property
-    def team_a(self) -> 'Team':
+    def team_a(self) -> Team:
         return self.tournament.event.teams_by_id[self.stored_team_board.team_a_id]
 
     @property
-    def team_b(self) -> 'Team | None':
+    def team_b(self) -> Team | None:
         team_b_id = self.stored_team_board.team_b_id
         if team_b_id is None:
             return None
@@ -96,7 +96,7 @@ class TeamBoard:
         return self.stored_team_board.bye_type or TeamByeType.PAB
 
     @cached_property
-    def boards(self) -> list['Board']:
+    def boards(self) -> list[Board]:
         """Individual boards belonging to this team match, ordered by index."""
         return sorted(
             (
@@ -107,7 +107,7 @@ class TeamBoard:
             key=lambda board: board.index,
         )
 
-    def board_team_ids(self, board: 'Board') -> tuple[int | None, int | None]:
+    def board_team_ids(self, board: Board) -> tuple[int | None, int | None]:
         """The ``(white_team_id, black_team_id)`` for ``board`` within
         this match. A forfeited side is a hole — no player, hence no
         team — so it's inferred from the present side and the match's

@@ -1395,7 +1395,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def _period_field_templates(
-        event: 'Event', tournament: Tournament | None
+        event: Event, tournament: Tournament | None
     ) -> list[str]:
         """The templates of the fields a rating period carries — what a
         plugin asks for once per period, such as the registration the period
@@ -1522,7 +1522,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def _read_rule_set_config(
-        rule_set: 'RuleSet', data: dict[str, str], errors: dict[str, str]
+        rule_set: RuleSet, data: dict[str, str], errors: dict[str, str]
     ) -> dict[str, Any]:
         """Read the values of the fields the rule set adds to the form,
         keyed by field id. Types and ``select`` choices are checked here;
@@ -1558,7 +1558,7 @@ class TournamentAdminController(BaseEventAdminController):
         return values
 
     @staticmethod
-    def _resolve_pairing_system_id(event: 'Event', variation_id: str) -> str | None:
+    def _resolve_pairing_system_id(event: Event, variation_id: str) -> str | None:
         """Resolve a pairing-variation id to its system id (the value
         rule sets key their overrides by). Returns ``None`` when the
         variation isn't registered."""
@@ -1573,8 +1573,8 @@ class TournamentAdminController(BaseEventAdminController):
     @classmethod
     def _apply_rule_set_tie_breaks(
         cls,
-        database: 'EventDatabase',
-        event: 'Event',
+        database: EventDatabase,
+        event: Event,
         stored_tournament: StoredTournament,
     ) -> None:
         """Replace the tournament's stored tie-breaks with the rule
@@ -3241,7 +3241,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _tie_break_sets_modal_context(event: 'Event') -> dict[str, Any]:
+    def _tie_break_sets_modal_context(event: Event) -> dict[str, Any]:
         """Context for the custom TB-set management modal: lists all
         custom sets, grouped by the pairing system they belong to.
 

@@ -7,7 +7,7 @@ import subprocess
 import sys
 from copy import copy
 from pathlib import Path
-from typing import Optional, overload, TYPE_CHECKING, ClassVar
+from typing import overload, TYPE_CHECKING, ClassVar
 
 import jinja2
 import litestar
@@ -279,7 +279,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.snapshot_max_age_days
 
     @property
-    def federation(self) -> Optional['Federation']:
+    def federation(self) -> Federation | None:
         from utils.types import Federation
 
         if self.stored_config.federation is not None:
@@ -303,7 +303,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return self._name_formatter
 
     @property
-    def default_player_category_set(self) -> 'PlayerCategorySet':
+    def default_player_category_set(self) -> PlayerCategorySet:
         from data.player_categories import PlayerCategorySet, EVEN_PRESET_CATEGORIES
 
         return PlayerCategorySet(
@@ -314,7 +314,7 @@ class SharlyChessConfig(metaclass=Singleton):
         )
 
     @property
-    def player_category_sets(self) -> list['PlayerCategorySet']:
+    def player_category_sets(self) -> list[PlayerCategorySet]:
         from data.player_categories import (
             PlayerCategory,
             PlayerCategorySet,
@@ -342,7 +342,7 @@ class SharlyChessConfig(metaclass=Singleton):
         ]
 
     @property
-    def tags(self) -> list['Tag']:
+    def tags(self) -> list[Tag]:
         """The event tags defined for this installation, in the order the
         user arranged them in — the order they are listed in everywhere."""
         from data.tag import Tag
@@ -353,10 +353,10 @@ class SharlyChessConfig(metaclass=Singleton):
         ]
 
     @property
-    def tags_by_id(self) -> dict[int, 'Tag']:
+    def tags_by_id(self) -> dict[int, Tag]:
         return {tag.id: tag for tag in self.tags}
 
-    def resolve_tags(self, tag_ids: list[int]) -> list['Tag']:
+    def resolve_tags(self, tag_ids: list[int]) -> list[Tag]:
         """The tags matching `tag_ids`, in the same order as :attr:`tags`. Ids
         that no longer resolve (a deleted tag, or an event imported from
         another installation) are ignored."""
@@ -364,7 +364,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return [tag for tag in self.tags if tag.id in wanted]
 
     @property
-    def custom_tie_break_sets(self) -> list['TieBreakSet']:
+    def custom_tie_break_sets(self) -> list[TieBreakSet]:
         from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
         from database.sqlite.event.event_store import StoredTieBreak
 

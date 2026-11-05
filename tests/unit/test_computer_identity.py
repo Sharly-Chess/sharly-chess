@@ -29,7 +29,7 @@ class FakeConfigDatabase:
     def __init__(self, write: bool = False) -> None:
         pass
 
-    def __enter__(self) -> 'FakeConfigDatabase':
+    def __enter__(self) -> FakeConfigDatabase:
         return self
 
     def __exit__(self, *args: Any) -> None:

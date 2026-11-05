@@ -157,7 +157,7 @@ class ProfileController(BaseController):
                                         account.stored_account
                                     )
                                 )
-                    except (VerifyMismatchError, VerificationError):
+                    except VerifyMismatchError, VerificationError:
                         errors[field] = _('Invalid password.')
                         data[field] = ''
                     except InvalidHash:

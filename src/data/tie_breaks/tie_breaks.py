@@ -234,7 +234,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     def compute_all_player_values(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         tie_break_index: int,
         *,
         after_round: int,
@@ -245,7 +245,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         )
 
     def get_player_variables(
-        self, tournament: 'Tournament', after_round: int
+        self, tournament: Tournament, after_round: int
     ) -> dict[int, Any]:
         """Get variables to store into the player objects for this tie-break.
         Returns a dict in format dict[player_id, variable].
@@ -291,7 +291,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         """Defines if the tie-break can be used with players without any rating defined."""
         return True
 
-    def unrated_players_error(self, tournament: 'Tournament') -> OptionError | None:
+    def unrated_players_error(self, tournament: Tournament) -> OptionError | None:
         """Why the tournament's estimated or unrated players disable the
         tie-break, on the option that would allow them, or None if they do
         not."""
@@ -301,7 +301,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         """What an option does to this tie-break, for the option's tooltip."""
         return ''
 
-    def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
+    def get_warning_for_tournament(self, tournament: Tournament) -> str | None:
         """Get a warning to display on the tie-break row."""
         if self.is_legacy:
             return _('This tie-break uses a legacy way to compute values.')
@@ -438,7 +438,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     def adjusted_dummy_score(
         cls,
         dummy_score: float,
-        tournament: 'Tournament',
+        tournament: Tournament,
         after_round: int,
         adjust_fore: bool = False,
         opponent: TournamentPlayer | None = None,
@@ -487,9 +487,9 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> SupportsFloat:
@@ -575,9 +575,9 @@ class WinsTieBreak(PlayerRecordTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> int:
@@ -635,9 +635,9 @@ class GamesWonTieBreak(PlayerRecordTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> int:
@@ -790,9 +790,9 @@ class ProgressiveScoresTieBreak(PlayerRecordTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -907,7 +907,7 @@ class StandardPointsTieBreak(PlayerRecordTieBreak):
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
         )
 
-    def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
+    def get_warning_for_tournament(self, tournament: Tournament) -> str | None:
         if tournament.is_standard_point_system_used:
             return _(
                 'This tie-break has no effect with '
@@ -996,9 +996,9 @@ class PointsTieBreak(PlayerRecordTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -1073,9 +1073,9 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> int:
@@ -1292,9 +1292,9 @@ class CutBuchholzTieBreak(BuchholzTieBreak, ABC):
 
     def _team_sum(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
         fore: bool,
@@ -1403,9 +1403,9 @@ class StandardBuchholzTieBreak(CutBuchholzTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -1483,9 +1483,9 @@ class ForeBuchholzTieBreak(CutBuchholzTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -1573,9 +1573,9 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -1688,9 +1688,9 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -1977,9 +1977,9 @@ class KoyaTieBreak(OpponentRecordTieBreak):
 
     def compute_team_value(
         self,
-        team_record: 'TeamRecord',
-        all_records: dict[int, 'TeamRecord'],
-        tournament_context: 'TeamTieBreakContext',
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> float:
@@ -2027,7 +2027,7 @@ class OpponentRatingTieBreak(TieBreak, ABC):
     def allow_unrated_players(self) -> bool:
         return self.fixed_unrated_rating is not None
 
-    def unrated_players_error(self, tournament: 'Tournament') -> OptionError | None:
+    def unrated_players_error(self, tournament: Tournament) -> OptionError | None:
         if not self.allow_unrated_players and tournament.unrated_count:
             return OptionError(
                 _(
@@ -2080,7 +2080,7 @@ class OpponentRatingTieBreak(TieBreak, ABC):
     def _with_same_unrated_rating[T: TieBreak](self, tie_break_type: type[T]) -> T:
         return tie_break_type([self._get_option(UnratedRatingTieBreakOption)])
 
-    def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
+    def get_warning_for_tournament(self, tournament: Tournament) -> str | None:
         if tournament.estimated_count:
             return _(
                 'This tie-break is not recommended with '
@@ -2667,7 +2667,7 @@ class DirectEncounterTieBreak(TieBreak):
 
     def compute_all_player_values(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         tie_break_index: int,
         *,
         after_round: int,

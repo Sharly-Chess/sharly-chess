@@ -25,9 +25,7 @@ if TYPE_CHECKING:
 class ReconciledParticipation:
     """One reconciled player's participation in a single source tournament."""
 
-    def __init__(
-        self, source: 'ChampionshipSource', tournament_player: 'TournamentPlayer'
-    ):
+    def __init__(self, source: ChampionshipSource, tournament_player: TournamentPlayer):
         self.source: ChampionshipSource = source
         self.tournament_player: TournamentPlayer = tournament_player
 
@@ -121,7 +119,7 @@ class ReconciledPlayer:
         return _competitor_key(self.participations)
 
     @property
-    def _representative(self) -> 'TournamentPlayer':
+    def _representative(self) -> TournamentPlayer:
         # Prefer a participation carrying a fide id, then one with a birth date,
         # so the canonical identity is the most complete one available.
         players = [p.tournament_player for p in self.participations]
@@ -180,9 +178,9 @@ class ReconciledTeamParticipation:
 
     def __init__(
         self,
-        source: 'ChampionshipSource',
-        team: 'Team',
-        standings_row: 'TeamStanding',
+        source: ChampionshipSource,
+        team: Team,
+        standings_row: TeamStanding,
     ):
         self.source = source
         self.team = team
@@ -294,7 +292,7 @@ class ReconciledTeam:
         return _competitor_key(self.participations)
 
     @property
-    def _representative(self) -> 'Team':
+    def _representative(self) -> Team:
         return self.participations[0].team
 
     @property
@@ -326,7 +324,7 @@ class _UnionFind:
 
 
 def reconcile_players(
-    sources: list['ChampionshipSource'],
+    sources: list[ChampionshipSource],
     overrides_by_ref: dict[tuple[str, int, int], str],
 ) -> list[ReconciledPlayer]:
     """Group the participants of every resolved source into reconciled players.
@@ -376,7 +374,7 @@ def reconcile_players(
 
 
 def reconcile_teams(
-    sources: list['ChampionshipSource'],
+    sources: list[ChampionshipSource],
     overrides_by_ref: dict[tuple[str, int, int], str],
 ) -> list[ReconciledTeam]:
     """Group teams across sources by exact normalized name and federation.

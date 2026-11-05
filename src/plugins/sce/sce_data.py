@@ -341,7 +341,7 @@ class SCEPlayerSyncData:
     def payment(self) -> tuple[float | None, float | None]:
         return self.owed, self.paid
 
-    def with_payment_of(self, other: 'SCEPlayerSyncData') -> Self:
+    def with_payment_of(self, other: SCEPlayerSyncData) -> Self:
         return replace(self, owed=other.owed, paid=other.paid)
 
     def augment_stored_player_payment(self, stored_player: StoredPlayer) -> None:
@@ -381,7 +381,7 @@ class SCEPlayerSyncData:
     @classmethod
     def from_sce_data(
         cls,
-        event: 'Event',
+        event: Event,
         data: dict[str, Any],
         tournament_id: str,
         with_mail: bool = False,

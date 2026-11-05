@@ -455,8 +455,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self,
         event: Event,
         board_id: int | None,
-        action: 'PairingAction | None',
-    ) -> 'list[TournamentPlayer] | None':
+        action: PairingAction | None,
+    ) -> list[TournamentPlayer] | None:
         """Return the affected board's players, or ``None`` for the full field."""
         if action != PairingAction.RESULT_UPDATE or board_id is None:
             return None
@@ -885,7 +885,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @staticmethod
     def _team_point_adjustment_context(
-        tournament: 'Tournament', team: 'Team | None', round_: int
+        tournament: Tournament, team: Team | None, round_: int
     ) -> dict[str, Any] | None:
         """Bonus/penalty data for one side of the match dialog: the
         team's current manual MP/GP/reason plus any rule-set-imposed
@@ -916,7 +916,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @staticmethod
     def _player_point_adjustment_context(
-        tournament: 'Tournament', player: 'TournamentPlayer', round_: int
+        tournament: Tournament, player: TournamentPlayer, round_: int
     ) -> dict[str, Any]:
         """The player's current manual delta and reason for the round.
         Individual tournaments have no match points and no rule-set
@@ -1787,7 +1787,7 @@ class PairingsAdminController(BaseEventAdminController):
         team_board: TeamBoard,
         side_team: Team,
         physical_side: str,
-        new_player_tp: 'TournamentPlayer',
+        new_player_tp: TournamentPlayer,
     ) -> None:
         """Put ``new_player_tp`` on the ``physical_side`` of
         ``this_board`` (its current value must be ``NULL`` — a hole)
@@ -2858,7 +2858,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             seat = int(data['table']), int(data['side'])
             member = int(data['member']) if data.get('member') else None
-        except (KeyError, ValueError):
+        except KeyError, ValueError:
             raise ClientException('Invalid seat or participant.') from None
 
         return self._schedule_render(
@@ -4371,7 +4371,7 @@ class PairingsAdminController(BaseEventAdminController):
     @staticmethod
     def _rating_correction_context(
         request: HTMXRequest, tournament_id: int, round_: int, board_id: int
-    ) -> 'PairingsAdminWebContext':
+    ) -> PairingsAdminWebContext:
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, round_=round_, board_id=board_id
         )
@@ -4539,8 +4539,8 @@ class PairingsAdminController(BaseEventAdminController):
 
     @classmethod
     def _team_pairing_checklist(
-        cls, tournament: 'Tournament', round_: int
-    ) -> 'TeamTournamentHistory | None':
+        cls, tournament: Tournament, round_: int
+    ) -> TeamTournamentHistory | None:
         """The engine's checklist for *round_*, or ``None`` when it can't
         supply one — the round-robin team engines pair from a fixed table
         and never run bbpPairings, and a round that cannot be paired has

@@ -1,7 +1,5 @@
 """`NormInputs` — pairings-derived snapshot used by the per-norm checks."""
 
-from __future__ import annotations
-
 from collections import Counter
 from dataclasses import dataclass, field, replace
 from enum import StrEnum

@@ -170,7 +170,7 @@ class ProjectBuilder(ABC):  # noqa: B024
             subprocess.run(
                 ['pip-licenses', '--version'], capture_output=True, check=True
             )
-        except (subprocess.CalledProcessError, FileNotFoundError):
+        except subprocess.CalledProcessError, FileNotFoundError:
             logger.error(
                 "pip-licenses not found. Install with: 'pip install pip-licenses' or 'pip install -e .[export]'."
             )

@@ -15,12 +15,12 @@ if TYPE_CHECKING:
 class RequestGarbageCollectionMiddleware:
     """Collect request-created cycles before they reach older generations."""
 
-    def __init__(self, app: 'ASGIApp') -> None:
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
         self._active_requests = 0
         self._restore_automatic_collection = False
 
-    async def __call__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope['type'] != ScopeType.HTTP or scope.get('path', '').startswith(
             '/static/'
         ):
@@ -47,7 +47,7 @@ class RequestGarbageCollectionMiddleware:
                 record_gc(collected, perf_counter() - start)
 
     @staticmethod
-    def _release_request_state(scope: 'Scope') -> None:
+    def _release_request_state(scope: Scope) -> None:
         # Drop request references before collecting their cycles.
         if state := scope.get('state'):
             state.clear()

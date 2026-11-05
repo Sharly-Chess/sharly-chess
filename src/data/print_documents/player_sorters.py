@@ -86,7 +86,7 @@ class PairingNumberGridPlayerSorter(GridPlayerSorter):
 
 class TeamGridSorter(IdentifiableEntity, ABC):
     @abstractmethod
-    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+    def sorted_teams(self, tournament: Tournament) -> list[Team]:
         """Get a sorted list of all the teams in a tournament."""
 
 
@@ -99,7 +99,7 @@ class RankTeamGridSorter(TeamGridSorter):
     def static_name() -> str:
         return _('Rank')
 
-    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+    def sorted_teams(self, tournament: Tournament) -> list[Team]:
         return [row.team for row in tournament.team_standings()]
 
 
@@ -112,7 +112,7 @@ class PairingNumberTeamGridSorter(TeamGridSorter):
     def static_name() -> str:
         return _('Pairing number')
 
-    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+    def sorted_teams(self, tournament: Tournament) -> list[Team]:
         return sorted(
             tournament.teams,
             key=lambda team: (
@@ -133,7 +133,7 @@ class NameTeamGridSorter(TeamGridSorter):
     def static_name() -> str:
         return _('Name')
 
-    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+    def sorted_teams(self, tournament: Tournament) -> list[Team]:
         return sorted(tournament.teams, key=lambda team: team.name.lower())
 
 

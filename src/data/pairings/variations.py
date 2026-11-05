@@ -54,7 +54,7 @@ class PairingVariation(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def system() -> 'PairingSystem':
+    def system() -> PairingSystem:
         """Pairing system associated to the variation."""
 
     @property
@@ -80,18 +80,18 @@ class PairingVariation(IdentifiableEntity, ABC):
         None for none."""
         return None
 
-    def validate_settings(self, tournament: 'Tournament') -> bool:
+    def validate_settings(self, tournament: Tournament) -> bool:
         return all(setting.is_valid(tournament) for setting in self.settings)
 
     def get_settings_data_errors(
-        self, tournament: 'Tournament', data: dict[str, str]
+        self, tournament: Tournament, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         for setting in self.settings:
             errors |= setting.get_data_errors(tournament, data)
         return errors
 
-    def settings_tooltip_message(self, tournament: 'Tournament') -> str | None:
+    def settings_tooltip_message(self, tournament: Tournament) -> str | None:
         setting_messages = []
         for setting in self.settings:
             message = setting.tooltip_representation(setting.get_value(tournament))
@@ -131,7 +131,7 @@ class PairingVariation(IdentifiableEntity, ABC):
         """
         return False
 
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         """The number of rounds this system works out for itself, or
         ``None`` when the arbiter chooses it.
 
@@ -150,7 +150,7 @@ class PairingVariation(IdentifiableEntity, ABC):
     @classmethod
     def compute_virtual_points(
         cls,
-        tournament: 'Tournament',
+        tournament: Tournament,
         player: TournamentPlayer,
         at_round: int,
     ) -> float:
@@ -158,7 +158,7 @@ class PairingVariation(IdentifiableEntity, ABC):
         return 0.0
 
     @classmethod
-    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         """Defines if the real points have to be displayed
         in addition to the virtual points for a round."""
         return False
@@ -170,7 +170,7 @@ class PairingVariation(IdentifiableEntity, ABC):
 
     def update_settings_from_deleted_pairing_numbers(
         self,
-        _tournament: 'Tournament',
+        _tournament: Tournament,
         _pairing_numbers: Iterable[int],
     ) -> bool:
         """Update the settings when pairing numbers have been deleted.
@@ -178,14 +178,14 @@ class PairingVariation(IdentifiableEntity, ABC):
         return False
 
     def update_settings_from_added_pairing_number(
-        self, _tournament: 'Tournament', _pairing_number: int
+        self, _tournament: Tournament, _pairing_number: int
     ) -> bool:
         """Update the settings when a pairing number has been added.
         Return True if the settings have been updated."""
         return False
 
     def get_tournament_accelerated_rules(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         """Get the acceleration rules of a tournament."""
         return []
@@ -196,13 +196,13 @@ class PairingVariation(IdentifiableEntity, ABC):
         return False
 
     @classmethod
-    def get_acceleration_group_max_numbers(cls, tournament: 'Tournament') -> list[int]:
+    def get_acceleration_group_max_numbers(cls, tournament: Tournament) -> list[int]:
         """Returns the list of the last pairing numbers of each acceleration group."""
         return []
 
     @classmethod
     def get_acceleration_number_range_by_group(
-        cls, tournament: 'Tournament'
+        cls, tournament: Tournament
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         """Returns the list of the last pairing numbers of each acceleration group."""
         return {}
@@ -214,7 +214,7 @@ class SwissVariation(PairingVariation, ABC):
     the generation of the pairings."""
 
     @staticmethod
-    def system() -> 'PairingSystem':
+    def system() -> PairingSystem:
         return systems.SwissPairingSystem()
 
     @property
@@ -234,7 +234,7 @@ class RoundRobinVariation(PairingVariation, ABC):
     """Parent class of all the Round-Robin pairing variations."""
 
     @staticmethod
-    def system() -> 'PairingSystem':
+    def system() -> PairingSystem:
         return systems.RoundRobinPairingSystem()
 
     @property
@@ -243,7 +243,7 @@ class RoundRobinVariation(PairingVariation, ABC):
         return True
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         engine = self.engine
         assert isinstance(engine, RoundRobinPairingEngine)
         player_count = tournament.player_count
@@ -357,7 +357,7 @@ class DoubleCustomRoundRobinVariation(RoundRobinVariation):
 
 class TeamSwissVariation(PairingVariation, ABC):
     @staticmethod
-    def system() -> 'PairingSystem':
+    def system() -> PairingSystem:
         return systems.TeamSwissPairingSystem()
 
     @property
@@ -379,7 +379,7 @@ class TeamSwissVariation(PairingVariation, ABC):
 
 class TeamRoundRobinVariation(PairingVariation, ABC):
     @staticmethod
-    def system() -> 'PairingSystem':
+    def system() -> PairingSystem:
         return systems.TeamRoundRobinPairingSystem()
 
     @property
@@ -388,7 +388,7 @@ class TeamRoundRobinVariation(PairingVariation, ABC):
         return True
 
     @override
-    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+    def automatic_round_count(self, tournament: Tournament) -> int | None:
         engine = self.engine
         assert isinstance(engine, TeamRoundRobinPairingEngine)
         team_count = len(tournament.teams)

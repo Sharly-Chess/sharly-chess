@@ -56,7 +56,7 @@ class ReportWindow:
         )
 
 
-def build_window(tournament: 'Tournament', period: TournamentPeriod) -> ReportWindow:
+def build_window(tournament: Tournament, period: TournamentPeriod) -> ReportWindow:
     """The window of a period, ranking the field on the games it holds."""
     window = ReportWindow(period=period, rank_by_player_id={})
     # The standings the file states are its own: ranked on the points of

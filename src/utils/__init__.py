@@ -315,7 +315,7 @@ class Utils:
 
     @staticmethod
     def tournament_results_modified_since(
-        tournament: 'Tournament | StoredTournament',
+        tournament: Tournament | StoredTournament,
         ref_datetime: datetime,
     ) -> bool:
         return ref_datetime < max(

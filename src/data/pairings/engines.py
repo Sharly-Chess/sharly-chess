@@ -49,10 +49,10 @@ class PairingEngine(ABC):
     @abstractmethod
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         """Generate a list of boards matching all the pairings of tournament
         *tournament* at round *at_round*.
@@ -64,7 +64,7 @@ class PairingEngine(ABC):
         tables ignore it."""
 
     @abstractmethod
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         """Returns an explanation message if the player count is invalid, or None if it is."""
 
     @property
@@ -84,11 +84,11 @@ class PairingEngine(ABC):
 
     def team_seat_owner(
         self,
-        tournament: 'Tournament',
-        team_board: 'TeamBoard',
+        tournament: Tournament,
+        team_board: TeamBoard,
         board_index: int,
         physical_side: str,
-    ) -> 'Team | None':
+    ) -> Team | None:
         """Which of the match's two teams owns physical side
         *physical_side* (``'white'`` / ``'black'``) of the board at
         *board_index*, before anyone is seated there.
@@ -114,8 +114,8 @@ class PairingEngine(ABC):
 
     def team_board_slots(
         self,
-        tournament: 'Tournament',
-        team_board: 'TeamBoard',
+        tournament: Tournament,
+        team_board: TeamBoard,
         team_id: int,
     ) -> dict[int, int]:
         """Board index → the lineup slot of *team_id* seated on it.
@@ -128,7 +128,7 @@ class PairingEngine(ABC):
 
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -187,7 +187,7 @@ class PairingEngine(ABC):
         return ''
 
     def _prohibited_pairing_feasible(
-        self, tournament: 'Tournament', round_: int, prohibited_lines: list
+        self, tournament: Tournament, round_: int, prohibited_lines: list
     ) -> bool:
         """Can bbpPairings pair this round with the given 260 lines? Only
         meaningful for bbp-driven (Swiss) engines; others never relax
@@ -195,8 +195,8 @@ class PairingEngine(ABC):
         raise NotImplementedError
 
     def _resolve_and_snapshot_prohibited(
-        self, tournament: 'Tournament', round_: int
-    ) -> tuple[str, 'list | None']:
+        self, tournament: Tournament, round_: int
+    ) -> tuple[str, list | None]:
         """Freeze this round's prohibited-pairing groups as the snapshot
         (for display + 260 export), then resolve the *effective* 260 lines
         to feed bbpPairings: hard groups always, soft groups relaxed from
@@ -266,14 +266,14 @@ class PairingEngine(ABC):
         ) + lowest_criterion_lines
 
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         """Determines if the pairings generation for round *at_round* is disabled.
         Returns an explanation message if it is, None if it is not."""
         return self.invalid_player_count_message(tournament)
 
     def expected_round_pairs(
-        self, tournament: 'Tournament', round_: int, stored_prohibitions: bool = False
+        self, tournament: Tournament, round_: int, stored_prohibitions: bool = False
     ) -> set[tuple[int, int | None]]:
         """The pairs the engine makes for *round_*, as
         :func:`data.pairings.manual_pairing.round_pairs` reads them. With
@@ -295,8 +295,8 @@ class PairingEngine(ABC):
         }
 
     def _expected_prohibited_override(
-        self, tournament: 'Tournament', round_: int
-    ) -> 'list | None':
+        self, tournament: Tournament, round_: int
+    ) -> list | None:
         if not self.honors_prohibited_pairings:
             return None
         error, prohibited_override = self._resolve_and_snapshot_prohibited(
@@ -308,7 +308,7 @@ class PairingEngine(ABC):
 
     def pairings_diff(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         ignore_order: bool = False,
         expected_stored_boards: list[StoredBoard] | None = None,
@@ -369,7 +369,7 @@ class BbpPairings(PairingEngine):
     def reorder_boards(self) -> bool:
         return True
 
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         if tournament.player_count <= tournament.rounds:
             return _(
                 'Pairings generation not allowed if '
@@ -378,7 +378,7 @@ class BbpPairings(PairingEngine):
         return None
 
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -401,10 +401,10 @@ class BbpPairings(PairingEngine):
 
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         with tempfile.TemporaryDirectory() as tmpdir:
             pairings_dir: Path = Path(tmpdir)
@@ -478,7 +478,7 @@ class BbpPairings(PairingEngine):
     def _boards_from_file(
         cls,
         file: TextIO,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool,
     ) -> list[StoredBoard]:
@@ -511,7 +511,7 @@ class BbpPairings(PairingEngine):
         return stored_boards
 
     def get_history(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> tuple[TournamentHistory, list[StoredBoard]]:
         with tempfile.TemporaryDirectory() as tmpdir:
             pairings_dir: Path = Path(tmpdir)
@@ -578,7 +578,7 @@ class BbpPairings(PairingEngine):
             return history_data, boards
 
     def _prohibited_pairing_feasible(
-        self, tournament: 'Tournament', round_: int, prohibited_lines: list
+        self, tournament: Tournament, round_: int, prohibited_lines: list
     ) -> bool:
         try:
             boards = self._generate_stored_boards(
@@ -592,7 +592,7 @@ class BbpPairings(PairingEngine):
         return len(boards) > 0
 
 
-def berger_order(tournament: 'Tournament') -> list[int]:
+def berger_order(tournament: Tournament) -> list[int]:
     """The players of *tournament* in the order of the Berger numbers set:
     those of players who have left since are dropped, and players without
     one follow, by starting rank."""
@@ -633,14 +633,14 @@ class ScheduledRoundRobin(ABC):
         return True
 
     @abstractmethod
-    def berger_numbered_members(self, tournament: 'Tournament') -> dict[int, int]:
+    def berger_numbered_members(self, tournament: Tournament) -> dict[int, int]:
         """The ids of the members of *tournament* by Berger number."""
 
     @abstractmethod
-    def member_namer(self, tournament: 'Tournament') -> Callable[[int], str]:
+    def member_namer(self, tournament: Tournament) -> Callable[[int], str]:
         """The name of a member of *tournament* from their id."""
 
-    def berger_schedule(self, tournament: 'Tournament') -> RoundRobinSchedule:
+    def berger_schedule(self, tournament: Tournament) -> RoundRobinSchedule:
         return RoundRobinSchedule.berger(
             self.berger_numbered_members(tournament),
             self.encounters,
@@ -649,13 +649,11 @@ class ScheduledRoundRobin(ABC):
 
     @abstractmethod
     def paired_tables(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> tuple[list[Table], list[int]]:
         """The pairs of *round_* as paired, and the members resting."""
 
-    def paired_round(
-        self, tournament: 'Tournament', round_: int
-    ) -> ScheduleRound | None:
+    def paired_round(self, tournament: Tournament, round_: int) -> ScheduleRound | None:
         """*round_* as paired, when it fits a round of the schedule."""
         tables, rests = self.paired_tables(tournament, round_)
         member_count = len(self.berger_numbered_members(tournament))
@@ -663,7 +661,7 @@ class ScheduledRoundRobin(ABC):
             return None
         return ScheduleRound(tables, rests[0] if rests else None)
 
-    def paired_schedule(self, tournament: 'Tournament') -> RoundRobinSchedule | None:
+    def paired_schedule(self, tournament: Tournament) -> RoundRobinSchedule | None:
         """The schedule of a tournament whose every round is paired."""
         member_count = len(self.berger_numbered_members(tournament))
         rounds: dict[int, ScheduleRound] = {}
@@ -675,7 +673,7 @@ class ScheduledRoundRobin(ABC):
             rounds[round_] = paired_round
         return RoundRobinSchedule(rounds)
 
-    def schedule(self, tournament: 'Tournament') -> RoundRobinSchedule | None:
+    def schedule(self, tournament: Tournament) -> RoundRobinSchedule | None:
         """The Berger tables when the variation follows them; otherwise the
         saved schedule, or the pairings when every round is paired, as in a
         tournament imported with its games."""
@@ -686,7 +684,7 @@ class ScheduledRoundRobin(ABC):
         return self.paired_schedule(tournament)
 
     def schedule_fits(
-        self, tournament: 'Tournament', schedule: RoundRobinSchedule
+        self, tournament: Tournament, schedule: RoundRobinSchedule
     ) -> bool:
         """Whether *schedule* is one of the members of *tournament* as they
         are, rather than as they were when it was made."""
@@ -696,7 +694,7 @@ class ScheduledRoundRobin(ABC):
         )
 
     def schedule_violations(
-        self, tournament: 'Tournament', schedule: RoundRobinSchedule
+        self, tournament: Tournament, schedule: RoundRobinSchedule
     ) -> list[ScheduleViolation]:
         """The rules *schedule* breaks. The colours of the Berger tables
         are theirs to answer for, even when the last rounds of the first
@@ -709,7 +707,7 @@ class ScheduledRoundRobin(ABC):
             check_colours=schedule != self.berger_schedule(tournament),
         )
 
-    def schedule_message(self, tournament: 'Tournament') -> str | None:
+    def schedule_message(self, tournament: Tournament) -> str | None:
         """Why *tournament* cannot be paired from its schedule."""
         schedule = self.schedule(tournament)
         if schedule is None:
@@ -743,17 +741,17 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
         return self.player_encounters
 
     @override
-    def berger_numbered_members(self, tournament: 'Tournament') -> dict[int, int]:
+    def berger_numbered_members(self, tournament: Tournament) -> dict[int, int]:
         return dict(enumerate(berger_order(tournament), 1))
 
     @override
-    def member_namer(self, tournament: 'Tournament') -> Callable[[int], str]:
+    def member_namer(self, tournament: Tournament) -> Callable[[int], str]:
         players = tournament.tournament_players_by_id
         return lambda player_id: players[player_id].full_name
 
     @override
     def paired_tables(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> tuple[list[Table], list[int]]:
         tables: list[Table] = []
         rests: list[int] = []
@@ -779,7 +777,7 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
             player_count
         )
 
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         player_count = tournament.player_count
         if player_count < self.MIN_PLAYERS:
             return _(
@@ -795,10 +793,10 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
 
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         schedule = self.schedule(tournament)
         assert schedule is not None
@@ -905,7 +903,7 @@ class DoubleCustomRoundRobinPairingEngine(CustomRoundRobinPairingEngine):
         return 2
 
 
-def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
+def _team_ui_sort_key(team: Team) -> tuple[float, str]:
     """Sort key matching the team-admin UI:
     ``(pairing_number or ∞, name.lower())``. Shared by the pairing
     engines and the TRF export so the TPN order
@@ -936,17 +934,17 @@ class TeamPairingEngine(PairingEngine, ABC):
 
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         raise NotImplementedError(
             f'{type(self).__name__} uses generate_pairings directly.'
         )
 
     @staticmethod
-    def _teams_for_tournament(tournament: 'Tournament') -> list['Team']:
+    def _teams_for_tournament(tournament: Tournament) -> list[Team]:
         """Teams attached to this tournament, ordered the same way the
         team-admin UI lists them: by ``pairing_number`` when set (lower
         first), then lower-cased name. Keeps TPN assignment matching
@@ -960,7 +958,7 @@ class TeamPairingEngine(PairingEngine, ABC):
 
     def _persist_team_round(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         team_pairs: list[tuple[int, int | None]],
         partial_pairings: bool = False,
@@ -1154,7 +1152,7 @@ class TeamPairingEngine(PairingEngine, ABC):
 
     def _team_match_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         stb: StoredTeamBoard,
     ) -> list[StoredBoard]:
         """Build StoredBoard entries for a team match. Board *i* seats
@@ -1233,7 +1231,7 @@ class TeamSwissEngine(TeamPairingEngine):
     def executable_path(self) -> Path:
         return BbpPairingsInstaller().executable_path
 
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         teams = self._teams_for_tournament(tournament)
         if len(teams) <= tournament.rounds:
             return _(
@@ -1245,7 +1243,7 @@ class TeamSwissEngine(TeamPairingEngine):
         return None
 
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -1263,7 +1261,7 @@ class TeamSwissEngine(TeamPairingEngine):
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -1303,7 +1301,7 @@ class TeamSwissEngine(TeamPairingEngine):
 
     @override
     def expected_round_pairs(
-        self, tournament: 'Tournament', round_: int, stored_prohibitions: bool = False
+        self, tournament: Tournament, round_: int, stored_prohibitions: bool = False
     ) -> set[tuple[int, int | None]]:
         return set(
             self._run_team_bbp(
@@ -1319,7 +1317,7 @@ class TeamSwissEngine(TeamPairingEngine):
         )
 
     def _prohibited_pairing_feasible(
-        self, tournament: 'Tournament', round_: int, prohibited_lines: list
+        self, tournament: Tournament, round_: int, prohibited_lines: list
     ) -> bool:
         try:
             teams = self._teams_for_tournament(tournament)
@@ -1335,7 +1333,7 @@ class TeamSwissEngine(TeamPairingEngine):
         return bool(team_pairs)
 
     @staticmethod
-    def _build_trf_id_map(teams: list['Team']) -> dict[int, int]:
+    def _build_trf_id_map(teams: list[Team]) -> dict[int, int]:
         """Map team.id → TRF team pairing number (TPN, 1-based). Prefers
         the stored ``pairing_number``; falls back to canonical sort
         order so teams that haven't been ordered yet still get a
@@ -1362,7 +1360,7 @@ class TeamSwissEngine(TeamPairingEngine):
         return result
 
     def get_team_history(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> TeamTournamentHistory:
         """The engine's own checklist for the round being paired: the score
         groups, colour preferences and bye eligibility it worked from, and
@@ -1409,11 +1407,11 @@ class TeamSwissEngine(TeamPairingEngine):
 
     def _run_team_bbp(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
-        teams: list['Team'],
+        teams: list[Team],
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[tuple[int, int | None]]:
         from data.input_output.trf.trf_serializer import TrfSerializer
 
@@ -1473,7 +1471,7 @@ class TeamSwissEngine(TeamPairingEngine):
     def _parse_team_pairs(
         self,
         file: TextIO,
-        team_by_trf_id: dict[int, 'Team'],
+        team_by_trf_id: dict[int, Team],
     ) -> list[tuple[int, int | None]]:
         file.readline()  # team count
         pairs: list[tuple[int, int | None]] = []
@@ -1518,17 +1516,17 @@ class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
         return self.team_encounters
 
     @override
-    def berger_numbered_members(self, tournament: 'Tournament') -> dict[int, int]:
+    def berger_numbered_members(self, tournament: Tournament) -> dict[int, int]:
         return self._berger_to_team_id_map(self._teams_for_tournament(tournament))
 
     @override
-    def member_namer(self, tournament: 'Tournament') -> Callable[[int], str]:
+    def member_namer(self, tournament: Tournament) -> Callable[[int], str]:
         teams = tournament.event.teams_by_id
         return lambda team_id: teams[team_id].name
 
     @override
     def paired_tables(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> tuple[list[Table], list[int]]:
         tables: list[Table] = []
         rests: list[int] = []
@@ -1551,7 +1549,7 @@ class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
     def get_round_count(self, team_count: int) -> int:
         return self.team_encounters * self.get_single_encounter_round_count(team_count)
 
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         teams = self._teams_for_tournament(tournament)
         if len(teams) < self.MIN_TEAMS:
             return _('Too few teams to generate the pairings (minimum: {min}).').format(
@@ -1572,7 +1570,7 @@ class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
         return self.schedule_message(tournament)
 
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -1604,7 +1602,7 @@ class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
         return team_pairs
 
     def full_schedule(
-        self, tournament: 'Tournament'
+        self, tournament: Tournament
     ) -> dict[int, list[tuple[int, int | None]]]:
         """The matches of every round of the schedule, including those not
         paired yet, round → team-id pairs. A tournament configured with
@@ -1625,7 +1623,7 @@ class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -1647,7 +1645,7 @@ class TeamRoundRobinPairingEngine(ScheduledRoundRobin, TeamPairingEngine):
         return ''
 
     @staticmethod
-    def _berger_to_team_id_map(teams: list['Team']) -> dict[int, int]:
+    def _berger_to_team_id_map(teams: list[Team]) -> dict[int, int]:
         """Berger number → team id. Berger numbers are assigned 1..N in
         the canonical ``_teams_for_tournament`` order."""
         return {i + 1: team.id for i, team in enumerate(teams)}

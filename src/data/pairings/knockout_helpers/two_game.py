@@ -33,63 +33,63 @@ class _TwoGameMatchHost(Protocol):
     ) -> dict[int, str]: ...
 
     def player_advancement(
-        self, tournament: 'Tournament', board: 'Board'
-    ) -> 'KnockoutAdvancement': ...
+        self, tournament: Tournament, board: Board
+    ) -> KnockoutAdvancement: ...
 
     def team_advancement(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
-    ) -> 'KnockoutAdvancement': ...
+        self, tournament: Tournament, team_board: TeamBoard
+    ) -> KnockoutAdvancement: ...
 
     def ranking_value(
         self,
-        tournament: 'Tournament',
-        player: 'TournamentPlayer',
+        tournament: Tournament,
+        player: TournamentPlayer,
         *,
         after_round: int,
     ) -> float: ...
 
     def team_ranking_values(
-        self, tournament: 'Tournament', *, after_round: int
+        self, tournament: Tournament, *, after_round: int
     ) -> dict[int, float]: ...
 
 
 class _TwoGameSingleElimHost(Protocol):
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None: ...
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None: ...
 
     def _bracket_pairs(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[tuple[int | None, int | None]]: ...
 
     def _pair_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         a_id: int | None,
         b_id: int | None,
     ) -> int | None: ...
 
     def _round_winner_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int | None] | None: ...
 
     def _round_winner_team_ids(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[int | None] | None: ...
 
     def _bracket_team_pairs(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[tuple[int | None, int | None]]: ...
 
     def _team_pair_winner(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         a_id: int | None,
         b_id: int | None,
     ) -> int | None: ...
 
     def _single_elim_slot(
-        self, tournament: 'Tournament', round_: int, index: int, cache: dict
+        self, tournament: Tournament, round_: int, index: int, cache: dict
     ) -> tuple[int | None, int | None, int | None]: ...
 
     @staticmethod
@@ -97,7 +97,7 @@ class _TwoGameSingleElimHost(Protocol):
 
     def _third_place_pairs(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         *,
         stage: int,
         final_stage: int,
@@ -105,16 +105,16 @@ class _TwoGameSingleElimHost(Protocol):
 
     def _third_place_match_descriptor(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         *,
         final_stage: int,
         app_round: int,
         cache: dict,
-    ) -> 'MatchDescriptor | None': ...
+    ) -> MatchDescriptor | None: ...
 
     def _third_place_ranking_value(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         participant_id: int,
         *,
         final_stage: int,
@@ -123,7 +123,7 @@ class _TwoGameSingleElimHost(Protocol):
 
     def _is_third_place_participant_pair(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         participant_ids: set[int],
         *,
         stage: int,
@@ -160,18 +160,18 @@ class TwoGameMatchMixin:
     def _game_app_round(level: int, game: int) -> int:
         return 2 * level - 2 + game
 
-    def match_rounds(self, tournament: 'Tournament', round_: int) -> tuple[int, ...]:
+    def match_rounds(self, tournament: Tournament, round_: int) -> tuple[int, ...]:
         level = self._level_of(round_)
         return (self._game_app_round(level, 1), self._game_app_round(level, 2))
 
-    def _level_count(self, tournament: 'Tournament') -> int:
+    def _level_count(self, tournament: Tournament) -> int:
         return tournament.rounds // self.GAMES_PER_MATCH
 
     def _completed_level_count(self, after_round: int) -> int:
         return after_round // self.GAMES_PER_MATCH
 
     def standing_labels(
-        self, tournament: 'Tournament', *, after_round: int | None = None
+        self, tournament: Tournament, *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
             after_round = tournament.max_ranking_round
@@ -187,7 +187,7 @@ class TwoGameMatchMixin:
         )
 
     def team_standing_labels(
-        self, tournament: 'Tournament', *, after_round: int | None = None
+        self, tournament: Tournament, *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
             after_round = tournament.max_ranking_round
@@ -201,7 +201,7 @@ class TwoGameMatchMixin:
 
     @staticmethod
     def _slot_scores(
-        tournament: 'Tournament',
+        tournament: Tournament,
         app_round: int,
         a_id: int | None,
         b_id: int | None,
@@ -240,7 +240,7 @@ class TwoGameMatchMixin:
         return (Utils.points_str(totals[a_id]), Utils.points_str(totals[b_id]))
 
     @staticmethod
-    def _add_individual_points(board: 'Board', totals: dict[int, float]) -> None:
+    def _add_individual_points(board: Board, totals: dict[int, float]) -> None:
         white = board.optional_white_tournament_player
         black = board.black_tournament_player
         if white is not None and white.id in totals:
@@ -249,7 +249,7 @@ class TwoGameMatchMixin:
             totals[black.id] += board.black_pairing.result.points()
 
     def _aggregate(
-        self, tournament: 'Tournament', board: 'Board'
+        self, tournament: Tournament, board: Board
     ) -> tuple[tuple[int, float], tuple[int, float]] | None:
         """Each player's points over both games of the match *board* is the
         second game of, or ``None`` while the match is not that far. The
@@ -276,7 +276,7 @@ class TwoGameMatchMixin:
         return (white.id, totals[white.id]), (black.id, totals[black.id])
 
     def _team_aggregate(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
+        self, tournament: Tournament, team_board: TeamBoard
     ) -> tuple[tuple[int, float], tuple[int, float]] | None:
         """Each team's game points over both legs of the match, or ``None``
         while a leg is still to be played."""
@@ -308,8 +308,8 @@ class TwoGameMatchMixin:
         )
 
     def board_advancement(
-        self, tournament: 'Tournament', board: 'Board'
-    ) -> 'KnockoutAdvancement | None':
+        self, tournament: Tournament, board: Board
+    ) -> KnockoutAdvancement | None:
         aggregate = self._aggregate(tournament, board)
         if aggregate is None:
             return None
@@ -319,8 +319,8 @@ class TwoGameMatchMixin:
         return self._two_game_match_host().player_advancement(tournament, board)
 
     def team_board_advancement(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
-    ) -> 'KnockoutAdvancement | None':
+        self, tournament: Tournament, team_board: TeamBoard
+    ) -> KnockoutAdvancement | None:
         aggregate = self._team_aggregate(tournament, team_board)
         if aggregate is None:
             return None
@@ -329,7 +329,7 @@ class TwoGameMatchMixin:
             return None
         return self._two_game_match_host().team_advancement(tournament, team_board)
 
-    def board_loser_id(self, tournament: 'Tournament', board: 'Board') -> int | None:
+    def board_loser_id(self, tournament: Tournament, board: Board) -> int | None:
         if tournament.pairing_system.paired_by_team:
             return None
         aggregate = self._aggregate(tournament, board)
@@ -349,7 +349,7 @@ class TwoGameMatchMixin:
         return b_id if winner == a_id else a_id
 
     def team_board_loser_id(
-        self, tournament: 'Tournament', team_board: 'TeamBoard'
+        self, tournament: Tournament, team_board: TeamBoard
     ) -> int | None:
         aggregate = self._team_aggregate(tournament, team_board)
         if aggregate is None:
@@ -368,7 +368,7 @@ class TwoGameMatchMixin:
         return b_id if winner == a_id else a_id
 
     def unresolved_matches(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[dict[str, Any]]:
         if self._game_of(round_) != 2:
             return []
@@ -424,7 +424,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return cast(_TwoGameSingleElimHost, self)
 
     def still_in_groups(
-        self, tournament: 'Tournament', from_round: int
+        self, tournament: Tournament, from_round: int
     ) -> list[tuple[str, list[int]]]:
         """Who is still in, as one group. A match spans two rounds here, so
         the level the round belongs to is what names its participants — the
@@ -437,7 +437,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
             ids += [pid for pid in (high, low) if pid is not None]
         return [('', ids)] if ids else []
 
-    def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
+    def round_label(self, tournament: Tournament, round_: int) -> str | None:
         return two_game_label(
             single_elimination_round_name(
                 self._level_of(round_), self._level_count(tournament)
@@ -446,7 +446,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         )
 
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         host = self._two_game_single_elim_host()
         if message := host.invalid_player_count_message(tournament):
@@ -467,7 +467,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return None
 
     def _level_winner_ids(
-        self, tournament: 'Tournament', level: int
+        self, tournament: Tournament, level: int
     ) -> list[int | None] | None:
         host = self._two_game_single_elim_host()
         if tournament.pairing_system.paired_by_team:
@@ -475,7 +475,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return host._round_winner_ids(tournament, level)
 
     def _two_game_level_pairs(
-        self, tournament: 'Tournament', level: int
+        self, tournament: Tournament, level: int
     ) -> list[tuple[int | None, int | None]]:
         host = self._two_game_single_elim_host()
         pairs = (
@@ -487,7 +487,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
             tournament, stage=level, final_stage=self._level_count(tournament)
         )
 
-    def board_section_label(self, tournament: 'Tournament', board: Any) -> str | None:
+    def board_section_label(self, tournament: Tournament, board: Any) -> str | None:
         level = self._level_of(board.round)
         game = self._game_of(board.round)
         if tournament.pairing_system.paired_by_team:
@@ -519,8 +519,8 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return two_game_label(stage, game)
 
     def bracket_match_descriptors(
-        self, tournament: 'Tournament'
-    ) -> list['MatchDescriptor']:
+        self, tournament: Tournament
+    ) -> list[MatchDescriptor]:
         from data.pairings.knockout_helpers.layout import MatchDescriptor
 
         levels = self._level_count(tournament)
@@ -561,7 +561,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return descriptors
 
     def ranking_value(
-        self, tournament: 'Tournament', player: 'TournamentPlayer', *, after_round: int
+        self, tournament: Tournament, player: TournamentPlayer, *, after_round: int
     ) -> float:
         if tournament.pairing_system.paired_by_team:
             # Generic player rankings are still requested for team tournaments.
@@ -593,7 +593,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return float(levels + 1)
 
     def team_ranking_values(
-        self, tournament: 'Tournament', *, after_round: int
+        self, tournament: Tournament, *, after_round: int
     ) -> dict[int, float]:
         levels = self._level_count(tournament)
         last_level = min(self._completed_level_count(after_round), levels)

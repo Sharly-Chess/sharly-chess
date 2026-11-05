@@ -334,7 +334,7 @@ class FfeLeaguePlayerFilter(PlayerFilter):
             FFEUtils.get_player_plugin_data(tournament_player).league in leagues
         )
 
-    def full_name(self, tournament: 'Tournament') -> str:
+    def full_name(self, tournament: Tournament) -> str:
         leagues = self._get_option(FfeLeaguesFilterOption).value
         exclude = self._get_option(ExcludeFilterOption).value
         option_str = ', '.join(leagues)
@@ -360,10 +360,10 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[list[str], str]):
     def default_value(self) -> list[str]:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+    def get_all_known_values(self, tournament: Tournament) -> list[str]:
         return list(FFE_LEAGUES)
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+    def get_tournament_player_counter(self, tournament: Tournament) -> Counter[str]:
         counter: Counter[str] = Counter[str]()
         for tournament_player in tournament.tournament_players:
             if league := FFEUtils.get_player_plugin_data(tournament_player).league:

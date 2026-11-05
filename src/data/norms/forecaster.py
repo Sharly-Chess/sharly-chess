@@ -1,7 +1,5 @@
 """`TitleNormForecaster` — what-if analysis over a single future round."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 

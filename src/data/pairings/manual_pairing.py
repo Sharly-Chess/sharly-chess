@@ -20,7 +20,7 @@ player id — team id in a team tournament; ``None`` for the pairing-allocated
 bye."""
 
 
-def played_colours(player: 'TournamentPlayer', before_round: int) -> list[BoardColor]:
+def played_colours(player: TournamentPlayer, before_round: int) -> list[BoardColor]:
     """The colours *player* had in the games actually played (or still to be
     played) before *before_round*: byes and forfeits have no colour."""
     colours: list[BoardColor] = []
@@ -37,7 +37,7 @@ def played_colours(player: 'TournamentPlayer', before_round: int) -> list[BoardC
     return colours
 
 
-def colour_preference(player: 'TournamentPlayer', round_: int) -> BoardColor | None:
+def colour_preference(player: TournamentPlayer, round_: int) -> BoardColor | None:
     """The colour *player* should get in *round_* (FIDE C.04.3 A.6): the one
     they had less of, or the opposite of the last one when even; none before
     their first game."""
@@ -57,9 +57,9 @@ def _opposite(colour: BoardColor) -> BoardColor:
 
 
 def _colour_violation(
-    tournament: 'Tournament',
+    tournament: Tournament,
     round_: int,
-    player: 'TournamentPlayer',
+    player: TournamentPlayer,
     colour: BoardColor,
 ) -> str | None:
     if round_ >= tournament.rounds:
@@ -82,7 +82,7 @@ def _colour_name(colour: BoardColor) -> str:
 
 
 def _have_played(
-    first: 'TournamentPlayer', second: 'TournamentPlayer', before_round: int
+    first: TournamentPlayer, second: TournamentPlayer, before_round: int
 ) -> bool:
     return any(
         (pairing := first.pairings_by_round.get(round_)) is not None
@@ -93,7 +93,7 @@ def _have_played(
 
 
 def _prohibited(
-    tournament: 'Tournament', round_: int, first_id: int, second_id: int
+    tournament: Tournament, round_: int, first_id: int, second_id: int
 ) -> bool:
     prohibited_pairings = tournament.prohibited_pairings
     groups = [group.member_ids for group in prohibited_pairings.snapshot(round_)] or [
@@ -104,10 +104,10 @@ def _prohibited(
 
 
 def pairing_violations(
-    tournament: 'Tournament',
+    tournament: Tournament,
     round_: int,
-    white: 'TournamentPlayer',
-    black: 'TournamentPlayer',
+    white: TournamentPlayer,
+    black: TournamentPlayer,
 ) -> list[str]:
     """The absolute criteria pairing *white* against *black* in *round_*
     would break."""
@@ -129,10 +129,10 @@ def pairing_violations(
 
 
 def colour_violations(
-    tournament: 'Tournament',
+    tournament: Tournament,
     round_: int,
-    white: 'TournamentPlayer',
-    black: 'TournamentPlayer',
+    white: TournamentPlayer,
+    black: TournamentPlayer,
 ) -> list[str]:
     """The colour criteria giving *white* white and *black* black in
     *round_* would break: three colours in a row, or a colour difference
@@ -145,7 +145,7 @@ def colour_violations(
 
 
 def bye_violations(
-    tournament: 'Tournament', round_: int, player: 'TournamentPlayer'
+    tournament: Tournament, round_: int, player: TournamentPlayer
 ) -> list[str]:
     """Why *player* should not get the pairing-allocated bye of *round_*: a
     player gets it once, and not after a win by forfeit or a full-point bye
@@ -169,7 +169,7 @@ def bye_violations(
     return violations
 
 
-def bye_eligibility_violations(player: 'TournamentPlayer', round_: int) -> list[str]:
+def bye_eligibility_violations(player: TournamentPlayer, round_: int) -> list[str]:
     """Why *player* cannot have the pairing-allocated bye of *round_* at all,
     whoever else is paired."""
     if not _had_bye_or_forfeit_win(player, round_):
@@ -182,7 +182,7 @@ def bye_eligibility_violations(player: 'TournamentPlayer', round_: int) -> list[
     ]
 
 
-def _had_bye_or_forfeit_win(player: 'TournamentPlayer', round_: int) -> bool:
+def _had_bye_or_forfeit_win(player: TournamentPlayer, round_: int) -> bool:
     """Whether *player* can no longer get the pairing-allocated bye, having
     had it, a win by forfeit or a full-point bye before *round_*."""
     return any(
@@ -193,7 +193,7 @@ def _had_bye_or_forfeit_win(player: 'TournamentPlayer', round_: int) -> bool:
     )
 
 
-def _score(player: 'TournamentPlayer', round_: int) -> float:
+def _score(player: TournamentPlayer, round_: int) -> float:
     return sum(
         pairing.points
         for round_before in range(1, round_)
@@ -202,7 +202,7 @@ def _score(player: 'TournamentPlayer', round_: int) -> float:
 
 
 def both_against_preference(
-    round_: int, white: 'TournamentPlayer', black: 'TournamentPlayer'
+    round_: int, white: TournamentPlayer, black: TournamentPlayer
 ) -> bool:
     """Whether both players get the colour opposite to the one they should
     have."""
@@ -212,7 +212,7 @@ def both_against_preference(
 
 
 def team_pairing_violations(
-    tournament: 'Tournament', round_: int, first: 'Team', second: 'Team'
+    tournament: Tournament, round_: int, first: Team, second: Team
 ) -> list[str]:
     """The absolute criteria pairing team *first* against *second* in
     *round_* would break."""
@@ -237,11 +237,11 @@ def team_pairing_violations(
     return violations
 
 
-def _team_paired(tournament: 'Tournament') -> bool:
+def _team_paired(tournament: Tournament) -> bool:
     return tournament.is_team_tournament and tournament.pairing_system.paired_by_team
 
 
-def round_pairs(tournament: 'Tournament', round_: int) -> RoundPairs:
+def round_pairs(tournament: Tournament, round_: int) -> RoundPairs:
     """The pairs the arbiter made for *round_*, leaving out the byes they
     gave by hand."""
     if _team_paired(tournament):
@@ -322,7 +322,7 @@ def _moved_members(start: RoundPairs, actual: RoundPairs) -> set[int]:
     return {member for pair in start ^ actual for member in pair if member is not None}
 
 
-def describe_pairs(tournament: 'Tournament', pairs: RoundPairs) -> str:
+def describe_pairs(tournament: Tournament, pairs: RoundPairs) -> str:
     """*pairs* in pairing numbers, as in the TRF comments: ``'19-7 44=PAB'``."""
     number = _pairing_number_reader(tournament)
     return ' '.join(
@@ -337,7 +337,7 @@ def describe_pairs(tournament: 'Tournament', pairs: RoundPairs) -> str:
     )
 
 
-def _pairing_number_reader(tournament: 'Tournament') -> Callable[[int], int]:
+def _pairing_number_reader(tournament: Tournament) -> Callable[[int], int]:
     if _team_paired(tournament):
         teams = tournament.event.teams_by_id
         return lambda id_: teams[id_].pairing_number or 0
@@ -345,7 +345,7 @@ def _pairing_number_reader(tournament: 'Tournament') -> Callable[[int], int]:
     return lambda id_: players[id_].pairing_number or 0
 
 
-def _member_namer(tournament: 'Tournament') -> Callable[[int], str]:
+def _member_namer(tournament: Tournament) -> Callable[[int], str]:
     """A member's name followed by their pairing number."""
     number = _pairing_number_reader(tournament)
     if _team_paired(tournament):
@@ -355,7 +355,7 @@ def _member_namer(tournament: 'Tournament') -> Callable[[int], str]:
     return lambda id_: f'{players[id_].full_name} ({number(id_)})'
 
 
-def pair_labels(tournament: 'Tournament', pairs: RoundPairs) -> list[str]:
+def pair_labels(tournament: Tournament, pairs: RoundPairs) -> list[str]:
     """*pairs* as the arbiter reads them, each member's name followed by
     their pairing number, in the order of the first member's pairing
     number."""
@@ -372,7 +372,7 @@ def pair_labels(tournament: 'Tournament', pairs: RoundPairs) -> list[str]:
 
 
 def seat_rows(
-    tournament: 'Tournament', seats: list[tuple[int, Seat | None, Seat | None]]
+    tournament: Tournament, seats: list[tuple[int, Seat | None, Seat | None]]
 ) -> list[tuple[str, str, str]]:
     """*seats* as the arbiter reads them: the member, then their opponent and
     colour with the pairing engine, then in the round, in the order of the
@@ -397,7 +397,7 @@ def seat_rows(
 
 
 def rounds_change_breach(
-    tournament: 'Tournament', rounds: int
+    tournament: Tournament, rounds: int
 ) -> tuple[RoundPairs, RoundPairs] | None:
     """What playing *rounds* rounds instead of the current count does to the
     last paired round, which is paired differently when it becomes, or stops
@@ -426,7 +426,7 @@ def rounds_change_breach(
 
 
 def imported_round_breaches(
-    tournament: 'Tournament',
+    tournament: Tournament,
 ) -> list[tuple[int, RoundPairs, RoundPairs]]:
     """The rounds of a tournament just imported whose pairings are not the
     engine's, each with the engine's pairs and the imported ones that

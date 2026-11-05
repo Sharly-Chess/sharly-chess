@@ -25,7 +25,7 @@ class QRCodeType(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
+    def get_valid_option_types() -> list[type[PrintOption]]:
         """Returns a dict of valid options for the QR code type."""
 
     @staticmethod
@@ -67,7 +67,7 @@ class QRCodeType(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def url(doc: 'QRCodePrintDocument') -> tuple[bool, str]:
+    def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
         """Returns the URL of the QR code, or an error message."""
 
     @staticmethod
@@ -77,17 +77,17 @@ class QRCodeType(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def title(doc: 'QRCodePrintDocument') -> str:
+    def title(doc: QRCodePrintDocument) -> str:
         """Returns the page title."""
 
     @staticmethod
-    def subtitle(doc: 'QRCodePrintDocument') -> str | None:
+    def subtitle(doc: QRCodePrintDocument) -> str | None:
         """Returns the page subtitle."""
         return None
 
     @staticmethod
     @abstractmethod
-    def info(doc: 'QRCodePrintDocument') -> str:
+    def info(doc: QRCodePrintDocument) -> str:
         """Returns info to display under the QR code."""
 
 
@@ -101,17 +101,17 @@ class NetworkQRCodeType(QRCodeType):
         return _('Network')
 
     @staticmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
+    def get_valid_option_types() -> list[type[PrintOption]]:
         from data.print_documents.options import QRCodeNetworkPrintOption
 
         return [QRCodeNetworkPrintOption]
 
     @staticmethod
-    def title(doc: 'QRCodePrintDocument') -> str:
+    def title(doc: QRCodePrintDocument) -> str:
         return 'Sharly Chess'
 
     @staticmethod
-    def info(doc: 'QRCodePrintDocument') -> str:
+    def info(doc: QRCodePrintDocument) -> str:
         from data.print_documents.options import QRCodeNetworkPrintOption
 
         ip = doc._get_option(QRCodeNetworkPrintOption).value
@@ -129,7 +129,7 @@ class NetworkQRCodeType(QRCodeType):
         ).format(type=details['type'])
 
     @staticmethod
-    def url(doc: 'QRCodePrintDocument') -> tuple[bool, str]:
+    def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
         from data.print_documents.options import QRCodeNetworkPrintOption
 
         ip = doc._get_option(QRCodeNetworkPrintOption).value

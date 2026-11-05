@@ -74,7 +74,7 @@ class Chess960Plugin(Plugin):
         return False
 
     def used_by_stored_tournament(
-        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
     ) -> bool:
         return False
 
@@ -98,7 +98,7 @@ class Chess960Plugin(Plugin):
         return self.id, Chess960ScreenPluginData
 
     @hookimpl
-    def insert_screen_types(self, screen_types: list[type['ScreenType']]) -> None:
+    def insert_screen_types(self, screen_types: list[type[ScreenType]]) -> None:
         screen_types.append(Chess960ScreenType)
 
     # ---------------------------------------------------------------------------------
@@ -106,7 +106,5 @@ class Chess960Plugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_document(
-        self, print_documents: list[type['PrintDocument']]
-    ) -> None:
+    def insert_print_document(self, print_documents: list[type[PrintDocument]]) -> None:
         print_documents.append(Chess960PrintDocument)

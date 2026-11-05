@@ -138,7 +138,7 @@ class ESBVariantTieBreakOption(TieBreakOption[str]):
         return self.variant.value
 
     @property
-    def variant_options(self) -> 'dict[str, Any]':
+    def variant_options(self) -> dict[str, Any]:
         """Select-input dict consumed by the ``esb_variant.html`` option
         template: ESBVariant.value → SelectOption(label, tooltip)."""
         from web.utils import SelectOption
@@ -217,7 +217,7 @@ class TeamTieBreak(TieBreak, ABC):
         self,
         team_record: TeamRecord,
         all_records: dict[int, TeamRecord],
-        tournament_context: 'TeamTieBreakContext',
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> SupportsFloat:
@@ -244,7 +244,7 @@ class TeamTieBreak(TieBreak, ABC):
         self,
         tied_groups: list[list[TeamRecord]],
         all_records: dict[int, TeamRecord],
-        tournament_context: 'TeamTieBreakContext',
+        tournament_context: TeamTieBreakContext,
         *,
         after_round: int,
     ) -> dict[int, float]:
@@ -301,7 +301,7 @@ class TeamTieBreakContext:
     # The number of teams of a round-robin, None for any other system.
     round_robin_field: int | None = None
 
-    def match_counts_for_tie_breaks(self, match: 'TeamMatchRecord') -> bool:
+    def match_counts_for_tie_breaks(self, match: TeamMatchRecord) -> bool:
         """False when *match* is against a team excluded from the final
         standings — that match must not feed the opponent's tie-breaks."""
         return match.opponent_id not in self.excluded_team_ids
@@ -777,7 +777,7 @@ class EDEKnockoutTieBreakOption(TieBreakOption[str]):
         return self.variant.acronym
 
     @property
-    def variant_options(self) -> 'dict[str, Any]':
+    def variant_options(self) -> dict[str, Any]:
         """Select-input dict consumed by ``ede_knockout.html``."""
         from web.utils import SelectOption
 
@@ -1171,7 +1171,7 @@ class _BoardTieBreak(TeamTieBreak):
         team_record: TeamRecord,
         boards: int,
         after_round: int,
-        context: 'TeamTieBreakContext',
+        context: TeamTieBreakContext,
     ) -> list[float]:
         """Game points the team scored on each board across the
         tournament, board 1 first."""

@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 class BoardOperations:
     """The pairings and unpairings of one tournament's boards."""
 
-    def __init__(self, tournament: 'Tournament') -> None:
+    def __init__(self, tournament: Tournament) -> None:
         self.tournament = tournament
 
     def pab_board(self, round_: int) -> Board | None:
