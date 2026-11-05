@@ -16,6 +16,7 @@
 - The administration pages have been reworked with a more modern look (5.2.0)
 - In the light admin view, the filtered players counter and the highlighted option of the drop-down lists are readable (5.2.1)
 - Fix libraries missing in Linux Flatpak build (5.2.1)
+- In the staff account form, every result of the player search fills in the account, including the results loaded after the first ones, which opened the player form, and the filter button that did nothing is gone. When replacing a player, the results loaded after the first ones also replace that player instead of creating a new one (5.2.2)
 
 ## Tournaments
 

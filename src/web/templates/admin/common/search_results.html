@@ -47,12 +47,13 @@
                         'admin-search-player',
                         event_uniq_id=admin_event.uniq_id,
                         page=page + 1,
-                        usage=usage,
                     ) }}"
                     hx-vals='js:{
                         "data_source_id": "{{ data_source.id }}",
                         "search": "{{ search }}",
-                        "filters": getFilters(),
+                        "filters": {{ filters|tojson }},
+                        "usage": "{{ usage }}",
+                        {% if admin_player %}"player_id": {{ admin_player.id }},{% endif %}
                     }'
                     hx-target="this"
                     hx-swap="afterend"
@@ -71,12 +72,12 @@
                     'admin-search-player',
                     event_uniq_id=admin_event.uniq_id,
                     page=page,
-                    usage=usage,
                 ) }}"
                 hx-vals='js:{
                     "data_source_id": "{{ data_source.id }}",
                     "search": {{ search|tojson }},
-                    "filters": getFilters(),
+                    "filters": {{ filters|tojson }},
+                    "usage": "{{ usage }}",
                     "players_before": {{ rest_from }},
                     {% if admin_player %}"player_id": {{ admin_player.id }},{% endif %}
                 }'

@@ -3606,6 +3606,7 @@ class PlayerAdminController(BaseEventAdminController):
                 'usage': usage,
                 'search': search,
                 'search_results': players,
+                'filters': filters,
                 'has_more_results': has_more_results,
                 'rest_from': rest_from,
                 'players_before': players_before,
