@@ -10,6 +10,7 @@ some of them. Run with:
 
 import importlib.metadata
 import sys
+from pathlib import Path
 
 from packaging.requirements import Requirement
 
@@ -30,6 +31,23 @@ def unresolved_requirements() -> list[str]:
     return sorted(unresolved)
 
 
+def missing_credentials_files() -> list[Path]:
+    from database.sqlite.fide.fide_database import FideDatabase
+    from plugins.chess_results.utils import CRUtils
+    from plugins.ffe.ffe_database import FfeDatabase
+    from plugins.ffe.ffe_sql_server import FFESqlServer
+    from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
+
+    credentials_files = [
+        FideDatabase.credentials_file(),
+        CRUtils.CREDENTIALS_FILE,
+        FFESqlServer.CREDENTIALS_FILE,
+        FfeDatabase.credentials_file(),
+        FRASchoolsDatabase.credentials_file(),
+    ]
+    return [file for file in credentials_files if not file.is_file()]
+
+
 def main() -> int:
     unresolved = unresolved_requirements()
     if unresolved:
@@ -44,8 +62,16 @@ def main() -> int:
     init_script()
     import web.server_engine  # noqa: F401
 
+    missing = missing_credentials_files()
+    if missing:
+        print('Credentials files missing from the application:')
+        for file in missing:
+            print(f'  {file}')
+        return 1
+
     print(
-        'All requirements resolve and the application imports in the Platform runtime'
+        'All requirements resolve, the application imports in the Platform runtime '
+        'and its credentials files are present'
     )
     return 0
 
