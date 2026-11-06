@@ -441,6 +441,7 @@ class ArchiveLoader:
                 for file in ARCHIVES_DIR.glob(f'*.{Extension.ARCHIVE}')
             ],
             key=lambda archive: archive.date,
+            reverse=True,
         )
 
     @classmethod
