@@ -67,6 +67,7 @@ from utils.data_dir_migration import (
 from utils.file import overlap
 from utils.program_variables import ProgramVar
 from utils.relaunch import relaunch
+from web.channels import publish_ws_event
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
 
@@ -1103,7 +1104,12 @@ class SharlyChessServerToga(toga.App):
         self._update_config('name_formatter', getattr(widget.value, 'name_formatter'))  # noqa: B009
 
     def _on_admin_theme_change(self, widget: toga.Selection, **kwargs: Any) -> None:
-        self._update_config('admin_theme', getattr(widget.value, 'admin_theme'))  # noqa: B009
+        theme = getattr(widget.value, 'admin_theme')  # noqa: B009
+        self._update_config('admin_theme', theme)
+        if self.server_running:
+            self.server_loop.call_soon_threadsafe(
+                publish_ws_event, 'admin-theme-updated', {'theme': theme}
+            )
 
     def _on_capitalise_last_name_switch_change(
         self, widget: toga.Switch, **kwargs: Any

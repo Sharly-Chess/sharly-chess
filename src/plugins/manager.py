@@ -150,6 +150,7 @@ class AppPluginManager(PluginManager):
                 stored_plugin.is_enabled = True
                 database.update_stored_plugin(stored_plugin)
         self.reload_register()
+        self._publish_plugins_updated()
         return plugins_to_enable
 
     def disable_plugin(self, plugin: Plugin) -> None:
@@ -162,6 +163,13 @@ class AppPluginManager(PluginManager):
             stored_plugin.is_enabled = False
             database.update_stored_plugin(stored_plugin)
         self.reload_register()
+        self._publish_plugins_updated()
+
+    @staticmethod
+    def _publish_plugins_updated() -> None:
+        from web.channels import publish_ws_event
+
+        publish_ws_event('plugins-updated')
 
     def set_event_is_enabled_by_default(self, plugin: Plugin, is_enabled: bool) -> None:
         from database.sqlite.config.config_database import ConfigDatabase

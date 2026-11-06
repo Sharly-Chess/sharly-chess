@@ -97,8 +97,15 @@ class PluginAdminController(BaseAdminController):
     ) -> dict[str, Any]:
         from web.controllers.admin.index_admin_controller import IndexAdminController
 
-        context = IndexAdminController.admin_shell_context(web_context) | {
-            'admin_tab': PLUGINS_ADMIN_TAB,
+        return (
+            IndexAdminController.admin_shell_context(web_context)
+            | {'admin_tab': PLUGINS_ADMIN_TAB}
+            | cls._content_context(plugin, embedded)
+        )
+
+    @classmethod
+    def _content_context(cls, plugin: Plugin | None, embedded: bool) -> dict[str, Any]:
+        context: dict[str, Any] = {
             'plugins': cls._sorted_plugins(),
             'selected_plugin': plugin,
             'embedded': embedded,
@@ -146,6 +153,25 @@ class PluginAdminController(BaseAdminController):
             AdminWebContext(request),
             self._get_plugin(plugin_id) if plugin_id else None,
             bool(embedded),
+        )
+
+    @get(path='/plugins-content', name='admin-plugins-content')
+    async def htmx_admin_plugins_content(
+        self,
+        request: HTMXRequest,
+        plugin_id: FromQuery[str | None] = None,
+        embedded: FromQuery[bool | None] = None,
+    ) -> Template:
+        """The section alone, displayed again when the plugins change elsewhere:
+        the messages pending for the user are left to the page they belong to."""
+        web_context = AdminWebContext(request)
+        return HTMXTemplate(
+            template_name='admin/plugins/_plugins_content.html',
+            context=web_context.template_context
+            | self._content_context(
+                self._get_plugin(plugin_id) if plugin_id else None,
+                bool(embedded),
+            ),
         )
 
     @get(path='/plugin-detail/{plugin_id:str}', name='admin-plugin-detail')

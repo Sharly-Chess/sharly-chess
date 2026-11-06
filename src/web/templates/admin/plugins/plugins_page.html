@@ -6,12 +6,6 @@
 
 {% block admin_header_back_button %}{% endblock admin_header_back_button %}
 
-{% block ws %}
-    {% if not embedded %}
-        {{ super() }}
-    {% endif %}
-{% endblock ws %}
-
 {% block sidebar %}
     {% if not embedded %}
         {{ super() }}
