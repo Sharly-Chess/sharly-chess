@@ -242,7 +242,7 @@ class ConfigDatabase(MigrationDatabase):
             outdate_action=row['outdate_action'],
             updated_at=row['updated_at'],
             published_at=row.get('published_at'),
-            read_online=cls.load_bool_from_database_field(row.get('read_online', 0)),
+            read_online=cls.load_bool_from_database_field(row.get('read_online', 1)),
             is_active=cls._load_optional_bool(row['is_active']),
         )
 

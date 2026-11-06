@@ -7981,6 +7981,9 @@ msgstr ""
 msgid "Print the rules with the settings above, without saving them."
 msgstr ""
 
+msgid "Prioritise over the local database"
+msgstr ""
+
 msgid "Private"
 msgstr ""
 
@@ -11768,9 +11771,6 @@ msgid "Trinidad & Tobago"
 msgstr ""
 
 msgid "Trophy, medal"
-msgstr ""
-
-msgid "Try before the installed copy"
 msgstr ""
 
 msgctxt "tuesday"

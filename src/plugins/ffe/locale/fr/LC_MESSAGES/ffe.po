@@ -599,6 +599,9 @@ msgstr "Joueur·euses sans numéro de licence FFE : {names}."
 msgid "Please select a file."
 msgstr "Veuillez sélectionner un fichier."
 
+msgid "Prioritise over the local FFE database"
+msgstr "Prioriser sur la base de données FFE locale"
+
 msgid "Public page of the tournament."
 msgstr "Page publique du tournoi."
 

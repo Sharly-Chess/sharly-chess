@@ -372,6 +372,10 @@ class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
         return _('FFE (local)')
 
     @property
+    def online_first_label(self) -> str:
+        return _('Prioritise over the local FFE database')
+
+    @property
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         return FfeDatabase
 

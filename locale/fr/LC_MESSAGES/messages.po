@@ -7983,6 +7983,9 @@ msgstr "Imprimer les règles"
 msgid "Print the rules with the settings above, without saving them."
 msgstr "Imprimer les règles avec les paramètres ci-dessus, sans les enregistrer."
 
+msgid "Prioritise over the local database"
+msgstr "Prioriser sur la base de données locale"
+
 msgid "Private"
 msgstr "Privé"
 
@@ -11771,9 +11774,6 @@ msgstr "Trinité-et-Tobago"
 
 msgid "Trophy, medal"
 msgstr "Trophée, médaille"
-
-msgid "Try before the installed copy"
-msgstr "Essayer avant la copie installée"
 
 msgctxt "tuesday"
 msgid "Tu"
