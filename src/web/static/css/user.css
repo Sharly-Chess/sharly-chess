@@ -762,6 +762,12 @@ body:has(#screen-exit-button) .alert-message {
         padding-top: 0.515em;
         padding-bottom: 0.515em;
     }
+    .input-screen .grid-striped .board-row > div {
+        padding-top: calc(0.45rem + 0.415em);
+        padding-bottom: calc(0.45rem + 0.415em);
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+    }
     .input-card-enter {
         padding-top: 0.615em;
         padding-bottom: 0.615em;
