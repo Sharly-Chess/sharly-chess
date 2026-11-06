@@ -2,14 +2,10 @@
 
 ## General
 
-- In the settings of the application window, the fields all have the same width, and the labels of the checkboxes line up with the labels of the other fields (5.2.2)
-- The plugins section follows the plugins enabled or disabled elsewhere, such as by importing an event that needs one, and the browser windows on the computer running _Sharly Chess_ follow the administration theme chosen in the application window, neither needing to be refreshed (5.2.2)
 - A name format setting (Last First / Last, First / First Last / First, Last), with an option to display last names in capitals, sets how players' names are displayed, whatever the language (5.2.0)
 - The update settings of the main application window have moved to a new About tab (5.2.0)
-- _FFE_ arbiter titles follow the 2026 reform (Young, Match, Club and Open Arbiter); the FIDE arbiter title (FA or IA) is filled in from the _FFE_ database, and existing accounts are converted following the transition rules of the DNA, the former Elite arbiters becoming FIDE or International Arbiters (5.2.0)
 - Only one _Sharly Chess_ runs on a data folder: starting it again opens the running one in the browser instead of starting a second server on another port, which would write to the same events (5.2.0)
 - On Windows, the data is stored in the local application data (`%LOCALAPPDATA%\Sharly Chess\data`) instead of the Documents, which cloud services such as OneDrive can synchronise and so block the events while _Sharly Chess_ writes to them. The data of the former default folder is moved on the first start, the previous folder being deleted once the copy has been checked; a folder chosen in OneDrive, Google Drive, Dropbox or iCloud Drive is moved if the user agrees (5.2.0)
-- The FFE upload, the event clone and the event backup copy the event in one consistent snapshot, even while results are being entered (5.2.0)
 - Events are backed up as they change, and a backup can be restored over an event or beside it. The backups are kept beside the data folder rather than inside it, so that either folder can be moved without the other, and a folder of the user's own can be named for them (5.2.0)
 - A refreshed admin view: a calmer and denser look set in Inter, cards and lists that show the status of each item as a coloured dot, the counts of the sidebar beside its entries, an edit button on each row of the players tab, the folding sections of the forms summarising their content, and fields that cannot be changed shown with a lock (5.2.0)
 - The admin view can be light as well as dark: by default it follows the appearance of the system, and the settings of the application window can force it dark or light (5.2.0)
@@ -19,9 +15,8 @@
 - In the light admin view, the filtered players counter and the highlighted option of the drop-down lists are readable (5.2.1)
 - Fix libraries missing in Linux Flatpak build (5.2.1)
 - In the staff account form, every result of the player search fills in the account, including the results loaded after the first ones, which opened the player form, and the filter button that did nothing is gone. When replacing a player, the results loaded after the first ones also replace that player instead of creating a new one (5.2.2)
-- The online _FFE_ database is now used in priority over the local copy by default, with the local copy standing in when it cannot be reached; a switch in the databases window turns this off (5.2.2)
-- The French schools database can be installed in the Linux Flatpak version (5.2.2)
-- The French schools database is no longer offered for installation from a file, and the other databases can be installed from a file of any size (5.2.2)
+- In the settings of the application window, the fields all have the same width, and the labels of the checkboxes line up with the labels of the other fields (5.2.2)
+- The plugins section follows the plugins enabled or disabled elsewhere, such as by importing an event that needs one, and the browser windows on the computer running _Sharly Chess_ follow the administration theme chosen in the application window, neither needing to be refreshed (5.2.2)
 
 ## Tournaments
 
@@ -43,7 +38,6 @@
 - Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 - The fees and payments of the registrations on _Sharly-Chess.com_ are imported into the players' owed and paid amounts when synchronising; payments recorded in _Sharly Chess_ are kept until they change on _Sharly-Chess.com_ (5.2.0)
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
-- Improved player search in the _FFE_ database: online searches are faster, and players whose names the _FFE_ database cut or abbreviated (such as `MERCIER-PIQUEM.` for Mercier-Piquemal) are found from their full names, both by searches and when matching imported players (5.2.0)
 
 ## Pairings
 
@@ -59,8 +53,8 @@
 - The rating-based tie-breaks (ARO, TPR, APRO, PTP, APPO and RTNG) can give players without a FIDE or national rating a fixed rating, 1400 by default, instead of their estimated rating (5.2.0)
 - In round robins with an odd number of players, the free round is not counted as a game: the Koya limit is half of the games each player can play, Rounds one Elected to Play leaves the free round out, and the Sonneborn-Berger cut applies to the games only (5.2.0)
 - The Berger grid gives the tie-breaks of the standings, after the last finished round, when the later rounds are already paired (5.2.0)
-- Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the FFE T2 minutes (5.2.0)
-- The arbiter now publishes each round: until then, the screens and the online services (Sharly-Chess.com, Chess-Results, FFE, custom uploads) stay on the previous round, while the new pairings can be checked and printed. A round can be published once the rounds before it are finished, and unpublished as long as it has no results (5.2.0)
+- Full-point byes, deprecated by FIDE (C.05:6.7.4), are listed in the log, and so in the TRF comments and the _FFE_ T2 minutes (5.2.0)
+- The arbiter now publishes each round: until then, the screens and the online services (_Sharly-Chess.com_, _Chess-Results_, _FFE_, custom uploads) stay on the previous round, while the new pairings can be checked and printed. A round can be published once the rounds before it are finished, and unpublished as long as it has no results (5.2.0)
 - In round robins and fixed-table tournaments (Molter, Scheveningen), whose pairings are known in advance, the online services receive the pairings of every round as soon as they are made; publishing a round moves the screens on to it and makes its results public. Publishing replaces the End round button of round robins (5.2.0)
 - When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
 - In round robins, a player or team that withdrew is dropped from the standings, and their games annulled, as soon as they can no longer complete half of their games, instead of only once the last round has a result (5.2.0)
@@ -72,11 +66,11 @@
 
 ## Documents
 
-- The FFE T2 minutes open with the events logged for the chosen tournaments (5.2.0)
+- The _FFE_ T2 minutes open with the events logged for the chosen tournaments (5.2.0)
 - The rules of the accelerated systems can be printed, from the documents or from the pairing settings: the rules of the system, the groups, the virtual points granted round by round and the players of each group (5.2.0)
 - Pairing place cards are not generated anymore for Pairing Allocated Byes (5.2.0)
-- The text of the FFE forms, the FFE pairing sheet and the Chess960 positions can be selected and copied in the PDFs saved from Firefox (5.2.0)
-- Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the FFE forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
+- The text of the _FFE_ forms, the _FFE_ pairing sheet and the Chess960 positions can be selected and copied in the PDFs saved from Firefox (5.2.0)
+- Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the _FFE_ forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
 - A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
 - The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
 
@@ -89,7 +83,19 @@
 - The timers and the alert message have fixed colours, a timer turning from green to orange then red and the message showing in a yellow band; the colours can no longer be chosen in the timer and screen settings (5.2.0)
 - Image screens can show a timer, the image then starting below it (5.2.0)
 
-## Sharly-Chess.com
+## _Sharly-Chess.com_
 
 - Several computers can synchronise the same event with Sharly-Chess.com: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)
 - The Sharly-Chess.com window says what each part covers: the registrations and the tournament settings, merged both ways when synchronising, and the pairings and results, published from the computer. Automatic publication is set per tournament for Sharly-Chess.com, the FFE and Chess-Results, the header switch turning it on or off for every tournament; new tournaments publish automatically to Sharly-Chess.com and the FFE (5.2.0)
+
+## _FFE_
+
+- _FFE_ arbiter titles follow the 2026 reform (Young, Match, Club and Open Arbiter); the FIDE arbiter title (FA or IA) is filled in from the _FFE_ database, and existing accounts are converted following the transition rules of the DNA, the former Elite arbiters becoming FIDE or International Arbiters (5.2.0)
+- Improved player search in the _FFE_ database: online searches are faster, and players whose names the _FFE_ database cut or abbreviated (such as `MERCIER-PIQUEM.` for Mercier-Piquemal) are found from their full names, both by searches and when matching imported players (5.2.0)
+- The FFE upload, the event clone and the event backup copy the event in one consistent snapshot, even while results are being entered (5.2.0)
+- The online _FFE_ database is now used in priority over the local copy by default, with the local copy standing in when it cannot be reached; a switch in the databases window turns this off (5.2.2)
+
+## _French schools_
+
+- The French schools database can be installed in the Linux Flatpak version (5.2.2)
+- The French schools database is no longer offered for installation from a file, and the other databases can be installed from a file of any size (5.2.2)
