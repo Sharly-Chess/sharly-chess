@@ -1811,6 +1811,9 @@ msgstr ""
 msgid "British Virgin Islands"
 msgstr ""
 
+msgid "Browser on startup"
+msgstr ""
+
 msgid "Brunei Darussalam"
 msgstr ""
 
@@ -5276,9 +5279,6 @@ msgid "Last, First"
 msgstr ""
 
 msgid "Latvia"
-msgstr ""
-
-msgid "Launch a browser on startup"
 msgstr ""
 
 msgid "Layout"

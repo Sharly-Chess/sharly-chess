@@ -448,6 +448,7 @@ class SharlyChessServerToga(toga.App):
         self.federation_field: toga.Widget | None = None
         self.setup_start_button: toga.Button | None = None
         self.settings_labels: list[toga.Label] = []
+        self.settings_fields: list[toga.Widget] = []
         self.version_search_ongoing = False
 
     @property
@@ -476,12 +477,18 @@ class SharlyChessServerToga(toga.App):
     view_margin = 10
     #: Space between two networks of the networks view.
     network_gap = 10
+    #: Space between the label and the field of a row of the settings.
+    settings_row_gap = 8
     #: Width of the QR code of a network.
     network_qrcode_width = 120
     #: Size of the logo displayed while the settings have not been set.
     setup_logo_width = 96
     #: The number of federations the list of the selection displays.
     federation_visible_items = 12
+
+    @property
+    def settings_row_width(self) -> int:
+        return self.compact_size[0] - self.view_margin * 4
 
     @property
     def compact_view_style(self) -> Pack:
@@ -520,6 +527,7 @@ class SharlyChessServerToga(toga.App):
         translated when they are built, so the whole content is built again
         when the language changes (see _rebuild_content())."""
         self.settings_labels = []
+        self.settings_fields = []
         if SharlyChessConfig().force_edit:
             # Nothing is usable before the language and the federation are set,
             # not even the web server (see on_running()).
@@ -702,7 +710,7 @@ class SharlyChessServerToga(toga.App):
         # Settings view
         self.settings_view = toga.Box(style=self.compact_view_style, gap=7)
         self.launch_browser_switch = toga.Switch(
-            text=_('Launch a browser on startup'),
+            text='',
             value=config.launch_browser,
             on_change=self._on_launch_browser_switch_change,
         )
@@ -773,19 +781,27 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
-            self._settings_row('', self._build_capitalise_last_name_switch()),
+            self._capitalise_last_name_row(),
             self._settings_row(
                 _('Administration theme:'), self._build_admin_theme_select()
             ),
-            self._settings_row('', self.launch_browser_switch),
+            self._settings_row(
+                _('{string}:').format(string=_('Browser on startup')),
+                self.launch_browser_switch,
+            ),
         ]
         if config.experimental_features:
             self.experimental_switch = toga.Switch(
-                text=_('Experimental features'),
+                text='',
                 value=config.experimental,
                 on_change=self._on_experimental_switch_change,
             )
-            general_children.append(self._settings_row('', self.experimental_switch))
+            general_children.append(
+                self._settings_row(
+                    _('{string}:').format(string=_('Experimental features')),
+                    self.experimental_switch,
+                )
+            )
         self.settings_view.add(
             toga.Label(_('General'), style=title_style),
             *general_children,
@@ -869,16 +885,25 @@ class SharlyChessServerToga(toga.App):
         """A row of the settings: the fields fill the width left by the labels,
         which are all as wide as the widest of them (see
         _align_settings_labels()), so that the fields are aligned with each
-        other instead of every row being centred on its own width."""
-        widget.style.flex = 1
+        other instead of every row being centred on its own width. A switch
+        keeps its own width: all of its width reacts to a click."""
+        if not isinstance(widget, toga.Switch):
+            widget.style.flex = 1
+            self.settings_fields.append(widget)
         label_widget = toga.Label(label, text_align='right')
         self.settings_labels.append(label_widget)
         return toga.Box(
             direction=ROW,
             align_items='center',
-            gap=8,
-            width=self.compact_size[0] - self.view_margin * 4,
+            gap=self.settings_row_gap,
+            width=self.settings_row_width,
             children=[label_widget, widget],
+        )
+
+    def _capitalise_last_name_row(self) -> toga.Box:
+        return self._settings_row(
+            _('{string}:').format(string=_('Capitalise last names')),
+            self._build_capitalise_last_name_switch(),
         )
 
     def _center_snapshot_switches(self) -> None:
@@ -920,6 +945,11 @@ class SharlyChessServerToga(toga.App):
             return
         for label in self.settings_labels:
             label.style.width = width
+        # A selection asks for the width of its longest item, which would make
+        # it wider than the others and than the row.
+        field_width = self.settings_row_width - width - self.settings_row_gap
+        for field in self.settings_fields:
+            field.style.width = field_width
         self.main_window.content.refresh()
 
     @staticmethod
@@ -1015,7 +1045,7 @@ class SharlyChessServerToga(toga.App):
 
     def _build_capitalise_last_name_switch(self) -> toga.Switch:
         self.capitalise_last_name_switch = toga.Switch(
-            text=_('Capitalise last names'),
+            text='',
             value=SharlyChessConfig().stored_config.capitalise_last_name,
             on_change=self._on_capitalise_last_name_switch_change,
         )
@@ -1055,7 +1085,7 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
-            self._settings_row('', self._build_capitalise_last_name_switch()),
+            self._capitalise_last_name_row(),
             self.setup_start_button,
         )
         assert isinstance(self.main_window, toga.Window)
