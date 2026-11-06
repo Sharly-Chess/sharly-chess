@@ -56,7 +56,7 @@ from data.snapshot_worker import SnapshotScheduler
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from gui.pdf_renderer import TogaPdfRenderer
-from gui.selection_popup import limit_popup_height
+from gui.selection_popup import allow_truncated_value, limit_popup_height
 from gui.web_view_background import show_window_through
 from utils import Utils
 from utils.data_dir_migration import (
@@ -890,6 +890,10 @@ class SharlyChessServerToga(toga.App):
         if not isinstance(widget, toga.Switch):
             widget.style.flex = 1
             self.settings_fields.append(widget)
+        elif sys.platform == 'linux':
+            # GTK keeps the gap between a switch and its text when it has none,
+            # which would shift the switch away from the fields.
+            widget._impl.native_label.set_no_show_all(True)
         label_widget = toga.Label(label, text_align='right')
         self.settings_labels.append(label_widget)
         return toga.Box(
@@ -963,6 +967,7 @@ class SharlyChessServerToga(toga.App):
         value of a selection triggers its handler, which would write the value
         that is being displayed back to the configuration."""
         select = toga.Selection(items=items, accessor='text')
+        allow_truncated_value(select)
         if selected is not None:
             assert isinstance(select.items, ListSource)
             if item := select.items.find(data={accessor_key: selected}):
