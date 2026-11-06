@@ -1,5 +1,7 @@
 """The players tab and the records of one player, over HTTP."""
 
+import json
+import re
 from collections.abc import Iterator
 from datetime import date
 
@@ -130,6 +132,27 @@ def test_the_player_modal_opens_for_every_action(
         f'/player-modal/{action}/{EVENT_ID}/{first_player(tournament).id}'
     )
     assert response.status_code == 200
+
+
+@pytest.mark.unit
+def test_the_player_modal_script_carries_a_club_criterion_with_special_characters(
+    http: TestClient,
+):
+    club = 'L\'Echiquier \\ "Romanais" </script>'
+    EVENT.create(json_file='tec-swiss', tournament={'criteria': {'club': club}})
+    try:
+        tournament = EVENT.tournament()
+        response = http.get(f'/player-modal/create/{EVENT_ID}')
+    finally:
+        EVENT.delete()
+
+    assert response.status_code == 200
+    declaration = re.search(r'var FILTERS_BY_TOURNAMENT = (.*);\n', response.text)
+    assert declaration is not None
+    assert json.loads(declaration.group(1))[str(tournament.id)] == [
+        ['club_filter', club]
+    ]
+    assert '</script>' not in declaration.group(1)
 
 
 @pytest.mark.unit

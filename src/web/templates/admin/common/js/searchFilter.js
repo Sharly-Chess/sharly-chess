@@ -1,8 +1,8 @@
 var filtersInitialized = false;
 var filters = {};
 var filterRefreshTimer;
-var ENABLED_FILTERS_BY_DATASOURCE = JSON.parse('{{enabled_filters_by_datasource|safe}}');
-var FILTERS_BY_TOURNAMENT = JSON.parse('{{filters_by_tournament|safe}}');
+var ENABLED_FILTERS_BY_DATASOURCE = {{ enabled_filters_by_datasource|tojson }};
+var FILTERS_BY_TOURNAMENT = {{ filters_by_tournament|tojson }};
 var enabledFilters;
 
 
