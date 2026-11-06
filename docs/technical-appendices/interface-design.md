@@ -272,9 +272,10 @@ legibility at a distance. Sizes follow the screen's font size option: write them
   on a darker part of the band. A message that fits is centred and still; a longer one
   scrolls at a steady 120 pixels per second, fading at the edges.
 - **Input screens.** The rows and columns of the pairings screen, a little taller to tap.
-  A game still to enter has a black **Enter** pill in the result column; an entered game is
-  greyed with a green tick; the last entry is highlighted in pale green. Below 640px each
-  game becomes a card with the players one above the other. Cards are for phones only.
+  A game still to enter has a black **Enter** pill in the result column, without making its
+  row any taller; an entered game is greyed; the last entry is highlighted in pale green.
+  Below 640px each game becomes a card with the players one above the other. Cards are for
+  phones only.
 - **Modals** (`user/modals/`). Result and check-in modals share one structure: the board
   number, a short question, large choices (white wins, draw, black wins; check in or
   cancel), and the rarer actions apart, such as forfeits in an arbiter section.

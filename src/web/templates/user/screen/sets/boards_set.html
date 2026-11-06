@@ -89,15 +89,9 @@
                                 <div class="{{ cell_classes }}">
                                     {% if column.cell_template %}
                                         {% include column.cell_template %}
-                                    {% elif screen.screen_type.allows_result_input and 'score' in cell_classes.split() %}
-                                        {% if board.result_str %}
-                                            <i class="bi-check-lg result-entered-mark"></i>{{ macros.column_cell(column, board) }}
-                                        {% elif editable %}
-                                            <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
-                                            <span class="visually-hidden">{{ macros.column_cell(column, board) }}</span>
-                                        {% else %}
-                                            {{ macros.column_cell(column, board) }}
-                                        {% endif %}
+                                    {% elif editable and not board.result_str and 'score' in cell_classes.split() %}
+                                        <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
+                                        <span class="visually-hidden">{{ macros.column_cell(column, board) }}</span>
                                     {% else %}
                                         {{ macros.column_cell(column, board) }}
                                     {% endif %}

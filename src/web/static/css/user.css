@@ -543,19 +543,17 @@ body:has(#screen-exit-button) .alert-message {
     color: var(--screen-ink);
     font-weight: 800;
 }
+/* The negative margins keep the button out of the height of its line, so that
+   a row is as tall with the button as with a score. */
 .enter-result-button {
     display: inline-block;
+    margin-block: -1em;
     padding: 0.1em 0.75em;
     border-radius: 0.45rem;
     background-color: var(--screen-ink);
     color: white;
     font-weight: 800;
     white-space: nowrap;
-}
-.result-entered-mark {
-    margin-right: 0.25em;
-    color: #0f6e3a;
-    -webkit-text-stroke: 0.5px;
 }
 /* On a phone the white and black columns do not fit side by side: each game
    becomes a card instead. */

@@ -156,10 +156,8 @@
                                         {%- if left_tp %} {{ left_tp.full_name }} <span class="text-muted">{{ left_tp.rating_str_in_round(board.round) }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                     </div>
                                     <div class="score text-center px-2">
-                                        {% if not screen.screen_type.allows_result_input %}
+                                        {% if board.result_str or not screen.screen_type.allows_result_input %}
                                             {{ display_result }}
-                                        {% elif board.result_str %}
-                                            <i class="bi-check-lg result-entered-mark"></i>{{ display_result }}
                                         {% elif editable %}
                                             <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
                                         {% endif %}
