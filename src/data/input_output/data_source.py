@@ -1,13 +1,11 @@
 import asyncio
 import copy
 from abc import ABC, abstractmethod
-from contextlib import contextmanager
-from contextvars import ContextVar
 from datetime import date, datetime
 from functools import cached_property, partial
 from logging import Logger
 from typing import override, ClassVar, cast
-from collections.abc import Awaitable, Callable, Collection, Iterator
+from collections.abc import Awaitable, Callable, Collection
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -508,24 +506,6 @@ class DataSource(IdentifiableEntity, ABC):
         Return a dict with the ones that have been found."""
 
 
-#: Set while only the installed copies of the lists may be read, by a
-#: check that must not wait on a server.
-_installed_copies_only: ContextVar[bool] = ContextVar(
-    'installed_copies_only', default=False
-)
-
-
-@contextmanager
-def installed_copies_only() -> Iterator[None]:
-    """Read the lists from their installed copies alone, whatever source
-    the user set them to try first."""
-    token = _installed_copies_only.set(True)
-    try:
-        yield
-    finally:
-        _installed_copies_only.reset(token)
-
-
 class LocalDataSource(DataSource, ABC):
     #: The online version of the list, which the lookups the application
     #: makes on its own read first when the user sets it to, and fall back
@@ -575,11 +555,7 @@ class LocalDataSource(DataSource, ABC):
         reads: list[Callable[[], Awaitable[T | None]]] = []
         if self.is_installed:
             reads.append(installed)
-        if (
-            online_version is not None
-            and online_version.is_available
-            and not _installed_copies_only.get()
-        ):
+        if online_version is not None and online_version.is_available:
             read_online = partial(online, online_version)
             if self.tries_online_first:
                 reads.insert(0, read_online)

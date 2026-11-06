@@ -59,6 +59,7 @@ from data.rating_check import (
     check_ratings,
     forget_automatic_check,
     list_versions,
+    player_edited,
     stale_lists,
 )
 from data.rating_sequences import (
@@ -1921,7 +1922,7 @@ class PlayerAdminController(BaseEventAdminController):
                 renumbered.id,
             )
         event.update_player(player, stored_player)
-        forget_automatic_check(event)
+        player_edited(event)
         if event.is_team_event:
             # Team membership is set via the team picker; a paired player's
             # team is locked (moving them would orphan their boards), so we
@@ -3219,6 +3220,7 @@ class PlayerAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         players = self._ratings_check_players(web_context)
         rating_check = await check_ratings(event, players)
+        forget_automatic_check(event)
         template_context = web_context.template_context | {
             'modal': 'ratings_check',
             'rating_check': rating_check,
@@ -3452,6 +3454,7 @@ class PlayerAdminController(BaseEventAdminController):
                     for comparator in player_comparators
                 ]
             )
+            forget_automatic_check(event)
             count: int = len(player_comparators)
             Message.success(
                 request,

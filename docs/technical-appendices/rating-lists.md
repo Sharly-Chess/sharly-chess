@@ -70,13 +70,15 @@ rating only.
 `check_ratings` reads, for the period being played, the FIDE list by FIDE id and
 each player's national list by national id, from the source
 `DataSourceManager.list_source` gives (its online version first while
-`read_online` is on, as it is by default; the installed copy alone for the
-automatic check), and
+`read_online` is on, as it is by default), and
 compares. A value read online records it (`origins.<kind>.online`). Changes of the tournament or official
 rating are proposed; corrections and typed values are listed apart and kept
 unless chosen; a change of source, snapshot or coefficient alone is applied
-unasked. `automatic_check` runs it on the installed copies for the players tab
-banner, again only once a list (`list_versions`) or a player changed.
+unasked. `automatic_check` runs it for the players tab banner when the event is
+first opened, then again once a list changed (`list_versions`), the arbiter has
+opened or applied the check, a bulk player update has run, or six hours have
+passed. Editing a player also runs it again, unless a national list of the event
+is read online.
 
 ## TRF
 
