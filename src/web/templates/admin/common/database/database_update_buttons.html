@@ -27,34 +27,36 @@
             {{ database.progress or _('Updating') }}
         {% endcall %}
     {% else %}
-        <form
-            id="database-{{ database.id }}-file-form"
-            hx-post="{{ url_for('admin-database-install-file', database_id=database.id) }}"
-            hx-encoding="multipart/form-data"
-            hx-target="closest div"
-            hx-swap="outerHTML"
-            hx-trigger="change from:#database-{{ database.id }}-file"
-            hx-indicator="#please-wait"
-            class="d-inline-flex"
-        >
-            <input
-                id="database-{{ database.id }}-file"
-                type="file"
-                name="file"
-                accept="{{ database.source_file_accept }}"
-                class="d-none"
+        {% if database.source_file_accept is not none %}
+            <form
+                id="database-{{ database.id }}-file-form"
+                hx-post="{{ url_for('admin-database-install-file', database_id=database.id) }}"
+                hx-encoding="multipart/form-data"
+                hx-target="closest div"
+                hx-swap="outerHTML"
+                hx-trigger="change from:#database-{{ database.id }}-file"
+                hx-indicator="#please-wait"
+                class="d-inline-flex"
             >
-            {{ components.button(
-                _('Install from a file…'),
-                icon='bi-folder2-open',
-                size='sm',
-                icon_only=not database.is_manual,
-                tooltip=database.source_file_help or _('Install the database from a source file you downloaded yourself.'),
-                tooltip_type='',
-                tooltip_placement='left',
-                attrs={'onclick': "$('#database-" ~ database.id ~ "-file').click()"},
-            ) }}
-        </form>
+                <input
+                    id="database-{{ database.id }}-file"
+                    type="file"
+                    name="file"
+                    accept="{{ database.source_file_accept }}"
+                    class="d-none"
+                >
+                {{ components.button(
+                    _('Install from a file…'),
+                    icon='bi-folder2-open',
+                    size='sm',
+                    icon_only=not database.is_manual,
+                    tooltip=database.source_file_help or _('Install the database from a source file you downloaded yourself.'),
+                    tooltip_type='',
+                    tooltip_placement='left',
+                    attrs={'onclick': "$('#database-" ~ database.id ~ "-file').click()"},
+                ) }}
+            </form>
+        {% endif %}
         {% if not database.is_manual %}
             {{ components.button(
                 _('Update') if database.exists() else _('Install'),

@@ -2269,6 +2269,7 @@ class IndexAdminController(BaseAdminController):
         path='/database-install-file/{database_id:str}',
         name='admin-database-install-file',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+        request_max_body_size=None,
     )
     async def _database_install_file(
         self,
@@ -2284,6 +2285,10 @@ class IndexAdminController(BaseAdminController):
             database = LocalSourceDatabaseManager().get_object(database_id)
         except KeyError:
             raise NotFoundException(f'Unknown database [{database_id}].') from None
+        if database.source_file_accept is None:
+            raise NotFoundException(
+                f'Database [{database_id}] cannot be installed from a file.'
+            )
         normalized_data = await WebContext.normalize_multipart_data(data)
         source_file = WebContext.form_data_to_path(normalized_data, 'file')
         if source_file is None or not database.is_active:

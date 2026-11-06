@@ -269,9 +269,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         return ''
 
     @property
-    def source_file_accept(self) -> str:
+    def source_file_accept(self) -> str | None:
         """The extensions of the source file the user can install, for the
-        file input."""
+        file input, or None if the database cannot be installed from a file."""
         return ''
 
     def _use_external_generator(self) -> bool:
