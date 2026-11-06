@@ -60,7 +60,7 @@ class TestPluginsLiveUpdates:
         expect(mark).to_have_count(1 if was_enabled else 0)
 
     def test_a_local_admin_page_follows_the_theme_of_the_application(self, page: Page):
-        page.goto('/')
+        page.goto('/home')
         page.evaluate(
             """() => document.body.dispatchEvent(new CustomEvent(
                 'ws:admin-theme-updated', {detail: {theme: 'light'}}

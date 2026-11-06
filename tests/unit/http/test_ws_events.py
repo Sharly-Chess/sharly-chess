@@ -23,3 +23,28 @@ def test_an_event_is_published_with_its_detail(http: TestClient) -> None:
         'event': 'admin-theme-updated',
         'data': {'detail': {'theme': 'light'}},
     }
+
+
+FOLLOWS = 'window.scFollowsApplicationTheme = true;'
+KEEPS_ITS_OWN = 'window.scFollowsApplicationTheme = false;'
+ADMIN_INTERFACE = """.attr('data-sc-interface', "admin")"""
+
+
+def test_a_local_admin_page_follows_the_theme_of_the_application(
+    http: TestClient,
+) -> None:
+    page = http.get('/home').text
+    assert ADMIN_INTERFACE in page
+    assert FOLLOWS in page
+
+
+def test_an_admin_page_over_the_network_keeps_its_own_theme(lan: TestClient) -> None:
+    page = lan.get('/home').text
+    assert ADMIN_INTERFACE in page
+    assert KEEPS_ITS_OWN in page
+
+
+def test_the_page_of_the_application_window_keeps_its_own_theme(
+    http: TestClient,
+) -> None:
+    assert KEEPS_ITS_OWN in http.get('/plugins?embedded=1').text
