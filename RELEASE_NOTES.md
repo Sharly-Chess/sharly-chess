@@ -18,6 +18,8 @@
 - Fix libraries missing in Linux Flatpak build (5.2.1)
 - In the staff account form, every result of the player search fills in the account, including the results loaded after the first ones, which opened the player form, and the filter button that did nothing is gone. When replacing a player, the results loaded after the first ones also replace that player instead of creating a new one (5.2.2)
 - The online _FFE_ database is now used in priority over the local copy by default, with the local copy standing in when it cannot be reached; a switch in the databases window turns this off (5.2.2)
+- The French schools database can be installed in the Linux Flatpak version (5.2.2)
+- The French schools database is no longer offered for installation from a file, and the other databases can be installed from a file of any size (5.2.2)
 
 ## Tournaments
 
