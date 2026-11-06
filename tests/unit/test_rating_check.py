@@ -1,8 +1,10 @@
 """The consistency check of the players' ratings against the lists."""
 
 import asyncio
+from collections import OrderedDict
 from collections.abc import Coroutine
 from concurrent.futures import ThreadPoolExecutor
+from types import SimpleNamespace
 from typing import Any
 import contextlib
 
@@ -196,3 +198,78 @@ class TestRatingCheck:
         check = self._check(player)
         [row] = check.arbiter_values
         assert str(row.proposed_rating) == '1875\xa0F'
+
+
+@pytest.mark.unit
+class TestAutomaticCheck:
+    """When the check behind the players tab banner is made again."""
+
+    @pytest.fixture(autouse=True)
+    def _setup(self, monkeypatch):
+        self.calls = 0
+        self.now = 1000.0
+        self.versions = {'ffe': 1.0}
+        self.reads_online = True
+        self.event: Any = SimpleNamespace(uniq_id='event', players_by_id={})
+
+        async def check_ratings(event, players):
+            self.calls += 1
+            return SimpleNamespace(attention_count=self.calls)
+
+        monkeypatch.setattr(rating_check, 'check_ratings', check_ratings)
+        monkeypatch.setattr(rating_check, 'list_versions', lambda: self.versions)
+        monkeypatch.setattr(rating_check, 'monotonic', lambda: self.now)
+        monkeypatch.setattr(rating_check, '_reads_online', lambda _: self.reads_online)
+        monkeypatch.setattr(rating_check, '_automatic_checks', OrderedDict())
+
+    def _check(self) -> int:
+        return _run(rating_check.automatic_check(self.event))
+
+    def test_the_count_is_kept_between_visits(self):
+        assert self._check() == 1
+        self.now += rating_check._AUTOMATIC_CHECK_LIFETIME - 1
+        assert self._check() == 1
+
+    def test_the_check_runs_out(self):
+        self._check()
+        self.now += rating_check._AUTOMATIC_CHECK_LIFETIME
+        assert self._check() == 2
+
+    def test_a_changed_list_is_checked_again(self):
+        self._check()
+        self.versions = {'ffe': 2.0}
+        assert self._check() == 2
+
+    def test_a_forgotten_check_is_made_again(self):
+        self._check()
+        rating_check.forget_automatic_check(self.event)
+        assert self._check() == 2
+
+    def test_an_edit_does_not_ask_the_server_again(self):
+        self._check()
+        rating_check.player_edited(self.event)
+        assert self._check() == 1
+
+    def test_an_edit_is_checked_again_when_no_server_is_asked(self):
+        self.reads_online = False
+        self._check()
+        rating_check.player_edited(self.event)
+        assert self._check() == 2
+
+
+@pytest.mark.unit
+def test_the_list_versions_follow_what_the_source_published(monkeypatch):
+    def database(published_at, updated_at):
+        return SimpleNamespace(
+            id=f'list-{published_at}',
+            exists=lambda: True,
+            updated_at_timestamp=updated_at,
+            stored_source_database=SimpleNamespace(published_at=published_at),
+        )
+
+    manager = SimpleNamespace(objects=lambda: [database(5.0, 9.0), database(None, 9.0)])
+    monkeypatch.setattr(
+        'database.sqlite.local_source_database.LocalSourceDatabaseManager',
+        lambda: manager,
+    )
+    assert rating_check.list_versions() == {'list-5.0': 5.0, 'list-None': 9.0}

@@ -6,12 +6,13 @@ import copy
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from functools import cached_property
+from time import monotonic
 from typing import TYPE_CHECKING
 
 from markupsafe import Markup
 
 from common.i18n import _, pgettext
-from data.input_output.data_source import installed_copies_only, reliable_k_factor
+from data.input_output.data_source import reliable_k_factor
 from data.player import Player
 from data.rating_sequences import (
     RatingListFamily,
@@ -452,13 +453,10 @@ async def _match_list(
     )
 
 
-async def check_ratings(
-    event: Event, players: list[Player], installed_only: bool = False
-) -> RatingCheck:
+async def check_ratings(event: Event, players: list[Player]) -> RatingCheck:
     """Compare the ratings of *players* with what the lists give them
     now, in the period of their tournament being played; each national
-    list is read from the source the user chose for it, its installed
-    copy alone with *installed_only*."""
+    list is read from the source the user chose for it."""
     from data.input_output import DataSourceManager
     from data.input_output.data_source import FideDataSource
 
@@ -476,11 +474,7 @@ async def check_ratings(
         data_source = DataSourceManager().national_source(source)
         if data_source is None:
             continue
-        if installed_only:
-            with installed_copies_only():
-                stored_players = await _match_list(data_source, source_players)
-        else:
-            stored_players = await _match_list(data_source, source_players)
+        stored_players = await _match_list(data_source, source_players)
         if stored_players is None:
             continue
         lists.append(data_source)
@@ -577,11 +571,16 @@ async def check_ratings(
 
 def list_versions() -> dict[str, float]:
     """The snapshot of every installed rating list, by list: what tells a
-    list update apart from the copies a check was last made against."""
+    list update apart from the copies a check was last made against. It is
+    the day the source published the list where it tells, as an update
+    finding nothing new still records the time it ran."""
     from database.sqlite.local_source_database import LocalSourceDatabaseManager
 
     return {
-        database.id: database.updated_at_timestamp
+        database.id: (
+            database.stored_source_database.published_at
+            or database.updated_at_timestamp
+        )
         for database in LocalSourceDatabaseManager().objects()
         if database.exists() and database.updated_at_timestamp is not None
     }
@@ -608,28 +607,36 @@ def stale_lists(lists: list[DataSource]) -> list[LocalSourceDatabase]:
 class _AutomaticCheck:
     versions: dict[str, float]
     count: int
+    checked_at: float
     stale: bool = False
 
 
 #: The outcome of the last automatic check of the events opened last.
 _automatic_checks: OrderedDict[str, _AutomaticCheck] = OrderedDict()
 _AUTOMATIC_CHECKS_KEPT = 16
+#: How long, in seconds, an automatic check holds: the online version of a
+#: list changes without anything telling the application.
+_AUTOMATIC_CHECK_LIFETIME = 6 * 60 * 60
 
 
 async def automatic_check(event: Event) -> int:
-    """How many players of *event* the installed lists would give another
-    rating (VCL Q139–140): checked when the event is first opened, then
-    again once a list has changed or a player was updated. No server is
-    asked."""
+    """How many players of *event* the lists would give another rating (VCL
+    Q139–140), each list being read from the source the user chose for it:
+    checked when the event is first opened, then again once a list has
+    changed, the arbiter has acted on the check, or the last check has run
+    out."""
     versions = list_versions()
     cached = _automatic_checks.get(event.uniq_id)
-    if cached is not None and not cached.stale and cached.versions == versions:
+    if (
+        cached is not None
+        and not cached.stale
+        and cached.versions == versions
+        and monotonic() - cached.checked_at < _AUTOMATIC_CHECK_LIFETIME
+    ):
         return cached.count
-    rating_check = await check_ratings(
-        event, list(event.players_by_id.values()), installed_only=True
-    )
+    rating_check = await check_ratings(event, list(event.players_by_id.values()))
     _automatic_checks[event.uniq_id] = _AutomaticCheck(
-        versions=versions, count=rating_check.attention_count
+        versions=versions, count=rating_check.attention_count, checked_at=monotonic()
     )
     _automatic_checks.move_to_end(event.uniq_id)
     while len(_automatic_checks) > _AUTOMATIC_CHECKS_KEPT:
@@ -638,7 +645,33 @@ async def automatic_check(event: Event) -> int:
 
 
 def forget_automatic_check(event: Event) -> None:
-    """Have the next automatic check made again, the players having
-    changed."""
+    """Have the next automatic check made again."""
     if (cached := _automatic_checks.get(event.uniq_id)) is not None:
         cached.stale = True
+
+
+def _reads_online(event: Event) -> bool:
+    """Whether an automatic check of *event* asks a server."""
+    from data.input_output import DataSourceManager
+    from data.input_output.data_source import LocalDataSource, OnlineDataSource
+
+    manager = DataSourceManager()
+    for source in {
+        player.national_source
+        for player in event.players_by_id.values()
+        if player.national_id and player.national_source
+    }:
+        data_source = manager.national_source(source)
+        if isinstance(data_source, OnlineDataSource) or (
+            isinstance(data_source, LocalDataSource) and data_source.tries_online_first
+        ):
+            return True
+    return False
+
+
+def player_edited(event: Event) -> None:
+    """Have the next automatic check made again after an edit, unless it
+    asks a server: entering players would then query the whole event each
+    time."""
+    if not _reads_online(event):
+        forget_automatic_check(event)

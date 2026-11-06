@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 
 from common.exception import SharlyChessException
-from data.input_output.data_source import LocalDataSource, installed_copies_only
+from data.input_output.data_source import LocalDataSource
 
 
 def _run[T](coroutine: Coroutine[Any, Any, T]) -> T:
@@ -61,24 +61,3 @@ def test_the_other_one_stands_in_when_the_first_fails_or_finds_nothing():
     assert (
         _read(_source(online_first=False, installed=False), None, 'online') == 'online'
     )
-
-
-@pytest.mark.unit
-def test_a_check_on_installed_copies_never_reads_online():
-    async def read_installed() -> Any:
-        return None
-
-    async def read_online(__: Any) -> Any:
-        return 'online'
-
-    async def check() -> Any:
-        with installed_copies_only():
-            return await LocalDataSource.first_answer(
-                _source(online_first=True), read_installed, read_online
-            )
-
-    def read() -> Any:
-        return asyncio.run(check())
-
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        assert executor.submit(read).result() is None
