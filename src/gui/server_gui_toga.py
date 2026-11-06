@@ -377,6 +377,8 @@ class SharlyChessServerToga(toga.App):
 
         # GUI elements (initialized in startup)
         self.main_box: toga.Box | None = None
+        #: The width of the views that follow the width of the window.
+        self.compact_view_width = self.base_compact_view_width
 
         # Menu buttons
         self.menu_home_btn: toga.Button | None = None
@@ -477,6 +479,8 @@ class SharlyChessServerToga(toga.App):
     view_margin = 10
     #: Space between two networks of the networks view.
     network_gap = 10
+    #: Space between two buttons of the menu.
+    menu_gap = 7
     #: Space between the label and the field of a row of the settings.
     settings_row_gap = 8
     #: Width of the QR code of a network.
@@ -487,8 +491,12 @@ class SharlyChessServerToga(toga.App):
     federation_visible_items = 12
 
     @property
+    def base_compact_view_width(self) -> int:
+        return self.compact_size[0] - self.view_margin * 2
+
+    @property
     def settings_row_width(self) -> int:
-        return self.compact_size[0] - self.view_margin * 4
+        return self.compact_view_width - self.view_margin * 2
 
     @property
     def compact_view_style(self) -> Pack:
@@ -496,7 +504,7 @@ class SharlyChessServerToga(toga.App):
             direction=COLUMN,
             margin=self.view_margin,
             align_items='center',
-            width=self.compact_size[0] - self.view_margin * 2,
+            width=self.compact_view_width,
         )
 
     # --- Toga lifecycle ---
@@ -528,6 +536,7 @@ class SharlyChessServerToga(toga.App):
         when the language changes (see _rebuild_content())."""
         self.settings_labels = []
         self.settings_fields = []
+        self.compact_view_width = self.base_compact_view_width
         if SharlyChessConfig().force_edit:
             # Nothing is usable before the language and the federation are set,
             # not even the web server (see on_running()).
@@ -851,11 +860,12 @@ class SharlyChessServerToga(toga.App):
 
         # Layout container
         self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(5, 10, 10, 10)))
-        btn_row = toga.Box(style=Pack(direction=ROW, gap=7))
+        btn_row = toga.Box(style=Pack(direction=ROW, gap=self.menu_gap))
         for button in self.menu_buttons:
             btn_row.add(button)
         self.main_box.add(btn_row)
         self.main_box.add(self.home_view)
+        self._fit_view_to_window(self.home_view)
 
         assert isinstance(self.main_window, toga.Window)
         self.main_window.content = self.main_box
@@ -864,7 +874,7 @@ class SharlyChessServerToga(toga.App):
         path_input = toga.TextInput(
             value=str(path),
             readonly=True,
-            width=self.compact_size[0] - self.view_margin * 2,
+            width=self.compact_view_width,
         )
         if sys.platform == 'darwin':
             # toga maps TextInput to an NSTextField that wraps a long value
@@ -954,6 +964,11 @@ class SharlyChessServerToga(toga.App):
         field_width = self.settings_row_width - width - self.settings_row_gap
         for field in self.settings_fields:
             field.style.width = field_width
+        for label in self.settings_labels:
+            label.parent.style.width = self.settings_row_width
+        for path_input in (self.data_path_input, self.snapshot_path_input):
+            if path_input is not None:
+                path_input.style.width = self.compact_view_width
         self.main_window.content.refresh()
 
     @staticmethod
@@ -1190,9 +1205,25 @@ class SharlyChessServerToga(toga.App):
         view_btn: toga.Button = getattr(self, f'menu_{name}_btn')
         self._set_button_active(view_btn, self.active_menu_button_style, active=True)
         self.active_view_name = name
+        if is_compact_window and view is not self.networks_view:
+            self._fit_view_to_window(view)
         self._request_window_size(
             self.compact_size if is_compact_window else self.expanded_size
         )
+
+    def _fit_view_to_window(self, view: toga.Box) -> None:
+        """Gives *view* the width of the window, which the menu makes wider than
+        the compact size on the platforms whose buttons are large. The buttons
+        are measured here, as they are not laid out before the window is."""
+        menu_width = self.menu_gap * (len(self.menu_buttons) - 1)
+        for button in self.menu_buttons:
+            button._impl.rehint()
+            asked_width = button.intrinsic.width
+            menu_width += getattr(asked_width, 'value', asked_width) or 0
+        self.compact_view_width = max(
+            self.base_compact_view_width, menu_width - self.view_margin * 2
+        )
+        view.style.width = self.compact_view_width
 
     def _show_home_view(self, widget: Any) -> None:
         self._show_view('home')
