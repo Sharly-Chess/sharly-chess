@@ -98,7 +98,7 @@ if sys.platform == 'darwin':
                 ),
             )
 elif sys.platform == 'linux':
-    from toga_gtk.libs import GLib, GTK_VERSION, IS_WAYLAND, Gtk
+    from toga_gtk.libs import GLib, GTK_VERSION, IS_WAYLAND, Gtk, Pango
 
     #: Makes a selection display its items in a list, which GTK confines to the
     #: screen and scrolls, instead of in a menu, which it does neither to.
@@ -234,6 +234,15 @@ elif sys.platform == 'linux':
             and scrolled_window.get_min_content_height() > 0
         ):
             scrolled_window.set_policy(horizontal_policy, Gtk.PolicyType.AUTOMATIC)
+
+
+def allow_truncated_value(selection: toga.Selection) -> None:
+    """Lets *selection* be narrower than its longest item, which it displays
+    truncated. GTK otherwise draws it as wide as that item whatever the width it
+    is given, over what is beside it. The other platforms truncate on their own."""
+    if sys.platform == 'linux' and GTK_VERSION < (4, 0, 0):
+        for cell in selection._impl.native.get_cells():
+            cell.set_property('ellipsize', Pango.EllipsizeMode.END)
 
 
 def limit_popup_height(selection: toga.Selection, max_visible_items: int) -> None:

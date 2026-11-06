@@ -203,13 +203,14 @@
     <!-- end background_script() -->
 {% endmacro %}
 
-{% macro theme_script(theme, interface) %}
+{% macro theme_script(theme, interface, follows_application_theme) %}
     <!-- theme_script() -->
     <!-- This is needed since it's not possible to change body attributes using HTMX -->
     <script>
         // `auto` follows the appearance of the system, and changes with it; a
         // browser that cannot tell it gets the dark theme.
         window.scRequestedTheme = "{{ theme }}";
+        window.scFollowsApplicationTheme = {{ 'true' if follows_application_theme else 'false' }};
         window.scApplyTheme ??= function() {
             var new_theme = window.scRequestedTheme === 'auto'
                 ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
@@ -221,6 +222,12 @@
         if (!window.scThemeListening) {
             window.scThemeListening = true;
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', window.scApplyTheme);
+            document.body.addEventListener('ws:admin-theme-updated', function(event) {
+                if (window.scFollowsApplicationTheme) {
+                    window.scRequestedTheme = event.detail.theme;
+                    window.scApplyTheme();
+                }
+            });
         }
         window.scApplyTheme();
         $('body').attr('data-sc-interface', "{{ interface }}");

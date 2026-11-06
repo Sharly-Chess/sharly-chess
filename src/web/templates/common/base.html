@@ -178,7 +178,7 @@
                 activateTooltips();
             </script>
             {{ macros.background_script(background_info) }}
-            {{ macros.theme_script(theme, interface) }}
+            {{ macros.theme_script(theme, interface, interface == 'admin' and client.is_local) }}
             <script>
                 $('body').css('padding-right', '0');
                 init_sidebar();

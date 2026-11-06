@@ -56,7 +56,7 @@ from data.snapshot_worker import SnapshotScheduler
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from gui.pdf_renderer import TogaPdfRenderer
-from gui.selection_popup import limit_popup_height
+from gui.selection_popup import allow_truncated_value, limit_popup_height
 from gui.web_view_background import show_window_through
 from utils import Utils
 from utils.data_dir_migration import (
@@ -67,6 +67,7 @@ from utils.data_dir_migration import (
 from utils.file import overlap
 from utils.program_variables import ProgramVar
 from utils.relaunch import relaunch
+from web.channels import publish_ws_event
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
 
@@ -376,6 +377,8 @@ class SharlyChessServerToga(toga.App):
 
         # GUI elements (initialized in startup)
         self.main_box: toga.Box | None = None
+        #: The width of the views that follow the width of the window.
+        self.compact_view_width = self.base_compact_view_width
 
         # Menu buttons
         self.menu_home_btn: toga.Button | None = None
@@ -447,6 +450,7 @@ class SharlyChessServerToga(toga.App):
         self.federation_field: toga.Widget | None = None
         self.setup_start_button: toga.Button | None = None
         self.settings_labels: list[toga.Label] = []
+        self.settings_fields: list[toga.Widget] = []
         self.version_search_ongoing = False
 
     @property
@@ -475,6 +479,10 @@ class SharlyChessServerToga(toga.App):
     view_margin = 10
     #: Space between two networks of the networks view.
     network_gap = 10
+    #: Space between two buttons of the menu.
+    menu_gap = 7
+    #: Space between the label and the field of a row of the settings.
+    settings_row_gap = 8
     #: Width of the QR code of a network.
     network_qrcode_width = 120
     #: Size of the logo displayed while the settings have not been set.
@@ -483,12 +491,20 @@ class SharlyChessServerToga(toga.App):
     federation_visible_items = 12
 
     @property
+    def base_compact_view_width(self) -> int:
+        return self.compact_size[0] - self.view_margin * 2
+
+    @property
+    def settings_row_width(self) -> int:
+        return self.compact_view_width - self.view_margin * 2
+
+    @property
     def compact_view_style(self) -> Pack:
         return Pack(
             direction=COLUMN,
             margin=self.view_margin,
             align_items='center',
-            width=self.compact_size[0] - self.view_margin * 2,
+            width=self.compact_view_width,
         )
 
     # --- Toga lifecycle ---
@@ -519,6 +535,8 @@ class SharlyChessServerToga(toga.App):
         translated when they are built, so the whole content is built again
         when the language changes (see _rebuild_content())."""
         self.settings_labels = []
+        self.settings_fields = []
+        self.compact_view_width = self.base_compact_view_width
         if SharlyChessConfig().force_edit:
             # Nothing is usable before the language and the federation are set,
             # not even the web server (see on_running()).
@@ -701,7 +719,7 @@ class SharlyChessServerToga(toga.App):
         # Settings view
         self.settings_view = toga.Box(style=self.compact_view_style, gap=7)
         self.launch_browser_switch = toga.Switch(
-            text=_('Launch a browser on startup'),
+            text='',
             value=config.launch_browser,
             on_change=self._on_launch_browser_switch_change,
         )
@@ -772,19 +790,27 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
-            self._settings_row('', self._build_capitalise_last_name_switch()),
+            self._capitalise_last_name_row(),
             self._settings_row(
                 _('Administration theme:'), self._build_admin_theme_select()
             ),
-            self._settings_row('', self.launch_browser_switch),
+            self._settings_row(
+                _('{string}:').format(string=_('Browser on startup')),
+                self.launch_browser_switch,
+            ),
         ]
         if config.experimental_features:
             self.experimental_switch = toga.Switch(
-                text=_('Experimental features'),
+                text='',
                 value=config.experimental,
                 on_change=self._on_experimental_switch_change,
             )
-            general_children.append(self._settings_row('', self.experimental_switch))
+            general_children.append(
+                self._settings_row(
+                    _('{string}:').format(string=_('Experimental features')),
+                    self.experimental_switch,
+                )
+            )
         self.settings_view.add(
             toga.Label(_('General'), style=title_style),
             *general_children,
@@ -834,11 +860,12 @@ class SharlyChessServerToga(toga.App):
 
         # Layout container
         self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(5, 10, 10, 10)))
-        btn_row = toga.Box(style=Pack(direction=ROW, gap=7))
+        btn_row = toga.Box(style=Pack(direction=ROW, gap=self.menu_gap))
         for button in self.menu_buttons:
             btn_row.add(button)
         self.main_box.add(btn_row)
         self.main_box.add(self.home_view)
+        self._fit_view_to_window(self.home_view)
 
         assert isinstance(self.main_window, toga.Window)
         self.main_window.content = self.main_box
@@ -847,7 +874,7 @@ class SharlyChessServerToga(toga.App):
         path_input = toga.TextInput(
             value=str(path),
             readonly=True,
-            width=self.compact_size[0] - self.view_margin * 2,
+            width=self.compact_view_width,
         )
         if sys.platform == 'darwin':
             # toga maps TextInput to an NSTextField that wraps a long value
@@ -868,16 +895,29 @@ class SharlyChessServerToga(toga.App):
         """A row of the settings: the fields fill the width left by the labels,
         which are all as wide as the widest of them (see
         _align_settings_labels()), so that the fields are aligned with each
-        other instead of every row being centred on its own width."""
-        widget.style.flex = 1
+        other instead of every row being centred on its own width. A switch
+        keeps its own width: all of its width reacts to a click."""
+        if not isinstance(widget, toga.Switch):
+            widget.style.flex = 1
+            self.settings_fields.append(widget)
+        elif sys.platform == 'linux':
+            # GTK keeps the gap between a switch and its text when it has none,
+            # which would shift the switch away from the fields.
+            widget._impl.native_label.set_no_show_all(True)
         label_widget = toga.Label(label, text_align='right')
         self.settings_labels.append(label_widget)
         return toga.Box(
             direction=ROW,
             align_items='center',
-            gap=8,
-            width=self.compact_size[0] - self.view_margin * 4,
+            gap=self.settings_row_gap,
+            width=self.settings_row_width,
             children=[label_widget, widget],
+        )
+
+    def _capitalise_last_name_row(self) -> toga.Box:
+        return self._settings_row(
+            _('{string}:').format(string=_('Capitalise last names')),
+            self._build_capitalise_last_name_switch(),
         )
 
     def _center_snapshot_switches(self) -> None:
@@ -919,6 +959,16 @@ class SharlyChessServerToga(toga.App):
             return
         for label in self.settings_labels:
             label.style.width = width
+        # A selection asks for the width of its longest item, which would make
+        # it wider than the others and than the row.
+        field_width = self.settings_row_width - width - self.settings_row_gap
+        for field in self.settings_fields:
+            field.style.width = field_width
+        for label in self.settings_labels:
+            label.parent.style.width = self.settings_row_width
+        for path_input in (self.data_path_input, self.snapshot_path_input):
+            if path_input is not None:
+                path_input.style.width = self.compact_view_width
         self.main_window.content.refresh()
 
     @staticmethod
@@ -932,6 +982,7 @@ class SharlyChessServerToga(toga.App):
         value of a selection triggers its handler, which would write the value
         that is being displayed back to the configuration."""
         select = toga.Selection(items=items, accessor='text')
+        allow_truncated_value(select)
         if selected is not None:
             assert isinstance(select.items, ListSource)
             if item := select.items.find(data={accessor_key: selected}):
@@ -1014,7 +1065,7 @@ class SharlyChessServerToga(toga.App):
 
     def _build_capitalise_last_name_switch(self) -> toga.Switch:
         self.capitalise_last_name_switch = toga.Switch(
-            text=_('Capitalise last names'),
+            text='',
             value=SharlyChessConfig().stored_config.capitalise_last_name,
             on_change=self._on_capitalise_last_name_switch_change,
         )
@@ -1054,7 +1105,7 @@ class SharlyChessServerToga(toga.App):
             ),
             self._settings_row(_('Date format:'), self._build_date_formatter_select()),
             self._settings_row(_('Name format:'), self._build_name_formatter_select()),
-            self._settings_row('', self._build_capitalise_last_name_switch()),
+            self._capitalise_last_name_row(),
             self.setup_start_button,
         )
         assert isinstance(self.main_window, toga.Window)
@@ -1103,7 +1154,12 @@ class SharlyChessServerToga(toga.App):
         self._update_config('name_formatter', getattr(widget.value, 'name_formatter'))  # noqa: B009
 
     def _on_admin_theme_change(self, widget: toga.Selection, **kwargs: Any) -> None:
-        self._update_config('admin_theme', getattr(widget.value, 'admin_theme'))  # noqa: B009
+        theme = getattr(widget.value, 'admin_theme')  # noqa: B009
+        self._update_config('admin_theme', theme)
+        if self.server_running:
+            self.server_loop.call_soon_threadsafe(
+                publish_ws_event, 'admin-theme-updated', {'theme': theme}
+            )
 
     def _on_capitalise_last_name_switch_change(
         self, widget: toga.Switch, **kwargs: Any
@@ -1149,9 +1205,25 @@ class SharlyChessServerToga(toga.App):
         view_btn: toga.Button = getattr(self, f'menu_{name}_btn')
         self._set_button_active(view_btn, self.active_menu_button_style, active=True)
         self.active_view_name = name
+        if is_compact_window and view is not self.networks_view:
+            self._fit_view_to_window(view)
         self._request_window_size(
             self.compact_size if is_compact_window else self.expanded_size
         )
+
+    def _fit_view_to_window(self, view: toga.Box) -> None:
+        """Gives *view* the width of the window, which the menu makes wider than
+        the compact size on the platforms whose buttons are large. The buttons
+        are measured here, as they are not laid out before the window is."""
+        menu_width = self.menu_gap * (len(self.menu_buttons) - 1)
+        for button in self.menu_buttons:
+            button._impl.rehint()
+            asked_width = button.intrinsic.width
+            menu_width += getattr(asked_width, 'value', asked_width) or 0
+        self.compact_view_width = max(
+            self.base_compact_view_width, menu_width - self.view_margin * 2
+        )
+        view.style.width = self.compact_view_width
 
     def _show_home_view(self, widget: Any) -> None:
         self._show_view('home')

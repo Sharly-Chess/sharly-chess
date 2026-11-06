@@ -1811,6 +1811,9 @@ msgstr "Brésil"
 msgid "British Virgin Islands"
 msgstr "Îles Vierges britanniques"
 
+msgid "Browser on startup"
+msgstr "Navigateur au démarrage"
+
 msgid "Brunei Darussalam"
 msgstr "Brunéi Darussalam"
 
@@ -5277,9 +5280,6 @@ msgstr "Nom, Prénom"
 
 msgid "Latvia"
 msgstr "Lettonie"
-
-msgid "Launch a browser on startup"
-msgstr "Lancer un navigateur web au démarrage"
 
 msgid "Layout"
 msgstr "Présentation"

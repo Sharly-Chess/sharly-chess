@@ -124,11 +124,18 @@
     </style>
 {% endif %}
 
+<div
+    hx-get="{{ url_for('admin-plugins-content') }}{% if embedded %}?embedded=1{% endif %}"
+    hx-trigger="ws:plugins-updated from:body"
+    hx-vals="js:{plugin_id: $('.plugin-list-item.active').attr('data-plugin-id') || ''}"
+    hx-target="#admin-content"
+></div>
 <div class="p-3 plugin-section">
     <div class="row g-3 plugin-columns">
         <div class="col-12 col-md-5 col-xl-4 plugin-column plugin-list-column">
             <input
                 id="plugin-search-input"
+                hx-preserve
                 type="search"
                 class="form-control mb-2"
                 autocomplete="off"
@@ -192,7 +199,7 @@
         $('#plugin-list-empty').toggle(visible === 0);
     }
 
-    $('#plugin-search-input').on('input', filterPlugins);
+    $('#plugin-search-input').off('input').on('input', filterPlugins);
 
     $('.plugin-list-item').click(function () {
         $('.plugin-list-item').removeClass('active');
