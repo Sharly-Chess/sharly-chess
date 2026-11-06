@@ -12,7 +12,7 @@ from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
-from data.access_levels.client import Client
+from data.access_levels.client import Client, SupportsRemote
 from data.screens.display_controller import DisplayController
 from data.screens.rotator import Rotator
 from data.screens.screen import Screen
@@ -163,8 +163,12 @@ class SetByeGuard(BaseGuard):
         self._authorize_action(action, client)
 
 
-class SupportsPublic(Protocol):
-    """What a screen entity has to expose for the guard below to read it."""
+class SupportsPublic(SupportsRemote, Protocol):
+    """What a screen entity has to expose for the guard below to read it.
+
+    Two separate questions, which is why `remote` comes from a protocol of its
+    own: `public` is who may look, `remote` is whether it leaves the venue.
+    """
 
     @property
     def public(self) -> bool: ...
@@ -180,10 +184,22 @@ class ViewScreenEntityGuard[T: SupportsPublic](BaseGuard, ABC):
     def is_entity_public(entity: T) -> bool:
         return entity.public
 
+    @staticmethod
+    def is_entity_remote(entity: T) -> bool:
+        return entity.remote
+
     def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         entity = self.get_entity(request)
         if not entity:
             return
+        if client.remote and not self.is_entity_remote(entity):
+            # Not found rather than forbidden: no account changes this answer,
+            # so saying it exists would only tell whoever is probing the
+            # hostname something they could not otherwise learn.
+            raise NotFoundException(
+                f'[{getattr(entity, "uniq_id", entity)}] is not served '
+                f'over the internet.'
+            )
         action = (
             AuthAction.VIEW_PUBLIC_SCREENS
             if self.is_entity_public(entity)
