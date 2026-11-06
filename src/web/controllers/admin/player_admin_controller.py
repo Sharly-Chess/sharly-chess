@@ -1172,10 +1172,8 @@ class PlayerAdminController(BaseEventAdminController):
             and cls._player_has_byes(admin_player),
             'is_team_event': event.is_team_event,
             'search_filters': search_filter_manager.get_filters(),
-            'filters_by_tournament': json.dumps(
-                search_filter_manager.get_filters_by_tournament()
-            ),
-            'enabled_filters_by_datasource': json.dumps(
+            'filters_by_tournament': search_filter_manager.get_filters_by_tournament(),
+            'enabled_filters_by_datasource': (
                 search_filter_manager.get_filters_by_datasource()
             ),
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
