@@ -69,8 +69,9 @@ rating only.
 
 `check_ratings` reads, for the period being played, the FIDE list by FIDE id and
 each player's national list by national id, from the source
-`DataSourceManager.list_source` gives (its installed copy, unless the user set
-`read_online` on it; the installed copy alone for the automatic check), and
+`DataSourceManager.list_source` gives (its online version first while
+`read_online` is on, as it is by default; the installed copy alone for the
+automatic check), and
 compares. A value read online records it (`origins.<kind>.online`). Changes of the tournament or official
 rating are proposed; corrections and typed values are listed apart and kept
 unless chosen; a change of source, snapshot or coefficient alone is applied

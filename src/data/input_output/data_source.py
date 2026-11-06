@@ -557,6 +557,11 @@ class LocalDataSource(DataSource, ABC):
             and self.database.stored_source_database.read_online
         )
 
+    @property
+    def online_first_label(self) -> str:
+        """The label of the switch that sets `tries_online_first`."""
+        return _('Prioritise over the local database')
+
     async def first_answer[T](
         self,
         installed: Callable[[], Awaitable[T | None]],

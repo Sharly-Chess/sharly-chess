@@ -31,7 +31,7 @@
 | `outdate_action` | `TEXT`    | NOT NULL                 | The action to take when the database needs to be updated (`notif`, `auto_update`)                                                                                                           |
 | `updated_at`     | `FLOAT`   |                          | The last update date for the database                                                                                                                                                       |
 | `published_at`   | `FLOAT`   |                          | When the source published the installed copy, where it tells (the _FIDE_ list's `Last-Modified`); the version of the ratings read from it                                                   |
-| `read_online`    | `INTEGER` | NOT NULL<br/>DEFAULT 0   | Boolean, for a list that also has an online source: whether players added from another list and the ratings checks read that online source rather than this copy                            |
+| `read_online`    | `INTEGER` | NOT NULL<br/>DEFAULT 1   | Boolean, for a list that also has an online source: whether players added from another list and the ratings checks read that online source rather than this copy                            |
 | `is_active`      | `INTEGER` |                          | Whether the database is offered in the application:<br/>- `NULL`: never activated (a federation event or a plugin may still activate it);<br/>- `1`: active;<br/>- `0`: removed by the user |
 
 ### `online_data_source` table (online player data sources)

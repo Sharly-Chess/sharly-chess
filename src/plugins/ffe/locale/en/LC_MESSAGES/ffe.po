@@ -594,6 +594,9 @@ msgstr ""
 msgid "Please select a file."
 msgstr ""
 
+msgid "Prioritise over the local FFE database"
+msgstr ""
+
 msgid "Public page of the tournament."
 msgstr ""
 
