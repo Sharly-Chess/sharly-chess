@@ -156,11 +156,17 @@ def ffe_list_ratings(
 ) -> dict[int, dict[str, Any]]:
     """The ratings of a player of the FFE list, each typed F or N. The
     estimates the list carries are left out, the plugin prescribing them
-    by age."""
+    by age: those typed E, and those of the published file typed N, which
+    only their value tells apart from a national rating."""
     return {
         tournament_rating.value: (
             PlayerRating()
             if rating_type == PlayerRatingType.ESTIMATED
+            or (
+                rating_type == PlayerRatingType.NATIONAL
+                and value is not None
+                and is_ffe_estimate(value)
+            )
             else PlayerRating.from_type(value, rating_type, origin)
         ).stored_value
         for tournament_rating, (value, rating_type) in ratings.items()

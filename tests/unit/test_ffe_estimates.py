@@ -4,7 +4,9 @@ import pytest
 
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.migrations.m010_prescribed_estimates import Migration
-from plugins.ffe.utils import is_ffe_estimate
+from plugins.ffe.utils import ffe_list_ratings, is_ffe_estimate
+from utils.enum import Cadence, PlayerRatingType
+from utils.types import RatingOrigin
 
 
 @pytest.mark.unit
@@ -25,6 +27,29 @@ def test_ffe_estimates_end_in_99_below_the_fide_floor(
     value: int, expected: bool
 ) -> None:
     assert is_ffe_estimate(value) == expected
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'value, rating_type, expected',
+    [
+        (799, PlayerRatingType.NATIONAL, {}),
+        (1199, PlayerRatingType.NATIONAL, {}),
+        (1299, PlayerRatingType.ESTIMATED, {}),
+        (860, PlayerRatingType.NATIONAL, {'national': 860}),
+        (1499, PlayerRatingType.NATIONAL, {'national': 1499}),
+        (1399, PlayerRatingType.FIDE, {'fide': 1399}),
+    ],
+)
+def test_the_estimates_of_the_ffe_list_are_left_out_however_typed(
+    value: int, rating_type: PlayerRatingType, expected: dict[str, int]
+) -> None:
+    ratings = ffe_list_ratings(
+        {Cadence.RAPID: (value, rating_type)}, RatingOrigin('ffe')
+    )
+    rating = ratings[Cadence.RAPID.value]
+    rating.pop('origins', None)
+    assert rating == expected
 
 
 @pytest.mark.unit
