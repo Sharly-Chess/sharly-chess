@@ -11062,7 +11062,7 @@ msgid "These lower-ranked teams were released so the round could be paired."
 msgstr "Les contraintes sur ces équipes de fin de classement ont été supprimées pour apparier la ronde."
 
 msgid "These players keep the value the arbiter entered, unless they are selected to take the value of the lists."
-msgstr "Ces joueur·euses gardent la valeur saisie par l'arbitre, sauf s'ils·elles sont sélectionné·es pour prendre la valeur des listes."
+msgstr "Ces joueur·euses gardent la valeur saisie par l'arbitre, sauf s'il·elles sont sélectionné·es pour prendre la valeur des listes."
 
 msgid "These plugins are installed together with this one."
 msgstr "Ces plug-ins sont installés en même temps que celui-ci."
