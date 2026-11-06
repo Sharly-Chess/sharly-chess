@@ -1142,6 +1142,12 @@
     gap: .75rem;
 }
 
+.filter-collapsable-container {
+    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+}
+
 .timer-usage-group {
     padding: .85rem 1rem;
     background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
