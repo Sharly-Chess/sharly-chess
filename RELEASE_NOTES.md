@@ -94,8 +94,8 @@
 - Improved player search in the _FFE_ database: online searches are faster, and players whose names the _FFE_ database cut or abbreviated (such as `MERCIER-PIQUEM.` for Mercier-Piquemal) are found from their full names, both by searches and when matching imported players (5.2.0)
 - The FFE upload, the event clone and the event backup copy the event in one consistent snapshot, even while results are being entered (5.2.0)
 - The online _FFE_ database is now used in priority over the local copy by default, with the local copy standing in when it cannot be reached; a switch in the databases window turns this off (5.2.2)
-- Players without a rapid or blitz rating no longer receive their estimate by age as a national rating from the local _FFE_ database, whose file marks these estimates as national ratings (5.2.3)
-- The banner of the players tab reads the rating lists from the same source as its Review window, so that it no longer announces changes the window does not show. It asks the online _FFE_ database at most every six hours for an event, unless a list changes or the arbiter acts on the check, and editing a player does not ask it again (5.2.3)
+- Players without a rapid or blitz rating no longer receive their estimate by age as a national rating from the local _FFE_ database, whose file marks these estimates as national ratings (5.2.2)
+- The banner of the players tab reads the rating lists from the same source as its Review window, so that it no longer announces changes the window does not show. It asks the online _FFE_ database at most every six hours for an event, unless a list changes or the arbiter acts on the check, and editing a player does not ask it again (5.2.2)
 
 ## _French schools_
 
