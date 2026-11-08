@@ -590,23 +590,10 @@
     margin-left: 2px;
 }
 
-/* The admin's outline buttons have quiet borders, which no longer mark the
-   join between the two halves of a split button. */
-[data-sc-interface=admin] .btn-group > .dropdown-toggle.dropdown-toggle-split[class*="btn-outline-"] {
-    margin-left: 2px;
-    border-top-left-radius: var(--bs-border-radius-sm);
-    border-bottom-left-radius: var(--bs-border-radius-sm);
-}
-
-[data-sc-interface=admin] .btn-group > :has(+ .dropdown-toggle-split[class*="btn-outline-"]) > .btn,
-[data-sc-interface=admin] .btn-group > .btn:has(+ .dropdown-toggle-split[class*="btn-outline-"]) {
-    border-top-right-radius: var(--bs-border-radius-sm);
-    border-bottom-right-radius: var(--bs-border-radius-sm);
-}
-
-/* Among the soft buttons of a card or a row, the two halves of a split
-   button keep their small gap but join with square corners. */
+/* Among the soft buttons of a card or a row, which have no outline to share,
+   the two halves of a split button keep a small gap with square corners. */
 [data-sc-interface=admin] :is(.collection-card-footer, .collection-list-cell-actions) .btn-group > .dropdown-toggle.dropdown-toggle-split {
+    margin-left: 2px !important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }

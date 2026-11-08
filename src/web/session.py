@@ -362,6 +362,15 @@ class SessionPairingsShowWithoutResults(BoolSessionVariable):
         return 'pairings_show_without_results'
 
 
+class SessionPairingsPairAndPublish(BoolSessionVariable):
+    """Whether the Pair button of the pairings tab publishes the round as soon
+    as it is paired."""
+
+    @property
+    def key(self) -> str:
+        return 'pairings_pair_and_publish'
+
+
 class SessionPairingsBoardSort(SessionVariable[str]):
     """Board column ordering on the pairings tab when a tournament has fixed
     boards and is numbered compactly: ``'board'`` (by display number, default)

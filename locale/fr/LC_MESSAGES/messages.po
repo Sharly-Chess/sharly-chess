@@ -4456,6 +4456,15 @@ msgstr "Générer des documents (appariements, résultats, classements…)."
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
+msgid "Generate pairings for this round and publish them at once. The choice is remembered."
+msgstr "Générer les appariements pour cette ronde et les publier aussitôt. Ce choix est mémorisé."
+
+msgid "Generate pairings for this round and publish them."
+msgstr "Générer les appariements pour cette ronde et les publier."
+
+msgid "Generate pairings for this round, to publish them later."
+msgstr "Générer les appariements pour cette ronde, pour les publier plus tard."
+
 msgid "Generate pairings for this round."
 msgstr "Générer les appariements pour cette ronde."
 
@@ -7143,6 +7152,9 @@ msgstr "Payé"
 msgid "Pair"
 msgstr "Apparier"
 
+msgid "Pair and publish"
+msgstr "Apparier et publier"
+
 msgid "Pair as BLACK"
 msgstr "Apparier avec les NOIRS"
 
@@ -7337,6 +7349,9 @@ msgstr "Les appariements devraient strictement respecter les règles du tournoi,
 
 msgid "Pairings started"
 msgstr "Appariements commencés"
+
+msgid "Pairings successfully generated and published."
+msgstr "Appariements générés et publiés avec succès."
 
 msgid "Pairings successfully generated."
 msgstr "Appariements générés avec succès."

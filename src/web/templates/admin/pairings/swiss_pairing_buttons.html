@@ -63,14 +63,50 @@
             {% set pair_request = {'hx-post': url_for('generate-round-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round)} %}
         {% endif %}
         {% do pair_request.update({'hx-target': 'body', 'hx-indicator': '#please-wait', 'hx-disabled-elt': 'this'}) %}
-        {{ components.button(
-            _('Pair'),
-            icon='bi-shuffle',
-            allowed=not pair_disabled_message,
-            reason=pair_disabled_message,
-            tooltip=_('Generate pairings for this round.'),
-            attrs=pair_request,
-        ) }}
+        {% if admin_tournament.pairing_system.predetermined_pairings
+            or not client.can_publish_pairings(admin_tournament.id) %}
+            {{ components.button(
+                _('Pair'),
+                icon='bi-shuffle',
+                allowed=not pair_disabled_message,
+                reason=pair_disabled_message,
+                tooltip=_('Generate pairings for this round.'),
+                attrs=pair_request,
+            ) }}
+        {% else %}
+            {% set pair_only_request = dict(pair_request) %}
+            {% do pair_only_request.update({
+                'hx-headers': '{"' ~ pair_and_publish_header ~ '": "0"}'
+            }) %}
+            {% set pair_and_publish_request = dict(pair_request) %}
+            {% do pair_and_publish_request.update({
+                'hx-headers': '{"' ~ pair_and_publish_header ~ '": "1"}'
+            }) %}
+            {% call components.split_button(
+                _('Pair and publish') if pair_and_publish else _('Pair'),
+                icon='bi-shuffle',
+                allowed=not pair_disabled_message,
+                reason=pair_disabled_message,
+                tooltip=_('Generate pairings for this round and publish them.')
+                    if pair_and_publish else _('Generate pairings for this round.'),
+                attrs=pair_and_publish_request if pair_and_publish else pair_only_request,
+            ) %}
+                {{ components.menu_item(
+                    _('Pair'),
+                    icon='bi-shuffle',
+                    active=not pair_and_publish,
+                    tooltip=_('Generate pairings for this round, to publish them later.'),
+                    attrs=pair_only_request,
+                ) }}
+                {{ components.menu_item(
+                    _('Pair and publish'),
+                    icon='bi-broadcast',
+                    active=pair_and_publish,
+                    tooltip=_('Generate pairings for this round and publish them at once. The choice is remembered.'),
+                    attrs=pair_and_publish_request,
+                ) }}
+            {% endcall %}
+        {% endif %}
     {% endif %}
     {% set action = 'PARTIAL_PAIRING' %}
     {% set action_route = url_for(
