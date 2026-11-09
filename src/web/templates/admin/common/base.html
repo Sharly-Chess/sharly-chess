@@ -8,7 +8,7 @@
 {% endblock head_extra %}
 
 {% block ws %}
-hx-ext="ws" ws-connect="/ws"
+hx-ext="ws" ws-connect="{{ url_for('ws-event', event_uniq_id=admin_event.uniq_id) if admin_event else url_for('ws') }}"
 {% endblock ws %}
 
 {% block sidebar_class %}admin-sidebar{% endblock sidebar_class %}

@@ -18,7 +18,7 @@ class _Channels:
         self.messages: list[dict[str, Any]] = []
 
     def publish(self, message: dict[str, Any], channels: list[str]) -> None:
-        assert channels == ['ws']
+        assert channels == ['event:open']
         self.messages.append(message)
 
 

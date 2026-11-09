@@ -130,17 +130,36 @@ window.addEventListener('keydown', function (event) {
     );
 });
 
-window.addEventListener("htmx:wsBeforeMessage", function(evt) {
+// Dispatches a websocket event as a `ws:<event>` custom event on the body.
+// Returns false for a message that is not an event.
+function dispatchWsMessage(message) {
+    let msg;
     try {
-        const msg = JSON.parse(evt.detail.message);
-        if (msg.event) {
-            // We intercept websocket events and dispatch them as a custom trigger
-            document.body.dispatchEvent(new CustomEvent("ws:" + msg.event,  msg.data || {}));
-            evt.preventDefault();
-        }
+        msg = JSON.parse(message);
     } catch (e) {
-        // not JSON, let htmx handle normally
+        return false;
     }
+    if (!msg.event) {
+        return false;
+    }
+    document.body.dispatchEvent(new CustomEvent("ws:" + msg.event,  msg.data || {}));
+    return true;
+}
+
+window.addEventListener("htmx:wsBeforeMessage", function(evt) {
+    if (dispatchWsMessage(evt.detail.message)) {
+        evt.preventDefault();
+    }
+});
+
+// The events sent while a socket was down are lost: once it is open again,
+// ws:reconnected lets the page catch up.
+const openedWsElements = new WeakSet();
+window.addEventListener('htmx:wsOpen', function(evt) {
+    if (openedWsElements.has(evt.target)) {
+        document.body.dispatchEvent(new CustomEvent('ws:reconnected'));
+    }
+    openedWsElements.add(evt.target);
 });
 
 window.addEventListener('htmx:beforeRequest', function (evt) {

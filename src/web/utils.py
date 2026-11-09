@@ -101,8 +101,8 @@ class RequestUtils:
                 )
         if (
             event.screens_fake_data
-            and request.method == 'GET'
             and request.url.path.startswith(FAKE_DATA_PATHS)
+            and request.method == 'GET'
         ):
             event = event_with_fake_data(event)
         request.state[cls.REQUEST_EVENT_ATTR] = event

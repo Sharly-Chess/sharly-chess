@@ -68,7 +68,8 @@ function scheduleLiveUpdate(delay) {
 
 function onLiveUpdateMessage(event) {
     const detail = event.detail || {};
-    if (event.type.startsWith('ws:new-checkins')) {
+    // After a reconnection anything may have changed.
+    if (event.type.startsWith('ws:new-checkins') || event.type === 'ws:reconnected') {
         liveUpdateChanges.checkIns = true;
     }
     if (!Array.isArray(detail.player_ids)) {
@@ -367,7 +368,7 @@ liveUpdateAppliers.pairings = async (source, changes) => {
 
 htmx.onLoad(function () {
     const source = document.getElementById('live-update');
-    const events = source ? source.dataset.events.split(' ') : [];
+    const events = source ? [...source.dataset.events.split(' '), 'ws:reconnected'] : [];
     if (events.join() === liveUpdateEvents.join()) {
         return;
     }
@@ -375,3 +376,52 @@ htmx.onLoad(function () {
     liveUpdateEvents = events;
     liveUpdateEvents.forEach((name) => document.body.addEventListener(name, onLiveUpdateMessage));
 });
+
+// A screen listens to the events of its event on a socket of its own, which
+// lives as long as the screen is shown: the refreshes of a screen replace the
+// whole body, and the screen page can be left for another page with a socket
+// of its own.
+let screenSocket = null;
+let screenSocketUrl = null;
+let screenSocketTimer = null;
+let screenSocketRetryDelay = 1000;
+
+function syncScreenSocket() {
+    const url = document.getElementById('screen-live-update')?.dataset.wsUrl || null;
+    if (url === screenSocketUrl) {
+        return;
+    }
+    clearTimeout(screenSocketTimer);
+    const socket = screenSocket;
+    screenSocket = null;
+    socket?.close();
+    screenSocketUrl = url;
+    screenSocketRetryDelay = 1000;
+    if (url) {
+        openScreenSocket(false);
+    }
+}
+
+function openScreenSocket(reconnecting) {
+    const url = new URL(screenSocketUrl, window.location.href);
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(url);
+    screenSocket = socket;
+    socket.addEventListener('open', () => {
+        screenSocketRetryDelay = 1000;
+        if (reconnecting) {
+            document.body.dispatchEvent(new CustomEvent('ws:reconnected'));
+        }
+    });
+    socket.addEventListener('message', (message) => dispatchWsMessage(message.data));
+    socket.addEventListener('close', () => {
+        if (screenSocket !== socket) {
+            return;
+        }
+        screenSocket = null;
+        screenSocketTimer = setTimeout(() => openScreenSocket(true), screenSocketRetryDelay);
+        screenSocketRetryDelay = Math.min(screenSocketRetryDelay * 2, 30000);
+    });
+}
+
+htmx.onLoad(syncScreenSocket);

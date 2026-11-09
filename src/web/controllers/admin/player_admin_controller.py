@@ -30,6 +30,7 @@ from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
+from web.channels import event_channel
 
 from common.exception import SharlyChessException, FormError
 from common.i18n import _, ngettext, pgettext
@@ -2359,11 +2360,11 @@ class PlayerAdminController(BaseEventAdminController):
         )
         channels.publish(
             {'event': f'new-checkins|{event.uniq_id}', 'data': data},
-            ['ws'],
+            [event_channel(event.uniq_id)],
         )
         channels.publish(
             {'event': f'new-checkins|{event.uniq_id}|{tournament.id}', 'data': data},
-            ['ws'],
+            [event_channel(event.uniq_id)],
         )
 
     @patch(
