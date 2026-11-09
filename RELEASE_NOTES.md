@@ -77,6 +77,7 @@
 - Documents have buttons at the top of the page to print them and to download them as PDF files; the documents with fields to fill in, such as the _FFE_ forms and the norm report, can also be downloaded as Word files. The files hold the values entered in the fields (5.2.0)
 - A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
 - The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
+- The statistics document downloaded as a PDF file shows the count at the end of each bar (5.2.4)
 
 ## Screens
 
