@@ -17,7 +17,7 @@
 - In the staff account form, every result of the player search fills in the account, including the results loaded after the first ones, which opened the player form, and the filter button that did nothing is gone. When replacing a player, the results loaded after the first ones also replace that player instead of creating a new one (5.2.2)
 - In the settings of the application window, the fields all have the same width, and the labels of the checkboxes line up with the labels of the other fields (5.2.2)
 - The plugins section follows the plugins enabled or disabled elsewhere, such as by importing an event that needs one, and the browser windows on the computer running _Sharly Chess_ follow the administration theme chosen in the application window, neither needing to be refreshed (5.2.2)
-- On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
+- The lists of events follow the plugins installed or uninstalled, so that an event that needs a plugin can be opened as soon as the plugin is installed, without refreshing the page (5.2.4)
 
 ## Tournaments
 
@@ -31,6 +31,7 @@
 - A new _PGN (all rounds)_ export gives the games of every paired round in a single file, and both PGN exports now carry the results of the games, forfeits included, with the round dates, the players' FIDE IDs and teams, and the time control (5.2.0)
 - Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
+- On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
 
 ## Players
 
