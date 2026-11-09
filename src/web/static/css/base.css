@@ -2538,9 +2538,9 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     vertical-align: 0;
 }
 
-/* The halves of a main split button share their outline, which is line
-   enough between them. */
-[data-sc-interface=admin] .btn-group > .btn-primary.dropdown-toggle-split {
+/* The halves of a split button share their outline, which is line enough
+   between them. */
+[data-sc-interface=admin] .btn-group > :is(.btn-primary, [class*="btn-outline-"]).dropdown-toggle-split {
     margin-left: calc(-1 * var(--bs-btn-border-width)) !important;
 }
 

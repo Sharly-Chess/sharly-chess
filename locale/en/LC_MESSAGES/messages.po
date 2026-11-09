@@ -4456,6 +4456,15 @@ msgstr ""
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
+msgid "Generate pairings for this round and publish them at once. The choice is remembered for this event."
+msgstr ""
+
+msgid "Generate pairings for this round and publish them."
+msgstr ""
+
+msgid "Generate pairings for this round, to publish them later."
+msgstr ""
+
 msgid "Generate pairings for this round."
 msgstr ""
 
@@ -7141,6 +7150,9 @@ msgstr ""
 msgid "Pair"
 msgstr ""
 
+msgid "Pair and publish"
+msgstr ""
+
 msgid "Pair as BLACK"
 msgstr ""
 
@@ -7334,6 +7346,9 @@ msgid "Pairings should strictly abide by the rules of the tournament, and not be
 msgstr ""
 
 msgid "Pairings started"
+msgstr ""
+
+msgid "Pairings successfully generated and published."
 msgstr ""
 
 msgid "Pairings successfully generated."
