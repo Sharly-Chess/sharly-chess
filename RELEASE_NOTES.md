@@ -31,6 +31,7 @@
 - A new _PGN (all rounds)_ export gives the games of every paired round in a single file, and both PGN exports now carry the results of the games, forfeits included, with the round dates, the players' FIDE IDs and teams, and the time control (5.2.0)
 - Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
+- On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
 
 ## Players
 
@@ -59,6 +60,7 @@
 - The arbiter now publishes each round: until then, the screens and the online services (_Sharly-Chess.com_, _Chess-Results_, _FFE_, custom uploads) stay on the previous round, while the new pairings can be checked and printed. A round can be published once the rounds before it are finished, and unpublished as long as it has no results (5.2.0)
 - In round robins and fixed-table tournaments (Molter, Scheveningen), whose pairings are known in advance, the online services receive the pairings of every round as soon as they are made; publishing a round moves the screens on to it and makes its results public. Publishing replaces the End round button of round robins (5.2.0)
 - When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
+- In tournaments whose pairings are not known in advance, the Pair button offers to pair and publish a round in one go; the browser remembers the choice made for each event (5.2.4)
 - In round robins, a player or team that withdrew is dropped from the standings, and their games annulled, as soon as they can no longer complete half of their games, instead of only once the last round has a result (5.2.0)
 
 ## Prizes
