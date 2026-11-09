@@ -12,6 +12,13 @@
 {% endblock admin_nav %}
 
 {% block admin_content %}
+    {# Enabling or disabling a plugin decides which events can be opened. #}
+    <div
+        class="d-none"
+        hx-get="{{ url_for('admin-tab', admin_tab=admin_tab) }}"
+        hx-trigger="ws:plugins-updated[!document.querySelector('.modal.show')] from:body"
+        hx-target="body"
+    ></div>
     {% for nav_id, nav_tab in nav_tab_panes.items() %}
         {% with active=(admin_tab == nav_id) %}
             <div
