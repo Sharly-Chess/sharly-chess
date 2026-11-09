@@ -28,7 +28,7 @@
             {% if view == 'list' and team.warnings %}
                 <i
                     class="bi-exclamation-triangle-fill text-warning ms-1"
-                    {{ macros.tooltip_attributes('warning', team.warning_message, 'top') }}
+                    {{ macros.tooltip_attributes('warning', team.warning_messages, 'top') }}
                 ></i>
             {% endif %}
         </div>
@@ -50,7 +50,7 @@
         {% if view == 'card' and team.warnings %}
             <div
                 class="small text-muted text-truncate"
-                {{ macros.tooltip_attributes('warning', team.warning_message, 'top') }}
+                {{ macros.tooltip_attributes('warning', team.warning_messages, 'top') }}
             >
                 {% call components.icon_text('bi-exclamation-triangle-fill', icon_class='text-warning') %}{{ team.warning_label }}{% endcall %}
             </div>

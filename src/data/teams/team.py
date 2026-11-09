@@ -344,12 +344,10 @@ class Team:
         return round(sum(ratings) / len(ratings))
 
     @property
-    def roster_warning_message(self) -> str | None:
-        """Combined roster warnings for the team card: a generic over-cap
-        warning when the roster exceeds the tournament's maximum size, plus
-        any rule-set-specific warnings (rating ceilings, composition…).
-        Returns ``None`` when the roster is clean. Rendered as a triangle +
-        tooltip on the team card."""
+    def roster_warnings(self) -> list[str]:
+        """The roster's warnings: a generic over-cap warning when the roster
+        exceeds the tournament's maximum size, plus any rule-set-specific
+        warnings (rating ceilings, composition…)."""
         warnings: list[str] = []
         max_size = self.roster_max_size
         if max_size is not None and len(self.players) > max_size:
@@ -361,7 +359,7 @@ class Team:
         rule_set = tournament.rule_set if tournament else None
         if rule_set is not None:
             warnings.extend(rule_set.roster_warnings(self))
-        return ' '.join(warnings) or None
+        return warnings
 
     @property
     def warnings(self) -> list[tuple[str, str]]:
@@ -370,9 +368,9 @@ class Team:
         warnings: list[tuple[str, str]] = []
         if not self.captain_display_name:
             warnings.append((_('No captain'), _('No captain is set for this team.')))
-        roster_warning = self.roster_warning_message
-        if roster_warning:
-            warnings.append((_('Roster issue'), roster_warning))
+        warnings.extend(
+            (_('Roster issue'), message) for message in self.roster_warnings
+        )
         return warnings
 
     @property
@@ -385,8 +383,8 @@ class Team:
         }
 
     @property
-    def warning_message(self) -> str:
-        return ' '.join(message for _label, message in self.warnings)
+    def warning_messages(self) -> list[str]:
+        return [message for _label, message in self.warnings]
 
     @property
     def affiliation_warning_message(self) -> str | None:
