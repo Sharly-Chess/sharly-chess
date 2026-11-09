@@ -971,6 +971,11 @@ body[data-sc-interface=admin] .htmx-indicator {
     padding: 0;
 }
 
+.collection-item.collection-item-filtered-out,
+.admin-collection-cards > .collection-item.collection-item-filtered-out {
+    display: none !important;
+}
+
 .admin-collection-cards > .collection-item > .collection-card {
     display: grid;
     grid-row: 1 / -1;

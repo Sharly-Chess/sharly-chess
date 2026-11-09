@@ -237,23 +237,27 @@
         <script>
             (function () {
                 function normalize(text) {
-                    return text.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
+                    return text.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                 }
-                const searchInput = document.getElementById('search');
                 function filterTeams() {
-                    const words = normalize(searchInput.value).split(/\s+/).filter(Boolean);
+                    const searchInput = document.getElementById('search');
+                    const words = normalize(searchInput ? searchInput.value : '').split(/\s+/).filter(Boolean);
                     document.querySelectorAll('#teams-form .collection-item').forEach(function (item) {
                         const input = item.querySelector('.assignment-input');
                         const text = normalize(input ? input.dataset.search || '' : '');
                         const match = words.every(function (word) {
                             return text.includes(word);
                         });
-                        item.classList.toggle('d-none', !match);
+                        item.classList.toggle('collection-item-filtered-out', !match);
                     });
                 }
+                const searchInput = document.getElementById('search');
                 searchInput.addEventListener('input', filterTeams);
                 searchInput.addEventListener('search', filterTeams);
                 filterTeams();
+                // When this tab replaces a previous render, htmx's settle step
+                // puts back the class of each team that keeps its id.
+                document.body.addEventListener('htmx:afterSettle', filterTeams, {once: true});
             })();
         </script>
         {% if draggable %}
