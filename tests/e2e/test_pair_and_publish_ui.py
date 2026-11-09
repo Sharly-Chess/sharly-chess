@@ -1,5 +1,6 @@
 """The Pair button of a Swiss tournament is a split button offering to pair
-alone or to pair and publish at once; the browser keeps the last choice."""
+alone or to pair and publish at once; the browser keeps the last choice made
+for each event."""
 
 import pytest
 from playwright.sync_api import APIRequestContext, Page, expect
@@ -9,6 +10,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from tests.test_config import TestUtils
 
 EVENT_ID = 'pair-and-publish-ui'
+OTHER_EVENT_ID = 'pair-and-publish-other-ui'
 TOURNAMENT_NAME = 'Swiss'
 
 
@@ -16,6 +18,8 @@ TOURNAMENT_NAME = 'Swiss'
 def setup(api_request_context: APIRequestContext):
     TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
     TestUtils.create_tournament(EVENT_ID, TOURNAMENT_NAME, overrides={'rounds': 3})
+    TestUtils.create_event(OTHER_EVENT_ID, via_api_request_context=api_request_context)
+    TestUtils.create_tournament(OTHER_EVENT_ID, TOURNAMENT_NAME)
     event = EventLoader().load_event(EVENT_ID)
     tournament = event.tournaments_by_name[TOURNAMENT_NAME]
     for index in range(4):
@@ -24,6 +28,7 @@ def setup(api_request_context: APIRequestContext):
         )
     yield
     TestUtils.delete_event(EVENT_ID)
+    TestUtils.delete_event(OTHER_EVENT_ID)
 
 
 def _published_round() -> int:
@@ -71,6 +76,12 @@ def test_pair_and_publish_is_remembered(page: Page):
         page.locator('#pairing-buttons .sc-split-button').get_by_role(
             'button', name='Pair and publish', exact=True
         )
+    ).to_be_visible()
+
+    # Another event keeps its own choice.
+    page.goto(f'/event/{OTHER_EVENT_ID}/pairings')
+    expect(
+        page.locator('#pairing-buttons').get_by_role('button', name='Pair', exact=True)
     ).to_be_visible()
 
     _pair_from_menu(page, 'Pair')

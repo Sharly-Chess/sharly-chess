@@ -4456,8 +4456,8 @@ msgstr "Générer des documents (appariements, résultats, classements…)."
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
-msgid "Generate pairings for this round and publish them at once. The choice is remembered."
-msgstr "Générer les appariements pour cette ronde et les publier aussitôt. Ce choix est mémorisé."
+msgid "Generate pairings for this round and publish them at once. The choice is remembered for this event."
+msgstr "Générer les appariements pour cette ronde et les publier aussitôt. Ce choix est mémorisé pour cet évènement."
 
 msgid "Generate pairings for this round and publish them."
 msgstr "Générer les appariements pour cette ronde et les publier."

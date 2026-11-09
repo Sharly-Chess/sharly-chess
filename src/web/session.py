@@ -362,13 +362,17 @@ class SessionPairingsShowWithoutResults(BoolSessionVariable):
         return 'pairings_show_without_results'
 
 
-class SessionPairingsPairAndPublish(BoolSessionVariable):
-    """Whether the Pair button of the pairings tab publishes the round as soon
-    as it is paired."""
+class SessionPairingsPairAndPublish(EventSessionVariable[bool]):
+    """Whether the Pair button of the pairings tab of an event publishes the
+    round as soon as it is paired."""
 
     @property
     def key(self) -> str:
         return 'pairings_pair_and_publish'
+
+    @property
+    def default_value(self) -> bool:
+        return False
 
 
 class SessionPairingsBoardSort(SessionVariable[str]):

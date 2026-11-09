@@ -193,7 +193,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         self.admin_boards_sortable = False
         self.admin_board_sort = SessionPairingsBoardSort(request).get()
-        pair_and_publish = SessionPairingsPairAndPublish(request)
+        pair_and_publish = SessionPairingsPairAndPublish(request, event)
         if (choice := request.headers.get(PAIR_AND_PUBLISH_HEADER)) is not None:
             pair_and_publish.set(choice == '1')
         self.pair_and_publish = pair_and_publish.get()

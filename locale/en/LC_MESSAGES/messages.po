@@ -4456,7 +4456,7 @@ msgstr ""
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
-msgid "Generate pairings for this round and publish them at once. The choice is remembered."
+msgid "Generate pairings for this round and publish them at once. The choice is remembered for this event."
 msgstr ""
 
 msgid "Generate pairings for this round and publish them."
