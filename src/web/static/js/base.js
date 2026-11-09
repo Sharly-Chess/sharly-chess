@@ -77,7 +77,7 @@ window.addEventListener('DOMContentLoaded', setPageTitle);
 window.addEventListener('htmx:historyRestore', setPageTitle);
 
 window.addEventListener('resize', setSize);
-window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); setPageTitle(); });
+window.addEventListener('htmx:afterSettle', function (event) { setSize(); closeTooltipsAfterRequest(event); setPageTitle(); });
 
 const collectionInteractiveSelector = [
     'a',
@@ -160,6 +160,26 @@ function closeTooltips () {
     }
     // Remove tooltip elements orphaned by HTMX swaps.
     $('body .tooltip').remove();
+}
+
+function removeOrphanedTooltips () {
+    document.querySelectorAll('body .tooltip').forEach((tip) => {
+        if (!tip.id || !document.querySelector(`[aria-describedby~="${tip.id}"]`)) {
+            tip.remove();
+        }
+    });
+}
+
+// A request the user did not start (a websocket notification, a load, a
+// poll) can come in at any time, such as several times a second while a
+// database downloads: it must not close the tooltip being read.
+function closeTooltipsAfterRequest (event) {
+    const triggeringEvent = event.detail?.requestConfig?.triggeringEvent;
+    if (triggeringEvent?.isTrusted) {
+        closeTooltips();
+    } else {
+        removeOrphanedTooltips();
+    }
 }
 
 window.addEventListener('click', function(event) {
@@ -409,11 +429,11 @@ window.addEventListener('htmx:beforeCleanupElement', function(event) {
     }
 });
 
-window.addEventListener('htmx:afterRequest', function() {
+window.addEventListener('htmx:afterRequest', function(event) {
     // Refresh once after all out-of-band swaps.
     activateTooltips();
     renderHumanizedTimeControls();
-    closeTooltips();
+    closeTooltipsAfterRequest(event);
     closeAirPickers();
 });
 
