@@ -1029,6 +1029,12 @@ body[data-sc-interface=admin] .htmx-indicator {
     }
 }
 
+@media (min-width: 1680px) {
+    .admin-collection-cards.admin-collection-cards-wide {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 .collection-controls {
     display: inline-flex;
     flex: 0 0 auto;
