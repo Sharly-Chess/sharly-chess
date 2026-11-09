@@ -151,6 +151,7 @@ class TestAdminCollections:
             'Roster'
         )
         expect(item.locator('.card-block-button button')).to_be_visible()
+        expect(item.locator('.collection-card-header')).to_contain_text('No captain')
 
     def test_team_search_hides_the_other_teams(self, page: Page):
         page.goto(f'/event/{TEAM_EVENT_ID}/teams')

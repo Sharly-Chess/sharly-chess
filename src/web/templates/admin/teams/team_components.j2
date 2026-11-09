@@ -33,6 +33,12 @@
                     {{ macros.tooltip_attributes('warning', team.roster_warning_message, 'top') }}
                 ></i>
             {% endif %}
+            {% if view == 'list' and not team.captain_display_name %}
+                <i
+                    class="bi-exclamation-triangle-fill text-warning ms-1"
+                    {{ macros.tooltip_attributes('warning', _('No captain is set for this team.'), 'top') }}
+                ></i>
+            {% endif %}
         </div>
         {% if view == 'card' and team.group %}
             <div
@@ -47,6 +53,14 @@
                 {{ macros.tooltip_attributes('warning', team.affiliation_warning_message, 'top') }}
             >
                 <i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No affiliation') }}
+            </div>
+        {% endif %}
+        {% if view == 'card' and not team.captain_display_name %}
+            <div
+                class="small text-muted text-truncate"
+                {{ macros.tooltip_attributes('warning', _('No captain is set for this team.'), 'top') }}
+            >
+                {% call components.icon_text('bi-exclamation-triangle-fill', icon_class='text-warning') %}{{ _('No captain') }}{% endcall %}
             </div>
         {% endif %}
     </div>

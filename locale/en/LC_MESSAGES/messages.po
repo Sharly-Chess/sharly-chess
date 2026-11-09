@@ -6227,6 +6227,12 @@ msgstr ""
 msgid "No built-in templates."
 msgstr ""
 
+msgid "No captain"
+msgstr ""
+
+msgid "No captain is set for this team."
+msgstr ""
+
 msgid "No competitors are available. Add a valid source tournament first."
 msgstr ""
 

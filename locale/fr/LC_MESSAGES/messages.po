@@ -6227,6 +6227,12 @@ msgstr "Aucune sauvegarde de cet évènement n'a encore été effectuée."
 msgid "No built-in templates."
 msgstr "Aucun modèle intégré."
 
+msgid "No captain"
+msgstr "Pas de capitaine"
+
+msgid "No captain is set for this team."
+msgstr "Cette équipe n'a pas de capitaine."
+
 msgid "No competitors are available. Add a valid source tournament first."
 msgstr "Aucun compétiteur disponible. Ajoutez d'abord un tournoi source valide."
 
