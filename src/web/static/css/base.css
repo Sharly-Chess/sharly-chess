@@ -976,6 +976,44 @@ body[data-sc-interface=admin] .htmx-indicator {
     display: none !important;
 }
 
+.team-sortable .sortable-ghost {
+    position: relative;
+}
+
+.team-sortable .sortable-ghost > * {
+    visibility: hidden;
+}
+
+.team-sortable .sortable-ghost::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px dashed var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.team-drag-fallback {
+    opacity: 1 !important;
+    background-color: var(--bs-body-bg);
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow);
+}
+
+.admin-collection-cards > .collection-item.team-drag-fallback {
+    display: block !important;
+}
+
+.admin-collection-cards > .collection-item.team-drag-fallback > .collection-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.collection-list-item.team-drag-fallback {
+    grid-template-columns: var(--collection-list-columns);
+}
+
 .admin-collection-cards > .collection-item > .collection-card {
     display: grid;
     grid-row: 1 / -1;

@@ -296,6 +296,10 @@
                             },
                             animation: 150,
                             ghostClass: 'sortable-ghost',
+                            // The browser's own drag image is always
+                            // translucent; Sortable's clone can be opaque.
+                            forceFallback: true,
+                            fallbackClass: 'team-drag-fallback',
                             filter: '.non-sortable',
                             preventOnFilter: true,
                             // Auto-sorted tournaments own their order:
