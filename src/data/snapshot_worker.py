@@ -461,7 +461,7 @@ class SnapshotScheduler:
 
     @staticmethod
     def publish_snapshot_failed(uniq_id: str) -> None:
-        from web.channels import channels_plugin
+        from web.channels import channels_plugin, event_channel
 
         # A snapshot can be written before the channels plugin is initialized.
         if channels_plugin and channels_plugin._pub_queue is not None:
@@ -470,5 +470,5 @@ class SnapshotScheduler:
                     'event': f'snapshot-failed|{uniq_id}',
                     'data': '',
                 },
-                ['ws'],
+                [event_channel(uniq_id)],
             )

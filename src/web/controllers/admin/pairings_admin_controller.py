@@ -26,6 +26,7 @@ from litestar.response import Response, Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
+from web.channels import event_channel
 
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
@@ -4705,14 +4706,14 @@ class PairingsAdminController(BaseEventAdminController):
                 'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
                 'data': data,
             },
-            ['ws'],
+            [event_channel(event_uniq_id)],
         )
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}',
                 'data': data,
             },
-            ['ws'],
+            [event_channel(event_uniq_id)],
         )
 
     @get(
