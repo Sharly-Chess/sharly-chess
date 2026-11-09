@@ -986,15 +986,15 @@ body[data-sc-interface=admin] .htmx-indicator {
     display: none !important;
 }
 
-.team-sortable .sortable-ghost {
+.sortable-ghost {
     position: relative;
 }
 
-.team-sortable .sortable-ghost > * {
+.sortable-ghost > * {
     visibility: hidden;
 }
 
-.team-sortable .sortable-ghost::after {
+.sortable-ghost::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -3033,8 +3033,7 @@ table.prominent tr.flat-pair-selected > th {
 }
 
 
-[data-sc-interface=admin] table.prominent tr.sortable-chosen,
-[data-sc-interface=admin] table.prominent tr.sortable-ghost {
+[data-sc-interface=admin] table.prominent tr.sortable-chosen {
   background-color: var(--bs-body-bg) !important;
 }
 
