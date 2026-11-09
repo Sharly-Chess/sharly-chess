@@ -77,7 +77,7 @@ window.addEventListener('DOMContentLoaded', setPageTitle);
 window.addEventListener('htmx:historyRestore', setPageTitle);
 
 window.addEventListener('resize', setSize);
-window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); setPageTitle(); });
+window.addEventListener('htmx:afterSettle', function (event) { setSize(); closeTooltipsAfterRequest(event); setPageTitle(); });
 
 const collectionInteractiveSelector = [
     'a',
@@ -152,6 +152,38 @@ window.addEventListener('htmx:beforeRequest', function (evt) {
 
 const tooltipSelector = '[data-bs-toggle="tooltip"]';
 
+// A tooltip goes as soon as the page or any part of it scrolls, rather than
+// staying behind or drifting with what it points at. None shows again until
+// the pointer moves: the browser hovers whatever scrolls under a still
+// pointer, sending moves that leave the pointer where it was.
+let tooltipsHeldByScroll = false;
+let pointerPosition = null;
+let pointerPositionAtScroll = null;
+
+window.addEventListener('mousemove', (event) => {
+    pointerPosition = {x: event.clientX, y: event.clientY};
+    if (
+        tooltipsHeldByScroll
+        && (pointerPositionAtScroll === null
+            || pointerPosition.x !== pointerPositionAtScroll.x
+            || pointerPosition.y !== pointerPositionAtScroll.y)
+    ) {
+        tooltipsHeldByScroll = false;
+    }
+}, {capture: true, passive: true});
+
+window.addEventListener('scroll', () => {
+    tooltipsHeldByScroll = true;
+    pointerPositionAtScroll = pointerPosition;
+    if (!document.querySelector('.tooltip') || typeof bootstrap === 'undefined') {
+        return;
+    }
+    document.querySelectorAll('[aria-describedby^="tooltip"]').forEach((element) => {
+        bootstrap.Tooltip.getInstance(element)?.hide();
+    });
+    $('body .tooltip').remove();
+}, {capture: true, passive: true});
+
 function closeTooltips () {
     if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
         document.querySelectorAll(tooltipSelector).forEach((element) => {
@@ -160,6 +192,26 @@ function closeTooltips () {
     }
     // Remove tooltip elements orphaned by HTMX swaps.
     $('body .tooltip').remove();
+}
+
+function removeOrphanedTooltips () {
+    document.querySelectorAll('body .tooltip').forEach((tip) => {
+        if (!tip.id || !document.querySelector(`[aria-describedby~="${tip.id}"]`)) {
+            tip.remove();
+        }
+    });
+}
+
+// A request the user did not start (a websocket notification, a load, a
+// poll) can come in at any time, such as several times a second while a
+// database downloads: it must not close the tooltip being read.
+function closeTooltipsAfterRequest (event) {
+    const triggeringEvent = event.detail?.requestConfig?.triggeringEvent;
+    if (triggeringEvent?.isTrusted) {
+        closeTooltips();
+    } else {
+        removeOrphanedTooltips();
+    }
 }
 
 window.addEventListener('click', function(event) {
@@ -312,6 +364,10 @@ window.addEventListener("renumber_players", function(event) {
 });
 
 window.addEventListener("show.bs.tooltip", function(event) {
+    if (tooltipsHeldByScroll) {
+        event.preventDefault();
+        return;
+    }
     if ($(event.target).hasClass('sidebar-tooltip') && !$('body').hasClass('compact-sidebar')) {
         event.preventDefault();
     }
@@ -409,11 +465,11 @@ window.addEventListener('htmx:beforeCleanupElement', function(event) {
     }
 });
 
-window.addEventListener('htmx:afterRequest', function() {
+window.addEventListener('htmx:afterRequest', function(event) {
     // Refresh once after all out-of-band swaps.
     activateTooltips();
     renderHumanizedTimeControls();
-    closeTooltips();
+    closeTooltipsAfterRequest(event);
     closeAirPickers();
 });
 
