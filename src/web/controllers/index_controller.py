@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from logging import Logger
 from typing import Annotated, ClassVar
-import json
-from collections.abc import AsyncGenerator
+
+import anyio
 
 from litestar import (
     Response,
@@ -11,16 +11,18 @@ from litestar import (
     route,
     HttpMethod,
     status_codes,
-    websocket_stream,
+    websocket,
+    WebSocket,
 )
 from litestar.channels import ChannelsPlugin
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.di import NamedDependency
-from litestar.exceptions import HTTPException
+from litestar.exceptions import HTTPException, WebSocketDisconnect
 from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 from litestar.status_codes import HTTP_204_NO_CONTENT
+from uvicorn.protocols.utils import ClientDisconnected
 
 from common.i18n import _
 from common.logger import get_logger
@@ -206,18 +208,28 @@ class IndexController(BaseController):
     ) -> HTMXTemplate:
         return self._error_template(request, status_code)
 
-    @websocket_stream('/ws')
+    @websocket('/ws')
     async def ws_handler(
-        self, channels: NamedDependency[ChannelsPlugin]
-    ) -> AsyncGenerator[dict]:
+        self, socket: WebSocket, channels: NamedDependency[ChannelsPlugin]
+    ) -> None:
+        """Forwards the published events to the page until it goes away. A page
+        can go away while an event is being sent to it, so a failed send ends the
+        connection just as a failed read does."""
+        await socket.accept()
         async with channels.start_subscription(['ws']) as subscriber:
-            async for raw_event in subscriber.iter_events():
-                event = (
-                    json.loads(raw_event)
-                    if isinstance(raw_event, (bytes, str))
-                    else raw_event
-                )
-                yield event
+
+            async def forward_events() -> None:
+                async for raw_event in subscriber.iter_events():
+                    await socket.send_data(raw_event)
+
+            try:
+                async with anyio.create_task_group() as task_group:
+                    task_group.start_soon(forward_events)
+                    # The pages send nothing, the read only waits for them to go.
+                    while True:
+                        await socket.receive_data('text')
+            except* WebSocketDisconnect, ClientDisconnected:
+                pass
 
     @post(
         path='/slow-request',
