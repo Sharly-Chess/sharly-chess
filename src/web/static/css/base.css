@@ -993,6 +993,10 @@ body[data-sc-interface=admin] .htmx-indicator {
     background-color: var(--bs-tertiary-bg);
 }
 
+.sortable-dragging .tooltip {
+    display: none !important;
+}
+
 .team-drag-fallback {
     opacity: 1 !important;
     background-color: var(--bs-body-bg);

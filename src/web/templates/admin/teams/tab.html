@@ -330,7 +330,11 @@
                                 // Equal values settle after.
                                 return dragged > related ? -1 : 1;
                             },
+                            onStart: function () {
+                                document.body.classList.add('sortable-dragging');
+                            },
                             onEnd: function () {
+                                document.body.classList.remove('sortable-dragging');
                                 refreshAssignments();
                                 htmx.trigger('#teams-form', 'teams-changed');
                             },
