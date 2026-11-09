@@ -17,6 +17,7 @@ from pathvalidate import sanitize_filename
 
 from common.exception import OptionError
 from common.i18n import _
+from common.i18n.utils import by
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
@@ -198,15 +199,7 @@ class EventDocumentsController(BaseEventAdminController):
         teams_per_tournament_id = {
             tournament.id: [
                 {'id': team.id, 'name': team.name}
-                for team in sorted(
-                    tournament.teams,
-                    key=lambda team: (
-                        team.pairing_number
-                        if team.pairing_number is not None
-                        else float('inf'),
-                        team.name.lower(),
-                    ),
-                )
+                for team in sorted(tournament.teams, key=by('name'))
             ]
             for tournament in allowed_tournaments
         }
