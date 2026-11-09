@@ -1,0 +1,8 @@
+{% if not tournament.is_team_tournament %}
+    {% set check_in_enabled = screen.accepts_input and tournament.check_in_open and client.can_check_in_players(tournament.id) %}
+    {% for players_by_name in screen_set.tournament_players_by_name_lists %}
+        {% for player in players_by_name if player.id in live_player_ids %}
+            {% include '/user/screen/sets/check_in_row.html' %}
+        {% endfor %}
+    {% endfor %}
+{% endif %}

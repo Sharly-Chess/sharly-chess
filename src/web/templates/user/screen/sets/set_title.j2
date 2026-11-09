@@ -1,5 +1,5 @@
-{% macro set_title(name, details='') %}
-    <div class="set-title">
+{% macro set_title(name, details='', live_key=none) %}
+    <div class="set-title"{% if live_key %} data-live-key="{{ live_key }}"{% endif %}>
         <h2 class="set-title-name">{{ name }}</h2>
         {% if details %}
             <span class="set-title-details">{{ details }}</span>

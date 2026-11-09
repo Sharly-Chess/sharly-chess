@@ -2659,11 +2659,13 @@ class Tournament:
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
 
-    def store_illegal_move(self, tournament_player: TournamentPlayer) -> None:
+    def store_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
         """Store an illegal move for the given `tournament_player`, for the current
-        round."""
+        round, unless they have all those the tournament records."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            tournament_player.pairings[self.current_round].add_illegal_move(database)
+            return tournament_player.pairings[self.current_round].add_illegal_move(
+                database
+            )
 
     def delete_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
         """Deletes one illegal move for the given `tournament_player` for the current round."""

@@ -7,11 +7,16 @@ import pytest
 from litestar.testing import TestClient
 from litestar.testing.websocket_test_session import WebSocketTestSession
 
+from data.tournament import Tournament
+from tests.test_config import ScreenType, TestUtils
+from tests.unit.http.client import ApiClient
 from tests.unit.http.events import EventUnderTest
+from utils.enum import Result
 from web.channels import publish_ws_event
 
 EVENT_ID = 'test-ws-channels'
 OTHER_EVENT_ID = 'test-ws-channels-other'
+TOURNAMENT_NAME = 'test-ws-channels-tournament'
 PROBE = 'probe'
 
 
@@ -94,3 +99,89 @@ def test_a_page_outside_any_event_receives_only_the_events_of_the_application(
         publish(http, f'new-checkins|{EVENT_ID}', EVENT_ID)
         publish(http, 'plugins-updated')
         assert receive(socket)['event'] == 'plugins-updated'
+
+
+@pytest.fixture
+def tournament() -> Iterator[Tournament]:
+    event = EventUnderTest(EVENT_ID, TOURNAMENT_NAME)
+    event.create(json_file='tec-swiss')
+    yield event.tournament()
+    event.delete()
+
+
+def first_player_id(tournament: Tournament) -> int:
+    return min(player.id for player in tournament.tournament_players)
+
+
+@pytest.mark.unit
+def test_a_change_to_the_data_of_a_tournament_names_the_tournament(
+    http: TestClient, tournament: Tournament
+) -> None:
+    with http.websocket_connect(f'/ws/event/{EVENT_ID}/screens') as socket:
+        wait_until_subscribed(http, socket)
+        player_id = first_player_id(tournament)
+        http.patch(f'/records/withdraw-player/{EVENT_ID}/{player_id}')
+        assert receive(socket) == {
+            'event': f'tournament-changed|{EVENT_ID}',
+            'data': {'detail': {'tournament_ids': [tournament.id]}},
+        }
+        http.patch(f'/records/return-player/{EVENT_ID}/{player_id}')
+        assert receive(socket)['event'] == f'tournament-changed|{EVENT_ID}'
+
+
+@pytest.mark.unit
+def test_a_change_announced_by_an_event_of_its_own_is_not_announced_again(
+    http: TestClient, tournament: Tournament
+) -> None:
+    with http.websocket_connect(f'/ws/event/{EVENT_ID}/screens') as socket:
+        wait_until_subscribed(http, socket)
+        http.patch(
+            f'/player-table/check-in-player/{EVENT_ID}/{first_player_id(tournament)}'
+        )
+        publish(http, 'end', EVENT_ID)
+        assert [receive(socket)['event'] for _ in range(3)] == [
+            f'new-checkins|{EVENT_ID}',
+            f'new-checkins|{EVENT_ID}|{tournament.id}',
+            'end',
+        ]
+
+
+@pytest.mark.unit
+def test_a_change_to_the_screens_is_announced_to_the_screens(
+    http: TestClient, api: ApiClient, tournament: Tournament
+) -> None:
+    with http.websocket_connect(f'/ws/event/{EVENT_ID}/screens') as socket:
+        wait_until_subscribed(http, socket)
+        TestUtils.create_screen(
+            api,
+            EVENT_ID,
+            'Boards',
+            ScreenType.BOARDS,
+            {'init_set_tournament_ids': [tournament.id]},
+        )
+        assert receive(socket) == {'event': f'screens-changed|{EVENT_ID}', 'data': ''}
+
+
+@pytest.mark.unit
+def test_a_result_changes_nothing_on_screens_beyond_its_boards(
+    http: TestClient, tournament: Tournament
+) -> None:
+    round_ = tournament.current_round
+    board = next(
+        board
+        for board in tournament.get_round_boards(round_)
+        if board.black_tournament_player is not None
+    )
+    with http.websocket_connect(f'/ws/event/{EVENT_ID}/screens') as socket:
+        wait_until_subscribed(http, socket)
+        response = http.put(
+            f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/'
+            f'{board.identifier}/{Result.DRAW.value}'
+        )
+        assert response.status_code == 200
+        publish(http, 'end', EVENT_ID)
+        assert [receive(socket)['event'] for _ in range(3)] == [
+            f'new-user-results|{EVENT_ID}|{tournament.id}|{round_}',
+            f'new-user-results|{EVENT_ID}',
+            'end',
+        ]

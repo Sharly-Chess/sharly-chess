@@ -606,8 +606,11 @@ class Snapshot:
             ) from e
 
     def _publish_event_restored(self) -> None:
-        from web.channels import channels_plugin, event_channel
+        from web.channels import channels_plugin, event_channel, notify_changes
 
+        # The restored timestamps may be older than those they replace: the
+        # screens are drawn again whatever they show.
+        notify_changes(self.uniq_id, (), screens=True)
         # A restoration can happen before the channels plugin is initialized.
         if not channels_plugin or channels_plugin._pub_queue is None:
             return

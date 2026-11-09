@@ -7,6 +7,8 @@ decided on the server and read back from the HTML here, where the
 browser suite was starting a browser per part to do the same.
 """
 
+import json
+import time
 from collections.abc import Iterator
 
 import pytest
@@ -526,3 +528,188 @@ def test_a_team_check_in_screen_can_list_the_members_of_each_team(
     response = http.get(f'/view/screen/{TEAM_EVENT_ID}/{stored_screen.uniq_id}')
     assert response.status_code == 200
     assert ('T1P0' in response.text) is show_members
+
+
+def live_update(
+    http: TestClient,
+    screen_uniq_id: str,
+    board_ids: list[int] | None = None,
+    player_ids: list[int] | None = None,
+) -> str:
+    response = http.get(
+        f'/view/screen/{EVENT_ID}/{screen_uniq_id}',
+        headers={
+            'X-Sharly-Chess-Live-Update': json.dumps(
+                {'board_ids': board_ids or [], 'player_ids': player_ids or []}
+            )
+        },
+    )
+    assert response.status_code == 200
+    return response.text
+
+
+def live_keys(text: str) -> list[str]:
+    parser = AdvancedHTMLParser()
+    parser.parseStr(text)
+    return [
+        element.getAttribute('data-live-key')
+        for element in parser.getAllNodes()
+        if element.getAttribute('data-live-key')
+    ]
+
+
+def current_board_ids() -> list[int]:
+    EventLoader.unload_event(EVENT_ID)
+    event = EventLoader().load_event(EVENT_ID)
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    return [
+        board.identifier
+        for board in tournament.get_round_boards(tournament.current_round)
+    ]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(('accepts_input', 'per_board'), [(False, 1), (True, 2)])
+def test_a_live_update_of_a_boards_screen_renders_only_the_boards_named(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    accepts_input: bool,
+    per_board: int,
+):
+    """The boards named come back with the title of their set: their row, and
+    their card on a screen taking results."""
+    stored_screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id], 'accepts_input': accepts_input},
+    )
+    board_ids = current_board_ids()
+    page = http.get(f'/view/screen/{EVENT_ID}/{stored_screen.uniq_id}').text
+    assert 'data-url="' in page
+    named = board_ids[2]
+    text = live_update(http, stored_screen.uniq_id, [named])
+    assert f'data-screen="{stored_screen.uniq_id}"' in text
+    assert sorted(live_keys(text)) == sorted(
+        ['set-1-title', f'board-{named}-row']
+        + ([f'board-{named}-card'] if accepts_input else [])
+    )
+    assert len(live_keys(text)) == 1 + per_board
+    page_keys = live_keys(page)
+    assert all(key in page_keys for key in live_keys(text))
+
+
+def refresh_status(http: TestClient, screen_uniq_id: str, drawn_at: float) -> int:
+    return http.get(
+        f'/view/screen/{EVENT_ID}/{screen_uniq_id}',
+        headers={'X-Sharly-Chess-If-Modified-Since': str(drawn_at)},
+    ).status_code
+
+
+def first_player_id(tournament_name: str) -> int:
+    EventLoader.unload_event(EVENT_ID)
+    event = EventLoader().load_event(EVENT_ID)
+    tournament = event.tournaments_by_name[tournament_name]
+    return min(player.id for player in tournament.tournament_players)
+
+
+@pytest.mark.unit
+def test_a_screen_is_drawn_again_only_for_a_change_it_shows(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+):
+    TestUtils.create_tournament(EVENT_ID, 'Other', json_file='test-screens')
+    stored_screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    drawn_at = time.time()
+    time.sleep(0.05)
+    assert refresh_status(http, stored_screen.uniq_id, drawn_at) == 304
+
+    http.patch(f'/records/withdraw-player/{EVENT_ID}/{first_player_id("Other")}')
+    assert refresh_status(http, stored_screen.uniq_id, drawn_at) == 304
+
+    http.patch(
+        f'/records/withdraw-player/{EVENT_ID}/{first_player_id(TOURNAMENT_NAME)}'
+    )
+    assert refresh_status(http, stored_screen.uniq_id, drawn_at) == 200
+
+    drawn_at = time.time()
+    time.sleep(0.05)
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Other boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    assert refresh_status(http, stored_screen.uniq_id, drawn_at) == 200
+
+
+@pytest.mark.unit
+def test_a_rotator_draws_its_page_again_only_when_it_changed(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+):
+    """Turning to a page always draws it; drawing the page shown again is
+    answered with "not modified" until something it shows changes."""
+    screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    rotator_id = TestUtils.create_rotator(
+        api, EVENT_ID, 'Rotator', screen_ids=[screen.id]
+    )
+    url = f'/view/rotator/{EVENT_ID}/{rotator_id}/0'
+    drawn_at = time.time()
+    time.sleep(0.05)
+    turning = {'X-Sharly-Chess-If-Modified-Since': str(drawn_at)}
+    redrawing = turning | {'X-Sharly-Chess-Redraw': 'true'}
+    assert http.get(url, headers=turning).status_code == 200
+    assert http.get(url, headers=redrawing).status_code == 304
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Other boards',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    assert http.get(url, headers=redrawing).status_code == 200
+
+
+def current_player_ids() -> list[int]:
+    EventLoader.unload_event(EVENT_ID)
+    event = EventLoader().load_event(EVENT_ID)
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    return sorted(player.id for player in tournament.tournament_players)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('screen_type', [ScreenType.CHECK_IN, ScreenType.PLAYERS])
+def test_a_live_update_of_a_players_screen_renders_only_the_players_named(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    screen_type: ScreenType,
+):
+    stored_screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Players',
+        screen_type,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    page = http.get(f'/view/screen/{EVENT_ID}/{stored_screen.uniq_id}').text
+    named = current_player_ids()[:2]
+    text = live_update(http, stored_screen.uniq_id, player_ids=named)
+    assert sorted(live_keys(text)) == sorted(
+        f'player-{player_id}' for player_id in named
+    )
+    assert all(key in live_keys(page) for key in live_keys(text))

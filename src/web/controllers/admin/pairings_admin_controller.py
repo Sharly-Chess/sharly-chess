@@ -24,7 +24,7 @@ from litestar.response import Response, Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
-from web.channels import event_channel
+from web.channels import event_channel, mark_tournament_change_announced
 
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
@@ -4412,6 +4412,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_add_illegal_move(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         player_id: FromPath[int],
@@ -4426,7 +4427,8 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament_player = web_context.get_admin_player()
-        tournament.store_illegal_move(tournament_player)
+        if tournament.store_illegal_move(tournament_player):
+            self.publish_illegal_moves(channels, tournament, tournament_player)
         if board_id is None:
             return self._admin_event_pairings_render(web_context=web_context)
         # Called from the board modal, which stays open for the next tap: the
@@ -4458,6 +4460,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_delete_illegal_move(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         player_id: FromPath[int],
@@ -4472,7 +4475,8 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament_player = web_context.get_admin_player()
-        tournament.delete_illegal_move(tournament_player)
+        if tournament.delete_illegal_move(tournament_player):
+            self.publish_illegal_moves(channels, tournament, tournament_player)
         if board_id is None:
             return self._admin_event_pairings_render(web_context=web_context)
         # Called from the board modal, which stays open for the next tap: the
@@ -4653,6 +4657,7 @@ class PairingsAdminController(BaseEventAdminController):
                 ),
             }
         }
+        mark_tournament_change_announced(event_uniq_id, tournament_id)
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
@@ -4666,6 +4671,24 @@ class PairingsAdminController(BaseEventAdminController):
                 'data': data,
             },
             [event_channel(event_uniq_id)],
+        )
+
+    @classmethod
+    def publish_illegal_moves(
+        cls,
+        channels: ChannelsPlugin,
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
+    ) -> None:
+        """Tell the pages that the illegal moves of a player changed, as a
+        change to their board in the current round."""
+        board = tournament_player.pairings[tournament.current_round].board
+        cls.publish_new_user_results(
+            channels,
+            tournament.event.uniq_id,
+            tournament.id,
+            tournament.current_round,
+            [board] if board is not None else [],
         )
 
     @get(

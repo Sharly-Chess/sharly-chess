@@ -1075,3 +1075,25 @@ def test_a_paged_screen_preview_shows_that_it_has_pages(
     ).text
     assert shown.count('feed-preview-paged') == 1
     assert '2 pages' in shown
+
+
+@pytest.mark.unit
+def test_a_channel_refreshing_itself_leaves_the_messages_to_the_administration(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+):
+    """A channel open in the browser of the administration refreshes itself as soon
+    as it is sent a screen, without taking the message that says so."""
+    screen = check_in_screen(api, tournament, 'Check-in')
+    projector = TestUtils.create_display_controller(api, EVENT_ID, 'Projector')
+    sent = http.patch(
+        f'/display-controller-assign/{EVENT_ID}/{projector.id}/screen/{screen.uniq_id}'
+    )
+    assert sent.status_code == 200
+    message = 'has been sent to channel'
+    channel = http.get(
+        f'/view/display-controller/{EVENT_ID}/{projector.id}',
+        headers={'HX-Request': 'true', 'X-Sharly-Chess-Refresh': 'true'},
+    )
+    assert channel.status_code == 200
+    assert message not in channel.text
+    assert message in http.get(f'/event/{EVENT_ID}/display_controllers').text

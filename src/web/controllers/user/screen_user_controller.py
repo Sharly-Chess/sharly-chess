@@ -7,6 +7,7 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from litestar_htmx import HTMXTemplate
 
+from web.channels import screens_changed_at
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     DisplayControllerUserWebContext,
@@ -43,13 +44,30 @@ class ScreenUserController(BaseScreenUserController):
         if family and family.last_update > date_dt:
             return True
         if screen:
-            event = screen.event
-            if event.last_update > date_dt:
+            if screens_changed_at(screen.event.uniq_id) > date_dt:
                 return True
             if screen.last_update > date_dt:
                 return True
             return screen.screen_type.refresh_needed(screen, date_dt)
         return False
+
+    REDRAW_HEADER: str = 'X-Sharly-Chess-Redraw'
+    """Asks a screen that turns its pages by itself for the page it shows, to
+    draw it again if it changed, rather than for its next page."""
+
+    def _user_rotating_screen_render(
+        self, request: HTMXRequest, web_context: ScreenEntityUserWebContext
+    ) -> HTMXTemplate | Reswap:
+        """A screen that turns its pages by itself is always drawn when it
+        turns to its next page, and only if it changed when it is drawn again."""
+        date: float | None = (
+            self.get_if_modified_since(request)
+            if request.headers.get(self.REDRAW_HEADER)
+            else None
+        )
+        if date is None or self._user_screen_refresh_needed(web_context, date):
+            return self._user_screen_render(web_context)
+        return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
 
     @get(
         path='/view/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
@@ -92,9 +110,9 @@ class ScreenUserController(BaseScreenUserController):
         self,
         request: HTMXRequest,
         rotator_screen_index: FromPath[int] = 0,
-    ) -> Template:
+    ) -> Template | Reswap:
         web_context = RotatorUserWebContext(request, rotator_screen_index)
-        return self._user_screen_render(web_context)
+        return self._user_rotating_screen_render(request, web_context)
 
     @head(
         path=[
@@ -124,9 +142,9 @@ class ScreenUserController(BaseScreenUserController):
         self,
         request: HTMXRequest,
         page_index: FromPath[int] = 0,
-    ) -> Template:
+    ) -> Template | Reswap:
         web_context = PagedScreenUserWebContext(request, page_index)
-        return self._user_screen_render(web_context)
+        return self._user_rotating_screen_render(request, web_context)
 
     @get(
         path=[
@@ -165,9 +183,9 @@ class ScreenUserController(BaseScreenUserController):
                 template_name='user/display_controller_waiting.html',
                 context=DisplayControllerWaitingWebContext(request).template_context,
             )
-        date: float | None = (
-            self.get_if_modified_since(request) if not web_context.is_rotator else None
-        )
+        if web_context.is_rotator:
+            return self._user_rotating_screen_render(request, web_context)
+        date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
         return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)

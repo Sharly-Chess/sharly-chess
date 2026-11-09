@@ -30,7 +30,7 @@ from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
-from web.channels import event_channel
+from web.channels import event_channel, mark_tournament_change_announced
 
 from common.exception import SharlyChessException, FormError
 from common.i18n import _, ngettext, pgettext
@@ -2358,6 +2358,7 @@ class PlayerAdminController(BaseEventAdminController):
             if player_ids is not None
             else ''
         )
+        mark_tournament_change_announced(event.uniq_id, tournament.id)
         channels.publish(
             {'event': f'new-checkins|{event.uniq_id}', 'data': data},
             [event_channel(event.uniq_id)],

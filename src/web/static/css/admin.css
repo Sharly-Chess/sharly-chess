@@ -476,7 +476,7 @@
         flex-grow: 1;
     }
 
-    #round-controls select {
+    #round-controls :is(select, .select2) {
         flex-grow: 1;
         width: auto !important;
     }

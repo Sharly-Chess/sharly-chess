@@ -669,6 +669,22 @@ class ScreenType(IdentifiableEntity, ABC):
         return None
 
     @property
+    def live_update_template(self) -> str | None:
+        """Template rendering, for one of the screen's sets, the elements that
+        the boards ``live_board_ids`` and the players ``live_player_ids`` bring
+        a change to, each carrying the ``data-live-key`` of the element it
+        replaces on the screen. ``None`` when the screen is only refreshed as a
+        whole."""
+        return None
+
+    @property
+    def live_update_messages(self) -> tuple[str, ...]:
+        """The websocket events naming boards or players whose changes the
+        ``live_update_template`` brings to the screen. Any other change
+        refreshes the screen as a whole."""
+        return ()
+
+    @property
     def has_screen_sets(self) -> bool:
         """Whether a screen of this type is built from per-tournament screen
         sets (rather than a single standalone view)."""
@@ -864,6 +880,16 @@ class CheckInScreenType(ScreenType):
 
     @property
     @override
+    def live_update_template(self) -> str | None:
+        return '/user/screen/sets/check_in_set_live_update.html'
+
+    @property
+    @override
+    def live_update_messages(self) -> tuple[str, ...]:
+        return ('new-checkins',)
+
+    @property
+    @override
     def allows_check_in(self) -> bool:
         return True
 
@@ -998,6 +1024,16 @@ class BoardsScreenType(ScreenType):
     @override
     def set_template(self) -> str | None:
         return '/user/screen/sets/boards_set.html'
+
+    @property
+    @override
+    def live_update_template(self) -> str | None:
+        return '/user/screen/sets/boards_set_live_update.html'
+
+    @property
+    @override
+    def live_update_messages(self) -> tuple[str, ...]:
+        return ('new-user-results',)
 
     @property
     @override
@@ -1224,6 +1260,24 @@ class PlayersScreenType(ScreenType):
     @override
     def set_template(self) -> str | None:
         return '/user/screen/sets/players_set.html'
+
+    @property
+    @override
+    def live_update_template(self) -> str | None:
+        return '/user/screen/sets/players_set_live_update.html'
+
+    @property
+    @override
+    def live_update_messages(self) -> tuple[str, ...]:
+        return ('new-user-results',)
+
+    @override
+    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
+        # Each player is shown with their board, opponent and result.
+        return (
+            super().set_refresh_needed(screen_set, since)
+            or screen_set.tournament.last_pairing_update > since
+        )
 
     @property
     @override

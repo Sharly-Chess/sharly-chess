@@ -1,0 +1,105 @@
+{% if tournament.current_round %}
+    {% with pairing=tournament_player.pairings[tournament.current_round] %}
+    {% with opponent_id=pairing.opponent_id %}
+        {% set board = tournament.boards[tournament_player.board_id] if (screen.accepts_input and not tournament.is_fake) and opponent_id and tournament_player.board_id is not none else none %}
+        {% set editable =
+            board
+            and board.black_tournament_player
+            and (
+                client.can_update_results(tournament.id)
+                or
+                (not board.result_str and client.can_enter_results(tournament.id))
+            )
+        %}
+        {% if editable %}
+            {% set result_url = url_for(
+                'user-result-modal',
+                event_uniq_id=user_event.uniq_id,
+                display_controller_id=display_controller.id,
+                tournament_id=tournament.id,
+                board_id=board.id
+            ) ~ display_controller_query if display_controller else url_for(
+                'user-result-modal',
+                is_screen=1,
+                event_uniq_id=user_event.uniq_id,
+                screen_uniq_id=screen.uniq_id,
+                tournament_id=tournament.id,
+                board_id=board.identifier
+            ) ~ menu_query %}
+        {% endif %}
+        <div
+            {% if not tournament.is_fake %}data-live-key="player-{{ tournament_player.id }}"{% endif %}
+            class="
+                player-row
+                {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}
+                {% if editable %}editable{% endif %}
+                {% if board %}{% if board.result_str %}result-set{% else %}result-not-set{% endif %}{% endif %}
+                {% if board and client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
+                {% if board and last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
+            {% if editable %}
+                hx-get="{{ result_url }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% endif %}
+        >
+            <div
+                class="player overflow-hidden text-nowrap"
+                style="text-overflow: ellipsis;"
+            >
+                {{ data.player_format.format(tournament_player) }}
+            </div>
+            <div class="pairing text-nowrap">
+                {% if pairing.exempt %}
+                    {{ tournament_player.exempt_str }}
+                {% elif not opponent_id %}
+                    {{ tournament_player.not_paired_str }}
+                {% else %}
+                    <span class="board-color-chip {% if tournament_player.color == 'B' %}black{% endif %}"></span>{{ data.board_format.format(tournament_player) }}
+                {% endif %}
+            </div>
+            {% if data.opponent_format != 1 %}
+                <div
+                    class="opponent overflow-hidden text-nowrap"
+                    style="text-overflow: ellipsis;"
+                >
+                    {% if pairing.exempt %}
+                    {% elif not opponent_id %}
+                    {% else %}
+                        {{ data.opponent_format.format(tournament.tournament_players_by_id[opponent_id]) }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if (screen.accepts_input and not tournament.is_fake) %}
+                <div class="score text-nowrap text-center">
+                    {% if editable and not board.result_str %}
+                        <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
+                    {% elif board %}
+                        {{ board.result_str }}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    {% endwith %}
+    {% endwith %}
+{% else %}
+    <div {% if not tournament.is_fake %}data-live-key="player-{{ tournament_player.id }}"{% endif %} class="player-row not-paired fs-italic">
+        <div
+            class="player overflow-hidden text-nowrap"
+            style="text-overflow: ellipsis;"
+        >
+            {{ data.player_format.format(tournament_player) }}
+        </div>
+        <div class="pairing text-nowrap">
+            {{ tournament_player.not_paired_str }}
+        </div>
+        {% if data.opponent_format != 1 %}
+            <div class="opponent text-nowrap">
+            </div>
+        {% endif %}
+        {% if (screen.accepts_input and not tournament.is_fake) %}
+            <div class="score"></div>
+        {% endif %}
+    </div>
+{% endif %}

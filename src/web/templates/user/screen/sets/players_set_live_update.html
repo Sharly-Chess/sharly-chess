@@ -1,0 +1,7 @@
+{% if tournament.started %}
+    {% for tournament_players in screen_set.tournament_players_by_name_lists %}
+        {% for tournament_player in tournament_players if tournament_player.id in live_player_ids %}
+            {% include '/user/screen/sets/players_set_row.html' %}
+        {% endfor %}
+    {% endfor %}
+{% endif %}

@@ -602,6 +602,20 @@ body[data-sc-interface=admin] #sidebar-expander {
     gap: .75rem 1.5rem;
 }
 
+/* On a phone, the label of the theme leaves its buttons too little room
+   beside it: each label goes above its control, as in the login form. */
+@media (max-width: 575.98px) {
+    .profile-preferences {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: start;
+        row-gap: .375rem;
+    }
+
+    .profile-preferences > span:not(:first-child) {
+        margin-top: .5rem;
+    }
+}
+
 /* A modal is sized against the layout viewport, which on a phone is as wide
    as the document whenever the page behind it scrolls sideways — a width
    given as a percentage or in vw then makes the dialog wider than the screen.

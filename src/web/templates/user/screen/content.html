@@ -10,6 +10,7 @@
         <div class="screen {{ screen_type.value }}-screen{% if screen.accepts_input and screen_type.allows_result_input %} input-screen{% endif %}">
             {% for screen_set in screen.sorted_screen_sets %}
                 {% set tournament = screen_set.tournament %}
+                {% set set_index = loop.index %}
                 {% set data = screen_type.set_context(screen_set) %}
                 {% include screen_type.set_template %}
             {% endfor %}
@@ -20,16 +21,14 @@
     {% endif %}
     {% if request.htmx %}
         <script>
-            (() => {
-                const refresher = document.querySelector(
-                    '.screen-refresher, .display-controller-refresher'
-                );
-                if (!refresher) return;
+            document.querySelectorAll(
+                '.screen-refresher, .display-controller-refresher, .screen-redrawer'
+            ).forEach((refresher) => {
                 const headers = JSON.parse(refresher.getAttribute('hx-headers') || '{}');
                 headers['If-Modified-Since'] = '{{ now_http_date }}';
                 headers['X-Sharly-Chess-If-Modified-Since'] = '{{ now }}';
                 refresher.setAttribute('hx-headers', JSON.stringify(headers));
-            })();
+            });
         </script>
     {% endif %}
 </div>

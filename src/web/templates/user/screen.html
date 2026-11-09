@@ -27,12 +27,18 @@
         {% endif %}
         {% set refresh_conditions = "modalIsClosed()" ~ (" && document.visibilityState === 'visible'" if not DEVEL_ENV else '') %}
         {% set becomes_visible = "visibilitychange[" ~ refresh_conditions ~ "] from:document," if not DEVEL_ENV else '' %}
-        {% set reconnected = 'ws:reconnected[' ~ refresh_conditions ~ '] from:body, ' %}
+        {% set reconnected = 'screen-refresh[' ~ refresh_conditions ~ '] from:body, ' %}
         {% if not request.query_params.get('preview') %}
             <div
                 id="screen-live-update"
                 class="d-none"
                 data-ws-url="{{ url_for('ws-event-screens', event_uniq_id=user_event.uniq_id) }}"
+                data-events="ws:new-user-results|{{ user_event.uniq_id }} ws:new-checkins|{{ user_event.uniq_id }} ws:tournament-changed|{{ user_event.uniq_id }} ws:screens-changed|{{ user_event.uniq_id }}"
+                {% if screen.screen_type.live_update_template %}
+                    data-url="{{ request.url.path }}{% if request.url.query %}?{{ request.url.query }}{% endif %}"
+                    data-screen="{{ screen.uniq_id }}"
+                    data-row-events="{% for message in screen.screen_type.live_update_messages %}ws:{{ message }}|{{ user_event.uniq_id }}{% if not loop.last %} {% endif %}{% endfor %}"
+                {% endif %}
             ></div>
         {% endif %}
         {% if request.query_params.get('preview') %}
@@ -62,7 +68,7 @@
                     ) }}"
                     hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
                 {% endif %}
-                hx-trigger="{{ '' if is_rotator else reconnected }}{{ becomes_visible }} every {{ display_controller.delay_for(screen) }}s[{{ refresh_conditions }}]"
+                hx-trigger="ws:display-controller-updated|{{ user_event.uniq_id }}|{{ display_controller.id }}[{{ refresh_conditions }}] from:body, {{ '' if is_rotator else reconnected }}{{ becomes_visible }} every {{ display_controller.delay_for(screen) }}s[{{ refresh_conditions }}]"
                 hx-target="body"
                 hx-indicator="#please-wait"
             ></div>
@@ -99,6 +105,19 @@
                 hx-target="body"
                 hx-trigger="{{ reconnected }}{{ becomes_visible }} every {{ sharly_chess_config.user_screen_update_delay }}s[{{ refresh_conditions }}] queue:none"
                 hx-indicator="#please-wait"
+            ></div>
+        {% endif %}
+        {% if is_rotator and not request.query_params.get('preview') %}
+            {# Draws the page shown again when it changes, leaving the turning
+               of the pages to the refresher above. #}
+            <div
+                class="refresher screen-redrawer"
+                hx-get="{{ request.url.path }}{% if request.url.query %}?{{ request.url.query }}{% endif %}"
+                hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}", "X-Sharly-Chess-Redraw": "true"}'
+                hx-trigger="screen-refresh[{{ refresh_conditions }}] from:body"
+                hx-select="#user-screen-content"
+                hx-target="#user-screen-content"
+                hx-swap="outerHTML"
             ></div>
         {% endif %}
         {% if user_event.fake_tournament_ids and (

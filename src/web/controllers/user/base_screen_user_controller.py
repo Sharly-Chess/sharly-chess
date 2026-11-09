@@ -1,3 +1,4 @@
+import json
 from abc import ABC, abstractmethod
 from functools import cached_property
 from logging import Logger
@@ -210,6 +211,23 @@ class BaseScreenUserController(BaseUserController):
     # browser could only show a page out of date or hold its requests back.
     cache_control = CacheControlHeader(no_store=True)
 
+    REFRESH_HEADER: str = 'X-Sharly-Chess-Refresh'
+    """Marks the requests a screen makes by itself to stay up to date, which
+    leave the messages of the session to the page the user acts on."""
+
+    LIVE_UPDATE_HEADER: str = 'X-Sharly-Chess-Live-Update'
+    """Asks, instead of the screen, for the elements of the screen that the
+    boards and the players it names bring a change to, as a JSON object with
+    the lists ``board_ids`` and ``player_ids``."""
+
+    @staticmethod
+    def _live_update_ids(live_update: str, key: str) -> set[int]:
+        try:
+            ids = json.loads(live_update).get(key, [])
+        except ValueError, AttributeError:
+            return set()
+        return {value for value in ids if isinstance(value, int)}
+
     @classmethod
     def _user_screen_render(
         cls,
@@ -232,6 +250,22 @@ class BaseScreenUserController(BaseUserController):
                 if columns is not None:
                     columns_by_tournament_id[tournament.id] = columns
         request = web_context.request
+        live_update = request.headers.get(cls.LIVE_UPDATE_HEADER)
+        if (
+            live_update is not None
+            and web_context.screen.screen_type.live_update_template
+        ):
+            return HTMXTemplate(
+                template_name='user/screen/live_update.html',
+                context=web_context.template_context
+                | {
+                    'last_result_updated': SessionLastResultUpdated(request).get(),
+                    'columns_by_tournament_id': columns_by_tournament_id,
+                    'last_check_in_updated': SessionLastCheckInUpdated(request).get(),
+                    'live_board_ids': cls._live_update_ids(live_update, 'board_ids'),
+                    'live_player_ids': cls._live_update_ids(live_update, 'player_ids'),
+                },
+            )
         return HTMXTemplate(
             template_name=template_name,
             context=web_context.template_context
@@ -241,7 +275,11 @@ class BaseScreenUserController(BaseUserController):
                     request
                 ).get(),
                 'last_check_in_updated': SessionLastCheckInUpdated(request).get(),
-                'messages': Message.messages(request),
+                'messages': (
+                    []
+                    if request.headers.get(cls.REFRESH_HEADER)
+                    else Message.messages(request)
+                ),
                 'columns_by_tournament_id': columns_by_tournament_id,
             },
             trigger_event=trigger_event,

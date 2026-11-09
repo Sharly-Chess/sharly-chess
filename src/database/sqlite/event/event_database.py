@@ -4,7 +4,8 @@ from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, Self, TYPE_CHECKING, override, cast
+import sqlite3
+from typing import Any, ClassVar, Self, TYPE_CHECKING, override, cast
 from collections.abc import Sequence
 
 from packaging.version import Version
@@ -109,7 +110,70 @@ class EventDatabase(MigrationDatabase):
                 f'modified right now.'
             )
         super().__enter__()
+        self.screens_changed = False
+        if self.write and self.database is not None:
+            self.database.set_authorizer(self._note_screens_change)
         return self
+
+    # The writes that cannot change what a screen shows beyond the data of
+    # the tournaments, either because the timestamps of the tournaments follow
+    # them or because no screen shows what they write. Any other write may, and
+    # the screens of the event are then drawn again: what is not listed here is
+    # never missed, at worst drawn again for nothing.
+    TABLES_FOLLOWED_BY_TOURNAMENTS: ClassVar[frozenset[str]] = frozenset(
+        {'pairing', 'player', 'tournament_player'}
+    )
+    TABLES_OFF_SCREENS: ClassVar[frozenset[str]] = frozenset(
+        {'metadata', 'plugin_metadata'}
+    )
+    UPDATED_COLUMNS_OFF_SCREENS: ClassVar[dict[str, frozenset[str]]] = {
+        'tournament': frozenset(
+            {'last_update', 'last_player_update', 'last_pairing_update', 'dirty'}
+        ),
+        'board': frozenset({'last_result_update'}),
+        'team_board': frozenset({'last_result_update'}),
+        'info': frozenset(
+            {
+                'plugin_data',
+                'ratings_check_dismissed',
+                'origin',
+                'origin_date',
+                'tag_ids',
+            }
+        ),
+    }
+
+    def _note_screens_change(
+        self,
+        action: int,
+        table: str | None,
+        column: str | None,
+        _database: str | None,
+        _source: str | None,
+    ) -> int:
+        """Notes, as SQLite prepares each statement, whether it writes what
+        the screens may show beyond the data of the tournaments."""
+        if (
+            self.screens_changed
+            or table is None
+            or action
+            not in (sqlite3.SQLITE_INSERT, sqlite3.SQLITE_DELETE, sqlite3.SQLITE_UPDATE)
+            or table in self.TABLES_FOLLOWED_BY_TOURNAMENTS
+            or table in self.TABLES_OFF_SCREENS
+            or (
+                action == sqlite3.SQLITE_UPDATE
+                and column in self.UPDATED_COLUMNS_OFF_SCREENS.get(table, ())
+            )
+        ):
+            return sqlite3.SQLITE_OK
+        self.screens_changed = True
+        logger.debug(
+            '%sThe screens may change: write to [%s%s]',
+            self.log_prefix,
+            table,
+            f'.{column}' if column else '',
+        )
+        return sqlite3.SQLITE_OK
 
     @override
     def __exit__(self, exc_type: Any, exc_value: Any, tb: Any) -> None:
@@ -167,6 +231,19 @@ class EventDatabase(MigrationDatabase):
             plugin_manager.hook.on_tournament_data_updated(
                 stored_event=stored_event,
                 stored_tournament=stored_tournament,
+            )
+
+        if changed and is_event_file:
+            from web.channels import notify_changes
+
+            notify_changes(
+                self.uniq_id,
+                (
+                    stored_tournament.id
+                    for stored_tournament in dirty_tournaments
+                    if stored_tournament.id is not None
+                ),
+                self.screens_changed,
             )
 
         if changed and is_event_file and self.snapshot_on_commit:
@@ -251,10 +328,6 @@ class EventDatabase(MigrationDatabase):
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
         return EVENTS_DIR / f'{uniq_id}.{Extension.EVENT_DB}'
-
-    @classmethod
-    def database_modified_at(cls, uniq_id: str) -> datetime:
-        return datetime.fromtimestamp(cls.event_database_path(uniq_id).lstat().st_mtime)
 
     def delete(self) -> Path:
         """Soft-deletes the event database file by archiving it."""
