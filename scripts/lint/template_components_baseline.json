@@ -85,6 +85,6 @@
     "button": 1
   },
   "src/web/templates/admin/teams/team_components.j2": {
-    "icon-spacing": 5
+    "icon-spacing": 4
   }
 }

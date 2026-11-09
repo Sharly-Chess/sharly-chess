@@ -23,6 +23,12 @@ msgid "%(bye)s at round %(round)d"
 msgstr "%(bye)s à la ronde %(round)d"
 
 #, python-format
+msgid "%(count)d issue"
+msgid_plural "%(count)d issues"
+msgstr[0] "%(count)d problème"
+msgstr[1] "%(count)d problèmes"
+
+#, python-format
 msgid "%(count)d player"
 msgid_plural "%(count)d players"
 msgstr[0] "%(count)d joueur·euse"
@@ -6227,6 +6233,12 @@ msgstr "Aucune sauvegarde de cet évènement n'a encore été effectuée."
 msgid "No built-in templates."
 msgstr "Aucun modèle intégré."
 
+msgid "No captain"
+msgstr "Pas de capitaine"
+
+msgid "No captain is set for this team."
+msgstr "Cette équipe n'a pas de capitaine."
+
 msgid "No competitors are available. Add a valid source tournament first."
 msgstr "Aucun compétiteur disponible. Ajoutez d'abord un tournoi source valide."
 
@@ -10006,6 +10018,9 @@ msgstr "Nom de l’équipe"
 
 msgid "Team opponents' records"
 msgstr "Historique des équipes rencontrées"
+
+msgid "Team or player"
+msgstr "Équipe ou joueur·euse"
 
 #, python-format
 msgid "Team pairing information for round %(round)d"

@@ -1,5 +1,7 @@
 """Entering teams in a team event, over HTTP."""
 
+import json
+import re
 from collections.abc import Iterator
 
 import pytest
@@ -351,3 +353,48 @@ def test_the_team_chosen_before_a_search_is_kept(
     assert none.status_code == 200
     assert f'<option value="{beta.id}" selected>' not in none.text
     assert '<option value="" selected>' in none.text
+
+
+@pytest.mark.unit
+def test_a_team_can_be_found_by_its_players(http: TestClient, tournament: Tournament):
+    """Each team card carries the words it is searched by, and the search
+    typed in is kept for the next time the tab is shown."""
+    assert create_team(http, tournament, name='Knights').status_code == 200
+    assert (
+        http.post(
+            f'/player-create/{EVENT_ID}',
+            data={
+                'federation': 'FRA',
+                'gender': '',
+                'title': '',
+                'team_id': str(team_id('Knights')),
+                'last_name': 'Rookwood',
+            },
+        ).status_code
+        == 200
+    )
+    response = http.get(
+        f'/event/{EVENT_ID}/teams/search', params={'search': 'rookwood'}
+    )
+    assert response.status_code == 204
+    tab = http.get(f'/event/{EVENT_ID}/teams')
+    assert tab.status_code == 200
+    searched = re.search(r'data-search="([^"]*)"', tab.text)
+    assert searched is not None
+    assert searched.group(1).startswith('Knights ')
+    assert 'ROOKWOOD' in searched.group(1).upper()
+    assert 'value="rookwood"' in tab.text
+
+
+@pytest.mark.unit
+def test_the_document_team_picker_lists_the_teams_by_name(
+    http: TestClient, tournament: Tournament
+):
+    for name in ('zebras', 'Écureuils', 'Antelopes'):
+        assert create_team(http, tournament, name=name).status_code == 200
+    response = http.get(f'/documents-modal/{EVENT_ID}')
+    assert response.status_code == 200
+    teams = re.search(r'var teamsPerTournamentId = (\{.*?\});', response.text)
+    assert teams is not None
+    names = [team['name'] for team in json.loads(teams.group(1))[str(tournament.id)]]
+    assert names == ['Antelopes', 'Écureuils', 'zebras']

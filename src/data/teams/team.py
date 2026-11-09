@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from collections.abc import Sequence
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import TeamByeType
 from database.sqlite.event.event_store import (
@@ -170,6 +170,23 @@ class Team:
             return captain.full_name
         return self.stored_team.captain_name or None
 
+    @property
+    def search_text(self) -> str:
+        """The words a team can be found by on the teams tab: its name,
+        affiliation, federation, captain and roster players."""
+        group = self.group
+        return ' '.join(
+            term
+            for term in (
+                self.name,
+                group.name if group else '',
+                self.federation,
+                self.captain_display_name or '',
+                *(player.full_name for player in self.players),
+            )
+            if term
+        )
+
     @cached_property
     def is_excluded_from_standings(self) -> bool:
         """FIDE 6.6 (team analogue): a team round-robin team that completed
@@ -327,12 +344,10 @@ class Team:
         return round(sum(ratings) / len(ratings))
 
     @property
-    def roster_warning_message(self) -> str | None:
-        """Combined roster warnings for the team card: a generic over-cap
-        warning when the roster exceeds the tournament's maximum size, plus
-        any rule-set-specific warnings (rating ceilings, composition…).
-        Returns ``None`` when the roster is clean. Rendered as a triangle +
-        tooltip on the team card."""
+    def roster_warnings(self) -> list[str]:
+        """The roster's warnings: a generic over-cap warning when the roster
+        exceeds the tournament's maximum size, plus any rule-set-specific
+        warnings (rating ceilings, composition…)."""
         warnings: list[str] = []
         max_size = self.roster_max_size
         if max_size is not None and len(self.players) > max_size:
@@ -344,7 +359,32 @@ class Team:
         rule_set = tournament.rule_set if tournament else None
         if rule_set is not None:
             warnings.extend(rule_set.roster_warnings(self))
-        return ' '.join(warnings) or None
+        return warnings
+
+    @property
+    def warnings(self) -> list[tuple[str, str]]:
+        """The team's warnings as (short label, explanation) pairs, shown
+        together behind a single warning sign on the teams tab."""
+        warnings: list[tuple[str, str]] = []
+        if not self.captain_display_name:
+            warnings.append((_('No captain'), _('No captain is set for this team.')))
+        warnings.extend(
+            (_('Roster issue'), message) for message in self.roster_warnings
+        )
+        return warnings
+
+    @property
+    def warning_label(self) -> str:
+        warnings = self.warnings
+        if len(warnings) == 1:
+            return warnings[0][0]
+        return ngettext('%(count)d issue', '%(count)d issues', len(warnings)) % {
+            'count': len(warnings)
+        }
+
+    @property
+    def warning_messages(self) -> list[str]:
+        return [message for _label, message in self.warnings]
 
     @property
     def affiliation_warning_message(self) -> str | None:
