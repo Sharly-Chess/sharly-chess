@@ -101,6 +101,7 @@ from web.session import (
     SessionPairingsSelectedTournament,
     SessionPairingsSelectedRound,
     SessionPairingsBoardSort,
+    SessionPairingsPairAndPublish,
     SessionSchedulePlayedGamesUnlocked,
 )
 from web.utils import SelectOption
@@ -114,6 +115,10 @@ logger = get_logger()
 # would make ordinary values like -1 unenterable.
 MIN_POINT_ADJUSTMENT = -9.5
 MAX_POINT_ADJUSTMENT = 99.5
+
+# Sent by the entries of the Pair menu, whose choice the session keeps for the
+# requests that follow (the modals shown before the pairing, the pairing).
+PAIR_AND_PUBLISH_HEADER = 'X-Sharly-Pair-And-Publish'
 
 
 class PairingsAdminWebContext(BaseEventAdminWebContext):
@@ -188,6 +193,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         self.admin_boards_sortable = False
         self.admin_board_sort = SessionPairingsBoardSort(request).get()
+        pair_and_publish = SessionPairingsPairAndPublish(request, event)
+        if (choice := request.headers.get(PAIR_AND_PUBLISH_HEADER)) is not None:
+            pair_and_publish.set(choice == '1')
+        self.pair_and_publish = pair_and_publish.get()
         # Set after a board-only points update and cleared by full-page rendering.
         self.scoped_recompute = False
         if self.admin_tournament is not None:
@@ -682,6 +691,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_boards': self.admin_boards,
             'admin_boards_sortable': self.admin_boards_sortable,
             'admin_board_sort': self.admin_board_sort,
+            'pair_and_publish': self.pair_and_publish,
+            'pair_and_publish_header': PAIR_AND_PUBLISH_HEADER,
             'round_status': self.round_status,
             'corrects_for_rating': self.corrects_for_rating,
             'display_rankings': self.display_rankings,
@@ -2508,17 +2519,30 @@ class PairingsAdminController(BaseEventAdminController):
             tournament.id,
         )
         adjourned_boards: list[Board] = []
-        if error := tournament.generate_round_pairings(round_):
-            Message.error(request, error)
-        else:
-            Message.success(request, _('Pairings successfully generated.'))
-            adjourned_boards = tournament.adjourned_boards(before_round=round_)
+        error = tournament.generate_round_pairings(round_)
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament.id,
             round_=round_,
             reload_event=True,
         )
+        if error:
+            Message.error(request, error)
+        else:
+            tournament = web_context.get_admin_tournament()
+            if (
+                web_context.pair_and_publish
+                and not tournament.pairing_system.predetermined_pairings
+                and web_context.client.can_publish_pairings(tournament.id)
+                and tournament.can_publish_round(round_)
+            ):
+                tournament.set_published_round(round_)
+                Message.success(
+                    request, _('Pairings successfully generated and published.')
+                )
+            else:
+                Message.success(request, _('Pairings successfully generated.'))
+            adjourned_boards = tournament.adjourned_boards(before_round=round_)
         if adjourned_boards:
             return self._admin_event_pairings_render(
                 web_context,
