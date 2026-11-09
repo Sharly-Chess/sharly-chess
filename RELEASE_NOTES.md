@@ -17,6 +17,7 @@
 - In the staff account form, every result of the player search fills in the account, including the results loaded after the first ones, which opened the player form, and the filter button that did nothing is gone. When replacing a player, the results loaded after the first ones also replace that player instead of creating a new one (5.2.2)
 - In the settings of the application window, the fields all have the same width, and the labels of the checkboxes line up with the labels of the other fields (5.2.2)
 - The plugins section follows the plugins enabled or disabled elsewhere, such as by importing an event that needs one, and the browser windows on the computer running _Sharly Chess_ follow the administration theme chosen in the application window, neither needing to be refreshed (5.2.2)
+- On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
 
 ## Tournaments
 
