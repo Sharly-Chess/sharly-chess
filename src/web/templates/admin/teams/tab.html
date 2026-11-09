@@ -89,6 +89,31 @@
     {% endif %}
 {% endblock %}
 
+{% block top_nav_bottom %}
+    {% if admin_event.teams %}
+        <div class="top-nav-collapsible w-100 d-flex flex-wrap gap-2 pt-1">
+            <span class="top-nav-keep" style="width: 400px; max-width: 100%; min-width: 15rem;">
+                {{ admin_macros.text_input(
+                    name='search',
+                    input_type='search',
+                    label='',
+                    hx_get=url_for('admin-event-teams-search', event_uniq_id=admin_event.uniq_id),
+                    hx_trigger='input changed delay:0.5s, paste delay:0.1s, search',
+                    hx_swap='none',
+                    placeholder=_('Search by: %(fields)s', fields=', '.join([
+                        _('Name'),
+                        _('Affiliation'),
+                        _('Federation'),
+                        _('Captain'),
+                        _('Players'),
+                    ])),
+                    data={'search': search or ''},
+                ) }}
+            </span>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block cards_container_cards %}
     {% if admin_event.teams %}
         {% set draggable = client.can_update_tournaments %}
@@ -209,6 +234,28 @@
                 {% endif %}
             </div>
         </form>
+        <script>
+            (function () {
+                function normalize(text) {
+                    return text.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
+                }
+                const searchInput = document.getElementById('search');
+                function filterTeams() {
+                    const words = normalize(searchInput.value).split(/\s+/).filter(Boolean);
+                    document.querySelectorAll('#teams-form .collection-item').forEach(function (item) {
+                        const input = item.querySelector('.assignment-input');
+                        const text = normalize(input ? input.dataset.search || '' : '');
+                        const match = words.every(function (word) {
+                            return text.includes(word);
+                        });
+                        item.classList.toggle('d-none', !match);
+                    });
+                }
+                searchInput.addEventListener('input', filterTeams);
+                searchInput.addEventListener('search', filterTeams);
+                filterTeams();
+            })();
+        </script>
         {% if draggable %}
             <script>
                 (function () {

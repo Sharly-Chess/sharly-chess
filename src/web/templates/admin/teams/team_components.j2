@@ -11,6 +11,7 @@
         value="{{ team.id }}:{{ team.tournament_id or '' }}"
         data-team-avg="{{ team.average_rating or 0 }}"
         data-lineup-avg="{{ team.lineup_average_rating(1) or 0 }}"
+        data-search="{{ team.search_text }}"
     />
     <div class="min-width-0">
         <div class="fw-semibold text-truncate">

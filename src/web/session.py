@@ -314,6 +314,12 @@ class SessionTeamsShowLineup(BoolSessionVariable):
         return True
 
 
+class SessionTeamsSearch(EventNoneSessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'teams_search'
+
+
 class SessionTimersAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:

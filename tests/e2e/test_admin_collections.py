@@ -152,6 +152,36 @@ class TestAdminCollections:
         )
         expect(item.locator('.card-block-button button')).to_be_visible()
 
+    def test_team_search_hides_the_other_teams(self, page: Page):
+        page.goto(f'/event/{TEAM_EVENT_ID}/teams')
+        for name in ('Searched Owls', 'Other Foxes'):
+            TestUtils.button_by_text(page, 'Create a team').click()
+            modal = page.locator('.modal-dialog')
+            expect(modal).to_be_visible()
+            TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+            TestUtils.submit_modal(
+                page, modal.get_by_role('button', name='Create', exact=True)
+            )
+            expect(
+                page.get_by_test_id('teams-item').filter(has_text=name)
+            ).to_be_visible()
+        owls = page.get_by_test_id('teams-item').filter(has_text='Searched Owls')
+        foxes = page.get_by_test_id('teams-item').filter(has_text='Other Foxes')
+
+        with page.expect_response(re.compile(r'/teams/search')):
+            page.locator('#search').fill('owls')
+        expect(owls).to_be_visible()
+        expect(foxes).to_be_hidden()
+
+        page.reload()
+        expect(page.locator('#search')).to_have_value('owls')
+        expect(owls).to_be_visible()
+        expect(foxes).to_be_hidden()
+
+        with page.expect_response(re.compile(r'/teams/search')):
+            page.locator('#search').fill('')
+        expect(foxes).to_be_visible()
+
     def test_tournaments_default_to_card_view(self, page: Page):
         page.goto(f'/event/{PRIZE_EVENT_ID}/tournaments')
         expect(page.locator('.admin-collection-cards')).to_be_visible()

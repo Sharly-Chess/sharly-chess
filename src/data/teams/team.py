@@ -170,6 +170,23 @@ class Team:
             return captain.full_name
         return self.stored_team.captain_name or None
 
+    @property
+    def search_text(self) -> str:
+        """The words a team can be found by on the teams tab: its name,
+        affiliation, federation, captain and roster players."""
+        group = self.group
+        return ' '.join(
+            term
+            for term in (
+                self.name,
+                group.name if group else '',
+                self.federation,
+                self.captain_display_name or '',
+                *(player.full_name for player in self.players),
+            )
+            if term
+        )
+
     @cached_property
     def is_excluded_from_standings(self) -> bool:
         """FIDE 6.6 (team analogue): a team round-robin team that completed
