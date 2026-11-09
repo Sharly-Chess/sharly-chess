@@ -606,7 +606,7 @@ class Snapshot:
             ) from e
 
     def _publish_event_restored(self) -> None:
-        from web.channels import channels_plugin
+        from web.channels import channels_plugin, event_channel
 
         # A restoration can happen before the channels plugin is initialized.
         if not channels_plugin or channels_plugin._pub_queue is None:
@@ -618,7 +618,7 @@ class Snapshot:
                 'event': f'new-user-results|{self.uniq_id}',
                 'data': '',
             },
-            ['ws'],
+            [event_channel(self.uniq_id)],
         )
 
 

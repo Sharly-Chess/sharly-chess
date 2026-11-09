@@ -27,9 +27,12 @@ from uvicorn.protocols.utils import ClientDisconnected
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.access_levels.actions import AuthAction
+from web.channels import APP_CHANNEL, event_channel
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
+from web.guards import ActionGuard, EventGuard
 from web.session import SessionEventsShowDetails
 
 
@@ -196,15 +199,15 @@ class IndexController(BaseController):
     ) -> HTMXTemplate:
         return self._error_template(request, status_code)
 
-    @websocket('/ws')
-    async def ws_handler(
-        self, socket: WebSocket, channels: NamedDependency[ChannelsPlugin]
+    @staticmethod
+    async def _forward_events(
+        socket: WebSocket, channels: ChannelsPlugin, channel_names: list[str]
     ) -> None:
-        """Forwards the published events to the page until it goes away. A page
-        can go away while an event is being sent to it, so a failed send ends the
-        connection just as a failed read does."""
+        """Forwards the events published on the channels to the page until it
+        goes away. A page can go away while an event is being sent to it, so a
+        failed send ends the connection just as a failed read does."""
         await socket.accept()
-        async with channels.start_subscription(['ws']) as subscriber:
+        async with channels.start_subscription(channel_names) as subscriber:
 
             async def forward_events() -> None:
                 async for raw_event in subscriber.iter_events():
@@ -218,6 +221,39 @@ class IndexController(BaseController):
                         await socket.receive_data('text')
             except* WebSocketDisconnect, ClientDisconnected:
                 pass
+
+    @websocket('/ws', name='ws')
+    async def ws_handler(
+        self, socket: WebSocket, channels: NamedDependency[ChannelsPlugin]
+    ) -> None:
+        await self._forward_events(socket, channels, [APP_CHANNEL])
+
+    @websocket('/ws/event/{event_uniq_id:str}', name='ws-event', guards=[EventGuard()])
+    async def ws_event_handler(
+        self,
+        socket: WebSocket,
+        channels: NamedDependency[ChannelsPlugin],
+        event_uniq_id: FromPath[str],
+    ) -> None:
+        """The events of the administration pages of an event: those of the
+        application and those of the event."""
+        await self._forward_events(
+            socket, channels, [APP_CHANNEL, event_channel(event_uniq_id)]
+        )
+
+    @websocket(
+        '/ws/event/{event_uniq_id:str}/screens',
+        name='ws-event-screens',
+        guards=[EventGuard(), ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS)],
+    )
+    async def ws_event_screens_handler(
+        self,
+        socket: WebSocket,
+        channels: NamedDependency[ChannelsPlugin],
+        event_uniq_id: FromPath[str],
+    ) -> None:
+        """The events of the screens of an event: only those of the event."""
+        await self._forward_events(socket, channels, [event_channel(event_uniq_id)])
 
     @post(
         path='/slow-request',
