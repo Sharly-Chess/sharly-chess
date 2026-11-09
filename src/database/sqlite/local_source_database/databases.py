@@ -709,26 +709,34 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             zip_target.unlink(missing_ok=True)
         return True
 
-    def update(self, source_file: Path | None = None, notify: bool = True) -> None:
+    def update(
+        self,
+        source_file: Path | None = None,
+        notify: bool = True,
+        force: bool = False,
+    ) -> None:
         """Start a thread updating the database, from a source file the
         user provides (deleted once used) instead of a download when given.
 
         *notify* is False for an update the user did not ask for, whose
         failure belongs in the log rather than on their screen: a site that
-        cannot be reached would otherwise report itself at every check."""
+        cannot be reached would otherwise report itself at every check.
+
+        *force* rebuilds the database even when the source has published
+        nothing newer than the installed copy."""
         self.__class__.notify_update = notify
         update_thread = threading.Thread(
-            target=self._run_update, args=(source_file,), daemon=True
+            target=self._run_update, args=(source_file, force), daemon=True
         )
         update_thread.start()
         atexit.register(self._stop_background_thread, update_thread)
 
-    def _run_update(self, source_file: Path | None = None) -> None:
+    def _run_update(self, source_file: Path | None = None, force: bool = False) -> None:
         """Runs the update, making sure that it ends however it goes: an
         exception reaching the thread would otherwise leave the database
         updating for good, with the window saying so."""
         try:
-            self._update(source_file)
+            self._update(source_file, force)
         except Exception as e:
             logger.exception(self.log_prefix + 'Update failed: %s.', e)
             self.stop_update(False)
@@ -737,7 +745,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.stop_event.set()
         thread.join()
 
-    def _update(self, source_file: Path | None = None) -> None:
+    def _update(self, source_file: Path | None = None, force: bool = False) -> None:
         """Update the source database:
         1. Download the source file (or take the one the user provides)
         2. Create a temp database
@@ -758,10 +766,12 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             return self.stop_update(False)
         published_at = self._source_published_at() if source_file is None else None
         if (
-            published_at is not None
+            not force
+            and published_at is not None
             and self.exists()
-            and (updated_at := self.updated_at)
-            and published_at.timestamp() <= updated_at.timestamp()
+            and (copy_published_at := self.stored_source_database.published_at)
+            is not None
+            and published_at.timestamp() <= copy_published_at
         ):
             logger.info(self.log_prefix + 'Source unchanged, kept as it is.')
             self._mark_updated(published_at)

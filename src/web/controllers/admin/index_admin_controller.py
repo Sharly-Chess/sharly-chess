@@ -2241,7 +2241,7 @@ class IndexAdminController(BaseAdminController):
     )
     async def _database_update(self, database_id: FromPath[str]) -> Reswap:
         database = LocalSourceDatabaseManager().get_object(database_id)
-        database.update()
+        database.update(force=True)
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
     @post(
