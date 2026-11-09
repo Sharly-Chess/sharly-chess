@@ -958,7 +958,7 @@ class Event:
 
     @cached_property
     def sorted_teams(self) -> list[Team]:
-        return sorted(self.teams, key=attrgetter('name'))
+        return sorted(self.teams, key=by('name'))
 
     def clear_team_cache(self) -> None:
         Utils.reset_cached_properties(
