@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from collections.abc import Sequence
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import TeamByeType
 from database.sqlite.event.event_store import (
@@ -362,6 +362,31 @@ class Team:
         if rule_set is not None:
             warnings.extend(rule_set.roster_warnings(self))
         return ' '.join(warnings) or None
+
+    @property
+    def warnings(self) -> list[tuple[str, str]]:
+        """The team's warnings as (short label, explanation) pairs, shown
+        together behind a single warning sign on the teams tab."""
+        warnings: list[tuple[str, str]] = []
+        if not self.captain_display_name:
+            warnings.append((_('No captain'), _('No captain is set for this team.')))
+        roster_warning = self.roster_warning_message
+        if roster_warning:
+            warnings.append((_('Roster issue'), roster_warning))
+        return warnings
+
+    @property
+    def warning_label(self) -> str:
+        warnings = self.warnings
+        if len(warnings) == 1:
+            return warnings[0][0]
+        return ngettext('%(count)d issue', '%(count)d issues', len(warnings)) % {
+            'count': len(warnings)
+        }
+
+    @property
+    def warning_message(self) -> str:
+        return ' '.join(message for _label, message in self.warnings)
 
     @property
     def affiliation_warning_message(self) -> str | None:

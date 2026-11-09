@@ -23,6 +23,12 @@ msgid "%(bye)s at round %(round)d"
 msgstr ""
 
 #, python-format
+msgid "%(count)d issue"
+msgid_plural "%(count)d issues"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(count)d player"
 msgid_plural "%(count)d players"
 msgstr[0] ""

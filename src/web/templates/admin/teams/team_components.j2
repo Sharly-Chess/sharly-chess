@@ -25,18 +25,10 @@
                 <i class="bi-flag pe-1"></i>
             {% endif %}
             {{ team.name }}
-            {# The card shows this in its body; the list has no body, so
-               the warning rides along with the name instead. #}
-            {% if view == 'list' and show_roster and team.roster_warning_message %}
+            {% if view == 'list' and team.warnings %}
                 <i
                     class="bi-exclamation-triangle-fill text-warning ms-1"
-                    {{ macros.tooltip_attributes('warning', team.roster_warning_message, 'top') }}
-                ></i>
-            {% endif %}
-            {% if view == 'list' and not team.captain_display_name %}
-                <i
-                    class="bi-exclamation-triangle-fill text-warning ms-1"
-                    {{ macros.tooltip_attributes('warning', _('No captain is set for this team.'), 'top') }}
+                    {{ macros.tooltip_attributes('warning', team.warning_message, 'top') }}
                 ></i>
             {% endif %}
         </div>
@@ -55,12 +47,12 @@
                 <i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No affiliation') }}
             </div>
         {% endif %}
-        {% if view == 'card' and not team.captain_display_name %}
+        {% if view == 'card' and team.warnings %}
             <div
                 class="small text-muted text-truncate"
-                {{ macros.tooltip_attributes('warning', _('No captain is set for this team.'), 'top') }}
+                {{ macros.tooltip_attributes('warning', team.warning_message, 'top') }}
             >
-                {% call components.icon_text('bi-exclamation-triangle-fill', icon_class='text-warning') %}{{ _('No captain') }}{% endcall %}
+                {% call components.icon_text('bi-exclamation-triangle-fill', icon_class='text-warning') %}{{ team.warning_label }}{% endcall %}
             </div>
         {% endif %}
     </div>
@@ -211,15 +203,6 @@
 {% endmacro %}
 
 {% macro card_content(team, view, placement) %}
-    {% if show_roster and team.roster_warning_message %}
-        <div class="text-start mb-2">
-            <i
-                class="bi-exclamation-triangle-fill text-warning pe-1"
-                {{ macros.tooltip_attributes('warning', team.roster_warning_message, 'top') }}
-            ></i>
-            <span class="text-muted">{{ _('Roster issue') }}</span>
-        </div>
-    {% endif %}
     {% if show_roster %}
         <div class="card-block">
             {{ roster_button(team, 'card-block-button') }}
