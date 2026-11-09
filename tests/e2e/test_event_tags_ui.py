@@ -163,11 +163,14 @@ class TestEventTags:
         self._open_tags_modal(page, EVENT_ID)
         rows = page.locator('#event-tags-modal .tag-row')
         names = page.locator('#event-tags-modal .tag-row .badge')
-        assert names.all_inner_texts() == [TAG_NAME, SECOND_TAG_NAME]
+        expect(names).to_have_text([TAG_NAME, SECOND_TAG_NAME])
 
         self._drag_row(page, rows.nth(1), rows.nth(0))
+        # The drop saves the order and swaps the whole page back in, the modal
+        # included, and its badges read raw template text while it is hidden.
+        TestUtils.wait_for_htmx_idle(page)
         expect(rows).to_have_count(2)
-        assert names.all_inner_texts() == [SECOND_TAG_NAME, TAG_NAME]
+        expect(names).to_have_text([SECOND_TAG_NAME, TAG_NAME])
 
         # The order is the registry's, so it holds outside this modal.
         self._goto_event_list(page)
