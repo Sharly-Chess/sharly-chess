@@ -187,6 +187,54 @@ class TestRatingCheck:
         [updated] = check.apply({player.id})
         assert updated.ratings[Cadence.STANDARD].manual is None
 
+    def _list_national(self, player, monkeypatch, listed: dict) -> None:
+        """Make the player's national list give them *listed*."""
+        from data.input_output import DataSourceManager
+
+        player.stored_player.national_id = 'A12345'
+        player.stored_player.national_source = 'ffe'
+        data_source = SimpleNamespace(
+            national_source_id='ffe',
+            check_player_match=lambda player, match: True,
+        )
+        monkeypatch.setattr(
+            DataSourceManager, 'national_source', lambda self, source: data_source
+        )
+
+        async def match_list(data_source, players):
+            return [
+                StoredPlayer(id=None, last_name=PLAYER_NAME, ratings={STANDARD: listed})
+            ]
+
+        monkeypatch.setattr(rating_check, '_match_list', match_list)
+
+    def test_a_value_the_national_list_types_is_proposed(self, monkeypatch):
+        player = self._setup({}, monkeypatch, {})
+        self._list_national(player, monkeypatch, {'manual': 1450})
+        check = self._check(player)
+        assert check.arbiter_values == []
+        [row] = check.changes
+        assert (row.current_rating.prescribed, row.proposed_rating.value) == (
+            True,
+            1450,
+        )
+        [updated] = check.apply({player.id})
+        assert updated.ratings[Cadence.STANDARD].manual == 1450
+
+    def test_a_value_the_national_list_types_is_not_the_arbiters(self, monkeypatch):
+        player = self._setup({'manual': 1450}, monkeypatch, {})
+        self._list_national(player, monkeypatch, {'manual': 1450})
+        check = self._check(player)
+        assert check.changes == [] and check.arbiter_values == []
+
+    def test_a_value_the_national_list_types_as_prescribed_is_left_out(
+        self, monkeypatch
+    ):
+        player = self._setup({}, monkeypatch, {})
+        self._list_national(player, monkeypatch, {'manual': 1399})
+        check = self._check(player)
+        assert check.changes == [] and check.arbiter_values == []
+
     def test_a_typed_value_superseded_by_a_list_is_put_to_the_arbiter(
         self, monkeypatch
     ):

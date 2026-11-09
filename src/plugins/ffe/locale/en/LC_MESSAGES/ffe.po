@@ -239,7 +239,7 @@ msgstr ""
 msgid "FFE estimate"
 msgstr ""
 
-msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz"
+msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz. A player the FFE list gives another estimate keeps it: one their club asked for, or 1399 after losing a FIDE rating"
 msgstr ""
 
 msgid "FFE forms"
