@@ -18,6 +18,7 @@
 - In the settings of the application window, the fields all have the same width, and the labels of the checkboxes line up with the labels of the other fields (5.2.2)
 - The plugins section follows the plugins enabled or disabled elsewhere, such as by importing an event that needs one, and the browser windows on the computer running _Sharly Chess_ follow the administration theme chosen in the application window, neither needing to be refreshed (5.2.2)
 - The lists of events follow the plugins installed or uninstalled, so that an event that needs a plugin can be opened as soon as the plugin is installed, without refreshing the page (5.2.4)
+- In every list that can be reordered by dragging, the place a dragged item will land is shown as an empty slot, instead of a second copy of the item (5.2.4)
 
 ## Tournaments
 
@@ -42,6 +43,13 @@
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
 - The player search of the player form works again when a tournament is restricted to a club whose name contains an apostrophe (5.2.3)
 - The Update button of the local FIDE database rebuilds it, instead of doing nothing when FIDE had not published a newer list since the copy was installed (5.2.4)
+
+## Teams
+
+- The teams tab has a search field that finds the teams by their name, affiliation, federation, captain or roster players; the search is kept while the tab is redrawn, after a team is dragged for instance (5.2.4)
+- A team with no captain shows a warning, and all of a team's warnings are gathered behind a single warning sign, whose tooltip lists them one per line (5.2.4)
+- A team being dragged is shown as a solid card or row, with no tooltips opening under the mouse, and the place it will land is shown as an empty slot (5.2.4)
+- The team lists of the player form and the pairings ignore case and accents when sorting the teams by name (5.2.4)
 
 ## Pairings
 
@@ -79,6 +87,7 @@
 - A new rating achievement certificate states the highest intermediate FIDE rating a player reached during the tournament, game by game; it is signed by the chief arbiter of the tournament or by the arbiter chosen, and its text can be edited before printing (5.2.0)
 - The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
 - The statistics document downloaded as a PDF file shows the count at the end of each bar (5.2.4)
+- The team selector of the documents lists the teams by name instead of in pairing order (5.2.4)
 
 ## Screens
 
