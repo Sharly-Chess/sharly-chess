@@ -1,0 +1,26 @@
+{% if tournament.started %}
+    {% include '/user/screen/sets/boards_set_title.html' %}
+    {% if tournament.is_team_tournament and tournament.pairing_system.paired_by_team %}
+        {% set show_points = not tournament.hide_team_block_points %}
+        {% for matches in screen_set.team_matches_lists %}
+            {% for team_board in matches %}
+                {% if team_board.boards|map(attribute='identifier')|select('in', live_board_ids)|list %}
+                    {% if data.hide_players %}
+                        {% include '/user/screen/sets/team_match_row.html' %}
+                    {% else %}
+                        {% include '/user/screen/sets/team_match_block.html' %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% else %}
+        {% set board_columns = columns_by_tournament_id[tournament.id] %}
+        {% set show_real_points = tournament.print_real_points() %}
+        {% for board in screen_set.boards_lists | sum(start=[]) if board.identifier in live_board_ids %}
+            {% include '/user/screen/sets/board_row.html' %}
+            {% if screen.accepts_input %}
+                {% include '/user/screen/sets/input_card.html' %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endif %}

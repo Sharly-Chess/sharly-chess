@@ -1,0 +1,13 @@
+{% set details %}
+    {%- if tournament.current_round -%}
+        {%- set current_round = tournament.current_round -%}
+        {%- set remaining = tournament.boards_without_result(current_round)|length -%}
+        {{ _('Round %(round)d', round=current_round) }} ·
+        {% if remaining -%}
+            {{ ngettext('%(remaining)d game in progress', '%(remaining)d games in progress', remaining, remaining=remaining) }}
+        {%- else -%}
+            {{ _('finished') }}
+        {%- endif -%}
+    {%- endif -%}
+{% endset %}
+{{ screen_macros.set_title(screen_set.name_for_boards, details, live_key=none if tournament.is_fake else 'set-' ~ set_index ~ '-title') }}

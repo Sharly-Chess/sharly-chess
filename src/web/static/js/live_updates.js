@@ -410,7 +410,7 @@ function openScreenSocket(reconnecting) {
     socket.addEventListener('open', () => {
         screenSocketRetryDelay = 1000;
         if (reconnecting) {
-            document.body.dispatchEvent(new CustomEvent('ws:reconnected'));
+            document.body.dispatchEvent(new CustomEvent('screen-refresh'));
         }
     });
     socket.addEventListener('message', (message) => dispatchWsMessage(message.data));
@@ -425,3 +425,124 @@ function openScreenSocket(reconnecting) {
 }
 
 htmx.onLoad(syncScreenSocket);
+
+// The requests a screen makes by itself to stay up to date leave the messages
+// of the session to the page that the user acts on.
+document.addEventListener('htmx:configRequest', (event) => {
+    if (event.detail.elt.classList?.contains('refresher')) {
+        event.detail.headers['X-Sharly-Chess-Refresh'] = 'true';
+    }
+});
+
+// A screen that knows which of its elements a result brings asks the server for
+// those only, and puts them in place of the ones it shows. Any other change
+// refreshes the whole screen, which the server answers with "not modified" when
+// the change does not concern it.
+let screenLiveBoardIds = new Set();
+let screenLivePlayerIds = new Set();
+let screenLiveRefresh = false;
+let screenLiveTimer = null;
+let screenLiveEvents = [];
+
+function scheduleScreenLiveUpdate(delay) {
+    clearTimeout(screenLiveTimer);
+    screenLiveTimer = setTimeout(runScreenLiveUpdate, delay);
+}
+
+function onScreenLiveMessage(event) {
+    const source = document.getElementById('screen-live-update');
+    const rowEvents = source?.dataset.rowEvents ? source.dataset.rowEvents.split(' ') : [];
+    const boardIds = event.detail?.board_ids;
+    const playerIds = event.detail?.player_ids;
+    if (rowEvents.includes(event.type) && (Array.isArray(boardIds) || Array.isArray(playerIds))) {
+        (boardIds || []).forEach((id) => screenLiveBoardIds.add(id));
+        (playerIds || []).forEach((id) => screenLivePlayerIds.add(id));
+    } else {
+        screenLiveRefresh = true;
+    }
+    scheduleScreenLiveUpdate(LIVE_UPDATE_DELAY);
+}
+
+function clearScreenLiveChanges() {
+    screenLiveBoardIds = new Set();
+    screenLivePlayerIds = new Set();
+    screenLiveRefresh = false;
+}
+
+async function runScreenLiveUpdate() {
+    const source = document.getElementById('screen-live-update');
+    if (!source) {
+        clearScreenLiveChanges();
+        return;
+    }
+    if (!modalIsClosed() || document.querySelector('.htmx-request')) {
+        scheduleScreenLiveUpdate(LIVE_UPDATE_RETRY_DELAY);
+        return;
+    }
+    if (screenLiveRefresh || !source.dataset.url) {
+        clearScreenLiveChanges();
+        document.body.dispatchEvent(new CustomEvent('screen-refresh'));
+        return;
+    }
+    const boardIds = [...screenLiveBoardIds];
+    const playerIds = [...screenLivePlayerIds];
+    clearScreenLiveChanges();
+    if (!boardIds.length && !playerIds.length) {
+        return;
+    }
+    let html;
+    try {
+        const response = await fetch(source.dataset.url, {
+            headers: {
+                'HX-Request': 'true',
+                'X-Sharly-Chess-Live-Update': JSON.stringify({board_ids: boardIds, player_ids: playerIds}),
+            },
+        });
+        if (!response.ok) {
+            return;
+        }
+        html = await response.text();
+    } catch (error) {
+        console.warn('Live update failed', error);
+        return;
+    }
+    // The screen may have moved on while the request was out.
+    if (document.getElementById('screen-live-update') !== source) {
+        return;
+    }
+    if (!modalIsClosed()) {
+        boardIds.forEach((id) => screenLiveBoardIds.add(id));
+        playerIds.forEach((id) => screenLivePlayerIds.add(id));
+        scheduleScreenLiveUpdate(LIVE_UPDATE_RETRY_DELAY);
+        return;
+    }
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    const received = template.content.querySelector('[data-screen]');
+    if (received?.dataset.screen !== source.dataset.screen) {
+        return;
+    }
+    received.querySelectorAll('[data-live-key]').forEach((element) => {
+        const shown = document.querySelector(`[data-live-key="${CSS.escape(element.dataset.liveKey)}"]`);
+        if (!shown || shown.outerHTML === element.outerHTML) {
+            return;
+        }
+        const changed = shown.textContent.replace(/\s+/g, ' ') !== element.textContent.replace(/\s+/g, ' ');
+        shown.replaceWith(element);
+        htmx.process(element);
+        if (changed && !element.matches('.set-title')) {
+            flashLiveUpdated([element]);
+        }
+    });
+}
+
+htmx.onLoad(function () {
+    const source = document.getElementById('screen-live-update');
+    const events = source?.dataset.events ? source.dataset.events.split(' ') : [];
+    if (events.join() === screenLiveEvents.join()) {
+        return;
+    }
+    screenLiveEvents.forEach((name) => document.body.removeEventListener(name, onScreenLiveMessage));
+    screenLiveEvents = events;
+    screenLiveEvents.forEach((name) => document.body.addEventListener(name, onScreenLiveMessage));
+});

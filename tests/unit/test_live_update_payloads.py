@@ -8,6 +8,7 @@ import pytest
 from litestar.channels import ChannelsPlugin
 
 from data.board import Board
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
@@ -65,6 +66,27 @@ def test_a_result_names_its_boards_and_their_players() -> None:
         cast(ChannelsPlugin, channels), 'open', 3, 2, boards
     )
     detail = {'board_ids': [7, 9], 'player_ids': [2, 5, 8]}
+    assert channels.messages == [
+        {'event': 'new-user-results|open|3|2', 'data': {'detail': detail}},
+        {'event': 'new-user-results|open', 'data': {'detail': detail}},
+    ]
+
+
+@pytest.mark.unit
+def test_an_illegal_move_names_the_board_of_its_player() -> None:
+    channels = _Channels()
+    board = SimpleNamespace(identifier=9, white_player_id=5, black_player_id=2)
+    tournament = cast(
+        Tournament,
+        SimpleNamespace(id=3, current_round=2, event=SimpleNamespace(uniq_id='open')),
+    )
+    tournament_player = cast(
+        TournamentPlayer, SimpleNamespace(pairings={2: SimpleNamespace(board=board)})
+    )
+    PairingsAdminController.publish_illegal_moves(
+        cast(ChannelsPlugin, channels), tournament, tournament_player
+    )
+    detail = {'board_ids': [9], 'player_ids': [2, 5]}
     assert channels.messages == [
         {'event': 'new-user-results|open|3|2', 'data': {'detail': detail}},
         {'event': 'new-user-results|open', 'data': {'detail': detail}},

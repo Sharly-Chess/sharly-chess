@@ -26,6 +26,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.channels import mark_screens_change_announced, publish_ws_event
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
@@ -339,6 +340,18 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_base_event_render(template_context)
 
+    @staticmethod
+    def _announce_display_controller_update(
+        event_uniq_id: str, display_controller_id: int
+    ) -> None:
+        """Tells the device of the channel that what it shows has changed, the
+        other screens having nothing to draw again."""
+        mark_screens_change_announced(event_uniq_id)
+        publish_ws_event(
+            f'display-controller-updated|{event_uniq_id}|{display_controller_id}',
+            event_uniq_id=event_uniq_id,
+        )
+
     @get(
         path='/event/{event_uniq_id:str}/display_controllers',
         name='admin-event-display-controllers-tab',
@@ -516,6 +529,10 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
+        if action != 'create' and display_controller_id is not None:
+            self._announce_display_controller_update(
+                event.uniq_id, display_controller_id
+            )
 
         return self._admin_event_display_controllers_render(request, reload_event=True)
 
@@ -669,6 +686,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
             event_database.update_stored_display_controller(
                 web_context.admin_display_controller.stored_display_controller
             )
+        self._announce_display_controller_update(
+            web_context.admin_event.uniq_id, web_context.admin_display_controller.id
+        )
 
         Message.success(request, message)
         return HTMXTemplate(
@@ -701,5 +721,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
             event_database.update_stored_display_controller(
                 web_context.admin_display_controller.stored_display_controller
             )
+        self._announce_display_controller_update(
+            web_context.admin_event.uniq_id, web_context.admin_display_controller.id
+        )
 
         return self._admin_event_display_controllers_render(request, reload_event=True)

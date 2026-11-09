@@ -1,0 +1,13 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/user/screen/sets/set_title.j2' as screen_macros %}
+{% set screen_type = screen.screen_type %}
+<div data-screen="{{ screen.uniq_id }}">
+    {% for screen_set in screen.sorted_screen_sets %}
+        {% set tournament = screen_set.tournament %}
+        {% set set_index = loop.index %}
+        {% if not tournament.is_fake %}
+            {% set data = screen_type.set_context(screen_set) %}
+            {% include screen_type.live_update_template %}
+        {% endif %}
+    {% endfor %}
+</div>
