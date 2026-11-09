@@ -61,6 +61,8 @@
 - The comment, email, phone, fixed board, _FIDE_ ID and national ID columns of the players tab can be shown even when no player has a value for them; they are then hidden by default (5.2.6)
 - A player found by the search who replaces another keeps the comment, email, phone, owed and paid amounts, fixed board and byes setting of the player replaced, instead of these being emptied (5.2.8)
 - A player withdrawn from the tournament after their game of the current round was paired, for instance once a forfeit has been entered, can be brought back with the Return to tournament button of their history, instead of being offered a withdrawal again (5.2.8)
+- The players tab follows the check-ins and results entered elsewhere, on another computer, a screen or the pairings tab, without being reloaded: the rows that change are updated in place and light up briefly, and a player who no longer matches the filters leaves the table, so that the list of the players not yet checked in shrinks as they arrive. A player checked in from the tab keeps their row while its countdown runs (5.3.0)
+- The rows of the players tab are lighter, so that long lists load faster (5.3.0)
 
 ## Teams
 
@@ -98,6 +100,7 @@
 - In team Swiss tournaments, a round where many teams at the top of the standings may not meet one another, such as the third round of the _FFE_ cups when many teams have won both of their first two matches, is paired at once instead of never finishing (5.2.6)
 - The Log and Prohibited buttons keep the height of the other pairing buttons when they show a count, instead of growing out of line with them (5.2.8)
 - A round robin played to the end without publishing its rounds, as happens when it is neither shown on screens nor sent to online services, is finished and shows its final rankings, instead of staying at the first round until its rounds are published (5.2.9)
+- The pairings tab follows the results and check-ins entered elsewhere without being reloaded: the boards whose result changes are updated in place and light up briefly, the players and teams checked in move between the lists, and the button to the next round appears once the round is finished. Nothing changes while the arbiter is typing, choosing, dragging or has a window open: the update waits until they have finished (5.3.0)
 
 ## Prizes
 
@@ -138,6 +141,8 @@
 - Adding, replacing or removing the image of an image screen gives back the space the previous images took in the event file, which kept it as large as when its biggest images were stored (5.2.7)
 - On an input screen shown through a display controller, tapping a game opens the result window of that game, instead of sometimes opening the window of another board of the round, such as board 1 for board 25 (5.2.8)
 - The illegal moves recorded on an input screen are shown only to the staff allowed to record them, instead of to every player reading the screen (5.2.8)
+- The screens follow the changes as they happen rather than every ten seconds: a result updates only the games and players it concerns on the pairings, result entry, players and check-in screens, the rankings are drawn again at once, and a change to a screen, such as its font size, shows straight away, as does what is sent to a channel, even one going through several screens (5.3.0)
+- A screen is drawn again only when something it shows has changed: a player withdrawn from another tournament no longer redraws every screen of the event (5.3.0)
 
 ## __Sharly-Chess.com__
 

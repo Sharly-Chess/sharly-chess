@@ -272,7 +272,9 @@ class InputUserController(BaseScreenUserController):
         except ValueError:
             raise ClientException(f'Invalid shown value [{shown}].') from None
 
-    def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
+    def _delete_or_add_illegal_move(
+        self, request: HTMXRequest, channels: ChannelsPlugin, add: bool
+    ) -> Template:
         web_context = PlayerUserWebContext(request)
         web_context.require_input(results=True)
         tournament = web_context.tournament
@@ -290,16 +292,17 @@ class InputUserController(BaseScreenUserController):
             expiration=time.time() + 20,
         )
         if add:
-            tournament.store_illegal_move(player)
-            session_handler.set(last_player_updated)
+            changed = tournament.store_illegal_move(player)
         else:
-            if not tournament.delete_illegal_move(player):
+            changed = tournament.delete_illegal_move(player)
+            if not changed:
                 Message.error(
                     request,
                     f'Player [{player.id}] has no illegal move recorded.',
                 )
-            else:
-                session_handler.set(last_player_updated)
+        if changed:
+            session_handler.set(last_player_updated)
+            PairingsAdminController.publish_illegal_moves(channels, tournament, player)
         return self._user_screen_render(web_context)
 
     @put(
@@ -313,8 +316,10 @@ class InputUserController(BaseScreenUserController):
         guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
     )
-    async def htmx_user_add_illegal_move(self, request: HTMXRequest) -> Template:
-        return self._delete_or_add_illegal_move(request, add=True)
+    async def htmx_user_add_illegal_move(
+        self, request: HTMXRequest, channels: NamedDependency[ChannelsPlugin]
+    ) -> Template:
+        return self._delete_or_add_illegal_move(request, channels, add=True)
 
     @delete(
         path=[
@@ -327,8 +332,10 @@ class InputUserController(BaseScreenUserController):
         guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
     )
-    async def htmx_user_delete_illegal_move(self, request: HTMXRequest) -> Template:
-        return self._delete_or_add_illegal_move(request, add=False)
+    async def htmx_user_delete_illegal_move(
+        self, request: HTMXRequest, channels: NamedDependency[ChannelsPlugin]
+    ) -> Template:
+        return self._delete_or_add_illegal_move(request, channels, add=False)
 
     @get(
         path=[

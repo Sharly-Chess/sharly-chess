@@ -1,0 +1,3 @@
+<div {% if not tournament.is_fake %}data-live-key="player-{{ player.id }}" {% endif %}class="player-row">
+    {% include '/user/screen/sets/player_row_player_cell.html' %}
+</div>

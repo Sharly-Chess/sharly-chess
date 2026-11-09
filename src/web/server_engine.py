@@ -32,7 +32,7 @@ from data.input_output import DataSourceManager
 from data.snapshot_worker import SnapshotScheduler
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from utils.instance_lock import InstanceLock
-from web.channels import channels_plugin
+from web.channels import bind_server_loop, channels_plugin
 from web.garbage_collection import RequestGarbageCollectionMiddleware
 from web.performance import PerformanceMiddleware
 from web.settings import (
@@ -212,7 +212,10 @@ class ServerEngine:
             listeners=listeners,
             # Installing a database holds the processor for as long as its
             # conversion takes, so it only begins once the server answers.
-            on_startup=[lambda _: LocalSourceDatabaseManager().start_checking()],
+            on_startup=[
+                lambda _: bind_server_loop(),
+                lambda _: LocalSourceDatabaseManager().start_checking(),
+            ],
         )
 
     async def serve(self) -> None:

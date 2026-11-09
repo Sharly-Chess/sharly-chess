@@ -3,7 +3,7 @@ import itertools
 import time
 from collections import defaultdict
 from contextlib import suppress
-from datetime import date, datetime
+from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -551,10 +551,6 @@ class Event:
     @cached_property
     def public_sorted_rotators(self) -> list[Rotator]:
         return [rotator for rotator in self.sorted_rotators if rotator.public]
-
-    @property
-    def last_update(self) -> datetime:
-        return EventDatabase.database_modified_at(self.uniq_id)
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:

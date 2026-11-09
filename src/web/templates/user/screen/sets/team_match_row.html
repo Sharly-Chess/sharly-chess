@@ -1,0 +1,18 @@
+<div {% if not tournament.is_fake %}data-live-key="team-board-{{ team_board.id }}-row" {% endif %}class="board-row {% if team_board.team_b and not team_board.all_games_played %}result-not-set fw-bold{% else %}result-set{% endif %}">
+    <div class="text-end">{{ team_board.display_number or '' }}</div>
+    {% if show_points %}
+        <div class="text-center">{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_a.id, team_board.round)) }}</div>
+    {% endif %}
+    <div class="text-start text-nowrap overflow-hidden text-ellipsis">{{ team_board.team_a.name }}</div>
+    <div class="text-center text-nowrap px-2">{{ team_board.game_score_display }}</div>
+    <div class="text-start text-nowrap overflow-hidden text-ellipsis">
+        {% if team_board.team_b %}
+            {{ team_board.team_b.name }}
+        {% else %}
+            <span class="fst-italic text-muted">{{ _('Bye') }}</span>
+        {% endif %}
+    </div>
+    {% if show_points %}
+        <div class="text-center">{% if team_board.team_b %}{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_b.id, team_board.round)) }}{% endif %}</div>
+    {% endif %}
+</div>

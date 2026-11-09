@@ -22,9 +22,7 @@
                         {{ _('Player / Elo') }}
                     </div>
                     {% for player in players_by_name %}
-                        <div class="player-row">
-                            {% include 'player_row_player_cell.html' %}
-                        </div>
+                        {% include '/user/screen/sets/check_in_row.html' %}
                     {% endfor %}
                 </div>
             </div>

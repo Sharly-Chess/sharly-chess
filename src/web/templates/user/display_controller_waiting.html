@@ -13,13 +13,18 @@
         {% set becomes_visible = "visibilitychange[" ~ refresh_conditions ~ "] from:document," if not DEVEL_ENV else '' %}
         {% if not request.query_params.get('preview') %}
             <div
+                id="screen-live-update"
+                class="d-none"
+                data-ws-url="{{ url_for('ws-event-screens', event_uniq_id=user_event.uniq_id) }}"
+            ></div>
+            <div
                 class="refresher display-controller-refresher"
                 hx-get="{{ url_for(
                     'user-display-controller',
                     event_uniq_id=user_event.uniq_id,
                     display_controller_id=display_controller.id,
                 ) }}"
-                hx-trigger="{{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
+                hx-trigger="ws:display-controller-updated|{{ user_event.uniq_id }}|{{ display_controller.id }}[{{ refresh_conditions }}] from:body, screen-refresh[{{ refresh_conditions }}] from:body, {{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
                 hx-target="body"
             ></div>
         {% endif %}

@@ -8,19 +8,7 @@
     </div>
 {% else %}
 <div class="boards-set">
-    {% set details %}
-        {%- if tournament.current_round -%}
-            {%- set current_round = tournament.current_round -%}
-            {%- set remaining = tournament.boards_without_result(current_round)|length -%}
-            {{ _('Round %(round)d', round=current_round) }} ·
-            {% if remaining -%}
-                {{ ngettext('%(remaining)d game in progress', '%(remaining)d games in progress', remaining, remaining=remaining) }}
-            {%- else -%}
-                {{ _('finished') }}
-            {%- endif -%}
-        {%- endif -%}
-    {% endset %}
-    {{ screen_macros.set_title(screen_set.name_for_boards, details) }}
+    {% include '/user/screen/sets/boards_set_title.html' %}
     {% set board_columns = columns_by_tournament_id[tournament.id] %}
     {# Match blocks only exist for team-vs-team pairing systems; flat
        fixed-table systems (e.g. Molter) render the individual board
@@ -42,63 +30,7 @@
                     {% endfor %}
 
                     {% for board in boards %}
-                        {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
-                        {% set editable =
-                            (screen.accepts_input and not tournament.is_fake)
-                            and board.black_tournament_player
-                            and (
-                                client.can_update_results(tournament.id)
-                                or
-                                (not board.result_str and client.can_enter_results(tournament.id))
-                            )
-                        %}
-                        {% if editable %}
-                            {% set result_url = url_for(
-                                'user-result-modal',
-                                event_uniq_id=user_event.uniq_id,
-                                display_controller_id=display_controller.id,
-                                tournament_id=tournament.id,
-                                board_id=board.identifier
-                            ) ~ display_controller_query if display_controller else url_for(
-                                'user-result-modal',
-                                is_screen=1,
-                                event_uniq_id=user_event.uniq_id,
-                                screen_uniq_id=screen.uniq_id,
-                                tournament_id=tournament.id,
-                                board_id=board.identifier
-                            ) ~ menu_query %}
-                        {% endif %}
-                        <div
-                            id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
-                            class="
-                                board-row
-                                {% if editable %}editable{% endif %}
-                                {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
-                                {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
-                                {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
-                            {% if editable %}
-                                hx-get="{{ result_url }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                            {% endif %}
-                        >
-                            {% for column in board_columns %}
-                                {% set cell_classes = column.get_cell_classes(board) %}
-                                <div class="{{ cell_classes }}">
-                                    {% if column.cell_template %}
-                                        {% include column.cell_template %}
-                                    {% elif editable and not board.result_str and 'score' in cell_classes.split() %}
-                                        <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
-                                        <span class="visually-hidden">{{ macros.column_cell(column, board) }}</span>
-                                    {% else %}
-                                        {{ macros.column_cell(column, board) }}
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                        {% endwith %}
+                        {% include '/user/screen/sets/board_row.html' %}
                     {% endfor %}
                 </div>
             </div>
