@@ -10019,6 +10019,9 @@ msgstr "Nom de l’équipe"
 msgid "Team opponents' records"
 msgstr "Historique des équipes rencontrées"
 
+msgid "Team or player"
+msgstr "Équipe ou joueur·euse"
+
 #, python-format
 msgid "Team pairing information for round %(round)d"
 msgstr "Informations d’appariement des équipes pour la ronde %(round)d"

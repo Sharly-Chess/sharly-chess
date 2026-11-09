@@ -100,7 +100,8 @@
                     hx_get=url_for('admin-event-teams-search', event_uniq_id=admin_event.uniq_id),
                     hx_trigger='input changed delay:0.5s, paste delay:0.1s, search',
                     hx_swap='none',
-                    placeholder=_('Search by: %(fields)s', fields=', '.join([
+                    placeholder=_('Team or player'),
+                    input_tooltip=_('Search by: %(fields)s', fields=', '.join([
                         _('Name'),
                         _('Affiliation'),
                         _('Federation'),

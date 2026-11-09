@@ -10017,6 +10017,9 @@ msgstr ""
 msgid "Team opponents' records"
 msgstr ""
 
+msgid "Team or player"
+msgstr ""
+
 #, python-format
 msgid "Team pairing information for round %(round)d"
 msgstr ""
