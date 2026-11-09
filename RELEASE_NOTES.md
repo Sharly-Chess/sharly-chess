@@ -29,7 +29,7 @@
 - Allowing more than one half-point bye per player asks for confirmation in FIDE mode (5.2.0)
 - After a TRF import, each imported round is checked against the pairing engine, and the rounds that differ are listed and logged (5.2.0)
 - The TRF export is named after its use: _TRF26 (ITDX)_ for a partial file while the tournament is not finished or games have no result, where those games are unknown results; _TRF26 (final)_ for the final report, which alone carries the corrections made for the rating report (5.2.0)
-- A new _PGN (all rounds)_ export gives the games of every paired round in a single file, and both PGN exports now carry the results of the games, forfeits included, with the round dates, the players' FIDE IDs and teams, and the time control (5.2.0)
+- A new _PGN (all rounds)_ export gives the games of every paired round in a single file, and both PGN exports now carry the results of the games, forfeits included, with the round dates, the players' _FIDE_ IDs and teams, and the time control (5.2.0)
 - Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
 - On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
@@ -38,11 +38,11 @@
 
 - Players' names are stored as entered; first names written all in capitals or all in lower case are displayed capitalised (5.2.0)
 - The players tab is sorted by the name displayed first (5.2.0)
-- Players can be marked as not eligible for byes (FIDE C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
+- Players can be marked as not eligible for byes (_FIDE_ C.05:6.7.4): no Half-Point Bye can then be assigned to them (5.2.0)
 - The fees and payments of the registrations on _Sharly-Chess.com_ are imported into the players' owed and paid amounts when synchronising; payments recorded in _Sharly Chess_ are kept until they change on _Sharly-Chess.com_ (5.2.0)
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
 - The player search of the player form works again when a tournament is restricted to a club whose name contains an apostrophe (5.2.3)
-- The Update button of the local FIDE database rebuilds it, instead of doing nothing when FIDE had not published a newer list since the copy was installed (5.2.4)
+- The Update button of the local _FIDE_ database rebuilds it, instead of doing nothing when _FIDE_ had not published a newer list since the copy was installed (5.2.4)
 
 ## Teams
 
