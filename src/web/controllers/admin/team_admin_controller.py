@@ -5,8 +5,8 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
 from litestar.params import Body, FromQuery, FromPath
 from litestar.plugins.htmx import HTMXRequest
-from litestar.response import Template
-from litestar.status_codes import HTTP_200_OK
+from litestar.response import Response, Template
+from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _, ngettext, pgettext
@@ -32,6 +32,7 @@ from web.guards import ActionGuard, EventGuard, SetByeGuard
 from web.messages import Message
 from web.session import (
     SessionTeamsAddOtherActive,
+    SessionTeamsSearch,
     SessionTeamsShowLineup,
     SessionTeamsShowRoster,
 )
@@ -71,6 +72,7 @@ class TeamAdminWebContext(BaseEventAdminWebContext):
             'admin_team': self.admin_team,
             'show_roster': SessionTeamsShowRoster(self.request).get(),
             'show_lineup': SessionTeamsShowLineup(self.request).get(),
+            'search': SessionTeamsSearch(self.request, event).get(),
             'team_sort_modes': list(TeamSortMode),
         }
 
@@ -213,6 +215,19 @@ class TeamAdminController(BaseEventAdminController):
         if show_lineup is not None:
             SessionTeamsShowLineup(request).set(show_lineup)
         return self._admin_event_teams_render(TeamAdminWebContext(request))
+
+    @get(
+        path='/event/{event_uniq_id:str}/teams/search',
+        name='admin-event-teams-search',
+    )
+    async def htmx_admin_event_teams_search(
+        self,
+        request: HTMXRequest,
+        search: FromQuery[str | None] = None,
+    ) -> Response[None]:
+        event = TeamAdminWebContext(request).get_admin_event()
+        SessionTeamsSearch(request, event).set(search or None)
+        return Response(status_code=HTTP_204_NO_CONTENT, content=None)
 
     # -------------------------------------------------------------------------
     # Modals

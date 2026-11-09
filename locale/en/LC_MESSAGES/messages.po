@@ -23,6 +23,12 @@ msgid "%(bye)s at round %(round)d"
 msgstr ""
 
 #, python-format
+msgid "%(count)d issue"
+msgid_plural "%(count)d issues"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(count)d player"
 msgid_plural "%(count)d players"
 msgstr[0] ""
@@ -6227,6 +6233,12 @@ msgstr ""
 msgid "No built-in templates."
 msgstr ""
 
+msgid "No captain"
+msgstr ""
+
+msgid "No captain is set for this team."
+msgstr ""
+
 msgid "No competitors are available. Add a valid source tournament first."
 msgstr ""
 
@@ -10003,6 +10015,9 @@ msgid "Team name"
 msgstr ""
 
 msgid "Team opponents' records"
+msgstr ""
+
+msgid "Team or player"
 msgstr ""
 
 #, python-format

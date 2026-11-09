@@ -890,6 +890,16 @@ body[data-sc-interface=admin] .htmx-indicator {
     --bs-tooltip-font-size: .85rem;
 }
 
+.tooltip-inner .tooltip-list {
+    margin: .25rem 0 0;
+    padding-left: 1.1rem;
+    text-align: start;
+}
+
+.tooltip-inner .tooltip-list > li + li {
+    margin-top: .25rem;
+}
+
 /* The tooltip is dark in both themes: its icon is a dimmer shade of its own
    text. */
 [data-sc-interface=admin] .sharly-chess-tooltip-info .tooltip-inner > i:first-child {
@@ -969,6 +979,59 @@ body[data-sc-interface=admin] .htmx-indicator {
     min-width: 0;
     margin-top: 0;
     padding: 0;
+}
+
+.collection-item.collection-item-filtered-out,
+.admin-collection-cards > .collection-item.collection-item-filtered-out {
+    display: none !important;
+}
+
+.sortable-ghost {
+    position: relative;
+}
+
+.sortable-ghost > * {
+    visibility: hidden;
+}
+
+.sortable-ghost::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px dashed var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.sortable-dragging .tooltip {
+    display: none !important;
+}
+
+.team-drag-fallback {
+    opacity: 1 !important;
+    background-color: var(--bs-body-bg);
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow);
+}
+
+.admin-collection-cards > .collection-item.team-drag-fallback {
+    display: block !important;
+}
+
+.admin-collection-cards > .collection-item.team-drag-fallback > .collection-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.collection-list-item.team-drag-fallback {
+    grid-template-columns: var(--collection-list-columns);
+}
+
+[data-sc-interface=admin] .collection-list-item.team-drag-fallback {
+    background: var(--pw-surface-bg, var(--bs-body-bg));
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
 }
 
 .admin-collection-cards > .collection-item > .collection-card {
@@ -2970,8 +3033,7 @@ table.prominent tr.flat-pair-selected > th {
 }
 
 
-[data-sc-interface=admin] table.prominent tr.sortable-chosen,
-[data-sc-interface=admin] table.prominent tr.sortable-ghost {
+[data-sc-interface=admin] table.prominent tr.sortable-chosen {
   background-color: var(--bs-body-bg) !important;
 }
 
