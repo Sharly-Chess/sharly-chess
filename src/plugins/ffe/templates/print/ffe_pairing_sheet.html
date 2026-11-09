@@ -165,7 +165,6 @@
         }
     </style>
 
-    {% set show_standings=tournament.is_round_finished(1) %}
     {% for team in teams %}
         <form class="fiche-fiche">
             <div class="fiche-header">
@@ -301,7 +300,7 @@
                 <tr>
                     <td colspan="3"></td>
                     <td colspan="3" class="classement">Classement final</td>
-                    <td colspan="4" class="classement"><input value="{% if show_standings %}{{ team.classement }}{% endif %}"/></td>
+                    <td colspan="4" class="classement"><input value="{{ team.classement }}"/></td>
                 </tr>
             </table>
 

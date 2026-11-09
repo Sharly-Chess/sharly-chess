@@ -305,7 +305,7 @@ class FfePairingSheetDocument(PrintDocument):
         team_boards_by_round = tournament.team_boards_by_round
         rank_by_team_id = (
             {row.team.id: row.rank for row in tournament.team_standings()}
-            if tournament.started
+            if tournament.is_round_finished(1)
             else {}
         )
         return {
