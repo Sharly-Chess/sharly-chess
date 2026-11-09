@@ -1014,6 +1014,12 @@ body[data-sc-interface=admin] .htmx-indicator {
     grid-template-columns: var(--collection-list-columns);
 }
 
+[data-sc-interface=admin] .collection-list-item.team-drag-fallback {
+    background: var(--pw-surface-bg, var(--bs-body-bg));
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+}
+
 .admin-collection-cards > .collection-item > .collection-card {
     display: grid;
     grid-row: 1 / -1;
