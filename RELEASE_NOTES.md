@@ -41,6 +41,7 @@
 - The fees and payments of the registrations on _Sharly-Chess.com_ are imported into the players' owed and paid amounts when synchronising; payments recorded in _Sharly Chess_ are kept until they change on _Sharly-Chess.com_ (5.2.0)
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
 - The player search of the player form works again when a tournament is restricted to a club whose name contains an apostrophe (5.2.3)
+- The Update button of the local FIDE database rebuilds it, instead of doing nothing when FIDE had not published a newer list since the copy was installed (5.2.4)
 
 ## Pairings
 
