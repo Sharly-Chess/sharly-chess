@@ -408,7 +408,7 @@ msgid "1.4.2c was applied: the last-round opponent forfeit was included in the m
 msgstr "1.4.2c a été appliqué : le forfait de l'adversaire à la dernière ronde a été inclus dans le panel et compté comme une défaite jouée. L'interprétation 1.4.1c par défaut (forfait exclu) est affichée à côté pour comparaison."
 
 msgid "1.4.2c: game not rated by FIDE — not counted."
-msgstr "1.4.2c : partie non comptabilisée pour le classement FIDE — non comptée."
+msgstr "1.4.2c : partie non comptabilisée pour le classement FIDE — non comptée."
 
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
@@ -954,7 +954,7 @@ msgid "Administration"
 msgstr "Administration"
 
 msgid "Administration theme:"
-msgstr "Thème de l'administration :"
+msgstr "Thème de l'administration :"
 
 msgid "Administrator"
 msgstr "Administrateur·ice"
@@ -1993,7 +1993,7 @@ msgid "Candidate"
 msgstr "Candidat·e"
 
 msgid "Candidate Master"
-msgstr "Candidat Maître"
+msgstr "Candidat·e Maître"
 
 msgid "Cannot have multiple arbiter roles on the same tournament."
 msgstr "Impossible d’avoir plusieurs rôles d’arbitre sur le même tournoi."
@@ -2416,7 +2416,7 @@ msgstr "Configurer les départages du tournoi."
 
 #, python-brace-format
 msgid "Confirm the new backups folder [{folder}]?"
-msgstr "Confirmer le nouveau dossier des sauvegardes [{folder}] ?"
+msgstr "Confirmer le nouveau dossier des sauvegardes [{folder}] ?"
 
 #, python-brace-format
 msgid "Confirm the new data folder [{folder}]?"
@@ -4334,7 +4334,7 @@ msgid "Forfeits played"
 msgstr "Forfaits joués"
 
 msgid "Form:"
-msgstr "Formulaire :"
+msgstr "Formulaire :"
 
 msgid "Format as schedule"
 msgstr "Afficher en calendrier"
@@ -4516,7 +4516,7 @@ msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 
 msgid "Go back to the default backups folder?"
-msgstr "Revenir au dossier des sauvegardes par défaut ?"
+msgstr "Revenir au dossier des sauvegardes par défaut ?"
 
 msgid "Go to the display controller."
 msgstr "Aller au pilote d'afficheur."
@@ -4979,10 +4979,10 @@ msgid "Installing…"
 msgstr "Installation…"
 
 msgid "International Arbiter"
-msgstr "Arbitre International"
+msgstr "Arbitre International·e"
 
 msgid "International Arbiter (IA1)"
-msgstr "Arbitre International (IA1)"
+msgstr "Arbitre International·e (AI1)"
 
 msgid "International Chess Federation"
 msgstr "Fédération internationale d'échecs"
@@ -6567,10 +6567,10 @@ msgid "No tie-break decides this tied match. Add the \"Manual\" tie-break to hol
 msgstr "Aucun départage ne tranche ce match à égalité. Ajoutez le départage « Manuel » pour organiser un barrage."
 
 msgid "No tie-break is set for this tournament: players on the same score will not be separated in the standings."
-msgstr "Aucun départage n'est défini pour ce tournoi : les joueur·euses à égalité de points ne seront pas départagé·es dans le classement."
+msgstr "Aucun départage n'est défini pour ce tournoi : les joueur·euses à égalité de points ne seront pas départagé·es dans le classement."
 
 msgid "No tie-break is set for this tournament: teams on the same score will not be separated in the standings."
-msgstr "Aucun départage n'est défini pour ce tournoi : les équipes à égalité de points ne seront pas départagées dans le classement."
+msgstr "Aucun départage n'est défini pour ce tournoi : les équipes à égalité de points ne seront pas départagées dans le classement."
 
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
@@ -12605,7 +12605,7 @@ msgid "Woman"
 msgstr "Femme"
 
 msgid "Woman Candidate Master"
-msgstr "Candidat Maître Féminin"
+msgstr "Candidate Maître Féminin"
 
 msgid "Woman Fide Master"
 msgstr "Maître Fide Féminin"
