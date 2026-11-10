@@ -119,3 +119,4 @@
 
 - The French schools database can be installed in the Linux Flatpak version (5.2.2)
 - The French schools database is no longer offered for installation from a file, and the other databases can be installed from a file of any size (5.2.2)
+- A school can be added to an event while the French schools database is not installed or is still downloading, by entering its name, city and postal code, instead of the add button staying disabled (5.2.6)
