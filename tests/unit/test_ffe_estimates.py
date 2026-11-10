@@ -4,7 +4,7 @@ import pytest
 
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.migrations.m010_prescribed_estimates import Migration
-from plugins.ffe.utils import ffe_list_ratings, is_ffe_estimate
+from plugins.ffe.utils import ffe_estimate_rating, ffe_list_ratings, is_ffe_estimate
 from utils.enum import Cadence, PlayerRatingType
 from utils.types import RatingOrigin
 
@@ -14,16 +14,17 @@ from utils.types import RatingOrigin
     'value, expected',
     [
         (799, True),
-        (999, True),
-        (1199, True),
-        (1299, True),
+        (1099, True),
         (1399, True),
-        (1499, False),
+        (1449, True),
+        (1749, True),
         (1300, False),
+        (1450, False),
+        (1643, False),
         (0, False),
     ],
 )
-def test_ffe_estimates_end_in_99_below_the_fide_floor(
+def test_ffe_estimates_go_by_steps_of_50_ending_in_49_or_99(
     value: int, expected: bool
 ) -> None:
     assert is_ffe_estimate(value) == expected
@@ -34,14 +35,19 @@ def test_ffe_estimates_end_in_99_below_the_fide_floor(
     'value, rating_type, expected',
     [
         (799, PlayerRatingType.NATIONAL, {}),
-        (1199, PlayerRatingType.NATIONAL, {}),
-        (1299, PlayerRatingType.ESTIMATED, {}),
+        (999, PlayerRatingType.NATIONAL, {}),
+        (799, PlayerRatingType.ESTIMATED, {}),
+        (1199, PlayerRatingType.NATIONAL, {'manual': 1199}),
+        (1399, PlayerRatingType.NATIONAL, {'manual': 1399}),
+        (1399, PlayerRatingType.ESTIMATED, {'manual': 1399}),
+        (1749, PlayerRatingType.NATIONAL, {'manual': 1749}),
+        (1500, PlayerRatingType.ESTIMATED, {'manual': 1500}),
         (860, PlayerRatingType.NATIONAL, {'national': 860}),
-        (1499, PlayerRatingType.NATIONAL, {'national': 1499}),
+        (1643, PlayerRatingType.NATIONAL, {'national': 1643}),
         (1399, PlayerRatingType.FIDE, {'fide': 1399}),
     ],
 )
-def test_the_estimates_of_the_ffe_list_are_left_out_however_typed(
+def test_the_ffe_list_estimates_are_kept_however_typed_but_outgrown_ones(
     value: int, rating_type: PlayerRatingType, expected: dict[str, int]
 ) -> None:
     ratings = ffe_list_ratings(
@@ -50,6 +56,26 @@ def test_the_estimates_of_the_ffe_list_are_left_out_however_typed(
     rating = ratings[Cadence.RAPID.value]
     rating.pop('origins', None)
     assert rating == expected
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'value, cadence, expected',
+    [
+        (1299, Cadence.STANDARD, {}),
+        (1399, Cadence.STANDARD, {'manual': 1399}),
+        (1499, Cadence.STANDARD, {'manual': 1499}),
+        (799, Cadence.RAPID, {}),
+        (999, Cadence.BLITZ, {}),
+        (1199, Cadence.BLITZ, {'manual': 1199}),
+        (1099, Cadence.RAPID, {'manual': 1099}),
+        (1399, Cadence.RAPID, {'manual': 1399}),
+    ],
+)
+def test_the_estimates_of_a_younger_category_are_left_to_the_age_rule(
+    value: int, cadence: Cadence, expected: dict[str, int]
+) -> None:
+    assert ffe_estimate_rating(value, cadence).stored_value == expected
 
 
 @pytest.mark.unit

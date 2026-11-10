@@ -244,8 +244,8 @@ msgstr "Numéro d'homologation :"
 msgid "FFE estimate"
 msgstr "Estimation FFE"
 
-msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz"
-msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz"
+msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz. A player the FFE list gives another estimate keeps it: one their club asked for, or 1399 after losing a FIDE rating"
+msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz. Un·e joueur·euse à qui la liste FFE donne une autre estimation la conserve : celle demandée par son club, ou 1399 après la perte d’un classement FIDE"
 
 msgid "FFE forms"
 msgstr "Formulaires FFE"
