@@ -88,6 +88,7 @@
 - The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
 - The statistics document downloaded as a PDF file shows the count at the end of each bar (5.2.4)
 - The team selector of the documents lists the teams by name instead of in pairing order (5.2.4)
+- On the standard team place card, the captain is printed under the team name instead of over the event name, and in the light admin view the previews of the place card templates are outlined so that the edges of the cards can be seen (5.2.5)
 
 ## Screens
 
