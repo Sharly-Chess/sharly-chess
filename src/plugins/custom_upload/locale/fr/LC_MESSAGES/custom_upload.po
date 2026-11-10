@@ -12,9 +12,9 @@ msgid ""
 "- documents uploaded on demand, or automatically as soon as the data of a tournament they cover changes;\n"
 "- the date of the last upload and the upload errors reported in the interface."
 msgstr ""
-"- un serveur configuré sur l’évènement (FTP, FTPS ou SFTP) ;\n"
-"- une liste de documents à téléverser, chacun couvrant tout l’évènement ou seulement certains de ses tournois ;\n"
-"- les documents téléversés à la demande, ou automatiquement dès que les données d’un tournoi qu’ils couvrent changent ;\n"
+"- un serveur configuré sur l’évènement (FTP, FTPS ou SFTP) ;\n"
+"- une liste de documents à téléverser, chacun couvrant tout l’évènement ou seulement certains de ses tournois ;\n"
+"- les documents téléversés à la demande, ou automatiquement dès que les données d’un tournoi qu’ils couvrent changent ;\n"
 "- la date du dernier téléversement et les erreurs de téléversement signalées dans l’interface."
 
 msgid "22 by default for SFTP, 21 for FTP/FTPS (optional)"
@@ -150,6 +150,9 @@ msgstr "Non configuré"
 msgid "Ongoing"
 msgstr "En cours"
 
+msgid "Only trust the server again if your hosting provider confirms that its key fingerprint is:"
+msgstr "Ne faites à nouveau confiance au serveur que si votre hébergeur confirme que l'empreinte de sa clé est :"
+
 msgid "Path does not exist or is inaccessible."
 msgstr "Le dossier n'existe pas ou est inaccessible."
 
@@ -169,7 +172,7 @@ msgid "Remove document"
 msgstr "Supprimer le document"
 
 msgid "Remove this document from the upload list?"
-msgstr "Supprimer ce document de la liste de mise en ligne ?"
+msgstr "Supprimer ce document de la liste de mise en ligne ?"
 
 msgid "SFTP (FTP over SSH)"
 msgstr "SFTP (FTP sur SSH)"
@@ -182,6 +185,19 @@ msgstr "Dossier sur le serveur"
 
 msgid "Status"
 msgstr "Status"
+
+#, python-brace-format
+msgid "The certificate of the server is not valid ({reason}): the identity of the server cannot be confirmed."
+msgstr "Le certificat du serveur n'est pas valide ({reason}) : l'identité du serveur ne peut pas être confirmée."
+
+msgid "The identity of this server has changed since you trusted it. This happens when the server is reinstalled or moved, but it can also mean that someone is impersonating it to steal your password."
+msgstr "L'identité de ce serveur a changé depuis que vous lui avez fait confiance. Cela arrive quand le serveur est réinstallé ou déplacé, mais cela peut aussi signifier que quelqu'un se fait passer pour lui afin de voler votre mot de passe."
+
+msgid "This server is not known yet. To make sure that no one is impersonating it to steal your password, check with your hosting provider that its key fingerprint is:"
+msgstr "Ce serveur n'est pas encore connu. Pour vous assurer que personne ne se fait passer pour lui afin de voler votre mot de passe, vérifiez auprès de votre hébergeur que l'empreinte de sa clé est :"
+
+msgid "Trust this server"
+msgstr "Faire confiance à ce serveur"
 
 msgid "Up to date"
 msgstr "À jour"
@@ -210,6 +226,9 @@ msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de pass
 
 msgid "target server path not found"
 msgstr "le dossier sur le serveur n'a pas pu être trouvé"
+
+msgid "the identity of the server is not confirmed, run the connection test of the upload settings"
+msgstr "l'identité du serveur n'est pas confirmée, lancez le test de connexion des paramètres de mise en ligne"
 
 msgid "to be configured"
 msgstr "à configurer"

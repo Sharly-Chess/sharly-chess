@@ -25,6 +25,7 @@ from plugins.custom_upload.custom_upload_status import (
     ConnectionFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
     PendingCustomUploadStatus,
+    UntrustedServerCustomUploadStatus,
 )
 from plugins.utils import PluginData
 from utils.date_time import format_datetime
@@ -231,6 +232,7 @@ class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus])
         return [
             AuthenticationFailureCustomUploadStatus,
             ConnectionFailureCustomUploadStatus,
+            UntrustedServerCustomUploadStatus,
             TargetLocationNotFoundCustomUploadStatus,
             UnexpectedFailureCustomUploadStatus,
         ]

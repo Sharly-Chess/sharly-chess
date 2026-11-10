@@ -25,6 +25,8 @@ dependencies = [
   # This can be pinned later due to security concerns
   "argon2-cffi",
   "babel ~= 2.18.0",
+  # Left unpinned to keep the certificate authorities up to date
+  "certifi",
   "chardet ~= 7.7.0",
   "chess ~= 1.11.2",
   "colorama ~= 0.4.6",

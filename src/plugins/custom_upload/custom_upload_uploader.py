@@ -1,6 +1,8 @@
 from typing import ClassVar
 import ftplib
 import os.path
+import socket
+import ssl
 import time
 from datetime import datetime, timedelta
 from ftplib import error_perm
@@ -8,10 +10,10 @@ from io import BytesIO
 from pathlib import PurePosixPath
 from threading import Thread, Timer
 
+import certifi
 import paramiko.client
 from paramiko.sftp_client import SFTPClient
 from paramiko.ssh_exception import (
-    BadHostKeyException,
     AuthenticationException,
     SSHException,
     NoValidConnectionsError,
@@ -28,10 +30,12 @@ from data.loader import EventLoader
 from plugins.custom_upload.custom_upload_status import (
     AuthenticationFailureCustomUploadStatus,
     ConnectionFailureCustomUploadStatus,
+    UntrustedServerCustomUploadStatus,
     UnexpectedFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
     FailureCustomUploadStatus,
 )
+from plugins.custom_upload.host_keys import SFTPHostKeys, UntrustedHostKeyError
 from plugins.custom_upload.utils import (
     ConfiguredDocument,
     CustomUploadUtils,
@@ -45,6 +49,32 @@ logger = get_logger()
 
 # Minimum delay, in minutes, between two automatic uploads of the same document.
 CUSTOM_UPLOAD_DELAY = 1
+
+
+class UntrustedCertificateError(ConnectionError):
+    """The FTPS server presented a certificate that could not be verified."""
+
+
+class VerifiedFTP_TLS(ftplib.FTP_TLS):
+    """An FTPS client that verifies the certificate of the server, and
+    resumes the TLS session of the control connection on the data connections,
+    which many servers require."""
+
+    def __init__(self) -> None:
+        context = ssl.create_default_context()
+        context.load_verify_locations(certifi.where())
+        super().__init__(context=context)
+
+    def ntransfercmd(
+        self, cmd: str, rest: int | str | None = None
+    ) -> tuple[socket.socket, int | None]:
+        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)
+        if self._prot_p:  # type: ignore[attr-defined]
+            assert isinstance(self.sock, ssl.SSLSocket)
+            conn = self.context.wrap_socket(
+                conn, server_hostname=self.host, session=self.sock.session
+            )
+        return conn, size
 
 
 class CustomUploadUploader:
@@ -108,15 +138,23 @@ class CustomUploadUploader:
         target_path: str,
         transfer_protocol: TransferProtocol,
         transfer_port: int,
+        accepted_host_key: str | None = None,
     ) -> None:
         """Connection attempt to the FTP/SFTP server.
         Throws ConnectionError exception if the connection doesn't succeed.
-        Throws FileNotFoundError exception if the target path can't be found."""
+        Throws FileNotFoundError exception if the target path can't be found.
+        Throws UntrustedHostKeyError if the SFTP server is not trusted; the key
+        it presented is trusted when passed back as ``accepted_host_key``."""
 
         match transfer_protocol:
             case TransferProtocol.SFTP:
                 cls._sftp_auth_check(
-                    host, username, password, transfer_port, target_path
+                    host,
+                    username,
+                    password,
+                    transfer_port,
+                    target_path,
+                    accepted_host_key,
                 )
             case TransferProtocol.FTP:
                 cls._ftp_auth_check(
@@ -266,11 +304,10 @@ class CustomUploadUploader:
         error_message: str = f'Uploading document to [{host}:{transfer_port}/{target_path}/{file_name}] via [{transfer_protocol.name}] failed: %s.'
 
         with paramiko.SSHClient() as ssh_client:
-            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             sftp_client: SFTPClient | None = None
             try:
-                ssh_client.connect(
-                    host, username=username, password=password, port=transfer_port
+                SFTPHostKeys.connect(
+                    ssh_client, host, transfer_port, username, password
                 )
                 sftp_client = ssh_client.open_sftp()
                 assert sftp_client is not None
@@ -296,6 +333,9 @@ class CustomUploadUploader:
                     (PurePosixPath(target_path) / file_name).as_posix(),
                 )
                 logger.info('Uploaded document file [%s].', file_name)
+            except UntrustedHostKeyError as error:
+                logger.error(error_message, error)
+                failure_status = UntrustedServerCustomUploadStatus()
             except AuthenticationException as error:
                 logger.error(
                     error_message,
@@ -343,11 +383,13 @@ class CustomUploadUploader:
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
             if transfer_protocol == TransferProtocol.FTPS:
-                ftp_client_type = ftplib.FTP_TLS
+                ftp_client_type = VerifiedFTP_TLS
 
             with ftp_client_type() as ftp_client:
                 ftp_client.connect(host, transfer_port, timeout=5)
                 ftp_client.login(username, password)
+                if isinstance(ftp_client, ftplib.FTP_TLS):
+                    ftp_client.prot_p()
 
                 if not CustomUploadUploader._does_remote_path_exist_ftp(
                     ftp_client, base_target_path
@@ -370,6 +412,12 @@ class CustomUploadUploader:
                     temporary_file,
                 )
                 logger.info('Uploaded document file [%s].', file_name)
+        except ssl.SSLCertVerificationError as error:
+            logger.error(
+                error_message,
+                f'Certificate verification failed [{error.verify_message}]',
+            )
+            failure_status = UntrustedServerCustomUploadStatus()
         except ftplib.error_perm as error:
             logger.error(
                 error_message,
@@ -538,19 +586,28 @@ class CustomUploadUploader:
 
     @staticmethod
     def _sftp_auth_check(
-        host: str, username: str, password: str, port: int, target_path: str
+        host: str,
+        username: str,
+        password: str,
+        port: int,
+        target_path: str,
+        accepted_host_key: str | None = None,
     ) -> None:
         with paramiko.SSHClient() as client:
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
-                client.connect(
-                    host, username=username, password=password, port=port, timeout=5
+                SFTPHostKeys.connect(
+                    client,
+                    host,
+                    port,
+                    username,
+                    password,
+                    accepted_key=accepted_host_key,
+                    timeout=5,
                 )
                 sftp_client = client.open_sftp()
             except AuthenticationException as error:
                 raise PermissionError(error) from error
             except (
-                BadHostKeyException,
                 NoValidConnectionsError,
                 SSHException,
                 OSError,
@@ -575,7 +632,7 @@ class CustomUploadUploader:
     def _ftps_auth_check(
         host: str, username: str, password: str, port: int, target_path: str
     ) -> None:
-        with ftplib.FTP_TLS() as ftp_client:
+        with VerifiedFTP_TLS() as ftp_client:
             CustomUploadUploader._ftplib_auth_check(
                 host, username, password, port, target_path, ftp_client
             )
@@ -592,12 +649,16 @@ class CustomUploadUploader:
         try:
             ftp_client.connect(host, port, timeout=5)
             ftp_client.login(username, password)
+            if isinstance(ftp_client, ftplib.FTP_TLS):
+                ftp_client.prot_p()
             if not CustomUploadUploader._does_remote_path_exist_ftp(
                 ftp_client, target_path
             ):
                 raise FileNotFoundError(f'Remote path not found: {target_path}')
         except FileNotFoundError:
             raise
+        except ssl.SSLCertVerificationError as error:
+            raise UntrustedCertificateError(error.verify_message) from error
         except ftplib.error_perm as error:
             raise PermissionError(error) from error
         except ftplib.all_errors as error:

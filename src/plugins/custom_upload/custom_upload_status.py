@@ -174,6 +174,19 @@ class AuthenticationFailureCustomUploadStatus(FailureCustomUploadStatus):
         return _('invalid credentials, check the username and password')
 
 
+class UntrustedServerCustomUploadStatus(FailureCustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'UNTRUSTED_SERVER'
+
+    @property
+    def details(self) -> str:
+        return _(
+            'the identity of the server is not confirmed, '
+            'run the connection test of the upload settings'
+        )
+
+
 class TargetLocationNotFoundCustomUploadStatus(FailureCustomUploadStatus):
     @staticmethod
     def static_id() -> str:

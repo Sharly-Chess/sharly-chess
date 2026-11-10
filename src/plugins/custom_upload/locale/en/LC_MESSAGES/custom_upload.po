@@ -146,6 +146,9 @@ msgstr ""
 msgid "Ongoing"
 msgstr ""
 
+msgid "Only trust the server again if your hosting provider confirms that its key fingerprint is:"
+msgstr ""
+
 msgid "Path does not exist or is inaccessible."
 msgstr ""
 
@@ -179,6 +182,19 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+#, python-brace-format
+msgid "The certificate of the server is not valid ({reason}): the identity of the server cannot be confirmed."
+msgstr ""
+
+msgid "The identity of this server has changed since you trusted it. This happens when the server is reinstalled or moved, but it can also mean that someone is impersonating it to steal your password."
+msgstr ""
+
+msgid "This server is not known yet. To make sure that no one is impersonating it to steal your password, check with your hosting provider that its key fingerprint is:"
+msgstr ""
+
+msgid "Trust this server"
+msgstr ""
+
 msgid "Up to date"
 msgstr ""
 
@@ -205,6 +221,9 @@ msgid "invalid credentials, check the username and password"
 msgstr ""
 
 msgid "target server path not found"
+msgstr ""
+
+msgid "the identity of the server is not confirmed, run the connection test of the upload settings"
 msgstr ""
 
 msgid "to be configured"

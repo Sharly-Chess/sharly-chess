@@ -14,7 +14,9 @@ from data.event import Event
 from plugins.custom_upload.custom_upload_uploader import (
     CUSTOM_UPLOAD_DELAY,
     CustomUploadUploader,
+    UntrustedCertificateError,
 )
+from plugins.custom_upload.host_keys import UntrustedHostKeyError
 from plugins.custom_upload.utils import (
     ConfiguredDocument,
     CustomUploadEventPluginData,
@@ -504,6 +506,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         errors = {}
         auth_valid = False
         path_valid = False
+        untrusted_host_key: UntrustedHostKeyError | None = None
         if NetworkMonitor.connected():
             if ftp_host and ftp_username:
                 log_message: str | None = None
@@ -523,10 +526,22 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         default_server_path,
                         transfer_protocol,
                         transfer_port,
+                        accepted_host_key=data.get('accepted_host_key') or None,
                     )
                     auth_valid = True
                     path_valid = True
                     logger.info('Connection succeeded.')
+                except UntrustedHostKeyError as error:
+                    untrusted_host_key = error
+                    log_message = str(error)
+                except UntrustedCertificateError as error:
+                    message = _(
+                        'The certificate of the server is not valid ({reason}): '
+                        'the identity of the server cannot be confirmed.'
+                    ).format(reason=error)
+                    errors['ftp_host'] = message
+                    errors['transfer_protocol'] = message
+                    log_message = str(error)
                 except PermissionError as error:
                     message = _('Invalid credentials.')
                     errors['ftp_username'] = message
@@ -575,6 +590,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 'ftp_password_visible': data.get('ftp_password_visible') == 'true',
                 'custom_upload_auth_valid': auth_valid,
                 'custom_upload_path_valid': path_valid,
+                'untrusted_host_key': untrusted_host_key,
                 'errors': errors,
             },
         )

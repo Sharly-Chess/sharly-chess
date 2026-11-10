@@ -30,6 +30,8 @@ from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
 from data.print_documents.place_cards.types import PairingCardType
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
+from plugins.custom_upload.utils import ConfiguredDocument
 from database.sqlite.event.event_store import (
     StoredAccount,
     StoredPlayer,
@@ -494,6 +496,23 @@ def test_rating_certificate_leaves_out_the_unrated_games(unrated_event: Event):
 @pytest.mark.parametrize('result', list(Result))
 def test_every_result_has_a_crosstable_symbol(result: Result):
     assert isinstance(result.to_crosstable, str)
+
+
+@pytest.mark.unit
+def test_uploaded_document_has_no_export_toolbar(event: Event):
+    """The export toolbar is for the documents viewed in the browser: a
+    document uploaded to a server is the document alone."""
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = ConfiguredDocument(
+        document_id=documents.PlayerListPrintDocument.static_id(),
+        options=f'tournament={tournament.id}',
+    )
+    file, _ = CustomUploadUploader._generate_document_in_memory(
+        event, document, Client.for_event_administrator(event)
+    )
+    html = file.getvalue().decode()
+    assert next(iter(tournament.players_by_id.values())).last_name in html
+    assert 'document-export-toolbar' not in html
 
 
 ARBITERS_EVENT_ID = 'test-print-documents-arbiters'
