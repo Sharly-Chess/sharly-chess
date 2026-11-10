@@ -88,6 +88,7 @@
 - The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
 - The statistics document downloaded as a PDF file shows the count at the end of each bar (5.2.4)
 - The team selector of the documents lists the teams by name instead of in pairing order (5.2.4)
+- A new arbiter norm report fills in the FIDE Arbiter (FA1) or International Arbiter (IA1) norm form for the candidate chosen, with the figures of the tournaments chosen and, when one is chosen, the signee; every field can be edited before printing or downloading the form as a Word file (5.3.0)
 
 ## Screens
 

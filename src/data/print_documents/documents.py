@@ -10,7 +10,7 @@ from typing import Any, TYPE_CHECKING, override, cast
 from collections.abc import Callable
 
 from common.exception import SharlyChessException, OptionError
-from common.i18n import _, ngettext, pgettext
+from common.i18n import DEFAULT_LOCALE, _, locale_set_to, ngettext, pgettext
 from common.i18n.utils import ordinal_integer, unicode_normalize
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
@@ -58,6 +58,10 @@ from data.print_documents.options import (
     MatchSheetSelectionPrintOption,
     MatchSheetArbiterPrintOption,
     ChiefArbiterPrintOption,
+    ArbiterNormCandidatePrintOption,
+    ArbiterNormForm,
+    ArbiterNormFormPrintOption,
+    ArbiterNormSigneePrintOption,
     TeamBergerGridPlayersPrintOption,
     GridPlayerSortPrintOption,
     TeamGridSortPrintOption,
@@ -97,6 +101,7 @@ from utils.enum import (
     TitleNorm,
     PlayerGender,
     PlayerRatingType,
+    RoleType,
     ScoreType,
 )
 from utils.option import Option, OptionHandler
@@ -2822,6 +2827,200 @@ class RatingAchievementCertificatePrintDocument(PrintDocument):
             if account is not None:
                 return account
         return self.tournament.chief_arbiter
+
+
+class ArbiterNormReportPrintDocument(PrintDocument):
+    """FIDE arbiter norm report (FIDE Handbook B.06.1), FA1 or IA1, filled in
+    with the candidate, the tournaments and the signee."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'arbiter-norm-report'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Arbiter Norm Report')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentsPrintOption,
+            ArbiterNormFormPrintOption,
+            ArbiterNormCandidatePrintOption,
+            ArbiterNormSigneePrintOption,
+        ]
+
+    @property
+    def form(self) -> ArbiterNormForm:
+        return ArbiterNormForm(self._get_option(ArbiterNormFormPrintOption).value)
+
+    @property
+    def title(self) -> str:
+        return self.form.heading
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/arbiter_norm_report.html'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments) or not allowed_tournaments:
+            return False
+        return bool(allowed_tournaments[0].event.sorted_active_user_accounts)
+
+    @override
+    def validate_options(self) -> None:
+        super().validate_options()
+        candidate_option = self._get_option(ArbiterNormCandidatePrintOption)
+        if (
+            self.get_event().accounts_by_id.get(cast(int, candidate_option.value))
+            is None
+        ):
+            raise OptionError(_('Please choose the candidate.'), candidate_option)
+
+    @property
+    def candidate(self) -> Account:
+        account_id = self._get_option(ArbiterNormCandidatePrintOption).value
+        assert account_id is not None
+        return self.get_event().accounts_by_id[account_id]
+
+    @property
+    def signee(self) -> Account | None:
+        account_id = self._get_option(ArbiterNormSigneePrintOption).value
+        if account_id is None:
+            return None
+        return self.get_event().accounts_by_id.get(account_id)
+
+    def _signee_position(self, signee: Account) -> str:
+        """The highest role the signee holds in the tournaments."""
+        for role_type, position in (
+            (RoleType.CHIEF_ARBITER, 'Chief Arbiter'),
+            (RoleType.DEPUTY_ARBITER, 'Deputy Chief Arbiter'),
+            (RoleType.ARBITER, 'Arbiter'),
+        ):
+            role = signee.get_role(role_type)
+            if (
+                role
+                and role.tournament_ids
+                and any(
+                    tournament.id in role.tournament_ids
+                    for tournament in self.tournaments
+                )
+            ):
+                return position
+        if signee.get_role(RoleType.ORGANISER):
+            return 'Organiser'
+        return ''
+
+    @property
+    def event_name(self) -> str:
+        """The name of the event, followed by the names of the tournaments
+        when only some of its tournaments are reported."""
+        event = self.get_event()
+        if len(self.tournaments) == len(event.tournaments_by_id):
+            return event.name
+        return f'{event.name} – {self._joined([t.name for t in self.tournaments])}'
+
+    @staticmethod
+    def _fide_federations(accounts: list[Account]) -> dict[int, str]:
+        """The federations the FIDE database gives the accounts, by account
+        id."""
+        from database.sqlite.fide.fide_database import FideDatabase
+
+        fide_ids = {account.id: account.fide_id for account in accounts}
+        database = FideDatabase()
+        if not any(fide_ids.values()) or not database.exists():
+            return {}
+        federations: dict[int, str] = {}
+        with database:
+            for account_id, fide_id in fide_ids.items():
+                if fide_id and (
+                    stored_player := database.get_stored_player_by_fide_id(fide_id)
+                ):
+                    federations[account_id] = stored_player.federation
+        return federations
+
+    @staticmethod
+    def _joined(values: list[str]) -> str:
+        """The distinct non-empty values, in order, separated by commas."""
+        return ', '.join(dict.fromkeys(value for value in values if value))
+
+    @staticmethod
+    def _first_round_date(tournament: Tournament) -> date:
+        first_round = tournament.round_datetimes.get(1)
+        return first_round.date() if first_round else tournament.start_date
+
+    @staticmethod
+    def _last_round_date(tournament: Tournament) -> date:
+        last_round = tournament.round_datetimes.get(tournament.rounds)
+        return last_round.date() if last_round else tournament.stop_date
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournaments = self.tournaments
+        candidate = self.candidate
+        signee = self.signee
+        federations = self._fide_federations(
+            [candidate] if signee is None else [candidate, signee]
+        )
+        tournament_players = list(
+            {
+                tournament_player.id: tournament_player
+                for tournament in tournaments
+                for tournament_player in tournament.tournament_players
+            }.values()
+        )
+        not_titles = {PlayerTitle.CANDIDATE_MASTER, PlayerTitle.WOMAN_CANDIDATE_MASTER}
+        with locale_set_to(DEFAULT_LOCALE):
+            systems = self._joined(
+                [tournament.pairing_system.static_name() for tournament in tournaments]
+            )
+        return {
+            'event': self.get_event(),
+            'form': self.form,
+            'candidate': candidate,
+            'candidate_federation': federations.get(candidate.id, ''),
+            'event_name': self.event_name,
+            'event_federation': self.get_event().federation,
+            'venue': self._joined(
+                [tournament.location or '' for tournament in tournaments]
+            ),
+            'first_round': min(
+                self._first_round_date(tournament) for tournament in tournaments
+            ).strftime('%Y.%m.%d'),
+            'last_round': max(
+                self._last_round_date(tournament) for tournament in tournaments
+            ).strftime('%Y.%m.%d'),
+            'system': systems,
+            'rounds': self._joined(
+                [str(tournament.rounds) for tournament in tournaments]
+            ),
+            'players_count': len(tournament_players),
+            'fide_rated_players_count': sum(
+                1
+                for tournament_player in tournament_players
+                if tournament_player.rating_used_by_fide.type == PlayerRatingType.FIDE
+            ),
+            'federations_count': len(
+                {
+                    str(tournament_player.federation)
+                    for tournament_player in tournament_players
+                    if str(tournament_player.federation)
+                }
+            ),
+            'titled_players_count': sum(
+                1
+                for tournament_player in tournament_players
+                if tournament_player.held_titles - not_titles
+            ),
+            'time_control': self._joined(
+                [tournament.time_control_trf25 for tournament in tournaments]
+            ),
+            'signee': signee,
+            'signee_position': self._signee_position(signee) if signee else '',
+            'signee_federation': federations.get(signee.id, '') if signee else '',
+            'signed_on': date.today().strftime('%Y.%m.%d'),
+        }
 
 
 class TournamentNormsSummaryPrintDocument(PrintDocument):

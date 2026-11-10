@@ -1225,6 +1225,9 @@ msgstr "Avril"
 msgid "Arbiter"
 msgstr "Arbitre"
 
+msgid "Arbiter Norm Report"
+msgstr "Rapport de norme d'arbitre"
+
 msgid "Arbiters"
 msgstr "Arbitres"
 
@@ -1985,6 +1988,9 @@ msgstr "Annuler la modification"
 msgctxt "check-in button"
 msgid "Cancel the check-in"
 msgstr "Annuler le pointage"
+
+msgid "Candidate"
+msgstr "Candidat·e"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -4031,6 +4037,9 @@ msgstr "FIDE %(fide_id)s"
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
 
+msgid "FIDE Arbiter (FA1)"
+msgstr "Arbitre FIDE (FA1)"
+
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
@@ -4323,6 +4332,9 @@ msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jou
 
 msgid "Forfeits played"
 msgstr "Forfaits joués"
+
+msgid "Form:"
+msgstr "Formulaire :"
 
 msgid "Format as schedule"
 msgstr "Afficher en calendrier"
@@ -4968,6 +4980,9 @@ msgstr "Installation…"
 
 msgid "International Arbiter"
 msgstr "Arbitre International"
+
+msgid "International Arbiter (IA1)"
+msgstr "Arbitre International (IA1)"
 
 msgid "International Chess Federation"
 msgstr "Fédération internationale d'échecs"
@@ -7785,8 +7800,14 @@ msgstr "Veuillez choisir une couleur valide."
 msgid "Please choose a variation."
 msgstr "Veuillez choisir une variante."
 
+msgid "Please choose the candidate."
+msgstr "Veuillez choisir le·la candidat·e."
+
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
+
+msgid "Please choose the form."
+msgstr "Veuillez choisir le formulaire."
 
 msgid "Please choose the template."
 msgstr "Veuillez choisir le modèle."
@@ -9337,8 +9358,14 @@ msgstr "Sélectionner un·e joueur·euse"
 msgid "Select the age categories to create and enter the default prizes for each (amounts in %(currency)s). One category is created per selected age, with a single age criterion. You can fine-tune the prizes and criteria afterwards."
 msgstr "Sélectionnez les catégories d'âge à créer et saisissez les prix par défaut pour chacune (montants en %(currency)s). Une catégorie est créée par âge sélectionné, avec un unique critère d'âge. Vous pourrez ajuster les prix et les critères ensuite."
 
+msgid "Select the candidate"
+msgstr "Sélectionner le·la candidat·e"
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
+
+msgid "Select the signee"
+msgstr "Sélectionner le·la signataire"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
@@ -9566,6 +9593,9 @@ msgstr "Sierra Leone"
 
 msgid "Signature"
 msgstr "Signature"
+
+msgid "Signee"
+msgstr "Signataire"
 
 msgid "Simple criteria"
 msgstr "Critères simples"
@@ -10177,6 +10207,9 @@ msgstr "La FIDE utilisera le classement standard du·de la joueur·euse pour cet
 #, python-brace-format
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
 msgstr "La FIDE utilisera les classements standards des deux joueur·euses pour cette partie ({rating_opponent} et {rating_player})."
+
+msgid "The FRS event codes are given by the FIDE Rating Server once the tournaments are registered."
+msgstr "Les codes FRS sont attribués par le serveur de classement FIDE (FIDE Rating Server) une fois les tournois enregistrés."
 
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
 msgstr "Le classement général inclut tou·tes les joueur·euses et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueur·euses doivent satisfaire tous les critères d'une catégorie."

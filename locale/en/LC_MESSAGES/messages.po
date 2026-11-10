@@ -1225,6 +1225,9 @@ msgstr ""
 msgid "Arbiter"
 msgstr ""
 
+msgid "Arbiter Norm Report"
+msgstr ""
+
 msgid "Arbiters"
 msgstr ""
 
@@ -1984,6 +1987,9 @@ msgstr ""
 
 msgctxt "check-in button"
 msgid "Cancel the check-in"
+msgstr ""
+
+msgid "Candidate"
 msgstr ""
 
 msgid "Candidate Master"
@@ -4031,6 +4037,9 @@ msgstr ""
 msgid "FIDE Arbiter"
 msgstr ""
 
+msgid "FIDE Arbiter (FA1)"
+msgstr ""
+
 msgid "FIDE ID"
 msgstr ""
 
@@ -4322,6 +4331,9 @@ msgid "Forfeited games are considered as played."
 msgstr ""
 
 msgid "Forfeits played"
+msgstr ""
+
+msgid "Form:"
 msgstr ""
 
 msgid "Format as schedule"
@@ -4967,6 +4979,9 @@ msgid "Installing…"
 msgstr ""
 
 msgid "International Arbiter"
+msgstr ""
+
+msgid "International Arbiter (IA1)"
 msgstr ""
 
 msgid "International Chess Federation"
@@ -7783,7 +7798,13 @@ msgstr ""
 msgid "Please choose a variation."
 msgstr ""
 
+msgid "Please choose the candidate."
+msgstr ""
+
 msgid "Please choose the document."
+msgstr ""
+
+msgid "Please choose the form."
 msgstr ""
 
 msgid "Please choose the template."
@@ -9335,7 +9356,13 @@ msgstr ""
 msgid "Select the age categories to create and enter the default prizes for each (amounts in %(currency)s). One category is created per selected age, with a single age criterion. You can fine-tune the prizes and criteria afterwards."
 msgstr ""
 
+msgid "Select the candidate"
+msgstr ""
+
 msgid "Select the players and the data to update:"
+msgstr ""
+
+msgid "Select the signee"
 msgstr ""
 
 msgid "Select the tournaments to add players to."
@@ -9563,6 +9590,9 @@ msgid "Sierra Leone"
 msgstr ""
 
 msgid "Signature"
+msgstr ""
+
+msgid "Signee"
 msgstr ""
 
 msgid "Simple criteria"
@@ -10174,6 +10204,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
+msgstr ""
+
+msgid "The FRS event codes are given by the FIDE Rating Server once the tournaments are registered."
 msgstr ""
 
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
