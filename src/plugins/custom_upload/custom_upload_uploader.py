@@ -11,7 +11,6 @@ from threading import Thread, Timer
 import paramiko.client
 from paramiko.sftp_client import SFTPClient
 from paramiko.ssh_exception import (
-    BadHostKeyException,
     AuthenticationException,
     SSHException,
     NoValidConnectionsError,
@@ -28,10 +27,12 @@ from data.loader import EventLoader
 from plugins.custom_upload.custom_upload_status import (
     AuthenticationFailureCustomUploadStatus,
     ConnectionFailureCustomUploadStatus,
+    UntrustedServerCustomUploadStatus,
     UnexpectedFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
     FailureCustomUploadStatus,
 )
+from plugins.custom_upload.host_keys import SFTPHostKeys, UntrustedHostKeyError
 from plugins.custom_upload.utils import (
     ConfiguredDocument,
     CustomUploadUtils,
@@ -108,15 +109,23 @@ class CustomUploadUploader:
         target_path: str,
         transfer_protocol: TransferProtocol,
         transfer_port: int,
+        accepted_host_key: str | None = None,
     ) -> None:
         """Connection attempt to the FTP/SFTP server.
         Throws ConnectionError exception if the connection doesn't succeed.
-        Throws FileNotFoundError exception if the target path can't be found."""
+        Throws FileNotFoundError exception if the target path can't be found.
+        Throws UntrustedHostKeyError if the SFTP server is not trusted; the key
+        it presented is trusted when passed back as ``accepted_host_key``."""
 
         match transfer_protocol:
             case TransferProtocol.SFTP:
                 cls._sftp_auth_check(
-                    host, username, password, transfer_port, target_path
+                    host,
+                    username,
+                    password,
+                    transfer_port,
+                    target_path,
+                    accepted_host_key,
                 )
             case TransferProtocol.FTP:
                 cls._ftp_auth_check(
@@ -266,11 +275,10 @@ class CustomUploadUploader:
         error_message: str = f'Uploading document to [{host}:{transfer_port}/{target_path}/{file_name}] via [{transfer_protocol.name}] failed: %s.'
 
         with paramiko.SSHClient() as ssh_client:
-            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             sftp_client: SFTPClient | None = None
             try:
-                ssh_client.connect(
-                    host, username=username, password=password, port=transfer_port
+                SFTPHostKeys.connect(
+                    ssh_client, host, transfer_port, username, password
                 )
                 sftp_client = ssh_client.open_sftp()
                 assert sftp_client is not None
@@ -296,6 +304,9 @@ class CustomUploadUploader:
                     (PurePosixPath(target_path) / file_name).as_posix(),
                 )
                 logger.info('Uploaded document file [%s].', file_name)
+            except UntrustedHostKeyError as error:
+                logger.error(error_message, error)
+                failure_status = UntrustedServerCustomUploadStatus()
             except AuthenticationException as error:
                 logger.error(
                     error_message,
@@ -538,19 +549,28 @@ class CustomUploadUploader:
 
     @staticmethod
     def _sftp_auth_check(
-        host: str, username: str, password: str, port: int, target_path: str
+        host: str,
+        username: str,
+        password: str,
+        port: int,
+        target_path: str,
+        accepted_host_key: str | None = None,
     ) -> None:
         with paramiko.SSHClient() as client:
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
-                client.connect(
-                    host, username=username, password=password, port=port, timeout=5
+                SFTPHostKeys.connect(
+                    client,
+                    host,
+                    port,
+                    username,
+                    password,
+                    accepted_key=accepted_host_key,
+                    timeout=5,
                 )
                 sftp_client = client.open_sftp()
             except AuthenticationException as error:
                 raise PermissionError(error) from error
             except (
-                BadHostKeyException,
                 NoValidConnectionsError,
                 SSHException,
                 OSError,

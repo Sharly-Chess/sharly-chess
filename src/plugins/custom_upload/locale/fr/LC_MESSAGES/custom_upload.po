@@ -150,6 +150,9 @@ msgstr "Non configuré"
 msgid "Ongoing"
 msgstr "En cours"
 
+msgid "Only trust the server again if your hosting provider confirms that its key fingerprint is:"
+msgstr "Ne faites à nouveau confiance au serveur que si votre hébergeur confirme que l'empreinte de sa clé est :"
+
 msgid "Path does not exist or is inaccessible."
 msgstr "Le dossier n'existe pas ou est inaccessible."
 
@@ -183,6 +186,15 @@ msgstr "Dossier sur le serveur"
 msgid "Status"
 msgstr "Status"
 
+msgid "The identity of this server has changed since you trusted it. This happens when the server is reinstalled or moved, but it can also mean that someone is impersonating it to steal your password."
+msgstr "L'identité de ce serveur a changé depuis que vous lui avez fait confiance. Cela arrive quand le serveur est réinstallé ou déplacé, mais cela peut aussi signifier que quelqu'un se fait passer pour lui afin de voler votre mot de passe."
+
+msgid "This server is not known yet. To make sure that no one is impersonating it to steal your password, check with your hosting provider that its key fingerprint is:"
+msgstr "Ce serveur n'est pas encore connu. Pour vous assurer que personne ne se fait passer pour lui afin de voler votre mot de passe, vérifiez auprès de votre hébergeur que l'empreinte de sa clé est :"
+
+msgid "Trust this server"
+msgstr "Faire confiance à ce serveur"
+
 msgid "Up to date"
 msgstr "À jour"
 
@@ -210,6 +222,9 @@ msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de pass
 
 msgid "target server path not found"
 msgstr "le dossier sur le serveur n'a pas pu être trouvé"
+
+msgid "the identity of the server is not confirmed, run the connection test of the upload settings"
+msgstr "l'identité du serveur n'est pas confirmée, lancez le test de connexion des paramètres de mise en ligne"
 
 msgid "to be configured"
 msgstr "à configurer"

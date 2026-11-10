@@ -57,6 +57,31 @@
             data=data, errors=errors
         ) }}
     </div>
+    {% if untrusted_host_key %}
+        <div class="col-12">
+            {% set trust_button = components.button(
+                _('Trust this server'),
+                kind='danger' if untrusted_host_key.changed else 'primary',
+                icon='bi-shield-check',
+                attrs={
+                    'hx-post': url_for('custom-upload-test-auth', event_uniq_id=admin_event.uniq_id),
+                    'hx-target': 'closest .auth-fields',
+                    'hx-swap': 'morphdom',
+                    'hx-vals': 'js:{ftp_password_visible: $("#ftp-password").attr("type") === "text", accepted_host_key: \'' ~ untrusted_host_key.encoded_key ~ '\'}',
+                    'hx-indicator': '#please-wait',
+                },
+            ) %}
+            {% call components.note('danger' if untrusted_host_key.changed else 'warning', actions=trust_button) %}
+                {% if untrusted_host_key.changed %}
+                    <p>{{ _('The identity of this server has changed since you trusted it. This happens when the server is reinstalled or moved, but it can also mean that someone is impersonating it to steal your password.') }}</p>
+                    <p>{{ _('Only trust the server again if your hosting provider confirms that its key fingerprint is:') }}</p>
+                {% else %}
+                    <p>{{ _('This server is not known yet. To make sure that no one is impersonating it to steal your password, check with your hosting provider that its key fingerprint is:') }}</p>
+                {% endif %}
+                <p class="mb-0"><code class="text-break">{{ untrusted_host_key.fingerprint }}</code></p>
+            {% endcall %}
+        </div>
+    {% endif %}
     <div class="text-center mt-4 mb-1">
         <span id="test-connection" {{ macros.tooltip_attributes('', _('Host and FTP username are required.')) }}>
             {{ components.button(
