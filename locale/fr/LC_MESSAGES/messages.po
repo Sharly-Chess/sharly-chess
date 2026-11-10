@@ -408,7 +408,7 @@ msgid "1.4.2c was applied: the last-round opponent forfeit was included in the m
 msgstr "1.4.2c a été appliqué : le forfait de l'adversaire à la dernière ronde a été inclus dans le panel et compté comme une défaite jouée. L'interprétation 1.4.1c par défaut (forfait exclu) est affichée à côté pour comparaison."
 
 msgid "1.4.2c: game not rated by FIDE — not counted."
-msgstr "1.4.2c : partie non comptabilisée pour le classement FIDE — non comptée."
+msgstr "1.4.2c : partie non comptabilisée pour le classement FIDE — non comptée."
 
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
@@ -954,7 +954,7 @@ msgid "Administration"
 msgstr "Administration"
 
 msgid "Administration theme:"
-msgstr "Thème de l'administration :"
+msgstr "Thème de l'administration :"
 
 msgid "Administrator"
 msgstr "Administrateur·ice"
@@ -1224,6 +1224,9 @@ msgstr "Avril"
 
 msgid "Arbiter"
 msgstr "Arbitre"
+
+msgid "Arbiter Norm Report"
+msgstr "Rapport de norme d'arbitre"
 
 msgid "Arbiters"
 msgstr "Arbitres"
@@ -1986,8 +1989,11 @@ msgctxt "check-in button"
 msgid "Cancel the check-in"
 msgstr "Annuler le pointage"
 
+msgid "Candidate"
+msgstr "Candidat·e"
+
 msgid "Candidate Master"
-msgstr "Candidat Maître"
+msgstr "Candidat·e Maître"
 
 msgid "Cannot have multiple arbiter roles on the same tournament."
 msgstr "Impossible d’avoir plusieurs rôles d’arbitre sur le même tournoi."
@@ -2410,7 +2416,7 @@ msgstr "Configurer les départages du tournoi."
 
 #, python-brace-format
 msgid "Confirm the new backups folder [{folder}]?"
-msgstr "Confirmer le nouveau dossier des sauvegardes [{folder}] ?"
+msgstr "Confirmer le nouveau dossier des sauvegardes [{folder}] ?"
 
 #, python-brace-format
 msgid "Confirm the new data folder [{folder}]?"
@@ -4031,6 +4037,9 @@ msgstr "FIDE %(fide_id)s"
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
 
+msgid "FIDE Arbiter (FA1)"
+msgstr "Arbitre FIDE (FA1)"
+
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
@@ -4324,6 +4333,9 @@ msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jou
 msgid "Forfeits played"
 msgstr "Forfaits joués"
 
+msgid "Form:"
+msgstr "Formulaire :"
+
 msgid "Format as schedule"
 msgstr "Afficher en calendrier"
 
@@ -4504,7 +4516,7 @@ msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 
 msgid "Go back to the default backups folder?"
-msgstr "Revenir au dossier des sauvegardes par défaut ?"
+msgstr "Revenir au dossier des sauvegardes par défaut ?"
 
 msgid "Go to the display controller."
 msgstr "Aller au pilote d'afficheur."
@@ -4967,7 +4979,10 @@ msgid "Installing…"
 msgstr "Installation…"
 
 msgid "International Arbiter"
-msgstr "Arbitre International"
+msgstr "Arbitre International·e"
+
+msgid "International Arbiter (IA1)"
+msgstr "Arbitre International·e (AI1)"
 
 msgid "International Chess Federation"
 msgstr "Fédération internationale d'échecs"
@@ -6552,10 +6567,10 @@ msgid "No tie-break decides this tied match. Add the \"Manual\" tie-break to hol
 msgstr "Aucun départage ne tranche ce match à égalité. Ajoutez le départage « Manuel » pour organiser un barrage."
 
 msgid "No tie-break is set for this tournament: players on the same score will not be separated in the standings."
-msgstr "Aucun départage n'est défini pour ce tournoi : les joueur·euses à égalité de points ne seront pas départagé·es dans le classement."
+msgstr "Aucun départage n'est défini pour ce tournoi : les joueur·euses à égalité de points ne seront pas départagé·es dans le classement."
 
 msgid "No tie-break is set for this tournament: teams on the same score will not be separated in the standings."
-msgstr "Aucun départage n'est défini pour ce tournoi : les équipes à égalité de points ne seront pas départagées dans le classement."
+msgstr "Aucun départage n'est défini pour ce tournoi : les équipes à égalité de points ne seront pas départagées dans le classement."
 
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
@@ -7785,8 +7800,14 @@ msgstr "Veuillez choisir une couleur valide."
 msgid "Please choose a variation."
 msgstr "Veuillez choisir une variante."
 
+msgid "Please choose the candidate."
+msgstr "Veuillez choisir le·la candidat·e."
+
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
+
+msgid "Please choose the form."
+msgstr "Veuillez choisir le formulaire."
 
 msgid "Please choose the template."
 msgstr "Veuillez choisir le modèle."
@@ -9337,8 +9358,14 @@ msgstr "Sélectionner un·e joueur·euse"
 msgid "Select the age categories to create and enter the default prizes for each (amounts in %(currency)s). One category is created per selected age, with a single age criterion. You can fine-tune the prizes and criteria afterwards."
 msgstr "Sélectionnez les catégories d'âge à créer et saisissez les prix par défaut pour chacune (montants en %(currency)s). Une catégorie est créée par âge sélectionné, avec un unique critère d'âge. Vous pourrez ajuster les prix et les critères ensuite."
 
+msgid "Select the candidate"
+msgstr "Sélectionner le·la candidat·e"
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
+
+msgid "Select the signee"
+msgstr "Sélectionner le·la signataire"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
@@ -9566,6 +9593,9 @@ msgstr "Sierra Leone"
 
 msgid "Signature"
 msgstr "Signature"
+
+msgid "Signee"
+msgstr "Signataire"
 
 msgid "Simple criteria"
 msgstr "Critères simples"
@@ -10177,6 +10207,9 @@ msgstr "La FIDE utilisera le classement standard du·de la joueur·euse pour cet
 #, python-brace-format
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
 msgstr "La FIDE utilisera les classements standards des deux joueur·euses pour cette partie ({rating_opponent} et {rating_player})."
+
+msgid "The FRS event codes are given by the FIDE Rating Server once the tournaments are registered."
+msgstr "Les codes FRS sont attribués par le serveur de classement FIDE (FIDE Rating Server) une fois les tournois enregistrés."
 
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
 msgstr "Le classement général inclut tou·tes les joueur·euses et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueur·euses doivent satisfaire tous les critères d'une catégorie."
@@ -12572,7 +12605,7 @@ msgid "Woman"
 msgstr "Femme"
 
 msgid "Woman Candidate Master"
-msgstr "Candidat Maître Féminin"
+msgstr "Candidate Maître Féminin"
 
 msgid "Woman Fide Master"
 msgstr "Maître Fide Féminin"

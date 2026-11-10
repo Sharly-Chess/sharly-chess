@@ -22,10 +22,10 @@ msgid ""
 "- the tie-breaks and the pairing variations used in France;\n"
 "- the clubs and the leagues available as columns, filters and groupings on the players, the documents and the screens."
 msgstr ""
-"- les joueur·euses recherché·es dans la base de la fédération, avec leur licence, leur club et leur ligue ;\n"
-"- les tournois importés depuis et exportés vers le format Papi ;\n"
-"- les résultats téléversés vers le site de la fédération ;\n"
-"- les départages et les variantes d’appariement utilisés en France ;\n"
+"- les joueur·euses recherché·es dans la base de la fédération, avec leur licence, leur club et leur ligue ;\n"
+"- les tournois importés depuis et exportés vers le format Papi ;\n"
+"- les résultats téléversés vers le site de la fédération ;\n"
+"- les départages et les variantes d’appariement utilisés en France ;\n"
 "- les clubs et les ligues disponibles comme colonnes, filtres et regroupements sur les joueur·euses, les documents et les écrans."
 
 msgctxt "FFE licence"
@@ -130,7 +130,7 @@ msgid "Club Arbiter"
 msgstr "Arbitre Fédéral Club"
 
 msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
-msgstr "Départage les équipes à égalité sur la somme des différentiels au 1er échiquier ; celles toujours à égalité sont ensuite comparées au 2e échiquier, et ainsi de suite (règlement FFE §4.4.a)."
+msgstr "Départage les équipes à égalité sur la somme des différentiels au 1er échiquier ; celles toujours à égalité sont ensuite comparées au 2e échiquier, et ainsi de suite (règlement FFE §4.4.a)."
 
 msgid "Competition:"
 msgstr "Compétition :"
@@ -244,8 +244,8 @@ msgstr "Numéro d'homologation :"
 msgid "FFE estimate"
 msgstr "Estimation FFE"
 
-msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz. A player the FFE list gives another estimate keeps it: one their club asked for, or 1399 after losing a FIDE rating"
-msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz. Un·e joueur·euse à qui la liste FFE donne une autre estimation la conserve : celle demandée par son club, ou 1399 après la perte d’un classement FIDE"
+msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz"
+msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz"
 
 msgid "FFE forms"
 msgstr "Formulaires FFE"
@@ -758,10 +758,10 @@ msgid "This filter applies only to players affiliated with the French federation
 msgstr "Ce filtre ne s'applique qu'aux joueur·euses affilié·es à la fédération française, les autres ne seront ni filtré·es ni grisé·es (pas besoin de licence française)."
 
 msgid "This is the first period, and the registration where the whole tournament is published; the others carry their own, in the schedule below."
-msgstr "Il s'agit de la première période, et de l'homologation où le tournoi entier est publié ; les autres ont la leur, dans le calendrier ci-dessous."
+msgstr "Il s'agit de la première période, et de l'homologation où le tournoi entier est publié ; les autres ont la leur, dans le calendrier ci-dessous."
 
 msgid "This period has been submitted; later rounds do not change it."
-msgstr "Cette période a été soumise ; les rondes suivantes ne la modifient pas."
+msgstr "Cette période a été soumise ; les rondes suivantes ne la modifient pas."
 
 msgid "Tournament"
 msgstr "Tournoi"

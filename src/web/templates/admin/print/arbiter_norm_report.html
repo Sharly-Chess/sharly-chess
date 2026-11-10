@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ form.heading }} {{ form.value }} - {{ candidate.full_name }}</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 900px;
+                margin: 2rem auto;
+                line-height: 1.4;
+                font-size: 0.9rem;
+                --row-gap: 1.2rem;
+            }
+            h1 {
+                display: flex;
+                justify-content: space-between;
+                font-size: 1.1rem;
+                margin: 0;
+            }
+            h1 .form-code {
+                min-width: 4em;
+                text-align: right;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: var(--row-gap);
+            }
+            td {
+                border: 1px solid black;
+                padding: 0.3rem 0.4rem;
+                vertical-align: top;
+            }
+            td.tall {
+                height: 2.6rem;
+            }
+            .item {
+                display: flex;
+                width: 100%;
+            }
+            .item label {
+                flex-shrink: 1;
+                white-space: nowrap;
+            }
+            .item.bold label {
+                font-weight: bold;
+            }
+            .item input {
+                flex-grow: 1;
+                margin-left: 0.5rem;
+                width: 1px;
+                border: none;
+                border-bottom: 2px dotted black;
+                font-size: inherit;
+                font-family: inherit;
+            }
+            p {
+                margin: var(--row-gap) 0 0 0;
+            }
+            .boxed {
+                border: 1px solid black;
+                padding: 0.2rem 0.4rem;
+                margin-top: 2rem;
+            }
+            .boxed p {
+                margin: 0;
+            }
+            .privacy-notice, .privacy-notice a, .privacy-notice a:visited {
+                font-size: 0.75rem;
+                margin-top: var(--row-gap);
+                color: red;
+            }
+            .info {
+                text-align: center;
+                font-style: italic;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            @media print {
+                .no-print {
+                    display: none !important;
+                }
+                body {
+                    margin: 0;
+                    padding: 10mm;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                body.paper-a4 {
+                    width: 210mm;
+                    height: 297mm;
+                }
+                body.paper-letter {
+                    width: 8.5in;
+                    height: 11in;
+                }
+                .item input {
+                    border-bottom: none;
+                }
+                @page {
+                    size: A4 portrait;
+                    margin: 10mm;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        {% set document_notes %}
+            {{ _('All values may be modified by the arbiter if necessary.') }}
+            <br />
+            {{ _('The FRS event codes are given by the FIDE Rating Server once the tournaments are registered.') }}
+        {% endset %}
+        {% if export_toolbar %}
+            {% include export_toolbar %}
+        {% else %}
+            <div class="info no-print">{{ document_notes }}</div>
+        {% endif %}
+
+        <form>
+            <h1>
+                <span>{{ form.heading }}</span>
+                <span class="form-code">{{ form.value }}</span>
+            </h1>
+
+            <table>
+                <colgroup>
+                    <col style="width: 50%;">
+                    <col style="width: 50%;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="item bold">
+                                <label>Last Name:</label>
+                                <input value="{{ candidate.last_name }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item bold">
+                                <label>First Name:</label>
+                                <input value="{{ candidate.first_name or '' }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item bold">
+                                <label>FIDE ID Number:</label>
+                                <input value="{{ candidate.fide_id or '' }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item bold">
+                                <label>Federation:</label>
+                                <input value="{{ candidate_federation }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="item">
+                                <label>Name of event:</label>
+                                <input value="{{ event_name }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="item">
+                                <label>FRS event code(s):</label>
+                                <input />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Federation of event:</label>
+                                <input value="{{ event_federation }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Venue:</label>
+                                <input value="{{ venue }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Date of first round:</label>
+                                <input value="{{ first_round }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Date of last round:</label>
+                                <input value="{{ last_round }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>System:</label>
+                                <input value="{{ system }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Number of rounds:</label>
+                                <input value="{{ rounds }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Number of players:</label>
+                                <input value="{{ players_count }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Number of FIDE rated players:</label>
+                                <input value="{{ fide_rated_players_count }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Number of federations represented:</label>
+                                <input value="{{ federations_count }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Number of titled players:</label>
+                                <input value="{{ titled_players_count }}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="item">
+                                <label>Time control:</label>
+                                <input value="{{ time_control }}" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                I hereby confirm that the Arbiter’s performance was of the required standard for {{ form.arbiter_title_name }}.
+            </p>
+
+            <table>
+                <colgroup>
+                    <col style="width: 37%;">
+                    <col style="width: 38%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Name:</label>
+                                <input value="{{ signee.full_name if signee else '' }}" />
+                            </div>
+                        </td>
+                        <td colspan="2">
+                            <div class="item">
+                                <label>Signature:</label>
+                                <input />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Position:</label>
+                                <input value="{{ signee_position }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Federation:</label>
+                                <input value="{{ signee_federation }}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Date:</label>
+                                <input value="{{ signed_on if signee else '' }}" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <colgroup>
+                    <col style="width: 75%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td colspan="2" class="tall">
+                            <div class="item">
+                                <label>Name and position of Authenticating Federation official:</label>
+                                <input />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">
+                                <label>Signature:</label>
+                                <input />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item">
+                                <label>Date:</label>
+                                <input />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                The organizer is responsible for providing the above certificate to each Arbiter who in
+                the opinion of the Chief Arbiter has qualified for {{ form.arbiter_title_name }} norm and who
+                requests it before the end of the tournament. The Chief Arbiter is responsible for
+                providing the signed certificate to the organising federation for authentication.
+            </p>
+
+            <div class="boxed">
+                <p>
+                    When applying for the {{ form.title_code }} title, the applicant’s federation must attach a copy of any
+                    appeals decisions.
+                </p>
+            </div>
+
+            <div class="privacy-notice">
+                PRIVACY NOTICE: this form contains personal data, please check FIDE Privacy policy at
+                <a href="https://www.fide.com/privacy" target="_blank">www.fide.com/privacy</a>
+            </div>
+        </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const locale = navigator.language || navigator.userLanguage;
+                if (locale.startsWith('en-US') || locale.startsWith('ca') || locale.startsWith('mx')) {
+                    document.body.classList.add('paper-letter');
+                } else {
+                    document.body.classList.add('paper-a4');
+                }
+            });
+        </script>
+    </body>
+</html>

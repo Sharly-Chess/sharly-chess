@@ -8,7 +8,10 @@ from typing import Any
 
 import pytest
 
+from common.exception import OptionError
+from common.i18n import get_locale, set_locale
 from data.access_levels.client import Client
+from data.account import Account
 from data.board import Board
 from data.event import Event
 from data.loader import EventLoader
@@ -21,19 +24,21 @@ from data.print_documents.managers import (
     PrintPairingStyleManager,
 )
 from data.print_documents import options
-from data.print_documents.options import PrintOption
+from data.print_documents.options import ArbiterNormForm, PrintOption
 from data.print_documents.place_cards.data import PlaceCardTournament
 from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
 from data.print_documents.place_cards.types import PairingCardType
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
+    StoredAccount,
     StoredPlayer,
+    StoredRole,
     StoredTeam,
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
-from utils.enum import EventType, PlayerRatingType, Result
+from utils.enum import EventType, PlayerRatingType, PlayerTitle, Result, RoleType
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.base_controller import WebContext
 
@@ -489,3 +494,151 @@ def test_rating_certificate_leaves_out_the_unrated_games(unrated_event: Event):
 @pytest.mark.parametrize('result', list(Result))
 def test_every_result_has_a_crosstable_symbol(result: Result):
     assert isinstance(result.to_crosstable, str)
+
+
+ARBITERS_EVENT_ID = 'test-print-documents-arbiters'
+
+
+@pytest.fixture(scope='module')
+def arbiters_event() -> Iterator[Event]:
+    """The individual event, refereed by a chief arbiter and an arbiter."""
+    TestUtils.create_event(ARBITERS_EVENT_ID)
+    TestUtils.create_tournament(
+        ARBITERS_EVENT_ID, TOURNAMENT_NAME, json_file='tec-swiss'
+    )
+    event = EventLoader().load_event(ARBITERS_EVENT_ID)
+    tournament_id = event.tournaments_by_name[TOURNAMENT_NAME].id
+    for role_type, first_name in (
+        (RoleType.CHIEF_ARBITER, 'Chief'),
+        (RoleType.ARBITER, 'Candidate'),
+    ):
+        event.create_account(
+            StoredAccount(
+                id=None,
+                active=True,
+                first_name=first_name,
+                last_name='Arbiter',
+                stored_roles=[
+                    StoredRole(
+                        account_id=None,
+                        role=role_type.value,
+                        tournament_ids=[tournament_id],
+                    )
+                ],
+            )
+        )
+    EventLoader.unload_event(ARBITERS_EVENT_ID)
+    yield EventLoader().load_event(ARBITERS_EVENT_ID)
+    EventLoader.unload_event(ARBITERS_EVENT_ID)
+    TestUtils.delete_event(ARBITERS_EVENT_ID)
+
+
+def _account(event: Event, first_name: str) -> Account:
+    return next(
+        account
+        for account in event.sorted_active_user_accounts
+        if account.first_name == first_name
+    )
+
+
+def _arbiter_norm_report(event: Event, **values: str) -> dict[str, Any]:
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(
+        event,
+        documents.ArbiterNormReportPrintDocument,
+        {'tournaments': str(tournament.id)} | values,
+    )
+    assert documents.ArbiterNormReportPrintDocument.is_available(
+        document.get_allowed_tournaments()
+    )
+    document.validate_options()
+    return document.template_context
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('form', list(ArbiterNormForm))
+def test_arbiter_norm_report_describes_the_tournament(
+    arbiters_event: Event, form: ArbiterNormForm
+):
+    """The report counts every player, the FIDE-rated ones, their
+    federations and the players holding a title above CM and WCM."""
+    tournament = arbiters_event.tournaments_by_name[TOURNAMENT_NAME]
+    candidate = _account(arbiters_event, 'Candidate')
+    context = _arbiter_norm_report(
+        arbiters_event,
+        **{
+            'arbiter-norm-form': form.value,
+            'arbiter-norm-candidate': str(candidate.id),
+        },
+    )
+    assert context['form'] == form
+    players = list(tournament.tournament_players)
+    assert context['candidate'] == candidate
+    assert context['players_count'] == len(players)
+    assert context['fide_rated_players_count'] == sum(
+        1
+        for player in players
+        if player.rating_used_by_fide.type == PlayerRatingType.FIDE
+    )
+    assert context['federations_count'] == len(
+        {str(player.federation) for player in players if str(player.federation)}
+    )
+    not_titles = {PlayerTitle.CANDIDATE_MASTER, PlayerTitle.WOMAN_CANDIDATE_MASTER}
+    assert context['titled_players_count'] == sum(
+        1 for player in players if player.held_titles - not_titles
+    )
+    assert context['rounds'] == str(tournament.rounds)
+
+
+@pytest.mark.unit
+def test_arbiter_norm_report_names_the_system_in_english(arbiters_event: Event):
+    """FIDE forms are in English, whatever the language of the interface."""
+    candidate = _account(arbiters_event, 'Candidate')
+    previous_locale = get_locale()
+    set_locale('fr')
+    try:
+        context = _arbiter_norm_report(
+            arbiters_event,
+            **{'arbiter-norm-candidate': str(candidate.id)},
+        )
+        assert get_locale() == 'fr'
+    finally:
+        set_locale(previous_locale)
+    assert context['system'] == 'Swiss'
+
+
+@pytest.mark.unit
+def test_arbiter_norm_report_is_signed_by_the_chosen_signee_only(
+    arbiters_event: Event,
+):
+    """The signee fields stay blank unless a signee is chosen, even when the
+    tournament has a chief arbiter."""
+    candidate = _account(arbiters_event, 'Candidate')
+    context = _arbiter_norm_report(
+        arbiters_event,
+        **{'arbiter-norm-candidate': str(candidate.id)},
+    )
+    assert context['signee'] is None
+    assert context['signee_position'] == ''
+    chief_arbiter = _account(arbiters_event, 'Chief')
+    context = _arbiter_norm_report(
+        arbiters_event,
+        **{
+            'arbiter-norm-candidate': str(candidate.id),
+            'arbiter-norm-signee': str(chief_arbiter.id),
+        },
+    )
+    assert context['signee'] == chief_arbiter
+    assert context['signee_position'] == 'Chief Arbiter'
+
+
+@pytest.mark.unit
+def test_arbiter_norm_report_requires_a_candidate(arbiters_event: Event):
+    tournament = arbiters_event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(
+        arbiters_event,
+        documents.ArbiterNormReportPrintDocument,
+        {'tournaments': str(tournament.id)},
+    )
+    with pytest.raises(OptionError):
+        document.validate_options()
