@@ -615,7 +615,9 @@ class FfePlugin(Plugin):
             label=_('FFE estimate'),
             description=_(
                 'FFE estimate by age: 1399 (1299 for juniors) in standard; '
-                '1199, 999 up to U14 and 799 up to U10 in rapid and blitz'
+                '1199, 999 up to U14 and 799 up to U10 in rapid and blitz. '
+                'A player the FFE list gives another estimate keeps it: one '
+                'their club asked for, or 1399 after losing a FIDE rating'
             ),
         )
 
@@ -635,7 +637,9 @@ class FfePlugin(Plugin):
         of every past event once opened: a new rule must apply from the date
         the FFE adopted it, keyed on the tournament's start date, the
         current one staying in force before. The migration that clears the
-        stored estimates also relies on them ending in 99 below 1400."""
+        stored estimates also relies on them ending in 99 below 1400, and
+        the list readers on the estimates of the younger categories
+        (`FFE_OUTGROWN_ESTIMATES`)."""
         if tournament_rating == Cadence.STANDARD:
             return 1299 if isinstance(category, JuniorCategory) else 1399
         if isinstance(category, JuniorCategory):

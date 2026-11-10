@@ -88,7 +88,8 @@
 - The norm report of a tournament in progress gives the figures of the 1.4.3d and 1.5.6a exceptions for the rounds being played, instead of zero while a round has no results (5.2.0)
 - The statistics document downloaded as a PDF file shows the count at the end of each bar (5.2.4)
 - The team selector of the documents lists the teams by name instead of in pairing order (5.2.4)
-- A new arbiter norm report fills in the FIDE Arbiter (FA1) or International Arbiter (IA1) norm form for the candidate chosen, with the figures of the tournaments chosen and, when one is chosen, the signee; every field can be edited before printing or downloading the form as a Word file (5.3.0)
+- On the standard team place card, the captain is printed under the team name instead of over the event name, and in the light admin view the previews of the place card templates are outlined so that the edges of the cards can be seen (5.2.5)
+- A new arbiter norm report fills in the FIDE Arbiter (FA1) or International Arbiter (IA1) norm form for the candidate chosen, with the figures of the tournaments chosen and, when one is chosen, the signee; every field can be edited before printing or downloading the form as a Word file (5.2.5)
 
 ## Screens
 
@@ -112,6 +113,7 @@
 - The online _FFE_ database is now used in priority over the local copy by default, with the local copy standing in when it cannot be reached; a switch in the databases window turns this off (5.2.2)
 - Players without a rapid or blitz rating no longer receive their estimate by age as a national rating from the local _FFE_ database, whose file marks these estimates as national ratings (5.2.2)
 - The banner of the players tab reads the rating lists from the same source as its Review window, so that it no longer announces changes the window does not show. It asks the online _FFE_ database at most every six hours for an event, unless a list changes or the arbiter acts on the check, and editing a player does not ask it again (5.2.2)
+- Unrated players are ranked on the estimate the _FFE_ list gives them, as on the federal site, when it differs from the estimate of their category: an estimate their club asked for, or 1399 at a cadence where they lost a _FIDE_ rating, instead of the estimate by age, such as 799 for a U10 in rapid. The estimate of a younger category, which the list may still give a player who has since moved up, is still replaced by the estimate of their category. The rating check proposes these estimates to the players of existing events and no longer sets them apart as values typed by the arbiter (5.2.5)
 
 ## _French schools_
 

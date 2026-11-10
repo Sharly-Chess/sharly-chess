@@ -113,8 +113,9 @@ class RatingCheckRow:
     def arbiter_value(self) -> bool:
         """Whether the player holds a value the arbiter set: a correction
         of a list value the list does not give, or a value typed for the
-        tournament rating. Such a player is listed apart and keeps that
-        value unless the arbiter chooses the list."""
+        tournament rating that the list does not type. Such a player is
+        listed apart and keeps that value unless the arbiter chooses the
+        list."""
         for tournament_rating in Cadence:
             current = self.current[tournament_rating]
             listed = self.listed[tournament_rating]
@@ -127,6 +128,7 @@ class RatingCheckRow:
             self.current_rating.type == PlayerRatingType.ESTIMATED
             and not self.current_rating.prescribed
             and self.current_rating.value > 0
+            and self.current[self.cadence].manual != self.listed[self.cadence].manual
         )
 
     @cached_property
@@ -506,8 +508,10 @@ async def check_ratings(event: Event, players: list[Player]) -> RatingCheck:
             else None
         )
         national_match = national_matches.get(player.id)
-        if national_match is not None:
-            national_ratings = _stored_ratings(national_match)
+        national_ratings = (
+            _stored_ratings(national_match) if national_match is not None else None
+        )
+        if national_ratings is not None:
             source = player.national_source or ''
             _set_listed(listed, PlayerRatingType.NATIONAL, national_ratings, source)
             _set_listed(listed, PlayerRatingType.FIDE, national_ratings, source)
@@ -539,13 +543,19 @@ async def check_ratings(event: Event, players: list[Player]) -> RatingCheck:
             )
         ):
             not_found.append(player)
-        # What the lists give a player they do not rate is the prescribed
-        # rating, where a plugin prescribes one
-        if listed[cadence].manual is not None and (
-            player.event.plugin_prescribed_rating(cadence, player, _category(player))
-            is not None
-        ):
-            listed[cadence].manual = None
+        # What the lists give a player they do not rate is the value the
+        # national list types for them, else the prescribed rating, where a
+        # plugin prescribes one
+        prescribed = player.event.plugin_prescribed_rating(
+            cadence, player, _category(player)
+        )
+        if prescribed is not None:
+            list_manual = (
+                national_ratings[cadence].manual
+                if national_ratings is not None
+                else None
+            )
+            listed[cadence].manual = None if list_manual == prescribed else list_manual
         kept = copy.deepcopy(listed)
         for tournament_rating in Cadence:
             rating = current[tournament_rating]

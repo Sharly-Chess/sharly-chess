@@ -7,14 +7,15 @@ text = "{{ team.name }}"
 font_size = 24.0
 bold = true
 h_align = "center"
-v_align = "middle"
+v_align = "top"
+v_pos = 7.0
 
 [team_captain]
 text = "{% if team.captain %}{{ _('Captain:') }} {{ team.captain }}{% endif %}"
 font_size = 11.0
 h_align = "center"
-v_align = "bottom"
-v_pos = 0.0
+v_align = "top"
+v_pos = 18.0
 
 [event]
 text = "{{ event.name }}"

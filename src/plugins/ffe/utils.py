@@ -154,18 +154,17 @@ def ffe_list_ratings(
     ratings: dict[Cadence, tuple[int | None, PlayerRatingType]],
     origin: RatingOrigin,
 ) -> dict[int, dict[str, Any]]:
-    """The ratings of a player of the FFE list, each typed F or N. The
-    estimates the list carries are left out, the plugin prescribing them
-    by age: those typed E, and those of the published file typed N, which
-    only their value tells apart from a national rating."""
+    """The ratings of a player of the FFE list, each typed F, N or E. The
+    estimates are those typed E, and those of the published file typed N,
+    which only their value tells apart from a national rating (see
+    `ffe_estimate_rating`)."""
     return {
         tournament_rating.value: (
-            PlayerRating()
-            if rating_type == PlayerRatingType.ESTIMATED
-            or (
-                rating_type == PlayerRatingType.NATIONAL
-                and value is not None
-                and is_ffe_estimate(value)
+            ffe_estimate_rating(value, tournament_rating)
+            if value is not None
+            and (
+                rating_type == PlayerRatingType.ESTIMATED
+                or (rating_type == PlayerRatingType.NATIONAL and is_ffe_estimate(value))
             )
             else PlayerRating.from_type(value, rating_type, origin)
         ).stored_value
@@ -173,10 +172,32 @@ def ffe_list_ratings(
     }
 
 
+#: The FFE estimates by age of the younger categories, by cadence, which a
+#: list may still give a player who has since moved up a category.
+FFE_OUTGROWN_ESTIMATES: dict[Cadence, frozenset[int]] = {
+    Cadence.STANDARD: frozenset({1299}),
+    Cadence.RAPID: frozenset({799, 999}),
+    Cadence.BLITZ: frozenset({799, 999}),
+}
+
+
+def ffe_estimate_rating(value: int, cadence: Cadence) -> PlayerRating:
+    """The rating an FFE estimate stands for. The FFE gives an unrated
+    player the estimate of their category, the estimate their club asked
+    for and the FFE accepted, or 1399 at a cadence where they lost a FIDE
+    rating; once published, that estimate is the official one. It is kept
+    as a typed value, but for an estimate of a younger category, which may
+    be one the player outgrew: the plugin then prescribes the estimate of
+    their category."""
+    if value in FFE_OUTGROWN_ESTIMATES[cadence]:
+        return PlayerRating()
+    return PlayerRating(manual=value)
+
+
 def is_ffe_estimate(value: int) -> bool:
-    """Whether *value* is an FFE estimate by age, all of which end in 99
-    below the FIDE floor of 1400."""
-    return value < 1400 and value % 100 == 99
+    """Whether *value* has the shape of an FFE estimate, which goes by
+    steps of 50 ending in 49 or 99; an FFE rating ends in 0."""
+    return value % 50 == 49
 
 
 FFE_UPLOAD_DELAY = 3
