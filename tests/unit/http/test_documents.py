@@ -11,7 +11,9 @@ from collections.abc import Iterator
 import pytest
 from litestar.testing import TestClient
 
+from database.sqlite.event.event_store import StoredAccount, StoredRole
 from tests.unit.http.events import EventUnderTest
+from utils.enum import RoleType
 
 EVENT_ID = 'test-documents-http'
 TOURNAMENT_NAME = 'test-documents-http-tournament'
@@ -91,3 +93,44 @@ def test_the_rating_certificate_states_the_intermediate_rating(
     assert response.status_code == 200
     assert 'CERTIFICATE OF FIDE RATING ACHIEVEMENT' in response.text
     assert 'Intermediate FIDE Standard rating after round' in response.text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ('form', 'heading'),
+    [
+        ('FA1', 'FIDE Arbiter Norm Report Form'),
+        ('IA1', 'International Arbiter Norm Report Form'),
+    ],
+)
+def test_the_arbiter_norm_report_names_the_candidate(
+    http: TestClient, tournament_id: int, form: str, heading: str
+):
+    candidate = EVENT.load().create_account(
+        StoredAccount(
+            id=None,
+            active=True,
+            first_name='Ada',
+            last_name='CANDIDATE',
+            fide_id=123456,
+            stored_roles=[
+                StoredRole(
+                    account_id=None,
+                    role=RoleType.ARBITER.value,
+                    tournament_ids=[tournament_id],
+                )
+            ],
+        )
+    )
+    response = http.get(
+        f'/document-view/{EVENT_ID}/arbiter-norm-report',
+        params={
+            'options': f'tournaments={tournament_id}'
+            f'|arbiter-norm-form={form}'
+            f'|arbiter-norm-candidate={candidate.id}'
+        },
+    )
+    assert response.status_code == 200
+    assert heading in response.text
+    assert 'value="CANDIDATE"' in response.text
+    assert 'value="123456"' in response.text

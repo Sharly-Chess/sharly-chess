@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import cast
 import gettext as gettext_lib
 import os
@@ -135,6 +137,18 @@ def set_locale(locale: str) -> bool:
         return True
     logger.warning('Unknown locale [%s].', locale)
     return False
+
+
+@contextmanager
+def locale_set_to(locale: str) -> Iterator[None]:
+    """Translate into *locale* within the block, then back into the locale
+    of the current thread."""
+    previous_locale = get_locale()
+    set_locale(locale)
+    try:
+        yield
+    finally:
+        set_locale(previous_locale)
 
 
 _domain_names: list[str] = [d.name for d in Domain.get_domains()]

@@ -23,9 +23,10 @@ kept current (TEC Manual 3.9.5, VCL Q116–145). The code is in
   corrected the value, what the list gave (`original`). A value without an origin
   is taken to come from the FIDE list for `fide`, from the player's national
   list for `national`.
-- `manual`: a value typed for a player no list rates. It has no kind and no
-  source (suffix `E`). Absent, the plugins may prescribe one (hook
-  `get_prescribed_rating`).
+- `manual`: a value typed for a player no list rates, by the arbiter or by a
+  national list that gives such a player an estimate no rule prescribes. It has
+  no kind and no source (suffix `E`). Absent, the plugins may prescribe one
+  (hook `get_prescribed_rating`).
 - `pinned`: on the tournament's cadence, the rating the arbiter chose among the
   player's ratings, keyed as a rating of a sequence.
 
@@ -72,8 +73,8 @@ each player's national list by national id, from the source
 `DataSourceManager.list_source` gives (its online version first while
 `read_online` is on, as it is by default), and
 compares. A value read online records it (`origins.<kind>.online`). Changes of the tournament or official
-rating are proposed; corrections and typed values are listed apart and kept
-unless chosen; a change of source, snapshot or coefficient alone is applied
+rating are proposed; corrections, and typed values the national list does not
+type, are listed apart and kept unless chosen; a change of source, snapshot or coefficient alone is applied
 unasked. `automatic_check` runs it for the players tab banner when the event is
 first opened, then again once a list changed (`list_versions`), the arbiter has
 opened or applied the check, a bulk player update has run, or six hours have

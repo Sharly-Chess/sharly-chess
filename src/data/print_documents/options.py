@@ -1,5 +1,6 @@
 import re
 from abc import ABC, abstractmethod
+from enum import StrEnum
 from functools import cached_property
 from types import UnionType
 from typing import TYPE_CHECKING, override, Any
@@ -359,12 +360,139 @@ class ChiefArbiterPrintOption(PrintOption[int | None]):
         return None
 
     @property
+    def template_file_name(self) -> str:
+        return 'account_choice'
+
+    @property
     def label(self) -> str:
         return _('{string}:').format(string=_('Chief arbiter'))
 
     @property
     def default_text(self) -> str:
         return _('Chief arbiter of the tournament')
+
+
+class ArbiterNormForm(StrEnum):
+    """The arbiter norm report forms of FIDE Handbook B.06.1."""
+
+    FIDE_ARBITER = 'FA1'
+    INTERNATIONAL_ARBITER = 'IA1'
+
+    @property
+    def label(self) -> str:
+        match self:
+            case ArbiterNormForm.FIDE_ARBITER:
+                return _('FIDE Arbiter (FA1)')
+            case ArbiterNormForm.INTERNATIONAL_ARBITER:
+                return _('International Arbiter (IA1)')
+
+    @property
+    def heading(self) -> str:
+        match self:
+            case ArbiterNormForm.FIDE_ARBITER:
+                return 'FIDE Arbiter Norm Report Form'
+            case ArbiterNormForm.INTERNATIONAL_ARBITER:
+                return 'International Arbiter Norm Report Form'
+
+    @property
+    def arbiter_title_name(self) -> str:
+        """The title the norm counts towards, with its indefinite article."""
+        match self:
+            case ArbiterNormForm.FIDE_ARBITER:
+                return 'a FIDE Arbiter'
+            case ArbiterNormForm.INTERNATIONAL_ARBITER:
+                return 'an International Arbiter'
+
+    @property
+    def title_code(self) -> str:
+        return self.value.removesuffix('1')
+
+
+class ArbiterNormFormPrintOption(PrintOption[str]):
+    @staticmethod
+    def static_id() -> str:
+        return 'arbiter-norm-form'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> str:
+        return ArbiterNormForm.FIDE_ARBITER.value
+
+    @property
+    def choices(self) -> dict[str, str]:
+        return {form.value: form.label for form in ArbiterNormForm}
+
+    @override
+    def validate(self) -> None:
+        super().validate()
+        if self.value not in self.choices:
+            raise OptionError(_('Please choose the form.'), self)
+
+
+class ArbiterNormCandidatePrintOption(PrintOption[int | None]):
+    """Account of the arbiter the norm report is written for."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'arbiter-norm-candidate'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'account_choice'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> int | None:
+        return None
+
+    @property
+    def label(self) -> str:
+        return _('{string}:').format(string=_('Candidate'))
+
+    @property
+    def default_text(self) -> str:
+        return _('Select the candidate')
+
+    @override
+    def validate(self) -> None:
+        super().validate()
+        if self.value is None:
+            raise OptionError(_('Please choose the candidate.'), self)
+
+
+class ArbiterNormSigneePrintOption(PrintOption[int | None]):
+    """Account signing the arbiter norm report. Empty leaves the signee
+    fields blank."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'arbiter-norm-signee'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'account_choice'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> int | None:
+        return None
+
+    @property
+    def label(self) -> str:
+        return _('{string}:').format(string=_('Signee'))
+
+    @property
+    def default_text(self) -> str:
+        return _('Select the signee')
 
 
 class TeamBergerGridPlayersPrintOption(PrintOption[bool]):
