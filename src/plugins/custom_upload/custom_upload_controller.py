@@ -14,6 +14,7 @@ from data.event import Event
 from plugins.custom_upload.custom_upload_uploader import (
     CUSTOM_UPLOAD_DELAY,
     CustomUploadUploader,
+    UntrustedCertificateError,
 )
 from plugins.custom_upload.host_keys import UntrustedHostKeyError
 from plugins.custom_upload.utils import (
@@ -532,6 +533,14 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     logger.info('Connection succeeded.')
                 except UntrustedHostKeyError as error:
                     untrusted_host_key = error
+                    log_message = str(error)
+                except UntrustedCertificateError as error:
+                    message = _(
+                        'The certificate of the server is not valid ({reason}): '
+                        'the identity of the server cannot be confirmed.'
+                    ).format(reason=error)
+                    errors['ftp_host'] = message
+                    errors['transfer_protocol'] = message
                     log_message = str(error)
                 except PermissionError as error:
                     message = _('Invalid credentials.')

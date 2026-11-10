@@ -1,6 +1,8 @@
 from typing import ClassVar
 import ftplib
 import os.path
+import socket
+import ssl
 import time
 from datetime import datetime, timedelta
 from ftplib import error_perm
@@ -8,6 +10,7 @@ from io import BytesIO
 from pathlib import PurePosixPath
 from threading import Thread, Timer
 
+import certifi
 import paramiko.client
 from paramiko.sftp_client import SFTPClient
 from paramiko.ssh_exception import (
@@ -46,6 +49,32 @@ logger = get_logger()
 
 # Minimum delay, in minutes, between two automatic uploads of the same document.
 CUSTOM_UPLOAD_DELAY = 1
+
+
+class UntrustedCertificateError(ConnectionError):
+    """The FTPS server presented a certificate that could not be verified."""
+
+
+class VerifiedFTP_TLS(ftplib.FTP_TLS):
+    """An FTPS client that verifies the certificate of the server, and
+    resumes the TLS session of the control connection on the data connections,
+    which many servers require."""
+
+    def __init__(self) -> None:
+        context = ssl.create_default_context()
+        context.load_verify_locations(certifi.where())
+        super().__init__(context=context)
+
+    def ntransfercmd(
+        self, cmd: str, rest: int | str | None = None
+    ) -> tuple[socket.socket, int | None]:
+        conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)
+        if self._prot_p:  # type: ignore[attr-defined]
+            assert isinstance(self.sock, ssl.SSLSocket)
+            conn = self.context.wrap_socket(
+                conn, server_hostname=self.host, session=self.sock.session
+            )
+        return conn, size
 
 
 class CustomUploadUploader:
@@ -354,11 +383,13 @@ class CustomUploadUploader:
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
             if transfer_protocol == TransferProtocol.FTPS:
-                ftp_client_type = ftplib.FTP_TLS
+                ftp_client_type = VerifiedFTP_TLS
 
             with ftp_client_type() as ftp_client:
                 ftp_client.connect(host, transfer_port, timeout=5)
                 ftp_client.login(username, password)
+                if isinstance(ftp_client, ftplib.FTP_TLS):
+                    ftp_client.prot_p()
 
                 if not CustomUploadUploader._does_remote_path_exist_ftp(
                     ftp_client, base_target_path
@@ -381,6 +412,12 @@ class CustomUploadUploader:
                     temporary_file,
                 )
                 logger.info('Uploaded document file [%s].', file_name)
+        except ssl.SSLCertVerificationError as error:
+            logger.error(
+                error_message,
+                f'Certificate verification failed [{error.verify_message}]',
+            )
+            failure_status = UntrustedServerCustomUploadStatus()
         except ftplib.error_perm as error:
             logger.error(
                 error_message,
@@ -595,7 +632,7 @@ class CustomUploadUploader:
     def _ftps_auth_check(
         host: str, username: str, password: str, port: int, target_path: str
     ) -> None:
-        with ftplib.FTP_TLS() as ftp_client:
+        with VerifiedFTP_TLS() as ftp_client:
             CustomUploadUploader._ftplib_auth_check(
                 host, username, password, port, target_path, ftp_client
             )
@@ -612,12 +649,16 @@ class CustomUploadUploader:
         try:
             ftp_client.connect(host, port, timeout=5)
             ftp_client.login(username, password)
+            if isinstance(ftp_client, ftplib.FTP_TLS):
+                ftp_client.prot_p()
             if not CustomUploadUploader._does_remote_path_exist_ftp(
                 ftp_client, target_path
             ):
                 raise FileNotFoundError(f'Remote path not found: {target_path}')
         except FileNotFoundError:
             raise
+        except ssl.SSLCertVerificationError as error:
+            raise UntrustedCertificateError(error.verify_message) from error
         except ftplib.error_perm as error:
             raise PermissionError(error) from error
         except ftplib.all_errors as error:

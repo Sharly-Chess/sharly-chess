@@ -182,6 +182,10 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+#, python-brace-format
+msgid "The certificate of the server is not valid ({reason}): the identity of the server cannot be confirmed."
+msgstr ""
+
 msgid "The identity of this server has changed since you trusted it. This happens when the server is reinstalled or moved, but it can also mean that someone is impersonating it to steal your password."
 msgstr ""
 
