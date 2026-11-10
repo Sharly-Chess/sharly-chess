@@ -545,7 +545,10 @@ class Player:
 
     @property
     def rated_tournament(self) -> Tournament | None:
-        """The tournament whose settings rate the player."""
+        """The tournament whose settings rate the player, None for a player
+        not yet entered, such as a search result or an imported row."""
+        if self.stored_player.id is None:
+            return None
         return self.optional_single_tournament
 
     @property
