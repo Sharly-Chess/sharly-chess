@@ -514,7 +514,7 @@ def test_uploaded_document_has_no_export_toolbar(event: Event):
     assert next(iter(tournament.players_by_id.values())).last_name in html
     assert 'document-export-toolbar' not in html
 
-    
+
 ARBITERS_EVENT_ID = 'test-print-documents-arbiters'
 
 
