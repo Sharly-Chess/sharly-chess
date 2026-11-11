@@ -71,6 +71,8 @@
 - When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
 - In tournaments whose pairings are not known in advance, the Pair button offers to pair and publish a round in one go; the browser remembers the choice made for each event (5.2.4)
 - In round robins, a player or team that withdrew is dropped from the standings, and their games annulled, as soon as they can no longer complete half of their games, instead of only once the last round has a result (5.2.0)
+- A pairing engine that does not answer within two minutes is stopped and reported, instead of leaving the application unresponsive; its input file is kept for the arbiter to send to the _Sharly Chess_ team (5.2.6)
+- In team Swiss tournaments, changing a lineup no longer changes the colours, and sometimes the opponents, given by the following pairings, and avoiding teams of the same club no longer rejects legal pairings or reports that no pairing exists (5.2.6)
 
 ## Prizes
 
