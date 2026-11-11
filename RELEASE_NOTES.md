@@ -52,7 +52,8 @@
 - A team being dragged is shown as a solid card or row, with no tooltips opening under the mouse, and the place it will land is shown as an empty slot (5.2.4)
 - The team lists of the player form and the pairings ignore case and accents when sorting the teams by name (5.2.4)
 - A player who leaves a team no longer keeps their place in the lineups set for its next rounds, where the pairing still seated them for the team they had left and the match sheet then printed the opposing player in their place; the board they held is left empty (5.2.6)
-- A player who has played for a team, a bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
+- A player who has played for a team, a pairing-allocated bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
+- A team that has been paired can no longer be deleted, which deleted its matches with it; its delete button is no longer offered (5.2.6)
 
 ## Pairings
 

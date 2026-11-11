@@ -1775,6 +1775,14 @@ class TeamAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         team = web_context.get_admin_team()
         team_name = team.name
+        if team.has_been_paired:
+            Message.error(
+                request,
+                _('Team [{team}] has been paired and cannot be deleted.').format(
+                    team=team_name
+                ),
+            )
+            return self._admin_event_teams_render(web_context)
         tournament = team.tournament
         await SnapshotScheduler.snapshot_before_async(
             event.uniq_id,

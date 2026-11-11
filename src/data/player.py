@@ -406,6 +406,17 @@ class Player:
         return self.single_tournament.tournament_players_by_id[self.id]
 
     @property
+    def paired_tournament(self) -> Tournament | None:
+        """The first tournament of the event in which the player has a
+        pairing, against an opponent or a pairing-allocated bye, or None.
+        A player paired anywhere can no longer be deleted."""
+        for tournament in self.event.tournaments:
+            tournament_player = tournament.tournament_players_by_id.get(self.id)
+            if tournament_player is not None and tournament_player.has_real_pairings:
+                return tournament
+        return None
+
+    @property
     def optional_single_tournament_player(self) -> TournamentPlayer | None:
         tournament = self.optional_single_tournament
         if tournament is None:

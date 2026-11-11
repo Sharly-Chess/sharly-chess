@@ -10,6 +10,7 @@ from types import NotImplementedType
 from typing import TYPE_CHECKING, cast
 from collections.abc import Collection
 
+from common.exception import PairedDeletionError
 from common.i18n import _
 from common.i18n.utils import by, normalized_key
 from common.logger import get_logger
@@ -670,6 +671,12 @@ class Event:
         return stored_player.id
 
     def delete_player(self, player: Player) -> None:
+        """Raises :class:`PairedDeletionError` when the player has been
+        paired in a tournament of the event."""
+        if player.paired_tournament is not None:
+            raise PairedDeletionError(
+                f'Player [{player.full_name}] has pairings and cannot be deleted.'
+            )
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
         del self.players_by_id[player.id]
@@ -1050,6 +1057,12 @@ class Event:
         return self.teams_by_id[stored_team.id]
 
     def delete_team(self, team: Team) -> None:
+        """Raises :class:`PairedDeletionError` when the team has been
+        paired."""
+        if team.has_been_paired:
+            raise PairedDeletionError(
+                f'Team [{team.name}] has been paired and cannot be deleted.'
+            )
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_team(team.id)
         self.stored_event.stored_teams = [

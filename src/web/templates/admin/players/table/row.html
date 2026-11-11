@@ -17,7 +17,7 @@
         ) %}
         {% set can_delete = (
             client.can_delete_players
-            and (not tournament_player or not tournament_player.has_real_pairings)
+            and player.paired_tournament is none
         ) %}
         {% if can_update or can_update_history or can_delete %}
             <span class="players-table-row-actions">

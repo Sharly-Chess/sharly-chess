@@ -2014,18 +2014,14 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
-        tournament_player = player.optional_single_tournament_player
         event = web_context.get_admin_event()
         deleted_player_id: int | None = None
-        if tournament_player is not None and tournament_player.has_real_pairings:
+        if (paired_tournament := player.paired_tournament) is not None:
             Message.error(
                 request,
                 _(
                     'Player [{player}] has pairings in tournament [{tournament}].'
-                ).format(
-                    player=player.full_name,
-                    tournament=tournament_player.tournament.name,
-                ),
+                ).format(player=player.full_name, tournament=paired_tournament.name),
             )
         else:
             event.delete_player(player)

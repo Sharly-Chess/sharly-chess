@@ -10020,6 +10020,10 @@ msgid "Team [{team}] has been paired against [{opponent}] at board #{board}."
 msgstr "L'équipe [{team}] a été appariée contre [{opponent}] à la table n°{board}."
 
 #, python-brace-format
+msgid "Team [{team}] has been paired and cannot be deleted."
+msgstr "L'équipe [{team}] a été appariée et ne peut pas être supprimée."
+
+#, python-brace-format
 msgid "Team [{team}] has been updated."
 msgstr "L'équipe [{team}] a été mise à jour."
 
