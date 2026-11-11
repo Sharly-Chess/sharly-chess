@@ -33,6 +33,7 @@
 - Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
 - On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
+- The TRF export of a team tournament lists each team's players in their registration order, as the format requires, instead of in the lineup of the round being paired; the lineups of the rounds played are given by their own records (5.2.6)
 
 ## Players
 
@@ -51,6 +52,7 @@
 - A team being dragged is shown as a solid card or row, with no tooltips opening under the mouse, and the place it will land is shown as an empty slot (5.2.4)
 - The team lists of the player form and the pairings ignore case and accents when sorting the teams by name (5.2.4)
 - A player who leaves a team no longer keeps their place in the lineups set for its next rounds, where the pairing still seated them for the team they had left and the match sheet then printed the opposing player in their place; the board they held is left empty (5.2.6)
+- A player who has played for a team, a bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
 
 ## Pairings
 
@@ -74,6 +76,7 @@
 - In round robins, a player or team that withdrew is dropped from the standings, and their games annulled, as soon as they can no longer complete half of their games, instead of only once the last round has a result (5.2.0)
 - A pairing engine that does not answer within two minutes is stopped and reported, instead of leaving the application unresponsive; its input file is kept for the arbiter to send to the _Sharly Chess_ team (5.2.6)
 - In team Swiss tournaments, changing a lineup no longer changes the colours, and sometimes the opponents, given by the following pairings, and avoiding teams of the same club no longer rejects legal pairings or reports that no pairing exists (5.2.6)
+- In team Swiss tournaments, a round where many teams at the top of the standings may not meet one another, such as the third round of the _FFE_ cups when many teams have won both of their first two matches, is paired at once instead of never finishing (5.2.6)
 
 ## Prizes
 
