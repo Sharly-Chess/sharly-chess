@@ -19,6 +19,9 @@
 - The plugins section follows the plugins enabled or disabled elsewhere, such as by importing an event that needs one, and the browser windows on the computer running _Sharly Chess_ follow the administration theme chosen in the application window, neither needing to be refreshed (5.2.2)
 - The lists of events follow the plugins installed or uninstalled, so that an event that needs a plugin can be opened as soon as the plugin is installed, without refreshing the page (5.2.4)
 - In every list that can be reordered by dragging, the place a dragged item will land is shown as an empty slot, instead of a second copy of the item (5.2.4)
+- On Windows, an event imported while _Sharly Chess_ was run as administrator can be opened when it is run normally, instead of being refused by Windows. Events that are already refused can be opened again by running `icacls "%LOCALAPPDATA%\Sharly Chess\data" /reset /t` from a command prompt run as administrator, before updating so that they are carried over to the new version (5.2.6)
+- The browser opens as soon as _Sharly Chess_ has started, instead of waiting, possibly forever, for the home page to load, and events that cannot be opened no longer slow down every page (5.2.6)
+- An event or championship file that Windows refuses no longer stops _Sharly Chess_ from starting after an update: it is left in the folder of the previous version and the others are carried over (5.2.6)
 
 ## Tournaments
 
