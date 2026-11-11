@@ -46,6 +46,10 @@ class PairingEngineError(SharlyChessException):
         self.detail = detail
 
 
+class PairingEngineTimeout(PairingEngineError):
+    """Error raised when the pairing engine does not answer in time."""
+
+
 class OptionError(SharlyChessException):
     """Error raised when validating an option."""
 
