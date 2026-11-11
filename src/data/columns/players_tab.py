@@ -70,11 +70,10 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         """Defines if the column only in usable in a single tournament context."""
         return False
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
-        """Defines if the column is enabled for the given players.
-        Disabled columns do not appear in the interface.
-        If this can be determined at event or tournament level,
-        use is_enabled_for_event instead."""
+    def has_data_for_players(self, players: list[Player]) -> bool:
+        """Defines if the given players hold data for this column.
+        Columns without data start hidden, until the user picks the
+        columns to display."""
         return True
 
     def is_enabled_for_event(self, event: Event, tournaments: list[Tournament]) -> bool:
@@ -481,7 +480,7 @@ class MailPlayersTabColumn(PlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         return not bool(player.mail), player.mail or ''
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
+    def has_data_for_players(self, players: list[Player]) -> bool:
         return any(player.mail for player in players)
 
 
@@ -509,7 +508,7 @@ class PhonePlayersTabColumn(PlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         return not bool(player.phone), player.phone or ''
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
+    def has_data_for_players(self, players: list[Player]) -> bool:
         return any(player.phone for player in players)
 
 
@@ -565,7 +564,7 @@ class FixedPlayersTabColumn(PlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         return not bool(player.fixed), player.fixed or 0
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
+    def has_data_for_players(self, players: list[Player]) -> bool:
         return any(player.fixed for player in players)
 
 
@@ -593,7 +592,7 @@ class FideIdPlayersTabColumn(PlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         return (not bool(player.fide_id),)
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
+    def has_data_for_players(self, players: list[Player]) -> bool:
         return any(player.fide_id for player in players)
 
 
@@ -621,7 +620,7 @@ class NationalIdPlayersTabColumn(PlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         return (not bool(player.national_id),)
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
+    def has_data_for_players(self, players: list[Player]) -> bool:
         return any(player.national_id for player in players)
 
 
@@ -775,7 +774,7 @@ class CommentPlayersTabColumn(PlayersTabColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.comment or ''
 
-    def is_enabled_for_players(self, players: list[Player]) -> bool:
+    def has_data_for_players(self, players: list[Player]) -> bool:
         return any(player.comment for player in players)
 
     def _get_sort_key(self, player: Player) -> tuple:
