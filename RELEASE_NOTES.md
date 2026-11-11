@@ -90,6 +90,7 @@
 - The team selector of the documents lists the teams by name instead of in pairing order (5.2.4)
 - On the standard team place card, the captain is printed under the team name instead of over the event name, and in the light admin view the previews of the place card templates are outlined so that the edges of the cards can be seen (5.2.5)
 - A new arbiter norm report fills in the _FIDE_ Arbiter (FA1) or International Arbiter (IA1) norm form for the candidate chosen, with the figures of the tournaments chosen and, when one is chosen, the signee; every field can be edited before printing or downloading the form as a Word file (5.2.5)
+- Opened from the pairings tab, the documents window proposes the round displayed, including after the next round has just been paired, instead of the round displayed when the tab was first opened (5.2.6)
 
 ## Screens
 
