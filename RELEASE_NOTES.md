@@ -99,6 +99,8 @@
 - On the result entry screens, the games still to enter show an Enter button and the games entered step back, the last entry staying highlighted in green; on a phone, each game is a card. The result and check-in windows have large buttons, with the arbiter's forfeits set apart, and the buttons respond reliably on tablets (5.2.0)
 - The timers and the alert message have fixed colours, a timer turning from green to orange then red and the message showing in a yellow band; the colours can no longer be chosen in the timer and screen settings (5.2.0)
 - Image screens can show a timer, the image then starting below it (5.2.0)
+- On a slow network, the result window of an input screen no longer shows the previous game's buttons while the next game is loading, which recorded the result tapped for the previous game instead of the one chosen (5.2.6)
+- A result entered on an input screen is refused, with a warning, when another device has changed the game's result since the window opened, and an illegal move tapped twice or sent twice on a slow network is counted once (5.2.6)
 
 ## _Sharly-Chess.com_
 
