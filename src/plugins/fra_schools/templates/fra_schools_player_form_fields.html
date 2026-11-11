@@ -57,7 +57,7 @@
                 'id': 'fra-school-add-button',
                 'hx-get': url_for('fra-schools-add-school-form', event_uniq_id=admin_event.uniq_id),
                 'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
-                'disabled': not fra_schools_database.exists() or show_fra_school_form,
+                'disabled': show_fra_school_form,
             },
         ) }}
     </div>
@@ -223,9 +223,7 @@
             $('#fra-school-edit-button').prop(
                 'disabled', $('#fra-school-id').val() === ''
             );
-            {% if fra_schools_database.exists() %}
-                $('#fra-school-add-button').prop('disabled', false);
-            {% endif %}
+            $('#fra-school-add-button').prop('disabled', false);
             const submitContainer = document.getElementById('submit-button-container');
             bootstrap.Tooltip.getInstance(submitContainer).dispose();
             $(submitContainer).find('button').prop('disabled', false);
