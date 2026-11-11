@@ -704,6 +704,20 @@ class Team:
         database.replace_team_round_lineup(self.id, round_, entries)
         self.stored_team.stored_round_lineups[round_] = entries
 
+    def _release_from_lineups(self, player_id: int, database: EventDatabase) -> None:
+        """Leaves a hole wherever the lineups of the team seat *player_id*,
+        a player leaving the team."""
+        for round_, entries in list(self.stored_team.stored_round_lineups.items()):
+            if all(entry.player_id != player_id for entry in entries):
+                continue
+            slots: list[int | None] = [None] * (
+                max(entry.index for entry in entries) + 1
+            )
+            for entry in entries:
+                if entry.player_id != player_id:
+                    slots[entry.index] = entry.player_id
+            self.set_round_lineup(round_, slots, database)
+
     def delete_round_lineup(self, round_: int, database: EventDatabase) -> None:
         database.delete_team_round_lineup(self.id, round_)
         self.stored_team.stored_round_lineups.pop(round_, None)
@@ -874,6 +888,7 @@ class Team:
                 # team captainless.
                 if previous_team.stored_team.captain_id == player.id:
                     previous_team.set_captain(None, None, database)
+                previous_team._release_from_lineups(player.id, database)
                 previous_team._invalidate_players()
                 previous_team._compact_indexes(database)
                 previous_tournament = previous_team.tournament
@@ -888,6 +903,7 @@ class Team:
             return
         if self.stored_team.captain_id == player.id:
             self.set_captain(None, None, database)
+        self._release_from_lineups(player.id, database)
         player.stored_player.team_id = None
         player.stored_player.team_index = None
         database.set_player_team(player.id, None, None)

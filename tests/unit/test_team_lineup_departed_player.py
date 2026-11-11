@@ -136,6 +136,37 @@ class TeamLineupDepartedPlayerTestCase(TestCase):
             {stored.team_a_id, stored.team_b_id},
         )
 
+    def test_the_lineup_left_behind_keeps_a_hole(self) -> None:
+        self._pair_and_play_round_1()
+        moved_id = self._move_first_player_of_team_1_to_team_4()
+        team_1 = self._load().event.teams_by_id[self.team_ids[0]]
+        entries = sorted(
+            team_1.stored_team.stored_round_lineups[2], key=lambda entry: entry.index
+        )
+        self.assertEqual(
+            [entry.player_id for entry in entries],
+            [None, *self.player_ids[0][1:BOARDS]],
+        )
+        self.assertNotIn(moved_id, [entry.player_id for entry in entries])
+
+    def test_a_player_removed_from_the_team_leaves_a_hole(self) -> None:
+        tournament = self._load()
+        team_1 = tournament.event.teams_by_id[self.team_ids[0]]
+        with EventDatabase(EVENT_ID, write=True) as database:
+            team_1.set_round_lineup(1, self.player_ids[0][:BOARDS], database)
+        tournament = self._load()
+        event = tournament.event
+        with EventDatabase(EVENT_ID, write=True) as database:
+            event.teams_by_id[self.team_ids[0]].remove_player(
+                event.players_by_id[self.player_ids[0][1]], database
+            )
+        tournament = self._load()
+        slots = tournament.event.teams_by_id[self.team_ids[0]].effective_round_slots(1)
+        self.assertEqual(
+            [player.id if player else None for player in slots],
+            [self.player_ids[0][0], None, *self.player_ids[0][2:BOARDS]],
+        )
+
     def test_the_lineup_left_behind_reads_as_a_hole(self) -> None:
         self._pair_and_play_round_1()
         moved_id = self._move_first_player_of_team_1_to_team_4()
