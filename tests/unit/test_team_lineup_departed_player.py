@@ -1,4 +1,5 @@
-"""A player who leaves a team is no longer seated by its lineups."""
+"""A player can leave a team only before playing for it, and is then no
+longer seated by its lineups."""
 
 import contextlib
 from unittest import TestCase
@@ -6,6 +7,7 @@ from unittest import TestCase
 import pytest
 
 from data.loader import EventLoader
+from data.teams.team import PlayerPairedError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -85,14 +87,17 @@ class TeamLineupDepartedPlayerTestCase(TestCase):
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
-    def _move_first_player_of_team_1_to_team_4(self) -> int:
-        """Team1's round 2 lineup names its first four players; its first
-        player then joins Team4."""
+    def _move_substitute_of_team_1_to_team_4(self) -> int:
+        """Team1's round 2 lineup puts its substitute, who sat round 1 out,
+        on board 1 ahead of three of its players; the substitute then joins
+        Team4."""
         tournament = self._load()
         team_1 = tournament.event.teams_by_id[self.team_ids[0]]
-        moved_id = self.player_ids[0][0]
+        moved_id = self.player_ids[0][BOARDS]
         with EventDatabase(EVENT_ID, write=True) as database:
-            team_1.set_round_lineup(2, self.player_ids[0][:BOARDS], database)
+            team_1.set_round_lineup(
+                2, [moved_id, *self.player_ids[0][1:BOARDS]], database
+            )
         tournament = self._load()
         event = tournament.event
         with EventDatabase(EVENT_ID, write=True) as database:
@@ -110,7 +115,7 @@ class TeamLineupDepartedPlayerTestCase(TestCase):
 
     def test_the_departed_player_is_not_paired_for_the_team_left(self) -> None:
         self._pair_and_play_round_1()
-        moved_id = self._move_first_player_of_team_1_to_team_4()
+        moved_id = self._move_substitute_of_team_1_to_team_4()
         tournament = self._load()
         self.assertEqual(tournament.generate_round_pairings(2), '')
         tournament = self._load()
@@ -138,7 +143,7 @@ class TeamLineupDepartedPlayerTestCase(TestCase):
 
     def test_the_lineup_left_behind_keeps_a_hole(self) -> None:
         self._pair_and_play_round_1()
-        moved_id = self._move_first_player_of_team_1_to_team_4()
+        moved_id = self._move_substitute_of_team_1_to_team_4()
         team_1 = self._load().event.teams_by_id[self.team_ids[0]]
         entries = sorted(
             team_1.stored_team.stored_round_lineups[2], key=lambda entry: entry.index
@@ -167,9 +172,42 @@ class TeamLineupDepartedPlayerTestCase(TestCase):
             [self.player_ids[0][0], None, *self.player_ids[0][2:BOARDS]],
         )
 
+    def test_a_player_who_has_played_cannot_be_removed(self) -> None:
+        self._pair_and_play_round_1()
+        event = self._load().event
+        team_1 = event.teams_by_id[self.team_ids[0]]
+        played = event.players_by_id[self.player_ids[0][0]]
+        with (
+            EventDatabase(EVENT_ID, write=True) as database,
+            self.assertRaises(PlayerPairedError),
+        ):
+            team_1.remove_player(played, database)
+        self.assertEqual(self._load().event.players_by_id[played.id].team_id, team_1.id)
+
+    def test_a_player_who_has_played_cannot_join_another_team(self) -> None:
+        self._pair_and_play_round_1()
+        event = self._load().event
+        played = event.players_by_id[self.player_ids[0][0]]
+        with (
+            EventDatabase(EVENT_ID, write=True) as database,
+            self.assertRaises(PlayerPairedError),
+        ):
+            event.teams_by_id[self.team_ids[3]].add_player(played, database)
+        self.assertEqual(
+            self._load().event.players_by_id[played.id].team_id, self.team_ids[0]
+        )
+
+    def test_a_substitute_who_has_not_played_can_leave(self) -> None:
+        self._pair_and_play_round_1()
+        event = self._load().event
+        substitute = event.players_by_id[self.player_ids[0][BOARDS]]
+        with EventDatabase(EVENT_ID, write=True) as database:
+            event.teams_by_id[self.team_ids[0]].remove_player(substitute, database)
+        self.assertIsNone(self._load().event.players_by_id[substitute.id].team_id)
+
     def test_the_lineup_left_behind_reads_as_a_hole(self) -> None:
         self._pair_and_play_round_1()
-        moved_id = self._move_first_player_of_team_1_to_team_4()
+        moved_id = self._move_substitute_of_team_1_to_team_4()
         tournament = self._load()
         team_1 = tournament.event.teams_by_id[self.team_ids[0]]
         slots = team_1.effective_round_slots(2)

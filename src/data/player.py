@@ -357,18 +357,6 @@ class Player:
         return self.event.teams_by_id.get(team_id)
 
     @property
-    def has_been_paired(self) -> bool:
-        """True if the player has been placed on a board in any of the
-        event's tournaments (whether or not a result was entered). Used
-        to lock the team picker — moving a paired player would orphan
-        their board(s)."""
-        for tournament in self.event.tournaments:
-            tournament_player = tournament.tournament_players_by_id.get(self.id)
-            if tournament_player is not None and tournament_player.has_been_paired:
-                return True
-        return False
-
-    @property
     def fixed(self) -> int | None:
         return self.stored_player.fixed
 

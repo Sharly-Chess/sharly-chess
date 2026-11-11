@@ -54,6 +54,15 @@ class RosterFullError(Exception):
         self.max_size = max_size
 
 
+class PlayerPairedError(Exception):
+    """Raised when a player who has played for a team would leave it."""
+
+    def __init__(self, team: Team, player: Player):
+        super().__init__(f'Player {player.full_name} has pairings for team {team.name}')
+        self.team = team
+        self.player = player
+
+
 class Team:
     """A team of players competing as a unit in a team tournament."""
 
@@ -860,10 +869,18 @@ class Team:
         Appends at the end of the roster ordering.
 
         Raises :class:`RosterFullError` when adding would exceed the
-        rule-set roster cap."""
+        rule-set roster cap, and :class:`PlayerPairedError` when the player
+        has played for their previous team."""
         previous_team_id = player.stored_player.team_id
         if previous_team_id == self.id:
             return
+        previous_team = (
+            self.event.teams_by_id.get(previous_team_id)
+            if previous_team_id is not None
+            else None
+        )
+        if previous_team is not None and previous_team.has_played_for(player):
+            raise PlayerPairedError(previous_team, player)
         max_size = self.roster_max_size
         if max_size is not None and len(self.players) >= max_size:
             raise RosterFullError(self, max_size)
@@ -881,26 +898,44 @@ class Team:
         player.invalidate_team_derived_cache()
         if self.tournament is not None:
             self.tournament.register_rostered_player(player.id)
-        if previous_team_id is not None:
-            previous_team = self.event.teams_by_id.get(previous_team_id)
-            if previous_team is not None:
-                # Losing its captain to another team leaves the previous
-                # team captainless.
-                if previous_team.stored_team.captain_id == player.id:
-                    previous_team.set_captain(None, None, database)
-                previous_team._release_from_lineups(player.id, database)
-                previous_team._invalidate_players()
-                previous_team._compact_indexes(database)
-                previous_tournament = previous_team.tournament
-                if previous_tournament is not None and previous_tournament.id != (
-                    self.tournament.id if self.tournament else None
-                ):
-                    previous_tournament.unregister_rostered_player(player.id)
+        if previous_team is not None:
+            # Losing its captain to another team leaves the previous team
+            # captainless.
+            if previous_team.stored_team.captain_id == player.id:
+                previous_team.set_captain(None, None, database)
+            previous_team._release_from_lineups(player.id, database)
+            previous_team._invalidate_players()
+            previous_team._compact_indexes(database)
+            previous_tournament = previous_team.tournament
+            if previous_tournament is not None and previous_tournament.id != (
+                self.tournament.id if self.tournament else None
+            ):
+                previous_tournament.unregister_rostered_player(player.id)
+
+    def has_played_for(self, player: Player) -> bool:
+        """True if *player* has a pairing, against an opponent or a bye, in
+        this team's tournament: what they played belongs to the team, so
+        they can no longer leave it."""
+        tournament = self.tournament
+        if tournament is None:
+            return False
+        tournament_player = tournament.tournament_players_by_id.get(player.id)
+        if tournament_player is None:
+            return False
+        return any(
+            pairing.opponent_id is not None or pairing.exempt
+            for pairing in tournament_player.pairings_by_round.values()
+        )
 
     def remove_player(self, player: Player, database: EventDatabase) -> None:
-        """Remove a player from this team. Compacts remaining indexes."""
+        """Remove a player from this team. Compacts remaining indexes.
+
+        Raises :class:`PlayerPairedError` when the player has played for
+        the team."""
         if player.stored_player.team_id != self.id:
             return
+        if self.has_played_for(player):
+            raise PlayerPairedError(self, player)
         if self.stored_team.captain_id == player.id:
             self.set_captain(None, None, database)
         self._release_from_lineups(player.id, database)
