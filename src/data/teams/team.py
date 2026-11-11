@@ -402,18 +402,25 @@ class Team:
             'from teams of the same affiliation.'
         )
 
+    def _lineup_member(self, player_id: int | None) -> Player | None:
+        """The player a stored lineup entry names, while they are still on
+        this team: a player who has left it keeps no seat in its lineups."""
+        player = self.event.players_by_id.get(player_id) if player_id else None
+        if player is None or player.team_id != self.id:
+            return None
+        return player
+
     @property
     def lineups_by_round(self) -> dict[int, list[Player]]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""
         result: dict[int, list[Player]] = {}
-        players_by_id = self.event.players_by_id
         for round_, entries in self.stored_team.stored_round_lineups.items():
             ordered = sorted(entries, key=lambda e: e.index)
             result[round_] = [
-                players_by_id[entry.player_id]
+                player
                 for entry in ordered
-                if entry.player_id in players_by_id
+                if (player := self._lineup_member(entry.player_id)) is not None
             ]
         return result
 
@@ -477,10 +484,9 @@ class Team:
             n = tournament.team_player_count
         slots: list[Player | None] = [None] * n
         if self.has_explicit_round_lineup(round_):
-            players_by_id = self.event.players_by_id
             for entry in self.stored_team.stored_round_lineups[round_]:
-                if 0 <= entry.index < n and entry.player_id in players_by_id:
-                    slots[entry.index] = players_by_id[entry.player_id]
+                if 0 <= entry.index < n:
+                    slots[entry.index] = self._lineup_member(entry.player_id)
             return slots
         # No stored lineup: rounds after the first inherit the previous
         # round's lineup (chains back to round 1's roster default). The
