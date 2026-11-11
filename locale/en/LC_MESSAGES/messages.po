@@ -10828,6 +10828,14 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+#, python-brace-format
+msgid "The result of board {board} was changed to {result} by someone else in the meantime: nothing was recorded."
+msgstr ""
+
+#, python-brace-format
+msgid "The result of board {board} was cleared by someone else in the meantime: nothing was recorded."
+msgstr ""
+
 #, python-format
 msgid "The result of this game is not taken into account for the final standings because at least one of the players did not play 50%% of the games (FIDE 6.6)."
 msgstr ""
