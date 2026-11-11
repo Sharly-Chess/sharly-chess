@@ -4,13 +4,11 @@ import signal
 import socket
 import sys
 from threading import Thread
-from time import sleep
 from types import FrameType
 from typing import ClassVar
 from collections.abc import Callable
 from webbrowser import open
 
-import requests
 import uvicorn
 from litestar import Litestar
 from litestar.enums import ScopeType
@@ -25,7 +23,6 @@ from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.types import ASGIApp, Scope
 
-from common import REQUEST_TIMEOUT
 from common.installation_checker import InstallationChecker
 from common.logger import get_logger, set_logging_config
 from common.network import NetworkMonitor
@@ -59,19 +56,13 @@ _PORT_TIMEOUT = 10  # Timeout when looking for a specific port
 
 
 def launch_browser(url: str) -> None:
+    """Opens the welcome page, once the server accepts connections. The page
+    itself is not waited for: it can take longer to build than any timeout
+    (events that can't be opened, a slow disk…), and the browser shows it
+    when it comes."""
     # Set the locale as the function is called in a new thread.
     SharlyChessConfig().load_and_set_env()
     logger.info(f'Opening the welcome page [{url}] in a browser…')
-    while True:
-        try:
-            requests.get(url, timeout=REQUEST_TIMEOUT)
-            break
-        except requests.RequestException as e:
-            msg = f'Web server not started yet ({e.__class__.__name__}), waiting…'
-            if isinstance(e, requests.TooManyRedirects) and e.response is not None:
-                msg += f' History: {[r.url for r in e.response.history]}'
-            logger.info(msg)
-            sleep(1)
     open(url, new=2)
 
 
@@ -244,8 +235,13 @@ class ServerEngine:
         if InstanceLock.held:
             InstanceLock.held.publish_url(sc_config.local_url)
 
-        if sc_config.launch_browser:
-            Thread(target=launch_browser, args=(sc_config.local_url,)).start()
+        browser_url = sc_config.local_url if sc_config.launch_browser else None
+
+        def on_ready() -> None:
+            if browser_url:
+                Thread(target=launch_browser, args=(browser_url,)).start()
+            if self.on_ready:
+                self.on_ready()
 
         SnapshotScheduler.start()
 
@@ -265,7 +261,7 @@ class ServerEngine:
             log_config=logging_config,
             timeout_graceful_shutdown=5,
         )
-        server = _Server(config, on_ready=self.on_ready)
+        server = _Server(config, on_ready=on_ready)
         self.__class__.server = server
 
         # The handler each signal already had. Replacing it outright drops

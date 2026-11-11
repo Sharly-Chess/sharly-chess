@@ -1,7 +1,7 @@
 import re
 import shutil
 import sqlite3
-from time import perf_counter
+from time import monotonic, perf_counter
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import date, datetime
@@ -39,6 +39,10 @@ from utils.enum import EventOrigin, Extension
 
 logger: Logger = get_logger()
 
+# Seconds during which a scan of the events does not try again an event file
+# that could not be opened.
+INACCESSIBLE_EVENT_RETRY_DELAY: float = 30
+
 
 class EventLoader:
     _valid_event_ids: ClassVar[set[str]] = set()
@@ -48,6 +52,11 @@ class EventLoader:
     # _invalid_uniq_ids so they are retried on each scan and recover once the file
     # becomes accessible again.
     _inaccessible_uniq_ids: ClassVar[set[str]] = set()
+    # When each inaccessible event was last tried. On Windows, SQLite insists
+    # for about 1.5 seconds before giving up on a file it is refused, and a page
+    # scans the events several times: retrying on every scan would make each
+    # page wait that long for every inaccessible event, again and again.
+    _inaccessible_tried_at: ClassVar[dict[str, float]] = {}
     # Event files present on disk holding something that is not a readable
     # database any more. Kept apart from _invalid_uniq_ids so that they are
     # listed rather than quietly dropped: a damaged event is the one whose
@@ -83,6 +92,7 @@ class EventLoader:
             cls._valid_event_ids.discard(uniq_id)
             cls._invalid_uniq_ids.discard(uniq_id)
             cls._inaccessible_uniq_ids.discard(uniq_id)
+            cls._inaccessible_tried_at.pop(uniq_id, None)
             cls._corrupted_uniq_ids.discard(uniq_id)
             cls.load_event_ids()
 
@@ -97,11 +107,20 @@ class EventLoader:
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
         cls._clean_not_existing_event_database_files(cls._inaccessible_uniq_ids)
+        for event_id in cls._inaccessible_tried_at.keys() - cls._inaccessible_uniq_ids:
+            del cls._inaccessible_tried_at[event_id]
         cls._clean_not_existing_event_database_files(cls._corrupted_uniq_ids)
         # Inaccessible and corrupted ids are deliberately excluded so they are
         # retried: a locked file may become readable again once the lock is
         # released, and a damaged one once a snapshot has been restored over it.
         known_event_ids = cls._valid_event_ids | cls._invalid_uniq_ids
+        if uniq_id is None:
+            now = monotonic()
+            known_event_ids |= {
+                event_id
+                for event_id, tried_at in cls._inaccessible_tried_at.items()
+                if now - tried_at < INACCESSIBLE_EVENT_RETRY_DELAY
+            }
         metadata_by_event_id: dict[str, EventMetadata] = {}
         for event_id in event_ids:
             if event_id in known_event_ids:
@@ -110,11 +129,13 @@ class EventLoader:
                 metadata_by_event_id[event_id] = cls.check_event_database(event_id)
                 cls._valid_event_ids.add(event_id)
                 cls._inaccessible_uniq_ids.discard(event_id)
+                cls._inaccessible_tried_at.pop(event_id, None)
                 cls._corrupted_uniq_ids.discard(event_id)
                 cls._last_known_metadata[event_id] = metadata_by_event_id[event_id]
             except DatabaseInaccessibleException as e:
                 logger.debug('Event [%s] could not be opened: %s', event_id, e)
                 cls._inaccessible_uniq_ids.add(event_id)
+                cls._inaccessible_tried_at[event_id] = monotonic()
             except DatabaseCorruptedException as e:
                 logger.debug('Event [%s] could not be read: %s', event_id, e)
                 cls._corrupted_uniq_ids.add(event_id)
@@ -202,7 +223,12 @@ class EventLoader:
         the event's uniq_id otherwise."""
         uniq_id = self.get_unused_event_uniq_id(self.format_uniq_id(file_path.stem))
         new_path = EventDatabase.event_database_path(uniq_id)
-        shutil.move(file_path, new_path)
+        # Copied rather than moved: a moved file keeps the permissions of the
+        # folder it was uploaded to, which on Windows only open it to whoever
+        # created it. Uploaded by Sharly Chess run as administrator, the event
+        # could then no longer be opened once Sharly Chess is run normally.
+        shutil.copyfile(file_path, new_path)
+        file_path.unlink(missing_ok=True)
         try:
             EventLoader.check_event_database(uniq_id)
             # Tag ids are only meaningful within the installation that
