@@ -138,6 +138,17 @@ $(document).on('hide.bs.modal', function (e) {
         e.preventDefault();
         window.dispatchEvent(new CustomEvent('request_refresh'));
         refreshRequested = false;
+    } else if (e.target.id === 'modal-wrapper') {
+        // Bootstrap shows the modal as soon as its trigger is tapped, before
+        // the new content arrives: until then the closing modal's buttons
+        // would be shown again, and act on what that modal was about.
+        $(e.target).children().attr('inert', '');
+    }
+});
+
+$(document).on('hidden.bs.modal', function (e) {
+    if (e.target.id === 'modal-wrapper') {
+        e.target.innerHTML = document.getElementById('empty-modal-template').innerHTML;
     }
 });
 

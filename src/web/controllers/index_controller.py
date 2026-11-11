@@ -79,18 +79,6 @@ class IndexController(BaseController):
         return IndexAdminController._admin_render(web_context)
 
     @get(
-        path='/empty-modal',
-        name='empty-modal',
-    )
-    async def empty_modal(
-        self,
-    ) -> Template:
-        return HTMXTemplate(
-            template_name='common/empty_modal.html',
-            re_target='#modal-wrapper',
-        )
-
-    @get(
         path='/favicon.ico',
         name='favicon',
         cache=CACHE_FOREVER,
