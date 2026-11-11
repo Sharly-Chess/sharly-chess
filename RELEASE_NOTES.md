@@ -112,6 +112,7 @@
 - Image screens can show a timer, the image then starting below it (5.2.0)
 - On a slow network, the result window of an input screen no longer shows the previous game's buttons while the next game is loading, which recorded the result tapped for the previous game instead of the one chosen (5.2.6)
 - A result entered on an input screen is refused, with a warning, when another device has changed the game's result since the window opened, and an illegal move tapped twice or sent twice on a slow network is counted once (5.2.6)
+- The team ranking screens show the tie-breaks where the lowest value wins, such as the lowest own average rating of the Loubatière cup, as positive values, as the admin view and the printed documents do (5.2.6)
 
 ## _Sharly-Chess.com_
 
