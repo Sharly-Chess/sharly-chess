@@ -12183,6 +12183,12 @@ msgid "Updating"
 msgstr "Mise à jour"
 
 #, python-format
+msgid "Updating records the list the rating of %(num)d player now comes from, without changing it."
+msgid_plural "Updating records the list the ratings of %(num)d players now come from, without changing them."
+msgstr[0] "La mise à jour enregistre la liste dont provient désormais le classement de %(num)d joueur·euse, sans le modifier."
+msgstr[1] "La mise à jour enregistre la liste dont proviennent désormais les classements de %(num)d joueur·euses, sans les modifier."
+
+#, python-format
 msgid "Updating the lists: %(lists)s. The check is run again once they are up to date."
 msgstr "Mise à jour des listes : %(lists)s. La vérification est relancée une fois qu’elles sont à jour."
 

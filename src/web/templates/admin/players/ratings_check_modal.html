@@ -104,6 +104,15 @@
                 {% endif %}
                 {% if not changes and not arbiter_values %}
                     <p>{{ _('The ratings of all the players are up to date.') }}</p>
+                    {% if rating_check.source_updates %}
+                        <p class="form-text">
+                            {{ ngettext(
+                                'Updating records the list the rating of %(num)d player now comes from, without changing it.',
+                                'Updating records the list the ratings of %(num)d players now come from, without changing them.',
+                                rating_check.source_updates|length,
+                            ) }}
+                        </p>
+                    {% endif %}
                 {% endif %}
                 {% if rating_check.not_found %}
                     <p class="form-text text-warning">
