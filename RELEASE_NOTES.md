@@ -43,6 +43,9 @@
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
 - The player search of the player form works again when a tournament is restricted to a club whose name contains an apostrophe (5.2.3)
 - The Update button of the local _FIDE_ database rebuilds it, instead of doing nothing when _FIDE_ had not published a newer list since the copy was installed (5.2.4)
+- A player who replaces another is given their own ratings, instead of the ratings of the player replaced (5.2.6)
+- The ratings update proposes to drop a _FIDE_ rating the _FIDE_ list no longer gives, in favour of the rating the national list gives, such as the 1399 estimate of the _FFE_ for a player who lost their _FIDE_ rating (5.2.6)
+- When the ratings update only has the sources of some ratings to bring up to date, the window says so, instead of saying that all the ratings are up to date beside an enabled Update button (5.2.6)
 
 ## Teams
 
