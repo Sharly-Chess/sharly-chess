@@ -570,6 +570,8 @@ class CustomUploadUploader:
     @staticmethod
     def _does_remote_path_exist_sftp(sftp_client: SFTPClient, remote_path: str) -> bool:
         try:
+            if not remote_path:
+                return True
             sftp_client.stat(remote_path)
         except FileNotFoundError:
             return False
@@ -578,7 +580,7 @@ class CustomUploadUploader:
     @staticmethod
     def _does_remote_path_exist_ftp(ftp_client: ftplib.FTP, remote_path: str) -> bool:
         try:
-            if 'type=dir;' in ftp_client.sendcmd(f'MLST {remote_path}'):
+            if not remote_path or 'type=dir;' in ftp_client.sendcmd(f'MLST {remote_path}'):
                 return True
         except error_perm:
             return False
