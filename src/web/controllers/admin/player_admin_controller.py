@@ -959,7 +959,9 @@ class PlayerAdminController(BaseEventAdminController):
                     # The fields hold the period being played, which is
                     # what an edit records (see
                     # ``_ratings_for_current_period``).
-                    ratings |= cls._current_period_ratings(admin_player, stored_player)
+                    ratings |= cls._current_period_ratings(
+                        None if search_stored_player else admin_player, stored_player
+                    )
                     title = stored_player.title
                     women_title = stored_player.women_title
                     federation = stored_player.federation

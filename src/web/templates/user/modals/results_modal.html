@@ -48,7 +48,7 @@
 {% endif %}
 {% set locked = board.result and not client.can_update_results(tournament.id) %}
 {% macro request_attributes(result) %}
-    hx-put="{{ result_update_url(result) }}"
+    hx-put="{{ result_update_url(result)|trim }}?shown={{ board.result.value }}"
     hx-target="#user-screen-content"
     hx-swap="morphdom"
     hx-indicator="#please-wait"

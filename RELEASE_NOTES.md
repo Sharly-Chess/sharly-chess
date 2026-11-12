@@ -44,6 +44,9 @@
 - The payment column of the players tab can be shown even when no player has fees; it is hidden by default (5.2.0)
 - The player search of the player form works again when a tournament is restricted to a club whose name contains an apostrophe (5.2.3)
 - The Update button of the local _FIDE_ database rebuilds it, instead of doing nothing when _FIDE_ had not published a newer list since the copy was installed (5.2.4)
+- A player who replaces another is given their own ratings, instead of the ratings of the player replaced (5.2.6)
+- The ratings update proposes to drop a _FIDE_ rating the _FIDE_ list no longer gives, in favour of the rating the national list gives, such as the 1399 estimate of the _FFE_ for a player who lost their _FIDE_ rating (5.2.6)
+- When the ratings update only has the sources of some ratings to bring up to date, the window says so, instead of saying that all the ratings are up to date beside an enabled Update button (5.2.6)
 
 ## Teams
 
@@ -97,6 +100,7 @@
 - The team selector of the documents lists the teams by name instead of in pairing order (5.2.4)
 - On the standard team place card, the captain is printed under the team name instead of over the event name, and in the light admin view the previews of the place card templates are outlined so that the edges of the cards can be seen (5.2.5)
 - A new arbiter norm report fills in the _FIDE_ Arbiter (FA1) or International Arbiter (IA1) norm form for the candidate chosen, with the figures of the tournaments chosen and, when one is chosen, the signee; every field can be edited before printing or downloading the form as a Word file (5.2.5)
+- Opened from the pairings tab, the documents window proposes the round displayed, including after the next round has just been paired, instead of the round displayed when the tab was first opened (5.2.6)
 
 ## Screens
 
@@ -106,6 +110,8 @@
 - On the result entry screens, the games still to enter show an Enter button and the games entered step back, the last entry staying highlighted in green; on a phone, each game is a card. The result and check-in windows have large buttons, with the arbiter's forfeits set apart, and the buttons respond reliably on tablets (5.2.0)
 - The timers and the alert message have fixed colours, a timer turning from green to orange then red and the message showing in a yellow band; the colours can no longer be chosen in the timer and screen settings (5.2.0)
 - Image screens can show a timer, the image then starting below it (5.2.0)
+- On a slow network, the result window of an input screen no longer shows the previous game's buttons while the next game is loading, which recorded the result tapped for the previous game instead of the one chosen (5.2.6)
+- A result entered on an input screen is refused, with a warning, when another device has changed the game's result since the window opened, and an illegal move tapped twice or sent twice on a slow network is counted once (5.2.6)
 
 ## _Sharly-Chess.com_
 
@@ -126,3 +132,4 @@
 
 - The French schools database can be installed in the Linux Flatpak version (5.2.2)
 - The French schools database is no longer offered for installation from a file, and the other databases can be installed from a file of any size (5.2.2)
+- A school can be added to an event while the French schools database is not installed or is still downloading, by entering its name, city and postal code, instead of the add button staying disabled (5.2.6)

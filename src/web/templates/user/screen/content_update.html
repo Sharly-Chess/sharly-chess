@@ -1,0 +1,8 @@
+{% include '/user/screen/content.html' %}
+{# djlint:off H053 #}
+{% if messages %}
+    <div id="messages" hx-swap-oob="beforeend">
+        {% include '/common/messages.html' %}
+    </div>
+{% endif %}
+{# djlint:on #}

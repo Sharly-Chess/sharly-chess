@@ -134,7 +134,11 @@ class SetResultGuard(BaseGuard):
         board = RequestUtils.get_board(request)
         result = RequestUtils.get_result(request)
         self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
-        if not board.no_result:
+        # A result entered from a screen that showed another one is not
+        # recorded but answered with what the board now holds, which a client
+        # only allowed to enter results is entitled to be told.
+        shown = request.query_params.get('shown')
+        if not board.no_result and shown in (None, str(board.result.value)):
             self._authorize_tournament_action(
                 AuthAction.UPDATE_RESULTS, client, request
             )

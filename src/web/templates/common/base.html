@@ -167,11 +167,12 @@
                     style="display: none"
                     aria-hidden="false"
                     tabindex="-1"
-                    hx-trigger="hidden.bs.modal"
-                    hx-get="{{ url_for('empty-modal') }}"
                 >
                     {% include 'empty_modal.html' %}
                 </div>
+                <template id="empty-modal-template">
+                    {% include 'empty_modal.html' %}
+                </template>
             </div>
             <script>
                 closeTooltips();

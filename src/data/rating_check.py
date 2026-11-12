@@ -517,16 +517,16 @@ async def check_ratings(event: Event, players: list[Player]) -> RatingCheck:
             _set_listed(listed, PlayerRatingType.FIDE, national_ratings, source)
         if fide_match is not None:
             fide_ratings = _stored_ratings(fide_match)
+            _set_listed(
+                listed,
+                PlayerRatingType.FIDE,
+                fide_ratings,
+                FideDataSource.static_id(),
+            )
             for tournament_rating in Cadence:
-                fide_rating = fide_ratings[tournament_rating]
-                rating = listed[tournament_rating]
-                if fide_rating.fide is not None:
-                    rating.set_value_from_type(
-                        fide_rating.fide,
-                        PlayerRatingType.FIDE,
-                        fide_rating.origins.get(PlayerRatingType.FIDE),
-                    )
-                rating.k_factor = fide_rating.k_factor
+                listed[tournament_rating].k_factor = fide_ratings[
+                    tournament_rating
+                ].k_factor
             _k_factors(
                 player,
                 current,
