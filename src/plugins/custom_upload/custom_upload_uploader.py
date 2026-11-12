@@ -1,6 +1,5 @@
 from typing import ClassVar
 import ftplib
-import os.path
 import socket
 import ssl
 import time
@@ -233,12 +232,9 @@ class CustomUploadUploader:
                 # Host or username is missing, we can't upload
                 return
 
-            target_path = (
+            target_path, base_target_path = cls._remote_target_paths(
                 document.server_path or event_plugin_data.default_server_path or ''
             )
-            # A path on the remote FTP server, not a local one: it is always
-            # POSIX, whatever the machine running the upload.
-            base_target_path = os.path.dirname(target_path)  # noqa: PTH120
             port = port or transfer_protocol.default_port
 
             logger.info(
@@ -566,6 +562,17 @@ class CustomUploadUploader:
                 cls.upload_document(event_uniq_id, document.id, http_client)
 
         Thread(target=_run, daemon=True).start()
+
+    @staticmethod
+    def _remote_target_paths(server_path: str) -> tuple[str, str]:
+        """Return the remote target directory and its parent directory.
+
+        Remote paths are always POSIX, whatever the machine running the upload.
+        A relative path with a single component has the login directory ('.')
+        as its parent, and an empty path targets the login directory itself.
+        """
+        target_path = server_path or '.'
+        return target_path, str(PurePosixPath(target_path).parent)
 
     @staticmethod
     def _does_remote_path_exist_sftp(sftp_client: SFTPClient, remote_path: str) -> bool:
