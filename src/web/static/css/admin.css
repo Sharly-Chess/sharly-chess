@@ -86,7 +86,7 @@
 .modal-table-sticky-header {
     z-index: 2 !important;
     position: sticky !important;
-    top: -1em;
+    top: calc(-1 * var(--sc-modal-body-padding-top, 1rem));
 }
 
 .error-cell {
