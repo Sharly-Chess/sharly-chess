@@ -217,13 +217,14 @@ class TestSnapshotDirSetting:
         with the folder one returns."""
         assert SharlyChessConfig().snapshot_dir.is_absolute()
 
-    def test_the_folder_the_user_names_is_the_folder_used(self, monkeypatch):
+    def test_the_folder_the_user_names_is_the_folder_used(self, monkeypatch, tmp_path):
+        folder = tmp_path / 'my-folder'
         monkeypatch.setattr(
-            SharlyChessConfig().stored_config, 'snapshot_dir', '/tmp/my-folder'
+            SharlyChessConfig().stored_config, 'snapshot_dir', str(folder)
         )
         config = SharlyChessConfig()
 
-        assert config.snapshot_dir == Path('/tmp/my-folder')
+        assert config.snapshot_dir == folder
         assert not config.snapshot_dir_is_default
 
     def test_nothing_of_the_user_is_removed_from_their_folder(
@@ -1276,8 +1277,7 @@ class TestArchiveLifecycle:
         snapshot_count = len(SnapshotLoader.snapshots(self.EVENT_ID))
         assert snapshot_count
 
-        with EventDatabase(self.EVENT_ID, write=True) as database:
-            archive_file = database.delete()
+        archive_file = EventDatabase(self.EVENT_ID).delete()
         archive_stem = archive_file.stem
 
         assert not snapshots_dir(self.EVENT_ID).is_dir()
@@ -1299,8 +1299,7 @@ class TestArchiveLifecycle:
         takes away what is left of the events it knows."""
         TestUtils.create_event(self.EVENT_ID)
         write_snapshot(self.EVENT_ID, SnapshotReason.BEFORE_PAIRING)
-        with EventDatabase(self.EVENT_ID, write=True) as database:
-            database.delete()
+        EventDatabase(self.EVENT_ID).delete()
         directory = snapshots_dir(self.EVENT_ID)
         directory.mkdir(parents=True, exist_ok=True)
         aged(directory)
@@ -1329,8 +1328,7 @@ class TestArchiveLifecycle:
         write_snapshot(uniq_id, SnapshotReason.BEFORE_PAIRING)
         snapshot_count = len(SnapshotLoader.snapshots(uniq_id))
 
-        with EventDatabase(uniq_id, write=True) as database:
-            database.rename(renamed)
+        EventDatabase(uniq_id).rename(renamed)
 
         assert len(SnapshotLoader.snapshots(renamed)) == snapshot_count
         assert not snapshots_dir(uniq_id).is_dir()
@@ -1347,8 +1345,7 @@ class TestArchiveLifecycle:
             database.execute('UPDATE `info` SET `name` = ?', ('Changed, then deleted',))
         assert SnapshotScheduler.pending(self.EVENT_ID), 'nothing was asked for'
 
-        with EventDatabase(self.EVENT_ID, write=True) as database:
-            database.delete()
+        EventDatabase(self.EVENT_ID).delete()
 
         assert not SnapshotScheduler.pending(self.EVENT_ID)
         assert not SnapshotScheduler.status(self.EVENT_ID).is_failing
@@ -1363,8 +1360,7 @@ class TestArchiveLifecycle:
             database.execute('UPDATE `info` SET `name` = ?', ('Changed, then renamed',))
         assert SnapshotScheduler.pending(uniq_id), 'nothing was asked for'
 
-        with EventDatabase(uniq_id, write=True) as database:
-            database.rename(renamed)
+        EventDatabase(uniq_id).rename(renamed)
 
         assert not SnapshotScheduler.pending(uniq_id)
         EventLoader.unload_event(renamed)

@@ -6,11 +6,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, ClassVar, Self
 
-if sys.platform == 'win32':
-    import msvcrt
-else:
-    import fcntl
-
 LOCK_FILE_NAME = '.instance.lock'
 
 # The information on the running instance is written at the start of the file,
@@ -24,6 +19,26 @@ _LOCK_OFFSET = 1 << 20
 #: and the lock lives as long as the process, which outlives its window.
 _WAIT_SECONDS = 5.0
 _RETRY_SECONDS = 0.25
+
+if sys.platform == 'win32':
+    import msvcrt
+
+    def _lock(fd: int) -> None:
+        os.lseek(fd, _LOCK_OFFSET, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+
+    def _unlock(fd: int) -> None:
+        os.lseek(fd, _LOCK_OFFSET, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+
+else:
+    import fcntl
+
+    def _lock(fd: int) -> None:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def _unlock(fd: int) -> None:
+        fcntl.flock(fd, fcntl.LOCK_UN)
 
 
 class InstanceLock:
@@ -47,11 +62,7 @@ class InstanceLock:
             self.file, os.O_RDWR | os.O_CREAT | getattr(os, 'O_BINARY', 0), 0o644
         )
         try:
-            if sys.platform == 'win32':
-                os.lseek(fd, _LOCK_OFFSET, os.SEEK_SET)
-                msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
-            else:
-                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            _lock(fd)
         except OSError:
             os.close(fd)
             return False
@@ -72,11 +83,7 @@ class InstanceLock:
     def release(self) -> None:
         if self._fd is None:
             return
-        if sys.platform == 'win32':
-            os.lseek(self._fd, _LOCK_OFFSET, os.SEEK_SET)
-            msvcrt.locking(self._fd, msvcrt.LK_UNLCK, 1)
-        else:
-            fcntl.flock(self._fd, fcntl.LOCK_UN)
+        _unlock(self._fd)
         os.close(self._fd)
         self._fd = None
         if InstanceLock.held is self:
