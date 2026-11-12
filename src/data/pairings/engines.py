@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 logger = get_logger()
 
 #: How long bbpPairings may take, when it pairs even large fields in seconds.
-BBP_TIMEOUT_SECONDS = 120
+BBP_TIMEOUT_SECONDS = 30
 
 BBP_FILES_DIR = TMP_DIR / 'bbp-pairings'
 
