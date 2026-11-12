@@ -580,7 +580,9 @@ class CustomUploadUploader:
     @staticmethod
     def _does_remote_path_exist_ftp(ftp_client: ftplib.FTP, remote_path: str) -> bool:
         try:
-            if not remote_path or 'type=dir;' in ftp_client.sendcmd(f'MLST {remote_path}'):
+            if not remote_path or 'type=dir;' in ftp_client.sendcmd(
+                f'MLST {remote_path}'
+            ):
                 return True
         except error_perm:
             return False
