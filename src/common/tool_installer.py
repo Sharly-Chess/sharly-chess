@@ -336,7 +336,7 @@ class BbpPairingsInstaller(ExecutableInstaller):
     @property
     def _sc_sub_version(self) -> int | None:
         """Sharly Chess subversion of the BbpPairings release."""
-        return 7
+        return 8
 
     @property
     def _full_version(self) -> str:

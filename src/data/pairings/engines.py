@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cache
@@ -16,7 +17,11 @@ from data.pairings.bbp_history import (
 )
 from typing import override
 
-from common.exception import PairingEngineError, SharlyChessException
+from common.exception import (
+    PairingEngineError,
+    PairingEngineTimeout,
+    SharlyChessException,
+)
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -43,6 +48,54 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 logger = get_logger()
+
+#: How long bbpPairings may take, when it pairs even large fields in seconds.
+BBP_TIMEOUT_SECONDS = 30
+
+BBP_FILES_DIR = TMP_DIR / 'bbp-pairings'
+
+
+def keep_bbp_file(file: Path, name: str) -> Path | None:
+    """Copies a bbpPairings file into the temporary folder, for the arbiter
+    to send when a pairing goes wrong. Returns the copy, None if it failed."""
+    try:
+        BBP_FILES_DIR.mkdir(parents=True, exist_ok=True)
+        return Path(shutil.copy(file, BBP_FILES_DIR / name))
+    except OSError as e:
+        logger.exception('Error keeping the BbpPairings file [%s]: %s', name, e)
+        return None
+
+
+def run_bbp(
+    tournament: Tournament, system: str, input_file: Path, *options: str | Path
+) -> subprocess.CompletedProcess[str]:
+    """Runs bbpPairings with the pairing *system* flag on *input_file*, kept
+    beforehand so that a run that never ends still leaves its input behind.
+    Raises a :class:`PairingEngineTimeout` when it does not answer in
+    time."""
+    kept_input = keep_bbp_file(
+        input_file, f'{tournament.sanitized_name}-{input_file.name}'
+    )
+    try:
+        return Utils.run_process(
+            [BbpPairingsInstaller().executable_path, system, input_file, *options],
+            capture_output=True,
+            encoding='utf-8',
+            timeout=BBP_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired as e:
+        detail = _(
+            'The pairing engine did not answer within {seconds} seconds.'
+        ).format(seconds=BBP_TIMEOUT_SECONDS)
+        if kept_input is not None:
+            detail += ' ' + _(
+                'Please send the file [{file}] to the Sharly Chess team.'
+            ).format(file=kept_input)
+        raise PairingEngineTimeout(
+            f'{tournament.log_prefix}BbpPairings did not answer within '
+            f'{BBP_TIMEOUT_SECONDS} seconds on [{kept_input or input_file}].',
+            detail=detail,
+        ) from e
 
 
 class PairingEngine(ABC):
@@ -143,13 +196,13 @@ class PairingEngine(ABC):
         # (possibly relaxed) effective 260 set is fed to bbp as an
         # override. Complementary reuses the frozen snapshot groups.
         prohibited_override = None
-        if not partial_pairings and self.honors_prohibited_pairings:
-            error, prohibited_override = self._resolve_and_snapshot_prohibited(
-                tournament, round_
-            )
-            if error:
-                return error
         try:
+            if not partial_pairings and self.honors_prohibited_pairings:
+                error, prohibited_override = self._resolve_and_snapshot_prohibited(
+                    tournament, round_
+                )
+                if error:
+                    return error
             stored_boards = self._generate_stored_boards(
                 tournament,
                 round_,
@@ -420,16 +473,8 @@ class BbpPairings(PairingEngine):
                 from data.input_output.trf.trf_serializer import TrfSerializer
 
                 TrfSerializer.dump(trf_file, trf_tournament)
-            result = Utils.run_process(
-                [
-                    self.executable_path,
-                    '--dutch',
-                    trf_file_path,
-                    '-p',
-                    pairings_file_path,
-                ],
-                capture_output=True,
-                encoding='utf-8',
+            result = run_bbp(
+                tournament, '--dutch', trf_file_path, '-p', pairings_file_path
             )
             # bbp opens the output file before it computes the matching, so a
             # failure (e.g. NO_VALID_PAIRING) leaves an *empty* file behind:
@@ -454,21 +499,10 @@ class BbpPairings(PairingEngine):
                     f'stdout: {result.stdout}\nstderr: {result.stderr}',
                     detail=detail,
                 )
-            try:
-                bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
-                bbp_tmp_dir.mkdir(parents=True, exist_ok=True)
-                shutil.copy(
-                    trf_file_path,
-                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-input.trfx',
-                )
-                shutil.copy(
-                    pairings_file_path,
-                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
-                )
-            except PermissionError as e:
-                logger.exception(
-                    'Error logging the BbpPairings input / output files: %s', e
-                )
+            keep_bbp_file(
+                pairings_file_path,
+                f'{tournament.sanitized_name}-{pairings_file_path.name}',
+            )
             with open(pairings_file_path, encoding='utf-8') as pairing_file:
                 return self._boards_from_file(
                     pairing_file, tournament, round_, partial_pairings
@@ -528,20 +562,16 @@ class BbpPairings(PairingEngine):
                 from data.input_output.trf.trf_serializer import TrfSerializer
 
                 TrfSerializer.dump(trf_file, trf_tournament)
-            result = Utils.run_process(
-                [
-                    self.executable_path,
-                    '--dutch',
-                    trfx_file_path,
-                    # The only way to get a checklist is to actually pair the round....
-                    '-p',
-                    pairings_file_path,
-                    # Request the checklist
-                    '-l',
-                    checklist_file_path,
-                ],
-                capture_output=True,
-                encoding='utf-8',
+            result = run_bbp(
+                tournament,
+                '--dutch',
+                trfx_file_path,
+                # The only way to get a checklist is to actually pair the round....
+                '-p',
+                pairings_file_path,
+                # Request the checklist
+                '-l',
+                checklist_file_path,
             )
             if not checklist_file_path.exists() or not pairings_file_path.exists():
                 raise SharlyChessException(
@@ -549,24 +579,9 @@ class BbpPairings(PairingEngine):
                     f'from BbpPairings failed with status {result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
-            try:
-                bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
-                bbp_tmp_dir.mkdir(parents=True, exist_ok=True)
-                shutil.copy(
-                    trfx_file_path,
-                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-input.trfx',
-                )
-                shutil.copy(
-                    pairings_file_path,
-                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
-                )
-                shutil.copy(
-                    checklist_file_path,
-                    bbp_tmp_dir / f'{tournament.sanitized_name}-checklist-output.txt',
-                )
-            except PermissionError as e:
-                logger.exception(
-                    'Error logging the BbpPairings input / output files: %s', e
+            for output_file in (pairings_file_path, checklist_file_path):
+                keep_bbp_file(
+                    output_file, f'{tournament.sanitized_name}-{output_file.name}'
                 )
             with open(checklist_file_path, encoding='utf-8') as file:
                 text_content = file.read()
@@ -587,6 +602,8 @@ class BbpPairings(PairingEngine):
                 partial_pairings=False,
                 prohibited_pairing_override=prohibited_lines,
             )
+        except PairingEngineTimeout:
+            raise
         except Exception:
             return False
         return len(boards) > 0
@@ -1274,14 +1291,14 @@ class TeamSwissEngine(TeamPairingEngine):
         # generating. The snapshot keeps the configured groups; the
         # (possibly relaxed) effective 260 set is fed to bbp as override.
         prohibited_override = None
-        if not partial_pairings:
-            error, prohibited_override = self._resolve_and_snapshot_prohibited(
-                tournament, round_
-            )
-            if error:
-                return error
         teams = self._teams_for_tournament(tournament)
         try:
+            if not partial_pairings:
+                error, prohibited_override = self._resolve_and_snapshot_prohibited(
+                    tournament, round_
+                )
+                if error:
+                    return error
             team_pairs = self._run_team_bbp(
                 tournament,
                 round_,
@@ -1289,6 +1306,9 @@ class TeamSwissEngine(TeamPairingEngine):
                 partial_pairings=partial_pairings,
                 prohibited_pairing_override=prohibited_override,
             )
+        except PairingEngineTimeout as e:
+            logger.exception(e)
+            return _('Pairing generation failed: {details}').format(details=e.detail)
         except Exception as e:
             logger.exception(e)
             return _('An error occurred. Consult the logs for more details.')
@@ -1328,6 +1348,8 @@ class TeamSwissEngine(TeamPairingEngine):
                 partial_pairings=False,
                 prohibited_pairing_override=prohibited_lines,
             )
+        except PairingEngineTimeout:
+            raise
         except Exception:
             return False
         return bool(team_pairs)
@@ -1380,19 +1402,15 @@ class TeamSwissEngine(TeamPairingEngine):
             checklist_path = pairings_dir / 'team-checklist-output.txt'
             with open(trf_path, 'w', encoding='utf-8') as file:
                 TrfSerializer.dump(file, trf_tournament)
-            result = Utils.run_process(
-                [
-                    self.executable_path,
-                    '--team',
-                    trf_path,
-                    # The checklist is only written when a round is paired.
-                    '-p',
-                    out_path,
-                    '-l',
-                    checklist_path,
-                ],
-                capture_output=True,
-                encoding='utf-8',
+            result = run_bbp(
+                tournament,
+                '--team',
+                trf_path,
+                # The checklist is only written when a round is paired.
+                '-p',
+                out_path,
+                '-l',
+                checklist_path,
             )
             if not checklist_path.exists():
                 raise SharlyChessException(
@@ -1428,17 +1446,7 @@ class TeamSwissEngine(TeamPairingEngine):
             out_path = pairings_dir / 'team-pairings-output.txt'
             with open(trf_path, 'w', encoding='utf-8') as f:
                 TrfSerializer.dump(f, trf_tournament)
-            result = Utils.run_process(
-                [
-                    self.executable_path,
-                    '--team',
-                    trf_path,
-                    '-p',
-                    out_path,
-                ],
-                capture_output=True,
-                encoding='utf-8',
-            )
+            result = run_bbp(tournament, '--team', trf_path, '-p', out_path)
             if not out_path.exists():
                 raise SharlyChessException(
                     f'{tournament.log_prefix}round {round_} - Team pairing '
@@ -1446,24 +1454,7 @@ class TeamSwissEngine(TeamPairingEngine):
                     f'{result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
-            try:
-                bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
-                bbp_tmp_dir.mkdir(parents=True, exist_ok=True)
-                shutil.copy(
-                    trf_path,
-                    bbp_tmp_dir
-                    / f'{tournament.sanitized_name}-team-pairings-input.trfx',
-                )
-                shutil.copy(
-                    out_path,
-                    bbp_tmp_dir
-                    / f'{tournament.sanitized_name}-team-pairings-output.txt',
-                )
-            except PermissionError as e:
-                logger.exception(
-                    'Error logging the team BbpPairings input / output files: %s',
-                    e,
-                )
+            keep_bbp_file(out_path, f'{tournament.sanitized_name}-{out_path.name}')
             team_by_trf_id = {trf_id_by_team_id[team.id]: team for team in teams}
             with open(out_path, encoding='utf-8') as f:
                 return self._parse_team_pairs(f, team_by_trf_id)

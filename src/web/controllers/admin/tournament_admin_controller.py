@@ -3544,7 +3544,7 @@ class TournamentAdminController(BaseEventAdminController):
         players = [
             player
             for player in tournament.tournament_players
-            if not player.has_real_pairings
+            if player.paired_tournament is None
         ]
         for player in players:
             event.delete_player(player)

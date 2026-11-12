@@ -305,7 +305,7 @@ class TrfExport:
             'TL': float(match_points.get(Result.LOSS, 0.0)),
         }
         tpn_map = self._team_tpn_map()
-        rosters = self._team_rosters(after_round=after_round, window=window)
+        rosters = self._team_rosters()
         trf.team_pabs = self._team_pabs_record(
             after_round=after_round, tpn_by_team_id=tpn_map, window=window
         )
@@ -415,36 +415,24 @@ class TrfExport:
             after_round=after_round, tpn_by_team_id=tpn_map, window=window
         )
 
-    def _team_rosters(
-        self, *, after_round: int, window: ReportWindow | None
-    ) -> dict[int, list[TournamentPlayer]]:
-        """Each team's 310 roster, ``team.id`` → players in roster order:
-        the board order of a round first (capped at the board count),
-        then the remaining roster members as substitutes, so a
-        never-fielded player still round-trips through the team record on
-        re-import. A period's file takes the board order of its last
-        round."""
-        tournament = self.tournament
-        team_player_count = tournament.team_player_count or 0
-        tp_by_player_id = {tp.id: tp for tp in tournament.tournament_players}
-        lineup_round = window.last_round if window else after_round + 1
-        rosters: dict[int, list[TournamentPlayer]] = {}
-        for team in tournament.teams:
-            lineup = team.effective_round_lineup(lineup_round)[:team_player_count]
-            ordered_members = list(lineup)
-            seen_ids = {member.id for member in lineup}
-            for member in team.players:
-                if member.id not in seen_ids:
-                    ordered_members.append(member)
-                    seen_ids.add(member.id)
-            members: list[TournamentPlayer] = []
-            for member in ordered_members:
-                tp = tp_by_player_id.get(member.id)
-                if tp is None or tp.pairing_number is None:
-                    continue
-                members.append(tp)
-            rosters[team.id] = members
-        return rosters
+    def _team_rosters(self) -> dict[int, list[TournamentPlayer]]:
+        """Each team's 310 roster, ``team.id`` → players in the team's
+        registration order, substitutes included. TRF-2026 makes it the
+        board order a team follows by default, the 300 records giving
+        the lineups each round actually fielded."""
+        tp_by_player_id = {
+            tp.id: tp
+            for tp in self.tournament.tournament_players
+            if tp.pairing_number is not None
+        }
+        return {
+            team.id: [
+                tp_by_player_id[member.id]
+                for member in team.players
+                if member.id in tp_by_player_id
+            ]
+            for team in self.tournament.teams
+        }
 
     def _window_team_ranks(
         self, teams: list[Team], team_totals: dict[int, tuple[float, float]]

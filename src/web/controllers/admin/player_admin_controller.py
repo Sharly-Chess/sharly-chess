@@ -1064,12 +1064,13 @@ class PlayerAdminController(BaseEventAdminController):
                 tournaments.insert(0, player_tournament)
         tournament_options |= web_context.get_tournament_options(tournaments)
 
-        # A player already placed on a board can't change team — moving
-        # them would orphan their board(s). Lock the team picker then.
+        # A player who has played for their team can't leave it: lock the
+        # team picker then.
         team_locked = (
             event.is_team_event
             and admin_player is not None
-            and admin_player.has_been_paired
+            and admin_player.team is not None
+            and admin_player.team.has_played_for(admin_player)
         )
 
         team_options: dict[str, str | dict[str, str]] = {'': '-'}
@@ -1924,14 +1925,13 @@ class PlayerAdminController(BaseEventAdminController):
         event.update_player(player, stored_player)
         player_edited(event)
         if event.is_team_event:
-            # Team membership is set via the team picker; a paired player's
-            # team is locked (moving them would orphan their boards), so we
-            # only reassign when not yet paired. Team events never use the
-            # individual tournament-assignment path below.
-            if not player.has_been_paired:
+            # Team membership is set via the team picker, which is locked
+            # for a player who has played for their team. Team events never
+            # use the individual tournament-assignment path below.
+            current_team = player.team
+            if current_team is None or not current_team.has_played_for(player):
                 team_id = WebContext.form_data_to_int(data, 'team_id')
                 new_team = event.teams_by_id.get(team_id) if team_id else None
-                current_team = player.team
                 if new_team is not current_team:
                     try:
                         with EventDatabase(event.uniq_id, True) as database:
@@ -2016,18 +2016,14 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
-        tournament_player = player.optional_single_tournament_player
         event = web_context.get_admin_event()
         deleted_player_id: int | None = None
-        if tournament_player is not None and tournament_player.has_real_pairings:
+        if (paired_tournament := player.paired_tournament) is not None:
             Message.error(
                 request,
                 _(
                     'Player [{player}] has pairings in tournament [{tournament}].'
-                ).format(
-                    player=player.full_name,
-                    tournament=tournament_player.tournament.name,
-                ),
+                ).format(player=player.full_name, tournament=paired_tournament.name),
             )
         else:
             event.delete_player(player)

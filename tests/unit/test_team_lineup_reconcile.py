@@ -302,11 +302,11 @@ class TeamLineupReconcileTestCase(TestCase):
         self._load()
         team_a = self._event.teams_by_id[self.team_a]
         seated = self._event.players_by_id[self.a_ids[0]]
-        self.assertTrue(TeamAdminController._player_is_paired(team_a, seated))
+        self.assertTrue(team_a.has_played_for(seated))
 
         # Bench the last player; they should no longer count as paired.
         self._reconcile(self.team_a, [*self.a_ids[:-1], None])
         self._load()
         team_a = self._event.teams_by_id[self.team_a]
         benched = self._event.players_by_id[self.a_ids[-1]]
-        self.assertFalse(TeamAdminController._player_is_paired(team_a, benched))
+        self.assertFalse(team_a.has_played_for(benched))

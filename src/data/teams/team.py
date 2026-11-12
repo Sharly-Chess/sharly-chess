@@ -54,6 +54,15 @@ class RosterFullError(Exception):
         self.max_size = max_size
 
 
+class PlayerPairedError(Exception):
+    """Raised when a player who has played for a team would leave it."""
+
+    def __init__(self, team: Team, player: Player):
+        super().__init__(f'Player {player.full_name} has pairings for team {team.name}')
+        self.team = team
+        self.player = player
+
+
 class Team:
     """A team of players competing as a unit in a team tournament."""
 
@@ -402,18 +411,25 @@ class Team:
             'from teams of the same affiliation.'
         )
 
+    def _lineup_member(self, player_id: int | None) -> Player | None:
+        """The player a stored lineup entry names, while they are still on
+        this team: a player who has left it keeps no seat in its lineups."""
+        player = self.event.players_by_id.get(player_id) if player_id else None
+        if player is None or player.team_id != self.id:
+            return None
+        return player
+
     @property
     def lineups_by_round(self) -> dict[int, list[Player]]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""
         result: dict[int, list[Player]] = {}
-        players_by_id = self.event.players_by_id
         for round_, entries in self.stored_team.stored_round_lineups.items():
             ordered = sorted(entries, key=lambda e: e.index)
             result[round_] = [
-                players_by_id[entry.player_id]
+                player
                 for entry in ordered
-                if entry.player_id in players_by_id
+                if (player := self._lineup_member(entry.player_id)) is not None
             ]
         return result
 
@@ -477,10 +493,9 @@ class Team:
             n = tournament.team_player_count
         slots: list[Player | None] = [None] * n
         if self.has_explicit_round_lineup(round_):
-            players_by_id = self.event.players_by_id
             for entry in self.stored_team.stored_round_lineups[round_]:
-                if 0 <= entry.index < n and entry.player_id in players_by_id:
-                    slots[entry.index] = players_by_id[entry.player_id]
+                if 0 <= entry.index < n:
+                    slots[entry.index] = self._lineup_member(entry.player_id)
             return slots
         # No stored lineup: rounds after the first inherit the previous
         # round's lineup (chains back to round 1's roster default). The
@@ -698,6 +713,20 @@ class Team:
         database.replace_team_round_lineup(self.id, round_, entries)
         self.stored_team.stored_round_lineups[round_] = entries
 
+    def _release_from_lineups(self, player_id: int, database: EventDatabase) -> None:
+        """Leaves a hole wherever the lineups of the team seat *player_id*,
+        a player leaving the team."""
+        for round_, entries in list(self.stored_team.stored_round_lineups.items()):
+            if all(entry.player_id != player_id for entry in entries):
+                continue
+            slots: list[int | None] = [None] * (
+                max(entry.index for entry in entries) + 1
+            )
+            for entry in entries:
+                if entry.player_id != player_id:
+                    slots[entry.index] = entry.player_id
+            self.set_round_lineup(round_, slots, database)
+
     def delete_round_lineup(self, round_: int, database: EventDatabase) -> None:
         database.delete_team_round_lineup(self.id, round_)
         self.stored_team.stored_round_lineups.pop(round_, None)
@@ -840,10 +869,18 @@ class Team:
         Appends at the end of the roster ordering.
 
         Raises :class:`RosterFullError` when adding would exceed the
-        rule-set roster cap."""
+        rule-set roster cap, and :class:`PlayerPairedError` when the player
+        has played for their previous team."""
         previous_team_id = player.stored_player.team_id
         if previous_team_id == self.id:
             return
+        previous_team = (
+            self.event.teams_by_id.get(previous_team_id)
+            if previous_team_id is not None
+            else None
+        )
+        if previous_team is not None and previous_team.has_played_for(player):
+            raise PlayerPairedError(previous_team, player)
         max_size = self.roster_max_size
         if max_size is not None and len(self.players) >= max_size:
             raise RosterFullError(self, max_size)
@@ -861,27 +898,47 @@ class Team:
         player.invalidate_team_derived_cache()
         if self.tournament is not None:
             self.tournament.register_rostered_player(player.id)
-        if previous_team_id is not None:
-            previous_team = self.event.teams_by_id.get(previous_team_id)
-            if previous_team is not None:
-                # Losing its captain to another team leaves the previous
-                # team captainless.
-                if previous_team.stored_team.captain_id == player.id:
-                    previous_team.set_captain(None, None, database)
-                previous_team._invalidate_players()
-                previous_team._compact_indexes(database)
-                previous_tournament = previous_team.tournament
-                if previous_tournament is not None and previous_tournament.id != (
-                    self.tournament.id if self.tournament else None
-                ):
-                    previous_tournament.unregister_rostered_player(player.id)
+        if previous_team is not None:
+            # Losing its captain to another team leaves the previous team
+            # captainless.
+            if previous_team.stored_team.captain_id == player.id:
+                previous_team.set_captain(None, None, database)
+            previous_team._release_from_lineups(player.id, database)
+            previous_team._invalidate_players()
+            previous_team._compact_indexes(database)
+            previous_tournament = previous_team.tournament
+            if previous_tournament is not None and previous_tournament.id != (
+                self.tournament.id if self.tournament else None
+            ):
+                previous_tournament.unregister_rostered_player(player.id)
+
+    def has_played_for(self, player: Player) -> bool:
+        """True if *player* has a pairing, against an opponent or a bye, in
+        this team's tournament: what they played belongs to the team, so
+        they can no longer leave it."""
+        tournament = self.tournament
+        if tournament is None:
+            return False
+        tournament_player = tournament.tournament_players_by_id.get(player.id)
+        if tournament_player is None:
+            return False
+        return any(
+            pairing.opponent_id is not None or pairing.exempt
+            for pairing in tournament_player.pairings_by_round.values()
+        )
 
     def remove_player(self, player: Player, database: EventDatabase) -> None:
-        """Remove a player from this team. Compacts remaining indexes."""
+        """Remove a player from this team. Compacts remaining indexes.
+
+        Raises :class:`PlayerPairedError` when the player has played for
+        the team."""
         if player.stored_player.team_id != self.id:
             return
+        if self.has_played_for(player):
+            raise PlayerPairedError(self, player)
         if self.stored_team.captain_id == player.id:
             self.set_captain(None, None, database)
+        self._release_from_lineups(player.id, database)
         player.stored_player.team_id = None
         player.stored_player.team_index = None
         database.set_player_team(player.id, None, None)
