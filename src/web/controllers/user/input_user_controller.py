@@ -335,14 +335,17 @@ class InputUserController(BaseScreenUserController):
                 template_name='user/screen/content_update.html',
                 trigger_event='close_modal',
             )
-        if result == Result.NO_RESULT:
-            with suppress(ValueError):
-                tournament.delete_result(board)
-        else:
-            tournament.add_result(board, result)
-        PairingsAdminController.publish_new_user_results(
-            channels, event.uniq_id, tournament.id, round_
-        )
+        # A result sent again from a screen that had not caught up finds the
+        # board already holding it: there is nothing to record.
+        if shown_result is None or board.result == shown_result:
+            if result == Result.NO_RESULT:
+                with suppress(ValueError):
+                    tournament.delete_result(board)
+            else:
+                tournament.add_result(board, result)
+            PairingsAdminController.publish_new_user_results(
+                channels, event.uniq_id, tournament.id, round_
+            )
         SessionLastResultUpdated(web_context.request).set(
             LastBoardUpdated(
                 tournament_id=tournament.id,
