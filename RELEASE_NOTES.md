@@ -33,6 +33,7 @@
 - Games can be recorded as adjourned in Swiss and round-robin tournaments: they count as draws until their result is entered, which can be done at any time; the standings say they are provisional, and the TRF gives the games as unknown results. In FIDE mode, and in team Swiss tournaments, a result other than a draw entered after the next round is paired asks for confirmation and is logged (5.2.0)
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
 - On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
+- The TRF export of a team tournament lists each team's players in their registration order, as the format requires, instead of in the lineup of the round being paired; the lineups of the rounds played are given by their own records (5.2.6)
 
 ## Players
 
@@ -54,6 +55,9 @@
 - A team with no captain shows a warning, and all of a team's warnings are gathered behind a single warning sign, whose tooltip lists them one per line (5.2.4)
 - A team being dragged is shown as a solid card or row, with no tooltips opening under the mouse, and the place it will land is shown as an empty slot (5.2.4)
 - The team lists of the player form and the pairings ignore case and accents when sorting the teams by name (5.2.4)
+- A player who leaves a team no longer keeps their place in the lineups set for its next rounds, where the pairing still seated them for the team they had left and the match sheet then printed the opposing player in their place; the board they held is left empty (5.2.6)
+- A player who has played for a team, a pairing-allocated bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
+- A team that has been paired can no longer be deleted, which deleted its matches with it; its delete button is no longer offered (5.2.6)
 
 ## Pairings
 
@@ -75,6 +79,9 @@
 - When the tournament is shown on screens or sent to online services, the pairings page warns that a round is waiting to be published (5.2.0)
 - In tournaments whose pairings are not known in advance, the Pair button offers to pair and publish a round in one go; the browser remembers the choice made for each event (5.2.4)
 - In round robins, a player or team that withdrew is dropped from the standings, and their games annulled, as soon as they can no longer complete half of their games, instead of only once the last round has a result (5.2.0)
+- A pairing engine that does not answer within 30 seconds is stopped and reported, instead of leaving the application unresponsive; its input file is kept for the arbiter to send to the _Sharly Chess_ team (5.2.6)
+- In team Swiss tournaments, changing a lineup no longer changes the colours, and sometimes the opponents, given by the following pairings, and avoiding teams of the same club no longer rejects legal pairings or reports that no pairing exists (5.2.6)
+- In team Swiss tournaments, a round where many teams at the top of the standings may not meet one another, such as the third round of the _FFE_ cups when many teams have won both of their first two matches, is paired at once instead of never finishing (5.2.6)
 
 ## Prizes
 
@@ -104,6 +111,9 @@
 - On the result entry screens, the games still to enter show an Enter button and the games entered step back, the last entry staying highlighted in green; on a phone, each game is a card. The result and check-in windows have large buttons, with the arbiter's forfeits set apart, and the buttons respond reliably on tablets (5.2.0)
 - The timers and the alert message have fixed colours, a timer turning from green to orange then red and the message showing in a yellow band; the colours can no longer be chosen in the timer and screen settings (5.2.0)
 - Image screens can show a timer, the image then starting below it (5.2.0)
+- On a slow network, the result window of an input screen no longer shows the previous game's buttons while the next game is loading, which recorded the result tapped for the previous game instead of the one chosen (5.2.6)
+- A result entered on an input screen is refused, with a warning, when another device has changed the game's result since the window opened, and an illegal move tapped twice or sent twice on a slow network is counted once (5.2.6)
+- The team ranking screens show the tie-breaks where the lowest value wins, such as the lowest own average rating of the Loubatière cup, as positive values, as the admin view and the printed documents do (5.2.6)
 
 ## _Sharly-Chess.com_
 

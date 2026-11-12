@@ -432,18 +432,20 @@
                         icon_only=true,
                         size='sm',
                     ) }}
-                    {{ components.modal_button(
-                        url_for(
-                            'admin-team-delete-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            team_id=team.id,
-                        ),
-                        _('Delete the team.'),
-                        kind='outline-danger',
-                        icon='delete',
-                        icon_only=true,
-                        size='sm',
-                    ) }}
+                    {% if not team.has_been_paired %}
+                        {{ components.modal_button(
+                            url_for(
+                                'admin-team-delete-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=team.id,
+                            ),
+                            _('Delete the team.'),
+                            kind='outline-danger',
+                            icon='delete',
+                            icon_only=true,
+                            size='sm',
+                        ) }}
+                    {% endif %}
                 </div>
             {% endif %}
         </div>

@@ -452,7 +452,7 @@ class SCESession(Session):
         plugin_data = SCEUtils.get_player_plugin_data(player)
         sce_id = plugin_data.id
         plugin_data.id = None
-        if player.has_real_pairings:
+        if player.paired_tournament is not None:
             plugin_data.deleted_id = sce_id
             plugin_data.removal_pending = True
             SCEUtils.update_player_plugin_data(player, plugin_data)

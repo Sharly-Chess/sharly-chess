@@ -7885,6 +7885,10 @@ msgstr ""
 msgid "Please select the account."
 msgstr ""
 
+#, python-brace-format
+msgid "Please send the file [{file}] to the Sharly Chess team."
+msgstr ""
+
 msgid "Please supply a valid URL (e.g. https://my.domain.com)."
 msgstr ""
 
@@ -10014,6 +10018,10 @@ msgid "Team [{team}] has been paired against [{opponent}] at board #{board}."
 msgstr ""
 
 #, python-brace-format
+msgid "Team [{team}] has been paired and cannot be deleted."
+msgstr ""
+
+#, python-brace-format
 msgid "Team [{team}] has been updated."
 msgstr ""
 
@@ -10620,6 +10628,10 @@ msgstr ""
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr ""
 
+#, python-brace-format
+msgid "The pairing engine did not answer within {seconds} seconds."
+msgstr ""
+
 msgid "The pairing integrity breaches, the changes to the settings of the tournament, the games corrected for the rating report and the full-point byes, recorded as comments in its TRF."
 msgstr ""
 
@@ -10826,6 +10838,14 @@ msgid "The ratings of all the players are up to date."
 msgstr ""
 
 msgid "The related objects will also be deleted:"
+msgstr ""
+
+#, python-brace-format
+msgid "The result of board {board} was changed to {result} by someone else in the meantime: nothing was recorded."
+msgstr ""
+
+#, python-brace-format
+msgid "The result of board {board} was cleared by someone else in the meantime: nothing was recorded."
 msgstr ""
 
 #, python-format

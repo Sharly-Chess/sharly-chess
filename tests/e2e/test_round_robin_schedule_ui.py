@@ -314,8 +314,18 @@ def test_games_played_at_the_wrong_boards_are_corrected(page: Page, played_round
         )
 
     def choose(table: int, side: int, label: str) -> None:
+        """Pick a player for a seat, and wait for the page it sends back.
+
+        A pick posts the schedule and swaps the whole page in again. The old
+        select shows the pick straight away, so a dropdown opened before the
+        swap lands is torn down under the next click.
+        """
+        picked = seat(table, side).element_handle()
         seat(table, side).locator('+ .select2').click()
         page.locator('.select2-results').get_by_role('option', name=label).click()
+        page.wait_for_function('(select) => !select.isConnected', arg=picked)
+        TestUtils.wait_for_htmx_idle(page)
+        expect(seat(table, side).locator('+ .select2')).to_be_visible()
         expect(seat(table, side).locator('option:checked')).to_have_text(label)
 
     # The black players of the two games really played the other game.

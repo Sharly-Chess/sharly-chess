@@ -7887,6 +7887,10 @@ msgstr "Veuillez sélectionner au moins une équipe."
 msgid "Please select the account."
 msgstr "Veuillez sélectionner le compte."
 
+#, python-brace-format
+msgid "Please send the file [{file}] to the Sharly Chess team."
+msgstr "Merci d'envoyer le fichier [{file}] à l'équipe Sharly Chess."
+
 msgid "Please supply a valid URL (e.g. https://my.domain.com)."
 msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
 
@@ -10016,6 +10020,10 @@ msgid "Team [{team}] has been paired against [{opponent}] at board #{board}."
 msgstr "L'équipe [{team}] a été appariée contre [{opponent}] à la table n°{board}."
 
 #, python-brace-format
+msgid "Team [{team}] has been paired and cannot be deleted."
+msgstr "L'équipe [{team}] ne peut être supprimée car elle a été appariée."
+
+#, python-brace-format
 msgid "Team [{team}] has been updated."
 msgstr "L'équipe [{team}] a été mise à jour."
 
@@ -10622,6 +10630,10 @@ msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, un
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr "Le moteur d'appariement n'a pas pu apparier la ronde %(round)d : vos appariements ne peuvent pas être comparés aux siens."
 
+#, python-brace-format
+msgid "The pairing engine did not answer within {seconds} seconds."
+msgstr "Le moteur d'appariement n'a pas répondu en {seconds} secondes."
+
 msgid "The pairing integrity breaches, the changes to the settings of the tournament, the games corrected for the rating report and the full-point byes, recorded as comments in its TRF."
 msgstr "Les atteintes à l'intégrité des appariements, les modifications des paramètres du tournoi, les parties corrigées pour le rapport Elo et les byes point entier, consignés en commentaire dans son TRF."
 
@@ -10829,6 +10841,14 @@ msgstr "Les classements de tou·tes les joueur·euses sont à jour."
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
+
+#, python-brace-format
+msgid "The result of board {board} was changed to {result} by someone else in the meantime: nothing was recorded."
+msgstr "Le résultat de la table {board} a été changé en {result} par quelqu'un d'autre entre-temps : rien n'a été enregistré."
+
+#, python-brace-format
+msgid "The result of board {board} was cleared by someone else in the meantime: nothing was recorded."
+msgstr "Le résultat de la table {board} a été effacé par quelqu'un d'autre entre-temps : rien n'a été enregistré."
 
 #, python-format
 msgid "The result of this game is not taken into account for the final standings because at least one of the players did not play 50%% of the games (FIDE 6.6)."

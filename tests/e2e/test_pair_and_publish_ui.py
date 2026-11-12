@@ -2,8 +2,11 @@
 alone or to pair and publish at once; the browser keeps the last choice made
 for each event."""
 
+import contextlib
+
 import pytest
 from playwright.sync_api import APIRequestContext, Page, expect
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from data.loader import EventLoader
 from database.sqlite.event.event_store import StoredPlayer
@@ -51,12 +54,16 @@ def _pair_from_menu(page: Page, item: str) -> None:
     # confirmed until the round is paired.
     unpair = page.get_by_role('button', name='Unpair')
     modal = page.locator('#modal-wrapper .modal-footer')
-    for _ in range(5):
+    # A confirmation swaps the next modal in, so a button is only clicked once
+    # nothing is in flight, and a click on one torn down under it is retried.
+    for _ in range(10):
+        TestUtils.wait_for_htmx_idle(page)
         if unpair.is_visible():
             break
         confirm = modal.locator('button:not([data-bs-dismiss])').last
-        if confirm.is_visible():
-            confirm.click()
+        if confirm.is_visible() and confirm.is_enabled():
+            with contextlib.suppress(PlaywrightTimeoutError):
+                confirm.click(timeout=2000)
         page.wait_for_timeout(500)
     expect(unpair).to_be_visible()
     expect(page.locator('#pairings-table')).to_be_visible()

@@ -46,6 +46,14 @@ class PairingEngineError(SharlyChessException):
         self.detail = detail
 
 
+class PairingEngineTimeout(PairingEngineError):
+    """Error raised when the pairing engine does not answer in time."""
+
+
+class PairedDeletionError(SharlyChessException):
+    """Error raised when deleting a player or a team that has been paired."""
+
+
 class OptionError(SharlyChessException):
     """Error raised when validating an option."""
 

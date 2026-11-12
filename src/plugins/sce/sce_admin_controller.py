@@ -1003,7 +1003,7 @@ class SCEAdminController(BaseAdminController):
         web_context = SCEWebContext(request, player_id=player_id)
         event = web_context.get_admin_event()
         player = web_context.get_player()
-        if player.has_real_pairings:
+        if player.paired_tournament is not None:
             raise ClientException(f'Player [{player.full_name}] is not deletable')
         event.delete_player(player)
         web_context = SCEWebContext(request, reload_event=True)

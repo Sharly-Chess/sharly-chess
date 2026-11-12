@@ -18,7 +18,7 @@ from data.event import Event
 from data.player import Player
 from data.snapshot import SnapshotReason
 from data.snapshot_worker import SnapshotScheduler
-from data.teams.team import RosterFullError, Team, TeamGroup
+from data.teams.team import PlayerPairedError, RosterFullError, Team, TeamGroup
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam
@@ -500,12 +500,10 @@ class TeamAdminController(BaseEventAdminController):
             'roster_at_cap': (
                 roster_max_size is not None and len(team.players) >= roster_max_size
             ),
-            # Paired players can't be removed (it would orphan their board);
-            # the template disables their remove button.
+            # Players who have played for the team can't leave it; the
+            # template disables their remove button.
             'paired_player_ids': {
-                player.id
-                for player in team.players
-                if cls._player_is_paired(team, player)
+                player.id for player in team.players if team.has_played_for(player)
             },
         }
 
@@ -800,37 +798,19 @@ class TeamAdminController(BaseEventAdminController):
         team = web_context.get_admin_team()
         player = event.players_by_id.get(player_id)
         if player is not None:
-            if self._player_is_paired(team, player):
-                # A paired player can't leave the roster — it would orphan
-                # their board(s). The lineup must be edited first.
+            try:
+                with EventDatabase(event.uniq_id, True) as database:
+                    team.remove_player(player, database)
+                    self._resort_team_tournament(team, database)
+            except PlayerPairedError:
                 Message.warning(
                     request,
                     _(
                         'This player is paired in at least one round and cannot be removed from the roster (must be removed from the lineup first).'
                     ),
                 )
-            else:
-                with EventDatabase(event.uniq_id, True) as database:
-                    team.remove_player(player, database)
-                    self._resort_team_tournament(team, database)
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
-        )
-
-    @staticmethod
-    def _player_is_paired(team: Team, player: Player) -> bool:
-        """True if *player* has a pairing in any round of *team*'s
-        tournament — an opponent or a bye/exempt. Such a player can't be
-        removed from the roster without orphaning their board."""
-        tournament = team.tournament
-        if tournament is None:
-            return False
-        tournament_player = tournament.tournament_players_by_id.get(player.id)
-        if tournament_player is None:
-            return False
-        return any(
-            pairing.opponent_id is not None or pairing.exempt
-            for pairing in tournament_player.pairings_by_round.values()
         )
 
     @patch(
@@ -1795,6 +1775,14 @@ class TeamAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         team = web_context.get_admin_team()
         team_name = team.name
+        if team.has_been_paired:
+            Message.error(
+                request,
+                _('Team [{team}] has been paired and cannot be deleted.').format(
+                    team=team_name
+                ),
+            )
+            return self._admin_event_teams_render(web_context)
         tournament = team.tournament
         await SnapshotScheduler.snapshot_before_async(
             event.uniq_id,
