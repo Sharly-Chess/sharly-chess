@@ -10832,11 +10832,11 @@ msgstr "Les objets liés vont également être supprimés :"
 
 #, python-brace-format
 msgid "The result of board {board} was changed to {result} by someone else in the meantime: nothing was recorded."
-msgstr "Le résultat de la table {board} a été changé en {result} par quelqu'un d'autre entre-temps : rien n'a été enregistré."
+msgstr "Le résultat de la table {board} a été changé en {result} par quelqu'un d'autre entre-temps : rien n'a été enregistré."
 
 #, python-brace-format
 msgid "The result of board {board} was cleared by someone else in the meantime: nothing was recorded."
-msgstr "Le résultat de la table {board} a été effacé par quelqu'un d'autre entre-temps : rien n'a été enregistré."
+msgstr "Le résultat de la table {board} a été effacé par quelqu'un d'autre entre-temps : rien n'a été enregistré."
 
 #, python-format
 msgid "The result of this game is not taken into account for the final standings because at least one of the players did not play 50%% of the games (FIDE 6.6)."
