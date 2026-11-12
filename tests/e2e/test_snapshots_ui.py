@@ -132,16 +132,19 @@ class TestAFailingBackupIsSeen:
     def test_the_event_page_warns_that_the_backups_stopped(self, page: Page):
         TestUtils.create_event(self.EVENT_ID)
         directory = snapshots_dir(self.EVENT_ID)
-        directory.mkdir(parents=True, exist_ok=True)
+        directory.parent.mkdir(parents=True, exist_ok=True)
         # A folder that cannot be written to: a memory stick pulled out, a
-        # share gone, rights changed.
-        directory.chmod(0o500)
+        # share gone, rights changed. A file in its place fails on every
+        # system, where a folder's rights do not on Windows.
+        directory.write_bytes(b'')
         try:
             modal = open_panel(page, self.EVENT_ID)
             modal.get_by_role('button', name='Back up now').click()
 
             # The panel says so, and so does the event page from then on.
-            expect(page.locator('body')).to_contain_text('failed')
+            expect(page.locator('body')).to_contain_text(
+                'The last backup could not be written.'
+            )
             page.goto(f'/event/{self.EVENT_ID}')
             warning = page.locator('#backup-message').get_by_text(
                 'This event is no longer being backed up'
@@ -151,7 +154,7 @@ class TestAFailingBackupIsSeen:
             page.goto(f'/event/{self.EVENT_ID}/tournaments')
             expect(warning).to_have_count(1)
         finally:
-            directory.chmod(0o700)
+            directory.unlink()
 
 
 @pytest.mark.e2e
