@@ -169,8 +169,11 @@ class TestAdminCollections:
         owls = page.get_by_test_id('teams-item').filter(has_text='Searched Owls')
         foxes = page.get_by_test_id('teams-item').filter(has_text='Other Foxes')
 
+        # Typed before htmx has taken the field over, the search is never sent.
+        TestUtils.wait_for_htmx_idle(page)
+        TestUtils.wait_for_htmx_bound(page, '#search')
         with page.expect_response(re.compile(r'/teams/search')):
-            page.locator('#search').fill('owls')
+            TestUtils.fill_and_confirm(page.locator('#search'), 'owls')
         expect(owls).to_be_visible()
         expect(foxes).to_be_hidden()
 
@@ -179,8 +182,9 @@ class TestAdminCollections:
         expect(owls).to_be_visible()
         expect(foxes).to_be_hidden()
 
+        TestUtils.wait_for_htmx_bound(page, '#search')
         with page.expect_response(re.compile(r'/teams/search')):
-            page.locator('#search').fill('')
+            TestUtils.fill_and_confirm(page.locator('#search'), '')
         expect(foxes).to_be_visible()
 
     def test_tournaments_default_to_card_view(self, page: Page):

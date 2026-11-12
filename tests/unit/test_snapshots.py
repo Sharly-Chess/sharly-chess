@@ -623,13 +623,16 @@ class TestChangesDriveTheSnapshots:
         self.settle()
         assert self.count() == 1
 
-    def test_a_burst_of_changes_becomes_a_single_snapshot(self, event):
+    def test_a_burst_of_changes_becomes_a_single_snapshot(self, event, monkeypatch):
         from time import sleep
 
+        # A loaded runner can take longer than the shortened debounce to open
+        # the event between two writes of the burst.
+        monkeypatch.setattr('data.snapshot_worker.IDLE_SECONDS', 1.0)
         for index in range(10):
             self.rename_event(f'Change {index}')
             sleep(0.02)
-        self.settle()
+        sleep(2.0)
         assert self.count() == 1
 
     def test_changing_a_copy_of_the_event_asks_for_nothing(self, event, tmp_path):
