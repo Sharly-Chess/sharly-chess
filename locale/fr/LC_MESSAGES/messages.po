@@ -10021,7 +10021,7 @@ msgstr "L'équipe [{team}] a été appariée contre [{opponent}] à la table n°
 
 #, python-brace-format
 msgid "Team [{team}] has been paired and cannot be deleted."
-msgstr "L'équipe [{team}] a été appariée et ne peut pas être supprimée."
+msgstr "L'équipe [{team}] ne peut être supprimée car elle a été appariée."
 
 #, python-brace-format
 msgid "Team [{team}] has been updated."
