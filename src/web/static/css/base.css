@@ -2224,7 +2224,8 @@ body[data-sc-interface=admin] .htmx-indicator {
 }
 
 [data-sc-interface=admin] .modal-body {
-    padding: 1.25rem 1.5rem;
+    --sc-modal-body-padding-top: 1.25rem;
+    padding: var(--sc-modal-body-padding-top) 1.5rem 1.25rem;
 }
 
 /* Colour themes */
