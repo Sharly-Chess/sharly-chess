@@ -7,105 +7,91 @@
 {% block content %}
     <section>
         <div class="section-title">{{ _('Overall ranking') }}</div>
-        <div
-            class="teams-overall centered"
-            style="grid-template-columns: repeat({{ tournament.team_ranking_tie_breaks|length + 2 }}, max-content);"
-        >
-            <div class="overall-header text-end fw-bold">
-                {{ pgettext('rank column header', 'Rk.') }}
-            </div>
-            <div class="overall-header">
-                {{ document.overall_table_header }}
-            </div>
-            {% for tie_break in tournament.team_ranking_tie_breaks %}
-                <div class="overall-header text-center">
-                    {{ tie_break.acronym }}
-                </div>
-            {% endfor %}
-            {% for team in ordered_teams %}
-                <div class="overall-cell text-end fw-bold">
-                    {{ ordinal_integer(loop.index)|safe }}
-                </div>
-                <div
-                    class="overall-cell"
-                    onclick="document.getElementById('team-{{ team.id }}').scrollIntoView()"
-                    style="cursor: pointer"
-                >
-                    {{ team.name | safe }}
-                    {% if not team.is_complete %}
-                        <i>({{ pgettext('incomplete team', 'incomplete') }})</i>
-                    {% endif %}
-                </div>
-                {% for tb_sum in team.tie_break_sums %}
-                     <div class="overall-cell text-center">
-                        {{ points_str(tb_sum) }}
-                    </div>
-                {% endfor %}
-            {% endfor %}
-        </div>
-    </section>
-    <section class="teams" style="grid-template-columns: repeat({{ player_columns|length }}, max-content);">
-        {% for team in ordered_teams %}
-            <div class="separator"></div>
-
-            <div id="team-{{ team.id }}" class="team no-page-break">
-                <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
-                <div class="team-title">
-                    {{ team.title_name | safe }}
-                </div>
-                <div class="team-info">
-                    {% if document.youngest_team_last_tie_break and team.avg_age_years %}
-                        <div style="margin-bottom: 0.75rem;">
-                            {{ _('Average age: %(years)s', years=localized_number(team.avg_age_years)) }}
-                        </div>
-                    {% endif %}
-                    {% if team.is_complete %}
-                        {% if document.display_incomplete_teams %}
-                            <i>{{ _('Complete Team') }}</i>
-                        {% endif %}
-                    {% else %}
-                        <i>{{ _('Incomplete Team') }}</i>
-                        {% if document.min_gender_count and team.missing_men %}
-                            <br/>
-                            {{ team.missing_men_str }}
-                        {% endif %}
-                        {% if document.min_gender_count and team.missing_women %}
-                            <br/>
-                            {{ team.missing_women_str }}
-                        {% endif %}
-                        {% if team.missing_any %}
-                            <br/>
-                            {{ team.missing_any_str }}
-                        {% endif %}
-                    {% endif %}
-                </div>
-
-                {% for column in player_columns %}
-                    <div class="player-header {{ column.header_classes }}">
-                        {{ macros.column_header(column) }}
-                    </div>
-                {% endfor %}
-
-                {% for player in team.players %}
-                    {% for column in player_columns %}
-                        <div class="player-cell {{ column.get_cell_classes(player) }}">
-                            {% if column.cell_template %}
-                                {% include column.cell_template %}
-                            {% else %}
-                                {{ macros.column_cell(column, player) }}
-                            {% endif %}
-                        </div>
+        <table class="doc-table teams-overall">
+            <thead>
+                <tr>
+                    <th class="text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
+                    <th>{{ document.overall_table_header }}</th>
+                    {% for tie_break in tournament.team_ranking_tie_breaks %}
+                        <th class="text-center">{{ tie_break.acronym }}</th>
                     {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in ordered_teams %}
+                    <tr class="{{ 'even' if loop.index is even else 'odd' }}">
+                        <td class="rank text-end">{{ ordinal_integer(loop.index)|safe }}</td>
+                        <td class="team-name">
+                            <a href="#team-{{ team.id }}">{{ team.name | safe }}</a>
+                            {% if not team.is_complete %}
+                                <i>({{ pgettext('incomplete team', 'incomplete') }})</i>
+                            {% endif %}
+                        </td>
+                        {% for tb_sum in team.tie_break_sums %}
+                            <td class="text-center">{{ points_str(tb_sum) }}</td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
-                <div class="total text-start" style="grid-column: 1 / {{ player_columns|length - team.tie_break_sums|length + 1 }};">
-                    {{ _('Total') }}
-                </div>
-                {% for tie_break_sum in team.tie_break_sums %}
-                     <div class="total">
-                        {{ points_str(tie_break_sum) }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
+            </tbody>
+        </table>
     </section>
+    {% for team in ordered_teams %}
+        <section id="team-{{ team.id }}" class="team no-page-break">
+            <div class="team-heading">
+                <span>{{ ordinal_integer(loop.index)|safe }}</span>
+                <span class="team-title">{{ team.title_name | safe }}</span>
+            </div>
+            <div class="team-info">
+                {% if document.youngest_team_last_tie_break and team.avg_age_years %}
+                    <div>{{ _('Average age: %(years)s', years=localized_number(team.avg_age_years)) }}</div>
+                {% endif %}
+                {% if team.is_complete %}
+                    {% if document.display_incomplete_teams %}
+                        <div>{{ _('Complete Team') }}</div>
+                    {% endif %}
+                {% else %}
+                    <div>{{ _('Incomplete Team') }}</div>
+                    {% if document.min_gender_count and team.missing_men %}
+                        <div>{{ team.missing_men_str }}</div>
+                    {% endif %}
+                    {% if document.min_gender_count and team.missing_women %}
+                        <div>{{ team.missing_women_str }}</div>
+                    {% endif %}
+                    {% if team.missing_any %}
+                        <div>{{ team.missing_any_str }}</div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <table class="doc-table team-players">
+                <thead>
+                    <tr>
+                        {% for column in player_columns %}
+                            <th class="{{ column.header_classes }}">{{ macros.column_header(column) }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in team.players %}
+                        <tr>
+                            {% for column in player_columns %}
+                                <td class="{{ column.get_cell_classes(player) }}">
+                                    {% if column.cell_template %}
+                                        {% include column.cell_template %}
+                                    {% else %}
+                                        {{ macros.column_cell(column, player) }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    <tr class="total">
+                        <td colspan="{{ player_columns|length - team.tie_break_sums|length }}">{{ _('Total') }}</td>
+                        {% for tie_break_sum in team.tie_break_sums %}
+                            <td class="text-center">{{ points_str(tie_break_sum) }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    {% endfor %}
 {% endblock %}

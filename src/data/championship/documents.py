@@ -9,10 +9,16 @@ it accepts; the controller assembles the actual page data from the existing
 ranking/competitor helpers."""
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
+
+from markupsafe import Markup
 
 from common.i18n import _
 from data.championship.options import ChampionshipCompetitorType
+from data.print_documents.fonts import print_font_faces
+from data.print_documents.page_layout import page_footer_rule
+from utils.date_time import format_datetime
 from utils.option import Option
 
 if TYPE_CHECKING:
@@ -189,6 +195,21 @@ class ChampionshipPrintDocument(ABC):
     @property
     def tab_title(self) -> str:
         return self.title
+
+    @property
+    def header_meta(self) -> str | None:
+        return None
+
+    @property
+    def font_faces(self) -> Markup:
+        return print_font_faces()
+
+    @property
+    def page_footer_css(self) -> Markup | None:
+        printed_at = _('Printed {datetime}').format(
+            datetime=format_datetime(datetime.now())
+        )
+        return page_footer_rule(self.championship.name, printed_at)
 
 
 class ChampionshipTournamentListPrintDocument(ChampionshipPrintDocument):

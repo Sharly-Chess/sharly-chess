@@ -13,6 +13,8 @@ from common.i18n import get_locale, set_locale
 from data.access_levels.client import Client
 from data.account import Account
 from data.board import Board
+from data.columns.board_table import PairingResultColumn, WrittenResultColumn
+from data.columns.column import ColumnUsage
 from data.event import Event
 from data.loader import EventLoader
 from data.pairings.molter import StandardMolterVariation
@@ -25,6 +27,7 @@ from data.print_documents.managers import (
 )
 from data.print_documents import options
 from data.print_documents.options import ArbiterNormForm, PrintOption
+from data.print_documents.page_layout import css_string, page_number_content
 from data.print_documents.place_cards.data import PlaceCardTournament
 from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
 from data.print_documents.place_cards.types import PairingCardType
@@ -661,3 +664,93 @@ def test_arbiter_norm_report_requires_a_candidate(arbiters_event: Event):
     )
     with pytest.raises(OptionError):
         document.validate_options()
+
+
+def _pairings(event: Event, **values: str) -> documents.BoardPairingPrintDocument:
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(
+        event,
+        documents.BoardPairingPrintDocument,
+        {'tournament': str(tournament.id), 'round': '1', **values},
+    )
+    assert isinstance(document, documents.BoardPairingPrintDocument)
+    return document
+
+
+@pytest.mark.unit
+def test_pairings_are_mirrored_around_the_result(event: Event):
+    roles = [column.print_role for column in _pairings(event).board_columns]
+    result = next(
+        index for index, role in enumerate(roles) if role.startswith('result')
+    )
+    assert roles[0] == 'board'
+    assert roles[1] == 'points'
+    assert roles[-1] == 'points'
+    assert 'name' in roles[:result]
+    assert 'name' in roles[result + 1 :]
+    assert 'points' not in roles[2:-1]
+
+
+@pytest.mark.unit
+def test_pairings_leave_space_for_the_results_when_asked(event: Event):
+    compact = _pairings(event)
+    spaced = _pairings(event, **{'result-space': 'on'})
+    assert PairingResultColumn in [type(column) for column in compact.board_columns]
+    assert WrittenResultColumn in [type(column) for column in spaced.board_columns]
+    assert compact.table_classes == ''
+    assert spaced.table_classes == 'result-space'
+
+
+@pytest.mark.unit
+def test_pairings_show_a_dash_until_the_result_is_known(playing_event: Event):
+    tournament = playing_event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(
+        playing_event,
+        documents.BoardPairingPrintDocument,
+        {'tournament': str(tournament.id), 'round': str(tournament.rounds)},
+    )
+    assert isinstance(document, documents.BoardPairingPrintDocument)
+    column = PairingResultColumn(ColumnUsage.PRINT)
+    cells = {column.get_cell_content(board) for board in document.boards}
+    assert '–' in cells
+    assert cells - {'–'}
+
+
+@pytest.mark.unit
+def test_pairings_print_the_title_columns_only_when_a_player_has_a_title(
+    event: Event,
+):
+    document = _pairings(event)
+    has_titles = any(
+        player.display_title
+        for board in document.boards
+        for player in (
+            board.optional_white_tournament_player,
+            board.black_tournament_player,
+        )
+        if player is not None
+    )
+    printed = any(column.print_role == 'title' for column in document.board_columns)
+    assert printed == has_titles
+
+
+@pytest.mark.unit
+def test_pages_have_a_footer_except_the_cards(event: Event):
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    values = {'tournament': str(tournament.id), 'round': '1'}
+    pairings = _build(event, documents.BoardPairingPrintDocument, values)
+    footer = pairings.page_footer_css
+    assert footer is not None
+    assert 'counter(page)' in footer
+    assert 'counter(pages)' in footer
+    for document_type in (
+        documents.PlaceCardPrintDocument,
+        documents.QRCodePrintDocument,
+    ):
+        assert _build(event, document_type, values).page_footer_css is None
+
+
+@pytest.mark.unit
+def test_css_strings_escape_quotes_and_backslashes():
+    assert css_string('Open "A" \\ 2026') == '"Open \\000022A\\000022 \\00005c 2026"'
+    assert page_number_content() == ('"Page " counter(page) " of " counter(pages)')

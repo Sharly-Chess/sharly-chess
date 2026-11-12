@@ -2,11 +2,9 @@
 
 {% block css %}
     {% include 'boards.css' %}
-    .board-table { margin: 12pt auto 0; }
-    .board-table .team { text-align: left; padding: 2px 8px; }
-    .board-table .number,
-    .board-table .points,
-    .board-table .result { padding: 2px 8px; }
+    .board-table { font-size: 10.5pt; }
+    .board-table .team { text-align: left; width: 50%; }
+    .board-table td.number { font-weight: bold; text-align: right; }
 {% endblock %}
 
 {% block content %}

@@ -802,6 +802,22 @@ class FederationPrintOption(PrintOption[bool]):
         return False
 
 
+class ResultSpacePrintOption(PrintOption[bool]):
+    """Whether the pairings leave room to write the results in by hand."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'result-space'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class ClubThresholdPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:

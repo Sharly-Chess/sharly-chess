@@ -238,6 +238,43 @@ class BoardColumnHandler:
         column_types.append(bt.BlackPointsColumn)
         return self.get_columns(column_types, tournament)
 
+    def get_print_pairings_columns(
+        self,
+        tournament: Tournament,
+        round_: int,
+        result_column_type: type[BoardColumn],
+        show_federation: bool = False,
+    ) -> list[BoardColumn]:
+        """The columns of the printed pairings and results, mirrored around
+        the result: each player's name and rating beside it, and their
+        points at the edge."""
+        show_real_points = tournament.print_real_points(round_)
+        column_types: list[Callable[[ColumnUsage], BoardColumn]] = [
+            bt.NumberColumn,
+            bt.WhitePointsColumn,
+        ]
+        if show_real_points:
+            column_types.append(bt.WhiteRealPointsColumn)
+        column_types += [
+            bt.WhiteTitleColumn,
+            bt.WhiteNameColumn,
+            bt.WhiteRatingColumn,
+        ]
+        if show_federation:
+            column_types.append(bt.WhiteFederationColumn)
+        column_types += [
+            result_column_type,
+            bt.BlackTitleColumn,
+            bt.BlackNameColumn,
+            bt.BlackRatingColumn,
+        ]
+        if show_federation:
+            column_types.append(bt.BlackFederationColumn)
+        if show_real_points:
+            column_types.append(bt.BlackRealPointsColumn)
+        column_types.append(bt.BlackPointsColumn)
+        return self.get_columns(column_types, tournament)
+
 
 class PlayersTabColumnHandler:
     def __init__(self, event: Event):

@@ -59,8 +59,13 @@ class BoardColumn(Column[Board], ABC):
         """Defines if clicking on the cell opens the result modal (if the board is editable)."""
         return True
 
+    print_role: str = ''
+    """What the column holds, which sets its width and style in print."""
+
 
 class NumberColumn(BoardColumn):
+    print_role = 'board'
+
     @property
     def header_content(self) -> str:
         return pgettext('board number column header', 'Bd.')
@@ -85,6 +90,8 @@ class NumberColumn(BoardColumn):
 
 
 class WhitePointsColumn(BoardColumn):
+    print_role = 'points'
+
     @property
     def header_content(self) -> str:
         return pgettext('points column header', 'Pts')
@@ -99,6 +106,8 @@ class WhitePointsColumn(BoardColumn):
 
 
 class WhiteRealPointsColumn(BoardColumn):
+    print_role = 'points'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -138,6 +147,8 @@ class WhiteIllegalMovesColumn(IllegalMovesColumn):
 
 
 class WhiteTitleColumn(BoardColumn):
+    print_role = 'title'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -152,6 +163,8 @@ class WhiteTitleColumn(BoardColumn):
 
 
 class WhiteNameColumn(BoardColumn):
+    print_role = 'name'
+
     @property
     def grid_column_template(self) -> str:
         return '1fr'
@@ -184,6 +197,8 @@ class WhiteNameColumn(BoardColumn):
 
 
 class WhiteRatingColumn(BoardColumn):
+    print_role = 'rating'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -198,6 +213,8 @@ class WhiteRatingColumn(BoardColumn):
 
 
 class WhiteFederationColumn(BoardColumn):
+    print_role = 'federation'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -212,6 +229,8 @@ class WhiteFederationColumn(BoardColumn):
 
 
 class ResultColumn(BoardColumn):
+    print_role = 'result'
+
     @property
     def header_content(self) -> str:
         return pgettext('result column header', 'Res.')
@@ -224,13 +243,39 @@ class ResultColumn(BoardColumn):
         return 'text-center'
 
 
-class NoResultColumn(BoardColumn):
+class PairingResultColumn(BoardColumn):
+    """The result of the game once it is known, a dash between the players
+    until then."""
+
+    print_role = 'result'
+
     @property
     def header_content(self) -> str:
-        return '\u00a0' * 6
+        return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.result_str if board.exempt else ''
+        return board.result_str or '\u2013'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class WrittenResultColumn(BoardColumn):
+    """A box to write the result in, holding the result once it is known."""
+
+    print_role = 'result written'
+
+    @property
+    def header_content(self) -> str:
+        return pgettext('result column header', 'Result')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.result_str
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class ScreenResultColumn(BoardColumn):
@@ -255,6 +300,8 @@ class BlackIllegalMovesColumn(IllegalMovesColumn):
 
 
 class BlackTitleColumn(BoardColumn):
+    print_role = 'title'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -271,6 +318,8 @@ class BlackTitleColumn(BoardColumn):
 
 
 class BlackNameColumn(BoardColumn):
+    print_role = 'name'
+
     @property
     def grid_column_template(self) -> str:
         return '1fr'
@@ -304,6 +353,8 @@ class BlackNameColumn(BoardColumn):
 
 
 class BlackRatingColumn(BoardColumn):
+    print_role = 'rating'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -317,6 +368,8 @@ class BlackRatingColumn(BoardColumn):
 
 
 class BlackFederationColumn(BoardColumn):
+    print_role = 'federation'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -331,6 +384,8 @@ class BlackFederationColumn(BoardColumn):
 
 
 class BlackRealPointsColumn(BoardColumn):
+    print_role = 'points'
+
     @property
     def header_content(self) -> str:
         return ''
@@ -345,6 +400,8 @@ class BlackRealPointsColumn(BoardColumn):
 
 
 class BlackPointsColumn(BoardColumn):
+    print_role = 'points'
+
     @property
     def header_content(self) -> str:
         return pgettext('points column header', 'Pts')

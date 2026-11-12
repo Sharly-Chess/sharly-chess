@@ -3,36 +3,34 @@
 {% block content %}
 <style>
     .stats-container {
-        font-family: sans-serif;
-        margin: 2em auto;
+        margin: 0;
 
         display: grid;
-        grid-template-columns: max-content minmax(100px, 1fr) auto;
+        grid-template-columns: minmax(max-content, 40mm) minmax(40mm, 110mm) auto;
         column-gap: 1em;
         row-gap: 0.4em;
         align-items: center;
     }
 
     .stats-title {
-        font-size: 1.2em;
+        font-size: 11pt;
         font-weight: bold;
-        margin-top: 1.5em;
-        border-bottom: 1px solid #ccc;
+        margin-top: 1em;
+        border-bottom: 0.5pt solid #C8C8C8;
         padding: 0.2em 0;
         grid-column: 1 / -1;
-        text-align: center;
+        break-after: avoid;
     }
 
     .stats-subtitle {
         font-size: 0.9em;
         font-weight: normal;
-        color: #666;
-        margin-top: 0.2em;
-        text-align: center;
+        color: #444444;
+        margin-top: 0.1em;
     }
 
     .stats-label {
-        text-align: right;
+        text-align: left;
         font-size: 0.95em;
         white-space: nowrap;
         overflow: hidden;
