@@ -118,6 +118,7 @@ from web.session import (
     SessionPlayersSearchResultsId,
     SessionPlayersActiveDataSource,
     SessionPlayersAddOtherActive,
+    SessionPlayersEmptyColumns,
     SessionPlayersHiddenColumns,
     SessionPlayersDisabledColumns,
     SessionPlayersSearch,
@@ -212,9 +213,11 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
     def column_handler(self) -> PlayersTabColumnHandler:
         event = self.get_admin_event()
         handler = PlayersTabColumnHandler(event)
-        hidden_column_ids = SessionPlayersHiddenColumns(self.request, event).get()
-        disabled_column_ids = SessionPlayersDisabledColumns(self.request, event).get()
-        handler.set_column_states(disabled_column_ids, hidden_column_ids)
+        handler.set_column_states(
+            SessionPlayersDisabledColumns(self.request, event).get(),
+            SessionPlayersHiddenColumns(self.request, event).get(),
+            SessionPlayersEmptyColumns(self.request, event).get(),
+        )
         return handler
 
     def set_column_filter_values(self, override: bool = False) -> None:
@@ -386,12 +389,18 @@ class PlayerAdminController(BaseEventAdminController):
             column.id
             for column in handler.columns
             if not column.is_enabled_for_event(event, allowed_tournaments)
-            or not column.is_enabled_for_players(allowed_players)
+        ]
+        empty_column_ids = [
+            column.id
+            for column in handler.columns
+            if not column.has_data_for_players(allowed_players)
         ]
         SessionPlayersDisabledColumns(request, event).set(disabled_column_ids)
+        SessionPlayersEmptyColumns(request, event).set(empty_column_ids)
         handler.set_column_states(
             disabled_column_ids,
             SessionPlayersHiddenColumns(request, event).get(),
+            empty_column_ids,
         )
 
     @classmethod

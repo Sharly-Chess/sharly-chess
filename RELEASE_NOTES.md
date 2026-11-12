@@ -48,6 +48,7 @@
 - The ratings update proposes to drop a _FIDE_ rating the _FIDE_ list no longer gives, in favour of the rating the national list gives, such as the 1399 estimate of the _FFE_ for a player who lost their _FIDE_ rating (5.2.6)
 - When the ratings update only has the sources of some ratings to bring up to date, the window says so, instead of saying that all the ratings are up to date beside an enabled Update button (5.2.6)
 - Importing players no longer fails with an error when a player of the file is rated only at another cadence than the tournaments of the event: the comparison shows them on their estimate (5.2.6)
+- The comment, email, phone, fixed board, _FIDE_ ID and national ID columns of the players tab can be shown even when no player has a value for them; they are then hidden by default (5.2.6)
 
 ## Teams
 

@@ -274,6 +274,7 @@ class PlayersTabColumnHandler:
         self,
         disabled_column_ids: list[str],
         hidden_column_ids: list[str] | None = None,
+        empty_column_ids: list[str] | None = None,
     ) -> None:
         for column in self.columns:
             column.is_enabled = column.id not in disabled_column_ids
@@ -281,6 +282,7 @@ class PlayersTabColumnHandler:
                 column.id not in hidden_column_ids
                 if hidden_column_ids is not None
                 else column.is_default_visible
+                and column.id not in (empty_column_ids or [])
             )
 
     @property

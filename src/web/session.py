@@ -481,6 +481,16 @@ class SessionPlayersDisabledColumns(EventSessionVariable[list[str]]):
         return []
 
 
+class SessionPlayersEmptyColumns(EventSessionVariable[list[str]]):
+    @property
+    def key(self) -> str:
+        return 'players_empty_columns'
+
+    @property
+    def default_value(self) -> list[str]:
+        return []
+
+
 class SessionPlayersSort(EventSessionVariable[tuple[str, bool]]):
     @property
     def key(self) -> str:
