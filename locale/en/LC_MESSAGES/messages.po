@@ -12189,6 +12189,12 @@ msgid "Updating"
 msgstr ""
 
 #, python-format
+msgid "Updating records the list the rating of %(num)d player now comes from, without changing it."
+msgid_plural "Updating records the list the ratings of %(num)d players now come from, without changing them."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "Updating the lists: %(lists)s. The check is run again once they are up to date."
 msgstr ""
 

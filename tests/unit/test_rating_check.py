@@ -235,6 +235,41 @@ class TestRatingCheck:
         check = self._check(player)
         assert check.changes == [] and check.arbiter_values == []
 
+    def test_a_rating_the_fide_list_no_longer_gives_is_dropped(self, monkeypatch):
+        player = self._setup(
+            {'fide': 1575, 'origins': {'f': {'source': 'fide'}}},
+            monkeypatch,
+            {},
+        )
+        check = self._check(player)
+        [row] = check.changes
+        assert row.proposed[Cadence.STANDARD].fide is None
+        assert row.proposed_official is None
+        [updated] = check.apply({player.id})
+        assert updated.ratings[Cadence.STANDARD].fide is None
+
+    def test_a_rating_the_fide_list_dropped_gives_way_to_the_national_one(
+        self, monkeypatch
+    ):
+        player = self._setup(
+            {'fide': 1575, 'origins': {'f': {'source': 'fide'}}},
+            monkeypatch,
+            {},
+        )
+        self._list_national(player, monkeypatch, {'manual': 1449})
+        check = self._check(player)
+        [row] = check.changes
+        assert str(row.proposed_rating) == '1449\xa0E'
+
+    def test_the_fide_list_leaves_the_national_copy_of_a_fide_rating(self, monkeypatch):
+        player = self._setup(
+            {'fide': 1575, 'origins': {'f': {'source': 'ffe'}}},
+            monkeypatch,
+            {},
+        )
+        check = self._check(player)
+        assert check.changes == [] and check.arbiter_values == []
+
     def test_a_typed_value_superseded_by_a_list_is_put_to_the_arbiter(
         self, monkeypatch
     ):
