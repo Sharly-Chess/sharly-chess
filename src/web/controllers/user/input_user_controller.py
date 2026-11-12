@@ -10,6 +10,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.channels import ChannelsPlugin
 from litestar.exceptions import ClientException
 
+from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.board import Board
 from data.screens.screen import Screen
@@ -198,10 +199,29 @@ class InputUserController(BaseScreenUserController):
         PlayerAdminController.publish_new_checkin(channels, tournament)
         return self._user_screen_render(web_context)
 
+    @staticmethod
+    def _shown_value(request: HTMXRequest) -> int | None:
+        """The value the screen showed when the user acted on it, sent with
+        the request so that a request built from an outdated screen, or sent
+        twice, does not apply again."""
+        shown = request.query_params.get('shown')
+        if shown is None:
+            return None
+        try:
+            return int(shown)
+        except ValueError:
+            raise ClientException(f'Invalid shown value [{shown}].') from None
+
     def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
         web_context = PlayerUserWebContext(request)
         tournament = web_context.tournament
         player = web_context.tournament_player
+        shown_count = self._shown_value(request)
+        if (
+            shown_count is not None
+            and shown_count != player.pairings[tournament.current_round].illegal_moves
+        ):
+            return self._user_screen_render(web_context)
         session_handler = SessionLastIllegalMoveUpdated(request)
         last_player_updated = LastPlayerUpdated(
             tournament_id=tournament.id,
@@ -294,14 +314,38 @@ class InputUserController(BaseScreenUserController):
             raise ClientException(
                 f'Round [{round_}] of tournament [{tournament.id}] is not published.'
             )
-        if result == Result.NO_RESULT:
-            with suppress(ValueError):
-                tournament.delete_result(board)
-        else:
-            tournament.add_result(board, result)
-        PairingsAdminController.publish_new_user_results(
-            channels, event.uniq_id, tournament.id, round_
-        )
+        shown_result = self._shown_value(request)
+        if shown_result is not None and board.result not in (shown_result, result):
+            Message.warning(
+                request,
+                (
+                    _(
+                        'The result of board {board} was cleared by someone else '
+                        'in the meantime: nothing was recorded.'
+                    )
+                    if board.no_result
+                    else _(
+                        'The result of board {board} was changed to {result} by '
+                        'someone else in the meantime: nothing was recorded.'
+                    )
+                ).format(board=board.number_str, result=board.result_str),
+            )
+            return self._user_screen_render(
+                web_context,
+                template_name='user/screen/content_update.html',
+                trigger_event='close_modal',
+            )
+        # A result sent again from a screen that had not caught up finds the
+        # board already holding it: there is nothing to record.
+        if shown_result is None or board.result == shown_result:
+            if result == Result.NO_RESULT:
+                with suppress(ValueError):
+                    tournament.delete_result(board)
+            else:
+                tournament.add_result(board, result)
+            PairingsAdminController.publish_new_user_results(
+                channels, event.uniq_id, tournament.id, round_
+            )
         SessionLastResultUpdated(web_context.request).set(
             LastBoardUpdated(
                 tournament_id=tournament.id,
@@ -314,6 +358,6 @@ class InputUserController(BaseScreenUserController):
         )
         return self._user_screen_render(
             web_context,
-            template_name='user/screen/content.html',
+            template_name='user/screen/content_update.html',
             trigger_event='close_modal',
         )

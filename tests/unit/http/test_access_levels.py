@@ -406,6 +406,31 @@ def test_whether_a_result_already_entered_can_be_changed(
 
 
 @pytest.mark.unit
+def test_a_result_from_a_screen_that_had_not_caught_up_is_answered(
+    http: TestClient, lan: TestClient, level: Rights, events: Fixtures
+):
+    """A screen still showing the game without a result sends one after
+    another device has entered it: every level allowed to enter results gets
+    its screen back, told what the board now holds, and the board keeps it."""
+    board_id, _white = first_board_and_players(PUBLIC_EVENT_ID, events.tournament_id)
+    set_result_as_admin(http, events, board_id, Result.WIN)
+    response = lan.put(
+        f'/view/update-result/1/{PUBLIC_EVENT_ID}/{events.public_screen.uniq_id}'
+        f'/{events.tournament_id}/1/{board_id}/{Result.LOSS.value}'
+        f'?shown={Result.NO_RESULT.value}',
+        follow_redirects=False,
+    )
+    assert_acts(response, level.enter_results)
+    if level.enter_results:
+        assert 'nothing was recorded' in response.text
+    EventLoader.unload_event(PUBLIC_EVENT_ID)
+    event = EventLoader().load_event(PUBLIC_EVENT_ID)
+    tournament = event.tournaments_by_id[events.tournament_id]
+    board = next(b for b in tournament.get_round_boards(1) if b.id == board_id)
+    assert board.result == Result.WIN
+
+
+@pytest.mark.unit
 def test_whether_a_forfeit_can_be_recorded_from_a_screen(
     http: TestClient, lan: TestClient, level: Rights, events: Fixtures
 ):
