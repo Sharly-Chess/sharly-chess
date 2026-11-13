@@ -15,7 +15,7 @@
 <div class="{% if not screen.timer %}text-secondary{% endif %}">
     {% call components.icon_text('bi-clock-fill') %}{% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}{% endcall %}
 </div>
-{% if show_details and client.can_manage_screens and screen.screen_type.has_exit_button %}
+{% if show_details and client.can_manage_screens and screen.accepts_input %}
     <div>
         {% call components.icon_text('bi-x-circle') %}{{ _('Exit button:') }}
         {% if screen.input_exit_button %}

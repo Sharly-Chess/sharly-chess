@@ -13,6 +13,7 @@ from utils.enum import MenuSubmenuMode
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.display_controller import DisplayController
     from data.screens.screen_types import ScreenType
 
 
@@ -282,6 +283,15 @@ class Menu:
         return _('Menu')
 
     @property
+    def display_controllers(self) -> list[DisplayController]:
+        """The display controllers this menu is set up for."""
+        return [
+            display_controller
+            for display_controller in self.event.sorted_display_controllers
+            if self.id in display_controller.stored_display_controller.item_menu_ids
+        ]
+
+    @property
     def stored_menu_items(self) -> list[StoredMenuItem]:
         return self.stored_menu.stored_menu_items
 
@@ -344,6 +354,28 @@ class Menu:
                     seen.add(screen.uniq_id)
                     screens.append(screen)
         return screens
+
+    def screens_for(self, include_private: bool) -> list[Screen]:
+        """The screens a viewer can reach through this menu."""
+        screens = self.resolved_screens()
+        if include_private:
+            return screens
+        return [screen for screen in screens if screen.public]
+
+    def nav_entries(
+        self, current_screen: Screen, include_private: bool
+    ) -> list[MenuNavEntry]:
+        """The navigation bar, when there is somewhere to go."""
+        screens = self.screens_for(include_private)
+        if len(screens) < 2:
+            return []
+        return group_menu_nav_entries(screens, self, current_screen)
+
+    def screen_indexes(self, include_private: bool) -> dict[str, int]:
+        return {
+            screen.uniq_id: index
+            for index, screen in enumerate(self.screens_for(include_private))
+        }
 
     def _get_menu_items_by_id(self) -> dict[int, MenuItem]:
         menu_items_by_id = {}

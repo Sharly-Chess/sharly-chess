@@ -226,7 +226,7 @@ class ResultsEntryAccessLevel(AccessLevel):
 
     def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows entry of results via any input Screens marked as public',
+            'Allows entry of results on any public screen accepting input',
             locale,
         )
 
@@ -270,7 +270,7 @@ class CheckInAccessLevel(AccessLevel):
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:
-        return _('Allows check-in via any input Screens marked as public', locale)
+        return _('Allows check-in on any public screen accepting input', locale)
 
 
 class SectorArbitrationAccessLevel(AccessLevel):

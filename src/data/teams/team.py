@@ -102,7 +102,7 @@ class Team:
     @property
     def pairing_label(self) -> str | None:
         """Human label for the pairing number: a letter (``A``, ``B``, …) for
-        systems that address teams alphabetically (round-robin Berger grids,
+        systems that address teams alphabetically (round-robin grids,
         Molter tables), otherwise ``#N``. ``None`` when the team has no
         pairing number."""
         number = self.pairing_number

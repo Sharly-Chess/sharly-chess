@@ -187,7 +187,7 @@
             {% endif %}
             {% call components.icon_text('bi-clock', tag='div') %}{{ _('Timers: %(num)d', num=item.timer_count) }}{% endcall %}
             {% call components.icon_text('bi-fullscreen', tag='div') %}{{ _('Screens: %(num)d', num=item.screen_count) }}{% endcall %}
-            {% call components.icon_text('bi-arrows-fullscreen', tag='div') %}{{ _('Multi-screens: %(num)d', num=item.family_count) }}{% endcall %}
+            {% call components.icon_text('bi-arrows-fullscreen', tag='div') %}{{ _('Paged screens: %(num)d', num=item.family_count) }}{% endcall %}
             {% call components.icon_text('bi-repeat', tag='div') %}{{ _('Rotators: %(num)d', num=item.rotator_count) }}{% endcall %}
             {% if item.origin_message %}
                 {% call components.icon_text('bi-clock-history', tag='div', class='text-secondary mt-2') %}{{ item.origin_message }}{% endcall %}

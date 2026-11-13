@@ -14,7 +14,36 @@
         hx-get="{{ nav_tab.refresh_url }}"
     {% endif %}
 >
-    {% if 'submenu' in nav_tab %}
+    {% if nav_tab.switcher_target %}
+        {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
+            <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+                <button
+                    class="nav-link text-start {% if active %}active{% endif %}"
+                    id="nav-{{ nav_id }}-link"
+                    data-testid="nav-{{ nav_id }}-link"
+                    hx-get="{{ url_for(nav_tab.switcher_target, event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-push-url="true"
+                    type="button"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="{{ nav_tab.icon_class }}"></i>
+                    <span class="expanded-only">{{ nav_tab.title|safe }}</span>
+                </button>
+            </span>
+        {% endwith %}
+        {% for sub_nav_id, sub_nav in nav_tab.submenu.items() if sub_nav.shortcut %}
+            <button
+                hidden
+                type="button"
+                hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-push-url="true"
+                hx-indicator="#please-wait"
+                hx-trigger="{{ sub_nav.shortcut }}"
+            ></button>
+        {% endfor %}
+    {% elif 'submenu' in nav_tab %}
         {# Dropdown for compact mode #}
         {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
             <div
@@ -48,6 +77,9 @@
                     {% for sub_nav_id, sub_nav_tab in nav_tab.submenu.items() %}
                         {% if sub_nav_tab.separator %}
                             <li class="dropdown-divider"></li>
+                        {% endif %}
+                        {% if sub_nav_tab.group %}
+                            <li><h6 class="dropdown-header sidebar-group-label">{{ sub_nav_tab.group }}</h6></li>
                         {% endif %}
                         <li>
                             <button
@@ -130,8 +162,11 @@
                     {% if sub_nav.separator %}
                         <div class="sidebar-divider"></div>
                     {% endif %}
+                    {% if sub_nav.group %}
+                        <div class="sidebar-group-label">{{ sub_nav.group }}</div>
+                    {% endif %}
                     <button
-                        class="nav-link text-start d-flex align-items-center pe-2 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
+                        class="nav-link text-start d-flex align-items-center pe-2 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if sub_nav_id == admin_event_tab %}active{% endif %}"
                         id="nav-{{ sub_nav_id }}-tab"
                         data-testid="nav-{{ sub_nav_id }}-tab"
                         {% if 'modal' in sub_nav %}

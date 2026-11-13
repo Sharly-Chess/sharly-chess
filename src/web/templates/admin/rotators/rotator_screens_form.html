@@ -1,5 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/components/macros.j2' as components with context %}
+{% import '/admin/screens/screen_badges.j2' as screen_badges with context %}
 
 <div id="screen-list-container">
     {% set rotating_screens = admin_rotator.sorted_rotating_screens %}
@@ -33,12 +34,16 @@
                                     {{ macros.screen_type_icon(screen.screen_type, true) }}
                                 </span>
                                 {{ screen.name }}
+                                {{ screen_badges.badges(screen) }}
                             {% elif family %}
                                 <span class="pe-1">
                                     {{ macros.screen_type_icon(family.screen_type, true) }}
                                 </span>
                                 {{ family.display_name }}
-                                <i class="ps-1">{{ _('(multi-screen)') }}</i>
+                                {{ screen_badges.badges(family) }}
+                                {% if family.page_delay %}
+                                    <span class="text-secondary ps-1">{{ ngettext('%(num)d second per page', '%(num)d seconds per page', family.page_delay) }}</span>
+                                {% endif %}
                             {% endif %}
                         </div>
                         <div class="flex-shrink-0 d-flex gap-2 align-items-center">

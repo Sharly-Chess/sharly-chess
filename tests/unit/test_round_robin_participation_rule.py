@@ -300,16 +300,16 @@ class RoundRobinParticipationRuleTestCase(TestCase):
                 leaver_number, (pairing.attrib['whiteno'], pairing.attrib['blackno'])
             )
 
-    def test_berger_grid_marks_the_annulled_games(self) -> None:
+    def test_round_robin_grid_marks_the_annulled_games(self) -> None:
         # The crosstable keeps every result, but the games that no longer
         # count for either side — the leaver's row and column — are marked
         # so the totals can be read.
-        from data.print_documents.documents import BergerGridPrintDocument
+        from data.print_documents.documents import RoundRobinGridPrintDocument
         from data.print_documents.options import TournamentPrintOption
 
         self._forfeit_leaver_rounds([3, 4, 5])
         tournament = self.tournament
-        document = BergerGridPrintDocument(
+        document = RoundRobinGridPrintDocument(
             options=[TournamentPrintOption(self._event, tournament.id)]
         )
         document.event = self._event

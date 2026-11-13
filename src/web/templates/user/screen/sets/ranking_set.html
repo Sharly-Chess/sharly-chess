@@ -5,7 +5,7 @@
         screen_set.name_for_ranking,
         _('After round %(round)d', round=data.ranking_round) if data.ranking_round else '',
     ) %}
-        {% if tournament.adjourned_boards(before_round=(data.ranking_round or tournament.rounds) + 1) %}
+        {% if tournament.adjourned_boards(before_round=data.ranking_round + 1) %}
             <span class="badge provisional-badge align-self-center">
                 <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
             </span>

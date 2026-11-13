@@ -2,7 +2,7 @@
     {% for mode, label, icon in [
         ('list', _('List view'), 'bi-list-ul'),
         ('cards', _('Card view'), 'bi-grid'),
-    ] %}
+    ] + ([('preview', _('Preview view'), 'bi-display')] if collection.preview_template else []) %}
         {{ components.segment_button(
             label,
             icon=icon,

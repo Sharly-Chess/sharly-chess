@@ -1,0 +1,21 @@
+{% if action == 'create' and screen_kind_type.families_allowed %}
+    {% call components.segmented(_('Pages'), class='w-100 mb-3 screen-kind-switch', attrs={'data-testid': 'screen-kind-switch'}) %}
+        {% for paged, label, icon, route, argument in [
+            (false, _('One or more tournaments, on one page'), screen_kind_type.icon_str, 'admin-screen-create-modal', 'screen_type'),
+            (true, _('One tournament, over several pages'), 'bi-window-split', 'admin-family-create-modal', 'family_type'),
+        ] %}
+            {{ components.segment_button(
+                label,
+                icon=icon,
+                active=paged == screen_kind_paged,
+                class='w-50',
+                attrs={} if paged == screen_kind_paged else {
+                    'hx-get': url_for(route, event_uniq_id=admin_event.uniq_id, **{argument: screen_kind_type.value}),
+                    'hx-target': 'body',
+                    'hx-indicator': '#please-wait',
+                    'data-testid': 'screen-kind-' ~ ('paged' if paged else 'single'),
+                },
+            ) }}
+        {% endfor %}
+    {% endcall %}
+{% endif %}

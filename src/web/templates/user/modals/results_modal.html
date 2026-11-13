@@ -10,7 +10,7 @@
         round=tournament.current_round,
         board_id=board.identifier,
         result=result,
-    ) if display_controller else url_for(
+    ) ~ display_controller_query if display_controller else url_for(
         'user-update-result',
         is_screen=1,
         event_uniq_id=user_event.uniq_id,
@@ -19,7 +19,7 @@
         round=tournament.current_round,
         board_id=board.identifier,
         result=result,
-    ) }}
+    ) ~ menu_query }}
 {% endmacro %}
 {# In a team match the pairings table (and match sheet) shows team A on
    the left whatever the colours — mirror that here, so black may sit on

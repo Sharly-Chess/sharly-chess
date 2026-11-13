@@ -9,6 +9,8 @@ from litestar.testing import TestClient
 
 from data.pairings.variations import StandardTeamSwissVariation
 from data.tournament import Tournament
+from tests.test_config import ScreenType, TestUtils
+from tests.unit.http.client import ApiClient
 from tests.unit.http.events import EventUnderTest
 from utils.enum import EventType
 
@@ -42,6 +44,34 @@ def create_team(http: TestClient, tournament: Tournament, **fields: str):
 
 def team_names() -> list[str]:
     return [team.name for team in EVENT.tournament().teams]
+
+
+@pytest.mark.unit
+def test_checking_in_a_team_on_a_destination_stays_on_it(
+    http: TestClient, api: ApiClient, tournament: Tournament
+):
+    create_team(http, tournament)
+    screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Team check-in',
+        ScreenType.CHECK_IN,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    controller = TestUtils.create_display_controller(
+        api, EVENT_ID, 'iPad', screen_uniq_id=screen.uniq_id
+    )
+    team = next(iter(EVENT.tournament().teams))
+    route = f'{EVENT_ID}/{controller.id}/{tournament.id}/{team.id}'
+
+    modal = http.get(f'/view/team-checkin-modal/0/{route}')
+    assert modal.status_code == 200
+    assert f'/view/team-toggle-check-in/0/{route}' in modal.text
+
+    response = http.patch(f'/view/team-toggle-check-in/0/{route}')
+    assert response.status_code == 200
+    assert f'/view/display-controller/{EVENT_ID}/{controller.id}' in response.text
+    assert next(iter(EVENT.tournament().teams)).check_in
 
 
 @pytest.mark.unit

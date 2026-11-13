@@ -28,7 +28,7 @@
     {% if tournament.is_team_tournament and tournament.pairing_system.paired_by_team %}
         {% include '/user/screen/sets/team_matches_set.html' %}
     {% else %}
-    <div class="row gy-2 gx-3 screen-set-row mx-0 {% if screen.screen_type.allows_result_input %}input-rows{% endif %}">
+    <div class="row gy-2 gx-3 screen-set-row mx-0 {% if (screen.accepts_input and not tournament.is_fake) %}input-rows{% endif %}">
         {% for boards in screen_set.boards_lists %}
             <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
@@ -44,7 +44,7 @@
                     {% for board in boards %}
                         {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
                         {% set editable =
-                            screen.screen_type.allows_result_input
+                            (screen.accepts_input and not tournament.is_fake)
                             and board.black_tournament_player
                             and (
                                 client.can_update_results(tournament.id)
@@ -59,14 +59,14 @@
                                 display_controller_id=display_controller.id,
                                 tournament_id=tournament.id,
                                 board_id=board.identifier
-                            ) if display_controller else url_for(
+                            ) ~ display_controller_query if display_controller else url_for(
                                 'user-result-modal',
                                 is_screen=1,
                                 event_uniq_id=user_event.uniq_id,
                                 screen_uniq_id=screen.uniq_id,
                                 tournament_id=tournament.id,
                                 board_id=board.identifier
-                            ) %}
+                            ) ~ menu_query %}
                         {% endif %}
                         <div
                             id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
@@ -104,7 +104,7 @@
             </div>
         {% endfor %}
     </div>
-    {% if screen.screen_type.allows_result_input %}
+    {% if (screen.accepts_input and not tournament.is_fake) %}
         {% include '/user/screen/sets/input_cards.html' %}
     {% endif %}
     {% endif %}

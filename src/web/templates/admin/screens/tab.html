@@ -1,4 +1,6 @@
 {% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+{% import '/admin/screens/display_switcher.j2' as display_switcher with context %}
 {% import '/admin/common/collection_macros.j2' as collection_macros with context %}
 
 {% set collection = get_admin_collection_spec('screens') %}
@@ -8,7 +10,7 @@
 
 {% block top_left_nav %}
     {% if client.can_manage_screens %}
-        {{ admin_macros.admin_title(_('Single Screens'), 'screens-single') }}
+        {{ display_switcher.title('screens-single') }}
         <script>
             preparePrintModal()
         </script>
@@ -17,24 +19,6 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% with id='show-family-screens', name='show_family_screens', show=show_family_screens %}
-            <div
-                class="d-inline-flex align-items-center gap-2 form-switch top-nav-switch mb-0"
-                {{ macros.tooltip_attributes('info', _('Show/hide the screens created from multi-screens.'), 'top') }}
-            >
-                <input
-                    hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %}
-                />
-                <label for="{{ id }}" class="form-check-label">{{ _('Multi-Screens') }}</label>
-            </div>
-        {% endwith %}
         {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
         {% call components.menu_button(_('Create a screen'), kind='primary', icon='add') %}
@@ -44,8 +28,8 @@
                     icon=screen_type.icon_str,
                     url=url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value),
                     modal=true,
-                    allowed=admin_event.tournaments_by_id or not screen_type.has_screen_sets,
-                    reason=_('You must create a tournament before creating these screens.'),
+                    allowed=screen_type_data['creatable'],
+                    reason=screen_type.no_tournament_reason,
                     tooltip_placement='left',
                     attrs={'data-testid': 'create-screen-type-' ~ screen_type.value},
                 ) }}
@@ -56,23 +40,11 @@
 
 {% block cards_container_cards %}
     {% if client.can_manage_screens %}
-        {% with screens=admin_event.sorted_screens if show_family_screens else admin_event.sorted_basic_screens %}
-            {% if not screens %}
-                {% call components.empty_state(_('No screens')) %}
-                    {% if client.can_manage_screens %}
-                        <p>
-                            {{ _('You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network.') }}
-                        </p>
-                        <p>
-                            {{ _('Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments.') }}
-                        </p>
-                        <p>
-                            {{ _('Input Screens may be used to allow players to enter their own results on a device that you make available at the venue.') }}
-                        </p>
-                        <p>
-                            {{ _('Create a screen now to get started.') }}
-                        </p>
-                    {% endif %}
+        {% with screen_count=admin_screen_types_data.values()|map(attribute='screens')|map('length')|sum %}
+            {% if not screen_count %}
+                {% call components.empty_state(none, class='screens-map-empty') %}
+                    {{ screens_map.guide('screens') }}
+                    <p>{{ _('Create a screen now to get started.') }}</p>
                 {% endcall %}
             {% else %}
                 {% set present_types = admin_screen_types_data.items()|selectattr('1.screens')|list %}
@@ -95,7 +67,7 @@
                         </button>
                     {% endmacro %}
                     <div class="screens-type-filter" role="group" aria-label="{{ _('Screen type') }}">
-                        {{ filter_chip('', _('All'), screens|length) }}
+                        {{ filter_chip('', _('All'), screen_count) }}
                         {% for screen_type, screen_type_data in present_types %}
                             {{ filter_chip(screen_type.id, screen_type_data.title, screen_type_data.screens|length, screen_type) }}
                         {% endfor %}

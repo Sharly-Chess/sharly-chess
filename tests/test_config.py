@@ -28,11 +28,11 @@ from database.sqlite.event.event_store import (
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from data.screens.screen_types import (
     CheckInScreenType,
-    InputScreenType,
     BoardsScreenType,
     PlayersScreenType,
     ResultsScreenType,
     RankingScreenType,
+    RoundRobinGridScreenType,
     ImageScreenType,
 )
 from utils.enum import (
@@ -46,11 +46,11 @@ class ScreenType(StrEnum):
     """Screen-type ids used by the tests to create screens and families."""
 
     CHECK_IN = CheckInScreenType.static_id()
-    INPUT = InputScreenType.static_id()
     BOARDS = BoardsScreenType.static_id()
     PLAYERS = PlayersScreenType.static_id()
     RESULTS = ResultsScreenType.static_id()
     RANKING = RankingScreenType.static_id()
+    ROUND_ROBIN_GRID = RoundRobinGridScreenType.static_id()
     IMAGE = ImageScreenType.static_id()
 
 
@@ -504,12 +504,14 @@ class TestUtils:
         defaults: dict[str, Any] = {
             'id': None,
             'name': name,
-            'init_set_tournament_id': None,
+            'init_set_tournament_ids': None,
             'columns': None,
             'font_size': None,
             'menu_text': None,
             'timer_id': None,
             'input_exit_button': None,
+            # A new check-in screen accepts input unless switched off.
+            'accepts_input': screen_type == ScreenType.CHECK_IN,
             'players_show_unpaired': None,
             'players_player_format': PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
             if screen_type == ScreenType.PLAYERS
@@ -584,6 +586,7 @@ class TestUtils:
             'menu_text': '',
             'timer_id': None,
             'input_exit_button': None,
+            'accepts_input': family_type == ScreenType.CHECK_IN,
             'players_show_unpaired': None,
             'players_player_format': PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
             if family_type == ScreenType.PLAYERS
@@ -712,18 +715,18 @@ class TestUtils:
         assert stored_rotator.id is not None
 
         for screen_id in screen_ids or []:
-            form_data = cls.prepare_form_data({'screen_id': screen_id})
+            form_data = cls.prepare_form_data({'item_id': f'screen:{screen_id}'})
             res = api_request_context.post(
-                f'/rotating-screens/create-screen/{event_uniq_id}/{stored_rotator.id}',
+                f'/rotating-screens/create/{event_uniq_id}/{stored_rotator.id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
             cls.check_api_response(res)
 
         for family_id in family_ids or []:
-            form_data = cls.prepare_form_data({'family_id': family_id})
+            form_data = cls.prepare_form_data({'item_id': f'family:{family_id}'})
             res = api_request_context.post(
-                f'/rotating-screens/create-family/{event_uniq_id}/{stored_rotator.id}',
+                f'/rotating-screens/create/{event_uniq_id}/{stored_rotator.id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )

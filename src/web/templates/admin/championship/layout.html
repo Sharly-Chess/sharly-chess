@@ -9,7 +9,7 @@
     {% elif championship.passed %}
         {% set target_tab = 'passed_championships' %}
     {% endif %}
-    <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
+    <div class="sidebar-header d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
         <button
             class="btn px-0 py-0 d-flex align-items-center gap-2"
             hx-get="{{ url_for('admin-tab', admin_tab=target_tab) }}"

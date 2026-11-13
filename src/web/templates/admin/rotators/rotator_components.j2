@@ -1,3 +1,4 @@
+{% import '/admin/screens/screen_badges.j2' as screen_badges with context %}
 {% macro item_class(item, view) -%}
     collection-status-{{ 'success' if item.rotating_screens_by_id else 'danger' }}
 {%- endmacro %}
@@ -16,7 +17,22 @@
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
         {% if client.can_manage_screens %}{{ macros.rotator_visibility_icon(item, '') }}{% endif %}
         <span class="fw-bold text-truncate">{{ item.name }}</span>
+        {% if client.can_manage_screens %}
+            {% for display_controller in item.display_controllers %}
+                {{ components.badge('neutral', display_controller.name) }}
+            {% endfor %}
+        {% endif %}
     </span>
+{% endmacro %}
+
+{% macro preview_url(item) %}
+    {% if item.rotating_screens %}
+        {{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=item.id) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro preview_header(item) %}
+    {{ identity(item, 'card', none) }}
 {% endmacro %}
 
 {% macro screens_count(item, view, placement) %}
@@ -33,7 +49,7 @@
     <span
         class="text-nowrap"
         data-testid="families-count"
-        {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
+        {{ macros.tooltip_attributes('info', _('Number of paged screens'), 'top') }}
     >
         {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.families|length }}{% endcall %}
     </span>
@@ -45,7 +61,7 @@
         icon='bi-window-stack',
         icon_only=not show_label,
         size='sm',
-        tooltip=_('Define the screens and multi-screens to display.'),
+        tooltip=_('Define the screens and paged screens to display.'),
         attrs={
             'hx-get': url_for(
                 'admin-rotator-screens-modal',
@@ -80,7 +96,7 @@
             '',
             'collection-inline-edit-label-group',
             false,
-            aria_label=_('Define the screens and multi-screens to display.'),
+            aria_label=_('Define the screens and paged screens to display.'),
         ) %}
             {{ assignment_content }}
         {% endcall %}
@@ -93,7 +109,7 @@
             class="text-danger text-nowrap"
             {{ macros.tooltip_attributes(
                 'warning',
-                _('There needs to be at least one screen or multi-screen defined for the rotator to be accessible.'),
+                _('There needs to be at least one screen or paged screen defined for the rotator to be accessible.'),
                 'top',
             ) }}
         >{% call components.icon_text('warning') %}{{ _('Empty') }}{% endcall %}</span>
@@ -144,22 +160,19 @@
     <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% endif %}">
         <section class="collection-detail-section">
             <h6>{{ _('Screens') }}</h6>
-            {% for screen in rotator.screens %}
+            {% for rotating_screen in rotator.sorted_rotating_screens %}
+                {% set screen = rotating_screen.screen %}
+                {% set family = rotating_screen.family %}
                 <div>
-                    {% if client.can_manage_screens %}{{ macros.screen_visibility_icon(screen, 'pe-1') }}{% endif %}
-                    {{ macros.screen_type_icon(screen.screen_type, true) }} {{ screen.name }}
-                </div>
-            {% else %}
-                <span class="text-secondary">{{ _('None') }}</span>
-            {% endfor %}
-        </section>
-        <section class="collection-detail-section">
-            <h6>{{ _('Multi-Screens') }}</h6>
-            {% for family in rotator.families %}
-                <div>
-                    {% if client.can_manage_screens %}{{ admin_macros.family_visibility_icon(family, 'pe-1') }}{% endif %}
-                    {{ macros.screen_type_icon(family.screen_type, true) }} {{ family.display_name }}
-                    {{ ngettext('(%(num)d screen)', '(%(num)d screens)', family.screens_by_uniq_id|length) }}
+                    {% if screen %}
+                        {% if client.can_manage_screens %}{{ macros.screen_visibility_icon(screen, 'pe-1') }}{% endif %}
+                        {{ macros.screen_type_icon(screen.screen_type, true) }} {{ screen.name }}
+                        {{ screen_badges.badges(screen) }}
+                    {% elif family %}
+                        {% if client.can_manage_screens %}{{ admin_macros.family_visibility_icon(family, 'pe-1') }}{% endif %}
+                        {{ macros.screen_type_icon(family.screen_type, true) }} {{ family.display_name }}
+                        {{ screen_badges.badges(family) }}
+                    {% endif %}
                 </div>
             {% else %}
                 <span class="text-secondary">{{ _('None') }}</span>
@@ -193,6 +206,7 @@
                         admin_event.sorted_display_controllers,
                         'rotator',
                         rotator.name,
+                        rotator.display_controllers,
                     ) }}
                 {% endif %}
             </div>
