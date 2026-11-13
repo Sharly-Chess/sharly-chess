@@ -2184,7 +2184,7 @@ body[data-sc-interface=admin] .htmx-indicator {
 /* The colours of the pieces the player had, whatever the theme. */
 [data-sc-interface=admin] .player-record-white {
     background-color: #e8e6e1;
-    border-color: #e8e6e1;
+    border-color: #9a968e;
     color: #17191c;
 }
 
@@ -2224,7 +2224,8 @@ body[data-sc-interface=admin] .htmx-indicator {
 }
 
 [data-sc-interface=admin] .modal-body {
-    padding: 1.25rem 1.5rem;
+    --sc-modal-body-padding-top: 1.25rem;
+    padding: var(--sc-modal-body-padding-top) 1.5rem 1.25rem;
 }
 
 /* Colour themes */

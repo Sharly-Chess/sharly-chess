@@ -221,17 +221,29 @@ class DataRecovery:
         for file in (version_dir / EVENTS_DIR.name).glob('*'):
             if not file.is_file():
                 continue
-            shutil.copy(file, EVENTS_DIR / file.name)
-            logger.debug('- Event [%s] recovered', file.stem)
+            if cls._recover_file(file, EVENTS_DIR):
+                logger.debug('- Event [%s] recovered', file.stem)
         old_championship_dir = version_dir / CHAMPIONSHIPS_DIR.name
         if old_championship_dir.is_dir():
             CHAMPIONSHIPS_DIR.mkdir(parents=True, exist_ok=True)
             for file in old_championship_dir.glob('*'):
                 if not file.is_file():
                     continue
-                shutil.copy(file, CHAMPIONSHIPS_DIR / file.name)
-                logger.debug('- Championship [%s] recovered', file.stem)
+                if cls._recover_file(file, CHAMPIONSHIPS_DIR):
+                    logger.debug('- Championship [%s] recovered', file.stem)
         return True
+
+    @staticmethod
+    def _recover_file(file: Path, directory: Path) -> bool:
+        """Copies *file* into *directory*. A file the system refuses (locked
+        by another program, or open to administrators only) is left where it
+        is rather than stopping the start of the application."""
+        try:
+            shutil.copy(file, directory / file.name)
+            return True
+        except OSError as error:
+            logger.warning('File [%s] could not be recovered: %s', file, error)
+            return False
 
     @classmethod
     def _recover_config_file(cls, old_config_file: Path) -> None:
