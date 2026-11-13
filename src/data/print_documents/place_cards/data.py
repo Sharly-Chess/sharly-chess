@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import date, datetime
 
 from common.i18n import _, pgettext
 from common.logger import get_logger
@@ -10,6 +10,7 @@ from data.board import Board
 from data.event import Event
 from data.player import TournamentPlayer
 from data.tournament import Tournament
+from utils.date_time import format_date, format_time
 
 logger: logging.Logger = get_logger()
 
@@ -111,9 +112,13 @@ class PlaceCardPairing:
         self,
         board: Board | None = None,
         round_: int = 0,
+        round_start: datetime | None = None,
     ):
         self.number: int
         self.round: int = round_
+        # Empty when the round is not scheduled.
+        self.round_date: str = format_date(round_start.date()) if round_start else ''
+        self.round_time: str = format_time(round_start) if round_start else ''
         self.white_player: PlaceCardPlayer
         self.black_player: PlaceCardPlayer
         if board:
