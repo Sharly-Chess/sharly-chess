@@ -14,6 +14,7 @@ from web.session import (
 class AdminCollectionViewMode(StrEnum):
     CARDS = 'cards'
     LIST = 'list'
+    PREVIEW = 'preview'
 
 
 @dataclass
@@ -79,6 +80,11 @@ class AdminCollectionSpec:
     card_href_component: str | None = None
     row_href_component: str | None = None
     default_view_mode: AdminCollectionViewMode = AdminCollectionViewMode.LIST
+    # Renders the items in the preview view mode, offered only when set.
+    preview_template: str | None = None
+
+    def offers_view_mode(self, mode: AdminCollectionViewMode) -> bool:
+        return mode != AdminCollectionViewMode.PREVIEW or bool(self.preview_template)
 
     def item_id(self, item: Any) -> str:
         return str(getattr(item, self.item_id_attribute))
@@ -173,6 +179,7 @@ def _insert_placement[Placement: ComponentPlacement](
 def resolve_admin_collection_view_mode(
     request: HTMXRequest, collection_key: str
 ) -> AdminCollectionViewMode:
+    spec = get_admin_collection_spec(collection_key)
     session_value = SessionAdminCollectionViewMode(request, collection_key)
     requested_mode = request.query_params.get('collection_view')
     try:
@@ -183,15 +190,18 @@ def resolve_admin_collection_view_mode(
         )
     except ValueError:
         requested_view_mode = None
-    if requested_view_mode is not None:
+    if requested_view_mode is not None and spec.offers_view_mode(requested_view_mode):
         session_value.set(requested_view_mode)
     stored_mode = session_value.get()
     if stored_mode is not None:
         try:
-            return AdminCollectionViewMode(stored_mode)
+            stored_view_mode = AdminCollectionViewMode(stored_mode)
         except ValueError:
             pass
-    default_mode = get_admin_collection_spec(collection_key).default_view_mode
+        else:
+            if spec.offers_view_mode(stored_view_mode):
+                return stored_view_mode
+    default_mode = spec.default_view_mode
     session_value.set(default_mode)
     return default_mode
 
@@ -218,7 +228,7 @@ from web.admin.display_controllers.collection import (  # noqa: E402
     COLLECTION_SPEC as _display_controllers_spec,
 )
 from web.admin.events.collection import COLLECTION_SPEC as _events_spec  # noqa: E402
-from web.admin.families.collection import COLLECTION_SPEC as _families_spec  # noqa: E402
+
 from web.admin.championship.collection import (  # noqa: E402
     COLLECTION_SPEC as _championships_spec,
     SOURCE_COLLECTION_SPEC as _championship_sources_spec,
@@ -238,7 +248,6 @@ _SPECS: dict[str, AdminCollectionSpec] = {
     'accounts': _accounts_spec,
     'display-controllers': _display_controllers_spec,
     'events': _events_spec,
-    'families': _families_spec,
     'championships': _championships_spec,
     'championship-sources': _championship_sources_spec,
     'menus': _menus_spec,

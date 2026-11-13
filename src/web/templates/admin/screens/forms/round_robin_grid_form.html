@@ -1,0 +1,24 @@
+<div class="row gy-2 gx-3">
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='round_robin_grid_by_rank',
+            label=_('%(string)s:', string=_('Order')),
+            tooltip_text=_('By pairing number, every player keeps their row and column all through the tournament; by rank, the leaders come first.'),
+            select_options={'off': _('Pairing number'), 'on': _('Rank')},
+            data=data, errors=errors
+        ) }}
+    </div>
+    {% if admin_event.is_team_event %}
+        <div class="col-12">
+            {{ admin_macros.switch_input(
+                name='round_robin_grid_players',
+                label='',
+                placeholder=_('Detail the grid by player (one row per player, individual results).'),
+                data=data, errors=errors
+            ) }}
+        </div>
+    {% endif %}
+    <div class="col-12">
+        {% include '/admin/common/modal/ranking_columns.html' %}
+    </div>
+</div>

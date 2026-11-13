@@ -132,8 +132,8 @@ def test_a_screen_joins_a_rotator_and_leaves_it(
         api, EVENT_ID, 'Rotated screen', ScreenType.RESULTS, {'public': True}
     )
     added = http.post(
-        f'/rotating-screens/create-screen/{EVENT_ID}/{rotator}',
-        data={'screen_id': str(screen.id)},
+        f'/rotating-screens/create/{EVENT_ID}/{rotator}',
+        data={'item_id': f'screen:{screen.id}'},
     )
     assert added.status_code == 200
     assert [
@@ -156,8 +156,8 @@ def test_a_duplicated_rotator_carries_its_screens(
         api, EVENT_ID, 'Rotated screen', ScreenType.RESULTS, {'public': True}
     )
     http.post(
-        f'/rotating-screens/create-screen/{EVENT_ID}/{rotator}',
-        data={'screen_id': str(screen.id)},
+        f'/rotating-screens/create/{EVENT_ID}/{rotator}',
+        data={'item_id': f'screen:{screen.id}'},
     )
     response = http.post(
         f'/rotator-clone/{EVENT_ID}/{rotator}',
@@ -171,3 +171,73 @@ def test_a_duplicated_rotator_carries_its_screens(
     ]
     assert len(copies) == 1
     assert len(copies[0].rotating_screens) == 1
+
+
+@pytest.fixture
+def screen_and_paged_screen(api: ApiClient, event: str) -> tuple[int, int]:
+    tournament = TestUtils.create_tournament(EVENT_ID, 'Open', json_file='test-screens')
+    screen = TestUtils.create_screen(
+        api, EVENT_ID, 'Results', ScreenType.RESULTS, {'public': True}
+    )
+    family = TestUtils.create_family(
+        api, EVENT_ID, tournament, 'ranking-pages', ScreenType.RANKING
+    )
+    assert screen.id is not None and family.id is not None
+    return screen.id, family.id
+
+
+@pytest.mark.unit
+def test_a_rotator_offers_screens_and_paged_screens_in_one_list(
+    http: TestClient,
+    event: str,
+    rotator: int,
+    screen_and_paged_screen: tuple[int, int],
+):
+    screen_id, family_id = screen_and_paged_screen
+    modal = http.get(f'/rotator-screens-modal/{EVENT_ID}/{rotator}')
+    assert f'value="screen:{screen_id}"' in modal.text
+    assert f'value="family:{family_id}"' in modal.text
+
+    for item_id in (f'screen:{screen_id}', f'family:{family_id}'):
+        response = http.post(
+            f'/rotating-screens/create/{EVENT_ID}/{rotator}',
+            data={'item_id': item_id},
+        )
+        assert response.status_code == 200
+    loaded = EVENT.load().rotators_by_id[rotator]
+    assert [screen.id for screen in loaded.screens] == [screen_id]
+    assert [family.id for family in loaded.families] == [family_id]
+
+
+@pytest.mark.unit
+def test_a_rotator_refuses_what_is_not_a_screen(
+    http: TestClient,
+    event: str,
+    rotator: int,
+    screen_and_paged_screen: tuple[int, int],
+):
+    screen_id, _family_id = screen_and_paged_screen
+    for item_id in (str(screen_id), f'rotator:{rotator}', 'screen:999'):
+        http.post(
+            f'/rotating-screens/create/{EVENT_ID}/{rotator}',
+            data={'item_id': item_id},
+        )
+    assert not EVENT.load().rotators_by_id[rotator].rotating_screens
+
+
+@pytest.mark.unit
+def test_a_menu_offers_screens_and_paged_screens_in_one_list(
+    http: TestClient, event: str, screen_and_paged_screen: tuple[int, int]
+):
+    screen_id, family_id = screen_and_paged_screen
+    http.post(f'/menu-create/{EVENT_ID}', data={'name': 'Main menu'})
+    menu_id = next(iter(EVENT.load().menus_by_id))
+    modal = http.get(f'/menu-items-modal/{EVENT_ID}/{menu_id}')
+    assert f'value="screen:{screen_id}"' in modal.text
+    assert f'value="family:{family_id}"' in modal.text
+
+    for item_id in (f'screen:{screen_id}', f'family:{family_id}', 'screen:999'):
+        http.post(f'/menu-items/create/{EVENT_ID}/{menu_id}', data={'item_id': item_id})
+    menu = EVENT.load().menus_by_id[menu_id]
+    assert [screen.id for screen in menu.screens] == [screen_id]
+    assert [family.id for family in menu.families] == [family_id]

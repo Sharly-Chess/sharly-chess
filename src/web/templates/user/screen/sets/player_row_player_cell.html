@@ -3,7 +3,7 @@
         player-cell
         {% if player.check_in %}checked-in{% endif %}
         {% if (
-            screen.screen_type.allows_check_in and
+            screen.screen_type.allows_check_in and screen.accepts_input and
             last_check_in_updated and
             last_check_in_updated.expiration > now and
             last_check_in_updated.tournament_id == tournament.id and
@@ -21,14 +21,14 @@
             display_controller_id=display_controller.id,
             tournament_id=tournament.id,
             player_id=player.id
-        ) if display_controller else url_for(
+        ) ~ display_controller_query if display_controller else url_for(
             'user-checkin-modal',
             is_screen=1,
             event_uniq_id=user_event.uniq_id,
             screen_uniq_id=screen.uniq_id,
             tournament_id=tournament.id,
             player_id=player.id
-        ) }}"
+        ) ~ menu_query }}"
         hx-target="body"
         hx-indicator="#please-wait"
         data-bs-toggle="modal"

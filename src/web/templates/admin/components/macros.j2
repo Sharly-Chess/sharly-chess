@@ -364,12 +364,13 @@
 {# An item of a menu opening a menu of its own, whose `menu_item`s are given in
    a `{% call %}`; `leading` is markup set before the label in place of an
    icon (a logo). #}
-{% macro submenu(label, icon=none, leading=none, tooltip=none, tooltip_placement='left') -%}
+{% macro submenu(label, icon=none, leading=none, trailing=none, tooltip=none, tooltip_placement='left') -%}
     {%- set items = caller() -%}
     {%- set toggle -%}
         <button type="button" class="dropdown-item sc-menu-item sc-submenu-toggle">
             {%- if leading %}{{ leading }}{% elif icon %}{{ _icon_tag(icon) }}{% endif -%}
             <span>{{ label }}</span>
+            {%- if trailing %}{{ trailing }}{% endif -%}
             {{- _icon_tag('bi-caret-right-fill', 'sc-submenu-caret') -}}
         </button>
     {%- endset -%}
@@ -522,7 +523,7 @@
 {% macro empty_state(title, class='') -%}
     {%- set content = caller() if caller is defined else none -%}
     <div class="admin-empty-state mx-auto{% if class %} {{ class }}{% endif %}">
-        <h5>{{ title }}</h5>
+        {%- if title %}<h5>{{ title }}</h5>{% endif %}
         {%- if content %}{{ content }}{% endif -%}
     </div>
 {%- endmacro %}

@@ -4,7 +4,6 @@ import pytest
 from litestar.params import QueryParameter
 
 from plugins.fra_schools.fra_schools_controller import FRASchoolsController
-from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.prize_admin_controller import PrizeAdminController
@@ -18,11 +17,6 @@ from web.controllers.qrcode_controller import QRCodeController
     [
         (QRCodeController, 'qrcode', 'logo'),
         (PrizeAdminController, 'htmx_admin_prizes_tab', 'show_details'),
-        (
-            FamilyAdminController,
-            'htmx_admin_event_families_tab',
-            'show_details',
-        ),
         (PlayerAdminController, 'htmx_admin_event_players_search', 'search'),
         (PlayerAdminController, 'htmx_admin_player_row', 'close_modal'),
         (

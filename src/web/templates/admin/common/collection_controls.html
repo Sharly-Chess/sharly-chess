@@ -5,7 +5,7 @@
         and collection_card_controls_template|default('')
     %}
         {% include collection_card_controls_template %}
-    {% elif collection.card.details or collection.list.details %}
+    {% elif (collection.card.details or collection.list.details) and collection_view_mode.value != 'preview' and not collection_hide_details|default(false) %}
         <div
             class="d-inline-flex align-items-center gap-2 form-switch top-nav-switch mb-0"
             {{ macros.tooltip_attributes('info', _('Expand or collapse the details of every item.'), 'top') }}

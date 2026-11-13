@@ -1,10 +1,8 @@
-"""What a visitor is offered on the screens, rotators and controllers
-tabs of a public event.
+"""The display page a visitor of a public event is offered.
 
-Those tabs are shown to anyone at the venue, with the controls that
-change anything left out: no actions column, no inline editing, no link
-to the editor. The rows stay clickable, because following one is how a
-visitor opens the screen it names.
+A visitor first chooses a feed to follow, or chooses to see everything, then
+opens a screen, menu or rotator from static previews. Nothing on the page
+changes anything.
 """
 
 from collections.abc import Iterator
@@ -49,16 +47,20 @@ def tabs(api: ApiClient) -> Iterator[Fixtures]:
         api,
         EVENT_ID,
         INPUT_SCREEN_NAME,
-        ScreenType.INPUT,
-        {'init_set_tournament_id': tournament.id, 'public': True},
+        ScreenType.BOARDS,
+        {
+            'accepts_input': True,
+            'init_set_tournament_ids': [tournament.id],
+            'public': True,
+        },
     )
     family = TestUtils.create_family(
         api,
         EVENT_ID,
         tournament,
         FAMILY_UNIQ_ID,
-        ScreenType.INPUT,
-        {'parts': 2, 'public': True},
+        ScreenType.BOARDS,
+        {'accepts_input': True, 'parts': 2, 'public': True},
     )
     TestUtils.update_family_name(EVENT_ID, family, '%t (%f to %l)')
     rotator_screen = TestUtils.create_screen(
@@ -93,132 +95,91 @@ def tabs(api: ApiClient) -> Iterator[Fixtures]:
     TestUtils.delete_event(EVENT_ID)
 
 
-def page(lan: TestClient, path: str, view: str = 'list') -> AdvancedHTMLParser:
-    response = lan.get(f'/event/{EVENT_ID}/{path}?collection_view={view}')
+def display(lan: TestClient, query: str = '') -> str:
+    response = lan.get(f'/event/{EVENT_ID}/display{query}')
     assert response.status_code == 200
+    return response.text
+
+
+def tiles(text: str, test_id: str) -> list[str]:
     parser = AdvancedHTMLParser()
-    parser.parseStr(response.text)
-    return parser
-
-
-def header(parser: AdvancedHTMLParser) -> str:
-    return ' '.join(
-        element.textContent
-        for element in parser.getElementsByTagName('div')
-        if 'collection-list-header' in (element.getAttribute('class') or '').split()
-    )
-
-
-def items(parser: AdvancedHTMLParser, test_id: str) -> list[str]:
+    parser.parseStr(text)
     return [
         element.getHTML()
-        for element in parser.getElementsByTagName('article')
-        + parser.getElementsByTagName('div')
-        if element.getAttribute('data-testid') == test_id
+        for element in parser.getElementsByAttr('data-testid', test_id)
     ]
 
 
-def item(parser: AdvancedHTMLParser, test_id: str, text: str) -> str:
-    """The markup of the one row or card holding this text."""
-    found = [markup for markup in items(parser, test_id) if text in markup]
-    assert found, f'no {test_id} holding {text}'
-    return found[0]
+@pytest.mark.unit
+def test_a_visitor_starts_by_choosing_a_feed(lan: TestClient, tabs: Fixtures):
+    landing = lan.get(f'/event/{EVENT_ID}', follow_redirects=False)
+    assert landing.headers['location'] == f'/event/{EVENT_ID}/display'
+
+    text = display(lan)
+    feeds = tiles(text, 'display-feed')
+    assert len(feeds) == 2
+    for controller in (tabs.assigned_controller, tabs.unassigned_controller):
+        assert f'href="/view/display-controller/{EVENT_ID}/{controller.id}"' in text
+    assert 'data-testid="display-show-all"' in text
+    assert 'no-sidebar' in text
 
 
 @pytest.mark.unit
-def test_a_screen_row_is_followed_but_not_edited(lan: TestClient, tabs: Fixtures):
-    listed = page(lan, 'input-screens')
-    assert 'Actions' not in header(listed)
-    assert 'Content' in header(listed)
-    assert 'Timer' in header(listed)
-
-    markup = item(listed, 'screens-item', INPUT_SCREEN_NAME)
-    assert 'collection-list-row-actionable' in markup
-    assert 'collection-list-cell-actions' not in markup
-    assert 'collection-inline-edit' not in markup
-    assert 'bi-pencil-fill' not in markup
-    assert 'collection-list-cell-source' not in markup
-    assert '1 set' in markup
-    assert 'No timer' in markup
-
-
-@pytest.mark.unit
-def test_a_multi_screen_row_says_which_one_it_is(lan: TestClient, tabs: Fixtures):
-    """A part of a multi-screen is named after the range it carries, and
-    is badged as one so it is not mistaken for a screen of its own."""
-    parts = [
-        markup
-        for markup in items(page(lan, 'input-screens'), 'screens-item')
-        if 'badge' in markup
-    ]
-    assert len(parts) == 2
-    markup = parts[0]
-    assert 'Multi-Screen' in markup
-    assert TOURNAMENT_NAME in markup
-    assert 'bi-window-split' not in markup
-    assert 'collection-list-cell-source' not in markup
-    assert 'No timer' in markup
-
-
-@pytest.mark.unit
-def test_a_screen_card_carries_no_editor_link(lan: TestClient, tabs: Fixtures):
-    markup = item(
-        page(lan, 'input-screens', 'cards'), 'screens-item', INPUT_SCREEN_NAME
-    )
-    assert 'collection-card-actionable' in markup
-    assert 'collection-card-footer' not in markup
-    assert 'screen-eye-' not in markup
-
-
-@pytest.mark.unit
-def test_a_standalone_screen_type_drops_the_columns_it_has_no_use_for(
+def test_showing_all_offers_static_previews_of_the_screens(
     lan: TestClient, tabs: Fixtures
 ):
-    """An image screen has neither sets nor a source tournament, so those
-    columns are not shown at all."""
-    listed = page(lan, 'image-screens')
-    assert 'Multi-Screen' not in header(listed)
-    assert 'Content' not in header(listed)
-
-    markup = item(listed, 'screens-item', IMAGE_SCREEN_NAME)
-    assert 'collection-list-cell-source' not in markup
-    assert 'collection-list-cell-screen_sets' not in markup
-
-
-@pytest.mark.unit
-def test_a_rotator_row_is_followed_but_not_edited(lan: TestClient, tabs: Fixtures):
-    listed = page(lan, 'rotators')
-    assert 'Actions' not in header(listed)
-
-    markup = item(listed, 'rotators-item', ROTATOR_NAME)
-    assert 'collection-list-cell-actions' not in markup
-    assert 'collection-inline-edit' not in markup
-    assert 'collection-list-row-actionable' in markup
-    assert f'/view/rotator/{EVENT_ID}/{tabs.rotator_id}' in markup
-
-    card = item(page(lan, 'rotators', 'cards'), 'rotators-item', ROTATOR_NAME)
-    assert 'collection-card-actionable' in card
-    assert 'collection-card-footer' not in card
-    assert 'bi-eye' not in card
-
-
-@pytest.mark.unit
-def test_a_display_controller_shows_what_it_is_pointed_at(
-    lan: TestClient, tabs: Fixtures
-):
-    """A controller sends a screen to a display, so what a visitor is
-    shown is which screen it carries — and nothing to change it with."""
-    listed = page(lan, 'display_controllers')
-    assert 'Actions' not in header(listed)
-
-    assigned = item(listed, 'display-controllers-item', ASSIGNED_CONTROLLER_NAME)
-    assert 'collection-list-cell-actions' not in assigned
-    assert 'collection-list-row-actionable' in assigned
+    text = display(lan, '?browse=true')
+    screens = tiles(text, 'display-screen')
+    assert any(INPUT_SCREEN_NAME in tile for tile in screens)
+    assert any(IMAGE_SCREEN_NAME in tile for tile in screens)
     assert (
-        f'/view/display-controller/{EVENT_ID}/{tabs.assigned_controller.id}' in assigned
+        f'src="/view/screen/{EVENT_ID}/{tabs.input_screen.uniq_id}?preview=true"'
+        in text
     )
-    assert INPUT_SCREEN_NAME in assigned
+    assert 'hx-patch' not in text
+    assert 'modal' not in ''.join(screens)
 
-    unassigned = item(listed, 'display-controllers-item', UNASSIGNED_CONTROLLER_NAME)
-    assert 'None' in unassigned
-    assert 'collection-list-row-actionable' not in unassigned
+
+@pytest.mark.unit
+def test_a_paged_screen_is_one_tile_with_a_link_per_page(
+    lan: TestClient, tabs: Fixtures
+):
+    text = display(lan, '?browse=true&kind=screens&type=boards')
+    paged = [
+        tile for tile in tiles(text, 'display-screen') if 'display-page-links' in tile
+    ]
+    assert len(paged) == 1
+    for page in (1, 2):
+        assert f'/view/screen/{EVENT_ID}/{FAMILY_UNIQ_ID}:{page:03}"' in paged[0]
+
+
+@pytest.mark.unit
+def test_a_type_chip_keeps_the_screens_of_one_type(lan: TestClient, tabs: Fixtures):
+    text = display(lan, '?browse=true&kind=screens&type=image')
+    screens = tiles(text, 'display-screen')
+    assert len(screens) == 1
+    assert IMAGE_SCREEN_NAME in screens[0]
+
+
+@pytest.mark.unit
+def test_rotators_are_offered_beside_the_screens(lan: TestClient, tabs: Fixtures):
+    text = display(lan, '?browse=true')
+    assert 'data-testid="display-kind-rotators"' in text
+    rotators = tiles(display(lan, '?browse=true&kind=rotators'), 'display-rotator')
+    assert len(rotators) == 1
+    assert ROTATOR_NAME in rotators[0]
+    assert f'/view/rotator/{EVENT_ID}/{tabs.rotator_id}' in rotators[0]
+
+
+@pytest.mark.unit
+def test_the_former_visitor_tabs_lead_to_the_display_page(
+    lan: TestClient, tabs: Fixtures
+):
+    for path, location in (
+        ('boards-screens', '?browse=true&kind=screens&type=boards'),
+        ('rotators', '?browse=true&kind=rotators'),
+        ('menus', '?browse=true&kind=menus'),
+        ('display_controllers', ''),
+    ):
+        response = lan.get(f'/event/{EVENT_ID}/{path}', follow_redirects=False)
+        assert response.headers['location'] == f'/event/{EVENT_ID}/display{location}'

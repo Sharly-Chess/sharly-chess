@@ -31,7 +31,7 @@ def tournament(api: ApiClient) -> Iterator[Tournament]:
         EVENT_ID,
         SCREEN_ID,
         ScreenType.CHECK_IN,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     yield tournament
     EVENT.delete()
@@ -97,7 +97,7 @@ def paired_tournament(api: ApiClient) -> Iterator[Tournament]:
         EVENT_ID,
         SCREEN_ID,
         ScreenType.CHECK_IN,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     yield tournament
     EVENT.delete()

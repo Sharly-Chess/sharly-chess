@@ -194,6 +194,9 @@ class PairingNumbers:
             tournament_player,
         ) in tournament_players_by_updated_pairing_number.items():
             tournament_player.stored_tournament_player.pairing_number = pairing_number
+        if tournament.event.fake_tournament_ids:
+            # An event showing made-up data is never written back.
+            return
         if tournament.is_team_tournament:
             # A team tournament's players are synthesised from the team
             # rosters and have no stored tournament_player row to persist

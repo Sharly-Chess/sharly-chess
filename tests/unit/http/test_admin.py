@@ -76,7 +76,6 @@ EVENT_TABS = [
     'players',
     'teams',
     'screens',
-    'input-screens',
     'check-in-screens',
     'boards-screens',
     'players-screens',

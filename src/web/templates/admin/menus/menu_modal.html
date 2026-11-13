@@ -42,10 +42,13 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    {% with destination_field_class='col-12' %}
+                        {% include '/admin/display_controllers/destination_field.html' %}
+                    {% endwith %}
                     <div class="col-12">
                         {{ admin_macros.select_input(
                             name='submenu_mode',
-                            label=_('%(string)s:', string=_('Multi-screen submenus')),
+                            label=_('%(string)s:', string=_('Paged screen submenus')),
                             select_options=submenu_mode_options,
                             tooltip_select=true,
                             data=data, errors=errors

@@ -1,5 +1,5 @@
 from copy import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field as dataclass_field
 from datetime import datetime, date
 from typing import Annotated, Any
 
@@ -44,6 +44,8 @@ class TimerUsageItem:
     screen_type: ScreenType | None
     other_timer: str | None
     checked: bool
+    channels: list[str] = dataclass_field(default_factory=list)
+    pages: int | None = None
 
 
 class TimerAdminWebContext(BaseEventAdminWebContext):
@@ -502,32 +504,40 @@ class TimerAdminController(BaseEventAdminController):
                         else None
                     ),
                     checked=item.timer is not None and item.timer.id == timer.id,
+                    channels=[
+                        display_controller.name
+                        for display_controller in item.display_controllers
+                    ],
+                    pages=(
+                        len(item.screens_by_uniq_id)
+                        if isinstance(item, Family)
+                        else None
+                    ),
                 )
             )
-        screen_types = ScreenTypeManager(event).objects()
-        sections = [
+        screens = items_by_kind['screen'] + items_by_kind['family']
+        sections: list[
+            tuple[str, list[tuple[ScreenType | None, list[TimerUsageItem]]]]
+        ] = [
             (
-                title,
+                _('Screens'),
                 [
                     (
                         screen_type,
                         sorted(
                             [
                                 item
-                                for item in items_by_kind[kind]
+                                for item in screens
                                 if item.screen_type == screen_type
                             ],
                             key=by('label'),
                         ),
                     )
-                    for screen_type in screen_types
+                    for screen_type in ScreenTypeManager(event).objects()
                 ],
-            )
-            for title, kind in [
-                (_('Screens'), 'screen'),
-                (_('Multi-screens'), 'family'),
-            ]
-        ] + [(_('Rotators'), [(None, items_by_kind['rotator'])])]
+            ),
+            (_('Rotators'), [(None, items_by_kind['rotator'])]),
+        ]
         return {
             'modal': 'timer_usage',
             'usage_sections': [

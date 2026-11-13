@@ -7,6 +7,7 @@ from data.columns.board_table import BoardColumn
 from data.columns.column import ColumnUsage
 from data.columns.player_table import TournamentPlayerTableColumn
 from data.columns.player_datasheet import DatasheetColumn
+from data.pairings.round_robin_grid import GridCells
 import data.columns.player_datasheet as pds
 from data.columns.players_tab import (
     PlayersTabColumn,
@@ -36,6 +37,27 @@ from utils.enum import Cadence, PlayerRatingType
 
 if TYPE_CHECKING:
     from data.input_output import DataSource
+
+
+RANKING_BASE_COLUMNS: tuple[type[TournamentPlayerTableColumn], ...] = (
+    pt.ExAequoRankColumn,
+    pt.TitleColumn,
+    pt.NameColumn,
+    pt.RatingColumn,
+    pt.CategoryColumn,
+    pt.GenderColumn,
+    pt.FederationColumn,
+    pt.ClubColumn,
+)
+
+
+# Who the players of a round-robin grid are, before their games.
+ROUND_ROBIN_GRID_PLAYER_COLUMNS: tuple[type[TournamentPlayerTableColumn], ...] = (
+    pt.TitleColumn,
+    pt.NameColumn,
+    pt.RatingColumn,
+    pt.FederationColumn,
+)
 
 
 class PlayerColumnHandler:
@@ -92,35 +114,90 @@ class PlayerColumnHandler:
         ]
         return self.get_columns(column_types)
 
-    def get_player_ranking_columns(
-        self, tournament: Tournament
+    @staticmethod
+    def _without_hidden(
+        columns: list[TournamentPlayerTableColumn], hidden: Collection[str]
     ) -> list[TournamentPlayerTableColumn]:
-        base = [
-            pt.ExAequoRankColumn,
-            pt.TitleColumn,
-            pt.NameColumn,
-            pt.RatingColumn,
-            pt.CategoryColumn,
-            pt.GenderColumn,
-            pt.FederationColumn,
-            pt.ClubColumn,
-        ]
+        return [column for column in columns if column.toggle_id not in hidden]
+
+    def get_ranking_column_toggles(self) -> dict[str, str]:
+        """The labels of the columns that can be hidden on the ranking
+        screens, by toggle id."""
+        toggles = {
+            column.toggle_id: column.toggle_label
+            for column in self.get_columns(list(RANKING_BASE_COLUMNS))
+            if column.toggle_id is not None
+        }
+        return toggles | pt.tie_break_toggle_labels()
+
+    def get_player_ranking_columns(
+        self, tournament: Tournament, hidden: Collection[str] = ()
+    ) -> list[TournamentPlayerTableColumn]:
+        base: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = list(
+            RANKING_BASE_COLUMNS
+        )
         if tournament.pairing_system.eliminates_participants:
             # A knock-out ranks by the round reached: a plain-language result,
             # not a score or standings tie-breaks.
-            return self.get_columns(
+            columns = self.get_columns(
                 [*base, partial(pt.KnockoutResultColumn, tournament=tournament)]
             )
-        return self.get_columns(
-            base
-            + [
+        else:
+            columns = self.get_columns(
+                base
+                + [
+                    partial(pt.TieBreakColumn, tournament=tournament, index=index)
+                    for index in range(len(tournament.tie_breaks))
+                ]
+            )
+        return self._without_hidden(columns, hidden)
+
+    def get_round_robin_grid_column_toggles(self) -> dict[str, str]:
+        """The labels of the columns that can be hidden on the round-robin grid
+        screens, by toggle id."""
+        toggles = {
+            column.toggle_id: column.toggle_label
+            for column in self.get_columns(list(ROUND_ROBIN_GRID_PLAYER_COLUMNS))
+            if column.toggle_id is not None
+        }
+        return toggles | pt.tie_break_toggle_labels()
+
+    def get_player_round_robin_grid_columns(
+        self,
+        tournament: Tournament,
+        order: list[int],
+        cells: GridCells,
+        hidden: Collection[str] = (),
+    ) -> list[TournamentPlayerTableColumn]:
+        """The columns of the round-robin grid of *tournament*, its players in
+        *order*: who they are, their games against each of them, then their
+        score and rank."""
+        number_by_player_id = {
+            player_id: number for number, player_id in enumerate(order, 1)
+        }
+        Column = Callable[[ColumnUsage], TournamentPlayerTableColumn]
+        column_types: list[Column] = [
+            partial(pt.GridNumberColumn, number_by_player_id=number_by_player_id),
+            *ROUND_ROBIN_GRID_PLAYER_COLUMNS,
+            *(
+                partial(
+                    pt.GridOpponentColumn,
+                    opponent_id=player_id,
+                    number=number,
+                    cells=cells,
+                )
+                for player_id, number in number_by_player_id.items()
+            ),
+            *(
                 partial(pt.TieBreakColumn, tournament=tournament, index=index)
                 for index in range(len(tournament.tie_breaks))
-            ]
-        )
+            ),
+            pt.RankColumn,
+        ]
+        return self._without_hidden(self.get_columns(column_types), hidden)
 
     def get_player_crosstable_columns(
-        self, tournament: Tournament, ranking_round: int
+        self, tournament: Tournament, ranking_round: int, hidden: Collection[str] = ()
     ) -> list[TournamentPlayerTableColumn]:
         Column = Callable[[ColumnUsage], TournamentPlayerTableColumn]
         rounds: list[Column] = [
@@ -146,7 +223,9 @@ class PlayerColumnHandler:
             pt.GenderColumn,
             pt.FederationColumn,
         ]
-        return self.get_columns(column_types + rounds + score_columns)
+        return self._without_hidden(
+            self.get_columns(column_types + rounds + score_columns), hidden
+        )
 
     def get_alpha_board_player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
