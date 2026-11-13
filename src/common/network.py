@@ -52,7 +52,8 @@ _EXCLUDE_IFACE_NAME_SUBSTR = (
     'bridge',
     'br-',  # bridges (incl. docker)
     'docker',
-    'veth',
+    # veth is allowed for some Windows/Hyper-V configurations
+    # 'veth',
     'vmnet',
     'vbox',
     'ham',
