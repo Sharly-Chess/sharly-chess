@@ -59,6 +59,16 @@ _EXCLUDE_IFACE_NAME_SUBSTR = (
     'hamachi',
 )
 
+# Hyper-V virtual switches are named "vEthernet (<switch name>)": an external
+# switch carries the LAN address of the network card it is bound to, while the
+# switches Windows creates for itself only reach internal NAT networks.
+_WIN_EXCLUDE_IFACE_NAME_SUBSTR = (
+    *(tag for tag in _EXCLUDE_IFACE_NAME_SUBSTR if tag != 'veth'),
+    'vethernet (default switch)',
+    'vethernet (wsl',
+    'vethernet (nat)',
+)
+
 
 def _is_private_ipv4(s: str) -> bool:
     """
@@ -355,7 +365,7 @@ def find_lan_interfaces() -> list[dict[str, str]]:
             # psutil's iface keys on Windows are typically FriendlyName already
             friendly, itype = winmap.get(iface, (iface, 'Unknown'))
             lname = iface.lower()
-            if any(tag in lname for tag in _EXCLUDE_IFACE_NAME_SUBSTR):
+            if any(tag in lname for tag in _WIN_EXCLUDE_IFACE_NAME_SUBSTR):
                 continue
             for a in infos:
                 if (
