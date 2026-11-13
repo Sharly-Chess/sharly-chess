@@ -336,6 +336,70 @@ def test_match_sheets_sheet_the_matches_of_a_team_paired_system(
     assert document.template_context['landscape']
 
 
+REFEREED_TEAM_EVENT_ID = 'test-print-documents-refereed-teams'
+
+
+@pytest.fixture(scope='module')
+def refereed_team_event() -> Iterator[Event]:
+    """The team event, refereed by a chief arbiter and an arbiter."""
+    for event in _seed_team_event(
+        REFEREED_TEAM_EVENT_ID,
+        BergerTeamRoundRobinVariation.static_id(),
+        TEAM_COUNT - 1,
+    ):
+        tournament_id = event.tournaments_by_name[TOURNAMENT_NAME].id
+        for role_type, first_name in (
+            (RoleType.CHIEF_ARBITER, 'Chief'),
+            (RoleType.ARBITER, 'Deputy'),
+        ):
+            event.create_account(
+                StoredAccount(
+                    id=None,
+                    active=True,
+                    first_name=first_name,
+                    last_name='Arbiter',
+                    stored_roles=[
+                        StoredRole(
+                            account_id=None,
+                            role=role_type.value,
+                            tournament_ids=[tournament_id],
+                        )
+                    ],
+                )
+            )
+        EventLoader.unload_event(REFEREED_TEAM_EVENT_ID)
+        yield EventLoader().load_event(REFEREED_TEAM_EVENT_ID)
+
+
+@pytest.mark.unit
+def test_match_sheets_leave_the_arbiter_to_write_by_hand(
+    refereed_team_event: Event,
+):
+    """Without an arbiter chosen, the sheets leave the arbiter's name blank,
+    to be written by hand, even when the tournament has a chief arbiter."""
+    _event, option_values = _case(refereed_team_event)
+    tournament = refereed_team_event.tournaments_by_name[TOURNAMENT_NAME]
+    assert tournament.chief_arbiter is not None
+    document = _build(
+        refereed_team_event, documents.MatchSheetsPrintDocument, option_values
+    )
+    assert document.template_context['arbiter_name'] is None
+
+
+@pytest.mark.unit
+def test_match_sheets_name_the_arbiter_chosen(refereed_team_event: Event):
+    """The arbiter chosen is named on the sheets."""
+    _event, option_values = _case(refereed_team_event)
+    deputy = _account(refereed_team_event, 'Deputy')
+    document = _build(
+        refereed_team_event,
+        documents.MatchSheetsPrintDocument,
+        option_values
+        | {options.MatchSheetArbiterPrintOption.static_id(): str(deputy.id)},
+    )
+    assert document.template_context['arbiter_name'] == deputy.full_name
+
+
 @pytest.mark.unit
 def test_match_sheets_of_large_matches_print_in_portrait(
     team_case: tuple[Event, dict[str, str]], monkeypatch: pytest.MonkeyPatch
