@@ -25,6 +25,7 @@
 - An event or championship file that Windows refuses no longer stops _Sharly Chess_ from starting after an update: it is left in the folder of the previous version and the others are carried over (5.2.6)
 - On Windows, the addresses of Hyper-V virtual switches, such as an external switch bridging the network card, are offered among the network interfaces instead of being ignored; the switches Windows creates for its own internal networks (Default Switch, WSL) are still left out (5.2.6)
 - On macOS, the application window is resized once to the tab being displayed, keeping its top in place, instead of moving about while it grows to the settings tab (5.2.7)
+- When the label of a field wraps above its input, the buttons beside the field, such as those of the school, the team affiliation, the tags and the place card template, line up with its input instead of its label, and the label stands apart from the field above (5.2.7)
 
 ## Tournaments
 
@@ -149,3 +150,4 @@
 - The French schools database can be installed in the Linux Flatpak version (5.2.2)
 - The French schools database is no longer offered for installation from a file, and the other databases can be installed from a file of any size (5.2.2)
 - A school can be added to an event while the French schools database is not installed or is still downloading, by entering its name, city and postal code, instead of the add button staying disabled (5.2.6)
+- The add button of the school field can be used as soon as the player form opens, whether or not the French schools database is installed, instead of staying disabled, and the school field is spaced like the other fields of the form (5.2.7)

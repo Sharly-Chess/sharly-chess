@@ -2,234 +2,236 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 {% import '/admin/components/macros.j2' as components with context %}
 
-<div id="fra-schools-container" class="mt-2 gx-3">
-    <div class="d-flex gap-2 gy-2 gx-3">
-        <div class="flex-grow-1">
-            {{ admin_macros.select_input(
-                name='fra_school_id',
-                label=_('%(string)s:', string=_('French school')),
-                select_options=fra_school_options,
-                tooltip_select=true,
-                search_placeholder=_(
-                    'Search by: %(fields)s',
-                    fields=', '.join([_('Code'), _('City'), _('Name'), _('Postal code')])
-                ),
-                data=data, errors=errors
+<div id="fra-schools-container" class="row gy-2 gx-3 mt-0">
+    <div class="col-12">
+        <div class="d-flex gap-2 gy-2 gx-3">
+            <div class="flex-grow-1">
+                {{ admin_macros.select_input(
+                    name='fra_school_id',
+                    label=_('%(string)s:', string=_('French school')),
+                    select_options=fra_school_options,
+                    tooltip_select=true,
+                    search_placeholder=_(
+                        'Search by: %(fields)s',
+                        fields=', '.join([_('Code'), _('City'), _('Name'), _('Postal code')])
+                    ),
+                    data=data, errors=errors
+                ) }}
+            </div>
+            {# The script below enables and disables the buttons, so they keep
+               their requests whatever their state on load. #}
+            {{ components.button(
+                _('Edit the selected French school.'),
+                icon='bi-pencil-fill',
+                icon_only=true,
+                class='fra-school-button',
+                attrs={
+                    'id': 'fra-school-edit-button',
+                    'hx-get': url_for('fra-schools-update-school-form', event_uniq_id=admin_event.uniq_id),
+                    'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
+                    'disabled': show_fra_school_form,
+                },
+            ) }}
+
+            {% if not fra_schools_database.exists() %}
+                {% set add_tooltip_type, add_tooltip = 'warning', _(
+                    'The database [%(database)s] is not installed (to install it: Menu > Data sources).',
+                    database=fra_schools_database.name,
+                ) %}
+            {% elif fra_schools_database.age_in_months > 1 %}
+                {% set add_tooltip_type, add_tooltip = 'warning', _(
+                    'The database [%(database)s] was last updated over %(age)d months ago. '
+                    'It is preferable to update it before proceeding (Menu > Data sources).',
+                    database=fra_schools_database.name,
+                    age=fra_schools_database.age_in_months,
+                ) %}
+            {% else %}
+                {% set add_tooltip_type, add_tooltip = 'info', _('Add a school to the options.') %}
+            {% endif %}
+            {{ components.button(
+                _('Add'),
+                icon='bi-plus-circle',
+                tooltip=add_tooltip,
+                tooltip_type=add_tooltip_type,
+                class='fra-school-button',
+                attrs={
+                    'id': 'fra-school-add-button',
+                    'hx-get': url_for('fra-schools-add-school-form', event_uniq_id=admin_event.uniq_id),
+                    'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
+                    'disabled': show_fra_school_form,
+                },
             ) }}
         </div>
-        {# The script below enables and disables the buttons, so they keep
-           their requests whatever their state on load. #}
-        {{ components.button(
-            _('Edit the selected French school.'),
-            icon='bi-pencil-fill',
-            icon_only=true,
-            class='fra-school-button',
-            attrs={
-                'id': 'fra-school-edit-button',
-                'hx-get': url_for('fra-schools-update-school-form', event_uniq_id=admin_event.uniq_id),
-                'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
-                'disabled': show_fra_school_form,
-            },
-        ) }}
 
-        {% if not fra_schools_database.exists() %}
-            {% set add_tooltip_type, add_tooltip = 'warning', _(
-                'The database [%(database)s] is not installed (to install it: Menu > Data sources).',
-                database=fra_schools_database.name,
-            ) %}
-        {% elif fra_schools_database.age_in_months > 1 %}
-            {% set add_tooltip_type, add_tooltip = 'warning', _(
-                'The database [%(database)s] was last updated over %(age)d months ago. '
-                'It is preferable to update it before proceeding (Menu > Data sources).',
-                database=fra_schools_database.name,
-                age=fra_schools_database.age_in_months,
-            ) %}
-        {% else %}
-            {% set add_tooltip_type, add_tooltip = 'info', _('Add a school to the options.') %}
-        {% endif %}
-        {{ components.button(
-            _('Add'),
-            icon='bi-plus-circle',
-            tooltip=add_tooltip,
-            tooltip_type=add_tooltip_type,
-            class='fra-school-button',
-            attrs={
-                'id': 'fra-school-add-button',
-                'hx-get': url_for('fra-schools-add-school-form', event_uniq_id=admin_event.uniq_id),
-                'hx-vals': "js:{fra_school_id: $('#fra-school-id').val()}",
-                'disabled': show_fra_school_form,
-            },
-        ) }}
-    </div>
-
-    {% if show_fra_school_form %}
-        <div
-            id="fra-school-form-container"
-            class="form-fields-container"
-        >
-            <h4>
-                {% if fra_schools_action == 'create' %}
-                    {{ _('Add a French school') }}
-                {% else %}
-                    {{ _('Update the school [%(school_name)s]', school_name=fra_school.short_name) }}
-                {% endif %}
-            </h4>
-            {% if fra_schools_database.exists() %}
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <div class="input-group">
-                            {{ admin_macros.search_indicator('fra-schools-search-indicator') }}
-                            <input
-                                id="fra-schools-search"
-                                name="fra_schools_search"
-                                class="dropdown form-control"
-                                type="search"
-                                placeholder="{{ _(
-                                    'Search by: %(fields)s',
-                                    fields=', '.join([_('Code'), _('City'), _('Name'), _('Postal code')])
-                                ) }}"
-                                hx-trigger="keyup changed delay:400ms,focus"
-                                hx-target="#fra-schools-search-results"
-                                hx-get="{{ url_for('fra-schools-search', event_uniq_id=admin_event.uniq_id) }}"
-                                hx-on::before-request="$('#fra-schools-search-results').show();"
-                                hx-on::after-request="$('#fra-schools-search-results').show();"
-                                hx-sync="this:replace"
-                                hx-indicator="#fra-schools-search-indicator"
-                                autocomplete="off"
-                            />
-                        </div>
-                        <ul
-                            id="fra-schools-search-results"
-                            class="dropdown-menu position-absolute end-0 search-results-dropdown"
-                            style="margin-right: 2rem"
-                        >
-                        </ul>
-                    </div>
-                </div>
-            {% endif %}
-            <form
-                id="fra-schools-form"
-                hx-vals="js:{fra_school_id: $('#fra-school-id').val()}"
-                hx-indicator="#please-wait"
-                {% if fra_schools_action == 'create' %}
-                    hx-post="{{ url_for('fra-schools-add-school', event_uniq_id=admin_event.uniq_id) }}"
-                {% else %}
-                    hx-patch="{{ url_for(
-                        'fra-schools-update-school',
-                        event_uniq_id=admin_event.uniq_id,
-                        fra_school_id=fra_school.id,
-                    ) }}"
-                {% endif %}
+        {% if show_fra_school_form %}
+            <div
+                id="fra-school-form-container"
+                class="form-fields-container"
             >
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-4">
-                        {{ admin_macros.text_input(
-                            name='fra_school_code',
-                            label=_('%(string)s:', string=_('UAI code')),
-                            input_tooltip=_('This field is not editable.'),
-                            disabled=true,
-                            prevent_wrapping=true,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-8">
-                        {{ admin_macros.text_input(
-                            name='fra_school_name',
-                            label=_('%(string)s:', string=_('Name')),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='fra_school_city',
-                            label=_('%(string)s:', string=_('City')),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='fra_school_postal_code',
-                            label=_('%(string)s:', string=_('Postal code')),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-                <div class="d-flex gap-2 mt-4">
-                    {% if show_fra_school_delete_button %}
-                        {{ components.button(
-                            _('Delete'),
-                            kind='outline-danger',
-                            icon='bi-trash-fill',
-                            size='sm',
-                            attrs={
-                                'hx-delete': url_for(
-                                    'fra-schools-delete-school',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    fra_school_id=fra_school.id,
-                                ),
-                            },
-                        ) }}
+                <h4>
+                    {% if fra_schools_action == 'create' %}
+                        {{ _('Add a French school') }}
+                    {% else %}
+                        {{ _('Update the school [%(school_name)s]', school_name=fra_school.short_name) }}
                     {% endif %}
-                    <div class="flex-grow-1"></div>
-                    {{ components.button(
-                        _('Cancel'),
-                        kind='outline-secondary',
-                        icon='bi-x-circle',
-                        size='sm',
-                        attrs={'id': 'fra-school-cancel-button'},
-                    ) }}
-                    {{ components.button(
-                        _('Add') if fra_schools_action == 'create' else _('Save'),
-                        icon='bi-plus-circle' if fra_schools_action == 'create' else 'save',
-                        size='sm',
-                        type='submit',
-                        attrs={'id': 'fra-school-submit-button', 'form': 'fra-schools-form'},
-                    ) }}
-                </div>
-            </form>
-        </div>
-    {% endif %}
-
-    <script>
-        $('#fra-school-id').change(function () {
-            $('#fra-school-edit-button').prop(
-                'disabled', $(this).val() === '' || $('#fra-school-form-container').is(':visible')
-            );
-        });
-        $('#fra-school-id').trigger('change');
-        $('#fra-school-search').on('blur', function () {
-            setTimeout(function () {
-                const results = $('#fra-schools-search-results');
-                const active = document.activeElement;
-
-                // Hide only if user didn't click inside results
-                if (!results.is(':hover') && !results[0].contains(active)) {
-                    results.hide();
-                }
-            }, 100);
-        });
-        $('.fra-school-button').click(function () {
-            const submitContainer = document.getElementById('submit-button-container');
-            new bootstrap.Tooltip(submitContainer, {
-                title: `{{ _('Please validate the French school to continue.') }}`,
-                placement: 'top',
-            });
-            $(submitContainer).find('button').prop('disabled', true);
-        });
-        $('#fra-school-cancel-button').click(function () {
-            $('#fra-school-form-container').hide();
-            $('#fra-school-edit-button').prop(
-                'disabled', $('#fra-school-id').val() === ''
-            );
-            $('#fra-school-add-button').prop('disabled', false);
-            const submitContainer = document.getElementById('submit-button-container');
-            bootstrap.Tooltip.getInstance(submitContainer).dispose();
-            $(submitContainer).find('button').prop('disabled', false);
-        });
-        {% if not show_fra_school_form %}
-             $('#fra-school-cancel-button').click();
+                </h4>
+                {% if fra_schools_database.exists() %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="input-group">
+                                {{ admin_macros.search_indicator('fra-schools-search-indicator') }}
+                                <input
+                                    id="fra-schools-search"
+                                    name="fra_schools_search"
+                                    class="dropdown form-control"
+                                    type="search"
+                                    placeholder="{{ _(
+                                        'Search by: %(fields)s',
+                                        fields=', '.join([_('Code'), _('City'), _('Name'), _('Postal code')])
+                                    ) }}"
+                                    hx-trigger="keyup changed delay:400ms,focus"
+                                    hx-target="#fra-schools-search-results"
+                                    hx-get="{{ url_for('fra-schools-search', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-on::before-request="$('#fra-schools-search-results').show();"
+                                    hx-on::after-request="$('#fra-schools-search-results').show();"
+                                    hx-sync="this:replace"
+                                    hx-indicator="#fra-schools-search-indicator"
+                                    autocomplete="off"
+                                />
+                            </div>
+                            <ul
+                                id="fra-schools-search-results"
+                                class="dropdown-menu position-absolute end-0 search-results-dropdown"
+                                style="margin-right: 2rem"
+                            >
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+                <form
+                    id="fra-schools-form"
+                    hx-vals="js:{fra_school_id: $('#fra-school-id').val()}"
+                    hx-indicator="#please-wait"
+                    {% if fra_schools_action == 'create' %}
+                        hx-post="{{ url_for('fra-schools-add-school', event_uniq_id=admin_event.uniq_id) }}"
+                    {% else %}
+                        hx-patch="{{ url_for(
+                            'fra-schools-update-school',
+                            event_uniq_id=admin_event.uniq_id,
+                            fra_school_id=fra_school.id,
+                        ) }}"
+                    {% endif %}
+                >
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-4">
+                            {{ admin_macros.text_input(
+                                name='fra_school_code',
+                                label=_('%(string)s:', string=_('UAI code')),
+                                input_tooltip=_('This field is not editable.'),
+                                disabled=true,
+                                prevent_wrapping=true,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-8">
+                            {{ admin_macros.text_input(
+                                name='fra_school_name',
+                                label=_('%(string)s:', string=_('Name')),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.text_input(
+                                name='fra_school_city',
+                                label=_('%(string)s:', string=_('City')),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='fra_school_postal_code',
+                                label=_('%(string)s:', string=_('Postal code')),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        {% if show_fra_school_delete_button %}
+                            {{ components.button(
+                                _('Delete'),
+                                kind='outline-danger',
+                                icon='bi-trash-fill',
+                                size='sm',
+                                attrs={
+                                    'hx-delete': url_for(
+                                        'fra-schools-delete-school',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        fra_school_id=fra_school.id,
+                                    ),
+                                },
+                            ) }}
+                        {% endif %}
+                        <div class="flex-grow-1"></div>
+                        {{ components.button(
+                            _('Cancel'),
+                            kind='outline-secondary',
+                            icon='bi-x-circle',
+                            size='sm',
+                            attrs={'id': 'fra-school-cancel-button'},
+                        ) }}
+                        {{ components.button(
+                            _('Add') if fra_schools_action == 'create' else _('Save'),
+                            icon='bi-plus-circle' if fra_schools_action == 'create' else 'save',
+                            size='sm',
+                            type='submit',
+                            attrs={'id': 'fra-school-submit-button', 'form': 'fra-schools-form'},
+                        ) }}
+                    </div>
+                </form>
+            </div>
         {% endif %}
-    </script>
+
+        <script>
+            $('#fra-school-id').change(function () {
+                $('#fra-school-edit-button').prop(
+                    'disabled', $(this).val() === '' || $('#fra-school-form-container').is(':visible')
+                );
+            });
+            $('#fra-school-id').trigger('change');
+            $('#fra-school-search').on('blur', function () {
+                setTimeout(function () {
+                    const results = $('#fra-schools-search-results');
+                    const active = document.activeElement;
+
+                    // Hide only if user didn't click inside results
+                    if (!results.is(':hover') && !results[0].contains(active)) {
+                        results.hide();
+                    }
+                }, 100);
+            });
+            $('.fra-school-button').click(function () {
+                const submitContainer = document.getElementById('submit-button-container');
+                new bootstrap.Tooltip(submitContainer, {
+                    title: `{{ _('Please validate the French school to continue.') }}`,
+                    placement: 'top',
+                });
+                $(submitContainer).find('button').prop('disabled', true);
+            });
+            $('#fra-school-cancel-button').click(function () {
+                $('#fra-school-form-container').hide();
+                $('#fra-school-edit-button').prop(
+                    'disabled', $('#fra-school-id').val() === ''
+                );
+                $('#fra-school-add-button').prop('disabled', false);
+                const submitContainer = document.getElementById('submit-button-container');
+                bootstrap.Tooltip.getInstance(submitContainer).dispose();
+                $(submitContainer).find('button').prop('disabled', false);
+            });
+            {% if not show_fra_school_form %}
+                 $('#fra-school-cancel-button').click();
+            {% endif %}
+        </script>
+    </div>
 </div>
