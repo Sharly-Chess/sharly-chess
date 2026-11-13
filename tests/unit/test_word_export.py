@@ -7,6 +7,7 @@ import msgspec
 import pytest
 from docx import Document as open_document
 from docx.document import Document
+from docx.enum.section import WD_ORIENTATION
 from docx.enum.text import WD_TAB_LEADER
 from docx.opc.constants import RELATIONSHIP_TYPE
 from docx.oxml import parse_xml
@@ -101,6 +102,41 @@ class TestWordExport:
         assert section.top_margin is not None
         assert section.left_margin is not None
         assert round(section.top_margin.mm) == round(section.left_margin.mm) == 10
+
+    def test_portrait_page(self) -> None:
+        section = _export(_paragraph(_text('Body'))).sections[0]
+        assert section.orientation == WD_ORIENTATION.PORTRAIT
+        assert section.page_width is not None
+        assert round(section.page_width.mm) == 210
+
+    def test_landscape_page(self) -> None:
+        content = json.dumps(
+            {
+                'title': 'Test',
+                'blocks': [
+                    {
+                        'type': 'table',
+                        'columns': [1, 1],
+                        'rows': 1,
+                        'cells': [_cell(0, 0, 'Home'), _cell(0, 1, 'Away')],
+                    }
+                ],
+                'landscape': True,
+            }
+        ).encode()
+        document = open_document(
+            BytesIO(build_word_document(decode_word_export(content)))
+        )
+        section = document.sections[0]
+        assert section.orientation == WD_ORIENTATION.LANDSCAPE
+        assert section.page_width is not None
+        assert section.page_height is not None
+        assert (round(section.page_width.mm), round(section.page_height.mm)) == (
+            297,
+            210,
+        )
+        widths = [column.width for column in document.tables[0].columns]
+        assert round(sum(width.mm for width in widths if width is not None)) == 277
 
     def test_line_break(self) -> None:
         document = _export(

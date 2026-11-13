@@ -1,8 +1,8 @@
 """PDF rendering of print documents with the web engine of the platform.
 
 The page is loaded in a web view of a window that is never shown, then printed
-to a file as the print of a browser does: on A4 paper, with the print styles of
-the page.
+to a file as the print of a browser does: on A4 paper, upright or turned
+sideways, with the print styles of the page.
 """
 
 import asyncio
@@ -10,6 +10,7 @@ import base64
 import json
 import tempfile
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,8 @@ _MM_PER_INCH = 25.4
 _POINTS_PER_INCH = 72
 _POINTS_PER_MM = _POINTS_PER_INCH / _MM_PER_INCH
 _TIMEOUT = 90
+_NS_PAPER_ORIENTATION_PORTRAIT = 0
+_NS_PAPER_ORIENTATION_LANDSCAPE = 1
 
 
 class TogaPdfRenderer(PdfRenderer):
@@ -33,18 +36,18 @@ class TogaPdfRenderer(PdfRenderer):
         self.web_view: toga.WebView | None = None
         self.lock: asyncio.Lock | None = None
 
-    async def render(self, url: str, margins: PageMargins) -> bytes:
+    async def render(self, url: str, margins: PageMargins, landscape: bool) -> bytes:
         # The rendering runs on the loop of the interface, which the time
         # limit, taken here, cancels.
         future = asyncio.run_coroutine_threadsafe(
-            self._render(url, margins), self.gui_loop
+            self._render(url, margins, landscape), self.gui_loop
         )
         try:
             return await asyncio.wait_for(asyncio.wrap_future(future), _TIMEOUT)
         except TimeoutError as error:
             raise PdfRenderingError('The page took too long to render.') from error
 
-    async def _render(self, url: str, margins: PageMargins) -> bytes:
+    async def _render(self, url: str, margins: PageMargins, landscape: bool) -> bytes:
         if self.lock is None:
             self.lock = asyncio.Lock()
         async with self.lock:
@@ -54,7 +57,7 @@ class TogaPdfRenderer(PdfRenderer):
                 await _until_drawn(web_view)
                 with tempfile.TemporaryDirectory() as directory:
                     path = Path(directory) / 'document.pdf'
-                    await _print(web_view, path, margins)
+                    await _print(web_view, path, _Page(margins, landscape))
                     return path.read_bytes()
             finally:
                 web_view.url = None
@@ -93,14 +96,30 @@ async def _until_drawn(web_view: toga.WebView) -> None:
     await asyncio.sleep(0.5)
 
 
-async def _print(web_view: toga.WebView, path: Path, margins: PageMargins) -> None:
+@dataclass(frozen=True)
+class _Page:
+    """The sheet of paper a document prints on."""
+
+    margins: PageMargins
+    landscape: bool
+
+    @property
+    def width_mm(self) -> float:
+        return _A4_HEIGHT_MM if self.landscape else _A4_WIDTH_MM
+
+    @property
+    def height_mm(self) -> float:
+        return _A4_WIDTH_MM if self.landscape else _A4_HEIGHT_MM
+
+
+async def _print(web_view: toga.WebView, path: Path, page: _Page) -> None:
     match toga.platform.current_platform:
         case 'macOS':
-            await _print_cocoa(web_view, path, margins)
+            await _print_cocoa(web_view, path, page)
         case 'windows':
-            await _print_winforms(web_view, path, margins)
+            await _print_winforms(web_view, path, page)
         case 'linux':
-            await _print_gtk(web_view, path, margins)
+            await _print_gtk(web_view, path, page)
         case platform:
             raise PdfRenderingError(f'No PDF rendering on [{platform}].')
 
@@ -147,17 +166,21 @@ def _cocoa_print_delegate(complete: Callable[[bool, str], None]) -> Any:
     return delegate
 
 
-async def _print_cocoa(
-    web_view: toga.WebView, path: Path, margins: PageMargins
-) -> None:
+async def _print_cocoa(web_view: toga.WebView, path: Path, page: _Page) -> None:
     from rubicon.objc import SEL, NSMakeRect, NSMakeSize, ObjCClass
 
     ns_print_info = ObjCClass('NSPrintInfo')
     ns_url = ObjCClass('NSURL')
     info = ns_print_info.sharedPrintInfo.copy()
     info.paperSize = NSMakeSize(
-        _A4_WIDTH_MM * _POINTS_PER_MM, _A4_HEIGHT_MM * _POINTS_PER_MM
+        page.width_mm * _POINTS_PER_MM, page.height_mm * _POINTS_PER_MM
     )
+    info.orientation = (
+        _NS_PAPER_ORIENTATION_LANDSCAPE
+        if page.landscape
+        else _NS_PAPER_ORIENTATION_PORTRAIT
+    )
+    margins = page.margins
     info.topMargin = margins.top
     info.rightMargin = margins.right
     info.bottomMargin = margins.bottom
@@ -178,7 +201,7 @@ async def _print_cocoa(
     operation.showsProgressPanel = False
     # The printing view of a web view has no size of its own.
     operation.view.frame = NSMakeRect(
-        0, 0, _A4_WIDTH_MM * _POINTS_PER_MM, _A4_HEIGHT_MM * _POINTS_PER_MM
+        0, 0, page.width_mm * _POINTS_PER_MM, page.height_mm * _POINTS_PER_MM
     )
     window = web_view.window
     assert window is not None
@@ -191,9 +214,7 @@ async def _print_cocoa(
     await future
 
 
-async def _print_winforms(
-    web_view: toga.WebView, path: Path, margins: PageMargins
-) -> None:
+async def _print_winforms(web_view: toga.WebView, path: Path, page: _Page) -> None:
     from System import Action, String  # type: ignore[import-not-found]
     from System.Threading.Tasks import (  # type: ignore[import-not-found]
         Task,
@@ -203,10 +224,11 @@ async def _print_winforms(
     # The print of the DevTools protocol returns the PDF file, or the reason
     # of its failure, where the print to a file of WebView2 tells only that it
     # failed.
+    margins = page.margins
     parameters = json.dumps(
         {
-            'paperWidth': _A4_WIDTH_MM / _MM_PER_INCH,
-            'paperHeight': _A4_HEIGHT_MM / _MM_PER_INCH,
+            'paperWidth': page.width_mm / _MM_PER_INCH,
+            'paperHeight': page.height_mm / _MM_PER_INCH,
             'marginTop': margins.top / _POINTS_PER_INCH,
             'marginRight': margins.right / _POINTS_PER_INCH,
             'marginBottom': margins.bottom / _POINTS_PER_INCH,
@@ -238,7 +260,7 @@ async def _print_winforms(
     await future
 
 
-async def _print_gtk(web_view: toga.WebView, path: Path, margins: PageMargins) -> None:
+async def _print_gtk(web_view: toga.WebView, path: Path, page: _Page) -> None:
     from toga_gtk.libs import Gtk, WebKit2
 
     operation = WebKit2.PrintOperation.new(web_view._impl.native)
@@ -249,6 +271,12 @@ async def _print_gtk(web_view: toga.WebView, path: Path, margins: PageMargins) -
     operation.set_print_settings(settings)
     page_setup = Gtk.PageSetup.new()
     page_setup.set_paper_size(Gtk.PaperSize.new(Gtk.PAPER_NAME_A4))
+    page_setup.set_orientation(
+        Gtk.PageOrientation.LANDSCAPE
+        if page.landscape
+        else Gtk.PageOrientation.PORTRAIT
+    )
+    margins = page.margins
     page_setup.set_top_margin(margins.top, Gtk.Unit.POINTS)
     page_setup.set_right_margin(margins.right, Gtk.Unit.POINTS)
     page_setup.set_bottom_margin(margins.bottom, Gtk.Unit.POINTS)

@@ -972,6 +972,10 @@ class ResultPrintDocument(BoardPrintDocument):
         return ResultColumn
 
 
+LANDSCAPE_MAX_BOARDS = 8
+"""The most boards a match sheet holds on a landscape page."""
+
+
 class MatchSheetsPrintDocument(PairingPrintDocument):
     """The pairings document of team events. Systems that pair whole teams
     print one signature-ready table per team match in the round, used by
@@ -1052,6 +1056,15 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
         return True
 
     @property
+    def landscape(self) -> bool:
+        """Sheets are printed across the width of the page, larger, when
+        every match fits on a landscape page."""
+        return all(
+            len(team_board.boards) <= LANDSCAPE_MAX_BOARDS
+            for team_board in self.team_boards
+        )
+
+    @property
     def team_boards(self) -> list[TeamBoard]:
         self.tournament.set_for_round(self.at_round)
         all_boards = [
@@ -1118,6 +1131,7 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
             'page_break': self.page_break,
             'arbiter_name': self.arbiter_name,
             'player_national_id': self.player_national_id,
+            'landscape': self.landscape,
         }
 
 

@@ -129,6 +129,27 @@
     body.match-sheets .page-header {
         display: none;
     }
+    {% if landscape %}
+        @page { size: A4 landscape; }
+        @media screen {
+            body.match-sheets .page-content { max-width: 1400px; }
+        }
+        .match-sheet { margin-bottom: 0; }
+        .match-sheet-title { font-size: 18pt; margin-top: 0; }
+        .match-sheet-meta * { font-size: 16pt; }
+        table.match-sheet-table th,
+        table.match-sheet-table td { padding: 4pt 10pt; }
+        table.match-sheet-table thead .team-name-head,
+        table.match-sheet-table thead .team-score-head { font-size: 17pt; }
+        .col-name { width: 41%; }
+        .col-result { width: 7%; height: 32pt; font-size: 18pt; }
+        td.col-bd .board-number { font-size: 16pt; }
+        .player-name { font-size: 14pt; }
+        .player-meta { font-size: 10pt; }
+        .color-chip { width: 11pt; height: 11pt; }
+        .result-legend { font-size: 10pt; }
+        .signature-label { font-size: 12pt; }
+    {% endif %}
 </style>
 {% endblock %}
 

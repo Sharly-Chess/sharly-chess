@@ -333,6 +333,19 @@ def test_match_sheets_sheet_the_matches_of_a_team_paired_system(
     ]
     assert document.template_name == '/admin/print/match_sheets.html'
     assert document.template_context['team_boards']
+    assert document.template_context['landscape']
+
+
+@pytest.mark.unit
+def test_match_sheets_of_large_matches_print_in_portrait(
+    team_case: tuple[Event, dict[str, str]], monkeypatch: pytest.MonkeyPatch
+):
+    """Matches with more boards than a landscape page holds are printed
+    on upright pages."""
+    event, option_values = team_case
+    monkeypatch.setattr(documents, 'LANDSCAPE_MAX_BOARDS', TEAM_SIZE - 1)
+    document = _build(event, documents.MatchSheetsPrintDocument, option_values)
+    assert not document.template_context['landscape']
 
 
 @pytest.mark.unit

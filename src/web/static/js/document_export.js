@@ -928,6 +928,7 @@
 
     const MM_TO_PX = 96 / 25.4;
     const A4_WIDTH = 210 * MM_TO_PX;
+    const A4_HEIGHT = 297 * MM_TO_PX;
     const DEFAULT_MARGIN = 10 * MM_TO_PX;
 
     function lengthInPixels(value) {
@@ -959,6 +960,20 @@
         }
         return margins;
     }
+
+    // Whether the pages of the document are turned sideways, as the size of
+    // its last @page rule giving one says.
+    function pageLandscape() {
+        let landscape = false;
+        for (const rule of PAGE_RULES) {
+            const size = rule.style.getPropertyValue('size');
+            if (size) {
+                landscape = /\blandscape\b/.test(size);
+            }
+        }
+        return landscape;
+    }
+
     // The widest page laid out for the Word file.
     const WIDEST_PAGE = 1000;
 
@@ -972,7 +987,8 @@
         const body = document.body;
         const style = body.getAttribute('style');
         const margins = pageMargins();
-        const textWidth = A4_WIDTH - margins.left - margins.right;
+        const landscape = pageLandscape();
+        const textWidth = (landscape ? A4_HEIGHT : A4_WIDTH) - margins.left - margins.right;
         const width = Math.min(WIDEST_PAGE, Math.max(textWidth, body.clientWidth));
         layoutScale = textWidth / width;
         body.style.setProperty('width', `${width}px`, 'important');
@@ -982,7 +998,9 @@
         try {
             const blocks = contentBlocks(body).filter(block => block);
             alignGrids();
-            return {title: document.title || 'document', blocks: blocks, margins: inPoints(margins)};
+            return {
+                title: document.title || 'document', blocks: blocks, margins: inPoints(margins), landscape: landscape,
+            };
         } finally {
             layoutScale = 1;
             if (style === null) {
@@ -1080,7 +1098,12 @@
             pdfButton.hidden = false;
             pdfButton.addEventListener('click', () => exportFile(
                 pdfButton, pdfUrl,
-                () => ({title: document.title || 'document', html: pageHtml(), margins: inPoints(pageMargins())}),
+                () => ({
+                    title: document.title || 'document',
+                    html: pageHtml(),
+                    margins: inPoints(pageMargins()),
+                    landscape: pageLandscape(),
+                }),
                 'pdf', 'application/pdf',
             ));
         }

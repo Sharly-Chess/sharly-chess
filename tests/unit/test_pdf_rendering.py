@@ -16,6 +16,13 @@ class TestPdfRendering:
         assert export.title == 'T1'
         assert export.html == '<html></html>'
         assert round(export.margins.left / 72 * 25.4) == 10
+        assert not export.landscape
+
+    def test_decode_landscape(self) -> None:
+        export = decode_pdf_export(
+            json.dumps({'title': 'T1', 'html': '', 'landscape': True}).encode()
+        )
+        assert export.landscape
 
     def test_decode_margins(self) -> None:
         export = decode_pdf_export(

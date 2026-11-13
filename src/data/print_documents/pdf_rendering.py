@@ -19,6 +19,7 @@ class PdfExport(msgspec.Struct):
     title: str
     html: str
     margins: PageMargins = msgspec.field(default_factory=PageMargins)
+    landscape: bool = False
 
 
 class PdfRenderingError(Exception):
@@ -27,8 +28,9 @@ class PdfRenderingError(Exception):
 
 class PdfRenderer(ABC):
     @abstractmethod
-    async def render(self, url: str, margins: PageMargins) -> bytes:
-        """The PDF of the page at ``url``, printed on A4 paper with ``margins``.
+    async def render(self, url: str, margins: PageMargins, landscape: bool) -> bytes:
+        """The PDF of the page at ``url``, printed on A4 paper with ``margins``,
+        turned sideways when ``landscape``.
 
         :raises PdfRenderingError: when the page could not be rendered.
         """
