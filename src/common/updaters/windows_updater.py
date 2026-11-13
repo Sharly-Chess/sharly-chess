@@ -69,12 +69,17 @@ class WindowsUpdater:
         locale = SharlyChessConfig().locale
         log_path = TMP_DIR / 'update.log'
         params = ['/SILENT', '/NOCANCEL', f'/LANG={locale}', f'/LOG="{log_path}"']
+        # Started as the user, not as administrator: the installer asks for the
+        # administrator rights itself, and so knows who the user is and starts
+        # Sharly Chess again as them. Started as administrator, it starts
+        # Sharly Chess as administrator, and the events imported then can no
+        # longer be opened once Sharly Chess is run normally.
         # Type error when not running on windows
         ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
-            None, 'runas', exe, ' '.join(params), None, 1
+            None, 'open', exe, ' '.join(params), None, 1
         )
         # Terminate this process immediately. ShellExecuteW only *launches* the
-        # elevated updater; if we return to the normal shutdown path, the running
+        # updater; if we return to the normal shutdown path, the running
         # executable and its _internal DLLs stay locked long enough that Inno
         # Setup skips the in-use files (the .exe isn't overwritten). Hard-exiting
         # releases the locks before the updater reaches its file-copy phase.
