@@ -12680,6 +12680,9 @@ msgstr ""
 msgid "Word"
 msgstr ""
 
+msgid "Written by hand"
+msgstr ""
+
 msgid "XLSX format"
 msgstr ""
 

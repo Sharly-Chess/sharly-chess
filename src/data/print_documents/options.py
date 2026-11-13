@@ -298,7 +298,7 @@ class MatchSheetSelectionPrintOption(PrintOption[list[int]]):
 class MatchSheetArbiterPrintOption(PrintOption[int | None]):
     """Arbiter whose name is printed on the match-sheet signature line,
     chosen from the event's team-tournament staff (chief + deputy
-    arbiters). Empty falls back to the tournament's chief arbiter."""
+    arbiters). Empty leaves the name blank, to be written by hand."""
 
     @staticmethod
     def static_id() -> str:
@@ -322,7 +322,7 @@ class MatchSheetArbiterPrintOption(PrintOption[int | None]):
 
     @property
     def default_text(self) -> str:
-        return _('Chief arbiter')
+        return _('Written by hand')
 
     def arbiter_options(self) -> dict[str, str]:
         """``{account_id: full_name}`` for all the arbiters

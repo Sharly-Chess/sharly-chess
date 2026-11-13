@@ -12682,6 +12682,9 @@ msgstr "Exemptions gagnées lues comme des exemptions d'appariement ({rounds})."
 msgid "Word"
 msgstr "Word"
 
+msgid "Written by hand"
+msgstr "À écrire à la main"
+
 msgid "XLSX format"
 msgstr "Format XLSX"
 
