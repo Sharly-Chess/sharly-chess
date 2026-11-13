@@ -23,7 +23,7 @@
 - The browser opens as soon as _Sharly Chess_ has started, instead of waiting, possibly forever, for the home page to load, and events that cannot be opened no longer slow down every page (5.2.6)
 - On Windows, _Sharly Chess_ is started again as the user after an update, instead of as administrator (5.2.6)
 - An event or championship file that Windows refuses no longer stops _Sharly Chess_ from starting after an update: it is left in the folder of the previous version and the others are carried over (5.2.6)
-- Windows specific network configurations (network bridges) are now correctly handled (5.2.6)
+- On Windows, the addresses of Hyper-V virtual switches, such as an external switch bridging the network card, are offered among the network interfaces instead of being ignored; the switches Windows creates for its own internal networks (Default Switch, WSL) are still left out (5.2.6)
 
 ## Tournaments
 
