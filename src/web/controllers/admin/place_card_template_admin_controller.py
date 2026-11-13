@@ -221,6 +221,8 @@ class PlaceCardTemplateAdminController(BaseAdminController):
                     [
                         (_('Board number'), '{{ pairing.number }}'),
                         (_('Round'), '{{ pairing.round }}'),
+                        (_('Round date'), '{{ pairing.round_date }}'),
+                        (_('Round time'), '{{ pairing.round_time }}'),
                     ],
                 )
             )

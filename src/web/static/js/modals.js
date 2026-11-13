@@ -148,7 +148,11 @@ $(document).on('hide.bs.modal', function (e) {
 
 $(document).on('hidden.bs.modal', function (e) {
     if (e.target.id === 'modal-wrapper') {
-        e.target.innerHTML = document.getElementById('empty-modal-template').innerHTML;
+        // The modal hides within the click on a closing button, before htmx
+        // sends that button's request, which it drops once the button is gone.
+        setTimeout(() => {
+            e.target.innerHTML = document.getElementById('empty-modal-template').innerHTML;
+        });
     }
 });
 
