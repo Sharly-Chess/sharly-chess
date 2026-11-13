@@ -35,7 +35,7 @@
         'ffe-team-auth',
         event_uniq_id=admin_event.uniq_id if admin_event else event_uniq_id,
     ) }}"
-    hx-trigger="input delay:500ms, ffe-team-refresh"
+    hx-trigger="input delay:500ms, ffe-team-refresh delay:200ms"
     hx-include="#modal-form"
     hx-target="this"
     hx-swap="morphdom"
