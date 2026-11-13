@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import random
-from datetime import datetime
+from datetime import date, datetime, time
 from typing import TYPE_CHECKING
 
 from common.i18n import _, pgettext
@@ -336,7 +336,9 @@ class PairingCardType(PlaceCardType):
     def get_random_pairing(
         cls,
     ) -> PlaceCardPairing:
-        place_card_pairing: PlaceCardPairing = PlaceCardPairing()
+        place_card_pairing: PlaceCardPairing = PlaceCardPairing(
+            round_start=datetime.combine(date.today(), time(14, 30))
+        )
         place_card_pairing.number = random.randint(1, 99)
         place_card_pairing.round = random.randint(1, 9)
         place_card_pairing.white_player = cls.get_random_player(
@@ -376,7 +378,11 @@ class PairingCardType(PlaceCardType):
         elif board_numbers:
             boards = [board for board in boards if board.number in board_numbers]
         return [
-            PlaceCardPairing(board, round_=round_)
+            PlaceCardPairing(
+                board,
+                round_=round_,
+                round_start=tournament.round_datetimes.get(round_),
+            )
             for board in boards
             if not board.exempt
         ]

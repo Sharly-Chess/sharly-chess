@@ -3,7 +3,7 @@
 import inspect
 import math
 from collections.abc import Callable, Iterator
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 import pytest
@@ -43,6 +43,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from tests.test_config import TestUtils
+from utils.date_time import format_date, format_time
 from utils.enum import EventType, PlayerRatingType, PlayerTitle, Result, RoleType
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.base_controller import WebContext
@@ -471,6 +472,26 @@ def test_pairing_cards_carry_their_round(event: Event):
     pairings = PairingCardType.pairings(tournament, 2)
     assert pairings
     assert {pairing.round for pairing in pairings} == {2}
+
+
+@pytest.mark.unit
+def test_pairing_cards_date_their_round_from_its_schedule(
+    event: Event, monkeypatch: pytest.MonkeyPatch
+):
+    """Pairing cards print the scheduled date and time of their round, and
+    nothing for a round with no schedule."""
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    start = datetime(2026, 7, 14, 15, 30)
+    monkeypatch.setattr(tournament.stored_tournament, 'round_datetimes', {2: start})
+    scheduled = PairingCardType.pairings(tournament, 2)
+    assert {(pairing.round_date, pairing.round_time) for pairing in scheduled} == {
+        (format_date(start.date()), format_time(start))
+    }
+    monkeypatch.setattr(tournament.stored_tournament, 'round_datetimes', {})
+    unscheduled = PairingCardType.pairings(tournament, 2)
+    assert {(pairing.round_date, pairing.round_time) for pairing in unscheduled} == {
+        ('', '')
+    }
 
 
 @pytest.mark.unit

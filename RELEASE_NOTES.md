@@ -111,6 +111,8 @@
 - Match sheets of up to eight boards are printed larger, across the width of a landscape page, which the PDF files downloaded from the documents follow; the PDF and Word files of the other documents laid out in landscape, such as the knock-out bracket, are now in landscape too (5.2.6)
 - Without an arbiter chosen in the documents window, the match sheets leave the arbiter's name blank, to be written by hand, instead of printing the chief arbiter of the tournament (5.2.6)
 - The printed documents have a new, more legible look: a common font, header and table style, and a footer on every page giving the event, when the document was printed and the page number. The pairings and results are laid out around the result, with the players' points at the edges, and the pairings can leave a boxed space to write the results in by hand; the prize list, the prize assignment and the ranking by club are set out as tables (5.2.6)
+- The Templates button of the place cards opens the place card templates again, instead of only closing the documents window (5.2.7)
+- Pairing place cards can print the scheduled date and time of their round (5.2.7)
 
 ## Screens
 
@@ -139,6 +141,7 @@
 - Players without a rapid or blitz rating no longer receive their estimate by age as a national rating from the local _FFE_ database, whose file marks these estimates as national ratings (5.2.2)
 - The banner of the players tab reads the rating lists from the same source as its Review window, so that it no longer announces changes the window does not show. It asks the online _FFE_ database at most every six hours for an event, unless a list changes or the arbiter acts on the check, and editing a player does not ask it again (5.2.2)
 - Unrated players are ranked on the estimate the _FFE_ list gives them, as on the federal site, when it differs from the estimate of their category: an estimate their club asked for, or 1399 at a cadence where they lost a _FIDE_ rating, instead of the estimate by age, such as 799 for a U10 in rapid. The estimate of a younger category, which the list may still give a player who has since moved up, is still replaced by the estimate of their category. The rating check proposes these estimates to the players of existing events and no longer sets them apart as values typed by the arbiter (5.2.5)
+- Opening the form of a tournament of a team event, to edit or duplicate it, no longer reports an uncaught exception: the lists of the _FFE_ team module are asked for once instead of twice, and a request the browser cancels is no longer logged as an error (5.2.7)
 
 ## _French schools_
 

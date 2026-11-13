@@ -17,11 +17,12 @@ from litestar.exceptions import (
     PermissionDeniedException,
     NotFoundException,
     ClientException,
+    InternalServerException,
     ValidationException,
 )
 from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
-from litestar.types import ASGIApp, Scope
+from litestar.types import ASGIApp, Logger, Scope
 
 from common.installation_checker import InstallationChecker
 from common.logger import get_logger, set_logging_config
@@ -53,6 +54,9 @@ if sys.platform == 'win32':  # pragma: py-not-win32
     HANDLED_SIGNALS.append(signal.SIGBREAK)  # Windows signal 21. Sent by Ctrl+Break.
 
 _PORT_TIMEOUT = 10  # Timeout when looking for a specific port
+
+# Raised by Litestar when the connection drops while a request body is read.
+CLIENT_DISCONNECTED_DETAIL = 'client disconnected prematurely'
 
 
 def launch_browser(url: str) -> None:
@@ -154,6 +158,29 @@ class ServerEngine:
                 exc,
             )
 
+        def log_uncaught_exception(
+            litestar_logger: Logger, scope: Scope, _traceback: list[str]
+        ) -> None:
+            # A request htmx cancels (hx-sync replace, a modal closed while
+            # it loads) drops the connection before its body is read: the
+            # browser no longer waits for any answer.
+            exc = sys.exc_info()[1]
+            if (
+                isinstance(exc, InternalServerException)
+                and exc.detail == CLIENT_DISCONNECTED_DETAIL
+            ):
+                logger.debug(
+                    'Request cancelled by the client: %s %s',
+                    scope.get('method', '?'),
+                    scope['path'],
+                )
+                return
+            litestar_logger.exception(
+                'Uncaught exception (connection_type=%s, path=%r):',
+                scope['type'],
+                scope['path'],
+            )
+
         return Litestar(
             debug=self.debug,
             request_class=HTMXRequest,
@@ -166,6 +193,7 @@ class ServerEngine:
                 **logging_config,
                 # Litestar's default only logs exceptions when debug=True.
                 log_exceptions='always',
+                exception_logging_handler=log_uncaught_exception,
                 disable_stack_trace={
                     400,
                     403,

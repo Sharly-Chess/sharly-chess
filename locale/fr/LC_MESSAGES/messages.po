@@ -8882,6 +8882,9 @@ msgstr "La ronde %(unfinished)d n'est pas terminée : les appariements de la ro
 msgid "Round count"
 msgstr "Nombre de rondes"
 
+msgid "Round date"
+msgstr "Date de la ronde"
+
 #, python-brace-format
 msgid "Round dates written year, day, month read as such, the only reading within the tournament dates ({rounds})."
 msgstr "Dates de ronde écrites année, jour, mois lues ainsi, seule lecture comprise dans les dates du tournoi ({rounds})."
@@ -8901,6 +8904,9 @@ msgstr "{matches}es de finale"
 
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
+
+msgid "Round time"
+msgstr "Heure de la ronde"
 
 msgid "Round to a full point"
 msgstr "Arrondir au point entier"
