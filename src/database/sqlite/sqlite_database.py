@@ -25,6 +25,22 @@ class SQLiteDatabase:
     enable_foreign_keys: bool = field(default=True)
     database: Connection | None = field(init=False, default=None)
     cursor: Cursor | None = field(init=False, default=None)
+    _vacuum_after_commit: bool = field(init=False, default=False)
+
+    def vacuum_after_commit(self) -> None:
+        """Rebuilds the file once the changes are committed. SQLite keeps the
+        pages freed by deleted or replaced data inside the file, so a file that
+        held large values stays as big until it is rebuilt."""
+        self._vacuum_after_commit = True
+
+    def _vacuum(self) -> None:
+        assert self.database is not None
+        try:
+            self.database.execute('VACUUM')
+        except sqlite3.Error as e:
+            # The changes are committed: a file left bigger than needed is not
+            # worth failing the request for.
+            logger.warning('Failed to vacuum database %s: %s', self.file, e)
 
     def is_sqlite_file(self) -> bool:
         try:
@@ -146,6 +162,8 @@ class SQLiteDatabase:
             elif self.database and self.write:
                 if exc_type is None:
                     self.database.commit()
+                    if self._vacuum_after_commit:
+                        self._vacuum()
                 else:
                     logger.debug(
                         'Rolling back [%s] due to exception [%s]: %s',
@@ -155,6 +173,7 @@ class SQLiteDatabase:
                     )
                     self.database.rollback()
         finally:
+            self._vacuum_after_commit = False
             try:
                 if self.cursor is not None:
                     self.cursor.close()
