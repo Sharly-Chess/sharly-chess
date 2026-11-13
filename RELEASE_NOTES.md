@@ -110,7 +110,7 @@
 - Opened from the pairings tab, the documents window proposes the round displayed, including after the next round has just been paired, instead of the round displayed when the tab was first opened (5.2.6)
 - Match sheets of up to eight boards are printed larger, across the width of a landscape page, which the PDF files downloaded from the documents follow; the PDF and Word files of the other documents laid out in landscape, such as the knock-out bracket, are now in landscape too (5.2.6)
 - Without an arbiter chosen in the documents window, the match sheets leave the arbiter's name blank, to be written by hand, instead of printing the chief arbiter of the tournament (5.2.6)
-- The printed documents have a new, more legible look: a common font, header and table style, and a footer on every page giving the event, when the document was printed and the page number. The pairings and results are laid out around the result, with the players' points at the edges, and the pairings can leave a boxed space to write the results in by hand; the prize list, the prize assignment and the ranking by club are set out as tables (5.3.0)
+- The printed documents have a new, more legible look: a common font, header and table style, and a footer on every page giving the event, when the document was printed and the page number. The pairings and results are laid out around the result, with the players' points at the edges, and the pairings can leave a boxed space to write the results in by hand; the prize list, the prize assignment and the ranking by club are set out as tables (5.2.6)
 
 ## Screens
 
