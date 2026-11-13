@@ -1,10 +1,13 @@
 import base64
 import hashlib
 import secrets
+from data.screens.family import Family
+from data.screens.fake_data import FAKE_DATA_PATHS, event_with_fake_data
 from dataclasses import dataclass
 from typing import Any, cast
 
 from anyio import run
+from markupsafe import Markup
 from litestar.exceptions import (
     HTTPException,
     NotFoundException,
@@ -14,6 +17,7 @@ from litestar.exceptions import (
 from litestar.status_codes import HTTP_423_LOCKED
 from litestar_htmx import HTMXRequest
 
+from common.i18n import ngettext
 from common.exception import (
     SharlyChessException,
     DatabaseCorruptedException,
@@ -95,6 +99,12 @@ class RequestUtils:
                     f'Event [{event_uniq_id}] - '
                     f'Required plugin [{plugin_id}] not enabled.'
                 )
+        if (
+            event.screens_fake_data
+            and request.method == 'GET'
+            and request.url.path.startswith(FAKE_DATA_PATHS)
+        ):
+            event = event_with_fake_data(event)
         request.state[cls.REQUEST_EVENT_ATTR] = event
         return event
 
@@ -165,6 +175,25 @@ class RequestUtils:
     def get_optional_rotator(cls, request: HTMXRequest) -> Rotator | None:
         try:
             return cls.get_rotator(request)
+        except ValidationException:
+            return None
+
+    FAMILY_UNIQ_ID_PARAM: str = 'family_uniq_id'
+
+    @classmethod
+    def get_family(cls, request: HTMXRequest) -> Family:
+        family_uniq_id = cls._get_request_param(request, cls.FAMILY_UNIQ_ID_PARAM)
+        try:
+            return cls.get_event(request).families_by_uniq_id[family_uniq_id]
+        except KeyError:
+            raise NotFoundException(
+                f'Paged screen [{family_uniq_id}] not found.'
+            ) from None
+
+    @classmethod
+    def get_optional_family(cls, request: HTMXRequest) -> Family | None:
+        try:
+            return cls.get_family(request)
         except ValidationException:
             return None
 
@@ -417,6 +446,31 @@ class SelectOption:
     subtitle: str | None = None
     #: Markup shown in place of the name in the list and the selection.
     html: str | None = None
+
+
+def paged_screen_option(
+    family: Family,
+    count_text: str = '',
+    disabled: bool = False,
+    tooltip: str | None = None,
+) -> SelectOption:
+    """A paged screen offered among single screens, its number of pages in
+    a badge. The count text tells how many times it was already added."""
+    pages = len(family.screens_by_uniq_id)
+    return SelectOption(
+        name=family.display_name + count_text,
+        disabled=disabled,
+        tooltip=tooltip,
+        html=Markup(
+            '{name}<span class="select-option-count">{count}</span> '
+            '<span class="badge sc-badge sc-badge-neutral">'
+            '<i class="bi-window-split" aria-hidden="true"></i>{pages}</span>'
+        ).format(
+            name=family.display_name,
+            count=count_text,
+            pages=ngettext('%(num)d page', '%(num)d pages', pages) % {'num': pages},
+        ),
+    )
 
 
 class PKCEUtils:

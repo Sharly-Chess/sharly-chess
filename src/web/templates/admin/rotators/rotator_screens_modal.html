@@ -8,77 +8,43 @@
             {% if success_message %}
                 {{ components.banner('success', success_message) }}
             {% endif %}
-            <div
-                id="screens-form-container"
-                data-testid="screens-form-container"
-                style="display: none"
-            >
-                {{ admin_macros.inline_multi_select_form(
-                    'screens',
-                    'screen_id',
-                    placeholder=_('Choose screens to add'),
-                    options=screen_options,
-                    post_url=url_for(
-                        'admin-rotating-screens-create-screen',
-                        event_uniq_id=admin_event.uniq_id,
-                        rotator_id=admin_rotator.id
-                    ),
-                    hx_target='#screen-list-container'
-                ) }}
-            </div>
-            <div
-                id="families-form-container"
-                style="display: none"
-            >
-                {{ admin_macros.inline_multi_select_form(
-                    'families',
-                    'family_id',
-                    placeholder=_('Choose multi-screens to add'),
-                    options=family_options,
-                    post_url=url_for(
-                        'admin-rotating-screens-create-family',
-                        event_uniq_id=admin_event.uniq_id,
-                        rotator_id=admin_rotator.id
-                    ),
-                    hx_target='#screen-list-container'
-                ) }}
-            </div>
-            <div class="d-flex justify-content-end gap-2 mb-3">
+            <div class="d-flex justify-content-end mb-3" id="screens-add-button-container">
                 {{ components.button(
                     _('Screens'),
                     kind='primary',
                     icon='add',
                     allowed=screen_options|length > 0,
                     reason=_('No screens to add.'),
-                    class='rotating-screen-button',
                     attrs={'id': 'screens-add-button', 'data-testid': 'screens-add-button'},
                 ) }}
-                {{ components.button(
-                    _('Multi-screens'),
-                    kind='primary',
-                    icon='add',
-                    allowed=family_options|length > 0,
-                    reason=_('No multi-screens to add.'),
-                    class='rotating-screen-button',
-                    attrs={'id': 'families-add-button', 'data-testid': 'families-add-button'},
+            </div>
+            <div
+                id="screens-form-container"
+                class="mb-3"
+                data-testid="screens-form-container"
+                style="display: none"
+            >
+                {{ admin_macros.inline_multi_select_form(
+                    'screens',
+                    'item_id',
+                    placeholder=_('Choose screens to add'),
+                    options=screen_options,
+                    post_url=url_for(
+                        'admin-rotating-screens-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=admin_rotator.id
+                    ),
+                    hx_target='#screen-list-container'
                 ) }}
             </div>
             <script>
                 $('#screens-add-button').click(() => {
                     $('#screens-form-container').css('display', '');
-                    $('.rotating-screen-button').css('display', 'none');
+                    $('#screens-add-button-container').addClass('d-none');
                 });
                 $('#screens-cancel-button').click(() => {
                     $('#screens-form-container').css('display', 'none');
-                    $('.rotating-screen-button').css('display', '');
-                });
-                $('#families-add-button').click(() => {
-                    $('#families-form-container').css('display', '');
-                    $('.rotating-screen-button').css('display', 'none');
-                });
-                $('#families-cancel-button').click(() => {
-                    $('#families-form-container').css('display', 'none');
-                    $('.rotating-screen-button').css('display', '');
+                    $('#screens-add-button-container').removeClass('d-none');
                 });
             </script>
 

@@ -56,7 +56,7 @@ class TestSingleScreensFunctionality:
             EVENT_ID,
             SCREEN_ID,
             ScreenType.CHECK_IN,
-            {'init_set_tournament_id': unpaired_tournament.id},
+            {'init_set_tournament_ids': [unpaired_tournament.id]},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.player-row')
@@ -108,8 +108,8 @@ class TestSingleScreensFunctionality:
             api_request_context,
             EVENT_ID,
             SCREEN_ID,
-            ScreenType.INPUT,
-            {'init_set_tournament_id': paired_tournament.id},
+            ScreenType.BOARDS,
+            {'accepts_input': True, 'init_set_tournament_ids': [paired_tournament.id]},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.board-row')
@@ -166,7 +166,7 @@ class TestSingleScreensFunctionality:
             EVENT_ID,
             SCREEN_ID,
             ScreenType.BOARDS,
-            {'init_set_tournament_id': paired_tournament.id},
+            {'init_set_tournament_ids': [paired_tournament.id]},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.board-row')

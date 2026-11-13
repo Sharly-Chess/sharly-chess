@@ -5,7 +5,9 @@
 {% set collection_items_data = collection_items_data|default({}) %}
 
 {% if items %}
-    {% if collection_view_mode.value == 'cards' %}
+    {% if collection_view_mode.value == 'preview' %}
+        {% include collection.preview_template %}
+    {% elif collection_view_mode.value == 'cards' %}
         <div
             class="row gy-3 gx-3 admin-collection admin-collection-cards {{ collection_items_class }} {% if sortable %}sortable with-handles{% endif %}"
             {% for name, value in collection_items_data.items() %}data-{{ name }}="{{ value }}"{% endfor %}

@@ -53,18 +53,21 @@
         <div class="col screen-set-col {% if not loop.first %}border-start border-2 border-dark{% endif %}">
             {% for team_board in matches %}
                 <div class="team-match-block mb-3">
-                    <div class="d-flex align-items-center justify-content-between fw-bold text-bg-dark rounded-top px-2 py-1 mb-1">
-                        <span class="text-start" style="flex: 1 1 0;">
-                            {% if team_board.display_number %}
-                                <span class="opacity-75 pe-2">{{ team_board.display_number }}.</span>
-                            {% endif %}
+                    <div
+                        class="d-grid align-items-center fw-bold text-bg-dark rounded-top py-1 mb-1"
+                        style="grid-template-columns: 2em 1fr minmax(4em, max-content) 1fr;"
+                    >
+                        <span class="text-end opacity-75 pe-2">
+                            {% if team_board.display_number %}{{ team_board.display_number }}.{% endif %}
+                        </span>
+                        <span class="text-start">
                             {% if show_points %}
                                 <span class="opacity-75 fw-normal me-2">{{ '%g'|format(tournament.team_primary_score_before_round(team_board.team_a.id, team_board.round)) }}&nbsp;{{ tournament.primary_score.abbreviation }}</span>
                             {% endif %}
                             {{ team_board.team_a.name }}
                         </span>
                         <span class="text-center text-nowrap px-2">{{ team_board.game_score_display }}</span>
-                        <span class="text-end" style="flex: 1 1 0;">
+                        <span class="text-end pe-2">
                             {% if team_board.team_b %}
                                 {{ team_board.team_b.name }}
                                 {% if show_points %}
@@ -113,7 +116,7 @@
                                 {# A forfeit hole has no editable result —
                                    both players must be present. #}
                                 {% set editable =
-                                    screen.screen_type.allows_result_input
+                                    (screen.accepts_input and not tournament.is_fake)
                                     and wtp and btp
                                     and (
                                         client.can_update_results(tournament.id)
@@ -136,14 +139,14 @@
                                             display_controller_id=display_controller.id,
                                             tournament_id=tournament.id,
                                             board_id=board.identifier
-                                        ) if display_controller else url_for(
+                                        ) ~ display_controller_query if display_controller else url_for(
                                             'user-result-modal',
                                             is_screen=1,
                                             event_uniq_id=user_event.uniq_id,
                                             screen_uniq_id=screen.uniq_id,
                                             tournament_id=tournament.id,
                                             board_id=board.identifier
-                                        ) }}"
+                                        ) ~ menu_query }}"
                                         hx-target="body"
                                         hx-indicator="#please-wait"
                                         data-bs-toggle="modal"
@@ -156,7 +159,7 @@
                                         {%- if left_tp %} {{ left_tp.full_name }} <span class="text-muted">{{ left_tp.rating_str_in_round(board.round) }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                     </div>
                                     <div class="score text-center px-2">
-                                        {% if board.result_str or not screen.screen_type.allows_result_input %}
+                                        {% if board.result_str or not (screen.accepts_input and not tournament.is_fake) %}
                                             {{ display_result }}
                                         {% elif editable %}
                                             <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>

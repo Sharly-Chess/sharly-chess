@@ -10,7 +10,7 @@
         data-page-title="{{ screen.name }}"
         data-page-context="{{ user_event.name }}"
     >
-        {% if not screen.screen_type.has_exit_button or screen.input_exit_button %}
+        {% if not display_controller and (not screen.accepts_input or screen.input_exit_button) %}
             <button
                 id="screen-exit-button"
                 class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-2"
@@ -27,7 +27,8 @@
         {% endif %}
         {% set refresh_conditions = "modalIsClosed()" ~ (" && document.visibilityState === 'visible'" if not DEVEL_ENV else '') %}
         {% set becomes_visible = "visibilitychange[" ~ refresh_conditions ~ "] from:document," if not DEVEL_ENV else '' %}
-        {% if display_controller %}
+        {% if request.query_params.get('preview') %}
+        {% elif display_controller %}
             <div
                 class="refresher display-controller-refresher"
                 {% if is_rotator %}
@@ -36,7 +37,15 @@
                         event_uniq_id=user_event.uniq_id,
                         display_controller_id=display_controller.id,
                         rotator_screen_index=rotator_screen_index + 1,
-                    ) }}"
+                    ) }}?showing={{ display_controller.assignment_key }}"
+                {% elif display_controller.menu %}
+                    hx-get="{{ url_for(
+                        'user-display-controller',
+                        event_uniq_id=user_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                        rotator_screen_index=rotator_screen_index,
+                    ) }}?showing={{ display_controller.assignment_key }}"
+                    hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
                 {% else %}
                     hx-get="{{ url_for(
                         'user-display-controller',
@@ -45,8 +54,17 @@
                     ) }}"
                     hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
                 {% endif %}
-                hx-trigger="{{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
+                hx-trigger="{{ becomes_visible }} every {{ display_controller.delay_for(screen) }}s[{{ refresh_conditions }}]"
                 hx-target="body"
+                hx-indicator="#please-wait"
+            ></div>
+        {% elif menu %}
+            <div
+                class="refresher menu-refresher"
+                hx-get="{{ url_for('user-menu', event_uniq_id=user_event.uniq_id, menu_id=menu.id, rotator_screen_index=rotator_screen_index) }}"
+                hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
+                hx-target="body"
+                hx-trigger="{{ becomes_visible }} every {{ sharly_chess_config.user_screen_update_delay }}s[{{ refresh_conditions }}] queue:none"
                 hx-indicator="#please-wait"
             ></div>
         {% elif rotator %}
@@ -54,7 +72,15 @@
                 class="refresher rotator-refresher"
                 hx-get="{{ url_for('user-rotator', event_uniq_id=user_event.uniq_id, rotator_id=rotator.id, rotator_screen_index=rotator_screen_index + 1) }}"
                 hx-target="body"
-                hx-trigger="{{ becomes_visible }} every {{ rotator.delay }}s[{{ refresh_conditions }}]"
+                hx-trigger="{{ becomes_visible }} every {{ rotator.delay_for(screen) }}s[{{ refresh_conditions }}]"
+                hx-indicator="#please-wait"
+            ></div>
+        {% elif cycling_family and is_rotator %}
+            <div
+                class="refresher paged-screen-refresher"
+                hx-get="{{ url_for('user-paged-screen', event_uniq_id=user_event.uniq_id, family_uniq_id=cycling_family.uniq_id, page_index=rotator_screen_index + 1) }}"
+                hx-target="body"
+                hx-trigger="{{ becomes_visible }} every {{ cycling_family_delay }}s[{{ refresh_conditions }}]"
                 hx-indicator="#please-wait"
             ></div>
         {% else %}
@@ -66,6 +92,12 @@
                 hx-trigger="{{ becomes_visible }} every {{ sharly_chess_config.user_screen_update_delay }}s[{{ refresh_conditions }}] queue:none"
                 hx-indicator="#please-wait"
             ></div>
+        {% endif %}
+        {% if user_event.fake_tournament_ids and (
+            not screen.screen_type.has_screen_sets
+            or screen.sorted_screen_sets|selectattr('tournament.id', 'in', user_event.fake_tournament_ids)|list
+        ) %}
+            <div class="fake-data-notice" data-testid="fake-data-notice">{{ _('This is fake data') }}</div>
         {% endif %}
         {% set message_text = rotator.message_text if rotator and not rotator.message_default else screen.message_text %}
         {% if message_text %}
@@ -148,8 +180,10 @@
 
 {% block content %}
     {% set menu_entries = [] %}
-    {% if not rotator and not display_controller %}
-        {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
+    {% set shown_menu = display_controller.menu if display_controller else menu %}
+    {% if shown_menu %}
+        {% set menu_entries = shown_menu.nav_entries(screen, client.can_view_private_screens) %}
+        {% set menu_screen_indexes = shown_menu.screen_indexes(client.can_view_private_screens) %}
     {% endif %}
     <div id="top-nav-wrapper" class="screen-top-nav pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
         {% if timer %}
@@ -173,7 +207,7 @@
                                     {% for sub in entry.screens %}
                                         <a
                                             class="screen-submenu-item cursor-pointer text-nowrap d-block py-1 px-2 {% if sub.uniq_id == screen.uniq_id %}selected{% endif %}"
-                                            hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=sub.uniq_id) }}"
+                                            hx-get="{{ url_for('user-display-controller', event_uniq_id=user_event.uniq_id, display_controller_id=display_controller.id, rotator_screen_index=menu_screen_indexes[sub.uniq_id]) if display_controller else url_for('user-menu', event_uniq_id=user_event.uniq_id, menu_id=shown_menu.id, rotator_screen_index=menu_screen_indexes[sub.uniq_id]) }}"
                                             hx-target="body"
                                             hx-push-url="true"
                                             hx-indicator="#please-wait"
@@ -184,7 +218,7 @@
                         {% else %}
                             <a
                                 class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
-                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
+                                hx-get="{{ url_for('user-display-controller', event_uniq_id=user_event.uniq_id, display_controller_id=display_controller.id, rotator_screen_index=menu_screen_indexes[entry.screen.uniq_id]) if display_controller else url_for('user-menu', event_uniq_id=user_event.uniq_id, menu_id=shown_menu.id, rotator_screen_index=menu_screen_indexes[entry.screen.uniq_id]) }}"
                                 hx-target="body"
                                 hx-push-url="true"
                                 hx-indicator="#please-wait"

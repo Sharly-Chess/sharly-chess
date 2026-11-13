@@ -1,5 +1,6 @@
 from copy import copy
-from operator import attrgetter
+from collections import Counter
+from operator import itemgetter
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
@@ -7,7 +8,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException
 from litestar.params import Body, FromQuery, FromPath
 from litestar.plugins.htmx import HTMXRequest
-from litestar.response import Template
+from litestar.response import Redirect, Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
@@ -28,7 +29,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
 from web.session import SessionRotatorsShowDetails
-from web.utils import RequestUtils, SelectOption
+from web.utils import RequestUtils, SelectOption, paged_screen_option
 
 
 class RotatorAdminWebContext(BaseEventAdminWebContext):
@@ -86,6 +87,10 @@ class RotatorAdminController(BaseEventAdminController):
                 'message_text_checkbox': stored_rotator.message_default,
                 'message_text': stored_rotator.message_text,
                 'timer_id': stored_rotator.timer_id,
+                'display_controller_ids': [
+                    display_controller.id
+                    for display_controller in rotator.display_controllers
+                ],
             }
         )
 
@@ -97,7 +102,15 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         show_details: FromQuery[bool | None],
-    ) -> Template:
+    ) -> Template | Redirect:
+        if not WebContext(request).client.can_manage_screens:
+            return Redirect(
+                request.app.route_reverse(
+                    'admin-event-display-tab',
+                    event_uniq_id=request.path_params['event_uniq_id'],
+                )
+                + '?browse=true&kind=rotators'
+            )
         if show_details is not None:
             SessionRotatorsShowDetails(request).set(show_details)
         return self._admin_event_rotator_render(RotatorAdminWebContext(request))
@@ -136,6 +149,7 @@ class RotatorAdminController(BaseEventAdminController):
             'timer_options': timer_options,
             'data': default_data | data,
             'errors': errors or {},
+            **cls._display_controller_destination_context(event),
         }
 
     @classmethod
@@ -148,44 +162,51 @@ class RotatorAdminController(BaseEventAdminController):
         rotator = web_context.get_admin_rotator()
         return {
             'modal': 'rotator_screens',
-            'screen_options': cls._screen_or_family_options(
-                event,
-                event.sorted_basic_screens_by_screen_type,
-                rotator.screens,
-            ),
-            'family_options': cls._screen_or_family_options(
-                event, event.families_by_screen_type, rotator.families
-            ),
+            'screen_options': cls._screen_options(event, rotator),
             'success_message': success_message,
         }
 
     @staticmethod
-    def _screen_or_family_options[T: Screen | Family](
-        event: Event,
-        entities_by_screen_type: dict[str, list[T]],
-        rotator_entities: list[T],
-    ) -> dict[str, dict[str, str]]:
-        screen_types = ScreenTypeManager(event).objects()
-        options: dict[str, dict[str, str]] = {
-            screen_type.name: {} for screen_type in screen_types
-        }
-        rotator_ids = [entity.id for entity in rotator_entities]
-        for screen_type in screen_types:
-            if not screen_type.allowed_in_rotators:
-                continue
-            for entity in sorted(
-                entities_by_screen_type[screen_type.id], key=attrgetter('name')
-            ):
-                suffix = ''
-                if rotator_count := rotator_ids.count(entity.id):
-                    suffix = f' (x{rotator_count})'
-                # Families expose display_name (their range resolved); screens
-                # fall back to their name.
-                label = getattr(entity, 'display_name', None) or entity.name
-                options[screen_type.name][str(entity.id)] = label + suffix
-        for screen_type in screen_types:
-            if not options[screen_type.name]:
-                del options[screen_type.name]
+    def _screen_options(
+        event: Event, rotator: Rotator
+    ) -> dict[str, dict[str, str | SelectOption]]:
+        """The screens and paged screens that can go in the rotator, by screen
+        type, each marked with how many times the rotator already shows it."""
+        counts = Counter(
+            [f'screen:{screen.id}' for screen in rotator.screens]
+            + [f'family:{family.id}' for family in rotator.families]
+        )
+
+        def count_text(item_id: str) -> str:
+            return f' (x{count})' if (count := counts[item_id]) else ''
+
+        options: dict[str, dict[str, str | SelectOption]] = {}
+        for screen_type in ScreenTypeManager(event).objects():
+            entities: list[tuple[str, str, str | SelectOption]] = [
+                (
+                    screen.name,
+                    f'screen:{screen.id}',
+                    screen.name + count_text(f'screen:{screen.id}'),
+                )
+                for screen in event.sorted_basic_screens_by_screen_type.get(
+                    screen_type.id, []
+                )
+                if screen.allowed_in_rotators
+            ] + [
+                (
+                    family.display_name,
+                    f'family:{family.id}',
+                    paged_screen_option(family, count_text(f'family:{family.id}')),
+                )
+                for family in event.families_by_screen_type.get(screen_type.id, [])
+                if family.allowed_in_rotators
+            ]
+            group = {
+                item_id: option
+                for _name, item_id, option in sorted(entities, key=itemgetter(0))
+            }
+            if group:
+                options[screen_type.name] = group
         return options
 
     @get(
@@ -286,6 +307,7 @@ class RotatorAdminController(BaseEventAdminController):
                 errors[field] = _('This name is already used.')
         field = 'delay'
         delay = WebContext.read_int_field(data, field, errors, minimum=1)
+        BaseEventAdminController._read_display_controller_ids(data, errors, event)
         if errors:
             return None, errors
         stored_rotator = StoredRotator(
@@ -308,23 +330,28 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        form_data = WebContext.flatten_list_data(data)
         web_context = RotatorAdminWebContext(request)
         stored_rotator, errors = self._read_rotator_form_data(
-            data, web_context, FormAction.CREATE
+            form_data, web_context, FormAction.CREATE
         )
         if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
                 self._rotator_form_modal_context(
-                    web_context, FormAction.CREATE, data, errors
+                    web_context, FormAction.CREATE, form_data, errors
                 ),
             )
         event = web_context.get_admin_event()
         web_context.admin_rotator = event.create_rotator(stored_rotator)
+        event.set_rotator_display_controllers(
+            web_context.admin_rotator.id,
+            self._read_display_controller_ids(form_data, errors, event),
+        )
 
         template_context = self._rotator_screens_modal_context(
             web_context,
@@ -342,19 +369,20 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        form_data = WebContext.flatten_list_data(data)
         web_context = RotatorAdminWebContext(request)
         stored_rotator, errors = self._read_rotator_form_data(
-            data, web_context, FormAction.CLONE
+            form_data, web_context, FormAction.CLONE
         )
         if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
                 self._rotator_form_modal_context(
-                    web_context, FormAction.CLONE, data, errors
+                    web_context, FormAction.CLONE, form_data, errors
                 ),
             )
         event = web_context.get_admin_event()
@@ -362,7 +390,11 @@ class RotatorAdminController(BaseEventAdminController):
         stored_rotator.stored_rotating_screens = copy(
             cloned_rotator.stored_rotating_screens
         )
-        event.create_rotator(stored_rotator)
+        new_rotator = event.create_rotator(stored_rotator)
+        event.set_rotator_display_controllers(
+            new_rotator.id,
+            self._read_display_controller_ids(form_data, errors, event),
+        )
         Message.success(
             request,
             _('Rotator [{rotator}] has been created.').format(
@@ -379,19 +411,20 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        form_data = WebContext.flatten_list_data(data)
         web_context = RotatorAdminWebContext(request)
         stored_rotator, errors = self._read_rotator_form_data(
-            data, web_context, FormAction.UPDATE
+            form_data, web_context, FormAction.UPDATE
         )
         if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
                 self._rotator_form_modal_context(
-                    web_context, FormAction.UPDATE, data, errors
+                    web_context, FormAction.UPDATE, form_data, errors
                 ),
             )
         event = web_context.get_admin_event()
@@ -399,6 +432,10 @@ class RotatorAdminController(BaseEventAdminController):
         stored_rotator.id = rotator.id
         stored_rotator.stored_rotating_screens = rotator.stored_rotating_screens
         event.update_rotator(stored_rotator)
+        event.set_rotator_display_controllers(
+            rotator.id,
+            self._read_display_controller_ids(form_data, errors, event),
+        )
         rotator.stored_rotator = stored_rotator
         Message.success(
             request,
@@ -469,46 +506,34 @@ class RotatorAdminController(BaseEventAdminController):
             web_context, self._rotator_screens_modal_context(web_context)
         )
 
-    @staticmethod
-    def _create_rotating_screen(
-        request: HTMXRequest, data: dict[str, str], is_family: bool
+    @post(
+        path='/rotating-screens/create/{event_uniq_id:str}/{rotator_id:int}',
+        name='admin-rotating-screens-create',
+    )
+    async def htmx_admin_rotating_screens_create(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template:
         web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
-        object_id = (
-            WebContext.form_data_to_int(data, 'family_id' if is_family else 'screen_id')
-            or 0
-        )
-        rotator.add_rotating_screen(object_id, is_family)
+        event = web_context.get_admin_event()
+        item_id = WebContext.form_data_to_str(data, 'item_id') or ''
+        kind, _separator, raw_id = item_id.partition(':')
+        object_id = int(raw_id) if raw_id.isdigit() else 0
+        entity: Screen | Family | None = None
+        match kind:
+            case 'screen':
+                entity = event.basic_screens_by_id.get(object_id)
+            case 'family':
+                entity = event.families_by_id.get(object_id)
+        if entity is None or not entity.allowed_in_rotators:
+            raise ClientException(f'[{item_id}] cannot be added to a rotator.')
+        rotator.add_rotating_screen(object_id, kind == 'family')
         return HTMXTemplate(
             template_name='/admin/rotators/rotator_screens_form.html',
             context=web_context.template_context,
         )
-
-    @post(
-        path='/rotating-screens/create-screen/{event_uniq_id:str}/{rotator_id:int}',
-        name='admin-rotating-screens-create-screen',
-    )
-    async def htmx_admin_rotating_screens_create_screen(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
-        return self._create_rotating_screen(request, data, False)
-
-    @post(
-        path='/rotating-screens/create-family/{event_uniq_id:str}/{rotator_id:int}',
-        name='admin-rotating-screens-create-family',
-    )
-    async def htmx_admin_rotating_screens_create_family(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
-        return self._create_rotating_screen(request, data, True)

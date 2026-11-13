@@ -1,5 +1,9 @@
 {% extends 'common/base.html' %}
 
+{% block wrapper_class %}{% if display_only %}no-sidebar{% endif %}{% endblock wrapper_class %}
+
+{% block sidebar_class %}{% if not display_only %}admin-sidebar{% endif %}{% endblock sidebar_class %}
+
 {% block admin_header_back_button %}
     {% set target_tab = 'current_events' %}
     {% if admin_event.coming %}
@@ -10,7 +14,7 @@
     {% if not client.account.administrator %}
         {% set target_tab = 'home' %}
     {% endif %}
-    <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
+    <div class="sidebar-header d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
         <button
             class="btn px-0 py-0 d-flex align-items-center gap-2"
             hx-get="{{ url_for('admin-tab', admin_tab=target_tab) }}"

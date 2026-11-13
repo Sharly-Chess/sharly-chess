@@ -128,7 +128,7 @@ def test_the_checked_screens_display_the_timer(http: TestClient, event: str):
     timer_ids = timer_ids_by_name(http)
     main_hall, side_room = timer_ids['Main hall'], timer_ids['Side room']
     tournament = EVENT.tournament()
-    screen_overrides = {'init_set_tournament_id': tournament.id}
+    screen_overrides = {'init_set_tournament_ids': [tournament.id]}
     boards = TestUtils.create_screen(
         api, EVENT_ID, 'Boards', ScreenType.BOARDS, screen_overrides
     )
@@ -198,14 +198,20 @@ def test_the_screens_are_listed_with_their_timer(http: TestClient, event: str):
         EVENT_ID,
         'Hall boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament_id, 'timer_id': timer_ids['Main hall']},
+        {
+            'init_set_tournament_ids': [tournament_id],
+            'timer_id': timer_ids['Main hall'],
+        },
     )
     other = TestUtils.create_screen(
         api,
         EVENT_ID,
         'Annex boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament_id, 'timer_id': timer_ids['Side room']},
+        {
+            'init_set_tournament_ids': [tournament_id],
+            'timer_id': timer_ids['Side room'],
+        },
     )
     response = http.get(f'/timer-usage-modal/{EVENT_ID}/{timer_ids["Main hall"]}')
     assert response.status_code == 200

@@ -1,0 +1,188 @@
+{% extends '../../common/admin_cards_container.html' %}
+
+{% set display_url = url_for('admin-event-display-tab', event_uniq_id=admin_event.uniq_id) %}
+
+{% macro _tile(name, url, preview_url, testid, icon=none, links=[], pages=0) %}
+    <div class="card feed-preview {% if pages > 1 %}feed-preview-paged{% endif %}" data-testid="{{ testid }}">
+        <a class="card-header d-flex align-items-center gap-2 min-width-0 text-reset text-decoration-none" href="{{ url }}">
+            {% if icon %}{{ icon }}{% endif %}
+            <span class="fw-bold text-truncate">{{ name }}</span>
+            {% if pages > 1 %}
+                <span class="ms-auto">{{ components.badge('neutral', ngettext('%(num)d page', '%(num)d pages', pages), icon='bi-window-split') }}</span>
+            {% endif %}
+        </a>
+        <a class="feed-preview-frame" href="{{ url }}" aria-label="{{ name }}">
+            {% if preview_url %}
+                <iframe src="{{ preview_url }}" title="{{ name }}" loading="lazy" tabindex="-1"></iframe>
+            {% else %}
+                <span class="feed-preview-empty">{{ _('Nothing to show') }}</span>
+            {% endif %}
+        </a>
+        {% if links %}
+            <div class="card-footer display-page-links">
+                {% for label, link_url in links %}
+                    <a class="screens-type-filter-chip" href="{{ link_url }}">{{ label }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro _preview(url) -%}{{ url }}?preview=true{%- endmacro %}
+
+{% block top_left_nav %}
+    <div class="admin-tab-title display-page-title d-flex align-items-center gap-2" data-page-title="{{ _('Display') }}">
+        {% if display_only %}
+            {{ components.button(
+                _('All Events'),
+                icon='bi-arrow-left',
+                kind='plain',
+                attrs={
+                    'hx-get': url_for('admin-tab', admin_tab='home' if not client.account.administrator else 'current_events'),
+                    'hx-target': 'body',
+                    'hx-push-url': 'true',
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
+            <span class="display-page-event">{{ admin_event.name }}</span>
+        {% endif %}
+        {% if display_step == 'browse' and display_feeds %}
+            {{ components.button(
+                _('Channels'),
+                icon='bi-chevron-left',
+                kind='outline',
+                size='sm',
+                attrs={
+                    'hx-get': display_url,
+                    'hx-target': 'body',
+                    'hx-push-url': 'true',
+                    'hx-indicator': '#please-wait',
+                    'data-testid': 'display-back-to-feeds',
+                },
+            ) }}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block top_right_nav %}
+    {% if display_only %}
+        <div class="top-nav-keep">
+            {{ components.modal_button(
+                url_for('profile-modal', event_uniq_id=admin_event.uniq_id),
+                client.account.full_name if not client.account.anonymous else _('Sign in'),
+                icon='bi-person-circle',
+                attrs={'data-testid': 'profile-button'},
+            ) }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block cards_container_cards %}
+<div class="display-page">
+    {% if display_step == 'feeds' %}
+        <h2 class="display-page-heading">{{ _('Choose what to show') }}</h2>
+        <div class="feed-previews" data-testid="display-feeds">
+            {% for feed in display_feeds %}
+                {% set feed_url = url_for('user-display-controller', event_uniq_id=admin_event.uniq_id, display_controller_id=feed.id) %}
+                {{ _tile(feed.name, feed_url, _preview(feed_url), 'display-feed', icon='<i class="bi-box-arrow-in-right"></i>'|safe) }}
+            {% endfor %}
+            <a class="card feed-preview display-show-all text-reset text-decoration-none" href="{{ display_url }}?browse=true" data-testid="display-show-all">
+                <span class="display-show-all-body">
+                    <i class="bi-grid"></i>
+                    <span class="fw-bold">{{ _('Show all') }}</span>
+                    <span class="text-secondary">{{ _('Every screen, menu and rotator') }}</span>
+                </span>
+            </a>
+        </div>
+    {% elif not display_kinds %}
+        {% call components.empty_state(_('No public screens')) %}
+            <p>{{ _("There are no public screens available for this event.") }}</p>
+        {% endcall %}
+    {% else %}
+        {% if display_kinds|length > 1 %}
+            {% call components.segmented(_('What to show'), class='display-page-kinds mb-3', attrs={'data-testid': 'display-kinds'}) %}
+                {% for key, count in display_kinds %}
+                    {% set label %}{{ {'screens': _('Screens'), 'menus': _('Menus'), 'rotators': _('Rotators')}[key] }} <span class="nav-count">{{ count }}</span>{% endset %}
+                    {{ components.segment_button(
+                        label,
+                        icon={'screens': 'bi-window', 'menus': 'bi-list-nested', 'rotators': 'bi-repeat'}[key],
+                        active=key == display_kind,
+                        attrs={
+                            'hx-get': display_url ~ '?browse=true&kind=' ~ key,
+                            'hx-target': 'body',
+                            'hx-push-url': 'true',
+                            'hx-indicator': '#please-wait',
+                            'data-testid': 'display-kind-' ~ key,
+                        },
+                    ) }}
+                {% endfor %}
+            {% endcall %}
+        {% endif %}
+
+        {% if display_kind == 'screens' %}
+            {% if display_groups|length > 1 %}
+                <div class="screens-type-filter" role="group" aria-label="{{ _('Screen type') }}">
+                    <a class="screens-type-filter-chip {% if not display_type %}active{% endif %}" href="{{ display_url }}?browse=true&kind=screens" data-testid="display-type-all">
+                        {{ _('All') }}
+                        <span class="screens-type-filter-count">{{ display_groups|map(attribute='1')|map('length')|sum }}</span>
+                    </a>
+                    {% for screen_type, items in display_groups %}
+                        <a class="screens-type-filter-chip {% if display_type == screen_type.id %}active{% endif %}" href="{{ display_url }}?browse=true&kind=screens&type={{ screen_type.id }}" data-testid="display-type-{{ screen_type.id }}">
+                            {{ macros.screen_type_icon(screen_type, false) }}
+                            {{ screen_type.name }}
+                            <span class="screens-type-filter-count">{{ items|length }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% for screen_type, items in display_groups if not display_type or display_type == screen_type.id %}
+                <h2 class="screens-collection-section-heading">
+                    {{ macros.screen_type_icon(screen_type, false) }}
+                    {{ screen_type.name }}
+                </h2>
+                <div class="feed-previews mb-4">
+                    {% for item in items %}
+                        {% if item.is_paged %}
+                            {% set pages = item.screens_by_uniq_id.values()|list %}
+                            {% set first_url = url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=pages[0].uniq_id) %}
+                            {% set open_url = url_for('user-paged-screen', event_uniq_id=admin_event.uniq_id, family_uniq_id=item.uniq_id) if item.allowed_in_rotators else first_url %}
+                            {% set links = [] %}
+                            {% for page in pages %}
+                                {% do links.append((page.range_label, url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=page.uniq_id))) %}
+                            {% endfor %}
+                            {{ _tile(item.display_name, open_url, _preview(first_url), 'display-screen', links=links, pages=pages|length) }}
+                        {% else %}
+                            {% set screen_url = url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=item.uniq_id) %}
+                            {{ _tile(item.name, screen_url, _preview(screen_url), 'display-screen') }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% elif display_kind == 'menus' %}
+            <div class="feed-previews">
+                {% for menu in display_menus %}
+                    {% set menu_url = url_for('user-menu', event_uniq_id=admin_event.uniq_id, menu_id=menu.id) %}
+                    {{ _tile(menu.name, menu_url, _preview(menu_url), 'display-menu', icon='<i class="bi-list-nested"></i>'|safe) }}
+                {% endfor %}
+            </div>
+        {% elif display_kind == 'rotators' %}
+            <div class="feed-previews">
+                {% for rotator in display_rotators %}
+                    {% set rotator_url = url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) %}
+                    {{ _tile(rotator.name, rotator_url, _preview(rotator_url), 'display-rotator', icon=macros.rotator_icon()) }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+    <script>
+        (() => {
+            const observer = new ResizeObserver((entries) => {
+                entries.forEach((entry) => {
+                    entry.target.style.setProperty('--feed-preview-scale', entry.contentRect.width / 1920);
+                });
+            });
+            document.querySelectorAll('.feed-preview-frame').forEach((frame) => observer.observe(frame));
+        })();
+    </script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% import '/admin/components/macros.j2' as components with context %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+
+{% macro title(doc_ref) %}
+    {% set display_tabs = nav_tabs['admin-event-views'].submenu %}
+    {% set active = display_tabs[admin_event_tab] %}
+    <nav
+        class="admin-tab-title display-tabs"
+        aria-label="{{ _('Display') }}"
+        data-page-title="{{ active.name }}"
+        data-testid="display-switcher"
+    >
+        {{ macros.doc_icon(doc_ref, 'display-tabs-help fs-5') }}
+        <div class="display-tabs-items">
+            {% for nav_id, display_tab in display_tabs.items() %}
+                {% set is_active = nav_id == admin_event_tab %}
+                {% call components.icon_text(
+                    display_tab.icon_class,
+                    tag='button',
+                    class='display-tab' ~ (' active' if is_active else ''),
+                    attrs={
+                        'type': 'button',
+                        'aria-current': 'page' if is_active else none,
+                        'aria-pressed': 'true' if is_active else 'false',
+                        'aria-label': display_tab.name,
+                        'title': display_tab.name,
+                        'hx-get': url_for(nav_id, event_uniq_id=admin_event.uniq_id),
+                        'hx-target': 'body',
+                        'hx-push-url': 'true',
+                        'hx-indicator': '#please-wait',
+                        'data-map-key': display_tab.map_key,
+                        'data-testid': 'display-switcher-' ~ display_tab.map_key,
+                    },
+                ) %}<span class="display-tab-label">{{ display_tab.title|safe }}</span>{% if display_tab.count %}<span class="nav-count">{{ display_tab.count }}</span>{% endif %}{% endcall %}
+            {% endfor %}
+        </div>
+        <div class="display-tabs-end">
+            {{ admin_macros.not_in_fide_mode_badge(admin_event.tournaments | selectattr('left_fide_mode') | list) }}
+            {% if admin_event.screens_fake_data or admin_event.tournaments_for_fake_data %}
+                {% call components.button(
+                    _('Fake data'),
+                    icon='bi-magic',
+                    size='sm',
+                    kind='primary' if admin_event.screens_fake_data else 'outline',
+                    tooltip=_('Show made-up pairings and results on the screens of the tournaments that have not started, to set them up.'),
+                    tooltip_placement='bottom',
+                    class='display-tabs-fake-data',
+                    attrs={
+                        'hx-patch': url_for('admin-screens-fake-data', event_uniq_id=admin_event.uniq_id, fake_data=0 if admin_event.screens_fake_data else 1),
+                        'hx-indicator': '#please-wait',
+                        'aria-pressed': 'true' if admin_event.screens_fake_data else 'false',
+                        'aria-label': _('Fake data'),
+                        'data-testid': 'screens-fake-data-toggle',
+                    },
+                ) %}<span class="display-tabs-fake-data-label">{{ _('Fake data') }}</span>{% endcall %}
+            {% endif %}
+            {{ screens_map.button(active.map_key) }}
+        </div>
+    </nav>
+    {% if admin_event.screens_fake_data %}
+        <div class="display-fake-data-banner" data-testid="screens-fake-data-banner">
+            {% call components.icon_text('bi-magic') %}{{ _('Screens show fake data for the tournaments that have not started, on every device.') }}{% endcall %}
+            {{ components.button(
+                _('Turn off'),
+                kind='outline',
+                size='sm',
+                attrs={
+                    'hx-patch': url_for('admin-screens-fake-data', event_uniq_id=admin_event.uniq_id, fake_data=0),
+                    'hx-indicator': '#please-wait',
+                },
+            ) }}
+        </div>
+    {% endif %}
+    <script>
+        (() => {
+            const pairs = (key) => document.querySelectorAll(`[data-map-key="${key}"]`);
+            document.querySelectorAll('[data-map-key]').forEach((element) => {
+                const key = element.dataset.mapKey;
+                const highlight = (on) => pairs(key).forEach((other) => other.classList.toggle('is-highlighted', on));
+                ['mouseenter', 'focusin'].forEach((type) => element.addEventListener(type, () => highlight(true)));
+                ['mouseleave', 'focusout'].forEach((type) => element.addEventListener(type, () => highlight(false)));
+            });
+        })();
+    </script>
+{% endmacro %}

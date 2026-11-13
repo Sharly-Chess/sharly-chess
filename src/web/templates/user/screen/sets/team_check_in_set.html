@@ -25,10 +25,16 @@
                                     hx-get="{{ url_for(
                                         'user-team-checkin-modal',
                                         event_uniq_id=user_event.uniq_id,
+                                        display_controller_id=display_controller.id,
+                                        tournament_id=tournament.id,
+                                        team_id=team.id
+                                    ) ~ display_controller_query if display_controller else url_for(
+                                        'user-team-checkin-modal',
+                                        event_uniq_id=user_event.uniq_id,
                                         screen_uniq_id=screen.uniq_id,
                                         tournament_id=tournament.id,
                                         team_id=team.id
-                                    ) }}"
+                                    ) ~ menu_query }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     data-bs-toggle="modal"
@@ -38,6 +44,11 @@
                                 <i class="check-in-mark {% if team.check_in %}bi-check-circle-fill{% else %}bi-circle{% endif %}"></i>
                                 {{ team.name }}
                                 <span class="text-muted small">({{ team.players|length }})</span>
+                                {% if data.show_members and team.players %}
+                                    <div class="team-members">
+                                        {{ team.players | map(attribute='full_name') | join(' · ') }}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}

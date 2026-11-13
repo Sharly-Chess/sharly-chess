@@ -87,11 +87,11 @@
         {% elif object_type == 'screen' %}
             {% set _tooltip_text=tooltip_public_text or _('This screen is public (visible by the spectators).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_public_text or _('This multi-screen is public (visible by the spectators).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This paged screen is public (visible by the spectators).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the spectators).') %}
         {% elif object_type == 'display_controller' %}
-            {% set _tooltip_text=tooltip_public_text or _('This display controller is public (visible by the spectators).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This channel is public (visible by the spectators).') %}
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
@@ -102,11 +102,11 @@
         {% elif object_type == 'screen' %}
             {% set _tooltip_text=tooltip_private_text or _('This screen is private (not visible by the spectators).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_private_text or _('This multi-screen is private (not visible by the spectators).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This paged screen is private (not visible by the spectators).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the spectators).') %}
         {% elif object_type == 'display_controller' %}
-            {% set _tooltip_text=tooltip_private_text or _('This display controller is private (not visible by the spectators).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This channel is private (not visible by the spectators).') %}
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
@@ -175,7 +175,7 @@
     <!-- display_controller_icon() -->
     <span
         class="fw-bold"
-        {{ tooltip_attributes('info', _('The screens displayed by the display controller are controlled by the screen managers.'), 'top') }}
+        {{ tooltip_attributes('info', _('The screens shown on a channel are controlled by the screen managers.'), 'top') }}
     >
         <i class="bi bi-box-arrow-in-right"></i>
     </span>

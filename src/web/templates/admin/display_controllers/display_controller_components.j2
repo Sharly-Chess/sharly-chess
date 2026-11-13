@@ -19,22 +19,255 @@
     </span>
 {% endmacro %}
 
+{% macro preview_url(item) %}
+    {{ url_for('user-display-controller', event_uniq_id=admin_event.uniq_id, display_controller_id=item.id) }}
+{% endmacro %}
+
+{% macro preview_header(item) %}
+    {{ identity(item, 'card', none) }}
+    {{ assignment(item, 'card', none) }}
+{% endmacro %}
+
 {% macro assignment(item, view, placement) %}
     <span class="d-flex min-width-0">
         {% if item.assigned_object %}
             <span class="d-inline-flex align-items-center gap-2 min-width-0">
                 <i class="bi-arrow-right text-secondary"></i>
-                {% if item.assigned_type == 'screen' %}
+                {% if item.assigned_type in ('screen', 'family') %}
                     {{ macros.screen_type_icon(item.assigned_object.screen_type, true) }}
+                {% elif item.assigned_type == 'menu' %}
+                    <i class="bi-list-nested"></i>
                 {% else %}
                     {{ macros.rotator_icon() }}
                 {% endif %}
-                <span class="text-truncate">{{ item.assigned_object.name }}</span>
+                <span class="text-truncate">{{ item.assigned_name }}</span>
             </span>
         {% else %}
             <span class="text-secondary text-truncate">{{ _('None') }}</span>
         {% endif %}
     </span>
+{% endmacro %}
+
+{% macro screen_counts(item, view, placement) %}
+    {% if client.can_manage_screens %}
+        {% set counts %}
+            <span class="d-inline-flex align-items-center gap-3">
+                <span
+                    class="text-nowrap"
+                    data-testid="screens-count"
+                    {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
+                >
+                    {% call components.icon_text('bi-window', icon_class='text-secondary') %}{{ item.item_screens|length }}{% endcall %}
+                </span>
+                <span
+                    class="text-nowrap"
+                    data-testid="families-count"
+                    {{ macros.tooltip_attributes('info', _('Number of paged screens'), 'top') }}
+                >
+                    {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.item_families|length }}{% endcall %}
+                </span>
+                <span
+                    class="text-nowrap"
+                    data-testid="menus-count"
+                    {{ macros.tooltip_attributes('info', _('Number of menus'), 'top') }}
+                >
+                    {% call components.icon_text('bi-list-nested', icon_class='text-secondary') %}{{ item.item_menus|length }}{% endcall %}
+                </span>
+                <span
+                    class="text-nowrap"
+                    data-testid="rotators-count"
+                    {{ macros.tooltip_attributes('info', _('Number of rotators'), 'top') }}
+                >
+                    {% call components.icon_text('bi-repeat', icon_class='text-secondary') %}{{ item.item_rotators|length }}{% endcall %}
+                </span>
+            </span>
+        {% endset %}
+        {% if view == 'card' %}
+            {{ counts }}
+        {% else %}
+            {% call collection_macros.column_edit_button(
+                false,
+                url_for('admin-display-controller-modal', action='update', event_uniq_id=admin_event.uniq_id, display_controller_id=item.id),
+                'info',
+                '',
+                'collection-inline-edit-label-group',
+                false,
+                aria_label=_('Edit the properties of the channel.'),
+            ) %}
+                {{ counts }}
+            {% endcall %}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro details(item, view, placement) %}
+    {% if client.can_manage_screens %}
+        <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% else %}collection-details-grid-quadruple{% endif %}">
+            <section class="collection-detail-section">
+                <h6>{{ _('Screens') }}</h6>
+                {% for screen in item.item_screens %}
+                    <div>
+                        {{ macros.screen_visibility_icon(screen, 'pe-1') }}
+                        {{ macros.screen_type_icon(screen.screen_type, true) }} {{ screen.name }}
+                    </div>
+                {% else %}
+                    <span class="text-secondary">{{ _('None') }}</span>
+                {% endfor %}
+            </section>
+            <section class="collection-detail-section">
+                <h6>{{ _('Paged Screens') }}</h6>
+                {% for family in item.item_families %}
+                    <div>
+                        {{ admin_macros.family_visibility_icon(family, 'pe-1') }}
+                        {{ macros.screen_type_icon(family.screen_type, true) }} {{ family.display_name }}
+                        {{ ngettext('(%(num)d screen)', '(%(num)d screens)', family.screens_by_uniq_id|length) }}
+                    </div>
+                {% else %}
+                    <span class="text-secondary">{{ _('None') }}</span>
+                {% endfor %}
+            </section>
+            <section class="collection-detail-section">
+                <h6>{{ _('Menus') }}</h6>
+                {% for menu in item.item_menus %}
+                    <div>
+                        <i class="bi-list-nested"></i> {{ menu.name }}
+                    </div>
+                {% else %}
+                    <span class="text-secondary">{{ _('None') }}</span>
+                {% endfor %}
+            </section>
+            <section class="collection-detail-section">
+                <h6>{{ _('Rotators') }}</h6>
+                {% for rotator in item.item_rotators %}
+                    <div>
+                        {{ macros.rotator_visibility_icon(rotator, 'pe-1') }}
+                        {{ macros.rotator_icon() }} {{ rotator.name }}
+                    </div>
+                {% else %}
+                    <span class="text-secondary">{{ _('None') }}</span>
+                {% endfor %}
+            </section>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro _assign_family_item(display_controller, family) %}
+    {% call components.submenu(family.display_name, leading=macros.screen_type_icon(family.screen_type)) %}
+        {% if family.allowed_in_rotators %}
+            {% call components.menu_item(
+                _('All pages in turn'),
+                icon='bi-arrow-repeat',
+                attrs={
+                    'hx-patch': url_for(
+                        'admin-display-controller-assign',
+                        event_uniq_id=admin_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                        type='family',
+                        object_uniq_id=family.uniq_id,
+                    ),
+                    'hx-indicator': '#please-wait',
+                },
+            ) %}<span><b>{{ _('All pages in turn') }}</b></span>{% endcall %}
+            {{ components.menu_divider() }}
+        {% endif %}
+        {% for screen in family.screens_by_uniq_id.values() %}
+            {% call components.menu_item(
+                screen.range_label,
+                attrs={
+                    'hx-patch': url_for(
+                        'admin-display-controller-assign',
+                        event_uniq_id=admin_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                        type='family-page',
+                        object_uniq_id=screen.uniq_id,
+                    ),
+                    'hx-indicator': '#please-wait',
+                },
+            ) %}<span>{{ screen.range_label }}</span>{% endcall %}
+        {% endfor %}
+    {% endcall %}
+{% endmacro %}
+
+{# What can be sent, grouped under a heading per kind: each screen type (its
+   screens, then its paged screens), the menus and the rotators. #}
+{% macro _assign_items(display_controller, screens, families, menus, rotators) %}
+    {% set screen_types = ((screens|map(attribute='screen_type')|list) + (families|map(attribute='screen_type')|list))|unique(attribute='id')|list %}
+    {% for screen_type in screen_types %}
+        {% set of_type = (screens|selectattr('screen_type.id', 'equalto', screen_type.id)|list) + (families|selectattr('screen_type.id', 'equalto', screen_type.id)|list) %}
+        {{ components.menu_header(of_type[0].type_str) }}
+        {% for basic_screen in screens if basic_screen.screen_type.id == screen_type.id %}
+            {{ _assign_screen_item(display_controller, basic_screen) }}
+        {% endfor %}
+        {% for family in families if family.screen_type.id == screen_type.id %}
+            {{ _assign_family_item(display_controller, family) }}
+        {% endfor %}
+    {% endfor %}
+    {% if menus %}
+        {{ components.menu_header(_('Menus')) }}
+        {% for menu in menus %}
+            {{ _assign_menu_item(display_controller, menu) }}
+        {% endfor %}
+    {% endif %}
+    {% if rotators %}
+        {{ components.menu_header(_('Rotators')) }}
+        {% for rotator in rotators %}
+            {{ _assign_rotator_item(display_controller, rotator) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro _assign_menu_item(display_controller, menu) %}
+    {% call components.menu_item(
+        menu.name,
+        attrs={
+            'hx-patch': url_for(
+                'admin-display-controller-assign',
+                event_uniq_id=admin_event.uniq_id,
+                display_controller_id=display_controller.id,
+                type='menu',
+                object_uniq_id=menu.id|string,
+            ),
+            'hx-indicator': '#please-wait',
+        },
+    ) %}
+        <i class="bi-list-nested"></i> <b>{{ menu.name }}</b>
+    {% endcall %}
+{% endmacro %}
+
+{% macro _assign_rotator_item(display_controller, rotator) %}
+    {% call components.menu_item(
+        rotator.name,
+        attrs={
+            'hx-patch': url_for(
+                'admin-display-controller-assign',
+                event_uniq_id=admin_event.uniq_id,
+                display_controller_id=display_controller.id,
+                type='rotator',
+                object_uniq_id=rotator.name,
+            ),
+            'hx-indicator': '#please-wait',
+        },
+    ) %}
+        {{ macros.rotator_icon() }} <b>{{ rotator.name }}</b>
+    {% endcall %}
+{% endmacro %}
+
+{% macro _assign_screen_item(display_controller, basic_screen) %}
+    {% call components.menu_item(
+        basic_screen.name,
+        attrs={
+            'hx-patch': url_for(
+                'admin-display-controller-assign',
+                event_uniq_id=admin_event.uniq_id,
+                display_controller_id=display_controller.id,
+                type='screen',
+                object_uniq_id=basic_screen.uniq_id,
+            ),
+            'hx-indicator': '#please-wait',
+        },
+    ) %}
+        {{ macros.screen_type_icon(basic_screen.screen_type) }} <b>{{ basic_screen.name }}</b>
+    {% endcall %}
 {% endmacro %}
 
 {% macro visibility(item, view, placement) %}
@@ -50,72 +283,58 @@
     {% if client.can_manage_screens %}
         <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-1">
-                {% if display_controller.assigned_object %}
-                    {{ components.button(
-                        _('Go to the display controller.'),
-                        icon='bi-eye',
-                        icon_only=true,
-                        size='sm',
-                        href=url_for(
-                            'user-display-controller',
-                            event_uniq_id=admin_event.uniq_id,
-                            display_controller_id=display_controller.id,
-                        ),
-                        attrs={'target': '_blank'},
-                    ) }}
-                {% endif %}
+                {{ components.button(
+                    _('Go to the channel.'),
+                    icon='bi-eye',
+                    icon_only=true,
+                    size='sm',
+                    href=url_for(
+                        'user-display-controller',
+                        event_uniq_id=admin_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                    ),
+                    attrs={'target': '_blank'},
+                ) }}
+                {{ components.modal_button(
+                    url_for('admin-display-controller-connect-modal', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
+                    _('Connect a device to this channel.'),
+                    icon='bi-qr-code',
+                    icon_only=true,
+                    size='sm',
+                ) }}
                 {% call components.menu_button(
-                    _('Assign a screen to the controller.'),
+                    _('Send a screen to this channel.'),
                     icon='bi-box-arrow-in-right',
                     icon_only=true,
                     size='sm',
                     class='d-inline-block',
                     toggle_class='dropdown-toggle',
                 ) %}
-                        {% for basic_screen in sorted_screens %}
-                            {% if loop.changed(basic_screen.type) %}
-                                {{ components.menu_header(basic_screen.type_str) }}
+                        {% set item_screens = display_controller.item_screens %}
+                        {% set item_families = display_controller.item_families %}
+                        {% set item_rotators = display_controller.item_rotators %}
+                        {% set item_menus = display_controller.item_menus %}
+                        {% set other_screens = display_controller.other_screens %}
+                        {% set other_families = display_controller.other_families %}
+                        {% set other_rotators = display_controller.other_rotators %}
+                        {% set other_menus = display_controller.other_menus %}
+                        {% set has_items = item_screens or item_families or item_rotators or item_menus %}
+                        {% set has_others = other_screens or other_families or other_rotators or other_menus %}
+                        {% if has_items %}
+                            {{ _assign_items(display_controller, item_screens, item_families, item_menus, item_rotators) }}
+                            {% if has_others %}
+                                {{ components.menu_divider() }}
+                                {% call components.submenu(_('Other screens'), icon='bi-three-dots') %}
+                                    {{ _assign_items(display_controller, other_screens, other_families, other_menus, other_rotators) }}
+                                {% endcall %}
                             {% endif %}
-                            {% call components.menu_item(
-                                basic_screen.name,
-                                attrs={
-                                    'hx-patch': url_for(
-                                        'admin-display-controller-assign',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        display_controller_id=display_controller.id,
-                                        type='screen',
-                                        object_uniq_id=basic_screen.uniq_id,
-                                    ),
-                                    'hx-indicator': '#please-wait',
-                                },
-                            ) %}
-                                {{ macros.screen_type_icon(basic_screen.screen_type) }} <b>{{ basic_screen.name }}</b>
-                            {% endcall %}
-                        {% endfor %}
-                        {% if admin_event.sorted_rotators and sorted_screens %}
-                            {{ components.menu_divider() }}
+                        {% else %}
+                            {{ _assign_items(display_controller, other_screens, other_families, other_menus, other_rotators) }}
                         {% endif %}
-                        {% for rotator in admin_event.sorted_rotators %}
-                            {% call components.menu_item(
-                                rotator.name,
-                                attrs={
-                                    'hx-patch': url_for(
-                                        'admin-display-controller-assign',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        display_controller_id=display_controller.id,
-                                        type='rotator',
-                                        object_uniq_id=rotator.name,
-                                    ),
-                                    'hx-indicator': '#please-wait',
-                                },
-                            ) %}
-                                {{ macros.rotator_icon() }} <b>{{ rotator.name }}</b>
-                            {% endcall %}
-                        {% endfor %}
                 {% endcall %}
                 {% if display_controller.assigned_object %}
                     {{ components.button(
-                        _('Remove the screen from the display controller.'),
+                        _('Remove the screen from the channel.'),
                         icon='close',
                         icon_only=true,
                         size='sm',
@@ -134,14 +353,14 @@
             <div class="d-flex align-items-center gap-1">
                 {{ components.modal_button(
                     url_for('admin-display-controller-modal', action='update', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
-                    _('Edit the properties of the display controller.'),
+                    _('Edit the properties of the channel.'),
                     icon='edit',
                     icon_only=true,
                     size='sm',
                 ) }}
                 {{ components.modal_button(
                     url_for('admin-display-controller-modal', action='delete', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
-                    _('Delete the display controller.'),
+                    _('Delete the channel.'),
                     kind='outline-danger',
                     icon='delete',
                     icon_only=true,

@@ -1,0 +1,43 @@
+{% extends '/common/base.html' %}
+
+{% block title %}{{ display_controller.name }}{% endblock %}
+
+{% block header %}
+    <div
+        id="user-screen-header"
+        class="header user-header user-screen-header"
+        data-page-title="{{ display_controller.name }}"
+        data-page-context="{{ user_event.name }}"
+    >
+        {% set refresh_conditions = "modalIsClosed()" ~ (" && document.visibilityState === 'visible'" if not DEVEL_ENV else '') %}
+        {% set becomes_visible = "visibilitychange[" ~ refresh_conditions ~ "] from:document," if not DEVEL_ENV else '' %}
+        {% if not request.query_params.get('preview') %}
+            <div
+                class="refresher display-controller-refresher"
+                hx-get="{{ url_for(
+                    'user-display-controller',
+                    event_uniq_id=user_event.uniq_id,
+                    display_controller_id=display_controller.id,
+                ) }}"
+                hx-trigger="{{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
+                hx-target="body"
+            ></div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block copyright %}{% endblock copyright %}
+
+{% block content %}
+    <div
+        class="d-flex flex-column align-items-center justify-content-center text-center gap-2 p-4 vh-100"
+        data-testid="display-controller-waiting"
+    >
+        <i class="bi-display fs-1 text-secondary"></i>
+        <div class="fs-2 fw-bold">{{ display_controller.name }}</div>
+        <div class="text-secondary">{{ user_event.name }}</div>
+        <div class="fs-5 mt-3">{{ _('Connected. Waiting for a screen…') }}</div>
+    </div>
+{% endblock content %}
+
+{% block footer %}{% endblock footer %}

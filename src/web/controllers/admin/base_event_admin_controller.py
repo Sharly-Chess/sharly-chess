@@ -6,13 +6,9 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _, pgettext
 from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
-from data.screens.display_controller import DisplayController
 from data.event import Event
 from plugins.manager import plugin_manager
-from data.screens.rotator import Rotator
-from data.screens.screen import Screen
 from data.tournament import Tournament
-from data.screens.manager import ScreenTypeManager
 from plugins.utils import NavDataTransferItem
 from utils.enum import (
     FormAction,
@@ -25,9 +21,10 @@ from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
     nav_count,
 )
+from web.controllers.base_controller import WebContext
 from web.guards import EventGuard
 from web.messages import Message
-from web.session import SessionPrintLastTournaments
+from web.session import SessionLastDisplayTab, SessionPrintLastTournaments
 from web.urls import data_transfer_item_url
 
 
@@ -160,106 +157,67 @@ class BaseEventAdminWebContext(AdminWebContext):
                 },
             }
         if self.client.can_manage_screens:
+            display_tabs: dict[str, dict[str, str | bool]] = {
+                'admin-event-display-controllers-tab': {
+                    'title': pgettext('with shortcut indication', 'Channels'),
+                    'name': _('Channels'),
+                    'icon_class': 'bi-box-arrow-in-right',
+                    'map_key': 'displays',
+                    'count': nav_count(len(event.display_controllers_by_id)),
+                    'template': 'display_controllers/tab.html',
+                    'shortcut': f'{pgettext("keyboard shortcut for the display controllers tab", "SC_N")} from:body',
+                },
+                'admin-event-screens-tab': {
+                    'title': pgettext('with shortcut indication', 'Screens'),
+                    'name': _('Screens'),
+                    'icon_class': 'bi-window',
+                    'map_key': 'screens',
+                    'count': nav_count(
+                        len(event.basic_screens_by_id) + len(event.families_by_id)
+                    ),
+                    'template': 'screens/tab.html',
+                    'shortcut': f'{pgettext("keyboard shortcut for the single screens tab", "SC_S")} from:body',
+                },
+                'admin-event-rotators-tab': {
+                    'title': pgettext('with shortcut indication', 'Rotators'),
+                    'name': _('Rotators'),
+                    'icon_class': 'bi-repeat',
+                    'map_key': 'rotators',
+                    'count': nav_count(len(event.rotators_by_id)),
+                    'template': 'rotators/tab.html',
+                    'shortcut': f'{pgettext("keyboard shortcut for the rotators tab", "SC_R")} from:body',
+                },
+                'admin-event-menus-tab': {
+                    'title': _('Menus'),
+                    'name': _('Menus'),
+                    'icon_class': 'bi-list-nested',
+                    'map_key': 'menus',
+                    'count': nav_count(len(event.menus_by_id)),
+                    'template': 'menus/tab.html',
+                },
+                'admin-event-timers-tab': {
+                    'title': _('Timers'),
+                    'name': _('Timers'),
+                    'icon_class': 'bi-clock',
+                    'map_key': 'timers',
+                    'count': nav_count(len(event.timers_by_id)),
+                    'template': 'timers/tab.html',
+                },
+            }
             nav_tabs |= {
                 'admin-event-views': {
-                    'title': _('Screens'),
+                    'title': _('Display'),
                     'icon_class': 'bi-display',
-                    'submenu': {
-                        'admin-event-screens-tab': {
-                            'title': pgettext(
-                                'with shortcut indication', 'Single Screens'
-                            ),
-                            'count': nav_count(len(event.basic_screens_by_id)),
-                            'template': 'screens/tab.html',
-                            'shortcut': f'{pgettext("keyboard shortcut for the single screens tab", "SC_S")} from:body',
-                        },
-                        'admin-event-families-tab': {
-                            'title': pgettext(
-                                'with shortcut indication', 'Multi-Screens'
-                            ),
-                            'count': nav_count(len(event.families_by_id)),
-                            'template': 'families/tab.html',
-                            'shortcut': f'{pgettext("keyboard shortcut for the multi-screens tab", "SC_M")} from:body',
-                        },
-                        'admin-event-menus-tab': {
-                            'title': _('Menus'),
-                            'count': nav_count(len(event.menus_by_id)),
-                            'template': 'menus/tab.html',
-                        },
-                        'admin-event-rotators-tab': {
-                            'title': pgettext('with shortcut indication', 'Rotators'),
-                            'count': nav_count(len(event.rotators_by_id)),
-                            'template': 'rotators/tab.html',
-                            'shortcut': f'{pgettext("keyboard shortcut for the rotators tab", "SC_R")} from:body',
-                        },
-                        'admin-event-timers-tab': {
-                            'title': _('Timers'),
-                            'count': nav_count(len(event.timers_by_id)),
-                            'template': 'timers/tab.html',
-                        },
-                        'admin-event-display-controllers-tab': {
-                            'title': pgettext(
-                                'with shortcut indication', 'Display controllers'
-                            ),
-                            'count': nav_count(len(event.display_controllers_by_id)),
-                            'template': 'display_controllers/tab.html',
-                            'shortcut': f'{pgettext("keyboard shortcut for the display controllers tab", "SC_I")} from:body',
-                        },
-                    },
+                    'submenu': display_tabs,
+                    'switcher_target': self._last_display_tab(event, display_tabs),
                 },
             }
         elif self.client.can_view_public_screens:
-            sorted_screens_by_screen_type: dict[str, list[Screen]]
-            rotators: list[Rotator]
-            display_controllers: list[DisplayController]
-            if self.client.can_view_private_screens:
-                sorted_screens_by_screen_type = event.sorted_screens_by_screen_type
-                rotators = event.sorted_rotators
-                display_controllers = event.sorted_display_controllers
-            else:
-                sorted_screens_by_screen_type = (
-                    event.sorted_public_screens_by_screen_type
-                )
-                rotators = event.public_sorted_rotators
-                display_controllers = event.sorted_public_display_controllers
-            for screen_type in ScreenTypeManager(event).objects():
-                screens = sorted_screens_by_screen_type[screen_type.id]
-                nav_tabs[f'admin-event-{screen_type.id}-screens-tab'] = {
-                    'title': screen_type.name,
-                    'count': nav_count(len(screens)),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': screen_type.icon_str,
-                }
-            # The Menus tab is a staff/config view; hide it from public
-            # (network) viewers who can only see public screens.
-            if self.client.can_view_private_screens:
-                menus = event.sorted_menus
-                nav_tabs |= {
-                    'admin-event-menus-tab': {
-                        'title': _('Menus'),
-                        'count': nav_count(len(menus)),
-                        'template': 'menus/tab.html',
-                        'disabled': not menus,
-                        'icon_class': 'bi-list-nested',
-                    },
-                }
             nav_tabs |= {
-                'admin-event-rotators-tab': {
-                    'title': _('Rotators'),
-                    'count': nav_count(len(rotators)),
-                    'template': 'rotators/tab.html',
-                    'disabled': not rotators,
-                    'icon_class': 'bi-repeat',
-                },
-            }
-            nav_tabs |= {
-                'admin-event-display-controllers-tab': {
-                    'title': _('Display controllers'),
-                    'count': nav_count(len(display_controllers)),
-                    'template': 'display_controllers/tab.html',
-                    'disabled': not display_controllers,
-                    'icon_class': 'bi-box-arrow-in-right',
+                'admin-event-display-tab': {
+                    'title': _('Display'),
+                    'template': 'screens/display_tab.html',
+                    'icon_class': 'bi-display',
                 },
             }
         if self.client.can_manage_accounts:
@@ -312,7 +270,24 @@ class BaseEventAdminWebContext(AdminWebContext):
             'messages': Message.messages(self.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
+            # With only the display page to offer, the page goes without a
+            # side menu.
+            'display_only': list(nav_tabs) == ['admin-event-display-tab']
+            and not self.client.can_generate_documents
+            and not self.client.can_manage_source_databases
+            and not self.client.can_manage_application_settings,
         }
+
+    def _last_display_tab(self, event: Event, display_tabs: dict[str, Any]) -> str:
+        """The display tab the Display entry of the side menu opens: the one
+        being shown, else the last one opened, else the screens."""
+        last_display_tab = SessionLastDisplayTab(self.request, event)
+        route_name = self.request.route_handler.name
+        if route_name in display_tabs:
+            last_display_tab.set(route_name)
+            return route_name
+        stored = last_display_tab.get()
+        return stored if stored in display_tabs else 'admin-event-screens-tab'
 
     def get_tournament_options(
         self, tournaments: list[Tournament] | None = None
@@ -357,6 +332,35 @@ class BaseEventAdminController(BaseAdminController):
     # Litestar declares `guards` on `Controller` as an instance variable, so
     # it cannot be narrowed to a class variable here.
     guards = [EventGuard()]  # noqa: RUF012
+
+    @staticmethod
+    def _display_controller_destination_context(event: Event) -> dict[str, Any]:
+        """The display controllers the destination field of the modals offers."""
+        return {
+            'display_controller_destination_options': {
+                str(display_controller.id): display_controller.name
+                for display_controller in event.sorted_display_controllers
+            },
+        }
+
+    @staticmethod
+    def _read_display_controller_ids(
+        data: dict[str, str],
+        errors: dict[str, str],
+        event: Event,
+    ) -> list[int]:
+        field = 'display_controller_ids'
+        try:
+            display_controller_ids = list(
+                dict.fromkeys(WebContext.form_data_to_list_int(data, field))
+            )
+        except ValueError:
+            errors[field] = _('Invalid value.')
+            return []
+        if not set(display_controller_ids) <= set(event.display_controllers_by_id):
+            errors[field] = _('Invalid value.')
+            return []
+        return display_controller_ids
 
     @classmethod
     def _admin_base_event_render(

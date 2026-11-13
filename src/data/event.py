@@ -80,6 +80,8 @@ class Event:
         # Seen as the public sees it, on the screens and the online services:
         # a round paired but not published yet is not there.
         self.public_view: bool = public_view
+        # The tournaments shown with made-up data (see data.screens.fake_data).
+        self.fake_tournament_ids: set[int] = set()
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -333,6 +335,19 @@ class Event:
         """Whether the ratings of the players are checked against the
         rating lists unasked (VCL Q138–140)."""
         return self.stored_event.check_ratings
+
+    @property
+    def tournaments_for_fake_data(self) -> list[Tournament]:
+        """The tournaments the screens can show fake data for."""
+        from data.screens.fake_data import tournaments_for_fake_data
+
+        return tournaments_for_fake_data(self)
+
+    @property
+    def screens_fake_data(self) -> bool:
+        """Whether the screens show made-up pairings and results for the
+        tournaments that have not started, to set them up."""
+        return self.stored_event.screens_fake_data
 
     @property
     def allow_multi_tournament_players(self) -> bool:
@@ -1272,6 +1287,21 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_rotator(stored_rotator)
 
+    def set_rotator_display_controllers(
+        self, rotator_id: int, display_controller_ids: list[int]
+    ) -> None:
+        with EventDatabase(self.uniq_id, True) as database:
+            database.set_stored_rotator_display_controllers(
+                rotator_id, display_controller_ids
+            )
+        for display_controller in self.display_controllers:
+            stored = display_controller.stored_display_controller
+            stored.item_rotator_ids = [
+                item_id for item_id in stored.item_rotator_ids if item_id != rotator_id
+            ]
+            if display_controller.id in display_controller_ids:
+                stored.item_rotator_ids.append(rotator_id)
+
     def delete_rotator(self, rotator: Rotator) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_rotator(rotator.id)
@@ -1319,6 +1349,21 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_menu(stored_menu)
 
+    def set_menu_display_controllers(
+        self, menu_id: int, display_controller_ids: list[int]
+    ) -> None:
+        with EventDatabase(self.uniq_id, True) as database:
+            database.set_stored_menu_display_controllers(
+                menu_id, display_controller_ids
+            )
+        for display_controller in self.display_controllers:
+            stored = display_controller.stored_display_controller
+            stored.item_menu_ids = [
+                item_id for item_id in stored.item_menu_ids if item_id != menu_id
+            ]
+            if display_controller.id in display_controller_ids:
+                stored.item_menu_ids.append(menu_id)
+
     def delete_menu(self, menu: Menu) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_menu(menu.id)
@@ -1327,29 +1372,9 @@ class Event:
         if menu.id in self.menus_by_id:
             del self.menus_by_id[menu.id]
 
-    @property
-    def menu_claimed_screen_types(self) -> set[str]:
-        """Screen types already used as an 'all screens of this type' item
-        in some menu. A screen may only belong to a single menu."""
-        return {
-            screen_type
-            for menu in self.menus_by_id.values()
-            for screen_type in menu.screen_types
-        }
-
-    @property
-    def menu_claimed_screen_ids(self) -> set[int]:
-        """Ids of screens added individually to some menu."""
-        return {
-            screen.id for menu in self.menus_by_id.values() for screen in menu.screens
-        }
-
-    @property
-    def menu_claimed_family_ids(self) -> set[int]:
-        """Ids of families added to some menu."""
-        return {
-            family.id for menu in self.menus_by_id.values() for family in menu.families
-        }
+    def menus_for(self, include_private: bool) -> list[Menu]:
+        """The menus with something a viewer can reach."""
+        return [menu for menu in self.sorted_menus if menu.screens_for(include_private)]
 
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:
@@ -1392,7 +1417,7 @@ class Event:
         """Returns the first unused display controller name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         return Utils.get_unused_item_name(
-            base_name or _('New display controller'),
+            base_name or _('New channel'),
             [
                 display_controller.name
                 for display_controller in self.display_controllers

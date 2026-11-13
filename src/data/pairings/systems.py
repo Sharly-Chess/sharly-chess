@@ -22,6 +22,20 @@ if TYPE_CHECKING:
     )
     from data.tournament import Tournament
     from data.event import Event
+    from data.player import TournamentPlayer
+
+#: A board of an example round: the higher-ranked player, and the
+#: lower-ranked one or ``None`` for a bye.
+type ExamplePair = tuple[TournamentPlayer, TournamentPlayer | None]
+
+
+def fold_pairs(players: list[TournamentPlayer]) -> list[ExamplePair]:
+    """The first against the last, the second against the one before, and so
+    on, the first player getting the bye of an odd number."""
+    if len(players) % 2:
+        return [*fold_pairs(players[1:]), (players[0], None)]
+    count = len(players)
+    return [(players[index], players[count - 1 - index]) for index in range(count // 2)]
 
 
 @cache
@@ -115,6 +129,24 @@ def swiss_style_permission_handler(
 class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     """Abstract class representing all the different pairing systems.
     Each system can have different variations."""
+
+    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
+        """A first round as the system would pair it among *players*, sorted
+        by starting rank, to show on the screens before the real one: the top
+        half against the bottom half, the last player getting the bye of an
+        odd number."""
+        half = len(players) // 2
+        pairs: list[ExamplePair] = [
+            (players[index], players[half + index]) for index in range(half)
+        ]
+        if len(players) % 2:
+            pairs.append((players[-1], None))
+        return pairs
+
+    @property
+    def example_draws(self) -> bool:
+        """Whether the example results include draws."""
+        return True
 
     @abstractmethod
     def variation_manager(self, event: Event) -> EntityManager[PV]:
@@ -380,7 +412,7 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     def uses_team_letters(self) -> bool:
         """Whether teams are conventionally identified by a letter
         (``A``, ``B``, …) rather than a numeric pairing number. True for
-        the fixed-schedule team systems (round-robin Berger grids, Molter
+        the fixed-schedule team systems (round-robin grids, Molter
         tables), which present teams alphabetically. Default False."""
         return False
 
@@ -460,6 +492,10 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
 
 
 class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
+    @override
+    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
+        return fold_pairs(players)
+
     @property
     @override
     def supports_adjourned_games(self) -> bool:
@@ -663,7 +699,7 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
     @property
     @override
     def uses_team_letters(self) -> bool:
-        # Teams appear as letters (A, B, …) in the Berger grid.
+        # Teams appear as letters (A, B, …) in the round-robin grid.
         return True
 
     @property

@@ -19,14 +19,14 @@
                 display_controller_id=display_controller.id,
                 tournament_id=tournament.id,
                 board_id=board.identifier
-            ) if display_controller else url_for(
+            ) ~ display_controller_query if display_controller else url_for(
                 'user-result-modal',
                 is_screen=1,
                 event_uniq_id=user_event.uniq_id,
                 screen_uniq_id=screen.uniq_id,
                 tournament_id=tournament.id,
                 board_id=board.identifier
-            ) %}
+            ) ~ menu_query %}
         {% endif %}
         <div
             id="tournament-{{ tournament.id }}-board-{{ board.id }}-card"

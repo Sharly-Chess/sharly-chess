@@ -239,7 +239,7 @@ def test_unpublished_pairings_shown_on_screens_are_flagged(
         EVENT_ID,
         'boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     pair_round(http, tournament, 1)
     assert EVENT.tournament().shown_on_screens
@@ -267,7 +267,7 @@ def test_results_wait_for_the_round_shown_on_screens_to_be_published(
         EVENT_ID,
         'boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     pair_round(http, tournament, 1)
     enter_result(http, tournament, 1)
@@ -303,7 +303,7 @@ def test_every_result_waits_for_the_round_shown_on_screens_to_be_published(
         EVENT_ID,
         'boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     pair_round(http, tournament, 1)
     assert enabled_results(http, tournament, 1) == set()
@@ -351,7 +351,7 @@ def test_only_the_next_round_robin_round_to_publish_is_flagged(
         EVENT_ID,
         'boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': round_robin.id},
+        {'init_set_tournament_ids': [round_robin.id]},
     )
     http.post(f'/pairings/unpair-tournament/{EVENT_ID}/{round_robin.id}')
     http.post(f'/pairings/generate/{EVENT_ID}/{round_robin.id}')

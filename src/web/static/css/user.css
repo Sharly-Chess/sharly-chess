@@ -34,6 +34,47 @@
     white-space: nowrap;
 }
 
+.round-robin-grid-screen-set thead th {
+    background-color: #212529;
+    color: white;
+}
+/* The names take the width left over, so that the squares of the grid
+   keep the same size whatever the width of the screen. */
+.round-robin-grid .name-column {
+    width: 100%;
+}
+.round-robin-grid .grid-cell {
+    min-width: 3em;
+    border-left: 1px solid rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+/* A player's own square, where the diagonal of the grid runs. */
+.round-robin-grid .grid-self {
+    box-shadow: inset 0 0 0 9999px #9aa0a6;
+}
+/* Detailed by player, each team's block of rows and columns is set apart. */
+.round-robin-grid tr.grid-team-start > td {
+    border-top: 2px solid var(--screen-ink);
+}
+.round-robin-grid .grid-team-start.grid-cell {
+    border-left: 2px solid var(--screen-ink);
+}
+/* An encounter still to play: the round it is played in. */
+.round-robin-grid .grid-round {
+    color: var(--screen-ink-secondary);
+    font-size: 0.75em;
+    font-style: italic;
+}
+
+/* The members of a team, under its name on the check-in screens. */
+.check-in-set .team-members {
+    padding-left: 1.6em;
+    color: var(--screen-ink-secondary);
+    font-size: 0.85em;
+    font-weight: normal;
+    white-space: normal;
+}
+
 .user-screen-content {
     --font-size: 100;
     font-size: calc(var(--font-size) * 1%)
@@ -476,22 +517,22 @@ body:has(#screen-exit-button) .alert-message {
     font-size: 0.8em;
     color: #777;
 }
-.input-screen .board-row.editable {
+.input-screen :is(.board-row, .player-row).editable {
     cursor: pointer;
 }
 /* A touch screen keeps a tapped row in its hover state, so only a mouse gets
    the hover colours. */
 @media (hover: hover) {
-    .input-screen .board-row.result-not-set:hover, .input-screen .grid-striped>.board-row.result-not-set:hover > div {
+    .input-screen :is(.board-row, .player-row).result-not-set:hover, .input-screen .grid-striped>:is(.board-row, .player-row).result-not-set:hover > div {
         background-color: yellow;
     }
-    .input-screen .board-row.result-set:hover, .input-screen .grid-striped>.board-row.result-set:hover > div {
+    .input-screen :is(.board-row, .player-row).result-set:hover, .input-screen .grid-striped>:is(.board-row, .player-row).result-set:hover > div {
         background-color: #ffffcc;
     }
-    .input-screen .board-row.special-results-allowed.result-not-set:hover, .input-screen .grid-striped>.board-row.special-results-allowed.result-not-set:hover > div {
+    .input-screen :is(.board-row, .player-row).special-results-allowed.result-not-set:hover, .input-screen .grid-striped>:is(.board-row, .player-row).special-results-allowed.result-not-set:hover > div {
         background-color: #ffc500;
     }
-    .input-screen .board-row.special-results-allowed.result-set:hover .input-screen .grid-striped>.board-row.special-results-allowed.result-set:hover > div {
+    .input-screen :is(.board-row, .player-row).special-results-allowed.result-set:hover .input-screen .grid-striped>:is(.board-row, .player-row).special-results-allowed.result-set:hover > div {
         background-color: #fff2cd;
     }
 }
@@ -501,11 +542,11 @@ body:has(#screen-exit-button) .alert-message {
 }
 /* The last entry made on a screen stays highlighted for a while, so whoever
    made it can see it went through. */
-.grid-striped > .board-row.last_result_updated > * {
+.grid-striped > :is(.board-row, .player-row).last_result_updated > * {
     background-color: #d4edde !important;
     color: var(--screen-ink) !important;
 }
-.grid-striped > .board-row.last_result_updated > :first-child {
+.grid-striped > :is(.board-row, .player-row).last_result_updated > :first-child {
     box-shadow: inset 5px 0 0 #0f6e3a;
 }
 .player-cell.last_illegal_move_updated,
@@ -526,20 +567,20 @@ body:has(#screen-exit-button) .alert-message {
 /* Rows a little taller than on the pairings screens, to tap on a tablet
    without losing too many games below the fold. The games still to enter
    stand out with an "Enter" button; the others step back. */
-.input-screen .grid-striped .board-row > div {
+.input-screen .grid-striped :is(.board-row, .player-row) > div {
     padding-top: 0.45rem;
     padding-bottom: 0.45rem;
 }
-.input-screen .board-row.editable {
+.input-screen :is(.board-row, .player-row).editable {
     touch-action: manipulation;
 }
-.input-screen .board-row.editable:active > div {
+.input-screen :is(.board-row, .player-row).editable:active > div {
     background-color: yellow;
 }
-.input-screen .grid-striped .board-row.result-set > div {
+.input-screen .grid-striped :is(.board-row, .player-row).result-set > div {
     color: #5b6370;
 }
-.input-screen .grid-striped .board-row.result-set > .score {
+.input-screen .grid-striped :is(.board-row, .player-row).result-set > .score {
     color: var(--screen-ink);
     font-weight: 800;
 }
@@ -762,7 +803,7 @@ body:has(#screen-exit-button) .alert-message {
         padding-top: 0.515em;
         padding-bottom: 0.515em;
     }
-    .input-screen .grid-striped .board-row > div {
+    .input-screen .grid-striped :is(.board-row, .player-row) > div {
         padding-top: calc(0.45rem + 0.415em);
         padding-bottom: calc(0.45rem + 0.415em);
         text-box-trim: trim-both;
@@ -877,4 +918,21 @@ body:has(#screen-exit-button) .alert-message {
     font-size: 2.2rem;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+}
+
+/* Over a screen showing made-up data while it is being set up. */
+.fake-data-notice {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1050;
+    transform: translate(-50%, -50%);
+    padding: .6rem 1.4rem;
+    border-radius: 1rem;
+    background-color: #FFC425;
+    color: #101418;
+    font-size: 1.4rem;
+    font-weight: 800;
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .25);
+    pointer-events: none;
 }

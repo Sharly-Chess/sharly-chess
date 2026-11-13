@@ -522,7 +522,7 @@
 {% macro empty_state(title, class='') -%}
     {%- set content = caller() if caller is defined else none -%}
     <div class="admin-empty-state mx-auto{% if class %} {{ class }}{% endif %}">
-        <h5>{{ title }}</h5>
+        {%- if title %}<h5>{{ title }}</h5>{% endif %}
         {%- if content %}{{ content }}{% endif -%}
     </div>
 {%- endmacro %}

@@ -489,7 +489,9 @@ class StoredScreen:
     menu_text: str | None
     timer_id: int | None
     input_exit_button: bool | None = None
+    accepts_input: bool = False
     boards_hide_players: bool | None = None
+    check_in_show_members: bool = False
     players_show_unpaired: bool | None = None
     players_player_format: int | None = None
     players_board_format: int | None = None
@@ -503,6 +505,9 @@ class StoredScreen:
     ranking_round: int | None = None
     ranking_min_points: float | None = None
     ranking_max_points: float | None = None
+    ranking_hidden_columns: list[str] = field(default_factory=list[str])
+    round_robin_grid_by_rank: bool = False
+    round_robin_grid_players: bool = False
     stored_screen_sets: list[StoredScreenSet] = field(
         default_factory=list[StoredScreenSet]
     )
@@ -514,7 +519,7 @@ class StoredScreen:
         default_factory=dict[str, dict[str, Any]]
     )
     errors: dict[str, str] = field(default_factory=dict[str, str])
-    init_set_tournament_id: int | None = None
+    init_set_tournament_ids: list[int] = field(default_factory=list[int])
 
 
 @dataclass
@@ -529,7 +534,9 @@ class StoredFamily:
     menu_text: str
     timer_id: int | None
     input_exit_button: bool | None = None
+    accepts_input: bool = False
     boards_hide_players: bool | None = None
+    check_in_show_members: bool = False
     players_show_unpaired: bool | None = None
     players_player_format: int | None = None
     players_board_format: int | None = None
@@ -538,10 +545,12 @@ class StoredFamily:
     ranking_round: int | None = None
     ranking_min_points: float | None = None
     ranking_max_points: float | None = None
+    ranking_hidden_columns: list[str] = field(default_factory=list[str])
     first: int | None = None
     last: int | None = None
     parts: int | None = None
     number: int | None = None
+    page_delay: int | None = None
     fixed_board_order: str | None = None
     public: bool = True
     message_default: bool = True
@@ -601,6 +610,13 @@ class StoredDisplayController:
     public: bool = True
     screen_id: int | None = None
     rotator_id: int | None = None
+    family_id: int | None = None
+    family_page: int | None = None
+    menu_id: int | None = None
+    item_screen_ids: list[int] = field(default_factory=list[int])
+    item_family_ids: list[int] = field(default_factory=list[int])
+    item_rotator_ids: list[int] = field(default_factory=list[int])
+    item_menu_ids: list[int] = field(default_factory=list[int])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -665,6 +681,7 @@ class BaseStoredEvent:
     allow_multi_tournament_players: bool = True
     event_type: EventType = EventType.INDIVIDUAL
     check_ratings: bool = True
+    screens_fake_data: bool = False
     #: The snapshots of the rating lists, by list, the arbiter last
     #: dismissed the findings of the ratings check for.
     ratings_check_dismissed: dict[str, float] = field(default_factory=dict)

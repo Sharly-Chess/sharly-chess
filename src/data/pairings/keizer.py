@@ -26,7 +26,7 @@ from data.pairings.settings import (
     KeizerStartAttributionSetting,
     PairingSetting,
 )
-from data.pairings.systems import PairingSystem, SwissPairingSystem
+from data.pairings.systems import ExamplePair, PairingSystem, SwissPairingSystem
 from data.pairings.variations import PairingVariation
 from data.permissions import PairingAction, PermissionHandler
 from database.sqlite.event.event_store import StoredBoard
@@ -191,6 +191,17 @@ class KeizerScorer:
 
 
 class KeizerPairingSystem(PairingSystem['KeizerVariation']):
+    @override
+    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
+        # Keizer pairs neighbours in the ranking.
+        pairs: list[ExamplePair] = [
+            (players[index], players[index + 1])
+            for index in range(0, len(players) - 1, 2)
+        ]
+        if len(players) % 2:
+            pairs.append((players[-1], None))
+        return pairs
+
     @staticmethod
     def static_id() -> str:
         return 'KEIZER'

@@ -1,0 +1,25 @@
+{% set input_type = family_type if family_type is defined and family_type else screen_type %}
+<div class="row gy-2 gx-3 mb-2 screen-input-fields">
+    <div class="col-12 col-md-6">
+        {{ admin_macros.switch_input(
+            name='accepts_input',
+            placeholder=input_type.input_label,
+            tooltip_text=_('A screen that accepts input cannot go through a rotator, so that it does not change under someone using it.'),
+            label='',
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6 screen-input-exit-button">
+        {% include '/admin/common/modal/exit_button.html' %}
+    </div>
+</div>
+<script>
+    (() => {
+        const fields = document.currentScript.previousElementSibling;
+        const accepts = fields.querySelector('[name="accepts_input"]');
+        const exitButton = fields.querySelector('.screen-input-exit-button');
+        const apply = () => exitButton.classList.toggle('d-none', !accepts.checked);
+        accepts.addEventListener('change', apply);
+        apply();
+    })();
+</script>

@@ -495,8 +495,8 @@ class ArbiterNormSigneePrintOption(PrintOption[int | None]):
         return _('Select the signee')
 
 
-class TeamBergerGridPlayersPrintOption(PrintOption[bool]):
-    """If on, the team Berger grid details down to the players: one row
+class TeamRoundRobinGridPlayersPrintOption(PrintOption[bool]):
+    """If on, the team round-robin grid details down to the players: one row
     per player (grouped by team), individual game results in the
     cells."""
 

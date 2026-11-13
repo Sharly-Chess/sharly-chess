@@ -408,6 +408,9 @@ class EventDatabase(MigrationDatabase):
             check_ratings=self.load_bool_from_database_field(
                 row.get('check_ratings', 1)
             ),
+            screens_fake_data=self.load_bool_from_database_field(
+                row.get('screens_fake_data', 0)
+            ),
             ratings_check_dismissed=self.load_json_from_database_field(
                 row.get('ratings_check_dismissed') or None, {}
             ),
@@ -463,6 +466,12 @@ class EventDatabase(MigrationDatabase):
         metadata.family_count = self._get_table_count('family')
         metadata.rotator_count = self._get_table_count('rotator')
         return metadata
+
+    def set_screens_fake_data(self, screens_fake_data: bool) -> None:
+        self.execute(
+            'UPDATE `info` SET `screens_fake_data` = ?',
+            (int(screens_fake_data),),
+        )
 
     def set_ratings_check_dismissed(self, list_versions: dict[str, float]) -> None:
         self.execute(
@@ -2674,8 +2683,12 @@ class EventDatabase(MigrationDatabase):
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
+            accepts_input=cls.load_bool_from_database_field(row['accepts_input']),
             boards_hide_players=cls.load_bool_or_none_from_database_field(
                 row['boards_hide_players']
+            ),
+            check_in_show_members=cls.load_bool_from_database_field(
+                row['check_in_show_members']
             ),
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
@@ -2689,6 +2702,9 @@ class EventDatabase(MigrationDatabase):
             ranking_round=row['ranking_round'],
             ranking_min_points=row['ranking_min_points'],
             ranking_max_points=row['ranking_max_points'],
+            ranking_hidden_columns=cls.load_json_from_database_field(
+                row['ranking_hidden_columns'], []
+            ),
             columns=row['columns'],
             font_size=row['font_size'],
             menu_text=row['menu_text'],
@@ -2696,6 +2712,7 @@ class EventDatabase(MigrationDatabase):
             first=row['first'],
             last=row['last'],
             parts=row['parts'],
+            page_delay=row['page_delay'],
             number=row['number'],
             fixed_board_order=row.get('fixed_board_order'),
             message_default=cls.load_bool_from_database_field(row['message_default']),
@@ -2735,7 +2752,9 @@ class EventDatabase(MigrationDatabase):
             'menu_text',
             'timer_id',
             'input_exit_button',
+            'accepts_input',
             'boards_hide_players',
+            'check_in_show_members',
             'players_show_unpaired',
             'players_player_format',
             'players_board_format',
@@ -2744,9 +2763,11 @@ class EventDatabase(MigrationDatabase):
             'ranking_round',
             'ranking_min_points',
             'ranking_max_points',
+            'ranking_hidden_columns',
             'first',
             'last',
             'parts',
+            'page_delay',
             'number',
             'fixed_board_order',
             'message_default',
@@ -2764,7 +2785,9 @@ class EventDatabase(MigrationDatabase):
             stored_family.menu_text,
             stored_family.timer_id,
             stored_family.input_exit_button,
+            stored_family.accepts_input,
             stored_family.boards_hide_players,
+            stored_family.check_in_show_members,
             stored_family.players_show_unpaired,
             stored_family.players_player_format,
             stored_family.players_board_format,
@@ -2773,9 +2796,11 @@ class EventDatabase(MigrationDatabase):
             stored_family.ranking_round,
             stored_family.ranking_min_points,
             stored_family.ranking_max_points,
+            self.dump_to_json_database_field(stored_family.ranking_hidden_columns, []),
             stored_family.first,
             stored_family.last,
             stored_family.parts,
+            stored_family.page_delay,
             stored_family.number,
             stored_family.fixed_board_order,
             stored_family.message_default,
@@ -2846,8 +2871,12 @@ class EventDatabase(MigrationDatabase):
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
             ),
+            accepts_input=cls.load_bool_from_database_field(row['accepts_input']),
             boards_hide_players=cls.load_bool_or_none_from_database_field(
                 row['boards_hide_players']
+            ),
+            check_in_show_members=cls.load_bool_from_database_field(
+                row['check_in_show_members']
             ),
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
@@ -2866,6 +2895,15 @@ class EventDatabase(MigrationDatabase):
             ranking_round=row['ranking_round'],
             ranking_min_points=row['ranking_min_points'],
             ranking_max_points=row['ranking_max_points'],
+            ranking_hidden_columns=cls.load_json_from_database_field(
+                row['ranking_hidden_columns'], []
+            ),
+            round_robin_grid_by_rank=cls.load_bool_from_database_field(
+                row['round_robin_grid_by_rank']
+            ),
+            round_robin_grid_players=cls.load_bool_from_database_field(
+                row['round_robin_grid_players']
+            ),
             background_image=row['background_image'],
             background_color=row['background_color'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
@@ -2947,7 +2985,9 @@ class EventDatabase(MigrationDatabase):
             'type',
             'public',
             'input_exit_button',
+            'accepts_input',
             'boards_hide_players',
+            'check_in_show_members',
             'players_show_unpaired',
             'players_player_format',
             'players_board_format',
@@ -2963,6 +3003,9 @@ class EventDatabase(MigrationDatabase):
             'ranking_round',
             'ranking_min_points',
             'ranking_max_points',
+            'ranking_hidden_columns',
+            'round_robin_grid_by_rank',
+            'round_robin_grid_players',
             'background_image',
             'background_color',
             'message_default',
@@ -2976,11 +3019,15 @@ class EventDatabase(MigrationDatabase):
             stored_screen.type,
             stored_screen.public,
             stored_screen.input_exit_button
-            if stored_screen.type in ('input', 'check-in')
+            if stored_screen.type in ('boards', 'players', 'check-in')
             else None,
+            stored_screen.accepts_input,
             stored_screen.boards_hide_players
             if stored_screen.type == 'boards'
             else None,
+            stored_screen.check_in_show_members
+            if stored_screen.type == 'check-in'
+            else False,
             stored_screen.players_show_unpaired
             if stored_screen.type == 'players'
             else None,
@@ -3012,6 +3059,15 @@ class EventDatabase(MigrationDatabase):
             stored_screen.ranking_max_points
             if stored_screen.type == 'ranking'
             else None,
+            self.dump_to_json_database_field(stored_screen.ranking_hidden_columns, [])
+            if stored_screen.type in ('ranking', 'round-robin-grid')
+            else None,
+            stored_screen.round_robin_grid_by_rank
+            if stored_screen.type == 'round-robin-grid'
+            else False,
+            stored_screen.round_robin_grid_players
+            if stored_screen.type == 'round-robin-grid'
+            else False,
             background_image,
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,
@@ -3491,8 +3547,35 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             screen_id=row['screen_id'],
             rotator_id=row['rotator_id'],
+            family_id=row['family_id'],
+            family_page=row['family_page'],
+            menu_id=row['menu_id'],
             public=cls.load_bool_from_database_field(row['public']),
         )
+
+    def _load_display_controller_items(
+        self, stored_display_controller: StoredDisplayController
+    ) -> StoredDisplayController:
+        self.execute(
+            'SELECT `screen_id`, `family_id`, `rotator_id`, `menu_id` '
+            'FROM `display_controller_item` '
+            'WHERE `display_controller_id` = ? ORDER BY `id`',
+            (stored_display_controller.id,),
+        )
+        rows = list(self.fetchall())
+        stored_display_controller.item_screen_ids = [
+            row['screen_id'] for row in rows if row['screen_id'] is not None
+        ]
+        stored_display_controller.item_family_ids = [
+            row['family_id'] for row in rows if row['family_id'] is not None
+        ]
+        stored_display_controller.item_rotator_ids = [
+            row['rotator_id'] for row in rows if row['rotator_id'] is not None
+        ]
+        stored_display_controller.item_menu_ids = [
+            row['menu_id'] for row in rows if row['menu_id'] is not None
+        ]
+        return stored_display_controller
 
     def get_stored_display_controller(
         self, display_controller_id: int
@@ -3503,7 +3586,9 @@ class EventDatabase(MigrationDatabase):
         )
         row: dict[str, Any]
         if row := self.fetchone():
-            return self._row_to_stored_display_controller(row)
+            return self._load_display_controller_items(
+                self._row_to_stored_display_controller(row)
+            )
         return None
 
     def load_stored_display_controllers(
@@ -3513,7 +3598,109 @@ class EventDatabase(MigrationDatabase):
             'SELECT * FROM `display_controller` ORDER BY `name`',
             (),
         )
-        yield from map(self._row_to_stored_display_controller, self.fetchall())
+        stored_display_controllers = list(
+            map(self._row_to_stored_display_controller, self.fetchall())
+        )
+        for stored_display_controller in stored_display_controllers:
+            yield self._load_display_controller_items(stored_display_controller)
+
+    def set_stored_display_controller_items(
+        self,
+        display_controller_id: int,
+        screen_ids: list[int],
+        family_ids: list[int],
+        rotator_ids: list[int],
+        menu_ids: list[int],
+    ) -> None:
+        self.execute(
+            'DELETE FROM `display_controller_item` WHERE `display_controller_id` = ?',
+            (display_controller_id,),
+        )
+        for rotator_id in rotator_ids:
+            self.add_stored_display_controller_rotator(
+                display_controller_id, rotator_id
+            )
+        for menu_id in menu_ids:
+            self.execute(
+                'INSERT INTO `display_controller_item`'
+                '(`display_controller_id`, `menu_id`) VALUES (?, ?)',
+                (display_controller_id, menu_id),
+            )
+        for screen_id in screen_ids:
+            self.execute(
+                'INSERT INTO `display_controller_item`'
+                '(`display_controller_id`, `screen_id`) VALUES (?, ?)',
+                (display_controller_id, screen_id),
+            )
+        for family_id in family_ids:
+            self.execute(
+                'INSERT INTO `display_controller_item`'
+                '(`display_controller_id`, `family_id`) VALUES (?, ?)',
+                (display_controller_id, family_id),
+            )
+
+    def add_stored_display_controller_rotator(
+        self, display_controller_id: int, rotator_id: int
+    ) -> None:
+        self.execute(
+            'INSERT OR IGNORE INTO `display_controller_item`'
+            '(`display_controller_id`, `rotator_id`) VALUES (?, ?)',
+            (display_controller_id, rotator_id),
+        )
+
+    def set_stored_rotator_display_controllers(
+        self, rotator_id: int, display_controller_ids: list[int]
+    ) -> None:
+        self.execute(
+            'DELETE FROM `display_controller_item` WHERE `rotator_id` = ?',
+            (rotator_id,),
+        )
+        for display_controller_id in display_controller_ids:
+            self.add_stored_display_controller_rotator(
+                display_controller_id, rotator_id
+            )
+
+    def set_stored_menu_display_controllers(
+        self, menu_id: int, display_controller_ids: list[int]
+    ) -> None:
+        self.execute(
+            'DELETE FROM `display_controller_item` WHERE `menu_id` = ?',
+            (menu_id,),
+        )
+        for display_controller_id in display_controller_ids:
+            self.execute(
+                'INSERT INTO `display_controller_item`'
+                '(`display_controller_id`, `menu_id`) VALUES (?, ?)',
+                (display_controller_id, menu_id),
+            )
+
+    def set_stored_screen_display_controllers(
+        self, screen_id: int, display_controller_ids: list[int]
+    ) -> None:
+        self.execute(
+            'DELETE FROM `display_controller_item` WHERE `screen_id` = ?',
+            (screen_id,),
+        )
+        for display_controller_id in display_controller_ids:
+            self.execute(
+                'INSERT INTO `display_controller_item`'
+                '(`display_controller_id`, `screen_id`) VALUES (?, ?)',
+                (display_controller_id, screen_id),
+            )
+
+    def set_stored_family_display_controllers(
+        self, family_id: int, display_controller_ids: list[int]
+    ) -> None:
+        self.execute(
+            'DELETE FROM `display_controller_item` WHERE `family_id` = ?',
+            (family_id,),
+        )
+        for display_controller_id in display_controller_ids:
+            self.execute(
+                'INSERT INTO `display_controller_item`'
+                '(`display_controller_id`, `family_id`) VALUES (?, ?)',
+                (display_controller_id, family_id),
+            )
 
     def _write_stored_display_controller(
         self,
@@ -3524,6 +3711,9 @@ class EventDatabase(MigrationDatabase):
             'public',
             'screen_id',
             'rotator_id',
+            'family_id',
+            'family_page',
+            'menu_id',
             'last_update',
         ]
         params: list = [
@@ -3531,6 +3721,9 @@ class EventDatabase(MigrationDatabase):
             stored_display_controller.public,
             stored_display_controller.screen_id,
             stored_display_controller.rotator_id,
+            stored_display_controller.family_id,
+            stored_display_controller.family_page,
+            stored_display_controller.menu_id,
             self.now_as_database_timestamp(),
         ]
         if stored_display_controller.id is None:

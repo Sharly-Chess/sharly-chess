@@ -1,0 +1,13 @@
+{% if display_controller_destination_options %}
+    <div class="{{ destination_field_class|default('col-12 col-md-6') }}">
+        {{ admin_macros.select_input(
+            name='display_controller_ids',
+            label=_('Designed for:'),
+            placeholder=_('Any channel'),
+            tooltip_text=_('The channels this is designed for. It is offered first when choosing what they show. Nothing is sent to them.'),
+            multiple_select=true,
+            select_options=display_controller_destination_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+{% endif %}

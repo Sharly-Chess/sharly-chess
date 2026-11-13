@@ -529,6 +529,14 @@ class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
 
 class FfeLeagueTableColumn(TournamentPlayerTableColumn):
     @property
+    def toggle_id(self) -> str | None:
+        return 'ffe_league'
+
+    @property
+    def toggle_label(self) -> str:
+        return _('League')
+
+    @property
     def header_content(self) -> str:
         return pgettext('league column header', 'League')
 

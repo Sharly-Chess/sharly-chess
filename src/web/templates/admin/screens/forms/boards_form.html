@@ -1,7 +1,17 @@
+{% include '/admin/screens/forms/input_form.html' %}
 {% if admin_event.is_team_event %}
-    <div class="row gy-2 gx-3">
+    <div class="row gy-2 gx-3 boards-hide-players-field">
         <div class="col-12 col-md-6">
             {% include '/admin/common/modal/boards_hide_players.html' %}
         </div>
     </div>
+    <script>
+        (() => {
+            const field = document.currentScript.previousElementSibling;
+            const accepts = field.closest('form').querySelector('[name="accepts_input"]');
+            const apply = () => field.classList.toggle('d-none', accepts.checked);
+            accepts.addEventListener('change', apply);
+            apply();
+        })();
+    </script>
 {% endif %}

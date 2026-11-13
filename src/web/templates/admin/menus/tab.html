@@ -1,15 +1,19 @@
 {% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+{% import '/admin/screens/display_switcher.j2' as display_switcher with context %}
 
 {% set collection = get_admin_collection_spec('menus') %}
 {% set collection_view_mode = get_admin_collection_view_mode('menus') %}
 {% set collection_show_details = get_admin_collection_show_details('menus') %}
 {% set collection_url = url_for('admin-event-menus-tab', event_uniq_id=admin_event.uniq_id) %}
+{% set collection_hide_details = not client.can_manage_screens %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(
-        _('Menus'),
-        'screens-menus' if client.can_manage_screens else ''
-    ) }}
+    {% if client.can_manage_screens %}
+        {{ display_switcher.title('screens-menus') }}
+    {% else %}
+        {{ admin_macros.admin_title(_('Menus'), '') }}
+    {% endif %}
 {% endblock %}
 
 {% block top_right_nav %}
@@ -27,9 +31,8 @@
 
 {% block cards_container_cards %}
     {% if not admin_menus and client.can_manage_screens %}
-        {% call components.empty_state(_('No menus')) %}
-            <p>{{ _('Menus group screens together so users can navigate between them.') }}</p>
-            <p>{{ _('Add screens, multi-screens or whole screen types to a menu, then reorder them as you like.') }}</p>
+        {% call components.empty_state(none, class='screens-map-empty') %}
+            {{ screens_map.guide('menus') }}
             <p>{{ _('Create a menu now to get started.') }}</p>
         {% endcall %}
     {% else %}
@@ -37,7 +40,8 @@
             items=admin_menus,
             empty_message=_('No menus'),
             sortable=false,
-            show_details=collection_show_details
+            show_details=collection_show_details,
+            hidden_list_columns=['content', 'actions'] if not client.can_manage_screens else []
         %}
             {% include '/admin/common/collection.html' %}
         {% endwith %}

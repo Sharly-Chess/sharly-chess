@@ -19,8 +19,8 @@ from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.display_controller import DisplayController
     from data.screens.family import Family
-    from data.screens.menu import Menu, MenuNavEntry
     from data.screens.screen_types import ScreenType
 
 
@@ -130,10 +130,42 @@ class Screen:
         return f'{self.family.uniq_id}:{self.family_part:03}'
 
     @property
+    def is_paged(self) -> bool:
+        return False
+
+    @property
+    def collection_item_id(self) -> str:
+        return str(self.id)
+
+    @property
     def name(self) -> str:
+        """The stored name or, when none is set, the automatic one."""
         if self.stored_screen and self.stored_screen.name:
             return self.stored_screen.name
         return self.screen_type.default_screen_name(self)
+
+    @property
+    def display_controllers(self) -> list[DisplayController]:
+        """The display controllers this screen is set up for."""
+        if self.stored_screen is None:
+            return []
+        return [
+            display_controller
+            for display_controller in self.event.sorted_display_controllers
+            if self.stored_screen.id
+            in display_controller.stored_display_controller.item_screen_ids
+        ]
+
+    @property
+    def page_display_controllers(self) -> list[DisplayController]:
+        """The display controllers held on this page of a multi-screen."""
+        if self.family is None or self.family_part is None:
+            return []
+        return [
+            display_controller
+            for display_controller in self.event.sorted_display_controllers
+            if display_controller.shows_family_page(self.family, self.family_part)
+        ]
 
     @property
     def columns(self) -> int:
@@ -261,44 +293,13 @@ class Screen:
         first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
         return format_range(first, last)
 
-    def _menu_and_screens(self, admin: bool) -> tuple[Menu | None, list[Screen]]:
-        """The menu this screen belongs to and the screens it navigates to. A
-        screen belongs to at most one menu; the menu is only displayed when it
-        holds more than one screen visible to the viewer."""
-        for menu in self.event.sorted_menus:
-            resolved = menu.resolved_screens()
-            if not any(screen.uniq_id == self.uniq_id for screen in resolved):
-                continue
-            entries = (
-                resolved if admin else [screen for screen in resolved if screen.public]
-            )
-            return (menu, entries) if len(entries) > 1 else (None, [])
-        return None, []
-
-    def _menu_screens(self, admin: bool) -> list[Screen]:
-        return self._menu_and_screens(admin)[1]
-
-    @cached_property
-    def public_menu_screens(self) -> list[Screen]:
-        return self._menu_screens(False)
-
-    @cached_property
-    def admin_menu_screens(self) -> list[Screen]:
-        return self._menu_screens(True)
-
-    def _menu_nav_entries(self, admin: bool) -> list[MenuNavEntry]:
-        from data.screens.menu import group_menu_nav_entries
-
-        menu, screens = self._menu_and_screens(admin)
-        return group_menu_nav_entries(screens, menu, current_screen=self)
-
-    @cached_property
-    def public_menu_nav_entries(self) -> list[MenuNavEntry]:
-        return self._menu_nav_entries(False)
-
-    @cached_property
-    def admin_menu_nav_entries(self) -> list[MenuNavEntry]:
-        return self._menu_nav_entries(True)
+    @property
+    def range_label(self) -> str:
+        """This screen's range alone, with full names."""
+        if not self.sorted_screen_sets:
+            return ''
+        first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=False)
+        return format_range(first, last)
 
     @property
     def timer(self) -> Timer | None:
@@ -330,11 +331,27 @@ class Screen:
         )
 
     @property
+    def accepts_input(self) -> bool:
+        """Whether results can be entered, or players checked in, on this
+        screen."""
+        if not self.screen_type.input_option:
+            return False
+        if self.stored_screen:
+            return self.stored_screen.accepts_input
+        if self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return self.family.accepts_input
+
+    @property
+    def allowed_in_rotators(self) -> bool:
+        """Whether the screen can go through a rotator: not while someone may
+        be using it."""
+        return not self.accepts_input
+
+    @property
     def input_exit_button(self) -> bool:
         if self.stored_screen:
-            exit_button = self.stored_screen.input_exit_button
-            assert exit_button is not None
-            return exit_button
+            return bool(self.stored_screen.input_exit_button)
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.input_exit_button

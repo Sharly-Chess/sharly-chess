@@ -4,7 +4,7 @@ import pytest
 
 from data.event import Event
 from data.loader import EventLoader
-from data.print_documents.documents import BergerGridPrintDocument
+from data.print_documents.documents import RoundRobinGridPrintDocument
 from data.print_documents.options import TournamentPrintOption
 from data.tie_breaks.team_records import TeamMatchRecord, TeamMatchType, TeamRecord
 from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
@@ -81,8 +81,8 @@ class TeamKoyaOddRoundRobinTestCase(TestCase):
 
 
 @pytest.mark.unit
-class BergerGridRankingRoundTestCase(TestCase):
-    """The Berger grid ranks the players as the standings do, after the
+class RoundRobinGridRankingRoundTestCase(TestCase):
+    """The round-robin grid ranks the players as the standings do, after the
     last finished round, though the later rounds are already paired."""
 
     def setUp(self) -> None:
@@ -112,7 +112,7 @@ class BergerGridRankingRoundTestCase(TestCase):
         }
 
         tournament = self._load()
-        document = BergerGridPrintDocument(
+        document = RoundRobinGridPrintDocument(
             options=[TournamentPrintOption(self._event, tournament.id)]
         )
         document.event = self._event

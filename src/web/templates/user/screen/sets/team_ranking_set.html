@@ -9,11 +9,12 @@
     and tournament.primary_score|string == 'MATCH_POINTS'
 ) %}
 {% set team_tie_breaks = tournament.tie_breaks | selectattr('supports_team_mode') | list %}
+{% set shown_tie_break_indexes = data.shown_team_tie_break_indexes %}
 {# A knock-out ranks by the round reached: one plain-language result column
    in place of the points / tie-break columns. #}
 {% set eliminates = tournament.pairing_system.eliminates_participants %}
 {% set knockout_standings = tournament.knockout.team_standing_labels() if eliminates else {} %}
-{% set numeric_count = 1 if eliminates else ((5 if primary_is_mp else 1) + 1 + team_tie_breaks | length) %}
+{% set numeric_count = 1 if eliminates else ((5 if primary_is_mp else 1) + 1 + shown_tie_break_indexes | length) %}
 <div class="row gy-2 gx-3 screen-set-row mx-0 w-100 px-3 py-2">
     {% for standings in screen_set.team_standings_lists %}
         <div class="col screen-set-col {% if not loop.first %}border-start border-2 border-dark{% endif %}">
@@ -36,8 +37,8 @@
                     {% else %}
                         <div class="grid-header fw-bold text-center">{{ pgettext('game points', 'GP') }}</div>
                     {% endif %}
-                    {% for tie_break in team_tie_breaks %}
-                        <div class="grid-header fw-bold text-center">{{ tie_break.acronym }}</div>
+                    {% for index in shown_tie_break_indexes %}
+                        <div class="grid-header fw-bold text-center">{{ team_tie_breaks[index].acronym }}</div>
                     {% endfor %}
                 {% endif %}
 
@@ -59,8 +60,9 @@
                                 {% else %}
                                     <div class="text-center fw-bold">{{ '%g'|format(row.gp) }}</div>
                                 {% endif %}
-                                {% for tie_break in team_tie_breaks %}
-                                    {% set value = row.tie_break_values[loop.index0].value | float %}
+                                {% for index in shown_tie_break_indexes %}
+                                    {% set tie_break = team_tie_breaks[index] %}
+                                    {% set value = row.tie_break_values[index].value | float %}
                                     {% if tie_break.display_absolute_value %}
                                         {% set value = value | abs %}
                                     {% endif %}

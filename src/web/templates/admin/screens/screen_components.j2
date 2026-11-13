@@ -1,9 +1,15 @@
 {% import '/admin/components/macros.j2' as components with context %}
+{% import '/admin/families/family_components.j2' as paged with context %}
 {% macro item_class(item, view) -%}
-    collection-status-{{ 'public' if item.public else 'private' }}
+    {%- if item.is_paged -%}
+        {{ paged.item_class(item, view) }}
+    {%- else -%}
+        collection-status-{{ 'public' if item.public else 'private' }}
+    {%- endif -%}
 {%- endmacro %}
 
 {% macro row_href(item, view, placement) %}
+{% if item.is_paged %}{% else %}
     {% if not client.can_manage_screens %}
         {{ url_for(
             'user-screen',
@@ -11,28 +17,78 @@
             screen_uniq_id=item.uniq_id,
         ) }}
     {% endif %}
+{% endif %}
 {% endmacro %}
 
+{% macro preview_url(item) %}
+{% if item.is_paged %}{{ paged.preview_url(item) }}{% else %}
+    {{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=item.uniq_id) }}
+{% endif %}
+{% endmacro %}
+
+{% macro preview_header(item) %}
+    <span class="d-flex align-items-center gap-2 min-width-0">
+        {% if item.is_paged %}
+            {{ admin_macros.family_visibility_icon(item, '') }}
+        {% else %}
+            {{ macros.screen_visibility_icon(item, '') }}
+        {% endif %}
+        <span class="fw-bold text-truncate">{{ item.display_name if item.is_paged else item.name }}</span>
+    </span>
+    {% if item.display_controllers or item.is_paged or item.accepts_input %}
+        <span class="d-flex flex-wrap gap-1">
+            {{ input_badge(item) }}
+            {% for display_controller in item.display_controllers %}
+                {{ components.badge('neutral', display_controller.name) }}
+            {% endfor %}
+            {% if item.is_paged %}
+                {{ components.badge('neutral', ngettext('%(num)d page', '%(num)d pages', item.screens_by_uniq_id|length), icon='bi-window-split') }}
+            {% endif %}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro input_badge(item) %}
+    {% if item.accepts_input %}
+        {{ components.badge('primary', item.screen_type.input_badge, icon='bi-pencil-square') }}
+    {% endif %}
+{% endmacro %}
+
+{% macro preview_class(item) -%}
+    {%- if item.is_paged %}feed-preview-paged{% endif -%}
+{%- endmacro %}
+
 {% macro identity(item, view, placement) %}
+{% if item.is_paged %}{{ paged.identity(item, view, placement) }}{% else %}
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
         {% if client.can_manage_screens %}
             {{ macros.screen_visibility_icon(item, '') }}
         {% endif %}
         <span class="fw-bold text-truncate">{{ item.name }}</span>
         {% if item.family %}
-            {{ components.badge('neutral', _('Multi-Screen')) }}
+            {{ components.badge('neutral', _('Paged Screen')) }}
+        {% endif %}
+        {{ input_badge(item) }}
+        {% if item.display_controllers %}
+            {% for display_controller in item.display_controllers %}
+                {{ components.badge('neutral', display_controller.name) }}
+            {% endfor %}
         {% endif %}
     </span>
+{% endif %}
 {% endmacro %}
 
 {% macro screen_type(item, view, placement) %}
+{% if item.is_paged %}{{ paged.screen_type(item, view, placement) }}{% else %}
     <span class="d-inline-flex align-items-center gap-2 text-nowrap">
         {{ macros.screen_type_icon(item.screen_type, true) }}
         <span class="{% if view == 'list' %}text-truncate{% endif %}">{{ item.type_str }}</span>
     </span>
+{% endif %}
 {% endmacro %}
 
 {% macro source(item, view, placement) %}
+{% if item.is_paged %}{% else %}
     {% if item.family %}
         {% set source_label = (
             item.family.screen_type.family_screen_label(item.sorted_screen_sets[0])
@@ -43,9 +99,11 @@
             <i class="bi-window-split pe-1"></i>{{ source_label }}
         </span>
     {% endif %}
+{% endif %}
 {% endmacro %}
 
 {% macro screen_sets(item, view, placement) %}
+{% if item.is_paged %}{{ paged.screen_count(item, view, placement) }}{% else %}
     {% set screen_sets_content %}
         {% if item.screen_type.has_screen_sets %}
             <span class="text-nowrap">
@@ -79,9 +137,11 @@
     {% else %}
         {{ screen_sets_content }}
     {% endif %}
+{% endif %}
 {% endmacro %}
 
 {% macro timer(item, view, placement) %}
+{% if item.is_paged %}{{ paged.timer(item, view, placement) }}{% else %}
     {% if item.timer %}
         <span
             class="text-truncate"
@@ -90,9 +150,11 @@
     {% else %}
         <span class="text-secondary fst-italic">{{ _('No timer') }}</span>
     {% endif %}
+{% endif %}
 {% endmacro %}
 
 {% macro summary(item, view, placement) %}
+{% if item.is_paged %}{{ paged.summary(item, view, placement) }}{% else %}
     {% set screen = item %}
     {% set screen_type = screen.screen_type %}
     <div class="d-flex flex-column gap-2">
@@ -103,9 +165,11 @@
             {% include screen_type.card_template %}
         {% endif %}
     </div>
+{% endif %}
 {% endmacro %}
 
 {% macro details(item, view, placement) %}
+{% if item.is_paged %}{{ paged.details(item, view, placement) }}{% else %}
     {% set screen = item %}
     {% set screen_type = screen.screen_type %}
     <div class="collection-details-grid">
@@ -150,9 +214,11 @@
             </section>
         {% endif %}
     </div>
+{% endif %}
 {% endmacro %}
 
 {% macro actions(item, view, placement) %}
+{% if item.is_paged %}{{ paged.actions(item, view, placement) }}{% else %}
     {% set screen = item %}
     {% set screen_type = screen.screen_type %}
     {% if client.can_manage_screens %}
@@ -194,6 +260,7 @@
                         admin_event.sorted_display_controllers,
                         'screen',
                         screen.uniq_id,
+                        screen.display_controllers,
                     ) }}
                 {% endif %}
             </div>
@@ -225,4 +292,5 @@
             {% endif %}
         </div>
     {% endif %}
+{% endif %}
 {% endmacro %}

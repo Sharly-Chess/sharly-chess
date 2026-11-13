@@ -2489,6 +2489,12 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @property
+    def is_fake(self) -> bool:
+        """Whether the tournament is shown with made-up data (see
+        data.screens.fake_data)."""
+        return self.id in self.event.fake_tournament_ids
+
+    @property
     def boards(self) -> list[Board]:
         return self.get_round_boards(self.current_round)
 

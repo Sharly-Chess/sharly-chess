@@ -1,0 +1,25 @@
+{% set ranking_type = family_type if family_type is defined else screen_type %}
+{% set marker = ranking_type.ranking_columns_marker %}
+<input type="hidden" name="{{ marker }}" value="on">
+<div class="input-block align-items-center row-gap-3">
+    <span class="form-check-label">
+        {{- _('Columns displayed:') -}}
+        <span class="text-nowrap">
+            <i
+                class="bi bi-info-circle-fill ms-2"
+                {{ macros.tooltip_attributes('', _('Uncheck the columns to hide them, to make room on screens showing many players.'), 'top') }}
+            ></i>
+        </span>
+    </span>
+    <div class="d-flex flex-wrap column-gap-3">
+        {% for toggle_id, toggle_label in ranking_type.ranking_column_toggles(admin_event).items() %}
+            {% set field = ranking_type.ranking_column_field(toggle_id) %}
+            {{ admin_macros.checkbox_input(
+                name=field,
+                placeholder=toggle_label,
+                data=data if (field in data or marker in data) else {field: 'on'},
+                errors=errors
+            ) }}
+        {% endfor %}
+    </div>
+</div>

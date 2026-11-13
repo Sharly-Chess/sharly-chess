@@ -1,0 +1,126 @@
+<div class="round-robin-grid-screen-set">
+    {% call screen_macros.set_title(data.title) %}
+        {% if tournament.adjourned_boards(before_round=tournament.rounds + 1) %}
+            <span class="badge provisional-badge align-self-center">
+                <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
+            </span>
+        {% endif %}
+    {% endcall %}
+    {% if data.player_rows %}
+        <table class="table table-striped table-sm bg-light round-robin-grid">
+            <thead>
+                <tr class="player-header">
+                    <th class="fw-bold text-end">{{ pgettext('NB column header', 'No.') }}</th>
+                    <th class="fw-bold text-start name-column">{{ pgettext('name column header', 'Name') }}</th>
+                    <th class="fw-bold text-start">{{ _('Team') }}</th>
+                    {% for opponent in data.opponents %}
+                        <th class="fw-bold text-center grid-cell{% if opponent.first_of_team and not loop.first %} grid-team-start{% endif %}">{{ opponent.number }}</th>
+                    {% endfor %}
+                    <th class="fw-bold text-center">{{ pgettext('points column header', 'Pts') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player_row in data.player_rows %}
+                    {% set row = player_row.row %}
+                    {% set excluded = row.team.is_excluded_from_standings %}
+                    <tr id="player-{{ row.tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}{% if row.first_of_team and not loop.first %} grid-team-start{% endif %}">
+                        <td class="text-end fw-bold">{{ row.number }}</td>
+                        <td class="text-start fw-bold text-nowrap name-column">{{ row.tournament_player.full_name }}</td>
+                        <td class="text-start text-nowrap">{% if row.first_of_team %}{{ row.team.name }}{% endif %}</td>
+                        {% for results in player_row.cells %}
+                            {% set opponent = data.opponents[loop.index0] %}
+                            <td class="text-center grid-cell{% if opponent.first_of_team and not loop.first %} grid-team-start{% endif %}{% if results is none %} grid-self{% elif excluded or opponent.team.is_excluded_from_standings %} annulled{% endif %}">
+                                {%- if results is not none %}{{ results | join(' ') }}{% endif -%}
+                            </td>
+                        {% endfor %}
+                        <td class="text-center fw-bold">{{ '' if excluded else row.points_str }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif tournament.is_team_tournament %}
+        <table class="table table-striped table-sm bg-light round-robin-grid">
+            <thead>
+                <tr class="player-header">
+                    <th class="fw-bold text-end">{{ pgettext('NB column header', 'No.') }}</th>
+                    <th class="fw-bold text-start name-column">{{ _('Team') }}</th>
+                    {% for row in data.rows %}
+                        <th class="fw-bold text-center grid-cell">{{ row.number }}</th>
+                    {% endfor %}
+                    <th class="fw-bold text-center">{{ pgettext('match points', 'MP') if data.primary_is_mp else pgettext('game points', 'GP') }}</th>
+                    {% for index in data.shown_team_tie_break_indexes %}
+                        <th class="fw-bold text-center">{{ data.team_tie_breaks[index].acronym }}</th>
+                    {% endfor %}
+                    <th class="fw-bold text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data.rows %}
+                    {% set excluded = row.team.is_excluded_from_standings %}
+                    {% set standing = row.standing if not excluded else none %}
+                    <tr id="team-{{ row.team.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                        <td class="text-end fw-bold">{{ row.number }}</td>
+                        <td class="text-start fw-bold text-nowrap name-column">{{ row.team.name }}</td>
+                        {% for encounters in row.cells %}
+                            {% if encounters is none %}
+                                <td class="text-center grid-cell grid-self"></td>
+                            {% else %}
+                                <td class="text-center grid-cell">
+                                    {%- for encounter in encounters -%}
+                                        {% if not loop.first %} {% endif %}
+                                        {%- if encounter.result is not none -%}
+                                            {{ encounter.result }}
+                                        {%- else -%}
+                                            <span class="grid-round">{{ pgettext('round column header', 'R {round}').format(round=encounter.round) }}</span>
+                                        {%- endif -%}
+                                    {%- endfor -%}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        <td class="text-center fw-bold">
+                            {% if standing %}{{ '%g'|format(standing.mp if data.primary_is_mp else standing.gp) }}{% endif %}
+                        </td>
+                        {% for index in data.shown_team_tie_break_indexes %}
+                            <td class="text-center">
+                                {% if standing %}{{ standing.tie_break_values[index].display_string_value }}{% endif %}
+                            </td>
+                        {% endfor %}
+                        <td class="text-end">{% if standing %}{{ standing.rank }}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% set player_columns = columns_by_tournament_id[tournament.id] %}
+        <table class="table table-striped table-sm bg-light round-robin-grid">
+            <thead>
+                <tr class="player-header">
+                    {% for column in player_columns %}
+                        <th class="fw-bold {{ column.header_classes }}">
+                            {% if column.header_template %}
+                                {% include column.header_template %}
+                            {% else %}
+                                {{ macros.column_header(column) }}
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for tournament_player in data.players %}
+                    <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                        {% for column in player_columns %}
+                            <td class="{{ column.get_cell_classes(tournament_player) }}">
+                                {% if column.cell_template %}
+                                    {% include column.cell_template %}
+                                {% else %}
+                                    {{ macros.column_cell(column, tournament_player) }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>

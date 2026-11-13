@@ -17,6 +17,7 @@ from data.loader import EventLoader
 from database.sqlite.event.event_store import StoredTournament
 from tests.test_config import ScreenType, TestUtils
 from tests.unit.http.client import ApiClient
+from tests.unit.http.conftest import TEAM_EVENT_ID
 
 EVENT_ID = 'test-screens-http'
 TOURNAMENT_NAME = 'test-screens-http-tournament'
@@ -57,7 +58,7 @@ def rows(http: TestClient, part: str, row_class: str) -> list[str]:
 @pytest.mark.unit
 @pytest.mark.parametrize(
     ('screen_type', 'row_class'),
-    [(ScreenType.INPUT, 'board-row'), (ScreenType.BOARDS, 'board-row')],
+    [(ScreenType.BOARDS, 'board-row')],
 )
 def test_a_multi_screen_splits_the_boards_into_parts(
     http: TestClient,
@@ -144,7 +145,12 @@ def test_a_multi_screen_is_created_and_deleted(
     http: TestClient, api: ApiClient, tournament: StoredTournament
 ):
     stored_family = TestUtils.create_family(
-        api, EVENT_ID, tournament, FAMILY_ID, ScreenType.INPUT, {'parts': 2}
+        api,
+        EVENT_ID,
+        tournament,
+        FAMILY_ID,
+        ScreenType.BOARDS,
+        {'accepts_input': True, 'parts': 2},
     )
     listed = http.get(f'/event/{EVENT_ID}/families')
     assert listed.status_code == 200
@@ -165,7 +171,7 @@ def test_a_screen_is_created_listed_and_deleted(
         EVENT_ID,
         'A boards screen',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     listed = http.get(f'/event/{EVENT_ID}/boards-screens')
     assert listed.status_code == 200
@@ -187,11 +193,11 @@ def test_the_link_to_a_screen_follows_its_renaming(
         api,
         EVENT_ID,
         'Renamed screen',
-        ScreenType.INPUT,
-        {'init_set_tournament_id': tournament.id},
+        ScreenType.BOARDS,
+        {'accepts_input': True, 'init_set_tournament_ids': [tournament.id]},
     )
     old_uniq_id = stored_screen.uniq_id
-    listed = http.get(f'/event/{EVENT_ID}/input-screens')
+    listed = http.get(f'/event/{EVENT_ID}/screens')
     assert f'/view/screen/{EVENT_ID}/{old_uniq_id}' in listed.text
 
     response = http.patch(
@@ -203,7 +209,7 @@ def test_the_link_to_a_screen_follows_its_renaming(
     assert response.headers['HX-Retarget'] == '.sc-modal-subtitle'
     assert 'modal-title' not in response.text
 
-    renamed = http.get(f'/event/{EVENT_ID}/input-screens')
+    renamed = http.get(f'/event/{EVENT_ID}/screens')
     assert f'/view/screen/{EVENT_ID}/{old_uniq_id}-renamed' in renamed.text
     assert http.get(f'/view/screen/{EVENT_ID}/{old_uniq_id}-renamed').status_code == 200
 
@@ -213,7 +219,6 @@ def test_the_link_to_a_screen_follows_its_renaming(
     ('screen_type', 'row_class', 'expected', 'first', 'last'),
     [
         (ScreenType.BOARDS, 'board-row', 8, 'ALYX', 'IRINA'),
-        (ScreenType.INPUT, 'board-row', 8, 'ALYX', 'IRINA'),
         (ScreenType.PLAYERS, 'player-row', 16, 'ALYX', 'STEPHAN'),
     ],
 )
@@ -233,7 +238,7 @@ def test_a_screen_of_its_own_shows_the_whole_tournament(
         EVENT_ID,
         'Whole tournament',
         screen_type,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     response = http.get(f'/view/screen/{EVENT_ID}/{stored_screen.uniq_id}')
     assert response.status_code == 200
@@ -252,7 +257,7 @@ def test_a_screen_of_its_own_shows_the_whole_tournament(
 @pytest.mark.unit
 @pytest.mark.parametrize(
     'screen_type',
-    [ScreenType.BOARDS, ScreenType.INPUT, ScreenType.PLAYERS, ScreenType.CHECK_IN],
+    [ScreenType.BOARDS, ScreenType.PLAYERS, ScreenType.CHECK_IN],
 )
 def test_the_create_modal_opens_for_every_screen_type(
     http: TestClient, tournament: StoredTournament, screen_type: ScreenType
@@ -273,7 +278,7 @@ def test_the_screen_modal_opens_for_every_action(
         EVENT_ID,
         'Modal screen',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     response = http.get(f'/screen-modal/{action}/{EVENT_ID}/{stored_screen.id}')
     assert response.status_code == 200
@@ -290,7 +295,7 @@ def test_the_sets_of_a_screen_are_added_and_removed(
         EVENT_ID,
         'Two sets',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament.id},
+        {'init_set_tournament_ids': [tournament.id]},
     )
     assert (
         http.get(f'/screen-sets-modal/{EVENT_ID}/{stored_screen.id}').status_code == 200
@@ -312,7 +317,7 @@ def test_the_sets_of_a_screen_are_added_and_removed(
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize('family_type', [ScreenType.BOARDS, ScreenType.INPUT])
+@pytest.mark.parametrize('family_type', [ScreenType.BOARDS, ScreenType.PLAYERS])
 def test_the_create_modal_opens_for_every_family_type(
     http: TestClient, tournament: StoredTournament, family_type: ScreenType
 ):
@@ -373,10 +378,151 @@ def test_the_footer_is_left_out_of_image_screens(
         screen_type,
         {'background_image_upload': ONE_PIXEL_PNG}
         if screen_type == ScreenType.IMAGE
-        else {'init_set_tournament_id': tournament.id},
+        else {'init_set_tournament_ids': [tournament.id]},
     )
     response = http.get(
         f'/view/screen/{EVENT_ID}/{stored_screen.uniq_id}', headers=headers
     )
     assert response.status_code == 200
     assert ('id="copyright"' in response.text) == shown
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ('screen_type', 'row_class'),
+    [(ScreenType.BOARDS, 'board-row'), (ScreenType.PLAYERS, 'player-row')],
+)
+def test_a_pairings_screen_waits_for_the_tournament_to_start(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    screen_type: ScreenType,
+    row_class: str,
+):
+    waiting = TestUtils.create_tournament(EVENT_ID, 'Not started yet')
+    stored_screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Waiting',
+        screen_type,
+        {'init_set_tournament_ids': [waiting.id]},
+    )
+    response = http.get(f'/view/screen/{EVENT_ID}/{stored_screen.uniq_id}')
+    assert response.status_code == 200
+    assert 'The tournament has not yet started.' in response.text
+    assert row_class not in response.text
+    assert 'check-in-mark' not in response.text
+
+
+def set_tournaments(screen_id: int | None) -> list[tuple[str, int, int]]:
+    """The tournament, first and last of each set of a screen, in order."""
+    event = EventLoader().load_event(EVENT_ID)
+    screen = event.basic_screens_by_id[screen_id or 0]
+    return [
+        (screen_set.tournament.name, screen_set.first, screen_set.last)
+        for screen_set in screen.sorted_screen_sets
+    ]
+
+
+@pytest.mark.unit
+def test_a_duplicate_offers_the_tournaments_of_the_original(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+):
+    screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Pairings',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    response = http.get(f'/screen-modal/clone/{EVENT_ID}/{screen.id}')
+    assert response.status_code == 200
+    parser = AdvancedHTMLParser()
+    parser.parseStr(response.text)
+    selected = [
+        option.getAttribute('value')
+        for option in parser.getElementsByTagName('option')
+        if option.hasAttribute('selected')
+        and option.parentNode.getAttribute('name') == 'init_set_tournament_ids'
+    ]
+    assert selected == [str(tournament.id)]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(('name', 'duplicate_named'), [('Pairings', True), ('', False)])
+def test_a_duplicate_is_named_only_after_a_screen_with_a_name_of_its_own(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    name: str,
+    duplicate_named: bool,
+):
+    screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        name,
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    response = http.get(f'/screen-modal/clone/{EVENT_ID}/{screen.id}')
+    parser = AdvancedHTMLParser()
+    parser.parseStr(response.text)
+    value = next(
+        field.getAttribute('value') or ''
+        for field in parser.getElementsByTagName('input')
+        if field.getAttribute('name') == 'name'
+    )
+    assert bool(value) == duplicate_named
+    if duplicate_named:
+        assert value != name
+
+
+@pytest.mark.unit
+def test_a_duplicate_keeps_the_sets_of_the_tournaments_kept_and_adds_the_others(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+):
+    other = TestUtils.create_tournament(EVENT_ID, 'Other', json_file='test-screens')
+    screen = TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Pairings',
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id]},
+    )
+    EventLoader.unload_event(EVENT_ID)
+    event = EventLoader().load_event(EVENT_ID)
+    original_sets = set_tournaments(screen.id)
+    before = set(event.basic_screens_by_id)
+
+    response = http.post(
+        f'/screen-clone/{EVENT_ID}/{screen.id}',
+        data={
+            'name': 'Both',
+            'init_set_tournament_ids': [str(tournament.id), str(other.id)],
+        },
+    )
+    assert response.status_code == 200
+    EventLoader.unload_event(EVENT_ID)
+    event = EventLoader().load_event(EVENT_ID)
+    (duplicate_id,) = set(event.basic_screens_by_id) - before
+    assert set_tournaments(duplicate_id) == [*original_sets, ('Other', 0, 0)]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('show_members', [True, False])
+def test_a_team_check_in_screen_can_list_the_members_of_each_team(
+    http: TestClient, api: ApiClient, team_round_robin: int, show_members: bool
+):
+    stored_screen = TestUtils.create_screen(
+        api,
+        TEAM_EVENT_ID,
+        'Check-in',
+        ScreenType.CHECK_IN,
+        {
+            'init_set_tournament_ids': [team_round_robin],
+            'check_in_show_members': show_members,
+        },
+    )
+    response = http.get(f'/view/screen/{TEAM_EVENT_ID}/{stored_screen.uniq_id}')
+    assert response.status_code == 200
+    assert ('T1P0' in response.text) is show_members

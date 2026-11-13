@@ -15,6 +15,7 @@ from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.display_controller import DisplayController
     from data.tournament import Tournament
     from data.screens.timer import Timer
     from data.screens.screen_types import ScreenType
@@ -76,11 +77,26 @@ class Family:
         return self.stored_family.uniq_id
 
     @property
+    def is_paged(self) -> bool:
+        return True
+
+    @property
+    def collection_item_id(self) -> str:
+        return f'family-{self.id}'
+
+    @property
     def name(self) -> str:
-        name: str = (
-            self.stored_family.name if self.stored_family.name else _('%t (%f to %l)')
-        )
+        name: str = self.stored_family.name or _('%t (%f to %l)')
         return name.replace('%t', self.tournament.name)
+
+    @property
+    def display_controllers(self) -> list[DisplayController]:
+        """The display controllers this multi-screen is set up for."""
+        return [
+            display_controller
+            for display_controller in self.event.sorted_display_controllers
+            if self.id in display_controller.stored_display_controller.item_family_ids
+        ]
 
     def resolve_label(self, template: str, abbreviated: bool = False) -> str:
         """Substitute the tokens %t (tournament), %f/%l (first/last of the
@@ -167,7 +183,7 @@ class Family:
 
     @property
     def shows_team_matches(self) -> bool:
-        """Whether boards/input screens of this family show team-match
+        """Whether boards screens of this family show team-match
         blocks: only team-vs-team pairing systems have match envelopes —
         flat fixed-table systems (e.g. Molter) keep the individual board
         list even in a team event."""
@@ -202,10 +218,26 @@ class Family:
         self.stored_family.timer_id = timer_id
 
     @property
+    def page_delay(self) -> int | None:
+        """How many seconds each page is shown wherever the pages turn, or
+        ``None`` to follow the feed's default or the rotator's delay."""
+        return self.stored_family.page_delay
+
+    @property
+    def accepts_input(self) -> bool:
+        """Whether results can be entered, or players checked in, on the
+        pages of this multi-screen."""
+        return self.screen_type.input_option and self.stored_family.accepts_input
+
+    @property
+    def allowed_in_rotators(self) -> bool:
+        """Whether the multi-screen can go through a rotator: not while
+        someone may be using it."""
+        return not self.accepts_input
+
+    @property
     def input_exit_button(self) -> bool:
-        exit_button = self.stored_family.input_exit_button
-        assert exit_button is not None
-        return exit_button
+        return bool(self.stored_family.input_exit_button)
 
     @property
     def icon_str(self) -> str:

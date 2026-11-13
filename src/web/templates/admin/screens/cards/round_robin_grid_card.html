@@ -1,0 +1,6 @@
+<div>
+    {{ _('Order: by rank') if data.by_rank else _('Order: by pairing number') }}
+</div>
+{% if data.by_player %}
+    <div>{{ _('One row per player') }}</div>
+{% endif %}

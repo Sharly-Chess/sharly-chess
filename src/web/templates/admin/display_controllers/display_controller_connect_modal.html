@@ -1,0 +1,39 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+
+{% block title %}
+    {{ _('Connect a device') }}
+{% endblock %}
+
+{% block subtitle %}
+    {{ admin_display_controller.name }}
+{% endblock %}
+
+{% block body %}
+    {% if connect_links %}
+        <p>{{ _('Open this address once on each device, or scan the code. Use as many devices as you like: they all show whatever you send to this channel.') }}</p>
+        {% for link in connect_links %}
+            <div class="d-flex flex-column align-items-center gap-2 mb-3">
+                {% if connect_links|length > 1 %}
+                    {{ components.section_heading(link.label, sub=true) }}
+                {% endif %}
+                <img
+                    src="{{ url_for('qrcode-lan-url', ip=link.qrcode_ip) }}?logo=1&amp;path={{ link.qrcode_path|urlencode }}"
+                    alt="{{ link.url }}"
+                    width="220"
+                    height="220"
+                />
+                <code data-testid="display-controller-connect-url" class="user-select-all">{{ link.url }}</code>
+            </div>
+        {% endfor %}
+    {% else %}
+        {{ components.note('warning', _('This computer is not connected to a network, so other devices cannot reach it.'), icon='warning') }}
+    {% endif %}
+    {% if not admin_display_controller.public %}
+        {{ components.note('info', _('This channel is private: the device must be signed in with an allowed account.')) }}
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button(_('Close')) }}
+{% endblock %}

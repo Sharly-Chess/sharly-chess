@@ -1,0 +1,46 @@
+<div class="feed-previews" data-testid="{{ collection.key }}-previews">
+    {% for item in items %}
+        {% set preview_url = item_components.preview_url(item)|trim %}
+        {% set preview_class_renderer = item_components|attr('preview_class') %}
+        <div
+            id="collection-{{ collection.key }}-item-{{ collection.item_id(item) }}"
+            class="card feed-preview {% if preview_class_renderer %}{{ preview_class_renderer(item)|trim }}{% endif %}"
+            data-testid="{{ collection.key }}-preview"
+        >
+            <div class="card-header d-flex flex-column gap-1 min-width-0">
+                {{ item_components.preview_header(item) }}
+            </div>
+            {% if preview_url %}
+                <a
+                    class="feed-preview-frame"
+                    href="{{ preview_url }}"
+                    target="_blank"
+                    aria-label="{{ _('Open in a new tab.') }}"
+                >
+                    <iframe
+                        src="{{ preview_url }}"
+                        title="{{ item.name }}"
+                        loading="lazy"
+                        tabindex="-1"
+                    ></iframe>
+                </a>
+            {% else %}
+                <div class="feed-preview-frame feed-preview-empty">{{ _('Nothing to show') }}</div>
+            {% endif %}
+            {% set footer_content = item_components.actions(item, 'card', none) %}
+            {% if footer_content|trim %}
+                <div class="card-footer">{{ footer_content }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+<script>
+    (() => {
+        const observer = new ResizeObserver((entries) => {
+            entries.forEach((entry) => {
+                entry.target.style.setProperty('--feed-preview-scale', entry.contentRect.width / 1920);
+            });
+        });
+        document.querySelectorAll('.feed-preview-frame').forEach((frame) => observer.observe(frame));
+    })();
+</script>

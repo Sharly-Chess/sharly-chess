@@ -2,12 +2,31 @@ from abc import ABC
 from functools import cached_property
 from typing import Any, override
 
+from markupsafe import Markup, escape
+
 from common.i18n import _, pgettext
 from common.i18n.utils import ordinal_integer
+from data.pairings.round_robin_grid import GridCells, GridEncounter
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils import Utils
 from .column import Column, ColumnUsage
+
+
+FIRST_TIE_BREAK_TOGGLE_ID = 'tie_break_first'
+OTHER_TIE_BREAKS_TOGGLE_ID = 'tie_break_others'
+
+
+def tie_break_toggle_id(index: int) -> str:
+    """The toggle under which the tie-break at *index* is shown or hidden."""
+    return FIRST_TIE_BREAK_TOGGLE_ID if index == 0 else OTHER_TIE_BREAKS_TOGGLE_ID
+
+
+def tie_break_toggle_labels() -> dict[str, str]:
+    return {
+        FIRST_TIE_BREAK_TOGGLE_ID: _('First tie-break'),
+        OTHER_TIE_BREAKS_TOGGLE_ID: _('Other tie-breaks'),
+    }
 
 
 class TournamentPlayerTableColumn(Column[TournamentPlayer], ABC):
@@ -23,6 +42,17 @@ class TournamentPlayerTableColumn(Column[TournamentPlayer], ABC):
         games. A participant dropped from the standings (FIDE 6.6) keeps
         its row in the crosstable, with these cells left empty."""
         return False
+
+    @property
+    def toggle_id(self) -> str | None:
+        """The identifier under which the column can be hidden on the
+        ranking screens, None when the column is always shown."""
+        return None
+
+    @property
+    def toggle_label(self) -> str:
+        """The label of the checkbox that shows or hides the column."""
+        return self.header_content
 
     @override
     def is_cell_blank_for(self, object_: TournamentPlayer) -> bool:
@@ -163,10 +193,20 @@ class NameColumn(TournamentPlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'fw-bold text-start text-nowrap'
+        return 'fw-bold text-start text-nowrap name-column'
 
 
 class RatingColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'rating'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Rating')
+
     @property
     def header_template(self) -> str | None:
         return '/admin/print/headers/rating.html'
@@ -181,6 +221,16 @@ class RatingColumn(TournamentPlayerTableColumn):
 
 class CategoryColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'category'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Category')
+
+    @property
     def header_content(self) -> str:
         return pgettext('category column header', 'Cat.')
 
@@ -193,6 +243,16 @@ class CategoryColumn(TournamentPlayerTableColumn):
 
 
 class GenderColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'gender'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Gender')
+
     @property
     def header_content(self) -> str:
         return pgettext('gender column header', 'Gen.')
@@ -207,6 +267,16 @@ class GenderColumn(TournamentPlayerTableColumn):
 
 class FederationColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'federation'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Federation')
+
+    @property
     def header_content(self) -> str:
         return pgettext('federation column header', 'Fed.')
 
@@ -219,6 +289,16 @@ class FederationColumn(TournamentPlayerTableColumn):
 
 
 class ClubColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'club'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Club')
+
     @property
     def header_content(self) -> str:
         return pgettext('club column header', 'Club')
@@ -319,6 +399,82 @@ class RoundColumn(TournamentPlayerTableColumn):
         return 'text-center'
 
 
+class GridNumberColumn(TournamentPlayerTableColumn):
+    """The number of a player in a round-robin grid, which heads their column."""
+
+    def __init__(self, usage: ColumnUsage, number_by_player_id: dict[int, int]):
+        super().__init__(usage)
+        self.number_by_player_id = number_by_player_id
+
+    @property
+    def header_content(self) -> str:
+        return pgettext('NB column header', 'No.')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return self.number_by_player_id[tournament_player.id]
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-end fw-bold'
+
+
+class GridOpponentColumn(TournamentPlayerTableColumn):
+    """The games of each player against the player numbered *number* in a
+    round-robin grid: their results once shown, otherwise the rounds they are
+    played in."""
+
+    def __init__(
+        self,
+        usage: ColumnUsage,
+        opponent_id: int,
+        number: int,
+        cells: GridCells,
+    ):
+        super().__init__(usage)
+        self.opponent_id = opponent_id
+        self.number = number
+        self.cells = cells
+
+    def _encounters(self, tournament_player: TournamentPlayer) -> list[GridEncounter]:
+        return self.cells.get(tournament_player.id, {}).get(self.opponent_id, [])
+
+    @property
+    def header_content(self) -> str:
+        return str(self.number)
+
+    @override
+    def is_cell_struck_for(self, object_: TournamentPlayer) -> bool:
+        return any(encounter.annulled for encounter in self._encounters(object_))
+
+    @override
+    def get_cell_classes(self, object_: TournamentPlayer) -> str:
+        classes = super().get_cell_classes(object_)
+        if object_.id == self.opponent_id:
+            return f'{classes} grid-self'
+        return classes
+
+    @property
+    @override
+    def is_cell_content_safe(self) -> bool:
+        return True
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return Markup(' ').join(
+            escape(encounter.result)
+            if encounter.result is not None
+            else Markup('<span class="grid-round">{round}</span>').format(
+                round=pgettext('round column header', 'R {round}').format(
+                    round=encounter.round
+                )
+            )
+            for encounter in self._encounters(tournament_player)
+        )
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center grid-cell'
+
+
 class TournamentColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
@@ -347,6 +503,16 @@ class TieBreakColumn(TournamentPlayerTableColumn):
     @override
     def is_standing(self) -> bool:
         return True
+
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return tie_break_toggle_id(self.index)
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return tie_break_toggle_labels()[tie_break_toggle_id(self.index)]
 
     @property
     def header_content(self) -> str:

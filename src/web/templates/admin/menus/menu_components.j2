@@ -2,9 +2,20 @@
     collection-status-{{ 'success' if item.menu_items_by_id else 'danger' }}
 {%- endmacro %}
 
+{% macro row_href(item, view, placement) %}
+    {% if not client.can_manage_screens %}
+        {{ url_for('user-menu', event_uniq_id=admin_event.uniq_id, menu_id=item.id) }}
+    {% endif %}
+{% endmacro %}
+
 {% macro identity(item, view, placement) %}
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
         <span class="fw-bold text-truncate">{{ item.name }}</span>
+        {% if client.can_manage_screens %}
+            {% for display_controller in item.display_controllers %}
+                {{ components.badge('neutral', display_controller.name) }}
+            {% endfor %}
+        {% endif %}
         {% if not item.menu_items_by_id %}
             <i
                 class="bi-exclamation-triangle-fill text-danger"
@@ -28,7 +39,7 @@
     <span
         class="text-nowrap"
         data-testid="families-count"
-        {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
+        {{ macros.tooltip_attributes('info', _('Number of paged screens'), 'top') }}
     >
         {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.covered_families|length }}{% endcall %}
     </span>
@@ -60,6 +71,7 @@
 {% macro details(item, view, placement) %}
     {% set menu = item %}
     {% set screen_types = menu.screen_type_objects %}
+    {% if client.can_manage_screens %}
     <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% endif %}">
         {% if screen_types %}
             <section class="collection-detail-section">
@@ -86,7 +98,7 @@
         {% endif %}
         {% if menu.families %}
             <section class="collection-detail-section">
-                <h6>{{ _('Multi-Screens') }}</h6>
+                <h6>{{ _('Paged Screens') }}</h6>
                 {% for family in menu.families %}
                     <div>
                         {% if client.can_manage_screens %}{{ admin_macros.family_visibility_icon(family, 'pe-1') }}{% endif %}
@@ -97,6 +109,7 @@
             </section>
         {% endif %}
     </div>
+    {% endif %}
 {% endmacro %}
 
 {% macro actions(item, view, placement) %}
@@ -126,11 +139,17 @@
                         icon_only=true,
                         size='sm',
                         href=url_for(
-                            'user-screen',
+                            'user-menu',
                             event_uniq_id=admin_event.uniq_id,
-                            screen_uniq_id=menu.first_screen.uniq_id,
+                            menu_id=menu.id,
                         ),
                         attrs={'target': '_blank'},
+                    ) }}
+                    {{ admin_macros.display_controller_assign_dropdown(
+                        admin_event.sorted_display_controllers,
+                        'menu',
+                        menu.id|string,
+                        menu.display_controllers,
                     ) }}
                 {% endif %}
             {% endif %}

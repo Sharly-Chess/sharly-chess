@@ -1,20 +1,20 @@
 {% extends '/admin/components/modal.html' %}
-{% set modal_size = 'fit' %}
+{% set modal_size = 'fit' if action == 'delete' else 'lg' %}
 {% set modal_class = 'admin-display_controller-edit-modal' %}
 
 {% block title %}
     {% if action == 'create' %}
-        {{ _('Create display controller') }}
+        {{ _('Create channel') }}
     {% elif action == 'update' %}
-        {{ _('Edit display controller') }}
+        {{ _('Edit channel') }}
     {% elif action == 'delete' %}
-        {{ _('Delete display controller') }}
+        {{ _('Delete channel') }}
     {% endif %}
 {% endblock %}
 
 {% block subtitle %}
     {% if action == 'delete' %}
-        {{ _('%(string)s: %(value)s', string=_('Display Controller'), value=admin_display_controller.name) }}
+        {{ _('%(string)s: %(value)s', string=_('Channel'), value=admin_display_controller.name) }}
     {% endif %}
 {% endblock %}
 
@@ -38,27 +38,36 @@
             {{ components.note('danger', _('Warning: the deletion is permanent!'), icon='warning') }}
         {% else %}
             <div class="row gy-2 gx-3">
-               <div class="d-flex">
+                <div class="col-12">
                     {{ admin_macros.switch_input(
                         name='public',
                         label='',
+                        tooltip_text=_('Only allowed users can view private channels.'),
                         placeholder=_('Define as public'),
                         data=data, errors=errors
                     ) }}
-                    <i class="bi bi-info-circle-fill"
-                        {{ macros.tooltip_attributes(
-                            'info', _('Only allowed users can view private display controllers.'), 'top'
-                        ) }}
-                    ></i>
                 </div>
                 <div class="col-12">
                     {{ admin_macros.text_input(
                         name='name',
                         label=_('%(string)s:', string=_('Name')),
-                        placeholder=_('E.g.: My display controller'),
+                        placeholder=_('E.g.: Projector, Tablets'),
                         data=data, errors=errors
                     ) }}
                 </div>
+                {% if item_options %}
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='item_ids',
+                            label=_('Screens designed for this channel:'),
+                            placeholder=_('None'),
+                            tooltip_text=_('The screens, paged screens, rotators and menus designed for this channel. They appear first when choosing what it shows, and anything else can still be sent to it.'),
+                            multiple_select=true,
+                            select_options=item_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     </form>

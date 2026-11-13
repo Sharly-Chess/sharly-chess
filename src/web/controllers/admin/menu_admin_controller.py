@@ -1,5 +1,5 @@
 from copy import copy
-from operator import attrgetter
+from operator import itemgetter
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
@@ -7,11 +7,12 @@ from litestar.exceptions import ClientException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, FromPath, FromQuery
-from litestar.response import Template
+from litestar.response import Redirect, Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
+from data.screens.family import Family
 from data.screens.menu import Menu
 from data.screens.manager import ScreenTypeManager
 from database.sqlite.event.event_store import StoredMenu
@@ -24,7 +25,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
 from web.session import SessionMenusShowDetails
-from web.utils import RequestUtils, SelectOption
+from web.utils import RequestUtils, SelectOption, paged_screen_option
 
 
 class MenuAdminWebContext(BaseEventAdminWebContext):
@@ -40,8 +41,10 @@ class MenuAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         event = self.get_admin_event()
         admin_menus: list[Menu] = []
-        if self.client.can_view_public_screens:
+        if self.client.can_manage_screens:
             admin_menus = event.sorted_menus
+        elif self.client.can_view_public_screens:
+            admin_menus = event.menus_for(self.client.can_view_private_screens)
         return super().template_context | {
             'admin_event_tab': 'admin-event-menus-tab',
             'show_details': SessionMenusShowDetails(self.request).get(),
@@ -77,6 +80,10 @@ class MenuAdminController(BaseEventAdminController):
             {
                 'name': menu.stored_menu.name or '',
                 'submenu_mode': menu.stored_menu.submenu_mode,
+                'display_controller_ids': [
+                    display_controller.id
+                    for display_controller in menu.display_controllers
+                ],
             }
         )
 
@@ -88,7 +95,15 @@ class MenuAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         show_details: FromQuery[bool | None],
-    ) -> Template:
+    ) -> Template | Redirect:
+        if not WebContext(request).client.can_manage_screens:
+            return Redirect(
+                request.app.route_reverse(
+                    'admin-event-display-tab',
+                    event_uniq_id=request.path_params['event_uniq_id'],
+                )
+                + '?browse=true&kind=menus'
+            )
         if show_details is not None:
             SessionMenusShowDetails(request).set(show_details)
         return self._admin_event_menu_render(MenuAdminWebContext(request))
@@ -100,6 +115,7 @@ class MenuAdminController(BaseEventAdminController):
     @classmethod
     def _menu_form_modal_context(
         cls,
+        web_context: MenuAdminWebContext,
         action: FormAction,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
@@ -116,6 +132,9 @@ class MenuAdminController(BaseEventAdminController):
                 mode.value: SelectOption(mode.name, tooltip=mode.tooltip)
                 for mode in MenuSubmenuMode
             },
+            **cls._display_controller_destination_context(
+                web_context.get_admin_event()
+            ),
         }
 
     @classmethod
@@ -125,105 +144,67 @@ class MenuAdminController(BaseEventAdminController):
         success_message: str | None = None,
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
+        menu = web_context.get_admin_menu()
         return {
             'modal': 'menu_items',
-            'screen_options': cls._screen_options(event),
-            'family_options': cls._family_options(event),
-            'screen_type_options': cls._screen_type_options(event),
+            'screen_options': cls._screen_options(event, menu),
+            'screen_type_options': cls._screen_type_options(event, menu),
             'success_message': success_message,
         }
 
-    # A screen, family or screen type may only belong to a single menu, so an
-    # entity already claimed by any menu is offered greyed-out with a reason.
     @staticmethod
-    def _screen_options(event: Any) -> dict[str, dict[str, Any]]:
-        claimed_ids = event.menu_claimed_screen_ids
-        claimed_types = event.menu_claimed_screen_types
-        manager = ScreenTypeManager(event)
+    def _screen_options(event: Any, menu: Menu) -> dict[str, dict[str, Any]]:
+        """The screens and paged screens by screen type, what the menu already
+        holds greyed out with the reason."""
+        own_ids = {f'screen:{screen.id}' for screen in menu.screens} | {
+            f'family:{family.id}' for family in menu.families
+        }
         options: dict[str, dict[str, Any]] = {}
-        for screen_type, screens in event.sorted_basic_screens_by_screen_type.items():
-            type_name = manager.get_object(screen_type).name
+        for screen_type in ScreenTypeManager(event).objects():
             group: dict[str, Any] = {}
-            for screen in sorted(screens, key=attrgetter('name')):
-                if screen.type in claimed_types:
-                    group[str(screen.id)] = SelectOption(
-                        name=screen.name,
-                        disabled=True,
-                        tooltip=_(
-                            'All "%(screen_type)s" screens already belong to a menu.'
-                        )
-                        % {'screen_type': type_name},
+            entities: list[tuple[str, str, Family | None]] = [
+                (screen.name, f'screen:{screen.id}', None)
+                for screen in event.sorted_basic_screens_by_screen_type.get(
+                    screen_type.id, []
+                )
+            ] + [
+                (family.display_name, f'family:{family.id}', family)
+                for family in event.families_by_screen_type.get(screen_type.id, [])
+            ]
+            for name, item_id, family in sorted(entities, key=itemgetter(0)):
+                tooltip: str | None = None
+                if screen_type.id in menu.screen_types:
+                    tooltip = _(
+                        'All "%(screen_type)s" screens already belong to this menu.'
+                    ) % {'screen_type': screen_type.name}
+                elif item_id in own_ids:
+                    tooltip = _('This screen already belongs to this menu.')
+                if family is not None:
+                    group[item_id] = paged_screen_option(
+                        family, disabled=tooltip is not None, tooltip=tooltip
                     )
-                elif screen.id in claimed_ids:
-                    group[str(screen.id)] = SelectOption(
-                        name=screen.name,
-                        disabled=True,
-                        tooltip=_('This screen already belongs to a menu.'),
+                elif tooltip is not None:
+                    group[item_id] = SelectOption(
+                        name=name, disabled=True, tooltip=tooltip
                     )
                 else:
-                    group[str(screen.id)] = screen.name
+                    group[item_id] = name
             if group:
-                options[type_name] = group
+                options[screen_type.name] = group
         return options
 
     @staticmethod
-    def _family_options(event: Any) -> dict[str, dict[str, Any]]:
-        claimed_family_ids = event.menu_claimed_family_ids
-        claimed_types = event.menu_claimed_screen_types
-        manager = ScreenTypeManager(event)
-        options: dict[str, dict[str, Any]] = {}
-        for screen_type, families in event.families_by_screen_type.items():
-            type_name = manager.get_object(screen_type).name
-            group: dict[str, Any] = {}
-            for family in sorted(families, key=attrgetter('name')):
-                if family.type in claimed_types:
-                    group[str(family.id)] = SelectOption(
-                        name=family.display_name,
-                        disabled=True,
-                        tooltip=_(
-                            'All "%(screen_type)s" screens already belong to a menu.'
-                        )
-                        % {'screen_type': type_name},
-                    )
-                elif family.id in claimed_family_ids:
-                    group[str(family.id)] = SelectOption(
-                        name=family.display_name,
-                        disabled=True,
-                        tooltip=_('This multi-screen already belongs to a menu.'),
-                    )
-                else:
-                    group[str(family.id)] = family.display_name
-            if group:
-                options[type_name] = group
-        return options
-
-    @staticmethod
-    def _screen_type_options(event: Any) -> dict[str, dict[str, Any]]:
-        claimed_types = event.menu_claimed_screen_types
-        claimed_ids = event.menu_claimed_screen_ids
-        claimed_family_ids = event.menu_claimed_family_ids
+    def _screen_type_options(event: Any, menu: Menu) -> dict[str, dict[str, Any]]:
         options: dict[str, Any] = {}
         for screen_type in ScreenTypeManager(event).objects():
             label = _('All "%(screen_type)s" screens') % {
                 'screen_type': screen_type.name
             }
-            if screen_type.id in claimed_types:
+            if screen_type.id in menu.screen_types:
                 options[screen_type.id] = SelectOption(
                     name=label,
                     disabled=True,
-                    tooltip=_('This screen type already belongs to a menu.'),
-                )
-            elif any(
-                screen.id in claimed_ids
-                for screen in event.sorted_basic_screens_by_screen_type[screen_type.id]
-            ) or any(
-                family.id in claimed_family_ids
-                for family in event.families_by_screen_type[screen_type.id]
-            ):
-                options[screen_type.id] = SelectOption(
-                    name=label,
-                    disabled=True,
-                    tooltip=_('Some screens of this type already belong to a menu.'),
+                    tooltip=_('This screen type already belongs to this menu.'),
                 )
             else:
                 options[screen_type.id] = label
@@ -240,7 +221,7 @@ class MenuAdminController(BaseEventAdminController):
         web_context = MenuAdminWebContext(request)
         name = web_context.get_admin_event().get_unused_menu_name()
         template_context = self._menu_form_modal_context(
-            FormAction.CREATE, {'name': name}
+            web_context, FormAction.CREATE, {'name': name}
         )
         return self._admin_event_menu_render(web_context, template_context)
 
@@ -255,7 +236,9 @@ class MenuAdminController(BaseEventAdminController):
         web_context = MenuAdminWebContext(request)
         menu = web_context.get_admin_menu()
         data = self._menu_form_data_from_menu(menu)
-        template_context = self._menu_form_modal_context(FormAction.UPDATE, data)
+        template_context = self._menu_form_modal_context(
+            web_context, FormAction.UPDATE, data
+        )
         return self._admin_event_menu_render(web_context, template_context)
 
     @get(
@@ -271,7 +254,9 @@ class MenuAdminController(BaseEventAdminController):
         menu = web_context.get_admin_menu()
         data = self._menu_form_data_from_menu(menu)
         data |= {'name': event.get_unused_menu_name(menu.name)}
-        template_context = self._menu_form_modal_context(FormAction.CLONE, data)
+        template_context = self._menu_form_modal_context(
+            web_context, FormAction.CLONE, data
+        )
         return self._admin_event_menu_render(web_context, template_context)
 
     @get(
@@ -321,6 +306,7 @@ class MenuAdminController(BaseEventAdminController):
                 used_names.remove(web_context.get_admin_menu().name)
             if name in used_names:
                 errors[field] = _('This name is already used.')
+        BaseEventAdminController._read_display_controller_ids(data, errors, event)
         raw_mode = WebContext.form_data_to_str(data, 'submenu_mode') or ''
         try:
             submenu_mode = MenuSubmenuMode(raw_mode)
@@ -342,21 +328,28 @@ class MenuAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        form_data = WebContext.flatten_list_data(data)
         web_context = MenuAdminWebContext(request)
         stored_menu, errors = self._read_menu_form_data(
-            data, web_context, FormAction.CREATE
+            form_data, web_context, FormAction.CREATE
         )
         if not stored_menu:
             return self._admin_event_menu_render(
                 web_context,
-                self._menu_form_modal_context(FormAction.CREATE, data, errors),
+                self._menu_form_modal_context(
+                    web_context, FormAction.CREATE, form_data, errors
+                ),
             )
         event = web_context.get_admin_event()
         web_context.admin_menu = event.create_menu(stored_menu)
+        event.set_menu_display_controllers(
+            web_context.admin_menu.id,
+            self._read_display_controller_ids(form_data, errors, event),
+        )
         template_context = self._menu_items_modal_context(
             web_context,
             _('Menu [{menu}] has been created.').format(menu=stored_menu.name),
@@ -371,23 +364,30 @@ class MenuAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        form_data = WebContext.flatten_list_data(data)
         web_context = MenuAdminWebContext(request)
         stored_menu, errors = self._read_menu_form_data(
-            data, web_context, FormAction.CLONE
+            form_data, web_context, FormAction.CLONE
         )
         if not stored_menu:
             return self._admin_event_menu_render(
                 web_context,
-                self._menu_form_modal_context(FormAction.CLONE, data, errors),
+                self._menu_form_modal_context(
+                    web_context, FormAction.CLONE, form_data, errors
+                ),
             )
         event = web_context.get_admin_event()
         cloned_menu = web_context.get_admin_menu()
         stored_menu.stored_menu_items = copy(cloned_menu.stored_menu_items)
-        event.create_menu(stored_menu)
+        new_menu = event.create_menu(stored_menu)
+        event.set_menu_display_controllers(
+            new_menu.id,
+            self._read_display_controller_ids(form_data, errors, event),
+        )
         Message.success(
             request,
             _('Menu [{menu}] has been created.').format(menu=stored_menu.name),
@@ -402,18 +402,21 @@ class MenuAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        form_data = WebContext.flatten_list_data(data)
         web_context = MenuAdminWebContext(request)
         stored_menu, errors = self._read_menu_form_data(
-            data, web_context, FormAction.UPDATE
+            form_data, web_context, FormAction.UPDATE
         )
         if not stored_menu:
             return self._admin_event_menu_render(
                 web_context,
-                self._menu_form_modal_context(FormAction.UPDATE, data, errors),
+                self._menu_form_modal_context(
+                    web_context, FormAction.UPDATE, form_data, errors
+                ),
             )
         event = web_context.get_admin_event()
         menu = web_context.get_admin_menu()
@@ -421,6 +424,10 @@ class MenuAdminController(BaseEventAdminController):
         stored_menu.default_type = menu.stored_menu.default_type
         stored_menu.stored_menu_items = menu.stored_menu_items
         event.update_menu(stored_menu)
+        event.set_menu_display_controllers(
+            menu.id,
+            self._read_display_controller_ids(form_data, errors, event),
+        )
         menu.stored_menu = stored_menu
         Message.success(
             request,
@@ -490,17 +497,17 @@ class MenuAdminController(BaseEventAdminController):
         web_context = MenuAdminWebContext(request)
         menu = web_context.get_admin_menu()
         menu.add_menu_item(**kwargs)
-        # Re-render the whole modal so it returns to the add buttons and the
-        # freshly-claimed entities become greyed-out in the select lists.
+        # Re-render the whole modal so it returns to the add buttons and what
+        # was just added becomes greyed-out in the select lists.
         return self._admin_event_menu_render(
             web_context, self._menu_items_modal_context(web_context)
         )
 
     @post(
-        path='/menu-items/create-screen/{event_uniq_id:str}/{menu_id:int}',
-        name='admin-menu-items-create-screen',
+        path='/menu-items/create/{event_uniq_id:str}/{menu_id:int}',
+        name='admin-menu-items-create',
     )
-    async def htmx_admin_menu_items_create_screen(
+    async def htmx_admin_menu_items_create(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -508,23 +515,16 @@ class MenuAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        screen_id = WebContext.form_data_to_int(data, 'screen_id') or 0
-        return self._create_menu_item(request, screen_id=screen_id)
-
-    @post(
-        path='/menu-items/create-family/{event_uniq_id:str}/{menu_id:int}',
-        name='admin-menu-items-create-family',
-    )
-    async def htmx_admin_menu_items_create_family(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
-        family_id = WebContext.form_data_to_int(data, 'family_id') or 0
-        return self._create_menu_item(request, family_id=family_id)
+        event = RequestUtils.get_event(request)
+        item_id = WebContext.form_data_to_str(data, 'item_id') or ''
+        kind, _separator, raw_id = item_id.partition(':')
+        object_id = int(raw_id) if raw_id.isdigit() else 0
+        match kind:
+            case 'screen' if object_id in event.basic_screens_by_id:
+                return self._create_menu_item(request, screen_id=object_id)
+            case 'family' if object_id in event.families_by_id:
+                return self._create_menu_item(request, family_id=object_id)
+        raise ClientException(f'[{item_id}] cannot be added to a menu.')
 
     @post(
         path='/menu-items/create-screen-type/{event_uniq_id:str}/{menu_id:int}',

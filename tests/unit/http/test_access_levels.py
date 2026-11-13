@@ -144,22 +144,30 @@ def events(api: ApiClient) -> Iterator[Fixtures]:
             api,
             PUBLIC_EVENT_ID,
             'Public input screen',
-            ScreenType.INPUT,
-            {'init_set_tournament_id': tournament.id, 'public': True},
+            ScreenType.BOARDS,
+            {
+                'accepts_input': True,
+                'init_set_tournament_ids': [tournament.id],
+                'public': True,
+            },
         ),
         private_screen=TestUtils.create_screen(
             api,
             PUBLIC_EVENT_ID,
             'Private input screen',
-            ScreenType.INPUT,
-            {'init_set_tournament_id': tournament.id, 'public': False},
+            ScreenType.BOARDS,
+            {
+                'accepts_input': True,
+                'init_set_tournament_ids': [tournament.id],
+                'public': False,
+            },
         ),
         check_in_screen=TestUtils.create_screen(
             api,
             PUBLIC_EVENT_ID,
             'Check-in screen',
             ScreenType.CHECK_IN,
-            {'init_set_tournament_id': unpaired.id, 'public': True},
+            {'init_set_tournament_ids': [unpaired.id], 'public': True},
         ),
     )
     TestUtils.delete_event(PUBLIC_EVENT_ID)

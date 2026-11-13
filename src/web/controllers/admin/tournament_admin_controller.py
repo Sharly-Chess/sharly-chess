@@ -2127,30 +2127,46 @@ class TournamentAdminController(BaseEventAdminController):
                             continue
                         if not screen_type.supports_event_type(event.event_type):
                             continue
-                        type_fields = screen_type.create_form_data(event)
-                        columns = type_fields.pop('columns', 1)
-                        stored_screen: StoredScreen = database.add_stored_screen(
-                            StoredScreen(
-                                id=None,
-                                uniq_id=event.get_unused_screen_uniq_id(
-                                    base_uniq_id=Utils.name_to_uniq_id(
-                                        f'{tournament.name}-{screen_type.value}'
-                                    )
-                                ),
-                                type=screen_type.value,
-                                public=True,
-                                name=f'{screen_type.name} ({tournament.name})',
-                                columns=columns,
-                                font_size=None,
-                                menu_text=None,
-                                timer_id=timer_id,
-                                message_default=True,
-                                message_text=None,
-                                **type_fields,
+                        if not screen_type.shows_tournament(tournament):
+                            continue
+                        variants: list[tuple[str, str, dict[str, Any]]] = [
+                            (screen_type.value, screen_type.name, {})
+                        ]
+                        # The pairings by board come twice: to read, and to
+                        # enter the results on.
+                        if screen_type.board_based and screen_type.allows_result_input:
+                            variants.append(
+                                ('input', _('Results entry'), {'accepts_input': True})
                             )
-                        )
-                        assert stored_screen.id is not None
-                        database.add_stored_screen_set(stored_screen.id, tournament.id)
+                        for uniq_suffix, name, variant_fields in variants:
+                            type_fields = (
+                                screen_type.create_form_data(event) | variant_fields
+                            )
+                            columns = type_fields.pop('columns', 1)
+                            stored_screen: StoredScreen = database.add_stored_screen(
+                                StoredScreen(
+                                    id=None,
+                                    uniq_id=event.get_unused_screen_uniq_id(
+                                        base_uniq_id=Utils.name_to_uniq_id(
+                                            f'{tournament.name}-{uniq_suffix}'
+                                        )
+                                    ),
+                                    type=screen_type.value,
+                                    public=True,
+                                    name=f'{name} ({tournament.name})',
+                                    columns=columns,
+                                    font_size=None,
+                                    menu_text=None,
+                                    timer_id=timer_id,
+                                    message_default=True,
+                                    message_text=None,
+                                    **type_fields,
+                                )
+                            )
+                            assert stored_screen.id is not None
+                            database.add_stored_screen_set(
+                                stored_screen.id, tournament.id
+                            )
                     success_message = _(
                         'Tournament [{tournament}] has been created '
                         'and default screens have been added.'

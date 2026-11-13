@@ -2,12 +2,18 @@ from functools import cached_property
 from typing import TYPE_CHECKING, override
 
 from common.i18n import _
-from data.pairings.systems import PairingSystem, swiss_style_permission_handler
+from data.pairings.systems import (
+    ExamplePair,
+    PairingSystem,
+    fold_pairs,
+    swiss_style_permission_handler,
+)
 from data.permissions import PairingAction, PermissionHandler
 from utils.entity import EntityManager
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.player import TournamentPlayer
     from data.pairings.knockout_helpers.variations import (
         KnockoutVariation,
         TeamKnockoutVariation,
@@ -20,6 +26,14 @@ class _KnockoutSystemMixin:
     systems. A knock-out decides its pairings as it goes (a lower seed may
     win), settles its own round count from the field size, and reads no
     colour history — colours are drawn or alternated."""
+
+    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
+        # The top seed meets the bottom one.
+        return fold_pairs(players)
+
+    @property
+    def example_draws(self) -> bool:
+        return False
 
     @property
     def predetermined_pairings(self) -> bool:

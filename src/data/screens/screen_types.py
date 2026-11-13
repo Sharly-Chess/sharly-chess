@@ -14,6 +14,7 @@ from utils.enum import (
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
     PlayersScreenPlayerFormat,
+    ScoreType,
 )
 
 logger = get_logger()
@@ -265,14 +266,14 @@ def _players_family_number_strings(
                 'from': _('teams from #{first} to end'),
                 'to': _('teams from start to #{last}'),
                 'range': _('teams from #{first} to #{last}'),
-                'number': _('screens of {number} teams'),
-                'number_from': _('screens of {number} teams from #{first} to end'),
-                'number_to': _('screens of {number} teams from start to #{last}'),
-                'number_range': _('screens of {number} teams from #{first} to #{last}'),
-                'parts': _('teams on {parts} screens'),
-                'parts_from': _('teams from #{first} to end, on {parts} screens'),
-                'parts_to': _('teams from start to #{last}, on {parts} screens'),
-                'parts_range': _('teams from #{first} to #{last}, on {parts} screens'),
+                'number': _('pages of {number} teams'),
+                'number_from': _('pages of {number} teams from #{first} to end'),
+                'number_to': _('pages of {number} teams from start to #{last}'),
+                'number_range': _('pages of {number} teams from #{first} to #{last}'),
+                'parts': _('teams on {parts} pages'),
+                'parts_from': _('teams from #{first} to end, on {parts} pages'),
+                'parts_to': _('teams from start to #{last}, on {parts} pages'),
+                'parts_range': _('teams from #{first} to #{last}, on {parts} pages'),
             },
             0,
         )
@@ -282,14 +283,14 @@ def _players_family_number_strings(
             'from': _('players from #{first} to end'),
             'to': _('players from start to #{last}'),
             'range': _('players from #{first} to #{last}'),
-            'number': _('screens of {number} players'),
-            'number_from': _('screens of {number} players from #{first} to end'),
-            'number_to': _('screens of {number} players from start to #{last}'),
-            'number_range': _('screens of {number} players from #{first} to #{last}'),
-            'parts': _('players on {parts} screens'),
-            'parts_from': _('players from #{first} to end, on {parts} screens'),
-            'parts_to': _('players from start to #{last}, on {parts} screens'),
-            'parts_range': _('players from #{first} to #{last}, on {parts} screens'),
+            'number': _('pages of {number} players'),
+            'number_from': _('pages of {number} players from #{first} to end'),
+            'number_to': _('pages of {number} players from start to #{last}'),
+            'number_range': _('pages of {number} players from #{first} to #{last}'),
+            'parts': _('players on {parts} pages'),
+            'parts_from': _('players from #{first} to end, on {parts} pages'),
+            'parts_to': _('players from start to #{last}, on {parts} pages'),
+            'parts_range': _('players from #{first} to #{last}, on {parts} pages'),
         },
         0,
     )
@@ -305,22 +306,20 @@ def _board_family_number_strings(family: Family) -> tuple[dict[str, str], int]:
                 'from': _('matches from #{first} to end'),
                 'to': _('matches from start to #{last}'),
                 'range': _('matches from #{first} to #{last}'),
-                'number': _('screens of {number} matches per column'),
+                'number': _('pages of {number} matches per column'),
                 'number_from': _(
-                    'screens of {number} matches per column from #{first} to end'
+                    'pages of {number} matches per column from #{first} to end'
                 ),
                 'number_to': _(
-                    'screens of {number} matches per column from start to #{last}'
+                    'pages of {number} matches per column from start to #{last}'
                 ),
                 'number_range': _(
-                    'screens of {number} matches per column from #{first} to #{last}'
+                    'pages of {number} matches per column from #{first} to #{last}'
                 ),
-                'parts': _('matches on {parts} screens'),
-                'parts_from': _('matches from #{first} to end, on {parts} screens'),
-                'parts_to': _('matches from start to #{last}, on {parts} screens'),
-                'parts_range': _(
-                    'matches from #{first} to #{last}, on {parts} screens'
-                ),
+                'parts': _('matches on {parts} pages'),
+                'parts_from': _('matches from #{first} to end, on {parts} pages'),
+                'parts_to': _('matches from start to #{last}, on {parts} pages'),
+                'parts_range': _('matches from #{first} to #{last}, on {parts} pages'),
             },
             0,
         )
@@ -332,18 +331,16 @@ def _board_family_number_strings(family: Family) -> tuple[dict[str, str], int]:
                 'from': _('pairings from #{first} to end'),
                 'to': _('pairings from start to #{last}'),
                 'range': _('pairings from #{first} to #{last}'),
-                'number': _('screens of {number} pairings'),
-                'number_from': _('screens of {number} pairings from #{first} to end'),
-                'number_to': _('screens of {number} pairings from start to #{last}'),
+                'number': _('pages of {number} pairings'),
+                'number_from': _('pages of {number} pairings from #{first} to end'),
+                'number_to': _('pages of {number} pairings from start to #{last}'),
                 'number_range': _(
-                    'screens of {number} pairings from #{first} to #{last}'
+                    'pages of {number} pairings from #{first} to #{last}'
                 ),
-                'parts': _('pairings on {parts} screens'),
-                'parts_from': _('pairings from #{first} to end, on {parts} screens'),
-                'parts_to': _('pairings from start to #{last}, on {parts} screens'),
-                'parts_range': _(
-                    'pairings from #{first} to #{last}, on {parts} screens'
-                ),
+                'parts': _('pairings on {parts} pages'),
+                'parts_from': _('pairings from #{first} to end, on {parts} pages'),
+                'parts_to': _('pairings from start to #{last}, on {parts} pages'),
+                'parts_range': _('pairings from #{first} to #{last}, on {parts} pages'),
             },
             0,
         )
@@ -353,14 +350,14 @@ def _board_family_number_strings(family: Family) -> tuple[dict[str, str], int]:
             'from': _('boards from #{first} to end'),
             'to': _('boards from start to #{last}'),
             'range': _('boards from #{first} to #{last}'),
-            'number': _('screens of {number} boards'),
-            'number_from': _('screens of {number} boards from #{first} to end'),
-            'number_to': _('screens of {number} boards from start to #{last}'),
-            'number_range': _('screens of {number} boards from #{first} to #{last}'),
-            'parts': _('boards on {parts} screens'),
-            'parts_from': _('boards from #{first} to end, on {parts} screens'),
-            'parts_to': _('boards from start to #{last}, on {parts} screens'),
-            'parts_range': _('boards from #{first} to #{last}, on {parts} screens'),
+            'number': _('pages of {number} boards'),
+            'number_from': _('pages of {number} boards from #{first} to end'),
+            'number_to': _('pages of {number} boards from start to #{last}'),
+            'number_range': _('pages of {number} boards from #{first} to #{last}'),
+            'parts': _('boards on {parts} pages'),
+            'parts_from': _('boards from #{first} to end, on {parts} pages'),
+            'parts_to': _('boards from start to #{last}, on {parts} pages'),
+            'parts_range': _('boards from #{first} to #{last}, on {parts} pages'),
         },
         family.tournament.first_board_number - 1,
     )
@@ -375,14 +372,14 @@ def _board_selection_labels(is_team_matches: bool) -> dict:
             'last_label': _('Last match:'),
             'first_tooltip': _('The table number of the first match to select.'),
             'last_tooltip': _('The table number of the last match to select.'),
-            'parts_placeholder': _('E.g.: 4 (split matches over 4 screens)'),
+            'parts_placeholder': _('E.g.: 4 (split matches over 4 pages)'),
             'parts_tooltip': _(
-                'The number of screens on which the matches will be distributed, optional (the number of screens is always the same and the number of matches per screen adapts to the number of matches).'
+                'The number of pages on which the matches will be distributed, optional (the number of pages is always the same and the number of matches per page adapts to the number of matches).'
             ),
             'number_label': _('Matches per column:'),
             'number_placeholder': _('E.g.: 4 (matches per column)'),
             'number_tooltip': _(
-                'The number of team matches per column, optional (the number of screens adapts to the number of matches; a match spans one row per board).'
+                'The number of team matches per column, optional (the number of pages adapts to the number of matches; a match spans one row per board).'
             ),
         }
     return {
@@ -391,14 +388,14 @@ def _board_selection_labels(is_team_matches: bool) -> dict:
         'last_label': _('Last board:'),
         'first_tooltip': _('The number of the first board to select.'),
         'last_tooltip': _('The number of the last board to select.'),
-        'parts_placeholder': _('E.g.: 4 (split boards over 4 screens)'),
+        'parts_placeholder': _('E.g.: 4 (split boards over 4 pages)'),
         'parts_tooltip': _(
-            'The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).'
+            'The number of pages on which the boards will be distributed, optional (the number of pages is always the same and the number of boards per page adapts to the number of boards).'
         ),
-        'number_label': _('Rows per screen:'),
-        'number_placeholder': _('E.g.: 20 (boards per screen)'),
+        'number_label': _('Rows per page:'),
+        'number_placeholder': _('E.g.: 20 (boards per page)'),
         'number_tooltip': _(
-            'The number of boards per screen, optional (the number of screens adapts to the number of boards).'
+            'The number of boards per page, optional (the number of pages adapts to the number of boards).'
         ),
     }
 
@@ -408,20 +405,20 @@ def _name_or_rank_selection_labels(is_team: bool, header: str) -> dict:
     ranking): teams in a team event, players otherwise. *header* differs per
     ordering (alphabetical vs rank); the ``first``/``last`` tooltips are set by
     the caller."""
-    unit_placeholder = _('E.g.: 20 (players per screen)')
+    unit_placeholder = _('E.g.: 20 (players per page)')
     number_tooltip = _(
-        'The number of players per screen, optional (the number of screens adapts to the number of players).'
+        'The number of players per page, optional (the number of pages adapts to the number of players).'
     )
     if is_team:
         return {
             'header': header,
             'first_label': _('First team:'),
             'last_label': _('Last team:'),
-            'parts_placeholder': _('E.g.: 4 (split teams over 4 screens)'),
+            'parts_placeholder': _('E.g.: 4 (split teams over 4 pages)'),
             'parts_tooltip': _(
-                'The number of screens on which the teams will be distributed, optional (the number of screens is always the same and the number of teams per screen adapts to the number of teams).'
+                'The number of pages on which the teams will be distributed, optional (the number of pages is always the same and the number of teams per page adapts to the number of teams).'
             ),
-            'number_label': _('Rows per screen:'),
+            'number_label': _('Rows per page:'),
             'number_placeholder': unit_placeholder,
             'number_tooltip': number_tooltip,
         }
@@ -429,18 +426,18 @@ def _name_or_rank_selection_labels(is_team: bool, header: str) -> dict:
         'header': header,
         'first_label': _('First player:'),
         'last_label': _('Last player:'),
-        'parts_placeholder': _('E.g.: 4 (split players over 4 screens)'),
+        'parts_placeholder': _('E.g.: 4 (split players over 4 pages)'),
         'parts_tooltip': _(
-            'The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.'
+            'The number of pages on which the players will be distributed, optional (the number of pages is always the same and the number of players per page adapts to the number of players.'
         ),
-        'number_label': _('Rows per screen:'),
+        'number_label': _('Rows per page:'),
         'number_placeholder': unit_placeholder,
         'number_tooltip': number_tooltip,
     }
 
 
 def _config_record(screen: Screen) -> StoredScreen | StoredFamily:
-    """The stored record carrying *screen*'s configuration: the screen's own
+    """The stored record carrying *screen*'s configuration: the page's own
     record, or its family's for a family-generated screen."""
     if screen.stored_screen is not None:
         return screen.stored_screen
@@ -518,24 +515,56 @@ class ScreenType(IdentifiableEntity, ABC):
 
     @property
     def allows_result_input(self) -> bool:
-        """Whether the screen lets people enter results (and illegal moves)."""
+        """Whether a screen of this type that accepts input lets people enter
+        results (and illegal moves)."""
         return False
 
     @property
     def allows_check_in(self) -> bool:
-        """Whether the screen lets people check players/teams in or out."""
+        """Whether a screen of this type that accepts input lets people check
+        players/teams in or out."""
         return False
 
     @property
-    def has_exit_button(self) -> bool:
-        """Whether the screen offers an exit button (the interactive types)."""
+    def input_option(self) -> bool:
+        """Whether a screen of this type can be set to accept input."""
         return self.allows_result_input or self.allows_check_in
 
     @property
-    def allowed_in_rotators(self) -> bool:
-        """Whether screens/families of this type can be picked for a rotator.
-        Interactive types (result entry, check-in) opt out."""
-        return True
+    def input_label(self) -> str:
+        """The label of the switch making a screen of this type accept input."""
+        if self.allows_check_in:
+            return _('Players can check in on this screen')
+        return _('Results can be entered on this screen')
+
+    @property
+    def input_badge(self) -> str:
+        """The short label marking a screen of this type that accepts input."""
+        if self.allows_check_in:
+            return _('Check-in')
+        return _('Result entry')
+
+    def input_form_values(self, data: dict[str, str]) -> dict:
+        """The input switches read from the submitted form *data*."""
+        from web.controllers.base_controller import WebContext
+
+        if not self.input_option:
+            return {}
+        return {
+            'accepts_input': WebContext.form_data_to_bool(data, 'accepts_input'),
+            'input_exit_button': WebContext.form_data_to_bool(
+                data, 'input_exit_button'
+            ),
+        }
+
+    def input_defaults(self, record: StoredScreen | StoredFamily) -> dict:
+        """The input switches of a stored screen or family, as form values."""
+        if not self.input_option:
+            return {}
+        return {
+            'accepts_input': record.accepts_input,
+            'input_exit_button': record.input_exit_button,
+        }
 
     @property
     def has_config_fields(self) -> bool:
@@ -621,6 +650,16 @@ class ScreenType(IdentifiableEntity, ABC):
         """Whether screens of this type can be created in an event of
         *event_type*."""
         return True
+
+    def shows_tournament(self, tournament: Tournament) -> bool:
+        """Whether a screen of this type can show *tournament*."""
+        return True
+
+    @property
+    def no_tournament_reason(self) -> str:
+        """Why a set-based screen of this type cannot be created while the
+        event has no tournament it can show."""
+        return _('You must create a tournament before creating these screens.')
 
     @property
     def set_template(self) -> str | None:
@@ -734,11 +773,12 @@ class ScreenType(IdentifiableEntity, ABC):
         family card. Only the family-capable types implement this."""
         raise NotImplementedError(f'{type(self).__name__} does not back a family')
 
-    def selection_labels(self, is_team: bool, is_team_matches: bool) -> dict:
+    def selection_labels(self, is_team: bool, is_team_matches: bool) -> dict | None:
         """The create/edit-form selection wording (section header, first/last
-        and screens/rows labels and tooltips) for a family of this type. Only
-        the family-capable types implement this."""
-        raise NotImplementedError(f'{type(self).__name__} does not back a family')
+        and screens/rows labels and tooltips) for a set or family of this
+        type, None when its sets always show the whole tournament. Only the
+        set-based types implement this."""
+        raise NotImplementedError(f'{type(self).__name__} does not select a range')
 
     def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
         """The selection-label string table and board-number offset for a
@@ -784,18 +824,27 @@ class CheckInScreenType(ScreenType):
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
-        return {
-            'input_exit_button': WebContext.form_data_to_bool(data, 'input_exit_button')
+        return self.input_form_values(data) | {
+            'check_in_show_members': event.is_team_event
+            and WebContext.form_data_to_bool(data, 'check_in_show_members')
         }
 
     @override
     def default_form_data(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
-        return {'input_exit_button': screen.stored_screen.input_exit_button}
+        return self.input_defaults(screen.stored_screen) | {
+            'check_in_show_members': screen.stored_screen.check_in_show_members
+        }
 
     @override
     def default_family_form_data(self, family: Family) -> dict:
-        return {'input_exit_button': family.stored_family.input_exit_button}
+        return self.input_defaults(family.stored_family) | {
+            'check_in_show_members': family.stored_family.check_in_show_members
+        }
+
+    @override
+    def set_context(self, screen_set: ScreenSet) -> dict:
+        return {'show_members': _config_record(screen_set.screen).check_in_show_members}
 
     @override
     def default_family_screen_name(self, screen: Screen) -> str:
@@ -820,17 +869,12 @@ class CheckInScreenType(ScreenType):
 
     @property
     @override
-    def allowed_in_rotators(self) -> bool:
-        return False
-
-    @property
-    @override
     def form_template(self) -> str | None:
-        return '/admin/screens/forms/exit_button_form.html'
+        return '/admin/screens/forms/check_in_form.html'
 
     @override
     def create_form_data(self, event: Event) -> dict:
-        return {'input_exit_button': False}
+        return {'accepts_input': True, 'input_exit_button': False}
 
     @override
     def range_bounds(
@@ -890,130 +934,6 @@ class CheckInScreenType(ScreenType):
         return selection
 
 
-class InputScreenType(ScreenType):
-    @staticmethod
-    def static_id() -> str:
-        return 'input'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Results entry')
-
-    @property
-    def icon_str(self) -> str:
-        return 'bi-pencil'
-
-    @property
-    def tooltip_text(self) -> str:
-        return _(
-            'Input screens show pairings by board number and allow people to '
-            'enter results.'
-        )
-
-    @override
-    def read_form_data(
-        self, data: dict[str, str], errors: dict[str, str], event: Event
-    ) -> dict:
-        from web.controllers.base_controller import WebContext
-
-        return {
-            'input_exit_button': WebContext.form_data_to_bool(data, 'input_exit_button')
-        }
-
-    @override
-    def default_form_data(self, screen: Screen) -> dict:
-        assert screen.stored_screen is not None
-        return {'input_exit_button': screen.stored_screen.input_exit_button}
-
-    @override
-    def default_family_form_data(self, family: Family) -> dict:
-        return {'input_exit_button': family.stored_family.input_exit_button}
-
-    @override
-    def default_family_screen_name(self, screen: Screen) -> str:
-        return screen.sorted_screen_sets[0].name_for_boards
-
-    @override
-    def shows_unpaired_players(self, screen: Screen) -> bool:
-        return True
-
-    @property
-    @override
-    def set_template(self) -> str | None:
-        return '/user/screen/sets/boards_set.html'
-
-    @property
-    @override
-    def supports_fixed_boards(self) -> bool:
-        return True
-
-    @property
-    @override
-    def allows_result_input(self) -> bool:
-        return True
-
-    @property
-    @override
-    def allowed_in_rotators(self) -> bool:
-        return False
-
-    @property
-    @override
-    def board_based(self) -> bool:
-        return True
-
-    @property
-    @override
-    def form_template(self) -> str | None:
-        return '/admin/screens/forms/exit_button_form.html'
-
-    @override
-    def create_form_data(self, event: Event) -> dict:
-        return {'input_exit_button': False}
-
-    @override
-    def build_columns(
-        self, screen: Screen, tournament: Tournament, event: Event
-    ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
-        show_illegal_moves = tournament.record_illegal_moves > 0
-        return _build_board_columns(tournament, show_illegal_moves)
-
-    @override
-    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
-        return (
-            super().set_refresh_needed(screen_set, since)
-            or screen_set.tournament.last_pairing_update > since
-        )
-
-    @override
-    def range_bounds(
-        self, screen_set: ScreenSet, abbreviated: bool = False
-    ) -> tuple[str, str]:
-        if not screen_set.tournament.current_round:
-            return super().range_bounds(screen_set, abbreviated)
-        return _board_range_bounds(screen_set)
-
-    @override
-    def numbers_str(self, screen_set: ScreenSet) -> str:
-        return _board_numbers_str(screen_set)
-
-    @override
-    def family_item_range(self, family: Family) -> FamilyItemRange:
-        return _board_family_item_range(family)
-
-    @override
-    def family_screen_label(self, screen_set: ScreenSet) -> str:
-        return _board_family_screen_label(screen_set)
-
-    @override
-    def selection_labels(self, is_team: bool, is_team_matches: bool) -> dict:
-        return _board_selection_labels(is_team_matches)
-
-    @override
-    def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
-        return _board_family_number_strings(family)
-
-
 class BoardsScreenType(ScreenType):
     @staticmethod
     def static_id() -> str:
@@ -1037,20 +957,26 @@ class BoardsScreenType(ScreenType):
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
+        input_values = self.input_form_values(data)
         return {
             'boards_hide_players': WebContext.form_data_to_bool(
                 data, 'boards_hide_players'
             )
-        }
+            and not input_values.get('accepts_input', False)
+        } | input_values
 
     @override
     def default_form_data(self, screen: Screen) -> dict:
         assert screen.stored_screen is not None
-        return {'boards_hide_players': screen.stored_screen.boards_hide_players}
+        return {
+            'boards_hide_players': screen.stored_screen.boards_hide_players
+        } | self.input_defaults(screen.stored_screen)
 
     @override
     def default_family_form_data(self, family: Family) -> dict:
-        return {'boards_hide_players': family.stored_family.boards_hide_players}
+        return {
+            'boards_hide_players': family.stored_family.boards_hide_players
+        } | self.input_defaults(family.stored_family)
 
     @override
     def default_family_screen_name(self, screen: Screen) -> str:
@@ -1063,13 +989,20 @@ class BoardsScreenType(ScreenType):
 
     def hides_players(self, screen: Screen) -> bool:
         """Whether the matches of team tournaments are shown without the
-        players of their boards."""
-        return bool(_config_record(screen).boards_hide_players)
+        players of their boards: never on a screen taking results, which are
+        entered on the boards."""
+        record = _config_record(screen)
+        return bool(record.boards_hide_players) and not record.accepts_input
 
     @property
     @override
     def set_template(self) -> str | None:
         return '/user/screen/sets/boards_set.html'
+
+    @property
+    @override
+    def allows_result_input(self) -> bool:
+        return True
 
     @property
     @override
@@ -1095,7 +1028,11 @@ class BoardsScreenType(ScreenType):
     def family_card_context(self, family: Family) -> dict | None:
         if not family.event.is_team_event:
             return None
-        return {'hide_players': bool(family.stored_family.boards_hide_players)}
+        stored = family.stored_family
+        return {
+            'hide_players': bool(stored.boards_hide_players)
+            and not stored.accepts_input
+        }
 
     @property
     @override
@@ -1111,7 +1048,12 @@ class BoardsScreenType(ScreenType):
     def build_columns(
         self, screen: Screen, tournament: Tournament, event: Event
     ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
-        return _build_board_columns(tournament, show_illegal_moves=False)
+        return _build_board_columns(
+            tournament,
+            show_illegal_moves=screen.accepts_input
+            and not tournament.is_fake
+            and tournament.record_illegal_moves > 0,
+        )
 
     @override
     def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
@@ -1185,7 +1127,7 @@ class PlayersScreenType(ScreenType):
             'players_opponent_format': WebContext.form_data_to_int(
                 data, 'players_opponent_format'
             ),
-        }
+        } | self.input_form_values(data)
 
     @override
     def default_form_data(self, screen: Screen) -> dict:
@@ -1196,7 +1138,7 @@ class PlayersScreenType(ScreenType):
             stored.players_player_format,
             stored.players_board_format,
             stored.players_opponent_format,
-        )
+        ) | self.input_defaults(stored)
 
     @override
     def default_family_form_data(self, family: Family) -> dict:
@@ -1206,7 +1148,7 @@ class PlayersScreenType(ScreenType):
             stored.players_player_format,
             stored.players_board_format,
             stored.players_opponent_format,
-        )
+        ) | self.input_defaults(stored)
 
     @staticmethod
     def _players_form_data(
@@ -1282,6 +1224,11 @@ class PlayersScreenType(ScreenType):
     @override
     def set_template(self) -> str | None:
         return '/user/screen/sets/players_set.html'
+
+    @property
+    @override
+    def allows_result_input(self) -> bool:
+        return True
 
     @property
     @override
@@ -1589,7 +1536,56 @@ class ResultsScreenType(ScreenType):
         return False
 
 
-class RankingScreenType(ScreenType):
+class ColumnTogglesScreenType(ScreenType, ABC):
+    """A screen type whose columns can be shown or hidden one by one, with a
+    checkbox each in its form."""
+
+    # Sent with the column checkboxes, so that an absent checkbox reads as
+    # unchecked only when the checkboxes were part of the form.
+    ranking_columns_marker = 'ranking_columns'
+
+    @abstractmethod
+    def ranking_column_toggles(self, event: Event) -> dict[str, str]:
+        """The labels of the columns that can be hidden, by toggle id."""
+
+    @staticmethod
+    def ranking_column_field(toggle_id: str) -> str:
+        """The form field of the checkbox showing the column *toggle_id*."""
+        return f'ranking_column_{toggle_id}'
+
+    def hidden_columns_form_value(
+        self, data: dict[str, str], event: Event
+    ) -> list[str]:
+        """The toggle ids of the columns left unchecked in the form *data*."""
+        from web.controllers.base_controller import WebContext
+
+        if self.ranking_columns_marker not in data:
+            return []
+        return [
+            toggle_id
+            for toggle_id in self.ranking_column_toggles(event)
+            if not WebContext.form_data_to_bool(
+                data, self.ranking_column_field(toggle_id)
+            )
+        ]
+
+    def column_form_data(
+        self, stored: StoredScreen | StoredFamily, event: Event
+    ) -> dict:
+        """The column checkboxes of a stored screen or family, as form
+        values."""
+        return {
+            self.ranking_column_field(toggle_id): (
+                toggle_id not in stored.ranking_hidden_columns
+            )
+            for toggle_id in self.ranking_column_toggles(event)
+        }
+
+    def ranking_hidden_columns(self, screen: Screen) -> list[str]:
+        return _config_record(screen).ranking_hidden_columns
+
+
+class RankingScreenType(ColumnTogglesScreenType):
     @staticmethod
     def static_id() -> str:
         return 'ranking'
@@ -1633,46 +1629,46 @@ class RankingScreenType(ScreenType):
             )
         except ValueError:
             errors['ranking_max_points'] = _('A positive integer is expected.')
+        values['ranking_hidden_columns'] = self.hidden_columns_form_value(data, event)
         return values
 
     @override
     def default_form_data(self, screen: Screen) -> dict:
         stored = screen.stored_screen
         assert stored is not None
-        return self._ranking_form_data(
-            stored.ranking_crosstable,
-            stored.ranking_round,
-            stored.ranking_min_points,
-            stored.ranking_max_points,
-        )
+        return self._ranking_form_data(stored, screen.event)
 
     @override
     def default_family_form_data(self, family: Family) -> dict:
-        stored = family.stored_family
-        return self._ranking_form_data(
-            stored.ranking_crosstable,
-            stored.ranking_round,
-            stored.ranking_min_points,
-            stored.ranking_max_points,
-        )
+        return self._ranking_form_data(family.stored_family, family.event)
 
-    @staticmethod
     def _ranking_form_data(
-        crosstable: bool,
-        ranking_round: int | None,
-        min_points: float | None,
-        max_points: float | None,
+        self, stored: StoredScreen | StoredFamily, event: Event
     ) -> dict:
         return {
-            'ranking_crosstable': crosstable,
-            'ranking_round': ranking_round,
-            'ranking_min_points': min_points,
-            'ranking_max_points': max_points,
-        }
+            'ranking_crosstable': stored.ranking_crosstable,
+            'ranking_round': stored.ranking_round,
+            'ranking_min_points': stored.ranking_min_points,
+            'ranking_max_points': stored.ranking_max_points,
+        } | self.column_form_data(stored, event)
 
     @override
     def create_form_data(self, event: Event) -> dict:
         return {'ranking_crosstable': False}
+
+    @override
+    def ranking_column_toggles(self, event: Event) -> dict[str, str]:
+        """The labels of the columns that can be hidden, by toggle id. Team
+        standings only have tie-break columns to hide."""
+        from data.columns.column import ColumnUsage
+        from data.columns.handlers import PlayerColumnHandler
+        from data.columns.player_table import tie_break_toggle_labels
+
+        if event.is_team_event:
+            return tie_break_toggle_labels()
+        return PlayerColumnHandler(
+            event, ColumnUsage.SCREEN
+        ).get_ranking_column_toggles()
 
     @override
     def default_family_screen_name(self, screen: Screen) -> str:
@@ -1720,11 +1716,12 @@ class RankingScreenType(ScreenType):
         ranking_round = tournament.ranking.correct_round(self.ranking_round(screen))
         tournament.compute_tournament_player_ranks(after_round=ranking_round)
         column_handler = PlayerColumnHandler(event, ColumnUsage.SCREEN)
+        hidden = self.ranking_hidden_columns(screen)
         if self.ranking_crosstable(screen):
             return column_handler.get_player_crosstable_columns(
-                tournament, ranking_round
+                tournament, ranking_round, hidden
             )
-        return column_handler.get_player_ranking_columns(tournament)
+        return column_handler.get_player_ranking_columns(tournament, hidden)
 
     @override
     def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
@@ -1735,7 +1732,21 @@ class RankingScreenType(ScreenType):
 
     @override
     def set_context(self, screen_set: ScreenSet) -> dict:
-        return {'ranking_round': self.ranking_round(screen_set.screen)}
+        from data.columns.player_table import tie_break_toggle_id
+
+        hidden = self.ranking_hidden_columns(screen_set.screen)
+        team_tie_break_count = sum(
+            tie_break.supports_team_mode
+            for tie_break in screen_set.tournament.tie_breaks
+        )
+        return {
+            'ranking_round': self.ranking_round(screen_set.screen),
+            'shown_team_tie_break_indexes': [
+                index
+                for index in range(team_tie_break_count)
+                if tie_break_toggle_id(index) not in hidden
+            ],
+        }
 
     @property
     @override
@@ -1872,6 +1883,280 @@ class RankingScreenType(ScreenType):
             str(first.rank) if first else dash,
             str(last.rank) if last else dash,
         )
+
+
+class RoundRobinGridScreenType(ColumnTogglesScreenType):
+    """Every player of a round robin against every other, or every team: the
+    results of the games played, and the rounds of those still to come."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'round-robin-grid'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Round-robin grid')
+
+    @property
+    def icon_str(self) -> str:
+        return 'bi-grid-3x3'
+
+    @property
+    def tooltip_text(self) -> str:
+        return _(
+            'Round-robin grid screens show every player of a round robin '
+            'against every other, with the results and the rounds still to play.'
+        )
+
+    @override
+    def read_form_data(
+        self, data: dict[str, str], errors: dict[str, str], event: Event
+    ) -> dict:
+        from web.controllers.base_controller import WebContext
+
+        return {
+            'round_robin_grid_by_rank': WebContext.form_data_to_bool(
+                data, 'round_robin_grid_by_rank'
+            ),
+            'round_robin_grid_players': event.is_team_event
+            and WebContext.form_data_to_bool(data, 'round_robin_grid_players'),
+            'ranking_hidden_columns': self.hidden_columns_form_value(data, event),
+        }
+
+    @override
+    def default_form_data(self, screen: Screen) -> dict:
+        stored = screen.stored_screen
+        assert stored is not None
+        return {
+            'round_robin_grid_by_rank': stored.round_robin_grid_by_rank,
+            'round_robin_grid_players': stored.round_robin_grid_players,
+        } | self.column_form_data(stored, screen.event)
+
+    @override
+    def create_form_data(self, event: Event) -> dict:
+        return {'round_robin_grid_by_rank': False, 'round_robin_grid_players': False}
+
+    @override
+    def ranking_column_toggles(self, event: Event) -> dict[str, str]:
+        """The labels of the columns that can be hidden, by toggle id. Team
+        grids only have tie-break columns to hide."""
+        from data.columns.column import ColumnUsage
+        from data.columns.handlers import PlayerColumnHandler
+        from data.columns.player_table import tie_break_toggle_labels
+
+        if event.is_team_event:
+            return tie_break_toggle_labels()
+        return PlayerColumnHandler(
+            event, ColumnUsage.SCREEN
+        ).get_round_robin_grid_column_toggles()
+
+    @property
+    @override
+    def families_allowed(self) -> bool:
+        return False
+
+    @property
+    @override
+    def multi_column_allowed(self) -> bool:
+        return False
+
+    @override
+    def shows_tournament(self, tournament: Tournament) -> bool:
+        from data.pairings.round_robin_grid import round_robin_engine
+
+        return round_robin_engine(tournament) is not None
+
+    @property
+    @override
+    def no_tournament_reason(self) -> str:
+        return _('These screens show round-robin tournaments only.')
+
+    @property
+    @override
+    def set_template(self) -> str | None:
+        return '/user/screen/sets/round_robin_grid_set.html'
+
+    @property
+    @override
+    def form_template(self) -> str | None:
+        return '/admin/screens/forms/round_robin_grid_form.html'
+
+    @override
+    def selection_labels(self, is_team: bool, is_team_matches: bool) -> dict | None:
+        return None
+
+    @override
+    def numbers_str(self, screen_set: ScreenSet) -> str:
+        if screen_set.tournament.is_team_tournament:
+            return _('All the teams')
+        return _('All the players')
+
+    def by_rank(self, screen: Screen) -> bool:
+        """Whether the grid orders its members by rank rather than by pairing
+        number."""
+        stored = screen.stored_screen
+        return stored is not None and stored.round_robin_grid_by_rank
+
+    def by_player(self, screen: Screen) -> bool:
+        """Whether a team grid shows a row per player rather than per team."""
+        stored = screen.stored_screen
+        return stored is not None and stored.round_robin_grid_players
+
+    def member_order(self, screen: Screen, tournament: Tournament) -> list[int]:
+        """The ids of the players, or teams, of *tournament* in the order of
+        the grid."""
+        from data.pairings.round_robin_grid import members_by_pairing_number
+
+        ranking_round = tournament.ranking.correct_round()
+        if tournament.is_team_tournament:
+            members = [team.id for team in tournament.teams]
+            ordered = (
+                [
+                    row.team.id
+                    for row in tournament.team_standings(after_round=ranking_round)
+                ]
+                if self.by_rank(screen)
+                else members_by_pairing_number(tournament)
+            )
+        else:
+            members = list(tournament.tournament_players_by_id)
+            ordered = (
+                [
+                    tournament_player.id
+                    for tournament_player in tournament.compute_tournament_player_ranks(
+                        after_round=ranking_round
+                    ).values()
+                ]
+                if self.by_rank(screen)
+                else members_by_pairing_number(tournament)
+            )
+        return [member for member in ordered if member in members] + [
+            member for member in members if member not in ordered
+        ]
+
+    @override
+    def build_columns(
+        self, screen: Screen, tournament: Tournament, event: Event
+    ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
+        from data.columns.column import ColumnUsage
+        from data.columns.handlers import PlayerColumnHandler
+        from data.pairings.round_robin_grid import player_grid
+
+        tournament.compute_tournament_player_ranks(
+            after_round=tournament.ranking.correct_round()
+        )
+        if tournament.is_team_tournament:
+            return None
+        cells = player_grid(
+            tournament, lambda round_: not tournament.hides_round_results(round_)
+        )
+        return PlayerColumnHandler(
+            event, ColumnUsage.SCREEN
+        ).get_player_round_robin_grid_columns(
+            tournament,
+            self.member_order(screen, tournament),
+            cells,
+            self.ranking_hidden_columns(screen),
+        )
+
+    @override
+    def set_refresh_needed(self, screen_set: ScreenSet, since: datetime) -> bool:
+        return (
+            super().set_refresh_needed(screen_set, since)
+            or screen_set.tournament.last_pairing_update > since
+        )
+
+    @override
+    def set_context(self, screen_set: ScreenSet) -> dict:
+        from data.columns.player_table import tie_break_toggle_id
+        from data.pairings.round_robin_grid import team_grid, team_player_grid
+
+        screen = screen_set.screen
+        tournament = screen_set.tournament
+        order = self.member_order(screen, tournament)
+        stored_screen_set = screen_set.stored_screen_set
+        title = (
+            stored_screen_set.name
+            if stored_screen_set is not None and stored_screen_set.name
+            else tournament.name
+        )
+        if not tournament.is_team_tournament:
+            return {
+                'title': title,
+                'players': [
+                    tournament.tournament_players_by_id[player_id]
+                    for player_id in order
+                ],
+            }
+        ranking_round = tournament.ranking.correct_round()
+        teams_by_id = {team.id: team for team in tournament.teams}
+        if self.by_player(screen):
+            player_rows, player_cells = team_player_grid(
+                tournament,
+                [teams_by_id[team_id] for team_id in order],
+                lambda round_: not tournament.hides_round_results(round_),
+            )
+            return {
+                'title': title,
+                'player_rows': [
+                    {
+                        'row': row,
+                        'cells': [
+                            None
+                            if opponent.team.id == row.team.id
+                            else player_cells[row.tournament_player.id][
+                                opponent.tournament_player.id
+                            ]
+                            for opponent in player_rows
+                        ],
+                    }
+                    for row in player_rows
+                ],
+                'opponents': player_rows,
+            }
+        cells = team_grid(
+            tournament, lambda round_: not tournament.hides_round_results(round_)
+        )
+        standings_by_team_id = {
+            row.team.id: row
+            for row in tournament.team_standings(after_round=ranking_round)
+        }
+        hidden = self.ranking_hidden_columns(screen)
+        team_tie_breaks = tournament.team_tie_breaks
+        return {
+            'title': title,
+            'rows': [
+                {
+                    'number': number,
+                    'team': teams_by_id[team_id],
+                    'standing': standings_by_team_id.get(team_id),
+                    'cells': [
+                        None if opponent_id == team_id else cells[team_id][opponent_id]
+                        for opponent_id in order
+                    ],
+                }
+                for number, team_id in enumerate(order, 1)
+            ],
+            'primary_is_mp': (
+                tournament.pairing_system.paired_by_team
+                and tournament.primary_score == ScoreType.MATCH_POINTS
+            ),
+            'team_tie_breaks': team_tie_breaks,
+            'shown_team_tie_break_indexes': [
+                index
+                for index in range(len(team_tie_breaks))
+                if tie_break_toggle_id(index) not in hidden
+            ],
+        }
+
+    @property
+    @override
+    def card_detail_template(self) -> str | None:
+        return '/admin/screens/cards/round_robin_grid_card.html'
+
+    @override
+    def card_context(self, screen: Screen) -> dict:
+        return {'by_rank': self.by_rank(screen), 'by_player': self.by_player(screen)}
 
 
 class ImageScreenType(ScreenType):

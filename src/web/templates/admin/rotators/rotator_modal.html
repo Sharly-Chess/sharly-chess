@@ -50,7 +50,9 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-
+                    {% with destination_field_class='col-12' %}
+                        {% include '/admin/display_controllers/destination_field.html' %}
+                    {% endwith %}
                     <div class="col-12">
                         {{ admin_macros.number_input(
                             name='delay',

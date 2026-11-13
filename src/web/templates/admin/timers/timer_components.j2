@@ -39,7 +39,7 @@
             <span {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}>
                 {% call components.icon_text('bi-window', icon_class='text-secondary') %}{{ item.screens|length }}{% endcall %}
             </span>
-            <span {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}>
+            <span {{ macros.tooltip_attributes('info', _('Number of paged screens'), 'top') }}>
                 {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.families|length }}{% endcall %}
             </span>
             <span {{ macros.tooltip_attributes('info', _('Number of rotators'), 'top') }}>

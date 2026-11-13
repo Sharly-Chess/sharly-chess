@@ -57,6 +57,14 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
 
 class FraSchoolTableColumn(TournamentPlayerTableColumn):
     @property
+    def toggle_id(self) -> str | None:
+        return 'fra_school'
+
+    @property
+    def toggle_label(self) -> str:
+        return _('School')
+
+    @property
     def header_content(self) -> str:
         return pgettext('school column header', 'School')
 

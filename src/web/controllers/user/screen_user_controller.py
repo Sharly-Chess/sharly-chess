@@ -10,6 +10,9 @@ from litestar_htmx import HTMXTemplate
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     DisplayControllerUserWebContext,
+    DisplayControllerWaitingWebContext,
+    MenuUserWebContext,
+    PagedScreenUserWebContext,
     RotatorUserWebContext,
     ScreenUserWebContext,
     ScreenEntityUserWebContext,
@@ -19,6 +22,7 @@ from web.guards import (
     ViewScreenGuard,
     ViewRotatorGuard,
     ViewDisplayControllerGuard,
+    ViewFamilyGuard,
 )
 
 
@@ -110,6 +114,40 @@ class ScreenUserController(BaseScreenUserController):
 
     @get(
         path=[
+            '/view/paged-screen/{event_uniq_id:str}/{family_uniq_id:str}/{page_index:int}',
+            '/view/paged-screen/{event_uniq_id:str}/{family_uniq_id:str}',
+        ],
+        name='user-paged-screen',
+        guards=[ViewFamilyGuard()],
+    )
+    async def htmx_user_paged_screen(
+        self,
+        request: HTMXRequest,
+        page_index: FromPath[int] = 0,
+    ) -> Template:
+        web_context = PagedScreenUserWebContext(request, page_index)
+        return self._user_screen_render(web_context)
+
+    @get(
+        path=[
+            '/view/menu/{event_uniq_id:str}/{menu_id:int}/{rotator_screen_index:int}',
+            '/view/menu/{event_uniq_id:str}/{menu_id:int}',
+        ],
+        name='user-menu',
+    )
+    async def htmx_user_menu(
+        self,
+        request: HTMXRequest,
+        rotator_screen_index: FromPath[int] = 0,
+    ) -> Template | Reswap:
+        web_context = MenuUserWebContext(request, rotator_screen_index)
+        date: float | None = self.get_if_modified_since(request)
+        if date is None or self._user_screen_refresh_needed(web_context, date):
+            return self._user_screen_render(web_context)
+        return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
+
+    @get(
+        path=[
             '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
             '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
@@ -122,6 +160,11 @@ class ScreenUserController(BaseScreenUserController):
         rotator_screen_index: FromPath[int] = 0,
     ) -> Template | Reswap:
         web_context = DisplayControllerUserWebContext(request, rotator_screen_index)
+        if not web_context.has_screen:
+            return HTMXTemplate(
+                template_name='user/display_controller_waiting.html',
+                context=DisplayControllerWaitingWebContext(request).template_context,
+            )
         date: float | None = (
             self.get_if_modified_since(request) if not web_context.is_rotator else None
         )

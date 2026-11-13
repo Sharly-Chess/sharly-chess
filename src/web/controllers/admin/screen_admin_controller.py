@@ -6,7 +6,7 @@ from litestar import post, get, delete, patch
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException, ClientException
 from litestar.params import Body, FromPath, FromQuery
-from litestar.plugins.htmx import HTMXRequest
+from litestar.plugins.htmx import ClientRefresh, HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -17,6 +17,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.screens.screen import Screen
 from data.screens.screen_set import ScreenSet
+from data.screens.family import Family
 from data.screens.manager import ScreenTypeManager
 from data.screens.screen_types import ScreenType
 from utils import Utils
@@ -32,11 +33,9 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
 from web.session import (
-    SessionScreensShowFamilyScreens,
     SessionScreensShowDetails,
     SessionScreensTypeFilter,
 )
-from web.urls import admin_event_url
 
 # A 2 MB image is ~2.8 MB once base64-encoded into a data: URI.
 MAX_UPLOADED_IMAGE_CHARS = 2_800_000
@@ -95,6 +94,14 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
             return None
         return ScreenTypeManager(self.get_admin_event()).get_object(self.screen_type_id)
 
+    def screen_tournament_options(self, screen_type: ScreenType) -> dict[str, str]:
+        """The tournaments a screen of *screen_type* can show, as options."""
+        return {
+            self.value_to_form_data(tournament.id): tournament.name
+            for tournament in self.get_admin_event().sorted_tournaments
+            if screen_type.shows_tournament(tournament)
+        }
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -143,19 +150,28 @@ class ScreenAdminRenderer(BaseEventAdminController):
 
         if web_context.client.can_manage_screens:
             # 'admin' view
-            show_family_screens = SessionScreensShowFamilyScreens(request).get()
-            sorted_screens_by_type: dict[str, list[Screen]]
-            if show_family_screens:
-                sorted_screens_by_type = event.sorted_screens_by_screen_type
-            else:
-                sorted_screens_by_type = event.sorted_basic_screens_by_screen_type
             for screen_type_ in list(admin_screen_types_data):
-                screens = sorted_screens_by_type[screen_type_.id]
+                items: list[Screen | Family] = [
+                    *event.sorted_basic_screens_by_screen_type[screen_type_.id],
+                    *event.families_by_screen_type.get(screen_type_.id, []),
+                ]
                 admin_screen_types_data[screen_type_]['has_screen_sets'] = (
                     screen_type_.has_screen_sets
                 )
-                admin_screen_types_data[screen_type_]['screens'] = screens
+                admin_screen_types_data[screen_type_]['screens'] = sorted(
+                    items,
+                    key=lambda item: (
+                        item.display_name if isinstance(item, Family) else item.name
+                    ),
+                )
                 admin_screen_types_data[screen_type_]['title'] = screen_type_.name
+                admin_screen_types_data[screen_type_]['creatable'] = (
+                    not screen_type_.has_screen_sets
+                    or any(
+                        screen_type_.shows_tournament(tournament)
+                        for tournament in event.tournaments_by_id.values()
+                    )
+                )
             type_filter = SessionScreensTypeFilter(request).get()
             if not any(
                 screen_type_.id == type_filter and data['screens']
@@ -165,7 +181,6 @@ class ScreenAdminRenderer(BaseEventAdminController):
             template_context |= {
                 'admin_event_tab': 'admin-event-screens-tab',
                 'admin_screen_types_data': admin_screen_types_data,
-                'show_family_screens': show_family_screens,
                 'show_details': SessionScreensShowDetails(request).get(),
                 'admin_screens_type_filter': type_filter,
                 'admin_screens_count': sum(
@@ -174,33 +189,14 @@ class ScreenAdminRenderer(BaseEventAdminController):
                 'scroll_to_screen_id': scroll_to_screen_id,
             }
         else:
-            # 'user' view
             screen_type_obj = web_context.screen_type
-            assert screen_type_obj is not None
-            if web_context.client.can_view_private_screens:
-                sorted_screens = event.sorted_screens_by_screen_type[screen_type_obj.id]
-            else:
-                sorted_screens = event.sorted_public_screens_by_screen_type[
-                    screen_type_obj.id
-                ]
-            if not sorted_screens:
-                return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
-
-            # setdefault: legacy screens of a type no longer offered for
-            # the event's type still render rather than crash.
-            admin_screen_type_data = admin_screen_types_data.setdefault(
-                screen_type_obj, {}
+            return Redirect(
+                request.app.route_reverse(
+                    'admin-event-display-tab', event_uniq_id=event.uniq_id
+                )
+                + '?browse=true&kind=screens'
+                + (f'&type={screen_type_obj.id}' if screen_type_obj else '')
             )
-            admin_screen_type_data['screens'] = sorted_screens
-            admin_screen_type_data['title'] = (
-                f'{screen_type_obj.name} ({len(sorted_screens) or "-"})'
-            )
-
-            template_context |= {
-                'admin_event_tab': f'admin-event-{screen_type_obj.id}-screens-tab',
-                'admin_screen_type_data': admin_screen_type_data,
-                'admin_screens_count': len(admin_screen_type_data['screens']),
-            }
 
         match modal:
             case None:
@@ -215,7 +211,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                     timer_id: int | None = None
                     message_default: bool | None = None
                     message_text: str | None = None
-                    init_set_tournament_id: int | None = None
+                    init_set_tournament_ids: list[int] = []
                     # Type-specific form values, provided by the screen type.
                     type_values: dict[str, Any] = {}
                     match action:
@@ -228,17 +224,28 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             assert screen_type_obj is not None
                             # Set-based screens open on a first tournament.
                             if screen_type_obj.has_screen_sets:
-                                init_set_tournament_id = next(
-                                    iter(event.tournaments_by_id.keys())
-                                )
+                                init_set_tournament_ids = [
+                                    tournament.id
+                                    for tournament in event.tournaments_by_id.values()
+                                    if screen_type_obj.shows_tournament(tournament)
+                                ][:1]
                             # No default name: an unnamed screen is named
                             # automatically from its tournament(s).
                         case 'clone':
                             screen = web_context.get_admin_screen()
-                            name = event.get_unused_screen_name(
-                                base_name=screen.name,
-                                screen_type=screen.screen_type,
+                            stored_screen = screen.stored_screen
+                            assert stored_screen is not None
+                            init_set_tournament_ids = list(
+                                dict.fromkeys(
+                                    screen_set.tournament.id
+                                    for screen_set in screen.sorted_screen_sets
+                                )
                             )
+                            if stored_screen.name:
+                                name = event.get_unused_screen_name(
+                                    base_name=stored_screen.name,
+                                    screen_type=screen.screen_type,
+                                )
                         case 'delete':
                             pass
                         case _:
@@ -276,25 +283,40 @@ class ScreenAdminRenderer(BaseEventAdminController):
                         'timer_id': timer_id,
                         'message_text_checkbox': message_default,
                         'message_text': message_text,
-                        'init_set_tournament_id': init_set_tournament_id,
+                        'init_set_tournament_ids': init_set_tournament_ids,
                     }
                     form_values.update(type_values)
                     form_values['background_color_checkbox'] = (
                         form_values.get('background_color') is None
                     )
+                    if action in ('update', 'clone'):
+                        form_values['display_controller_ids'] = [
+                            display_controller.id
+                            for display_controller in web_context.get_admin_screen().display_controllers
+                        ]
                     data = WebContext.values_dict_to_form_data(form_values)
                 # Errors are only surfaced when passed in from a failed submit;
                 # a freshly opened form must not show validation errors.
                 if errors is None:
                     errors = {}
+                form_screen_type = web_context.screen_type or (
+                    web_context.get_admin_screen().screen_type
+                    if web_context.admin_screen is not None
+                    else None
+                )
                 template_context |= {
-                    'tournament_options': web_context.get_tournament_options(),
+                    'tournament_options': (
+                        web_context.screen_tournament_options(form_screen_type)
+                        if form_screen_type is not None
+                        else web_context.get_tournament_options()
+                    ),
                     'screen_type_options': cls._get_screen_type_options(
                         family_screens_only=False, event=event
                     ),
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'screen_uniq_ids': list(event.screens_by_uniq_id.keys()),
+                    **cls._display_controller_destination_context(event),
                     'players_player_format_options': web_context.get_players_screen_player_format_options(),
                     'players_board_format_options': web_context.get_players_screen_board_format_options(),
                     'players_opponent_format_options': web_context.get_players_screen_opponent_format_options(),
@@ -344,7 +366,9 @@ class ScreenAdminRenderer(BaseEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'tournament_options': web_context.get_tournament_options(),
+                    'tournament_options': web_context.screen_tournament_options(
+                        web_context.get_admin_screen().screen_type
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -353,6 +377,121 @@ class ScreenAdminRenderer(BaseEventAdminController):
             case _:
                 raise ValueError(f'modal=[{modal}]')
         return cls._admin_base_event_render(template_context)
+
+
+class DisplayAdminRenderer(BaseEventAdminController):
+    """The display page of those who can view screens but not manage them: the
+    feeds to follow, then the screens, menus and rotators to open."""
+
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
+    ]
+
+    @classmethod
+    def _admin_event_display_render(
+        cls,
+        request: HTMXRequest,
+        kind: str | None,
+        type_id: str | None,
+        browse: bool,
+    ) -> HTMXTemplate:
+        web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
+        include_private = web_context.client.can_view_private_screens
+        feeds = (
+            event.sorted_display_controllers
+            if include_private
+            else event.sorted_public_display_controllers
+        )
+        screens = [
+            screen
+            for screen in event.sorted_basic_screens
+            if include_private or screen.public
+        ]
+        families = [
+            family
+            for family in event.sorted_families
+            if (include_private or family.public) and family.screens_by_uniq_id
+        ]
+        menus = event.menus_for(include_private)
+        rotators = [
+            rotator
+            for rotator in (
+                event.sorted_rotators
+                if include_private
+                else event.public_sorted_rotators
+            )
+            if rotator.rotating_screens
+        ]
+        groups: list[tuple[ScreenType, list[Screen | Family]]] = []
+        for screen_type in ScreenTypeManager(event).objects():
+            items: list[Screen | Family] = [
+                screen for screen in screens if screen.type == screen_type.id
+            ]
+            items += [
+                family for family in families if family.screen_type.id == screen_type.id
+            ]
+            if items:
+                groups.append((screen_type, items))
+        kinds = [
+            (key, count)
+            for key, count in (
+                ('screens', sum(len(items) for _type, items in groups)),
+                ('menus', len(menus)),
+                ('rotators', len(rotators)),
+            )
+            if count
+        ]
+        kind_keys = [key for key, _count in kinds]
+        if kind not in kind_keys:
+            kind = kind_keys[0] if kind_keys else None
+        if type_id not in [screen_type.id for screen_type, _items in groups]:
+            type_id = ''
+        return cls._admin_base_event_render(
+            web_context.template_context
+            | {
+                'admin_event_tab': 'admin-event-display-tab',
+                'display_step': 'feeds' if feeds and not browse else 'browse',
+                'display_feeds': feeds,
+                'display_kinds': kinds,
+                'display_kind': kind,
+                'display_groups': groups,
+                'display_type': type_id,
+                'display_menus': menus,
+                'display_rotators': rotators,
+            }
+        )
+
+
+class DisplayAdminController(DisplayAdminRenderer):
+    @patch(
+        path='/screens-fake-data/{event_uniq_id:str}/{fake_data:int}',
+        name='admin-screens-fake-data',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+    )
+    async def htmx_admin_screens_fake_data(
+        self, request: HTMXRequest, fake_data: FromPath[int]
+    ) -> ClientRefresh:
+        event = BaseEventAdminWebContext(request).get_admin_event()
+        with EventDatabase(event.uniq_id, True) as database:
+            database.set_screens_fake_data(bool(fake_data))
+        return ClientRefresh()
+
+    @get(
+        path='/event/{event_uniq_id:str}/display',
+        name='admin-event-display-tab',
+    )
+    async def htmx_admin_event_display_tab(
+        self,
+        request: HTMXRequest,
+        kind: FromQuery[str | None] = None,
+        type: FromQuery[str | None] = None,
+        browse: FromQuery[bool] = False,
+    ) -> HTMXTemplate:
+        return self._admin_event_display_render(request, kind, type, browse)
 
 
 class ScreenAdminController(ScreenAdminRenderer):
@@ -377,26 +516,41 @@ class ScreenAdminController(ScreenAdminRenderer):
             data = {}
         field: str
         type_: str
-        init_set_tournament_id: int | None = None
+        init_set_tournament_ids: list[int] = []
         match action:
-            case 'create':
-                screen_type = web_context.screen_type
-                assert screen_type is not None
-                assert web_context.screen_type_id is not None
-                type_ = web_context.screen_type_id
-                if not screen_type.supports_event_type(event.event_type):
-                    raise ValueError(
-                        f'Screen type [{type_}] is not available for '
-                        f'[{event.event_type}] events.'
-                    )
-                # Set-based screens open on a first tournament; standalone
-                # ones (results, image) don't take one.
+            case 'create' | 'clone':
+                if action == 'create':
+                    screen_type = web_context.screen_type
+                    assert screen_type is not None
+                    assert web_context.screen_type_id is not None
+                    type_ = web_context.screen_type_id
+                    if not screen_type.supports_event_type(event.event_type):
+                        raise ValueError(
+                            f'Screen type [{type_}] is not available for '
+                            f'[{event.event_type}] events.'
+                        )
+                else:
+                    screen_type = web_context.get_admin_screen().screen_type
+                    type_ = screen_type.id
+                # Set-based screens open on their tournaments, a set each;
+                # standalone ones (results, image) don't take any.
                 if screen_type.has_screen_sets:
-                    field = 'init_set_tournament_id'
-                    init_set_tournament_id = WebContext.form_data_to_int(data, field)
-                    if init_set_tournament_id not in event.tournaments_by_id:
-                        errors[field] = _('Please choose the tournament.')
-            case 'update' | 'clone' | 'delete':
+                    field = 'init_set_tournament_ids'
+                    try:
+                        init_set_tournament_ids = list(
+                            dict.fromkeys(WebContext.form_data_to_list_int(data, field))
+                        )
+                    except ValueError:
+                        init_set_tournament_ids = []
+                    if not init_set_tournament_ids or any(
+                        tournament_id not in event.tournaments_by_id
+                        or not screen_type.shows_tournament(
+                            event.tournaments_by_id[tournament_id]
+                        )
+                        for tournament_id in init_set_tournament_ids
+                    ):
+                        errors[field] = _('Please choose the tournaments.')
+            case 'update' | 'delete':
                 stored_screen = web_context.get_admin_screen().stored_screen
                 assert stored_screen is not None
                 type_ = stored_screen.type
@@ -523,7 +677,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             message_text=message_text,
             plugin_data=plugin_data,
             errors=errors,
-            init_set_tournament_id=init_set_tournament_id,
+            init_set_tournament_ids=init_set_tournament_ids,
             **type_values,
         )
 
@@ -562,6 +716,14 @@ class ScreenAdminController(ScreenAdminRenderer):
                     )
         except ValueError:
             errors[field] = _('A positive integer is expected.')
+        if (
+            field not in errors
+            and tournament_id in event.tournaments_by_id
+            and not screen.screen_type.shows_tournament(
+                event.tournaments_by_id[tournament_id]
+            )
+        ):
+            errors[field] = _('This screen cannot show this tournament.')
         mode: BoardSelectionMode | None = None
         if screen.screen_type.supports_fixed_boards:
             mode_value = WebContext.form_data_to_str(data, 'fixed_board_order') or ''
@@ -621,12 +783,9 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_event_screens_tab(
         self,
         request: HTMXRequest,
-        show_family_screens: FromQuery[bool | None],
         show_details: FromQuery[bool | None],
         screen_type_filter: FromQuery[str | None],
     ) -> Template | Redirect:
-        if show_family_screens is not None:
-            SessionScreensShowFamilyScreens(request).set(show_family_screens)
         if show_details is not None:
             SessionScreensShowDetails(request).set(show_details)
         if screen_type_filter is not None:
@@ -701,6 +860,9 @@ class ScreenAdminController(ScreenAdminRenderer):
         stored_screen: StoredScreen = self._admin_validate_screen_update_data(
             action, web_context, data
         )
+        display_controller_ids = self._read_display_controller_ids(
+            data, stored_screen.errors, event
+        )
         if stored_screen.errors:
             return self._admin_event_screens_render(
                 request,
@@ -715,16 +877,14 @@ class ScreenAdminController(ScreenAdminRenderer):
         with EventDatabase(event.uniq_id, write=True) as event_database:
             match action:
                 case 'create':
-                    # init_set_tournament_id is the id of the tournament that should be
-                    # used to create the default screen_set.
-                    # It is set in the screen creation form.
-                    # It needs to be saved because EventDatabase.add_stored_screen()
-                    # doesn't save it (it is not stored in the database).
-                    init_set_tournament_id: int | None = (
-                        stored_screen.init_set_tournament_id
-                    )
+                    # The tournaments chosen in the creation form, a screen set
+                    # each, kept aside as add_stored_screen() does not store them.
+                    init_set_tournament_ids = stored_screen.init_set_tournament_ids
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
+                    event_database.set_stored_screen_display_controllers(
+                        stored_screen.id, display_controller_ids
+                    )
                     self._show_screen_type(request, stored_screen.type)
                     scroll_to_screen_id = stored_screen.id
                     if (
@@ -732,13 +892,14 @@ class ScreenAdminController(ScreenAdminRenderer):
                         .get_object(stored_screen.type)
                         .has_screen_sets
                     ):
-                        if init_set_tournament_id is None:
+                        if not init_set_tournament_ids:
                             raise RuntimeError(
                                 'Missing data: not able to create default screen set'
                             )
-                        event_database.add_stored_screen_set(
-                            stored_screen.id, init_set_tournament_id
-                        )
+                        for tournament_id in init_set_tournament_ids:
+                            event_database.add_stored_screen_set(
+                                stored_screen.id, tournament_id
+                            )
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been created.').format(
@@ -747,20 +908,30 @@ class ScreenAdminController(ScreenAdminRenderer):
                     )
                 case 'clone':
                     screen = web_context.get_admin_screen()
+                    init_set_tournament_ids = stored_screen.init_set_tournament_ids
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
+                    event_database.set_stored_screen_display_controllers(
+                        stored_screen.id, display_controller_ids
+                    )
                     self._show_screen_type(request, stored_screen.type)
                     scroll_to_screen_id = stored_screen.id
-                    if (
-                        ScreenTypeManager(event)
-                        .get_object(stored_screen.type)
-                        .has_screen_sets
-                    ):
+                    if screen.screen_type.has_screen_sets:
+                        # The sets of the tournaments kept are copied, ranges
+                        # and names included; a tournament added gets a set.
+                        cloned_tournament_ids: set[int] = set()
                         for screen_set in screen.sorted_screen_sets:
                             assert screen_set.id is not None
-                            event_database.clone_stored_screen_set(
-                                screen_set.id, stored_screen.id
-                            )
+                            if screen_set.tournament.id in init_set_tournament_ids:
+                                event_database.clone_stored_screen_set(
+                                    screen_set.id, stored_screen.id
+                                )
+                                cloned_tournament_ids.add(screen_set.tournament.id)
+                        for tournament_id in init_set_tournament_ids:
+                            if tournament_id not in cloned_tournament_ids:
+                                event_database.add_stored_screen_set(
+                                    stored_screen.id, tournament_id
+                                )
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been created.').format(
@@ -770,6 +941,9 @@ class ScreenAdminController(ScreenAdminRenderer):
                 case 'update':
                     stored_screen = event_database.update_stored_screen(stored_screen)
                     assert stored_screen.id is not None
+                    event_database.set_stored_screen_display_controllers(
+                        stored_screen.id, display_controller_ids
+                    )
                     scroll_to_screen_id = stored_screen.id
                     Message.success(
                         request,
@@ -1160,15 +1334,6 @@ class ScreenAdminController(ScreenAdminRenderer):
             screen_set_id=None,
             data=data,
         )
-
-    @get(
-        path='/event/{event_uniq_id:str}/input-screens',
-        name='admin-event-input-screens-tab',
-    )
-    async def htmx_admin_event_input_screens_tab(
-        self, request: HTMXRequest
-    ) -> Template | Redirect:
-        return self._admin_event_screens_render(request, screen_type='input')
 
     @get(
         path='/event/{event_uniq_id:str}/check-in-screens',

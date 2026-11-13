@@ -20,6 +20,7 @@ from data.account import Account
 from data.access_levels.client import Client
 from data.board import Board
 from data.pairings.fixed_table import FixedPairingTable
+from data.pairings.round_robin_grid import team_grid, team_player_grid
 from data.teams.team_board import TeamBoard
 from data.columns import player_table as columns
 from data.columns.board_table import (
@@ -69,7 +70,7 @@ from data.print_documents.options import (
     ArbiterNormForm,
     ArbiterNormFormPrintOption,
     ArbiterNormSigneePrintOption,
-    TeamBergerGridPlayersPrintOption,
+    TeamRoundRobinGridPlayersPrintOption,
     GridPlayerSortPrintOption,
     TeamGridSortPrintOption,
     ListPlayerSortPrintOption,
@@ -1305,7 +1306,7 @@ class TeamRankingPrintDocument(PrintDocument):
         }
 
 
-class BergerGridPrintDocument(PrintDocument):
+class RoundRobinGridPrintDocument(PrintDocument):
     hide_for_team_events = True
 
     @staticmethod
@@ -1314,7 +1315,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Berger grid')
+        return _('Round-robin grid')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1326,7 +1327,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def template_name(self) -> str:
-        return '/admin/print/berger_grid.html'
+        return '/admin/print/round_robin_grid.html'
 
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
@@ -1450,7 +1451,7 @@ class BergerGridPrintDocument(PrintDocument):
         }
 
 
-class TeamBergerGridPrintDocument(PrintDocument):
+class TeamRoundRobinGridPrintDocument(PrintDocument):
     """Berger crosstable for team round-robins. Unlike the individual
     grid, team round-robins are paired round by round (lineups change
     between rounds), so the encounter schedule is computed from the
@@ -1465,7 +1466,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Berger grid')
+        return _('Round-robin grid')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1473,7 +1474,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
             TournamentPrintOption,
             RoundPrintOption,
             TeamGridSortPrintOption,
-            TeamBergerGridPlayersPrintOption,
+            TeamRoundRobinGridPlayersPrintOption,
         ]
 
     @property
@@ -1492,11 +1493,11 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
     @property
     def template_name(self) -> str:
-        return '/admin/print/team_berger_grid.html'
+        return '/admin/print/team_round_robin_grid.html'
 
     @property
     def by_player(self) -> bool:
-        return bool(self._get_option(TeamBergerGridPlayersPrintOption).value)
+        return bool(self._get_option(TeamRoundRobinGridPlayersPrintOption).value)
 
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
@@ -1544,135 +1545,28 @@ class TeamBergerGridPrintDocument(PrintDocument):
             if bound_round == 0
             else _('After round #{round}').format(round=bound_round)
         )
-        engine = tournament.pairing_variation.engine
-        assert isinstance(engine, TeamRoundRobinPairingEngine)
         teams = self._get_option(TeamGridSortPrintOption).team_grid_sorter.sorted_teams(
             tournament
         )
         grid_id_by_team_id = {team.id: i + 1 for i, team in enumerate(teams)}
 
-        # One cell list per (team, opponent): each encounter is the
-        # scheduled round plus the match score once played.
-        cells: dict[int, dict[int, list[dict[str, Any]]]] = {
-            team.id: {opp.id: [] for opp in teams if opp.id != team.id}
-            for team in teams
-        }
-        boards_by_round_pair: dict[tuple[int, frozenset], Any] = {}
-        for round_ in range(1, tournament.rounds + 1):
-            for tb in tournament.get_round_team_boards(round_):
-                stb = tb.stored_team_board
-                if stb.team_b_id is None:
-                    continue
-                boards_by_round_pair[
-                    (round_, frozenset({stb.team_a_id, stb.team_b_id}))
-                ] = tb
-        for round_, pairs in engine.full_schedule(tournament).items():
-            for a_id, b_id in pairs:
-                if b_id is None:
-                    continue
-                match_tb = boards_by_round_pair.get((round_, frozenset({a_id, b_id})))
-                if (
-                    round_ <= bound_round
-                    and match_tb is not None
-                    and match_tb.match_score_pair is not None
-                ):
-                    played_match = match_tb
-                    a_gp_eff, b_gp_eff = match_tb.effective_game_points
-                    team_a_id = match_tb.stored_team_board.team_a_id
-                else:
-                    played_match = None
-                    a_gp_eff = b_gp_eff = team_a_id = None
-                for mine, theirs in ((a_id, b_id), (b_id, a_id)):
-                    if mine not in cells or theirs not in cells[mine]:
-                        continue
-                    # The cell shows the *match outcome* for ``mine`` (win 1,
-                    # draw ½, loss 0) — or F when ``mine`` forfeited the whole
-                    # match. Decided on effective game points so round
-                    # penalties / bonuses count, same basis as the standings.
-                    score = None
-                    if played_match is not None and team_a_id is not None:
-                        if played_match.team_all_forfeit(mine):
-                            score = 'F'
-                        else:
-                            mine_gp = a_gp_eff if team_a_id == mine else b_gp_eff
-                            theirs_gp = b_gp_eff if team_a_id == mine else a_gp_eff
-                            if mine_gp > theirs_gp:
-                                score = '1'
-                            elif mine_gp < theirs_gp:
-                                score = '0'
-                            else:
-                                score = '½'
-                    cells[mine][theirs].append({'round': round_, 'score': score})
+        cells = team_grid(tournament, lambda round_: round_ <= bound_round)
 
         standings_by_team_id = {
             entry.team.id: entry
             for entry in tournament.team_standings(after_round=bound_round)
         }
 
-        # Player-level detail: one grid row per player, grouped by
-        # team, individual game results in the cells.
-        player_rows: list[dict[str, Any]] = []
-        player_cells: dict[int, dict[int, list[str]]] = {}
         if self.by_player:
-            ordered_players = [
-                tournament.tournament_players_by_id[player.id]
-                for team in teams
-                for player in team.players
-                if player.id in tournament.tournament_players_by_id
-            ]
-            grid_id_by_player_id = {
-                tp.id: i + 1 for i, tp in enumerate(ordered_players)
-            }
-            for team in teams:
-                first = True
-                for player in team.players:
-                    tp = tournament.tournament_players_by_id.get(player.id)
-                    if tp is None:
-                        continue
-                    player_rows.append(
-                        {
-                            'tournament_player': tp,
-                            'grid_id': grid_id_by_player_id[tp.id],
-                            'team': team,
-                            'first_of_team': first,
-                        }
-                    )
-                    first = False
-            player_cells = {
-                tp.id: {opp.id: [] for opp in ordered_players if opp.id != tp.id}
-                for tp in ordered_players
-            }
-            points_by_player_id: dict[int, float] = {
-                tp.id: 0.0 for tp in ordered_players
-            }
-            for tp in ordered_players:
-                for pairing in tp.pairings.values():
-                    if pairing.round > bound_round:
-                        continue
-                    opponent_id = pairing.opponent_id
-                    if not opponent_id or opponent_id not in player_cells[tp.id]:
-                        continue
-                    if pairing.result == Result.NO_RESULT:
-                        continue
-                    player_cells[tp.id][opponent_id].append(
-                        pairing.result.to_berger_table
-                    )
-                    if tp.game_is_annulled(pairing):
-                        continue
-                    points_by_player_id[tp.id] += pairing.result.points(
-                        tournament.point_values
-                    )
-            for row in player_rows:
-                row['points_str'] = Utils.points_str(
-                    points_by_player_id[row['tournament_player'].id]
-                )
+            player_rows, player_cells = team_player_grid(
+                tournament, teams, lambda round_: round_ <= bound_round
+            )
             return {
                 'tournament': self.tournament,
                 'subtitle': subtitle,
                 'by_player': True,
                 'player_rows': player_rows,
                 'player_cells': player_cells,
-                'grid_id_by_player_id': grid_id_by_player_id,
             }
 
         return {

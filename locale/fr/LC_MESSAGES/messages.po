@@ -132,12 +132,6 @@ msgid_plural "%(num)d missing tournaments"
 msgstr[0] "%(num)d tournoi manquant"
 msgstr[1] "%(num)d tournois manquants"
 
-#, python-format
-msgid "%(num)d multi-screen"
-msgid_plural "%(num)d multi-screens"
-msgstr[0] "%(num)d écran multiple"
-msgstr[1] "%(num)d écrans multiples"
-
 #. counts columns; the noun is in the 'Columns:' label this follows
 #, python-format
 msgctxt "columns"
@@ -145,6 +139,18 @@ msgid "%(num)d optional"
 msgid_plural "%(num)d optional"
 msgstr[0] "%(num)d facultative"
 msgstr[1] "%(num)d facultatives"
+
+#, python-format
+msgid "%(num)d page"
+msgid_plural "%(num)d pages"
+msgstr[0] "%(num)d page"
+msgstr[1] "%(num)d pages"
+
+#, python-format
+msgid "%(num)d paged screen"
+msgid_plural "%(num)d paged screens"
+msgstr[0] "%(num)d écran paginé"
+msgstr[1] "%(num)d écrans paginés"
 
 #, python-format
 msgid "%(num)d player"
@@ -207,6 +213,12 @@ msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] "%(num)d écran"
 msgstr[1] "%(num)d écrans"
+
+#, python-format
+msgid "%(num)d second per page"
+msgid_plural "%(num)d seconds per page"
+msgstr[0] "%(num)d seconde par page"
+msgstr[1] "%(num)d secondes par page"
 
 #, python-format
 msgid "%(num)d set"
@@ -338,6 +350,9 @@ msgstr "(%(total)s au total, %(own)s de sa propre fédération)"
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
 
+msgid "(already showing it)"
+msgstr "(l'affiche déjà)"
+
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -348,8 +363,8 @@ msgstr "(héritage : {inheritance})"
 msgid "(inherited)"
 msgstr "(hérité)"
 
-msgid "(multi-screen)"
-msgstr "(écran multiple)"
+msgid "(paged screen)"
+msgstr "(écran paginé)"
 
 #, python-format
 msgid "(replace [%(object_uniq_id)s])"
@@ -555,6 +570,9 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
+msgid "<b>Multiple</b> tournaments on one page"
+msgstr "<b>Plusieurs</b> tournois sur une page"
+
 msgid "<first> <second>"
 msgstr "<first> <second>"
 
@@ -605,6 +623,9 @@ msgstr "Une catégorie portant ce nom existe déjà."
 msgid "A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix."
 msgstr "Un Grand Prix regroupe des tournois de plusieurs événements indépendants en un classement unique inter-événements — par exemple un circuit sur une saison."
 
+msgid "A channel is optional. It lets you change what a device shows from the arbiter computer, and any number of devices can follow the same channel."
+msgstr "Un canal est facultatif. Il permet de changer ce qu'affiche un appareil depuis l'ordinateur de l'arbitre, et plusieurs appareils peuvent suivre le même canal."
+
 msgid "A competitor who has played in fewer than this many stages is left out of the rankings. Leave empty for no minimum."
 msgstr "Un compétiteur ayant joué moins d'étapes que ce nombre est exclu des classements. Laisser vide pour aucun minimum."
 
@@ -616,6 +637,9 @@ msgstr "Un fichier est attendu."
 
 msgid "A half point to one side only, or nothing to either."
 msgstr "Un demi-point à un seul des deux camps, ou rien à aucun."
+
+msgid "A menu can hold screens, or all the screens of a type. A screen can be in several menus."
+msgstr "Un menu peut contenir des écrans, ou tous les écrans d'un type. Un écran peut figurer dans plusieurs menus."
 
 msgid "A minimum and a maximum rating are expected."
 msgstr "Un Elo minimum et maximum sont attendus."
@@ -686,9 +710,15 @@ msgstr "Une valeur positive est attendue."
 msgid "A rating from 0 to {max} is expected."
 msgstr "Un classement de 0 à {max} est attendu."
 
+msgid "A rotator can hold any screen, except check-in and result entry screens."
+msgstr "Un écran rotatif peut contenir tout écran, sauf les écrans de pointage et de saisie des résultats."
+
 #, python-brace-format
 msgid "A round between 1 and {max} is expected."
 msgstr "Une ronde comprise entre 1 et {max} est attendue."
+
+msgid "A screen that accepts input cannot go through a rotator, so that it does not change under someone using it."
+msgstr "Un écran qui accepte la saisie ne peut pas passer dans un écran rotatif, pour ne pas changer pendant qu'on l'utilise."
 
 #, python-brace-format
 msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
@@ -702,6 +732,9 @@ msgstr "Une équipe qui a abandonné ou a été exclue après avoir disputé moi
 
 msgid "A template name is required."
 msgstr "Un nom de modèle est requis."
+
+msgid "A timer can be added to screens and rotators."
+msgstr "Un chronomètre peut être ajouté aux écrans et aux écrans rotatifs."
 
 #, python-brace-format
 msgid "A value between 0 and {max} is expected."
@@ -835,14 +868,14 @@ msgstr "Réel"
 msgid "Add"
 msgstr "Ajouter"
 
+msgid "Add a channel to the event."
+msgstr "Ajouter un canal à l'évènement."
+
 msgid "Add a criterion to the list."
 msgstr "Ajouter un critère à la liste."
 
 msgid "Add a data source"
 msgstr "Ajouter une source de données"
-
-msgid "Add a display controller to the event."
-msgstr "Ajouter un pilote d'afficheur."
 
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
@@ -906,9 +939,6 @@ msgstr "Ajouter des joueur·euses"
 
 msgid "Add rule"
 msgstr "Ajouter la règle"
-
-msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
-msgstr "Ajouter des écrans, des écrans multiples ou des types d'écran entiers à un menu, puis les réorganiser à votre convenance."
 
 msgid "Add the first tournament to start building the standings."
 msgstr "Ajoutez le premier tournoi pour commencer à construire le classement."
@@ -1033,8 +1063,8 @@ msgid "All \"%(screen_type)s\" screens"
 msgstr "Tous les écrans « %(screen_type)s »"
 
 #, python-format
-msgid "All \"%(screen_type)s\" screens already belong to a menu."
-msgstr "Tous les écrans « %(screen_type)s » appartiennent déjà à un menu."
+msgid "All \"%(screen_type)s\" screens already belong to this menu."
+msgstr "Tous les écrans « %(screen_type)s » appartiennent déjà à ce menu."
 
 msgid "All Championships"
 msgstr "Tous les Grands Prix"
@@ -1057,6 +1087,9 @@ msgstr "Tous les groupes"
 
 msgid "All hours have been cleared."
 msgstr "Tous les horaires ont été supprimés."
+
+msgid "All pages in turn"
+msgstr "Toutes les pages à tour de rôle"
 
 msgid "All players are paired."
 msgstr "Tou·tes les joueur·euses sont apparié·es."
@@ -1093,6 +1126,9 @@ msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·
 msgid "All the tables"
 msgstr "Toutes les tables"
 
+msgid "All the teams"
+msgstr "Toutes les équipes"
+
 msgid "All the text of the certificate may be modified by the arbiter before printing."
 msgstr "Tout le texte de l'attestation peut être modifié par l'arbitre avant impression."
 
@@ -1117,11 +1153,11 @@ msgstr "Autorise l'accès aux écrans publics"
 msgid "Allows access to the Players and Pairings tabs, results and illegal moves update"
 msgstr "Autorise l'accès à l'interface des joueur·euses et des appariements, la modification des coups illégaux et des résultats"
 
-msgid "Allows check-in via any input Screens marked as public"
-msgstr "Autorise le pointage des joueur·euses sur des écrans de saisie publics"
+msgid "Allows check-in on any public screen accepting input"
+msgstr "Permet le pointage sur tout écran public acceptant la saisie"
 
-msgid "Allows entry of results via any input Screens marked as public"
-msgstr "Autorise la saisie des résultats sur des écrans de saisie publics"
+msgid "Allows entry of results on any public screen accepting input"
+msgstr "Permet la saisie des résultats sur tout écran public acceptant la saisie"
 
 msgid "Allows granting or revoking the Chief Arbitration access level and editing the event"
 msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef » et l'édition de l'évènement"
@@ -1191,8 +1227,8 @@ msgstr "Anonyme"
 msgid "Antigua and Barbuda"
 msgstr "Antigua-et-Barbuda"
 
-msgid "Any number of devices can be controlled by the same display controller."
-msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
+msgid "Any channel"
+msgstr "Tout canal"
 
 msgid "Applicant's federation"
 msgstr "Fédération du·de la candidat·e"
@@ -1279,17 +1315,8 @@ msgstr "Arménie"
 msgid "Aruba"
 msgstr "Aruba"
 
-msgid "Assign a screen to the controller."
-msgstr "Attribuer un écran au pilote."
-
 msgid "Assign this team to a tournament now or leave unassigned."
 msgstr "Assigner cette équipe à un tournoi maintenant ou la laisser non assignée."
-
-msgid "Assign to a display controller."
-msgstr "Attribuer à un pilote d'écran."
-
-msgid "Assigned display"
-msgstr "Affichage assigné"
 
 msgid "At least a minimum or a maximum category must be defined."
 msgstr "Au moins une catégorie minimale ou catégorie maximale doit être définie."
@@ -1653,9 +1680,6 @@ msgstr "Belize"
 msgid "Berger"
 msgstr "Berger"
 
-msgid "Berger grid"
-msgstr "Grille Berger"
-
 msgid "Bermuda"
 msgstr "Bermudes"
 
@@ -1664,6 +1688,9 @@ msgstr "Meilleures étapes :"
 
 msgid "Bhutan"
 msgstr "Bhoutan"
+
+msgid "Big screen"
+msgstr "Grand écran"
 
 #, python-brace-format
 msgid "Birth dates not readable ({values}), left empty"
@@ -1884,6 +1911,9 @@ msgstr "Par match"
 
 msgid "By number of groups (balanced player counts)"
 msgstr "Par nombre de groupes (effectifs équilibrés)"
+
+msgid "By pairing number, every player keeps their row and column all through the tournament; by rank, the leaders come first."
+msgstr "Par numéro d'appariement, chaque joueur·euse garde sa ligne et sa colonne pendant tout le tournoi ; par classement, les premier·ères viennent en tête."
 
 msgid "By player"
 msgstr "Par ordre alpha."
@@ -2119,6 +2149,9 @@ msgstr "Modifier les départages"
 msgid "Change the tie-breaks…"
 msgstr "Modifier les départages…"
 
+msgid "Change what devices show <b>from the arbiter computer</b>"
+msgstr "Changez ce qu'affichent les appareils <b>depuis l'ordinateur de l'arbitre</b>"
+
 msgid "Changelog"
 msgstr "ChangeLog"
 
@@ -2128,6 +2161,28 @@ msgstr "Passer de %(before)d à %(after)d rondes une fois le tournoi commencé n
 
 msgid "Changing the tie-breaks once the tournament has started is not compliant with the FIDE regulations: they are published before it starts."
 msgstr "Modifier les départages une fois le tournoi commencé n'est pas conforme au règlement FIDE : ils sont publiés avant le début du tournoi."
+
+msgid "Channel"
+msgstr "Canal"
+
+#, python-brace-format
+msgid "Channel [{display_controller}] has been created."
+msgstr "Le canal [{display_controller}] a été créé."
+
+#, python-brace-format
+msgid "Channel [{display_controller}] has been deleted."
+msgstr "Le canal [{display_controller}] a été supprimé."
+
+#, python-brace-format
+msgid "Channel [{display_controller}] has been updated."
+msgstr "Le canal [{display_controller}] a été modifié."
+
+msgid "Channels"
+msgstr "Canaux"
+
+msgctxt "with shortcut indication"
+msgid "Channels"
+msgstr "Ca<u>n</u>aux"
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
@@ -2196,9 +2251,6 @@ msgstr "Choisir au moins une valeur."
 msgid "Choose between an individual or team event. Cannot be changed after the event has been created."
 msgstr "Choisir entre un événement individuel ou par équipes. Non modifiable après la création de l'événement."
 
-msgid "Choose multi-screens to add"
-msgstr "Choisir des écrans multiples à ajouter"
-
 msgid "Choose one or more players."
 msgstr "Choisissez un·e ou plusieurs joueur·euses."
 
@@ -2223,8 +2275,11 @@ msgstr "Choisir les colonnes affichées."
 msgid "Choose the screens that display the timer"
 msgstr "Choisir les écrans qui affichent le chronomètre"
 
-msgid "Choose the screens, multi-screens and rotators that display this timer."
-msgstr "Choisir les écrans, multi-écrans et écrans rotatifs qui affichent ce chronomètre."
+msgid "Choose the screens, paged screens and rotators that display this timer."
+msgstr "Choisir les écrans, écrans paginés et écrans rotatifs qui affichent ce chronomètre."
+
+msgid "Choose what to show"
+msgstr "Choisissez ce qui est affiché"
 
 msgid "Clear"
 msgstr "Vider"
@@ -2349,6 +2404,9 @@ msgstr "Permutation de {pairs}."
 msgid "Columns"
 msgstr "Colonnes"
 
+msgid "Columns displayed:"
+msgstr "Colonnes affichées :"
+
 msgid "Comma-separated board numbers to show."
 msgstr "Numéros d'échiquier à afficher, séparés par des virgules."
 
@@ -2392,6 +2450,9 @@ msgstr "Valeur complémentaire"
 msgid "Complete Team"
 msgstr "Équipe complète"
 
+msgid "Computer"
+msgstr "Ordinateur"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -2425,12 +2486,21 @@ msgstr "Confirmer le nouveau dossier des données [{folder}] ?"
 msgid "Confirm your settings to start."
 msgstr "Confirmez vos paramètres pour démarrer."
 
+msgid "Connect a device"
+msgstr "Connecter un appareil"
+
+msgid "Connect a device to this channel."
+msgstr "Connecter un appareil à ce canal."
+
 #, python-brace-format
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
 
 msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess, puis scannez pour accéder au serveur Sharly Chess."
+
+msgid "Connected. Waiting for a screen…"
+msgstr "Connecté. En attente d'un écran…"
 
 msgid "Connection established"
 msgstr "Connexion établie"
@@ -2555,23 +2625,17 @@ msgstr "Créer une catégorie"
 msgid "Create a championship"
 msgstr "Créer un Grand Prix"
 
-msgid "Create a display controller"
-msgstr "Créer un pilote d'afficheur"
+msgid "Create a channel"
+msgstr "Créer un canal"
 
-msgid "Create a display controller now to get started."
-msgstr "Créez un pilote d'afficheur maintenant commencer."
+msgid "Create a channel now to get started."
+msgstr "Créez un canal maintenant pour commencer."
 
 msgid "Create a menu"
 msgstr "Créer un menu"
 
 msgid "Create a menu now to get started."
 msgstr "Créez un menu pour commencer."
-
-msgid "Create a multi-screen"
-msgstr "Créer un écran multiple"
-
-msgid "Create a multi-screen now to get started."
-msgstr "Créez un écran multiple pour commencer."
 
 msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
 msgstr "Créer un Groupe de prix non cumulables dans lequel vous pourrez ensuite créer des catégories, puis des prix."
@@ -2612,17 +2676,14 @@ msgstr "Créer un évènement"
 msgid "Create and add another"
 msgstr "Créer et ajouter à nouveau"
 
-msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
-msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
-
 msgid "Create category set"
 msgstr "Créer un ensemble de catégories"
 
+msgid "Create channel"
+msgstr "Créer un canal"
+
 msgid "Create criterion"
 msgstr "Créer un critère"
-
-msgid "Create display controller"
-msgstr "Créer un pilote d'afficheur"
 
 msgid "Create event"
 msgstr "Créer un évènement"
@@ -2639,8 +2700,8 @@ msgstr "Créer les horaires depuis un tournoi"
 msgid "Create menu"
 msgstr "Créer un menu"
 
-msgid "Create multi-screen"
-msgstr "Créer un écran multiple"
+msgid "Create one for each place, and let any number of devices follow it"
+msgstr "Créez-en un par lieu, suivi par autant d'appareils que vous le souhaitez"
 
 msgid "Create permission"
 msgstr "Créer une permission"
@@ -2763,14 +2824,6 @@ msgstr "Titre actuel :"
 
 msgid "Current version"
 msgstr "Version actuelle"
-
-#, python-brace-format
-msgid "Currently displaying rotator [{name}]"
-msgstr "Affiche actuellement l'écran rotatif [{name}]"
-
-#, python-brace-format
-msgid "Currently displaying screen [{name}]"
-msgstr "Affiche actuellement l'écran [{name}]"
 
 msgid "Custom"
 msgstr "Personnalisés"
@@ -2928,8 +2981,8 @@ msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
 
-msgid "Define the screens and multi-screens to display."
-msgstr "Définir les écrans et les écrans multiples à afficher."
+msgid "Define the screens and paged screens to display."
+msgstr "Définir les écrans et les écrans paginés à afficher."
 
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
@@ -2978,8 +3031,8 @@ msgstr "Supprimer la catégorie"
 msgid "Delete championship"
 msgstr "Supprimer le Grand Prix"
 
-msgid "Delete display controller"
-msgstr "Supprimer le pilote d'afficheur"
+msgid "Delete channel"
+msgstr "Supprimer le canal"
 
 msgid "Delete every player of the event"
 msgstr "Supprimer tou·tes les joueur·euses de l'évènement"
@@ -2993,8 +3046,8 @@ msgstr "Supprimer l’élément"
 msgid "Delete menu"
 msgstr "Supprimer le menu"
 
-msgid "Delete multi-screen"
-msgstr "Supprimer l'écran multiple"
+msgid "Delete paged screen"
+msgstr "Supprimer l'écran paginé"
 
 msgid "Delete permanently"
 msgstr "Supprimer définitivement"
@@ -3032,8 +3085,8 @@ msgstr "Supprimer le compte."
 msgid "Delete the category."
 msgstr "Supprimer la catégorie."
 
-msgid "Delete the display controller."
-msgstr "Supprimer le pilote d'afficheur."
+msgid "Delete the channel."
+msgstr "Supprimer le canal."
 
 msgid "Delete the existing players"
 msgstr "Supprimer les joueur·euses existant·es"
@@ -3041,8 +3094,8 @@ msgstr "Supprimer les joueur·euses existant·es"
 msgid "Delete the menu."
 msgstr "Supprimer le menu."
 
-msgid "Delete the multi-screen."
-msgstr "Supprimer l'écran multiple."
+msgid "Delete the paged screen."
+msgstr "Supprimer l'écran paginé."
 
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
@@ -3129,14 +3182,23 @@ msgstr "Classement décroissant"
 msgid "Description"
 msgstr "Description"
 
+msgid "Designed for:"
+msgstr "Conçu pour :"
+
 msgid "Detail the grid by player (one row per player, individual results)."
 msgstr "Détailler la grille par joueur·euse (une ligne par joueur·euse, résultats individuels)."
 
 msgid "Details"
 msgstr "Détails"
 
+msgid "Devices"
+msgstr "Appareils"
+
 msgid "Different for White / Black"
 msgstr "Différent pour Blancs / Noirs"
+
+msgid "Different screens in turn"
+msgstr "Différents écrans à tour de rôle"
 
 msgid "Direct encounter"
 msgstr "Confrontation directe"
@@ -3155,34 +3217,6 @@ msgstr "Masquer"
 
 msgid "Display"
 msgstr "Affichage"
-
-msgid "Display Controller"
-msgstr "Pilote d'afficheur"
-
-msgid "Display controller"
-msgstr "Pilote d'afficheur"
-
-#, python-brace-format
-msgid "Display controller [{display_controller}] has been created."
-msgstr "Le pilote d'afficheur [{display_controller}] a été créé."
-
-#, python-brace-format
-msgid "Display controller [{display_controller}] has been deleted."
-msgstr "Le pilote d'afficheur [{display_controller}] a été supprimé."
-
-#, python-brace-format
-msgid "Display controller [{display_controller}] has been updated."
-msgstr "Le pilote d'afficheur [{display_controller}] a été modifié."
-
-msgid "Display controllers"
-msgstr "Pilotes d'afficheur"
-
-msgctxt "with shortcut indication"
-msgid "Display controllers"
-msgstr "P<u>i</u>lotes d'afficheur"
-
-msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
-msgstr "Les pilotes d'afficheur vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
 msgid "Display history on hover"
 msgstr "Afficher l'historique au survol"
@@ -3408,8 +3442,8 @@ msgstr "Dupliquer l'évènement."
 msgid "Duplicate the menu."
 msgstr "Dupliquer le menu."
 
-msgid "Duplicate the multi-screen."
-msgstr "Dupliquer l'écran multiple."
+msgid "Duplicate the paged screen."
+msgstr "Dupliquer l'écran paginé."
 
 msgid "Duplicate the rotator."
 msgstr "Dupliquer l'écran rotatif."
@@ -3454,26 +3488,26 @@ msgstr "Ex. : %(string)s"
 msgid "E.g.: 1.5"
 msgstr "Ex. : 1.5"
 
-msgid "E.g.: 20 (boards per screen)"
-msgstr "Ex. : 20 (échiquiers par écran)"
+msgid "E.g.: 20 (boards per page)"
+msgstr "Ex. : 20 (échiquiers par page)"
 
-msgid "E.g.: 20 (players per screen)"
-msgstr "Ex. : 20 (joueur·euses par écran)"
+msgid "E.g.: 20 (players per page)"
+msgstr "Ex. : 20 (joueur·euses par page)"
 
 msgid "E.g.: 4 (matches per column)"
 msgstr "Ex. : 4 (matchs par colonne)"
 
-msgid "E.g.: 4 (split boards over 4 screens)"
-msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
+msgid "E.g.: 4 (split boards over 4 pages)"
+msgstr "Ex. : 4 (échiquiers sur 4 pages)"
 
-msgid "E.g.: 4 (split matches over 4 screens)"
-msgstr "Ex. : 4 (répartir les matchs sur 4 écrans)"
+msgid "E.g.: 4 (split matches over 4 pages)"
+msgstr "Ex. : 4 (répartir les matchs sur 4 pages)"
 
-msgid "E.g.: 4 (split players over 4 screens)"
-msgstr "Ex. : 4 (joueur·euses sur 4 écrans)"
+msgid "E.g.: 4 (split players over 4 pages)"
+msgstr "Ex. : 4 (joueur·euses sur 4 pages)"
 
-msgid "E.g.: 4 (split teams over 4 screens)"
-msgstr "Ex. : 4 (répartir les équipes sur 4 écrans)"
+msgid "E.g.: 4 (split teams over 4 pages)"
+msgstr "Ex. : 4 (répartir les équipes sur 4 pages)"
 
 #, python-format
 msgid "E.g.: Boards %%f to %%l"
@@ -3502,9 +3536,6 @@ msgstr "Ex. : Tournoi principal"
 msgid "E.g.: Matches %%f to %%l"
 msgstr "Ex. : Matchs %%f à %%l"
 
-msgid "E.g.: My display controller"
-msgstr "Ex. : Mon pilote d'afficheur"
-
 msgid "E.g.: My favourite club!"
 msgstr "Ex. : Mon club favori !"
 
@@ -3517,6 +3548,9 @@ msgstr "Ex. : Joueur·euses %%f à %%l"
 
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "Ex. : Merci de bien vouloir se mettre en place !"
+
+msgid "E.g.: Projector, Tablets"
+msgstr "Ex. : Vidéoprojecteur, Tablettes"
 
 msgid "E.g.: Sharly Chess Club"
 msgstr "Ex. : Sharly Chess Club"
@@ -3622,11 +3656,11 @@ msgstr "Modifier joueur·euse"
 msgid "Edit account"
 msgstr "Modifier le compte"
 
+msgid "Edit channel"
+msgstr "Modifier le canal"
+
 msgid "Edit criterion"
 msgstr "Modifier le critère"
-
-msgid "Edit display controller"
-msgstr "Modifier le pilote d'afficheur"
 
 msgid "Edit event"
 msgstr "Modifier l'évènement"
@@ -3640,8 +3674,8 @@ msgstr "Modifier la composition"
 msgid "Edit menu"
 msgstr "Modifier le menu"
 
-msgid "Edit multi-screen"
-msgstr "Modifier l'écran multiple"
+msgid "Edit paged screen"
+msgstr "Modifier l'écran paginé"
 
 msgid "Edit permission"
 msgstr "Modifier la permission"
@@ -3691,8 +3725,8 @@ msgstr "Modifier les propriétés du compte."
 msgid "Edit the properties of the category."
 msgstr "Modifier les propriétés de la catégorie."
 
-msgid "Edit the properties of the display controller."
-msgstr "Modifier les propriétés du pilote d'afficheur."
+msgid "Edit the properties of the channel."
+msgstr "Modifier les propriétés du canal."
 
 msgid "Edit the properties of the event."
 msgstr "Modifier les propriétés de l'évènement."
@@ -3700,8 +3734,8 @@ msgstr "Modifier les propriétés de l'évènement."
 msgid "Edit the properties of the menu."
 msgstr "Modifier les propriétés du menu."
 
-msgid "Edit the properties of the multi-screen."
-msgstr "Modifier les propriétés de l'écran multiple."
+msgid "Edit the properties of the paged screen."
+msgstr "Modifier les propriétés de l'écran paginé."
 
 msgid "Edit the properties of the rotator."
 msgstr "Modifier les propriétés de l'écran rotatif."
@@ -3827,6 +3861,9 @@ msgstr "Entrer des résultats"
 msgid "Entering %(result)s breaches the integrity of the pairings. It will be logged, and recorded in the TRF of the tournament."
 msgstr "Saisir %(result)s porte atteinte à l'intégrité des appariements. Ce sera consigné, et enregistré dans le TRF du tournoi."
 
+msgid "Entrance"
+msgstr "Entrée"
+
 msgid "Entry"
 msgstr "Saisie"
 
@@ -3916,6 +3953,9 @@ msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l
 
 msgid "Every round is paired: unpair a round to change its matches."
 msgstr "Toutes les rondes sont appariées : désappariez une ronde pour changer ses matchs."
+
+msgid "Every screen, menu and rotator"
+msgstr "Tous les écrans, menus et écrans rotatifs"
 
 msgid "Every seat whose game has not been played will be emptied."
 msgstr "Toutes les places dont la partie n'a pas été jouée seront libérées."
@@ -4104,6 +4144,9 @@ msgctxt "short name for Fide Master"
 msgid "FM"
 msgstr "MF"
 
+msgid "Fake data"
+msgstr "Données fictives"
+
 msgid "Faroe Islands"
 msgstr "Îles Féroé"
 
@@ -4232,6 +4275,9 @@ msgstr "Première équipe"
 
 msgid "First team:"
 msgstr "Première équipe :"
+
+msgid "First tie-break"
+msgstr "Premier départage"
 
 msgid "First, Last"
 msgstr "Prénom, Nom"
@@ -4369,9 +4415,6 @@ msgstr "Issu du jeu de règles"
 
 msgid "From top"
 msgstr "Depuis le haut"
-
-msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
-msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
 msgid "Full name"
 msgstr "Nom complet"
@@ -4518,11 +4561,11 @@ msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 msgid "Go back to the default backups folder?"
 msgstr "Revenir au dossier des sauvegardes par défaut ?"
 
-msgid "Go to the display controller."
-msgstr "Aller au pilote d'afficheur."
+msgid "Go to the channel."
+msgstr "Aller au canal."
 
-msgid "Go to the first screen."
-msgstr "Aller au premier écran."
+msgid "Go to the first page."
+msgstr "Aller à la première page."
 
 msgid "Go to the pairings."
 msgstr "Aller aux appariements."
@@ -4532,6 +4575,9 @@ msgstr "Aller à l'écran rotatif."
 
 msgid "Go to the screen."
 msgstr "Aller à l'écran."
+
+msgid "Go to this page."
+msgstr "Aller à cette page."
 
 msgid "Grand Final"
 msgstr "Grande finale"
@@ -4685,23 +4731,30 @@ msgstr "Comment sont déterminées les couleurs de chaque partie."
 msgid "How each source tournament is named in the list."
 msgstr "Comment chaque tournoi source est nommé dans la liste."
 
+#, python-format
+msgid "How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay."
+msgstr "Durée d'affichage de chaque page quand les pages défilent, sur un canal ou dans un écran rotatif. Vide, un canal affiche chaque page %(seconds)d secondes et un écran rotatif selon son propre délai."
+
 msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
 msgstr "Combien de fois le compétiteur a terminé à la place choisie (p. ex. nombre de premières places). Un décompte, donc non pondéré."
 
 msgid "How much each player is rated below the one above them."
 msgstr "L'écart de Elo entre chaque joueur·euse et le·la précédante."
 
-msgid "How the boards shown by these screens are chosen and ordered."
-msgstr "Comment les échiquiers affichés par ces écrans sont choisis et ordonnés."
-
 msgid "How the boards shown by this set are chosen and ordered."
 msgstr "Comment les échiquiers affichés par cet ensemble sont choisis et ordonnés."
+
+msgid "How the boards shown on these pages are chosen and ordered."
+msgstr "Comment les échiquiers affichés sur ces pages sont choisis et ordonnés."
 
 msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
 msgstr "La manière dont les joueur·euses de cette catégorie sont classé·es avant l'attribution des prix : selon leur classement final ou selon leur performance."
 
 msgid "How the players with the same rating and title are ordered in the starting rank."
 msgstr "L'ordre des joueur·euses de même classement Elo et de même titre dans le classement initial."
+
+msgid "How this fits together"
+msgstr "Comment tout s'articule"
 
 msgid "Hungary"
 msgstr "Hongrie"
@@ -4940,15 +4993,6 @@ msgstr "Score initial"
 
 msgid "Initial score accelerated system"
 msgstr "Système accéléré à scores initiaux"
-
-msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
-msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
-
-msgid "Input screens can't be part of rotators."
-msgstr "Les écrans de pointage et de saisie des résultats ne peuvent faire partie des écrans rotatifs."
-
-msgid "Input screens show pairings by board number and allow people to enter results."
-msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."
 
 msgid "Install"
 msgstr "Installer"
@@ -5416,6 +5460,9 @@ msgstr "Liste des participant·es"
 msgid "List view"
 msgstr "Affichage en liste"
 
+msgid "Lists the players of each team under its name, so that captains can check their team is complete."
+msgstr "Liste les joueur·euses de chaque équipe sous son nom, pour que les capitaines puissent vérifier que leur équipe est complète."
+
 msgid "Lithuania"
 msgstr "Lituanie"
 
@@ -5780,6 +5827,10 @@ msgstr "Hommes"
 msgid "Menu"
 msgstr "Menu"
 
+msgctxt "one menu"
+msgid "Menu"
+msgstr "Menu"
+
 #, python-brace-format
 msgid "Menu [{menu}] has been created."
 msgstr "Le menu [{menu}] a été créé."
@@ -5787,6 +5838,10 @@ msgstr "Le menu [{menu}] a été créé."
 #, python-brace-format
 msgid "Menu [{menu}] has been deleted."
 msgstr "Le menu [{menu}] a été supprimé."
+
+#, python-brace-format
+msgid "Menu [{menu}] has been sent to channel [{display_controller}]."
+msgstr "Le menu [{menu}] a été envoyé au canal [{display_controller}]."
 
 #, python-brace-format
 msgid "Menu [{menu}] has been updated."
@@ -5804,9 +5859,6 @@ msgstr "Libellé de menu : %(menu_label)s"
 
 msgid "Menus"
 msgstr "Menus"
-
-msgid "Menus group screens together so users can navigate between them."
-msgstr "Les menus regroupent des écrans pour permettre aux utilisateur·ices de naviguer entre eux."
 
 msgid "Merge selected players"
 msgstr "Fusionner les joueur·euses sélectionné·es"
@@ -5938,50 +5990,6 @@ msgstr "Passage à la ronde n°%(round)d"
 msgid "Mozambique"
 msgstr "Mozambique"
 
-msgid "Multi-Screen"
-msgstr "Écran multiple"
-
-#, python-brace-format
-msgid "Multi-Screen [{family_uniq_id}] has been created."
-msgstr "L'écran multiple [{family_uniq_id}] a été créé."
-
-#, python-brace-format
-msgid "Multi-Screen [{family_uniq_id}] has been deleted."
-msgstr "L'écran multiple [{family_uniq_id}] a été supprimé."
-
-#, python-brace-format
-msgid "Multi-Screen [{family_uniq_id}] has been updated."
-msgstr "L'écran multiple [{family_uniq_id}] a été mis à jour."
-
-msgid "Multi-Screens"
-msgstr "Écrans multiples"
-
-msgctxt "with shortcut indication"
-msgid "Multi-Screens"
-msgstr "Écrans&nbsp;<u>M</u>ultiples"
-
-msgid "Multi-Screens are used to split a large amount of information across multiple screens."
-msgstr "Les écrans multiples sont utilisés pour répartir une grande quantité d'informations sur plusieurs écrans."
-
-msgid "Multi-screen submenus"
-msgstr "Sous-menus des écrans multiples"
-
-msgid "Multi-screens"
-msgstr "Écrans multiples"
-
-msgid "Multi-screens always appear as dropdown submenus."
-msgstr "Les écrans multiples apparaissent toujours en sous-menus déroulants."
-
-msgid "Multi-screens appear as dropdowns when the menu holds more than one, otherwise they are expanded inline."
-msgstr "Les écrans multiples apparaissent en menus déroulants lorsque le menu en contient plus d’un, sinon ils sont développés en ligne."
-
-msgid "Multi-screens are always expanded inline."
-msgstr "Les écrans multiples sont toujours développés en ligne."
-
-#, python-format
-msgid "Multi-screens: %(num)d"
-msgstr "Écrans multiples : %(num)d"
-
 msgid "My category"
 msgstr "Ma catégorie"
 
@@ -6093,6 +6101,9 @@ msgstr "Naturel (ordre d'appariement)"
 msgid "Nauru"
 msgstr "Nauru"
 
+msgid "Navigation"
+msgstr "Navigation"
+
 msgid "Need a plugin of your own?"
 msgstr "Besoin d’un plugin sur mesure ?"
 
@@ -6138,15 +6149,15 @@ msgstr "Nouvelle affiliation"
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
+msgid "New channel"
+msgstr "Nouveau canal"
+
 #, python-format
 msgid "New check-ins are in, %(absents)d players now absent"
 msgstr "De nouveaux pointages ont été effectués, il y a maintenant %(absents)d joueur·euses absent·es"
 
 msgid "New checkins are in, refresh your browser"
 msgstr "De nouveaux pointages ont été effectués, actualisez la page"
-
-msgid "New display controller"
-msgstr "Nouveau pilote d'afficheur"
 
 msgid "New each time"
 msgstr "Nouvelle à chaque fois"
@@ -6254,6 +6265,12 @@ msgstr "Pas de capitaine"
 msgid "No captain is set for this team."
 msgstr "Cette équipe n'a pas de capitaine."
 
+msgid "No channel set for the event."
+msgstr "Aucun canal défini pour l'évènement."
+
+msgid "No channels"
+msgstr "Aucun canal"
+
 msgid "No competitors are available. Add a valid source tournament first."
 msgstr "Aucun compétiteur disponible. Ajoutez d'abord un tournoi source valide."
 
@@ -6286,9 +6303,6 @@ msgstr "Aucune source de données n'est active."
 
 msgid "No director"
 msgstr "Aucun Directeur·ice "
-
-msgid "No display controllers"
-msgstr "Aucun pilote d'afficheur"
 
 msgid "No dropdowns"
 msgstr "Sans menus déroulants"
@@ -6362,15 +6376,6 @@ msgstr "Aucun minimum"
 msgid "No monetary prizes assigned to players for this tournament."
 msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
 
-msgid "No multi-screens"
-msgstr "Aucun écran multiple"
-
-msgid "No multi-screens in this event yet."
-msgstr "Aucun écran multiple dans cet évènement pour le moment."
-
-msgid "No multi-screens to add."
-msgstr "Pas d'écran multiple à ajouter."
-
 msgid "No national list installed"
 msgstr "Aucune liste nationale installée"
 
@@ -6389,6 +6394,9 @@ msgstr "Aucun·e adversaire apparié·e à cette ronde."
 
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
+
+msgid "No pages"
+msgstr "Aucune page"
 
 msgid "No paired team matches for this round."
 msgstr "Aucun match d'équipe pour cette ronde."
@@ -6518,9 +6526,6 @@ msgstr "Aucun ensemble enregistré."
 
 msgid "No scoring rule has been created yet."
 msgstr "Aucune règle de score n'a encore été créée."
-
-msgid "No screens"
-msgstr "Aucun écran"
 
 msgid "No screens in this event yet."
 msgstr "Aucun écran dans cet évènement pour le moment."
@@ -6799,6 +6804,9 @@ msgstr "Rien de plus — laisser les équipes à égalité"
 msgid "Nothing has been recorded."
 msgstr "Rien n'a été enregistré."
 
+msgid "Nothing to show"
+msgstr "Rien à afficher"
+
 msgid "Notification"
 msgstr "Notification"
 
@@ -6845,8 +6853,14 @@ msgstr "Nombre de groupes"
 msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
 msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points requis pour que les adversaires soient pris en compte."
 
-msgid "Number of multi-screens"
-msgstr "Nombre d'écrans multiples"
+msgid "Number of menus"
+msgstr "Nombre de menus"
+
+msgid "Number of paged screens"
+msgstr "Nombre d'écrans paginés"
+
+msgid "Number of pages"
+msgstr "Nombre de pages"
 
 msgid "Number of placings"
 msgstr "Nombre de places"
@@ -6941,11 +6955,17 @@ msgstr "Oman"
 msgid "On this computer"
 msgstr "Sur cet ordinateur"
 
-msgid "Once created, choose the screens, multi-screens and rotators that display the timer with its Screens button, or select the timer in the settings of each of them."
-msgstr "Une fois le chronomètre créé, choisissez les écrans, écrans multiples et écrans rotatifs qui l'affichent avec son bouton Écrans, ou sélectionnez-le dans les paramètres de chacun d'eux."
-
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
+
+msgid "One or more tournaments, on one page"
+msgstr "Un ou plusieurs tournois, sur une page"
+
+msgid "One row per player"
+msgstr "Une ligne par joueur·euse"
+
+msgid "One tournament, over several pages"
+msgstr "Un seul tournoi, sur plusieurs pages"
 
 msgid "Ongoing"
 msgstr "En cours"
@@ -6956,14 +6976,14 @@ msgstr "Sources en ligne"
 msgid "Only allowed users can see private events."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les évènements privés."
 
-msgid "Only allowed users can see private multi-screens."
-msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans multiples privés."
+msgid "Only allowed users can see private paged screens."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans paginés privés."
 
 msgid "Only allowed users can see private screens."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans privés."
 
-msgid "Only allowed users can view private display controllers."
-msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheur privés."
+msgid "Only allowed users can view private channels."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les canaux privés."
 
 msgid "Only allowed users can view private rotators."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
@@ -7009,6 +7029,9 @@ msgstr "Ouvrir l'application (navigateur)"
 msgid "Open editor"
 msgstr "Ouvrir l’éditeur"
 
+msgid "Open in a new tab."
+msgstr "Ouvrir dans un nouvel onglet."
+
 msgid "Open the event"
 msgstr "Ouvrir l'événement"
 
@@ -7017,6 +7040,9 @@ msgstr "Ouvrir l'événement."
 
 msgid "Open the profile in a new tab."
 msgstr "Ouvrir la fiche dans un nouvel onglet."
+
+msgid "Open this address once on each device, or scan the code. Use as many devices as you like: they all show whatever you send to this channel."
+msgstr "Ouvrez cette adresse une fois sur chaque appareil, ou scannez le code. Utilisez autant d'appareils que vous le souhaitez : ils affichent tous ce que vous envoyez à ce canal."
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
@@ -7062,11 +7088,23 @@ msgstr "Valeur monétaire optionnelle du prix non monétaire complémentaire (ex
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
 
+msgid "Or <b>one</b> tournament split over several pages"
+msgstr "Ou <b>un</b> tournoi réparti sur plusieurs pages"
+
 msgid "Or upload an image (stored with the event, max 2 MB):"
 msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
 
+msgid "Order"
+msgstr "Ordre"
+
 msgid "Order the still-tied competitors by hand, by dragging them in the ranking."
 msgstr "Ordonnez à la main les compétiteurs encore à égalité en les faisant glisser dans le classement."
+
+msgid "Order: by pairing number"
+msgstr "Ordre : par numéro d'appariement"
+
+msgid "Order: by rank"
+msgstr "Ordre : par classement"
 
 msgid "Organisation"
 msgstr "Organisation"
@@ -7093,6 +7131,12 @@ msgstr "Autres joueur·euses manquant·es : {count}"
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
+
+msgid "Other screens"
+msgstr "Autres écrans"
+
+msgid "Other tie-breaks"
+msgstr "Autres départages"
 
 msgid "Others"
 msgstr "Autres"
@@ -7170,8 +7214,56 @@ msgid "Page break between matches (one match per page)."
 msgstr "Saut de page entre les matchs (un match par page)."
 
 #, python-brace-format
+msgid "Page {page} of [{family}] has been sent to channel [{display_controller}]."
+msgstr "La page {page} de [{family}] a été envoyée au canal [{display_controller}]."
+
+#, python-brace-format
 msgid "Page {page} of {pages}"
 msgstr "Page {page} sur {pages}"
+
+msgid "Paged Screen"
+msgstr "Écran paginé"
+
+#, python-brace-format
+msgid "Paged Screen [{family_uniq_id}] has been created."
+msgstr "L'écran paginé [{family_uniq_id}] a été créé."
+
+#, python-brace-format
+msgid "Paged Screen [{family_uniq_id}] has been deleted."
+msgstr "L'écran paginé [{family_uniq_id}] a été supprimé."
+
+#, python-brace-format
+msgid "Paged Screen [{family_uniq_id}] has been updated."
+msgstr "L'écran paginé [{family_uniq_id}] a été mis à jour."
+
+#, python-brace-format
+msgid "Paged Screen [{family}] has been sent to channel [{display_controller}]."
+msgstr "L'écran paginé [{family}] a été envoyé au canal [{display_controller}]."
+
+msgid "Paged Screens"
+msgstr "Écrans paginés"
+
+msgid "Paged screen submenus"
+msgstr "Sous-menus des écrans paginés"
+
+msgid "Paged screens"
+msgstr "Écrans paginés"
+
+msgid "Paged screens always appear as dropdown submenus."
+msgstr "Les écrans paginés apparaissent toujours en sous-menus déroulants."
+
+msgid "Paged screens appear as dropdowns when the menu holds more than one, otherwise they are expanded inline."
+msgstr "Les écrans paginés apparaissent en menus déroulants lorsque le menu en contient plus d’un, sinon ils sont développés en ligne."
+
+msgid "Paged screens are always expanded inline."
+msgstr "Les écrans paginés sont toujours développés en ligne."
+
+#, python-format
+msgid "Paged screens: %(num)d"
+msgstr "Écrans paginés : %(num)d"
+
+msgid "Pages"
+msgstr "Pages"
 
 msgid "Paid"
 msgstr "Payé"
@@ -7675,6 +7767,9 @@ msgstr "<u>J</u>oueur·euses"
 msgid "Players (none now)"
 msgstr "Joueur·euses (aucun·e actuellement)"
 
+msgid "Players can check in on this screen"
+msgstr "Les joueur·euses peuvent se pointer sur cet écran"
+
 msgid "Players can't be overwritten once a tournament has started."
 msgstr "Les joueur·euses ne peuvent plus être remplacé·es dès qu'un tournoi a commencé."
 
@@ -7776,6 +7871,9 @@ msgstr "Joueur·euses : masqué·es"
 msgid "Playing"
 msgstr "En cours"
 
+msgid "Playing hall"
+msgstr "Salle de jeu"
+
 #, python-format
 msgid "Playing in tournament [%(name)s]"
 msgstr "Participe au tournoi [%(name)s]"
@@ -7818,6 +7916,9 @@ msgstr "Veuillez choisir le modèle."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
+
+msgid "Please choose the tournaments."
+msgstr "Veuillez choisir les tournois."
 
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr "Considérez contacter le support, ou installer la nouvelle version manuellement."
@@ -8018,6 +8119,9 @@ msgstr "Aperçu"
 msgid "Preview the card with different sample data."
 msgstr "Prévisualisez le chevalet avec différentes données d’exemple."
 
+msgid "Preview view"
+msgstr "Affichage en aperçus"
+
 msgid "Previous round"
 msgstr "Ronde précédente"
 
@@ -8148,6 +8252,9 @@ msgstr "Interdit en mode FIDE"
 msgid "Prohibited pairings"
 msgstr "Protections d'appariement"
 
+msgid "Projector"
+msgstr "Vidéoprojecteur"
+
 msgid "Properties"
 msgstr "Propriétés"
 
@@ -8170,8 +8277,8 @@ msgstr "Public"
 msgid "Public event"
 msgstr "Évènement public"
 
-msgid "Public multi-screen"
-msgstr "Écran multiple public"
+msgid "Public paged screen"
+msgstr "Écran paginé public"
 
 msgid "Public screen"
 msgstr "Écran public"
@@ -8514,8 +8621,8 @@ msgstr "Supprimer la période"
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
-msgid "Remove the screen from the display controller."
-msgstr "Supprimer la redirection du pilote d'afficheur vers cet écran."
+msgid "Remove the screen from the channel."
+msgstr "Retirer l'écran du canal."
 
 msgid "Remove this period"
 msgstr "Supprimer cette période"
@@ -8667,6 +8774,9 @@ msgstr "Le résultat [{result}] ne peut être utilisé sans adversaire."
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr "Le résultat [{result}] est incompatible avec le résultat de l'adversaire [{opponent_result}]."
 
+msgid "Result entry"
+msgstr "Saisie des résultats"
+
 #, python-brace-format
 msgid "Result of the adjourned game {pair} entered as {result}, after the next round was paired with the game counting as a draw."
 msgstr "Résultat de la partie ajournée {pair} saisi comme {result}, après l'appariement de la ronde suivante où la partie comptait comme nulle."
@@ -8685,6 +8795,9 @@ msgstr "Résultat de {pair} saisi : {after}."
 
 msgid "Results"
 msgstr "Résultats"
+
+msgid "Results can be entered on this screen"
+msgstr "Les résultats peuvent être saisis sur cet écran"
 
 msgid "Results entry"
 msgstr "Saisie des résultats"
@@ -8780,9 +8893,9 @@ msgstr "Délai de rotation"
 msgid "Rotator"
 msgstr "Écran rotatif"
 
-#, python-brace-format
-msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
-msgstr "L'écran rotatif [{rotator}] est utilisé par le pilote d'afficheur [{display_controller}]."
+msgctxt "one rotator"
+msgid "Rotator"
+msgstr "Écran rotatif"
 
 #, python-brace-format
 msgid "Rotator [{rotator}] has been created."
@@ -8791,6 +8904,10 @@ msgstr "L'écran rotatif [{rotator}] a été créé."
 #, python-brace-format
 msgid "Rotator [{rotator}] has been deleted."
 msgstr "L'écran rotatif [{rotator}] a été supprimé."
+
+#, python-brace-format
+msgid "Rotator [{rotator}] has been sent to channel [{display_controller}]."
+msgstr "L'écran rotatif [{rotator}] a été envoyé au canal [{display_controller}]."
 
 #, python-brace-format
 msgid "Rotator [{rotator}] has been updated."
@@ -8805,9 +8922,6 @@ msgstr "Écrans rotatifs"
 msgctxt "with shortcut indication"
 msgid "Rotators"
 msgstr "Écrans&nbsp<u>R</u>otatifs"
-
-msgid "Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event."
-msgstr "Les écrans rotatifs vous permettent d'alterner entre plusieurs écrans, ou écrans multiples, pour afficher de nombreuses informations lors de votre évènement."
 
 #, python-format
 msgid "Rotators: %(num)d"
@@ -8969,6 +9083,12 @@ msgstr "Ronde {} commencée depuis %%s"
 msgid "Round-Robin"
 msgstr "Toutes-rondes"
 
+msgid "Round-robin grid"
+msgstr "Grille toutes-rondes"
+
+msgid "Round-robin grid screens show every player of a round robin against every other, with the results and the rounds still to play."
+msgstr "Les écrans de grille toutes-rondes montrent chaque joueur·euse d'un toutes-rondes face à tou·tes les autres, avec les résultats et les rondes restant à jouer."
+
 msgid "Round-robin schedule"
 msgstr "Calendrier toutes-rondes"
 
@@ -9003,8 +9123,8 @@ msgstr "Rondes {min_round}-{max_round}"
 msgid "Rounds: {rounds}."
 msgstr "Rondes : {rounds}."
 
-msgid "Rows per screen:"
-msgstr "Lignes par écran :"
+msgid "Rows per page:"
+msgstr "Lignes par page :"
 
 msgid "Rp"
 msgstr "Rp"
@@ -9069,12 +9189,8 @@ msgid "SC_D"
 msgstr "SC_D"
 
 msgctxt "keyboard shortcut for the display controllers tab"
-msgid "SC_I"
-msgstr "SC_I"
-
-msgctxt "keyboard shortcut for the multi-screens tab"
-msgid "SC_M"
-msgstr "SC_M"
+msgid "SC_N"
+msgstr "SC_N"
 
 msgctxt "keyboard shortcut for the players tab"
 msgid "SC_P"
@@ -9210,12 +9326,12 @@ msgstr "Écosse"
 msgid "Screen"
 msgstr "Écran"
 
+msgctxt "one screen"
+msgid "Screen"
+msgstr "Écran"
+
 msgid "Screen Management"
 msgstr "Gestion de l'affichage"
-
-#, python-brace-format
-msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
-msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheur [{display_controller}]."
 
 #, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been created."
@@ -9224,6 +9340,10 @@ msgstr "L'écran [{screen_uniq_id}] a été créé."
 #, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr "L'écran [{screen_uniq_id}] a été supprimé."
+
+#, python-brace-format
+msgid "Screen [{screen_uniq_id}] has been sent to channel [{display_controller}]."
+msgstr "L'écran [{screen_uniq_id}] a été envoyé au canal [{display_controller}]."
 
 #, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been updated."
@@ -9244,15 +9364,25 @@ msgstr "Types d'écran"
 msgid "Screens"
 msgstr "Écrans"
 
+msgctxt "with shortcut indication"
+msgid "Screens"
+msgstr "Écran<u>s</u>"
+
+msgid "Screens designed for this channel:"
+msgstr "Écrans conçus pour ce canal :"
+
 msgid "Screens list"
 msgstr "Liste d'écrans"
-
-msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
 
 #, python-format
 msgid "Screens of timer [%(timer)s]"
 msgstr "Écrans du chronomètre [%(timer)s]"
+
+msgid "Screens people tap between"
+msgstr "Des écrans entre lesquels on navigue en touchant"
+
+msgid "Screens show fake data for the tournaments that have not started, on every device."
+msgstr "Les écrans affichent des données fictives pour les tournois non commencés, sur tous les appareils."
 
 #, python-format
 msgid "Screens: %(num)d"
@@ -9301,6 +9431,9 @@ msgstr "Le score secondaire plus le Buchholz d'équipe sur le score primaire div
 
 msgid "Secondary score, used to allocate colours."
 msgstr "Score secondaire, utilisé pour l'attribution des couleurs."
+
+msgid "Seconds per page:"
+msgstr "Secondes par page :"
 
 msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
@@ -9411,6 +9544,15 @@ msgstr "Sélection : %(selection)s"
 
 msgid "Semifinals"
 msgstr "Demi-finales"
+
+msgid "Send a screen to this channel."
+msgstr "Envoyer un écran à ce canal."
+
+msgid "Send this page to a channel."
+msgstr "Envoyer cette page à un canal."
+
+msgid "Send to a channel."
+msgstr "Envoyer à un canal."
 
 msgid "Senegal"
 msgstr "Sénégal"
@@ -9568,8 +9710,17 @@ msgstr "Sharly Chess {version}"
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
 
+msgid "Show all"
+msgstr "Tout afficher"
+
 msgid "Show level"
 msgstr "Afficher le niveau"
+
+msgid "Show made-up pairings and results on the screens of the tournaments that have not started, to set them up."
+msgstr "Afficher des appariements et des résultats fictifs sur les écrans des tournois non commencés, pour les mettre en place."
+
+msgid "Show the members of each team"
+msgstr "Afficher les membres de chaque équipe"
 
 msgid "Show the pairings of this round on the screens and send them to the online services."
 msgstr "Afficher les appariements de cette ronde sur les écrans et les envoyer aux services en ligne."
@@ -9602,11 +9753,11 @@ msgstr "Afficher/masquer les contours"
 msgid "Show/hide the round lineups on the cards."
 msgstr "Affiche/masque les compositions par ronde sur les cartes."
 
-msgid "Show/hide the screens created from multi-screens."
-msgstr "Afficher/masquer les écrans créés à partir des écrans multiples."
-
 msgid "Show/hide the team rosters on the cards."
 msgstr "Affiche/masque les effectifs des équipes sur les cartes."
+
+msgid "Showing now"
+msgstr "Affichage en cours"
 
 msgid "Side A"
 msgstr "Face A"
@@ -9616,6 +9767,9 @@ msgstr "Face B"
 
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
+
+msgid "Sign in"
+msgstr "Se connecter"
 
 msgid "Signature"
 msgstr "Signature"
@@ -9634,10 +9788,6 @@ msgstr "Singapour"
 
 msgid "Single Screens"
 msgstr "Écrans simples"
-
-msgctxt "with shortcut indication"
-msgid "Single Screens"
-msgstr "Écrans&nbsp;<u>S</u>imples"
 
 msgid "Single elimination"
 msgstr "Élimination simple"
@@ -9685,9 +9835,6 @@ msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les 
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
 msgstr "Certaines des données de Sharly Chess ne sont pas incluses dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation du format SCE est fortement recommandée."
-
-msgid "Some screens of this type already belong to a menu."
-msgstr "Certains écrans de ce type appartiennent déjà à un menu."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -9993,6 +10140,9 @@ msgstr "Numéro de table"
 
 msgid "Table numbers:"
 msgstr "Numéros des tables :"
+
+msgid "Tablets"
+msgstr "Tablettes"
 
 msgid "Tags"
 msgstr "Étiquettes"
@@ -10329,6 +10479,9 @@ msgstr "La catégorie a été renommée."
 msgid "The change will be recorded in the TRF of the tournament."
 msgstr "La modification sera consignée dans le TRF du tournoi."
 
+msgid "The channels this is designed for. It is offered first when choosing what they show. Nothing is sent to them."
+msgstr "Les canaux pour lesquels ceci est conçu. Il est proposé en premier quand on choisit ce qu'ils affichent. Rien ne leur est envoyé."
+
 #, python-format
 msgid "The coefficient (k) of the player is unknown, %(k)d is assumed."
 msgstr "Le coefficient (k) du·de la joueur·euse est inconnu, %(k)d est utilisé."
@@ -10420,9 +10573,6 @@ msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] "La première ronde est ingorée."
 msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
-msgid "The first tournament of the screen."
-msgstr "Le premier tournoi de l'écran."
-
 #, python-brace-format
 msgid "The fixed rating must be between 1 and {max}."
 msgstr "Le Elo fixe doit être compris entre 1 et {max}."
@@ -10471,8 +10621,8 @@ msgstr "Les groupes sont très inégaux, la majeure partie du tableau est donc c
 msgid "The image is too large (max 2 MB)."
 msgstr "L'image est trop volumineuse (max. 2 Mo)."
 
-msgid "The label used for this multi-screen in menus. Its range is appended automatically."
-msgstr "Le libellé utilisé pour cet écran multiple dans les menus. Sa plage est ajoutée automatiquement."
+msgid "The label used for this paged screen in menus. Its range is appended automatically."
+msgstr "Le libellé utilisé pour cet écran paginé dans les menus. Sa plage est ajoutée automatiquement."
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
 msgstr "Le libellé utilisé pour cet écran dans les menus. S'il est vide, le nom du tournoi est utilisé."
@@ -10575,8 +10725,8 @@ msgstr "Le nouveau dossier ne peut être un sous-dossier do dossier actuel."
 msgid "The new folder is in use, but the backups already taken could not be moved to it. They are still in the previous folder."
 msgstr "Le nouveau dossier est utilisé, mais les sauvegardes déjà effectuées n'ont pas pu y être déplacées. Elles sont toujours dans le dossier précédent."
 
-msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
-msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'adapte au nombre d'échiquiers)."
+msgid "The number of boards per page, optional (the number of pages adapts to the number of boards)."
+msgstr "Le nombre d'échiquiers par page, facultatif (le nombre de pages s'adapte au nombre d'échiquiers)."
 
 msgid "The number of columns used to display data."
 msgstr "Le nombre de colonnes utilisé pour afficher les données."
@@ -10593,8 +10743,20 @@ msgstr "Le nombre de parties gagnées sur l'échiquier avec les Noirs."
 msgid "The number of games won over the board."
 msgstr "Le nombre de parties gagnées sur l'échiquier."
 
-msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
-msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
+msgid "The number of pages on which the boards will be distributed, optional (the number of pages is always the same and the number of boards per page adapts to the number of boards)."
+msgstr "Le nombre de pages sur lesquelles les échiquiers seront répartis, facultatif (le nombre de pages reste toujours le même et le nombre d'échiquiers par page s'adapte)."
+
+msgid "The number of pages on which the matches will be distributed, optional (the number of pages is always the same and the number of matches per page adapts to the number of matches)."
+msgstr "Le nombre de pages sur lesquelles les matchs seront répartis, optionnel (le nombre de pages est toujours le même et le nombre de matchs par page s'adapte au nombre de matchs)."
+
+msgid "The number of pages on which the players will be distributed, optional (the number of pages is always the same and the number of players per page adapts to the number of players."
+msgstr "Le nombre de pages sur lesquelles les joueur·euses seront réparti·es, facultatif (le nombre de pages reste toujours le même et le nombre de joueur·euses par page s'adapte)."
+
+msgid "The number of pages on which the teams will be distributed, optional (the number of pages is always the same and the number of teams per page adapts to the number of teams)."
+msgstr "Le nombre de pages sur lesquelles les équipes seront réparties, optionnel (le nombre de pages est toujours le même et le nombre d'équipes par page s'adapte au nombre d'équipes)."
+
+msgid "The number of players per page, optional (the number of pages adapts to the number of players)."
+msgstr "Le nombre de joueur·euses par page, facultatif (le nombre de pages s'adapte au nombre de joueur·euses)."
 
 #, python-brace-format
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
@@ -10615,20 +10777,8 @@ msgstr "Le nombre de rondes qui doivent s'écouler avant que deux joueur·euses 
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr "Le nombre de rondes lors desquelles un·e joueur·euse obtient, en jouant ou non, autant de points que lors d'une victoire."
 
-msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
-msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facultatif (le nombre d'écrans reste toujours le même et le nombre d'échiquiers par écran s'adapte)."
-
-msgid "The number of screens on which the matches will be distributed, optional (the number of screens is always the same and the number of matches per screen adapts to the number of matches)."
-msgstr "Le nombre d'écrans sur lesquels les matchs seront répartis, optionnel (le nombre d'écrans est toujours le même et le nombre de matchs par écran s'adapte au nombre de matchs)."
-
-msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
-msgstr "Le nombre d'écrans sur lesquels les joueur·euses seront réparti·es, facultatif (le nombre d'écrans reste toujours le même et le nombre de joueur·euses par écran s'adapte)."
-
-msgid "The number of screens on which the teams will be distributed, optional (the number of screens is always the same and the number of teams per screen adapts to the number of teams)."
-msgstr "Le nombre d'écrans sur lesquels les équipes seront réparties, optionnel (le nombre d'écrans est toujours le même et le nombre d'équipes par écran s'adapte au nombre d'équipes)."
-
-msgid "The number of team matches per column, optional (the number of screens adapts to the number of matches; a match spans one row per board)."
-msgstr "Le nombre de matchs par colonne, optionnel (le nombre d'écrans s'adapte au nombre de matchs ; un match occupe une ligne par échiquier)."
+msgid "The number of team matches per column, optional (the number of pages adapts to the number of matches; a match spans one row per board)."
+msgstr "Le nombre de matchs par colonne, optionnel (le nombre de pages s'adapte au nombre de matchs ; un match occupe une ligne par échiquier)."
 
 msgid "The number of the first board to select."
 msgstr "Le numéro du premier échiquier à prendre en compte."
@@ -10969,12 +11119,15 @@ msgstr "Le calendrier a été établi sur %(scheduled)d ronde(s), mais ce systè
 msgid "The scoring criterion applied to rank the competitors."
 msgstr "Le critère de score appliqué pour classer les compétiteurs."
 
-msgid "The screens displayed by the display controller are controlled by the screen managers."
-msgstr "Les écrans utilisés par le pilote d'afficheur sont désignés par l'administrateur·ice."
-
 #, python-brace-format
 msgid "The screens of timer [{timer}] have been updated."
 msgstr "Les écrans du chronomètre [{timer}] ont été mis à jour."
+
+msgid "The screens shown on a channel are controlled by the screen managers."
+msgstr "Les écrans affichés sur un canal sont désignés par l'administrateur·ice."
+
+msgid "The screens, paged screens, rotators and menus designed for this channel. They appear first when choosing what it shows, and anything else can still be sent to it."
+msgstr "Les écrans, écrans paginés, écrans rotatifs et menus conçus pour ce canal. Ils sont proposés en premier quand on choisit ce qu'il affiche, et tout le reste peut encore lui être envoyé."
 
 #, python-brace-format
 msgid "The selected {competitors} have been merged."
@@ -11049,11 +11202,11 @@ msgstr "Le seuil ne peut être supérieur à la valeur du dernier prix de la cat
 msgid "The tie-break computed from each stage’s games and aggregated across the counted stages."
 msgstr "Le départage calculé à partir des parties de chaque étape et agrégé sur les étapes comptées."
 
+msgid "The timer displayed on the pages of the paged screen."
+msgstr "Le chronomètre affiché sur les pages de l'écran paginé."
+
 msgid "The timer displayed on the screen."
 msgstr "Le chronomètre qui sera affiché en haut de l'écran."
-
-msgid "The timer displayed on the screens of the multi-screen."
-msgstr "Le chronomètre affiché sur les écrans de l'écran multiple."
 
 #, python-brace-format
 msgid "The timer is green until {delay_1} minutes before the start of the rounds, then turns gradually orange until {delay_2} minutes before the start of the rounds."
@@ -11088,8 +11241,8 @@ msgstr "Le tournoi est terminé."
 msgid "The tournament must keep at least one ranking criterion."
 msgstr "Le tournoi doit conserver au moins un critère de classement."
 
-msgid "The tournament of the screens of the multi-screen."
-msgstr "Le tournoi des écrans de l'écran multiple."
+msgid "The tournament of the paged screen."
+msgstr "Le tournoi de l'écran paginé."
 
 msgid "The tournaments for which the staff member is a deputy arbiter."
 msgstr "Les tournois pour lesquels le membre du staff est arbitre adjoint·e."
@@ -11102,6 +11255,9 @@ msgstr "Les tournois pour lesquels le membre du staff est arbitre principal·e."
 
 msgid "The tournaments on which the permission is applied."
 msgstr "Les tournois sur lesquels la permission s'applique."
+
+msgid "The tournaments shown on the screen, each in its own set. More can be added later."
+msgstr "Les tournois affichés sur l'écran, chacun dans son propre ensemble. D'autres peuvent être ajoutés ensuite."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
@@ -11157,8 +11313,8 @@ msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée 
 msgid "There are no public screens available for this event."
 msgstr "Aucun écran public n’est disponible pour cet évènement."
 
-msgid "There needs to be at least one screen or multi-screen defined for the rotator to be accessible."
-msgstr "Il doit y avoir au moins un écran ou un écran multiple défini pour que l'écran rotatif soit accessible."
+msgid "There needs to be at least one screen or paged screen defined for the rotator to be accessible."
+msgstr "Il doit y avoir au moins un écran ou un écran paginé défini pour que l'écran rotatif soit accessible."
 
 msgid "These decide who advances from a level knock-out match — a tied team match or a drawn individual game — applied in the order listed. They do not affect the standings, which rank by the round each participant reached."
 msgstr "Ils déterminent qui se qualifie lors d'un match de coupe à égalité — un match par équipes nul ou une partie individuelle nulle — appliqués dans l'ordre indiqué. Ils n'affectent pas le classement, établi selon le tour atteint par chaque participant·e."
@@ -11177,6 +11333,9 @@ msgstr "Ces plug-ins sont installés en même temps que celui-ci."
 
 msgid "These points count towards the tournament standings and are used for the pairings. They do not change the results of the games, which are reported to FIDE as they were played."
 msgstr "Ces points comptent pour le classement du tournoi et sont utilisés pour les appariements. Ils ne modifient pas les résultats des parties, qui sont transmis à la FIDE tels qu’ils ont été joués."
+
+msgid "These screens show round-robin tournaments only."
+msgstr "Ces écrans ne montrent que des tournois toutes-rondes."
 
 msgid "These sets are saved per pairing system and shared across events."
 msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés entre les événements."
@@ -11229,6 +11388,18 @@ msgstr "Cette sauvegarde a été effectuée par une autre version de l'applicati
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
 msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre unÏe joueur·euse à cette place."
 
+msgid "This channel is private (not visible by the spectators)."
+msgstr "Ce canal est privé (non visible des spectateur·ices)."
+
+msgid "This channel is private: the device must be signed in with an allowed account."
+msgstr "Ce canal est privé : l'appareil doit être connecté avec un compte autorisé."
+
+msgid "This channel is public (visible by the spectators)."
+msgstr "Ce canal est public (visible des spectateur·ices)."
+
+msgid "This computer is not connected to a network, so other devices cannot reach it."
+msgstr "Cet ordinateur n'est connecté à aucun réseau : les autres appareils ne peuvent pas l'atteindre."
+
 msgid "This content is too advanced for the block editor."
 msgstr "Ce contenu est trop avancé pour l’éditeur de blocs."
 
@@ -11240,12 +11411,6 @@ msgstr "Cette source de données n'est pas disponible (pour plus de détails : 
 
 msgid "This database is not installed (to install it: Menu > Data sources)."
 msgstr "Cette base de données n'est pas installée (pour l'installer : Menu > Sources de données)."
-
-msgid "This display controller is private (not visible by the spectators)."
-msgstr "Ce pilote d'afficheur est privé (non visible des spectateur·ices)."
-
-msgid "This display controller is public (visible by the spectators)."
-msgstr "Ce pilote d'afficheur est public (visible des spectateur·ices)."
 
 msgid "This document is not available for unpaired tournaments."
 msgstr "Ce document n'est pas disponible pour les tournois non appariés."
@@ -11343,23 +11508,23 @@ msgstr "Ce dossier est synchronisé par {service}, ce qui conserve une copie des
 msgid "This game has been played."
 msgstr "Cette partie a été jouée."
 
+msgid "This is fake data"
+msgstr "Données fictives"
+
 msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
 msgstr "Cela permet aux joueurs d'affronter des adversaires de force similaire. Lorsque l'option est activée (Keizer standard), le score de chaque joueur inclut sa propre valeur de classement actuelle : le classement reste stable et chaque ronde apparie des joueurs de force proche. Un mauvais résultat ne fait pas chuter un joueur fort loin dans le classement, et les appariements ne varient pas brutalement. Lorsque l'option est désactivée, le score provient uniquement des résultats, ce qui peut rendre le classement initial, et donc les appariements, plus instables."
 
 msgid "This menu is empty."
 msgstr "Ce menu est vide."
 
-msgid "This multi-screen already belongs to a menu."
-msgstr "Cet écran multiple appartient déjà à un menu."
-
-msgid "This multi-screen is private (not visible by the spectators)."
-msgstr "Cet écran multiple est privé (non visible par les spectateur·ices)."
-
-msgid "This multi-screen is public (visible by the spectators)."
-msgstr "Cet écran multiple est public (visible par les spectateur·ices)."
-
 msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
+
+msgid "This paged screen is private (not visible by the spectators)."
+msgstr "Cet écran paginé est privé (non visible par les spectateur·ices)."
+
+msgid "This paged screen is public (visible by the spectators)."
+msgstr "Cet écran paginé est public (visible par les spectateur·ices)."
 
 msgid "This pairing breaks the absolute criteria of the pairing system:"
 msgstr "Cet appariement enfreint les critères absolus du système d'appariement :"
@@ -11467,8 +11632,11 @@ msgstr "Cette ronde utilisera la composition de la ronde n°%(round)d lors de l'
 msgid "This row contains errors that prevent it from being imported."
 msgstr "Cette ligne contient des erreurs empêchant son import."
 
-msgid "This screen already belongs to a menu."
-msgstr "Cet écran appartient déjà à un menu."
+msgid "This screen already belongs to this menu."
+msgstr "Cet écran appartient déjà à ce menu."
+
+msgid "This screen cannot show this tournament."
+msgstr "Cet écran ne peut pas afficher ce tournoi."
 
 msgid "This screen is private (not visible by the spectators)."
 msgstr "Cet écran est privé (non visible des spectateur·ices)."
@@ -11476,8 +11644,8 @@ msgstr "Cet écran est privé (non visible des spectateur·ices)."
 msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
 
-msgid "This screen type already belongs to a menu."
-msgstr "Ce type d'écran appartient déjà à un menu."
+msgid "This screen type already belongs to this menu."
+msgstr "Ce type d'écran appartient déjà à ce menu."
 
 msgid "This second instance will close and Sharly Chess will be shown in your browser."
 msgstr "Cette seconde instance va se fermer et Sharly Chess va s'afficher dans votre navigateur."
@@ -11649,9 +11817,6 @@ msgstr "Chronomètre : aucun"
 msgid "Timers"
 msgstr "Chronomètres"
 
-msgid "Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event."
-msgstr "Les chronomètres peuvent être placés sur n'importe quel écran, écran multiple ou écran rotatif pour afficher un compte à rebours jusqu'à la prochaine ronde ou un autre évènement important."
-
 #, python-format
 msgid "Timers: %(num)d"
 msgstr "Chronomètres : %(num)d"
@@ -11725,9 +11890,6 @@ msgstr "Trop peu d'équipes pour générer les appariements (minimum : {min})."
 #, python-brace-format
 msgid "Too many byes for player [{player_name}]."
 msgstr "Trop de byes pour le·la joueurÏeuse [{player_name}]."
-
-msgid "Too much information to display on a single projector?"
-msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
 msgid "Top board results"
 msgstr "Résultats des premiers échiquiers"
@@ -11896,6 +12058,9 @@ msgstr "Turquie"
 msgid "Turkmenistan"
 msgstr "Turkménistan"
 
+msgid "Turn off"
+msgstr "Désactiver"
+
 msgid "Two draws cannot be worth more than a win and a loss."
 msgstr "Deux nulles ne peuvent pas valoir plus qu'une victoire et une défaite."
 
@@ -11960,6 +12125,9 @@ msgstr "Non disponible avant le début du tournoi."
 
 msgid "Unavailable once the tournament has started."
 msgstr "Non disponible une fois le tournoi démarré."
+
+msgid "Uncheck the columns to hide them, to make room on screens showing many players."
+msgstr "Décochez les colonnes pour les masquer, afin de gagner de la place sur les écrans affichant beaucoup de joueur·euses."
 
 msgid "Undefined"
 msgstr "Non défini"
@@ -12050,9 +12218,6 @@ msgstr "Tournoi inconnu."
 #, python-brace-format
 msgid "Unknown value (expected: {expected})."
 msgstr "Valeur inconnue (attendu : {expected})."
-
-msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
-msgstr "Contrairement aux écrans simples, les écrans multiples ne peuvent être utilisés que pour afficher les informations d'un seul tournoi."
 
 msgid "Unlock"
 msgstr "Déverrouiller"
@@ -12451,6 +12616,9 @@ msgstr "Voir les sauvegardes de l'évènement."
 msgid "View the menu."
 msgstr "Voir le menu."
 
+msgid "View the paged screen."
+msgstr "Voir l'écran paginé."
+
 msgid "Virtual points"
 msgstr "Points virtuels"
 
@@ -12459,9 +12627,6 @@ msgstr "Les points virtuels s'ajoutent au score des joueur·euses pour l'apparie
 
 msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
 msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
-
-msgid "Visibility:"
-msgstr "Visibilité :"
 
 msgctxt "short name for gender woman"
 msgid "W"
@@ -12555,6 +12720,9 @@ msgstr "Pondérer la valeur de chaque étape comptée par le coefficient du tour
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
+msgid "What can be shown, and how it reaches a device"
+msgstr "Ce qui peut être affiché, et comment cela arrive sur un appareil"
+
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr "Ce qui a été inscrit dans le TRF : atteintes à l'intégrité des appariements, modifications des paramètres et parties corrigées pour le rapport Elo."
 
@@ -12564,6 +12732,9 @@ msgstr "Ce qui départage les deux dernières équipes lorsqu'elles sont à éga
 #, python-brace-format
 msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
 msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, une nulle ou une défaite jouée conviennent toutes — mais la ronde doit être jouée (un forfait devient une défaite par forfait et disqualifie la norme). « norme déjà acquise » signifie qu'elle est acquise quel que soit le résultat de la ronde {round} — soit le résultat est déjà saisi, soit elle tient sans cette ronde (1.4.1e)."
+
+msgid "What to show"
+msgstr "Quoi afficher"
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
@@ -12576,9 +12747,6 @@ msgstr "Lorsqu'activé, un avertissement est montré si une composition d'équip
 
 msgid "When hovering a player's name with the mouse, display its history."
 msgstr "Au survol du nom d'un·une joueur·euse avec la souris, affiche son historique de tournoi."
-
-msgid "When not displaying the exit button, users can not accidentally exit input screens."
-msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
 msgid "When only the matches are displayed, the players of each board are hidden, so team captains can find their match at a glance."
 msgstr "Lorsque seuls les matchs sont affichés, les joueur·euses de chaque échiquier sont masqué·es, pour que les capitaines trouvent leur match d'un coup d'œil."
@@ -12650,6 +12818,9 @@ msgstr "Forfait définitif"
 
 msgid "Withdrawn"
 msgstr "Forfait définitif"
+
+msgid "Without the exit button, people cannot leave the screen by mistake."
+msgstr "Sans le bouton de sortie, personne ne peut quitter l'écran par erreur."
 
 msgctxt "name for gender woman"
 msgid "Woman"
@@ -12851,9 +13022,6 @@ msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette c
 msgid "You can't add any more permission to this account."
 msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
-msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
-msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
-
 msgid "You do not have write permission on this folder."
 msgstr "Vous n'avez pas la permission d'écriture sur ce dossier."
 
@@ -12863,17 +13031,11 @@ msgstr "Vous n'avez aucune permission"
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"
 
-msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
-msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
-
 msgid "You must create a prize bracket before creating a prize category."
 msgstr "Vous devez créer un groupe non cumulable avant de créer une catégorie de prix."
 
-msgid "You must create a screen or a multi-screen before creating a rotator."
-msgstr "Vous devez créer un écran ou un écran multiple avant de créer un écran rotatif."
-
-msgid "You must create a tournament before creating a multi-screen."
-msgstr "Vous devez créer un tournoi avant de créer un écran multiple."
+msgid "You must create a screen or a paged screen before creating a rotator."
+msgstr "Vous devez créer un écran ou un écran paginé avant de créer un écran rotatif."
 
 msgid "You must create a tournament before creating a prize bracket."
 msgstr "Vous devez créer un tournoi avant de créer un groupe non cumulable."
@@ -13057,28 +13219,28 @@ msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
 
 #, python-brace-format
-msgid "boards from #{first} to #{last}, on {parts} screens"
-msgstr "échiquiers du n°{first} au n°{last}, sur {parts} écrans"
+msgid "boards from #{first} to #{last}, on {parts} pages"
+msgstr "échiquiers du n°{first} au n°{last}, sur {parts} pages"
 
 #, python-brace-format
 msgid "boards from #{first} to end"
 msgstr "échiquiers du n°{first} à la fin"
 
 #, python-brace-format
-msgid "boards from #{first} to end, on {parts} screens"
-msgstr "échiquiers du n°{first} à la fin, sur {parts} écrans"
+msgid "boards from #{first} to end, on {parts} pages"
+msgstr "échiquiers du n°{first} à la fin, sur {parts} pages"
 
 #, python-brace-format
 msgid "boards from start to #{last}"
 msgstr "échiquiers du début au n°{last}"
 
 #, python-brace-format
-msgid "boards from start to #{last}, on {parts} screens"
-msgstr "échiquiers du début au n°{last}, sur {parts} écrans"
+msgid "boards from start to #{last}, on {parts} pages"
+msgstr "échiquiers du début au n°{last}, sur {parts} pages"
 
 #, python-brace-format
-msgid "boards on {parts} screens"
-msgstr "échiquiers sur {parts} écrans"
+msgid "boards on {parts} pages"
+msgstr "échiquiers sur {parts} pages"
 
 #, python-brace-format
 msgid "boards {board_numbers}"
@@ -13178,28 +13340,28 @@ msgid "matches from #{first} to #{last}"
 msgstr "matchs du n°{first} au n°{last}"
 
 #, python-brace-format
-msgid "matches from #{first} to #{last}, on {parts} screens"
-msgstr "matchs du n°{first} au n°{last}, sur {parts} écrans"
+msgid "matches from #{first} to #{last}, on {parts} pages"
+msgstr "matchs du n°{first} au n°{last}, sur {parts} pages"
 
 #, python-brace-format
 msgid "matches from #{first} to end"
 msgstr "matchs du n°{first} à la fin"
 
 #, python-brace-format
-msgid "matches from #{first} to end, on {parts} screens"
-msgstr "matchs du n°{first} à la fin, sur {parts} écrans"
+msgid "matches from #{first} to end, on {parts} pages"
+msgstr "matchs du n°{first} à la fin, sur {parts} pages"
 
 #, python-brace-format
 msgid "matches from start to #{last}"
 msgstr "matchs du début au n°{last}"
 
 #, python-brace-format
-msgid "matches from start to #{last}, on {parts} screens"
-msgstr "matchs du début au n°{last}, sur {parts} écrans"
+msgid "matches from start to #{last}, on {parts} pages"
+msgstr "matchs du début au n°{last}, sur {parts} pages"
 
 #, python-brace-format
-msgid "matches on {parts} screens"
-msgstr "matchs sur {parts} écrans"
+msgid "matches on {parts} pages"
+msgstr "matchs sur {parts} pages"
 
 msgctxt "minutes"
 msgid "min"
@@ -13215,8 +13377,8 @@ msgstr "mm"
 msgid "my-event"
 msgstr "mon-evenement"
 
-msgid "my-multi-screen"
-msgstr "mon-ecran-multiple"
+msgid "my-paged-screen"
+msgstr "mon-ecran-pagine"
 
 msgid "my-screen"
 msgstr "mon-ecran"
@@ -13265,32 +13427,112 @@ msgid "online database tried first"
 msgstr "base en ligne essayée en premier"
 
 #, python-brace-format
+msgid "pages of {number} boards"
+msgstr "pages de {number} échiquiers"
+
+#, python-brace-format
+msgid "pages of {number} boards from #{first} to #{last}"
+msgstr "pages de {number} échiquiers du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} boards from #{first} to end"
+msgstr "pages de {number} échiquiers du n°{first} à la fin"
+
+#, python-brace-format
+msgid "pages of {number} boards from start to #{last}"
+msgstr "pages de {number} échiquiers du début au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} matches per column"
+msgstr "pages de {number} matchs par colonne"
+
+#, python-brace-format
+msgid "pages of {number} matches per column from #{first} to #{last}"
+msgstr "pages de {number} matchs par colonne du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} matches per column from #{first} to end"
+msgstr "pages de {number} matchs par colonne du n°{first} à la fin"
+
+#, python-brace-format
+msgid "pages of {number} matches per column from start to #{last}"
+msgstr "pages de {number} matchs par colonne du début au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} pairings"
+msgstr "pages de {number} appariements"
+
+#, python-brace-format
+msgid "pages of {number} pairings from #{first} to #{last}"
+msgstr "pages de {number} appariements du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} pairings from #{first} to end"
+msgstr "pages de {number} appariements du n°{first} à la fin"
+
+#, python-brace-format
+msgid "pages of {number} pairings from start to #{last}"
+msgstr "pages de {number} appariements du début au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} players"
+msgstr "pages de {number} joueur·euses"
+
+#, python-brace-format
+msgid "pages of {number} players from #{first} to #{last}"
+msgstr "pages de {number} joueur·euses du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} players from #{first} to end"
+msgstr "pages de {number} joueur·euses du n°{first} à la fin"
+
+#, python-brace-format
+msgid "pages of {number} players from start to #{last}"
+msgstr "pages de {number} joueur·euses du début au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} teams"
+msgstr "pages de {number} équipes"
+
+#, python-brace-format
+msgid "pages of {number} teams from #{first} to #{last}"
+msgstr "pages de {number} équipes du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "pages of {number} teams from #{first} to end"
+msgstr "pages de {number} équipes du n°{first} à la fin"
+
+#, python-brace-format
+msgid "pages of {number} teams from start to #{last}"
+msgstr "pages de {number} équipes du début au n°{last}"
+
+#, python-brace-format
 msgid "pairings from #{first} to #{last}"
 msgstr "appariements du n°{first} au n°{last}"
 
 #, python-brace-format
-msgid "pairings from #{first} to #{last}, on {parts} screens"
-msgstr "appariements du n°{first} au n°{last}, sur {parts} écrans"
+msgid "pairings from #{first} to #{last}, on {parts} pages"
+msgstr "appariements du n°{first} au n°{last}, sur {parts} pages"
 
 #, python-brace-format
 msgid "pairings from #{first} to end"
 msgstr "appariements du n°{first} à la fin"
 
 #, python-brace-format
-msgid "pairings from #{first} to end, on {parts} screens"
-msgstr "appariements du n°{first} à la fin, sur {parts} écrans"
+msgid "pairings from #{first} to end, on {parts} pages"
+msgstr "appariements du n°{first} à la fin, sur {parts} pages"
 
 #, python-brace-format
 msgid "pairings from start to #{last}"
 msgstr "appariements du début au n°{last}"
 
 #, python-brace-format
-msgid "pairings from start to #{last}, on {parts} screens"
-msgstr "appariements du début au n°{last}, sur {parts} écrans"
+msgid "pairings from start to #{last}, on {parts} pages"
+msgstr "appariements du début au n°{last}, sur {parts} pages"
 
 #, python-brace-format
-msgid "pairings on {parts} screens"
-msgstr "appariements sur {parts} écrans"
+msgid "pairings on {parts} pages"
+msgstr "appariements sur {parts} pages"
 
 #, python-brace-format
 msgid "place {place}"
@@ -13311,28 +13553,28 @@ msgid "players from #{first} to #{last}"
 msgstr "joueur·euses du n°{first} au n°{last}"
 
 #, python-brace-format
-msgid "players from #{first} to #{last}, on {parts} screens"
-msgstr "joueur·euses du n°{first} au n°{last}, sur {parts} écrans"
+msgid "players from #{first} to #{last}, on {parts} pages"
+msgstr "joueur·euses du n°{first} au n°{last}, sur {parts} pages"
 
 #, python-brace-format
 msgid "players from #{first} to end"
 msgstr "joueur·euses du n°{first} à la fin"
 
 #, python-brace-format
-msgid "players from #{first} to end, on {parts} screens"
-msgstr "joueur·euses du n°{first} à la fin, sur {parts} écrans"
+msgid "players from #{first} to end, on {parts} pages"
+msgstr "joueur·euses du n°{first} à la fin, sur {parts} pages"
 
 #, python-brace-format
 msgid "players from start to #{last}"
 msgstr "joueur·euses du début au n°{last}"
 
 #, python-brace-format
-msgid "players from start to #{last}, on {parts} screens"
-msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
+msgid "players from start to #{last}, on {parts} pages"
+msgstr "joueur·euses du début au n°{last}, sur {parts} pages"
 
 #, python-brace-format
-msgid "players on {parts} screens"
-msgstr "joueur·euses sur {parts} écrans"
+msgid "players on {parts} pages"
+msgstr "joueur·euses sur {parts} pages"
 
 msgid "points"
 msgstr "points"
@@ -13371,86 +13613,6 @@ msgstr[1] "rondes {rounds}"
 msgid "round_{round}"
 msgstr "ronde_{round}"
 
-#, python-brace-format
-msgid "screens of {number} boards"
-msgstr "écrans de {number} échiquiers"
-
-#, python-brace-format
-msgid "screens of {number} boards from #{first} to #{last}"
-msgstr "écrans de {number} échiquiers du n°{first} au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} boards from #{first} to end"
-msgstr "écrans de {number} échiquiers du n°{first} à la fin"
-
-#, python-brace-format
-msgid "screens of {number} boards from start to #{last}"
-msgstr "écrans de {number} échiquiers du début au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} matches per column"
-msgstr "écrans de {number} matchs par colonne"
-
-#, python-brace-format
-msgid "screens of {number} matches per column from #{first} to #{last}"
-msgstr "écrans de {number} matchs par colonne du n°{first} au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} matches per column from #{first} to end"
-msgstr "écrans de {number} matchs par colonne du n°{first} à la fin"
-
-#, python-brace-format
-msgid "screens of {number} matches per column from start to #{last}"
-msgstr "écrans de {number} matchs par colonne du début au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} pairings"
-msgstr "écrans de {number} appariements"
-
-#, python-brace-format
-msgid "screens of {number} pairings from #{first} to #{last}"
-msgstr "écrans de {number} appariements du n°{first} au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} pairings from #{first} to end"
-msgstr "écrans de {number} appariements du n°{first} à la fin"
-
-#, python-brace-format
-msgid "screens of {number} pairings from start to #{last}"
-msgstr "écrans de {number} appariements du début au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} players"
-msgstr "écrans de {number} joueur·euses"
-
-#, python-brace-format
-msgid "screens of {number} players from #{first} to #{last}"
-msgstr "écrans de {number} joueur·euses du n°{first} au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} players from #{first} to end"
-msgstr "écrans de {number} joueur·euses du n°{first} à la fin"
-
-#, python-brace-format
-msgid "screens of {number} players from start to #{last}"
-msgstr "écrans de {number} joueur·euses du début au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} teams"
-msgstr "écrans de {number} équipes"
-
-#, python-brace-format
-msgid "screens of {number} teams from #{first} to #{last}"
-msgstr "écrans de {number} équipes du n°{first} au n°{last}"
-
-#, python-brace-format
-msgid "screens of {number} teams from #{first} to end"
-msgstr "écrans de {number} équipes du n°{first} à la fin"
-
-#, python-brace-format
-msgid "screens of {number} teams from start to #{last}"
-msgstr "écrans de {number} équipes du début au n°{last}"
-
 msgctxt "seconds"
 msgid "sec"
 msgstr "sec."
@@ -13469,28 +13631,28 @@ msgid "teams from #{first} to #{last}"
 msgstr "équipes du n°{first} au n°{last}"
 
 #, python-brace-format
-msgid "teams from #{first} to #{last}, on {parts} screens"
-msgstr "équipes du n°{first} au n°{last}, sur {parts} écrans"
+msgid "teams from #{first} to #{last}, on {parts} pages"
+msgstr "équipes du n°{first} au n°{last}, sur {parts} pages"
 
 #, python-brace-format
 msgid "teams from #{first} to end"
 msgstr "équipes du n°{first} à la fin"
 
 #, python-brace-format
-msgid "teams from #{first} to end, on {parts} screens"
-msgstr "équipes du n°{first} à la fin, sur {parts} écrans"
+msgid "teams from #{first} to end, on {parts} pages"
+msgstr "équipes du n°{first} à la fin, sur {parts} pages"
 
 #, python-brace-format
 msgid "teams from start to #{last}"
 msgstr "équipes du début au n°{last}"
 
 #, python-brace-format
-msgid "teams from start to #{last}, on {parts} screens"
-msgstr "équipes du début au n°{last}, sur {parts} écrans"
+msgid "teams from start to #{last}, on {parts} pages"
+msgstr "équipes du début au n°{last}, sur {parts} pages"
 
 #, python-brace-format
-msgid "teams on {parts} screens"
-msgstr "équipes sur {parts} écrans"
+msgid "teams on {parts} pages"
+msgstr "équipes sur {parts} pages"
 
 msgid "the file does not code it"
 msgstr "le fichier ne le code pas"
@@ -13686,6 +13848,10 @@ msgstr "{name} (copie {num})"
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (copie)"
+
+#, python-brace-format
+msgid "{name}, page {page}"
+msgstr "{name}, page {page}"
 
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."

@@ -16,7 +16,22 @@
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
         {% if client.can_manage_screens %}{{ macros.rotator_visibility_icon(item, '') }}{% endif %}
         <span class="fw-bold text-truncate">{{ item.name }}</span>
+        {% if client.can_manage_screens %}
+            {% for display_controller in item.display_controllers %}
+                {{ components.badge('neutral', display_controller.name) }}
+            {% endfor %}
+        {% endif %}
     </span>
+{% endmacro %}
+
+{% macro preview_url(item) %}
+    {% if item.rotating_screens %}
+        {{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=item.id) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro preview_header(item) %}
+    {{ identity(item, 'card', none) }}
 {% endmacro %}
 
 {% macro screens_count(item, view, placement) %}
@@ -33,7 +48,7 @@
     <span
         class="text-nowrap"
         data-testid="families-count"
-        {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
+        {{ macros.tooltip_attributes('info', _('Number of paged screens'), 'top') }}
     >
         {% call components.icon_text('bi-window-split', icon_class='text-secondary') %}{{ item.families|length }}{% endcall %}
     </span>
@@ -45,7 +60,7 @@
         icon='bi-window-stack',
         icon_only=not show_label,
         size='sm',
-        tooltip=_('Define the screens and multi-screens to display.'),
+        tooltip=_('Define the screens and paged screens to display.'),
         attrs={
             'hx-get': url_for(
                 'admin-rotator-screens-modal',
@@ -80,7 +95,7 @@
             '',
             'collection-inline-edit-label-group',
             false,
-            aria_label=_('Define the screens and multi-screens to display.'),
+            aria_label=_('Define the screens and paged screens to display.'),
         ) %}
             {{ assignment_content }}
         {% endcall %}
@@ -93,7 +108,7 @@
             class="text-danger text-nowrap"
             {{ macros.tooltip_attributes(
                 'warning',
-                _('There needs to be at least one screen or multi-screen defined for the rotator to be accessible.'),
+                _('There needs to be at least one screen or paged screen defined for the rotator to be accessible.'),
                 'top',
             ) }}
         >{% call components.icon_text('warning') %}{{ _('Empty') }}{% endcall %}</span>
@@ -154,7 +169,7 @@
             {% endfor %}
         </section>
         <section class="collection-detail-section">
-            <h6>{{ _('Multi-Screens') }}</h6>
+            <h6>{{ _('Paged Screens') }}</h6>
             {% for family in rotator.families %}
                 <div>
                     {% if client.can_manage_screens %}{{ admin_macros.family_visibility_icon(family, 'pe-1') }}{% endif %}
@@ -193,6 +208,7 @@
                         admin_event.sorted_display_controllers,
                         'rotator',
                         rotator.name,
+                        rotator.display_controllers,
                     ) }}
                 {% endif %}
             </div>

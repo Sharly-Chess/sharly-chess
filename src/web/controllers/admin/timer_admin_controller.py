@@ -525,7 +525,7 @@ class TimerAdminController(BaseEventAdminController):
             )
             for title, kind in [
                 (_('Screens'), 'screen'),
-                (_('Multi-screens'), 'family'),
+                (_('Paged screens'), 'family'),
             ]
         ] + [(_('Rotators'), [(None, items_by_kind['rotator'])])]
         return {

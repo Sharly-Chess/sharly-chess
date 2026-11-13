@@ -7,7 +7,7 @@
 >
     {% set screen_type = screen.screen_type %}
     {% if screen_type.set_template %}
-        <div class="screen {{ screen_type.value }}-screen">
+        <div class="screen {{ screen_type.value }}-screen{% if screen.accepts_input and screen_type.allows_result_input %} input-screen{% endif %}">
             {% for screen_set in screen.sorted_screen_sets %}
                 {% set tournament = screen_set.tournament %}
                 {% set data = screen_type.set_context(screen_set) %}

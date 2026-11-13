@@ -1,3 +1,4 @@
+{% import '/admin/components/macros.j2' as components with context %}
 {% macro item_class(item, view) -%}
     {%- if not item.screens_by_uniq_id -%}
         collection-status-danger
@@ -8,10 +9,24 @@
     {%- endif -%}
 {%- endmacro %}
 
+{% macro preview_url(item) %}
+    {% if item.screens_by_uniq_id %}
+        {{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=item.calculated_first_screen_id) }}
+    {% endif %}
+{% endmacro %}
+
 {% macro identity(item, view, placement) %}
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
         {{ admin_macros.family_visibility_icon(item, '') }}
         <span class="fw-bold text-truncate">{{ item.display_name }}</span>
+        {% if item.accepts_input %}
+            {{ components.badge('primary', item.screen_type.input_badge, icon='bi-pencil-square') }}
+        {% endif %}
+        {% if item.display_controllers %}
+            {% for display_controller in item.display_controllers %}
+                {{ components.badge('neutral', display_controller.name) }}
+            {% endfor %}
+        {% endif %}
     </span>
 {% endmacro %}
 
@@ -28,9 +43,9 @@
 
 {% macro screen_count(item, view, placement) %}
     <span class="{% if not item.screens_by_uniq_id %}text-danger{% endif %} text-nowrap">
-        {% call components.icon_text('bi-window') %}{{ ngettext(
-            '%(num)d screen',
-            '%(num)d screens',
+        {% call components.icon_text('bi-window-split') %}{{ ngettext(
+            '%(num)d page',
+            '%(num)d pages',
             item.screens_by_uniq_id|length,
         ) }}{% endcall %}
     </span>
@@ -52,15 +67,71 @@
     {% if family.screens_by_uniq_id %}
         <div class="d-flex flex-column gap-1">
             {% for screen in family.screens_by_uniq_id.values() %}
-                <div>
-                    <span class="text-secondary">{{ loop.index }}.</span>
-                    {{ family.screen_type.family_screen_label(screen.sorted_screen_sets[0]) }}
+                <div class="paged-screen-page" data-testid="paged-screen-page">
+                    <span class="text-secondary text-nowrap">{{ loop.index }}.</span>
+                    <span>{{ family.screen_type.family_screen_label(screen.sorted_screen_sets[0]) }}</span>
+                    <span class="paged-screen-page-actions">
+                        {{ components.button(
+                            _('Go to this page.'),
+                            icon='bi-eye',
+                            icon_only=true,
+                            size='sm',
+                            href=url_for(
+                                'user-screen',
+                                event_uniq_id=admin_event.uniq_id,
+                                screen_uniq_id=screen.uniq_id,
+                            ),
+                            attrs={'target': '_blank'},
+                        ) }}
+                        {{ admin_macros.display_controller_assign_dropdown(
+                            admin_event.sorted_display_controllers,
+                            'family-page',
+                            screen.uniq_id,
+                            screen.page_display_controllers,
+                            showing=screen.page_display_controllers,
+                            label=_('Send this page to a channel.'),
+                        ) }}
+                    </span>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-danger">{% call components.icon_text('bi-exclamation-triangle-fill') %}{{ _('No screens') }}{% endcall %}</div>
+        <div class="text-danger">{% call components.icon_text('bi-exclamation-triangle-fill') %}{{ _('No pages') }}{% endcall %}</div>
     {% endif %}
+{% endmacro %}
+
+{% macro summary(item, view, placement) %}
+    {% set family = item %}
+    <div class="d-flex flex-column gap-2">
+        {% if show_details and client.can_manage_screens %}
+            <div>
+                <span class="pe-1">{{ macros.screen_type_icon(family.screen_type, true) }}</span>
+                {{ _('Type: %(screen_type)s', screen_type=family.type_str) }}
+            </div>
+        {% endif %}
+        {% if family.screen_type.multi_column_allowed %}
+            <div>
+                {{ _('%(string)s:', string=_('Columns')) }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+            </div>
+        {% endif %}
+        <div>
+            {% call components.icon_text('bi-hand-index') %}{{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}{% endcall %}
+        </div>
+        {% if family.page_delay %}
+            <div>
+                {% call components.icon_text('bi-hourglass-split') %}{{ ngettext('%(num)d second per page', '%(num)d seconds per page', family.page_delay) }}{% endcall %}
+            </div>
+        {% endif %}
+        <div class="{% if not family.timer %}text-secondary{% endif %}">
+            {% call components.icon_text('bi-clock-fill') %}{% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}{% endcall %}
+        </div>
+        {% if show_details and client.can_manage_screens and family.accepts_input %}
+            <div>
+                {% call components.icon_text('bi-x-circle') %}{{ _('Exit button:') }} {{ _('yes') if family.input_exit_button else _('no') }}{% endcall %}
+            </div>
+        {% endif %}
+        <div>{{ family.tournament.name }} ({{ family.numbers_str }})</div>
+    </div>
 {% endmacro %}
 
 {% macro details(item, view, placement) %}
@@ -68,34 +139,43 @@
     {% set screen_type = family.screen_type %}
     <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% endif %}">
         <section class="collection-detail-section">
-            <h6>{{ _('Selection') }}</h6>
-            {% if view == 'card' %}
+            <h6>{{ _('Pages') }}</h6>
+            {{ screen_ranges(item, view, placement) }}
+        </section>
+        {% if view != 'card' %}
+            <section class="collection-detail-section">
+                <h6>{{ _('Selection') }}</h6>
                 <div>{{ _('Tournament: %(tournament_name)s', tournament_name=family.tournament.name) }}</div>
-            {% endif %}
-            <div>{{ _('Selection: %(selection)s', selection=family.numbers_str) }}</div>
-            <div>
-                {{ _('%(string)s:', string=_('Columns')) }}
-                {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
-            </div>
-        </section>
-        <section class="collection-detail-section">
-            <h6>{{ _('General configuration') }}</h6>
-            {% if screen_type.has_exit_button %}
+                <div>{{ _('Selection: %(selection)s', selection=family.numbers_str) }}</div>
                 <div>
-                    {% call components.icon_text('bi-x-circle') %}{{ _('Exit button:') }} {{ _('yes') if family.input_exit_button else _('no') }}{% endcall %}
+                    {{ _('%(string)s:', string=_('Columns')) }}
+                    {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
                 </div>
-            {% endif %}
-            <div>
-                {% call components.icon_text('bi-hand-index') %}{{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}{% endcall %}
-            </div>
-            <div class="{% if not family.timer %}text-secondary{% endif %}">
-                {% call components.icon_text('bi-clock') %}{{
-                    _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name)
-                    if family.timer
-                    else _('Timer: none')
-                }}{% endcall %}
-            </div>
-        </section>
+            </section>
+            <section class="collection-detail-section">
+                <h6>{{ _('General configuration') }}</h6>
+                {% if family.accepts_input %}
+                    <div>
+                        {% call components.icon_text('bi-x-circle') %}{{ _('Exit button:') }} {{ _('yes') if family.input_exit_button else _('no') }}{% endcall %}
+                    </div>
+                {% endif %}
+                <div>
+                    {% call components.icon_text('bi-hand-index') %}{{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}{% endcall %}
+                </div>
+                {% if family.page_delay %}
+                    <div>
+                        {% call components.icon_text('bi-hourglass-split') %}{{ ngettext('%(num)d second per page', '%(num)d seconds per page', family.page_delay) }}{% endcall %}
+                    </div>
+                {% endif %}
+                <div class="{% if not family.timer %}text-secondary{% endif %}">
+                    {% call components.icon_text('bi-clock') %}{{
+                        _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name)
+                        if family.timer
+                        else _('Timer: none')
+                    }}{% endcall %}
+                </div>
+            </section>
+        {% endif %}
         {% if screen_type.card_detail_template %}
             {% set data = screen_type.family_card_context(family) %}
             {% if data is not none %}
@@ -125,14 +205,18 @@
 {% macro actions(item, view, placement) %}
     {% set family = item %}
     <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
-        <div>
+        <div class="d-flex align-items-center gap-1">
             {% if family.calculated_first_screen_id %}
                 {{ components.button(
-                    _('Go to the first screen.'),
+                    _('View the paged screen.') if family.allowed_in_rotators else _('Go to the first page.'),
                     icon='bi-eye',
                     icon_only=true,
                     size='sm',
                     href=url_for(
+                        'user-paged-screen',
+                        event_uniq_id=admin_event.uniq_id,
+                        family_uniq_id=family.uniq_id,
+                    ) if family.allowed_in_rotators else url_for(
                         'user-screen',
                         event_uniq_id=admin_event.uniq_id,
                         screen_uniq_id=family.calculated_first_screen_id,
@@ -140,25 +224,33 @@
                     attrs={'target': '_blank'},
                 ) }}
             {% endif %}
+            {% if family.screens_by_uniq_id and family.allowed_in_rotators %}
+                {{ admin_macros.display_controller_assign_dropdown(
+                    admin_event.sorted_display_controllers,
+                    'family',
+                    family.uniq_id,
+                    family.display_controllers,
+                ) }}
+            {% endif %}
         </div>
         <div class="d-flex align-items-center gap-1">
             {{ components.modal_button(
                 url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=family.id),
-                _('Edit the properties of the multi-screen.'),
+                _('Edit the properties of the paged screen.'),
                 icon='edit',
                 icon_only=true,
                 size='sm',
             ) }}
             {{ components.modal_button(
                 url_for('admin-family-modal', action='clone', event_uniq_id=admin_event.uniq_id, family_id=family.id),
-                _('Duplicate the multi-screen.'),
+                _('Duplicate the paged screen.'),
                 icon='copy',
                 icon_only=true,
                 size='sm',
             ) }}
             {{ components.modal_button(
                 url_for('admin-family-modal', action='delete', event_uniq_id=admin_event.uniq_id, family_id=family.id),
-                _('Delete the multi-screen.'),
+                _('Delete the paged screen.'),
                 kind='outline-danger',
                 icon='delete',
                 icon_only=true,

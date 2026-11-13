@@ -26,7 +26,7 @@
                     <th class="player">{{ pgettext('name column header', 'Name') }}</th>
                     <th class="player">{{ _('Team') }}</th>
                     {% for header_row in player_rows %}
-                        <th class="{% if header_row.first_of_team and not loop.first %}team-col-separator{% endif %}">{{ header_row.grid_id }}</th>
+                        <th class="{% if header_row.first_of_team and not loop.first %}team-col-separator{% endif %}">{{ header_row.number }}</th>
                     {% endfor %}
                     <th class="result">{{ pgettext('points column header', 'Pts') }}</th>
                 </tr>
@@ -35,7 +35,7 @@
                 {% for row in player_rows %}
                     {% set tp = row.tournament_player %}
                     <tr class="row gy-2 gx-3 {% if loop.index is even %}even{% else %}odd{% endif %} {% if row.first_of_team and not loop.first %}team-separator{% endif %} {% if row.team.is_excluded_from_standings %}excluded-from-standings{% endif %}">
-                        <td class="number">{{ row.grid_id }}</td>
+                        <td class="number">{{ row.number }}</td>
                         <td class="player">{{ tp.full_name }}</td>
                         <td class="player">{% if row.first_of_team %}{{ row.team.name }}{% endif %}</td>
                         {% for opponent_row in player_rows %}
@@ -89,8 +89,8 @@
                                 {% set annulled = team.is_excluded_from_standings or opponent.is_excluded_from_standings %}
                                 <td class="result {% if annulled %}annulled{% endif %}">
                                     {{ cells[team.id][opponent.id]
-                                        | selectattr('score')
-                                        | map(attribute='score')
+                                        | selectattr('result')
+                                        | map(attribute='result')
                                         | join(' | ') }}
                                 </td>
                             {% endif %}

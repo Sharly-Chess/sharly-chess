@@ -4,8 +4,8 @@ from litestar import post, get, patch, delete
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body, FromPath, FromQuery
-from litestar.response import Template
+from litestar.params import Body, FromPath
+from litestar.response import Redirect, Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
@@ -23,10 +23,10 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.controllers.admin.screen_admin_controller import ScreenAdminRenderer
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
-from web.session import SessionFamiliesShowDetails
 
 
 class FamilyAdminWebContext(BaseEventAdminWebContext):
@@ -123,6 +123,7 @@ class FamilyAdminController(BaseEventAdminController):
         last: int | None = None
         parts: int | None = None
         number: int | None = None
+        page_delay: int | None = None
         fixed_board_order: str | None = None
         message_default: bool = True
         message_text: str | None = None
@@ -175,6 +176,8 @@ class FamilyAdminController(BaseEventAdminController):
                 parts = WebContext.read_int_field(data, field, errors, minimum=1)
                 field = 'number'
                 number = WebContext.read_int_field(data, field, errors, minimum=1)
+                field = 'page_delay'
+                page_delay = WebContext.read_int_field(data, field, errors, minimum=1)
                 if parts and number:
                     error = _(
                         'Specifying the number of parts and the number of items per part is not possible.'
@@ -243,6 +246,7 @@ class FamilyAdminController(BaseEventAdminController):
             last=last,
             parts=parts,
             number=number,
+            page_delay=page_delay,
             fixed_board_order=fixed_board_order,
             message_default=message_default,
             message_text=message_text,
@@ -261,7 +265,11 @@ class FamilyAdminController(BaseEventAdminController):
         family_type: str | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template:
+    ) -> Template | Redirect:
+        if modal is None:
+            return ScreenAdminRenderer._admin_event_screens_render(
+                request, reload_event=reload_event
+            )
         web_context = FamilyAdminWebContext(
             request,
             family_id=family_id,
@@ -270,13 +278,10 @@ class FamilyAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
         template_context = web_context.template_context | {
-            'admin_event_tab': 'admin-event-families-tab',
-            'show_details': SessionFamiliesShowDetails(request).get(),
+            'admin_event_tab': 'admin-event-screens-tab',
         }
 
         match modal:
-            case None:
-                pass
             case 'family':
                 if data is None:
                     name: str | None = None
@@ -290,6 +295,7 @@ class FamilyAdminController(BaseEventAdminController):
                     last: int | None = None
                     parts: int | None = None
                     number: int | None = None
+                    page_delay: int | None = None
                     fixed_board_order: str | None = None
                     message_default: bool = True
                     message_text: str | None = None
@@ -304,10 +310,11 @@ class FamilyAdminController(BaseEventAdminController):
                             pass
                         case 'clone':
                             family = web_context.get_admin_family()
-                            name = event.get_unused_family_name(
-                                family_type=family.screen_type,
-                                base_name=family.stored_family.name,
-                            )
+                            if family.stored_family.name:
+                                name = event.get_unused_family_name(
+                                    family_type=family.screen_type,
+                                    base_name=family.stored_family.name,
+                                )
                         case 'delete':
                             pass
                         case _:
@@ -329,6 +336,7 @@ class FamilyAdminController(BaseEventAdminController):
                             )
                             parts = stored_family.parts
                             number = stored_family.number
+                            page_delay = stored_family.page_delay
                             fixed_board_order = stored_family.fixed_board_order
                             message_default = stored_family.message_default
                             message_text = stored_family.message_text
@@ -356,11 +364,17 @@ class FamilyAdminController(BaseEventAdminController):
                         'last': last,
                         'parts': parts,
                         'number': number,
+                        'page_delay': page_delay,
                         'fixed_board_order': fixed_board_order,
                         'message_text_checkbox': message_default,
                         'message_text': message_text,
                     }
                     form_values.update(type_values)
+                    if action in ('update', 'clone'):
+                        form_values['display_controller_ids'] = [
+                            display_controller.id
+                            for display_controller in web_context.get_admin_family().display_controllers
+                        ]
                     data = WebContext.values_dict_to_form_data(form_values)
                     stored_family = cls._admin_validate_family_update_data(
                         action, web_context, data
@@ -377,6 +391,7 @@ class FamilyAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'family_uniq_ids': list(event.families_by_uniq_id.keys()),
+                    **cls._display_controller_destination_context(event),
                     'players_player_format_options': web_context.get_players_screen_player_format_options(),
                     'players_board_format_options': web_context.get_players_screen_board_format_options(),
                     'players_opponent_format_options': web_context.get_players_screen_opponent_format_options(),
@@ -396,11 +411,13 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_event_families_tab(
         self,
         request: HTMXRequest,
-        show_details: FromQuery[bool | None],
-    ) -> Template:
-        if show_details is not None:
-            SessionFamiliesShowDetails(request).set(show_details)
-        return self._admin_event_families_render(request)
+    ) -> Redirect:
+        return Redirect(
+            path=request.app.route_reverse(
+                'admin-event-screens-tab',
+                event_uniq_id=request.path_params['event_uniq_id'],
+            )
+        )
 
     @staticmethod
     def _family_modal_live_data(request: HTMXRequest) -> dict[str, str] | None:
@@ -411,7 +428,7 @@ class FamilyAdminController(BaseEventAdminController):
         plain modal open."""
         if request.query_params.get('live'):
             return {
-                key: value[0] if isinstance(value, list) else value
+                key: ';'.join(value) if isinstance(value, list) else value
                 for key, value in request.query_params.dict().items()
                 if key != 'live'
             }
@@ -425,7 +442,7 @@ class FamilyAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         family_type: FromPath[str],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_event_families_render(
             request,
             modal='family',
@@ -444,7 +461,7 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         action: FromPath[str],
         family_id: FromPath[int | None],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_event_families_render(
             request,
             modal='family',
@@ -463,7 +480,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         web_context = FamilyAdminWebContext(
             request,
             family_id=family_id,
@@ -473,6 +490,9 @@ class FamilyAdminController(BaseEventAdminController):
             raise RuntimeError('admin_event not defined')
         stored_family: StoredFamily = self._admin_validate_family_update_data(
             action, web_context, data
+        )
+        display_controller_ids = self._read_display_controller_ids(
+            data, stored_family.errors, web_context.admin_event
         )
         if stored_family.errors:
             return self._admin_event_families_render(
@@ -490,17 +510,25 @@ class FamilyAdminController(BaseEventAdminController):
             match action:
                 case 'create' | 'clone':
                     stored_family = event_database.add_stored_family(stored_family)
+                    assert stored_family.id is not None
+                    event_database.set_stored_family_display_controllers(
+                        stored_family.id, display_controller_ids
+                    )
                     Message.success(
                         request,
-                        _('Multi-Screen [{family_uniq_id}] has been created.').format(
+                        _('Paged Screen [{family_uniq_id}] has been created.').format(
                             family_uniq_id=stored_family.uniq_id
                         ),
                     )
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
+                    assert stored_family.id is not None
+                    event_database.set_stored_family_display_controllers(
+                        stored_family.id, display_controller_ids
+                    )
                     Message.success(
                         request,
-                        _('Multi-Screen [{family_uniq_id}] has been updated.').format(
+                        _('Paged Screen [{family_uniq_id}] has been updated.').format(
                             family_uniq_id=stored_family.uniq_id
                         ),
                     )
@@ -509,7 +537,7 @@ class FamilyAdminController(BaseEventAdminController):
                     event_database.delete_stored_family(web_context.admin_family.id)
                     Message.success(
                         request,
-                        _('Multi-Screen [{family_uniq_id}] has been deleted.').format(
+                        _('Paged Screen [{family_uniq_id}] has been deleted.').format(
                             family_uniq_id=web_context.admin_family.uniq_id
                         ),
                     )
@@ -528,16 +556,16 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         family_type: FromPath[str],
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_family_update(
             request,
             action='create',
             family_id=None,
             family_type=family_type,
-            data=data,
+            data=WebContext.flatten_list_data(data),
         )
 
     @post(
@@ -549,16 +577,16 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         family_id: FromPath[int | None],
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_family_update(
             request,
             action='clone',
             family_id=family_id,
             family_type=None,
-            data=data,
+            data=WebContext.flatten_list_data(data),
         )
 
     @patch(
@@ -570,16 +598,16 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         family_id: FromPath[int | None],
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_family_update(
             request,
             action='update',
             family_id=family_id,
             family_type=None,
-            data=data,
+            data=WebContext.flatten_list_data(data),
         )
 
     @patch(
@@ -638,7 +666,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_family_update(
             request,
             action='delete',

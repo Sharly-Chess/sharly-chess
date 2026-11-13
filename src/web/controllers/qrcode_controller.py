@@ -73,13 +73,14 @@ class QRCodeController(BaseController):
         request: HTMXRequest,
         ip: FromPath[str],
         logo: FromQuery[Any] = None,
+        path: FromQuery[str] = '',
     ) -> File:
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         suffix: str | None = None
         if ip:
             suffix = f'lan_url_{ip.replace(".", "_")}'
         return self.qrcode_response(
-            url=sharly_chess_config.app_url(ip),
+            url=f'{sharly_chess_config.app_url(ip)}{path if path.startswith("/") else ""}',
             filename_suffix=suffix,
             logo=logo is not None,
         )

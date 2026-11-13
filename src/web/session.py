@@ -216,22 +216,10 @@ class SessionLastCheckInUpdated(DataclassSessionVariable[LastPlayerUpdated]):
         return 'last_check_in_updated'
 
 
-class SessionScreensShowFamilyScreens(BoolSessionVariable):
-    @property
-    def key(self) -> str:
-        return 'screens_show_family_screens'
-
-
 class SessionScreensShowDetails(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'screens_show_details'
-
-
-class SessionFamiliesShowDetails(BoolSessionVariable):
-    @property
-    def key(self) -> str:
-        return 'families_show_details'
 
 
 class SessionRotatorsShowDetails(BoolSessionVariable):
@@ -671,6 +659,15 @@ class SessionPrizesAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'prizes_add_other_active'
+
+
+class SessionLastDisplayTab(EventNoneSessionVariable[str]):
+    """The display tab last opened in an event, which the Display entry of
+    the side menu goes back to."""
+
+    @property
+    def key(self) -> str:
+        return 'last_display_tab'
 
 
 class SessionPrintLastTournaments(EventSessionVariable[list[int]]):

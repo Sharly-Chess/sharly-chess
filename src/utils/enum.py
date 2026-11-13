@@ -351,7 +351,7 @@ class Result(IntEnum):
 
     @property
     def to_berger_table(self) -> str:
-        # Berger grids read nicer with ½ for a draw (matching the Pts and
+        # Round-robin grids read nicer with ½ for a draw (matching the Pts and
         # tie-break columns) than the TRF '=' symbol.
         if self == Result.ADJOURNED:
             return '?'
@@ -1597,13 +1597,13 @@ class MenuSubmenuMode(StrEnum):
         match self:
             case MenuSubmenuMode.AUTOMATIC:
                 return _(
-                    'Multi-screens appear as dropdowns when the menu holds '
+                    'Paged screens appear as dropdowns when the menu holds '
                     'more than one, otherwise they are expanded inline.'
                 )
             case MenuSubmenuMode.DROPDOWN:
-                return _('Multi-screens always appear as dropdown submenus.')
+                return _('Paged screens always appear as dropdown submenus.')
             case MenuSubmenuMode.NO_DROPDOWN:
-                return _('Multi-screens are always expanded inline.')
+                return _('Paged screens are always expanded inline.')
             case _:
                 raise ValueError(f'Invalid submenu mode: {self}')
 

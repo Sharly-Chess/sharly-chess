@@ -13,6 +13,7 @@ from data.columns.board_table import BoardColumn
 from data.columns.player_table import TournamentPlayerTableColumn
 from data.screens.display_controller import DisplayController
 from data.screens.family import Family
+from data.screens.menu import Menu
 from data.screens.rotator import Rotator
 from data.screens.screen import Screen
 from web.controllers.user.base_user_controller import BaseUserController
@@ -40,7 +41,10 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
         self.rotator: Rotator | None = None
         self.rotator_screen_index: int | None = None
         self.display_controller: DisplayController | None = None
+        self.menu: Menu | None = None
         self.is_rotator: bool = False
+        # A paged screen opened as a whole, going through its pages.
+        self.cycling_family: Family | None = None
 
     @property
     @abstractmethod
@@ -78,6 +82,20 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
             'screen': self.screen,
             'family': self.family,
             'display_controller': self.display_controller,
+            'display_controller_query': (
+                f'?screen_index={self.rotator_screen_index}'
+                if self.display_controller and self.rotator_screen_index
+                else ''
+            ),
+            'menu': self.menu,
+            'menu_query': f'?menu_id={self.menu.id}' if self.menu else '',
+            'cycling_family': self.cycling_family,
+            'cycling_family_delay': (
+                self.cycling_family.page_delay
+                or SharlyChessConfig.default_rotator_delay
+                if self.cycling_family
+                else None
+            ),
         }
 
 
@@ -111,26 +129,80 @@ class RotatorUserWebContext(ScreenEntityUserWebContext):
         return self._screen
 
 
+class PagedScreenUserWebContext(ScreenEntityUserWebContext):
+    """A paged screen opened as a whole: its pages in turn, at its pace."""
+
+    def __init__(self, request: HTMXRequest, page_index: int):
+        super().__init__(request, user_event_tab='screens')
+        family = RequestUtils.get_family(request)
+        pages = list(family.screens_by_uniq_id.values())
+        if not pages:
+            raise NotFoundException(f'Paged screen [{family.uniq_id}] has no page.')
+        self.cycling_family = family
+        self.rotator_screen_index = page_index % len(pages)
+        self._screen: Screen = pages[self.rotator_screen_index]
+        # A paged screen taking input stays on its page under whoever uses it.
+        self.is_rotator = len(pages) > 1 and family.allowed_in_rotators
+
+    @property
+    def screen(self) -> Screen:
+        return self._screen
+
+
+class MenuUserWebContext(ScreenEntityUserWebContext):
+    def __init__(self, request: HTMXRequest, rotator_screen_index: int):
+        super().__init__(request, user_event_tab='menus')
+        self.menu = RequestUtils.get_menu(request)
+        screens = self.menu.screens_for(self.client.can_view_private_screens)
+        if not screens:
+            raise NotFoundException(f'Menu [{self.menu.id}] has no screen to show.')
+        self.rotator_screen_index = rotator_screen_index % len(screens)
+        self._screen: Screen = screens[self.rotator_screen_index]
+
+    @property
+    def screen(self) -> Screen:
+        return self._screen
+
+
 class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
     def __init__(self, request: HTMXRequest, rotator_screen_index: int):
         super().__init__(request, user_event_tab='display_controllers')
         self.display_controller = RequestUtils.get_display_controller(request)
         self._screen: Screen | None = None
         self.rotator_screen_index = 0
-        if rotator := self.display_controller.rotator:
-            self.is_rotator = True
-            if rotator.rotating_screens:
-                self.rotator_screen_index = rotator_screen_index % len(
-                    rotator.rotating_screens
-                )
-                self._screen = rotator.rotating_screens[self.rotator_screen_index]
-        else:
-            self._screen = self.display_controller.screen
+        self.is_rotator = self.display_controller.cycles
+        screens = self.display_controller.screens_for(
+            self.client.can_view_private_screens
+        )
+        if screens:
+            showing = request.query_params.get('showing')
+            if showing and showing != self.display_controller.assignment_key:
+                rotator_screen_index = 0
+            self.rotator_screen_index = rotator_screen_index % len(screens)
+            self._screen = screens[self.rotator_screen_index]
+
+    @property
+    def has_screen(self) -> bool:
+        return self._screen is not None
 
     @property
     def screen(self) -> Screen:
         assert self._screen is not None
         return self._screen
+
+
+class DisplayControllerWaitingWebContext(EventUserWebContext):
+    """A display controller with nothing to show yet."""
+
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request, user_event_tab='display_controllers')
+        self.display_controller = RequestUtils.get_display_controller(request)
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'display_controller': self.display_controller,
+        }
 
 
 class BaseScreenUserController(BaseUserController):
