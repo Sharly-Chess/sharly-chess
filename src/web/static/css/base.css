@@ -676,10 +676,21 @@ body[data-sc-interface=admin] #top-nav-wrapper {
     overflow-wrap: anywhere;
 }
 
+/* The label keeps the same space above and below it, so that once it wraps
+   above its input it stands apart from the field before and stays close to
+   its own input; next to the input, it remains centred on it. */
 .input-block {
     display: flex;
     flex-wrap: wrap;
-    row-gap: .5rem;
+    row-gap: .125rem;
+}
+
+.input-block > :first-child {
+    padding-block: .375rem;
+}
+
+.input-block > .form-text {
+    margin-top: .625rem;
 }
 
 /* A field whose label always sits on its own line, so the field keeps its
@@ -705,6 +716,13 @@ body[data-sc-interface=admin] #top-nav-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+}
+
+/* The buttons beside a field sit at its bottom, level with its input when
+   the label wraps above it, unless a line under the input would carry them
+   down with it. */
+[data-sc-interface=admin] .d-flex:not(.flex-column):not(:has(.form-text)):has(> * > .input-block) {
+    align-items: flex-end;
 }
 
 .input-block .form-check-label {

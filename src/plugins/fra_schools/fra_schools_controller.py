@@ -79,6 +79,7 @@ class FRASchoolsController(BaseEventAdminController):
             'fra_schools_action': action,
             'fra_schools_database': database,
             'fra_school_options': school_options,
+            'show_fra_school_form': False,
         }
 
     @get(
