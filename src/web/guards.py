@@ -13,6 +13,7 @@ from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
+from data.screens.family import Family
 from data.screens.display_controller import DisplayController
 from data.screens.rotator import Rotator
 from data.screens.screen import Screen
@@ -214,6 +215,16 @@ class ViewRotatorGuard(ViewScreenEntityGuard[Rotator]):
     @staticmethod
     def get_entity(request: HTMXRequest) -> Rotator | None:
         return RequestUtils.get_optional_rotator(request)
+
+
+class ViewFamilyGuard(ViewScreenEntityGuard[Family]):
+    """Guard validating if a client can view a paged screen.
+    requires: event_uniq_id
+    optional: family_uniq_id."""
+
+    @staticmethod
+    def get_entity(request: HTMXRequest) -> Family | None:
+        return RequestUtils.get_optional_family(request)
 
 
 class ViewDisplayControllerGuard(ViewScreenEntityGuard[DisplayController]):

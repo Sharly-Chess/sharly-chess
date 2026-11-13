@@ -12,6 +12,7 @@ from database.sqlite.event.event_store import StoredRotator, StoredRotatingScree
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.display_controller import DisplayController
 
 
 ROTATOR_DEFAULT_DELAY: int = 15
@@ -107,6 +108,13 @@ class Rotator:
             else SharlyChessConfig.default_rotator_delay
         )
 
+    def delay_for(self, screen: Screen) -> int:
+        """How long *screen* is shown: the pace of its multi-screen when it
+        sets one, otherwise the rotator's delay."""
+        if screen.family is not None and screen.family.page_delay:
+            return screen.family.page_delay
+        return self.delay
+
     @property
     def message_default(self) -> bool:
         return self.stored_rotator.message_default
@@ -127,6 +135,15 @@ class Rotator:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_stored_rotator_timer_id(self.id, timer_id)
         self.stored_rotator.timer_id = timer_id
+
+    @property
+    def display_controllers(self) -> list[DisplayController]:
+        """The display controllers this rotator is set up for."""
+        return [
+            display_controller
+            for display_controller in self.event.sorted_display_controllers
+            if self.id in display_controller.stored_display_controller.item_rotator_ids
+        ]
 
     @property
     def stored_rotating_screens(self) -> list[StoredRotatingScreen]:

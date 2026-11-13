@@ -25,7 +25,7 @@
     {{ admin_macros.uniq_id_form(
         current_uniq_id=admin_family.uniq_id,
         existing_uniq_ids=family_uniq_ids,
-        placeholder=_('E.g.: %(string)s', string=_('my-multi-screen')),
+        placeholder=_('E.g.: %(string)s', string=_('my-paged-screen')),
         patch_url=url_for(
             'admin-family-uniq-id-update',
             event_uniq_id=admin_event.uniq_id,

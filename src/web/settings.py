@@ -74,7 +74,10 @@ from web.controllers.admin.menu_admin_controller import MenuAdminController
 from web.controllers.admin.screen_config_admin_controller import (
     ScreenConfigAdminController,
 )
-from web.controllers.admin.screen_admin_controller import ScreenAdminController
+from web.controllers.admin.screen_admin_controller import (
+    DisplayAdminController,
+    ScreenAdminController,
+)
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.team_admin_controller import TeamAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
@@ -121,6 +124,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     PrizeConfigAdminController,
     PrizeAdminController,
     ScreenConfigAdminController,
+    DisplayAdminController,
     ScreenAdminController,
     TimerAdminController,
     FamilyAdminController,

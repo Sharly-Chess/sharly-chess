@@ -34,8 +34,8 @@ def tournament(api: ApiClient, http: TestClient) -> Iterator[Tournament]:
         api,
         EVENT_ID,
         SCREEN_ID,
-        ScreenType.INPUT,
-        {'init_set_tournament_id': tournament.id},
+        ScreenType.BOARDS,
+        {'init_set_tournament_ids': [tournament.id], 'accepts_input': True},
     )
     http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
     http.put(f'/pairings/publish/{EVENT_ID}/{tournament.id}/1')

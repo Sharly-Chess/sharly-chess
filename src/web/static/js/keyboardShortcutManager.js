@@ -17,6 +17,7 @@ function keyboardShortcutManager(event) {
         'j': "SC_J",
         'l': "SC_L",
         'm': "SC_M",
+        'n': "SC_N",
         'p': "SC_P",
         'r': "SC_R",
         's': "SC_S",

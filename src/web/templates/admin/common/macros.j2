@@ -642,7 +642,7 @@ with_indicator: display a loading indicator, optional
                     {% if input_type in ['password', 'search', 'integer-range', 'select-range'] %}input-group{% endif %}
                     {% if default_checkbox %}input-group{% endif %}
                     {% if input_type == 'switch' %}form-check form-switch d-inline-flex align-items-center me-2{% endif %}
-                    {% if input_type == 'checkbox' %}form-check d-inline-block me-2{% endif %}
+                    {% if input_type == 'checkbox' %}form-check d-inline-flex align-items-center me-2{% endif %}
                 "
             >
                 {% if input_type == 'select' %}
@@ -885,7 +885,7 @@ with_indicator: display a loading indicator, optional
                                 id="{{ default_checkbox_id }}"
                                 name="{{ default_checkbox_name }}"
                                 type="checkbox"
-                                class="form-check-input me-2 mb-2"
+                                class="form-check-input me-2 mt-0"
                                 aria-describedby="{{ id }}-help {{ id }}-error"
                                 {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
 
@@ -1756,7 +1756,9 @@ with_indicator: display a loading indicator, optional
                 $('#{{ id }}-form-submit').click();
 
                 // Increment the counter in the option text
-                const $option = $(`.select2-results__option[data-select2-id$=-${selectedValue}]`);
+                const $result = $(`.select2-results__option[data-select2-id$="-${selectedValue}"]`);
+                const $count = $result.find('.select-option-count');
+                const $option = $count.length ? $count : $result;
                 const selectedText = $option.text();
                 const counterMatch = selectedText.match(/\(x(\d+)\)/);
                 let newText = '';
@@ -1905,22 +1907,28 @@ with_indicator: display a loading indicator, optional
 {% macro display_controller_assign_dropdown(
     display_controllers,
     object_type,
-    object_uniq_id
+    object_uniq_id,
+    item_display_controllers=[],
+    showing=[],
+    label=none
 ) %}
     {% if components is not defined %}
         {% import '/admin/components/macros.j2' as components with context %}
     {% endif %}
     {% call components.menu_button(
-        _('Assign to a display controller.'),
+        label or _('Send to a channel.'),
         icon='bi-box-arrow-in-right',
         icon_only=true,
         size='sm',
         allowed=display_controllers|length > 0,
-        reason=_('Add a display controller to the event.'),
+        reason=_('No channel set for the event.'),
         class='d-inline-block',
         toggle_class='dropdown-toggle mx-auto',
     ) %}
-            {% for display_controller in display_controllers %}
+            {% for display_controller in (item_display_controllers + display_controllers|reject('in', item_display_controllers)|list) %}
+                {% if loop.index0 == item_display_controllers|length and item_display_controllers and loop.length > item_display_controllers|length %}
+                    {{ components.menu_divider() }}
+                {% endif %}
                 {% call components.menu_item(
                     display_controller.name,
                     attrs={
@@ -1928,7 +1936,7 @@ with_indicator: display a loading indicator, optional
                         'hx-indicator': '#please-wait',
                     },
                 ) %}
-                    <span><b>{{ display_controller.name }}</b> {% if display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_object.name) }}{% endif %}</span>
+                    <span><b>{{ display_controller.name }}</b> {% if display_controller in showing %}{{ _('(already showing it)') }}{% elif display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_name) }}{% endif %}</span>
                 {% endcall %}
             {% endfor %}
     {% endcall %}

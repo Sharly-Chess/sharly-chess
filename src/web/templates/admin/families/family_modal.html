@@ -4,11 +4,11 @@
 
 {% block title %}
     {% if action in ['create', 'clone', ] %}
-        {{ _('Create multi-screen') }}
+        {{ _('Create screen') }}
     {% elif action == 'update' %}
-        {{ _('Edit multi-screen') }}
+        {{ _('Edit paged screen') }}
     {% elif action == 'delete' %}
-        {{ _('Delete multi-screen') }}
+        {{ _('Delete paged screen') }}
     {% endif %}
 {% endblock %}
 
@@ -18,11 +18,14 @@
     {% elif action in ['create', 'clone', ] %}
         {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
     {% elif action == 'delete' %}
-        {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
+        {{ _('%(string)s: %(value)s', string=_('Paged Screen'), value=admin_family.uniq_id) }}
     {% endif %}
 {% endblock %}
 
 {% block body %}
+            {% with screen_kind_type=family_type, screen_kind_paged=true %}
+                {% include '/admin/screens/screen_kind_switch.html' %}
+            {% endwith %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -48,9 +51,9 @@
                         <div class="col-12">
                             {{ admin_macros.switch_input(
                                 name='public',
-                                label=_('Visibility:'),
-                                placeholder=_('Public multi-screen'),
-                                tooltip_text=_('Only allowed users can see private multi-screens.'),
+                                label='',
+                                placeholder=_('Public paged screen'),
+                                tooltip_text=_('Only allowed users can see private paged screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -67,15 +70,15 @@
                                 name='menu_text',
                                 label=_('Menu label:'),
                                 placeholder=_('Automatic'),
-                                tooltip_text=_('The label used for this multi-screen in menus. Its range is appended automatically.'),
+                                tooltip_text=_('The label used for this paged screen in menus. Its range is appended automatically.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('%(string)s:', string=_('Tournament')),
-                                tooltip_text=_('The tournament of the screens of the multi-screen.'),
+                                tooltip_text=_('The tournament of the paged screen.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
@@ -107,7 +110,7 @@
                                     name='fixed_board_order',
                                     label=_('Board selection:'),
                                     select_options=family_type.board_selection_options(false),
-                                    tooltip_text=_('How the boards shown by these screens are chosen and ordered.'),
+                                    tooltip_text=_('How the boards shown on these pages are chosen and ordered.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -161,35 +164,9 @@
 
                     {{ components.section_heading(_('Layout')) }}
                     <div class="row gy-2 gx-3">
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.number_input(
-                                name='parts',
-                                label=_('%(string)s:', string=_('Number of screens')),
-                                placeholder=sel.parts_placeholder,
-                                tooltip_text=sel.parts_tooltip,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.number_input(
-                                name='number',
-                                label=sel.number_label,
-                                placeholder=sel.number_placeholder,
-                                tooltip_text=sel.number_tooltip,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        {% if admin_event.timers_by_id %}
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.select_input(
-                                    name='timer_id',
-                                    label=_('%(string)s:', string=_('Timer')),
-                                    tooltip_text=_('The timer displayed on the screens of the multi-screen.'),
-                                    select_options=timer_options,
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% endif %}
+                        {% with destination_field_class='col-12' %}
+                            {% include '/admin/display_controllers/destination_field.html' %}
+                        {% endwith %}
                         {% if family_type.multi_column_allowed %}
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.number_input(
@@ -209,6 +186,45 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='parts',
+                                label=_('%(string)s:', string=_('Number of pages')),
+                                placeholder=sel.parts_placeholder,
+                                tooltip_text=sel.parts_tooltip,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='number',
+                                label=sel.number_label,
+                                placeholder=sel.number_placeholder,
+                                tooltip_text=sel.number_tooltip,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='page_delay',
+                                label=_('Seconds per page:'),
+                                placeholder=_('Default'),
+                                tooltip_text=_('How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay.', seconds=sharly_chess_config.default_rotator_delay),
+                                data=data, errors=errors,
+                                min=1
+                            ) }}
+                        </div>
+                        {% if admin_event.timers_by_id %}
+                            <div class="col-12 col-md-6">
+                                {{ admin_macros.select_input(
+                                    name='timer_id',
+                                    label=_('%(string)s:', string=_('Timer')),
+                                    tooltip_text=_('The timer displayed on the pages of the paged screen.'),
+                                    select_options=timer_options,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                         <div class="col-12">
                             {% include '../common/modal/alert_message.html' %}
                         </div>

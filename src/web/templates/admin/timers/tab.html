@@ -1,4 +1,6 @@
 {% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+{% import '/admin/screens/display_switcher.j2' as display_switcher with context %}
 
 {% set collection = get_admin_collection_spec('timers') %}
 {% set collection_view_mode = get_admin_collection_view_mode('timers') %}
@@ -6,7 +8,7 @@
 {% set collection_url = url_for('admin-event-timers-tab', event_uniq_id=admin_event.uniq_id) %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Timers'), 'screens-timers') }}
+    {{ display_switcher.title('screens-timers') }}
     <script>
         preparePrintModal()
     </script>
@@ -33,13 +35,8 @@
 
 {% block cards_container_cards %}
     {% if not admin_event.timers_by_name %}
-        {% call components.empty_state(_('No timers')) %}
-            <p>
-                {{ _('Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event.') }}
-            </p>
-            <p>
-                {{ _('Once created, choose the screens, multi-screens and rotators that display the timer with its Screens button, or select the timer in the settings of each of them.') }}
-            </p>
+        {% call components.empty_state(none, class='screens-map-empty') %}
+            {{ screens_map.guide('timers') }}
             <p>{{ _('Create a timer now to get started.') }}</p>
         {% endcall %}
     {% else %}

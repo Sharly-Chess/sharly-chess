@@ -67,6 +67,7 @@
                     {% set is_team_matches = is_team and admin_screen.screen_type.board_based %}
                     {% set sel = admin_screen.screen_type.selection_labels(is_team, is_team_matches) %}
                     {% set show_board_selection = admin_screen.screen_type.supports_fixed_boards and not is_team_matches %}
+                    {% if sel %}
                     {{ components.section_heading(sel.header) }}
                     <div class="row gy-2 gx-3">
                         {% if show_board_selection %}
@@ -140,6 +141,7 @@
                                 apply();
                             })();
                         </script>
+                    {% endif %}
                     {% endif %}
                 {% endif %}
             </form>

@@ -6,10 +6,6 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
 from data.access_levels.actions import AuthAction
-from data.screens.display_controller import DisplayController
-from data.screens.manager import ScreenTypeManager
-from data.screens.rotator import Rotator
-from data.screens.screen import Screen
 from data.tournament import Tournament
 from litestar.plugins.htmx import HTMXTemplate
 from web.controllers.admin.base_event_admin_controller import (
@@ -80,54 +76,15 @@ class EventAdminController(BaseEventAdminController):
                 admin_event_tournaments_url(request, web_context.admin_event.uniq_id)
             )
 
-        # Search for screens
         if web_context.client.can_view_public_screens:
-            sorted_screens_by_screen_type: dict[str, list[Screen]]
-            if web_context.client.can_view_private_screens:
-                sorted_screens_by_screen_type = (
-                    web_context.admin_event.sorted_screens_by_screen_type
+            return Redirect(
+                path=request.app.route_reverse(
+                    'admin-event-screens-tab'
+                    if web_context.client.can_manage_screens
+                    else 'admin-event-display-tab',
+                    event_uniq_id=event_uniq_id,
                 )
-            else:
-                sorted_screens_by_screen_type = (
-                    web_context.admin_event.sorted_public_screens_by_screen_type
-                )
-            for screen_type in ScreenTypeManager(web_context.admin_event).objects():
-                if sorted_screens_by_screen_type[screen_type.id]:
-                    return Redirect(
-                        path=request.app.route_reverse(
-                            f'admin-event-{screen_type.id}-screens-tab',
-                            event_uniq_id=event_uniq_id,
-                        )
-                    )
-        # Search for rotators
-        if web_context.client.can_view_public_screens:
-            rotators: list[Rotator]
-            if web_context.client.can_view_private_screens:
-                rotators = web_context.admin_event.sorted_rotators
-            else:
-                rotators = web_context.admin_event.public_sorted_rotators
-            if rotators:
-                return Redirect(
-                    path=request.app.route_reverse(
-                        'admin-event-rotators-tab', event_uniq_id=event_uniq_id
-                    )
-                )
-        # search for display controllers
-        if web_context.client.can_view_public_screens:
-            display_controllers: list[DisplayController]
-            if web_context.client.can_view_private_screens:
-                display_controllers = web_context.admin_event.sorted_display_controllers
-            else:
-                display_controllers = (
-                    web_context.admin_event.sorted_public_display_controllers
-                )
-            if display_controllers:
-                return Redirect(
-                    path=request.app.route_reverse(
-                        'admin-event-displayer_controllers-tab',
-                        event_uniq_id=event_uniq_id,
-                    )
-                )
+            )
 
         # default display with no tab selected
         return self._admin_base_event_render(web_context.template_context)

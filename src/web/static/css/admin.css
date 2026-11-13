@@ -1150,7 +1150,7 @@
 }
 
 .timer-usage-group .form-check,
-.timer-usage-group .form-check * {
+.timer-usage-group .form-check :not(.badge) {
     text-box-trim: none;
 }
 
@@ -1169,6 +1169,10 @@
 
 .timer-usage-group .form-check-label {
     line-height: 1.4;
+}
+
+.timer-usage-group .badge {
+    --bs-badge-padding-y: .25rem;
 }
 
 /* A match header shares the grey of the table header, stacked as a card on

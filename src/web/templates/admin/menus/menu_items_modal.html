@@ -11,7 +11,7 @@
             {% macro back_button() %}
                 {{ components.button(_('Back'), kind='link', icon='bi-arrow-left', size='sm', class='menu-item-back px-0 mb-1') }}
             {% endmacro %}
-            <div id="screen-types-form-container" style="display: none">
+            <div id="screen-types-form-container" class="mb-3" style="display: none">
                 {{ back_button() }}
                 {{ admin_macros.inline_multi_select_form(
                     'screen-types',
@@ -27,31 +27,15 @@
                     tooltip_select=true
                 ) }}
             </div>
-            <div id="screens-form-container" style="display: none">
+            <div id="screens-form-container" class="mb-3" style="display: none">
                 {{ back_button() }}
                 {{ admin_macros.inline_multi_select_form(
                     'screens',
-                    'screen_id',
+                    'item_id',
                     placeholder=_('Choose screens to add'),
                     options=screen_options,
                     post_url=url_for(
-                        'admin-menu-items-create-screen',
-                        event_uniq_id=admin_event.uniq_id,
-                        menu_id=admin_menu.id
-                    ),
-                    hx_target='#menu-item-list-container',
-                    tooltip_select=true
-                ) }}
-            </div>
-            <div id="families-form-container" style="display: none">
-                {{ back_button() }}
-                {{ admin_macros.inline_multi_select_form(
-                    'families',
-                    'family_id',
-                    placeholder=_('Choose multi-screens to add'),
-                    options=family_options,
-                    post_url=url_for(
-                        'admin-menu-items-create-family',
+                        'admin-menu-items-create',
                         event_uniq_id=admin_event.uniq_id,
                         menu_id=admin_menu.id
                     ),
@@ -76,19 +60,10 @@
                     class='menu-item-button',
                     attrs={'id': 'screens-add-button', 'data-testid': 'screens-add-button'},
                 ) }}
-                {{ components.button(
-                    _('Multi-screens'),
-                    kind='primary',
-                    icon='add',
-                    allowed=family_options|length > 0,
-                    reason=_('No multi-screens in this event yet.'),
-                    class='menu-item-button',
-                    attrs={'id': 'families-add-button', 'data-testid': 'families-add-button'},
-                ) }}
             </div>
             <script>
                 $('.menu-item-back, .inline-form-cancel-button').click(() => {
-                    $('#screen-types-form-container, #screens-form-container, #families-form-container')
+                    $('#screen-types-form-container, #screens-form-container')
                         .css('display', 'none');
                     $('.menu-item-button').css('display', '');
                 });
@@ -98,10 +73,6 @@
                 });
                 $('#screens-add-button').click(() => {
                     $('#screens-form-container').css('display', '');
-                    $('.menu-item-button').css('display', 'none');
-                });
-                $('#families-add-button').click(() => {
-                    $('#families-form-container').css('display', '');
                     $('.menu-item-button').css('display', 'none');
                 });
             </script>

@@ -7,20 +7,31 @@
 > [!NOTE]
 > :information_source: Table `info` contains only one line.
 
-| Field                   | Type      | Constraint                 | Description                                                                                                                  |
-|-------------------------|-----------|----------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| `force_edit`            | `INTEGER` | NOT NULL                   | Boolean:<br/>- `1`: Editing the configuration is mandatory;<br/>- `0`: Editing the configuration is possible but optional    |
-| `console_log_level`     | `INTEGER` |                            | The console logging level                                                                                                    |
-| `console_color`         | `INTEGER` |                            | Boolean:<br/>- `1`: Use colors on the console (default);<br/>- `0`: Do not use colors on the console                         |
-| `console_show_date`     | `INTEGER` |                            | Boolean:<br/>- `1`: Show the date and time on the console;<br/>- `0`: Do not show the date and time on the console (default) |
-| `console_show_level`    | `INTEGER` |                            | Boolean:<br/>- `1`: Show the logging level on the console;<br/>- `0`: Do not show the logging level on the console (default) |
-| `launch_browser`        | `INTEGER` |                            | Boolean:<br/>- `1`: A browser is automatically opened (default);<br/>- `0`: No browser is opened                             |
-| `federation`            | `TEXT`    |                            | The default federation code for events                                                                                       |
-| `locale`                | `TEXT`    |                            | The default language used for users                                                                                          |
-| `experimental`          | `INTEGER` |                            | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
-| `date_formatter`        | `TEXT`    | NOT NULL<br/>DEFAULT 'ISO' | The format used to display dates (`ISO`, `EU`, `US`)                                                                         |
-| `check_beta_versions`   | `INTEGER` | NOT NULL<br/>DEFAULT 0     | Boolean:<br/>- `1`: Beta releases are considered when looking for updates;<br/>- `0`: Only final releases are (default)      |
-| `last_notified_version` | `TEXT`    |                            | The last version the user was notified about, so the notice is shown once                                                    |
+| Field                      | Type      | Constraint                        | Description                                                                                                                               |
+|----------------------------|-----------|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `force_edit`               | `INTEGER` | NOT NULL                          | Boolean:<br/>- `1`: Editing the configuration is mandatory;<br/>- `0`: Editing the configuration is possible but optional                 |
+| `console_log_level`        | `INTEGER` |                                   | The console logging level                                                                                                                 |
+| `console_color`            | `INTEGER` |                                   | Boolean:<br/>- `1`: Use colors on the console (default);<br/>- `0`: Do not use colors on the console                                      |
+| `console_show_date`        | `INTEGER` |                                   | Boolean:<br/>- `1`: Show the date and time on the console;<br/>- `0`: Do not show the date and time on the console (default)              |
+| `console_show_level`       | `INTEGER` |                                   | Boolean:<br/>- `1`: Show the logging level on the console;<br/>- `0`: Do not show the logging level on the console (default)              |
+| `launch_browser`           | `INTEGER` |                                   | Boolean:<br/>- `1`: A browser is automatically opened (default);<br/>- `0`: No browser is opened                                          |
+| `federation`               | `TEXT`    |                                   | The default federation code for events                                                                                                    |
+| `locale`                   | `TEXT`    |                                   | The default language used for users                                                                                                       |
+| `experimental`             | `INTEGER` |                                   | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)                            |
+| `date_formatter`           | `TEXT`    | NOT NULL<br/>DEFAULT 'ISO'        | The format used to display dates (`ISO`, `EU`, `US`)                                                                                      |
+| `check_beta_versions`      | `INTEGER` | NOT NULL<br/>DEFAULT 0            | Boolean:<br/>- `1`: Beta releases are considered when looking for updates;<br/>- `0`: Only final releases are (default)                   |
+| `last_notified_version`    | `TEXT`    |                                   | The last version the user was notified about, so the notice is shown once                                                                 |
+| `name_formatter`           | `TEXT`    | NOT NULL<br/>DEFAULT 'LAST_FIRST' | How the players' names are displayed (`LAST_FIRST`, `LAST_COMMA_FIRST`, `FIRST_LAST`, `FIRST_COMMA_LAST`)                                 |
+| `capitalise_last_name`     | `INTEGER` | NOT NULL<br/>DEFAULT 1            | Boolean: whether last names are displayed in capitals                                                                                     |
+| `computer_private_key`     | `TEXT`    |                                   | The private key of the computer's own key pair, by which the services it connects to recognise it (`NULL` until the pair is first needed) |
+| `computer_public_key`      | `TEXT`    |                                   | The public key of the computer's own key pair                                                                                             |
+| `snapshot_enabled`         | `INTEGER` | NOT NULL<br/>DEFAULT 1            | Boolean: whether snapshots of the events are taken                                                                                        |
+| `snapshot_dir`             | `TEXT`    |                                   | The folder the snapshots are kept in (`NULL` for the default folder)                                                                      |
+| `snapshot_keep_milestones` | `INTEGER` | NOT NULL<br/>DEFAULT 10           | The number of milestone snapshots (taken at a step of the event, such as pairing a round) kept for each event                             |
+| `snapshot_keep_auto`       | `INTEGER` | NOT NULL<br/>DEFAULT 10           | The number of automatic snapshots (taken after changes) kept for each event                                                               |
+| `snapshot_max_total_mb`    | `INTEGER` | NOT NULL<br/>DEFAULT 500          | The space the snapshots of all events may take, in megabytes                                                                              |
+| `snapshot_max_age_days`    | `INTEGER` | NOT NULL<br/>DEFAULT 90           | The age in days after which snapshots are given up                                                                                        |
+| `admin_theme`              | `TEXT`    | NOT NULL<br/>DEFAULT 'auto'       | The theme of the administration interface (`auto`, `light`, `dark`)                                                                       |
 
 ### `local_source_database` table (local player databases)
 
@@ -58,11 +69,12 @@
 
 ### `plugin` table (extensions)
 
-| Field         | Type      | Constraint                | Description                                                                           |
-|---------------|-----------|---------------------------|---------------------------------------------------------------------------------------|
-| `name`        | `TEXT`    | NOT NULL<br/>PRIMARY KEY  | The name of the extension                                                             |
-| `is_enabled`  | `INTEGER` | NOT NULL                  | Boolean:<br/>- `1`: The extension is enabled;<br/>- `0`: The extension is not enabled |
-| `plugin_data` | `TEXT`    | NOT NULL<br/>DEFAULT '{}' | Additional data used by the extension, in JSON format                                 |
+| Field                      | Type      | Constraint                | Description                                                                                      |
+|----------------------------|-----------|---------------------------|--------------------------------------------------------------------------------------------------|
+| `name`                     | `TEXT`    | NOT NULL<br/>PRIMARY KEY  | The name of the extension                                                                        |
+| `is_enabled`               | `INTEGER` | NOT NULL                  | Boolean:<br/>- `1`: The extension is enabled;<br/>- `0`: The extension is not enabled            |
+| `plugin_data`              | `TEXT`    | NOT NULL<br/>DEFAULT '{}' | Additional data used by the extension, in JSON format                                            |
+| `default_event_is_enabled` | `INTEGER` |                           | Boolean, whether new events enable the extension (`NULL` for the default the extension declares) |
 
 ### `tag` table (tags)
 
@@ -128,17 +140,21 @@
 
 ### `board` table (chess boards)
 
-| Field                | Type      | Constraint                                       | Description                                                   |
-|----------------------|-----------|--------------------------------------------------|---------------------------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT       | The board ID                                                  |
-| `white_player_id`    | `INTEGER` | REFERENCES `player`(`id`) ON DELETE CASCADE      | The white player ID (can be NULL for byes / team-match holes) |
-| `black_player_id`    | `INTEGER` | REFERENCES `player`(`id`) ON DELETE CASCADE      | The black player ID (can be NULL for byes)                    |
-| `index`              | `INTEGER` | NOT NULL                                         | The board number/index                                        |
-| `last_result_update` | `FLOAT`   |                                                  | Timestamp of the last result update for board                 |
-| `team_board_id`      | `INTEGER` | REFERENCES `team_board`(`id`) ON DELETE SET NULL | Parent team match (team tournaments only)                     |
-| `fixed_number`       | `INTEGER` |                                                  | The board's fixed number, or `NULL`                           |
+| Field                       | Type      | Constraint                                       | Description                                                                                          |
+|-----------------------------|-----------|--------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| `id`                        | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT       | The board ID                                                                                         |
+| `white_player_id`           | `INTEGER` | REFERENCES `player`(`id`) ON DELETE CASCADE      | The white player ID (can be NULL for byes / team-match holes)                                        |
+| `black_player_id`           | `INTEGER` | REFERENCES `player`(`id`) ON DELETE CASCADE      | The black player ID (can be NULL for byes)                                                           |
+| `index`                     | `INTEGER` | NOT NULL                                         | The board number/index                                                                               |
+| `last_result_update`        | `FLOAT`   |                                                  | Timestamp of the last result update for board                                                        |
+| `team_board_id`             | `INTEGER` | REFERENCES `team_board`(`id`) ON DELETE SET NULL | Parent team match (team tournaments only)                                                            |
+| `fixed_number`              | `INTEGER` |                                                  | The board's fixed number, or `NULL`                                                                  |
+| `knockout_winner_player_id` | `INTEGER` |                                                  | In a knock-out, the player the arbiter designated as the winner of a drawn game no tie-break settles |
 
-### `display_controller` table (display controllers)
+### `display_controller` table (display controllers, called channels in the interface)
+
+> [!NOTE]
+> :information_source: A display controller shows at most one of a screen, a family (all its pages in turn, or the page `family_page`), a rotator or a menu; with none, it shows its waiting page.
 
 | Field         | Type      | Constraint                                    | Description                                                                                                                        |
 |---------------|-----------|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
@@ -148,21 +164,41 @@
 | `screen_id`   | `INTEGER` | REFERENCES `screen`(`id`) ON DELETE SET NULL  | The screen ID to display                                                                                                           |
 | `rotator_id`  | `INTEGER` | REFERENCES `rotator`(`id`) ON DELETE SET NULL | The rotator ID to display                                                                                                          |
 | `last_update` | `TEXT`    |                                               | The date the controller was last updated                                                                                           |
+| `family_id`   | `INTEGER` | REFERENCES `family`(`id`) ON DELETE SET NULL  | The family ID to display                                                                                                           |
+| `family_page` | `INTEGER` |                                               | The page of the family to hold the controller on, counted from 1 (`NULL`: the pages are shown in turn)                             |
+| `menu_id`     | `INTEGER` | REFERENCES `menu`(`id`) ON DELETE SET NULL    | The menu ID to display                                                                                                             |
 
-### `family` table (screen families)
+### `display_controller_item` table (what display controllers are designed for)
+
+> [!NOTE]
+> :information_source: Each row links a display controller to one screen, family, rotator or menu designed for it, whose column is the only one of the four set. Unique indexes keep an item from being linked twice to the same controller. The link only ranks the item first when choosing what the controller shows.
+
+| Field                   | Type      | Constraint                                                           | Description                             |
+|-------------------------|-----------|----------------------------------------------------------------------|-----------------------------------------|
+| `id`                    | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                           | The link ID                             |
+| `display_controller_id` | `INTEGER` | NOT NULL<br/>REFERENCES `display_controller`(`id`) ON DELETE CASCADE | The display controller                  |
+| `screen_id`             | `INTEGER` | REFERENCES `screen`(`id`) ON DELETE CASCADE                          | The screen designed for the controller  |
+| `family_id`             | `INTEGER` | REFERENCES `family`(`id`) ON DELETE CASCADE                          | The family designed for the controller  |
+| `rotator_id`            | `INTEGER` | REFERENCES `rotator`(`id`) ON DELETE CASCADE                         | The rotator designed for the controller |
+| `menu_id`               | `INTEGER` | REFERENCES `menu`(`id`) ON DELETE CASCADE                            | The menu designed for the controller    |
+
+### `family` table (screen families, called paged screens in the interface)
 
 | Field                     | Type      | Constraint                                 | Description                                                                                                                                                                                                                                              |
 |---------------------------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `id`                      | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The family ID                                                                                                                                                                                                                                            |
 | `uniq_id`                 | `TEXT`    | NOT NULL<br/>UNIQUE                        | The unique text ID of the family                                                                                                                                                                                                                         |
-| `type`                    | `TEXT`    | NOT NULL                                   | The screen type:<br/>- `input`: player check-in and results entry<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `image`: image                                            |
+| `type`                    | `TEXT`    | NOT NULL                                   | The screen type:<br/>- `check-in`: player check-in<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `ranking`: ranking or crosstable                                                                         |
 | `public`                  | `INTEGER` |                                            | Boolean:<br/>- `1`: the family is public (visible to users on the public interface);<br/>- `0`: the family is reserved for referees                                                                                                                      |
 | `name`                    | `TEXT`    |                                            | The name of the family                                                                                                                                                                                                                                   |
 | `columns`                 | `INTEGER` |                                            | The number of columns in the family's screens                                                                                                                                                                                                            |
 | `menu_text`               | `TEXT`    | NOT NULL                                   | The text of the hyperlink to the family's screens, used on other screens                                                                                                                                                                                 |
 | `timer_id`                | `INTEGER` | REFERENCES `timer`(`id`)                   | The ID of the timer used on the family's screens                                                                                                                                                                                                         |
 | `tournament_id`           | `INTEGER` | REFERENCES `tournament`(`id`)              | The ID of the tournament in the family                                                                                                                                                                                                                   |
-| `input_exit_button`       | `INTEGER` |                                            | Boolean:<br/>- `NULL` if `type` is different from `input`;<br/>- `1`: a button to exit the page is displayed;<br/>- `0`: the button is not displayed                                                                                                     |
+| `input_exit_button`       | `INTEGER` |                                            | Boolean, for a family accepting input:<br/>- `1`: a button to exit the page is displayed;<br/>- `0`: the button is not displayed                                                                                                                         |
+| `accepts_input`           | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether input is accepted on the family's screens (results on the `boards` and `players` types, check-ins on the `check-in` type)                                                                                                               |
+| `boards_hide_players`     | `INTEGER` |                                            | Boolean, for the `boards` type of a team tournament: whether the matches are shown without the players of each board (never while input is accepted)                                                                                                     |
+| `check_in_show_members`   | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean, for the `check-in` type of a team tournament: whether the members of each team are listed under its name                                                                                                                                        |
 | `players_show_unpaired`   | `INTEGER` |                                            | Boolean:<br/>- `NULL` if `type` is different from `players`;<br/>- `0`: non-paired players are hidden;<br/>- `1`: non-paired players are shown                                                                                                           |
 | `players_player_format`   | `INTEGER` |                                            | The display of the player:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: `GM CARLSEN Magnus`<br/>- `2`: `GM CARLSEN Magnus 2840`<br/>- `3`: `GM CARLSEN Magnus 2840F`<br/>- `4`: `GM CARLSEN Magnus 2840F \[4\]`                        |
 | `players_board_format`    | `INTEGER` |                                            | The display of the board:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: `27 White`<br/>- `2`: `#27 with White`<br/>- `3`: `Board #27 White`<br/>- `4`: `Board #27 with White`                                                           |
@@ -171,7 +207,9 @@
 | `ranking_round`           | `INTEGER` |                                            | The number of the round to display (by default the last round played)                                                                                                                                                                                    |
 | `ranking_min_points`      | `FLOAT`   |                                            | The minimum number of points of the displayed players                                                                                                                                                                                                    |
 | `ranking_max_points`      | `FLOAT`   |                                            | The maximum number of points of the displayed players                                                                                                                                                                                                    |
+| `ranking_hidden_columns`  | `TEXT`    |                                            | The toggle IDs of the ranking columns hidden on the family's screens, in JSON format (`NULL`: all columns are shown)                                                                                                                                     |
 | `font_size`               | `INTEGER` |                                            | The font size in percentage (default 100%)                                                                                                                                                                                                               |
+| `page_delay`              | `INTEGER` |                                            | How long each page is shown when the pages turn, on a display controller or in a rotator, in seconds (`NULL`: the controller's default, or the rotator's delay)                                                                                          |
 | `first`                   | `INTEGER` |                                            | The number of the first element (board or player) to consider                                                                                                                                                                                            |
 | `last`                    | `INTEGER` |                                            | The number of the last element (board or player) to consider                                                                                                                                                                                             |
 | `range`                   | `TEXT`    |                                            | The range of screens to generate, for example `4-6` (by default, all screens in the family are generated)                                                                                                                                                |
@@ -223,6 +261,9 @@
 | `age_categories`                 | `TEXT`    |                                   | The age categories used to split the players                                                                                                        |
 | `age_category_change_month`      | `INTEGER` | DEFAULT 1                         | The number of the month on which the category of the players changes                                                                                |
 | `tag_ids`                        | `TEXT`    | NOT NULL<br/>DEFAULT '[]'         | The IDs of the event's tags, in JSON format                                                                                                         |
+| `origin`                         | `TEXT`    |                                   | Where the event came from (`CREATED`, `IMPORTED_FILE`, `IMPORTED_ONLINE`, `RESTORED`), `NULL` for the events older than the field                   |
+| `origin_date`                    | `TEXT`    |                                   | When the event was created, imported or restored                                                                                                    |
+| `screens_fake_data`              | `INTEGER` | NOT NULL<br/>DEFAULT 0            | Boolean: whether the screens show a made-up first round for the tournaments without pairings, while they are being set up (never saved)             |
 
 ### `menu` table (menus)
 
@@ -263,6 +304,21 @@
 | `illegal_moves`    | `INTEGER` | NOT NULL<br/>DEFAULT 0                                     | Number of illegal moves made by the player in the round |
 | `effective_points` | `REAL`    |                                                            | Override game points used for match-point calc          |
 
+### `pibe` table (logged events of the TRF)
+
+> [!NOTE]
+> :information_source: The pairing integrity breaching events (PIBEs), something done to a round after the rounds that followed were paired from it, and the changes to the tournament settings that the regulations fix before it starts. They are written to the TRF as comments.
+
+| Field           | Type      | Constraint                                                   | Description                                                                                                                               |
+|-----------------|-----------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The event ID                                                                                                                              |
+| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament ID                                                                                                                         |
+| `round`         | `INTEGER` | NOT NULL                                                     | The round concerned                                                                                                                       |
+| `type`          | `TEXT`    | NOT NULL                                                     | The type of the event (`MPA`, `Import`, `Regeneration`, `Correction`, `Adjournment`, `Exchange`, `Configuration`, `Rounds`, `Tie-breaks`) |
+| `description`   | `TEXT`    | NOT NULL                                                     | The description of the event, as written in the TRF                                                                                       |
+| `members`       | `TEXT`    |                                                              | The player (or team) each pairing number of the description stood for when the event was logged, in JSON format                           |
+| `date`          | `TEXT`    | NOT NULL                                                     | When the event was logged                                                                                                                 |
+
 ### `player` table (players)
 
 | Field             | Type      | Constraint                                 | Description                                                                                                                                                |
@@ -288,6 +344,7 @@
 | `club`            | `TEXT`    |                                            | The player's chess club                                                                                                                                    |
 | `fixed`           | `INTEGER` |                                            | The player's fixed table (if any)                                                                                                                          |
 | `check_in`        | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the player has checked in                                                                                                                 |
+| `byes_allowed`    | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean: whether the player may take voluntary byes (FIDE C.05:6.7.4)                                                                                      |
 | `team_id`         | `INTEGER` | REFERENCES `team`(`id`) ON DELETE SET NULL | The player's team (team tournaments only)                                                                                                                  |
 | `team_index`      | `INTEGER` |                                            | The player's board order within the team (team tournaments only)                                                                                           |
 | `plugin_data`     | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format                                                                                                            |
@@ -332,13 +389,14 @@
 
 ### `prize` table (prizes)
 
-| Field               | Type      | Constraint                                            | Description                                                    |
-|---------------------|-----------|-------------------------------------------------------|----------------------------------------------------------------|
-| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE | The prize ID                                                   |
-| `prize_category_id` | `INTEGER` | NOT NULL<br/>REFERENCES `prize_category`(`id`)        | The prize category ID                                          |
-| `value`             | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                              | The monetary value of the prize                                |
-| `type`              | `TEXT`    |                                                       | The type of the prize (`MONETARY`, `NON_MONETARY` or `HYBRID`) |
-| `description`       | `TEXT`    |                                                       | The prize description                                          |
+| Field                 | Type      | Constraint                                            | Description                                                    |
+|-----------------------|-----------|-------------------------------------------------------|----------------------------------------------------------------|
+| `id`                  | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE | The prize ID                                                   |
+| `prize_category_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `prize_category`(`id`)        | The prize category ID                                          |
+| `value`               | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                              | The monetary value of the prize                                |
+| `type`                | `TEXT`    |                                                       | The type of the prize (`MONETARY`, `NON_MONETARY` or `HYBRID`) |
+| `description`         | `TEXT`    |                                                       | The prize description                                          |
+| `complementary_value` | `REAL`    |                                                       | For a `HYBRID` prize, the value of its non-monetary part       |
 
 ### `prize_category` table (prize categories)
 
@@ -375,13 +433,13 @@
 > [!NOTE]
 > :information_source: A group is a set of members (players or teams) that must not be paired together. `round` NULL = a reusable manual template carried forward; a non-NULL `round` = an immutable per-round snapshot driving the TRF 260 export. `protect_rank` (snapshot rows) records the soft-relaxation cutoff applied that round.
 
-| Field           | Type      | Constraint                                                   | Description                                               |
-|-----------------|-----------|--------------------------------------------------------------|-----------------------------------------------------------|
-| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The group ID                                              |
-| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament ID                                         |
-| `round`         | `INTEGER` |                                                              | `NULL` = reusable template; non-NULL = per-round snapshot |
-| `is_hard`       | `INTEGER` | NOT NULL<br/>DEFAULT 1                                       | Boolean: hard (`1`) vs soft (`0`) constraint              |
-| `protect_rank`  | `INTEGER` |                                                              | Soft-relaxation cutoff for the round (snapshot rows only) |
+| Field             | Type      | Constraint                                                   | Description                                                                                                                                                                                                                                                                                         |
+|-------------------|-----------|--------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The group ID                                                                                                                                                                                                                                                                                        |
+| `tournament_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament ID                                                                                                                                                                                                                                                                                   |
+| `round`           | `INTEGER` |                                                              | `NULL` = reusable template; non-NULL = per-round snapshot                                                                                                                                                                                                                                           |
+| `constraint_type` | `TEXT`    | NOT NULL<br/>DEFAULT 'HARD'                                  | How strongly the members are kept apart:<br/>- `HARD`: never paired together;<br/>- `PROTECT_TOP`: as `HARD`, but when the round cannot be paired the members are released from the bottom of the standings up;<br/>- `LOWEST_CRITERION`: avoided as the pairing engine's lowest-priority criterion |
+| `protect_rank`    | `INTEGER` |                                                              | Soft-relaxation cutoff for the round (snapshot rows only)                                                                                                                                                                                                                                           |
 
 ### `prohibited_pairing_group_member` table (prohibited-pairing group members)
 
@@ -389,6 +447,21 @@
 |-------------|-----------|--------------------------------------------------------------------------------------------|--------------------------------|
 | `group_id`  | `INTEGER` | NOT NULL<br/>REFERENCES `prohibited_pairing_group`(`id`) ON DELETE CASCADE<br/>PRIMARY KEY | The group ID                   |
 | `member_id` | `INTEGER` | NOT NULL<br/>PRIMARY KEY                                                                   | The member ID (player or team) |
+
+### `rating_correction` table (games corrected for the rating report)
+
+> [!NOTE]
+> :information_source: A game found wrong too late to change the round it was played in is recorded differently in the rating report only.
+
+| Field             | Type      | Constraint                                                   | Description                       |
+|-------------------|-----------|--------------------------------------------------------------|-----------------------------------|
+| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The correction ID                 |
+| `tournament_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament ID                 |
+| `round`           | `INTEGER` | NOT NULL                                                     | The round the game was played in  |
+| `white_player_id` | `INTEGER` | NOT NULL                                                     | The player who actually had white |
+| `black_player_id` | `INTEGER` | NOT NULL                                                     | The player who actually had black |
+| `result`          | `INTEGER` | NOT NULL                                                     | The actual result of white        |
+| `date`            | `TEXT`    | NOT NULL                                                     | When the correction was recorded  |
 
 ### `rotating_screen` table (rotating screens)
 
@@ -417,35 +490,41 @@
 
 ### `screen` table (screens)
 
-| Field                     | Type      | Constraint                                 | Description                                                                                                                                                                                                                                              |
-|---------------------------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`                      | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The screen ID                                                                                                                                                                                                                                            |
-| `uniq_id`                 | `TEXT`    | NOT NULL<br/>UNIQUE                        | The unique text ID of the screen                                                                                                                                                                                                                         |
-| `type`                    | `TEXT`    | NOT NULL                                   | The screen type:<br/>- `input`: player check-in and results entry<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `image`: image                                            |
-| `public`                  | `INTEGER` |                                            | Boolean:<br/>- `1`: the screen is public (visible to users on the public interface);<br/>- `0`: the screen is reserved for referees                                                                                                                      |
-| `name`                    | `TEXT`    |                                            | The name of the screen                                                                                                                                                                                                                                   |
-| `columns`                 | `INTEGER` |                                            | The number of columns on the screen                                                                                                                                                                                                                      |
-| `menu_text`               | `TEXT`    |                                            | `NULL` if `type` is `image`, otherwise the text of the hyperlink to the screen, used on other screens                                                                                                                                                    |
-| `timer_id`                | `INTEGER` | REFERENCES `timer`(`id`)                   | The timer ID                                                                                                                                                                                                                                             |
-| `input_exit_button`       | `INTEGER` |                                            | Boolean:<br/>- `NULL` if `type` is different from `input`;<br/>- `1`: a button to exit the page is displayed;<br/>- `0`: the button is not displayed                                                                                                     |
-| `players_show_unpaired`   | `INTEGER` |                                            | Boolean:<br/>- `NULL` if `type` is different from `players`;<br/>- `0`: non-paired players are hidden;<br/>- `1`: non-paired players are shown                                                                                                           |
-| `players_player_format`   | `INTEGER` |                                            | The display of the player:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: `GM CARLSEN Magnus`<br/>- `2`: `GM CARLSEN Magnus 2840`<br/>- `3`: `GM CARLSEN Magnus 2840F`<br/>- `4`: `GM CARLSEN Magnus 2840F \[4\]`                        |
-| `players_board_format`    | `INTEGER` |                                            | The display of the board:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: `27 White`<br/>- `2`: `#27 with White`<br/>- `3`: `Board #27 White`<br/>- `4`: `Board #27 with White`                                                           |
-| `players_opponent_format` | `INTEGER` |                                            | The display of the opponent:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: players' opponent are hidden;<br/>- `2`: `GM HOU Yifan`<br/>- `3`: `GM HOU Yifan 2613`<br/>- `4`: `GM HOU Yifan 2613F`<br/>- `5`: `GM HOU Yifan 2613F \[6\]` |
-| `results_limit`           | `INTEGER` |                                            | - `NULL` if `type` is different from `results`;<br/>- `0`: all recent results are shown;<br/>- positive integer: the maximum number of results shown on the screen                                                                                       |
-| `results_max_age`         | `INTEGER` |                                            | - `NULL` if `type` is different from `results`;<br/>- `NULL` or positive integer: the maximum age of results displayed on the screen (in minutes, default 60)                                                                                            |
-| `results_tournament_ids`  | `TEXT`    |                                            | - `NULL` if `type` is not equal to `results`;<br/>- The list of tournament IDs for which results are displayed on the screen, in JSON format (if the list is empty, the results of all tournaments are displayed)                                        |
-| `background_image`        | `TEXT`    |                                            | - `NULL` if `type` is not equal to `image`;<br/>- The URL of the image to display                                                                                                                                                                        |
-| `background_color`        | `TEXT`    |                                            | - `NULL` if `type` is not equal to `image`;<br/>- The background color of the image, in hexadecimal format `#RRGGBB`                                                                                                                                     |
-| `ranking_crosstable`      | `INTEGER` |                                            | Boolean:<br/>- `1`: American grid;<br/>- `0`: simple ranking                                                                                                                                                                                             |
-| `ranking_round`           | `INTEGER` |                                            | The number of the round to display (by default the last round played)                                                                                                                                                                                    |
-| `ranking_min_points`      | `FLOAT`   |                                            | The minimum number of points of the displayed players                                                                                                                                                                                                    |
-| `ranking_max_points`      | `FLOAT`   |                                            | The maximum number of points for the displayed players                                                                                                                                                                                                   |
-| `font_size`               | `INTEGER` |                                            | The font size in percentage (default 100%)                                                                                                                                                                                                               |
-| `message_default`         | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean:<br/>- `1`: The event alert message (or the rotating screen, if applicable) is used;<br/>- `0`: The screen alert message is used instead of the event alert message                                                                              |
-| `message_text`            | `TEXT`    |                                            | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                                                       |
-| `last_update`             | `TEXT`    | NOT NULL                                   | The date the screen was last modified                                                                                                                                                                                                                    |
-| `plugin_data`             | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                                                                                                                                                                                          |
+| Field                      | Type      | Constraint                                 | Description                                                                                                                                                                                                                                                                           |
+|----------------------------|-----------|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`                       | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The screen ID                                                                                                                                                                                                                                                                         |
+| `uniq_id`                  | `TEXT`    | NOT NULL<br/>UNIQUE                        | The unique text ID of the screen                                                                                                                                                                                                                                                      |
+| `type`                     | `TEXT`    | NOT NULL                                   | The screen type:<br/>- `check-in`: player check-in<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `ranking`: ranking or crosstable<br/>- `round-robin-grid`: grid of a round robin<br/>- `image`: image |
+| `public`                   | `INTEGER` |                                            | Boolean:<br/>- `1`: the screen is public (visible to users on the public interface);<br/>- `0`: the screen is reserved for referees                                                                                                                                                   |
+| `name`                     | `TEXT`    |                                            | The name of the screen                                                                                                                                                                                                                                                                |
+| `columns`                  | `INTEGER` |                                            | The number of columns on the screen                                                                                                                                                                                                                                                   |
+| `menu_text`                | `TEXT`    |                                            | `NULL` if `type` is `image`, otherwise the text of the hyperlink to the screen, used on other screens                                                                                                                                                                                 |
+| `timer_id`                 | `INTEGER` | REFERENCES `timer`(`id`)                   | The timer ID                                                                                                                                                                                                                                                                          |
+| `input_exit_button`        | `INTEGER` |                                            | Boolean, for a screen accepting input:<br/>- `1`: a button to exit the page is displayed;<br/>- `0`: the button is not displayed                                                                                                                                                      |
+| `accepts_input`            | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether input is accepted on the screen (results on the `boards` and `players` types, check-ins on the `check-in` type)                                                                                                                                                      |
+| `boards_hide_players`      | `INTEGER` |                                            | Boolean, for the `boards` type of a team tournament: whether the matches are shown without the players of each board (never while input is accepted)                                                                                                                                  |
+| `check_in_show_members`    | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean, for the `check-in` type of a team tournament: whether the members of each team are listed under its name                                                                                                                                                                     |
+| `players_show_unpaired`    | `INTEGER` |                                            | Boolean:<br/>- `NULL` if `type` is different from `players`;<br/>- `0`: non-paired players are hidden;<br/>- `1`: non-paired players are shown                                                                                                                                        |
+| `players_player_format`    | `INTEGER` |                                            | The display of the player:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: `GM CARLSEN Magnus`<br/>- `2`: `GM CARLSEN Magnus 2840`<br/>- `3`: `GM CARLSEN Magnus 2840F`<br/>- `4`: `GM CARLSEN Magnus 2840F \[4\]`                                                     |
+| `players_board_format`     | `INTEGER` |                                            | The display of the board:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: `27 White`<br/>- `2`: `#27 with White`<br/>- `3`: `Board #27 White`<br/>- `4`: `Board #27 with White`                                                                                        |
+| `players_opponent_format`  | `INTEGER` |                                            | The display of the opponent:<br/>- `NULL` if `type` is different from `players`;<br/>- `1`: players' opponent are hidden;<br/>- `2`: `GM HOU Yifan`<br/>- `3`: `GM HOU Yifan 2613`<br/>- `4`: `GM HOU Yifan 2613F`<br/>- `5`: `GM HOU Yifan 2613F \[6\]`                              |
+| `results_limit`            | `INTEGER` |                                            | - `NULL` if `type` is different from `results`;<br/>- `0`: all recent results are shown;<br/>- positive integer: the maximum number of results shown on the screen                                                                                                                    |
+| `results_max_age`          | `INTEGER` |                                            | - `NULL` if `type` is different from `results`;<br/>- `NULL` or positive integer: the maximum age of results displayed on the screen (in minutes, default 60)                                                                                                                         |
+| `results_tournament_ids`   | `TEXT`    |                                            | - `NULL` if `type` is not equal to `results`;<br/>- The list of tournament IDs for which results are displayed on the screen, in JSON format (if the list is empty, the results of all tournaments are displayed)                                                                     |
+| `background_image`         | `TEXT`    |                                            | - `NULL` if `type` is not equal to `image`;<br/>- The URL of the image to display                                                                                                                                                                                                     |
+| `background_color`         | `TEXT`    |                                            | - `NULL` if `type` is not equal to `image`;<br/>- The background color of the image, in hexadecimal format `#RRGGBB`                                                                                                                                                                  |
+| `ranking_crosstable`       | `INTEGER` |                                            | Boolean:<br/>- `1`: American grid;<br/>- `0`: simple ranking                                                                                                                                                                                                                          |
+| `ranking_round`            | `INTEGER` |                                            | The number of the round to display (by default the last round played)                                                                                                                                                                                                                 |
+| `ranking_min_points`       | `FLOAT`   |                                            | The minimum number of points of the displayed players                                                                                                                                                                                                                                 |
+| `ranking_max_points`       | `FLOAT`   |                                            | The maximum number of points for the displayed players                                                                                                                                                                                                                                |
+| `ranking_hidden_columns`   | `TEXT`    |                                            | For the `ranking` and `round-robin-grid` types, the toggle IDs of the columns hidden on the screen, in JSON format (`NULL`: all columns are shown)                                                                                                                                    |
+| `round_robin_grid_by_rank` | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean, for the `round-robin-grid` type:<br/>- `1`: the members are ordered by rank;<br/>- `0`: by pairing number                                                                                                                                                                    |
+| `round_robin_grid_players` | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean, for the `round-robin-grid` type of a team tournament: whether the grid has a row per player rather than per team                                                                                                                                                             |
+| `font_size`                | `INTEGER` |                                            | The font size in percentage (default 100%)                                                                                                                                                                                                                                            |
+| `message_default`          | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean:<br/>- `1`: The event alert message (or the rotating screen, if applicable) is used;<br/>- `0`: The screen alert message is used instead of the event alert message                                                                                                           |
+| `message_text`             | `TEXT`    |                                            | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                                                                                    |
+| `last_update`              | `TEXT`    | NOT NULL                                   | The date the screen was last modified                                                                                                                                                                                                                                                 |
+| `plugin_data`              | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                                                                                                                                                                                                                       |
 
 ### `screen_set` table (screen sets)
 
@@ -478,16 +557,17 @@
 
 ### `team_board` table (team-vs-team matches)
 
-| Field                | Type      | Constraint                                                   | Description                                                                          |
-|----------------------|-----------|--------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The team match ID                                                                    |
-| `tournament_id`      | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament ID                                                                    |
-| `round`              | `INTEGER` | NOT NULL                                                     | The round number                                                                     |
-| `team_a_id`          | `INTEGER` | NOT NULL<br/>REFERENCES `team`(`id`) ON DELETE CASCADE       | One of the two teams (symmetric; colors via `color_pattern`)                         |
-| `team_b_id`          | `INTEGER` | REFERENCES `team`(`id`) ON DELETE CASCADE                    | The other team (`NULL` = bye)                                                        |
-| `index`              | `INTEGER` |                                                              | Table slot (0-based). `NULL` for hidden byes (HPB/FPB/ZPB) that don't sit at a table |
-| `last_result_update` | `TEXT`    |                                                              | Timestamp of the last result update                                                  |
-| `bye_type`           | `TEXT`    |                                                              | Bye type when `team_b_id` is NULL (PAB/HPB/FPB/ZPB); `NULL` for regular pairings     |
+| Field                     | Type      | Constraint                                                   | Description                                                                                         |
+|---------------------------|-----------|--------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `id`                      | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                   | The team match ID                                                                                   |
+| `tournament_id`           | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE | The tournament ID                                                                                   |
+| `round`                   | `INTEGER` | NOT NULL                                                     | The round number                                                                                    |
+| `team_a_id`               | `INTEGER` | NOT NULL<br/>REFERENCES `team`(`id`) ON DELETE CASCADE       | One of the two teams (symmetric; colors via `color_pattern`)                                        |
+| `team_b_id`               | `INTEGER` | REFERENCES `team`(`id`) ON DELETE CASCADE                    | The other team (`NULL` = bye)                                                                       |
+| `index`                   | `INTEGER` |                                                              | Table slot (0-based). `NULL` for hidden byes (HPB/FPB/ZPB) that don't sit at a table                |
+| `last_result_update`      | `TEXT`    |                                                              | Timestamp of the last result update                                                                 |
+| `bye_type`                | `TEXT`    |                                                              | Bye type when `team_b_id` is NULL (PAB/HPB/FPB/ZPB); `NULL` for regular pairings                    |
+| `knockout_winner_team_id` | `INTEGER` |                                                              | In a knock-out, the team the arbiter designated as the winner of a level match no tie-break settles |
 
 ### `team_group` table (reusable team groupings)
 
@@ -597,7 +677,7 @@
 | `unrated_rating`                          | `INTEGER` |                                            | The rating of the players no list rates, when no plugin prescribes one; `NULL` for the event's                                                         |
 | `pairing`                                 | `TEXT`    |                                            | The tournament's pairing as a string                                                                                                                   |
 | `pairing_settings`                        | `TEXT`    |                                            | The tournament's pairing settings, in JSON format                                                                                                      |
-| `current_round`                           | `INTEGER` |                                            | The tournament's current round                                                                                                                         |
+| `published_round`                         | `INTEGER` |                                            | The last round whose pairings are published to the screens and the online services                                                                     |
 | `round_datetimes`                         | `TEXT`    |                                            | The round schedule in JSON format ({int: datetime, None})                                                                                              |
 | `criteria`                                | `TEXT`    | NOT NULL<br/>DEFAULT '{}'                  | The criteria in JSON format ({str: Any})                                                                                                               |
 | `game_points`                             | `TEXT`    |                                            | Game points awarded per result (WIN, DRAW, LOSS, ZERO_POINT_BYE, PAIRING_ALLOCATED_BYE), JSON dict (replaces `three_points_for_a_win` / `pab_value`)   |
@@ -613,10 +693,18 @@
 | `rule_set`                                | `TEXT`    |                                            | The applied rule-set ID (e.g. an FFE rule set), if any                                                                                                 |
 | `rule_set_config`                         | `TEXT`    |                                            | The configuration of the rule set for the tournament, in JSON format                                                                                   |
 | `prohibited_pairing_dimension`            | `TEXT`    |                                            | Grouping-dimension ID used to derive prohibited pairings (`NULL` = off)                                                                                |
-| `prohibited_pairing_dimension_is_hard`    | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean: whether the prohibited-pairing dimension is a hard constraint                                                                                 |
+| `prohibited_pairing_dimension_constraint` | `TEXT`    | NOT NULL<br/>DEFAULT 'HARD'                | How strongly the groups of the dimension are kept apart, as `prohibited_pairing_group`.`constraint_type`, or `NONE` to turn the automatic grouping off |
 | `round_robin_participation_rule`          | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the round-robin &lt;50% participation rule (FIDE 6.6) applies — leavers dropped from the final standings.                             |
 | `multi_period`                            | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the tournament is reported to _FIDE_ in periods of at most 30 days (see `tournament_period`)                                          |
 | `tie_break_rating`                        | `TEXT`    | NOT NULL<br/>DEFAULT ''                    | Which rating the rating-based tie-breaks read (FIDE C.07:10): `''` for the first, `round` for each game's own period, else a `tournament_period`(`id`) |
+| `fide_mode`                               | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean: whether the tournament is paired in FIDE mode (read only by the pairing systems that support it)                                              |
+| `fide_mode_exit_round`                    | `INTEGER` |                                            | The round FIDE mode was left at, reported in the TRF                                                                                                   |
+| `manual_pairing_round`                    | `INTEGER` |                                            | The round whose pairings are being edited by hand, until they are checked                                                                              |
+| `manual_pairing_boards`                   | `TEXT`    |                                            | The boards of that round as they were before the manual edit, in JSON format, to put them back                                                         |
+| `starting_rank_tie_order`                 | `TEXT`    | NOT NULL<br/>DEFAULT 'ALPHABETICAL'        | How the players with the same rating and title are ordered in the starting rank (`ALPHABETICAL`, `LOTS`)                                               |
+| `starting_rank_lot_seed`                  | `INTEGER` |                                            | The seed of the drawing of lots, when the ties are drawn                                                                                               |
+| `round_robin_schedule`                    | `TEXT`    |                                            | The saved schedule of a round robin (who meets whom, with which colours, in every round), which the pairings are made from, in JSON format             |
+| `round_robin_schedule_draft`              | `TEXT`    |                                            | The schedule the arbiter is editing, kept until it is saved or cancelled, in JSON format                                                               |
 | `deprecated_chessevent_user_id`           | `TEXT`    |                                            | _Deprecated_                                                                                                                                           |
 | `deprecated_chessevent_password`          | `TEXT`    |                                            | _Deprecated_                                                                                                                                           |
 | `deprecated_chessevent_event_id`          | `TEXT`    |                                            | _Deprecated_                                                                                                                                           |

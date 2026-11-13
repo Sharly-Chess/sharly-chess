@@ -8,6 +8,7 @@ browser had opened.
 from collections.abc import Iterator
 
 import pytest
+from AdvancedHTMLParser import AdvancedHTMLParser
 from litestar.testing import TestClient
 
 from tests.test_config import ScreenType, TestUtils
@@ -128,7 +129,7 @@ def test_the_checked_screens_display_the_timer(http: TestClient, event: str):
     timer_ids = timer_ids_by_name(http)
     main_hall, side_room = timer_ids['Main hall'], timer_ids['Side room']
     tournament = EVENT.tournament()
-    screen_overrides = {'init_set_tournament_id': tournament.id}
+    screen_overrides = {'init_set_tournament_ids': [tournament.id]}
     boards = TestUtils.create_screen(
         api, EVENT_ID, 'Boards', ScreenType.BOARDS, screen_overrides
     )
@@ -198,14 +199,20 @@ def test_the_screens_are_listed_with_their_timer(http: TestClient, event: str):
         EVENT_ID,
         'Hall boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament_id, 'timer_id': timer_ids['Main hall']},
+        {
+            'init_set_tournament_ids': [tournament_id],
+            'timer_id': timer_ids['Main hall'],
+        },
     )
     other = TestUtils.create_screen(
         api,
         EVENT_ID,
         'Annex boards',
         ScreenType.BOARDS,
-        {'init_set_tournament_id': tournament_id, 'timer_id': timer_ids['Side room']},
+        {
+            'init_set_tournament_ids': [tournament_id],
+            'timer_id': timer_ids['Side room'],
+        },
     )
     response = http.get(f'/timer-usage-modal/{EVENT_ID}/{timer_ids["Main hall"]}')
     assert response.status_code == 200
@@ -213,3 +220,42 @@ def test_the_screens_are_listed_with_their_timer(http: TestClient, event: str):
     assert f'data-testid="screen-{shown.id}-other-timer"' not in response.text
     assert f'data-testid="screen-{other.id}-other-timer"' in response.text
     assert 'Timer: Side room' in response.text
+
+
+@pytest.mark.unit
+def test_the_screens_are_listed_with_the_channels_they_are_designed_for(
+    http: TestClient, event: str
+):
+    api = ApiClient(http)
+    timer_ids = timer_ids_by_name(http)
+    channel = TestUtils.create_display_controller(api, EVENT_ID, 'Entrance tablets')
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        'Hall boards',
+        ScreenType.BOARDS,
+        {
+            'init_set_tournament_ids': [EVENT.tournament().id],
+            'display_controller_ids': [channel.id],
+        },
+    )
+    response = http.get(f'/timer-usage-modal/{EVENT_ID}/{timer_ids["Main hall"]}')
+    assert response.status_code == 200
+    assert response.text.index('Hall boards') < response.text.index('Entrance tablets')
+
+
+def proposed_timer_name(http: TestClient) -> str:
+    parser = AdvancedHTMLParser()
+    parser.parseStr(http.get(f'/timer-modal/create/{EVENT_ID}').text)
+    return next(
+        field.getAttribute('value')
+        for field in parser.getElementsByTagName('input')
+        if field.getAttribute('name') == 'name'
+    )
+
+
+@pytest.mark.unit
+def test_a_new_timer_is_named_timer_then_numbered(http: TestClient, event: str):
+    assert proposed_timer_name(http) == 'Timer'
+    create_timer(http, name='Timer')
+    assert proposed_timer_name(http) == 'Timer (2)'

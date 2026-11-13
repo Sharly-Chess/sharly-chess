@@ -1,0 +1,14 @@
+{% extends '/admin/components/modal.html' %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+{% set modal_size = 'xl' %}
+{% set modal_close = true %}
+
+{% block title %}
+    {{ _('How this fits together') }}
+{% endblock %}
+
+{% block body %}
+    {{ screens_map.guide(screens_map_active) }}
+{% endblock %}
+
+{% block footer %}{% endblock %}

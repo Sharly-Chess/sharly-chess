@@ -1,10 +1,10 @@
 from typing import override
 
 from data.screens.screen_types import (
+    RoundRobinGridScreenType,
     BoardsScreenType,
     CheckInScreenType,
     ImageScreenType,
-    InputScreenType,
     PlayersScreenType,
     RankingScreenType,
     ResultsScreenType,
@@ -19,9 +19,9 @@ class ScreenTypeManager(EventBoundEntityManager[ScreenType]):
     def entity_types(self) -> list[type[ScreenType]]:
         screen_types: list[type[ScreenType]] = [
             CheckInScreenType,
-            InputScreenType,
             BoardsScreenType,
             PlayersScreenType,
+            RoundRobinGridScreenType,
             ResultsScreenType,
             RankingScreenType,
             ImageScreenType,

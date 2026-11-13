@@ -8,7 +8,11 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar.channels import ChannelsPlugin
-from litestar.exceptions import ClientException
+from litestar.exceptions import (
+    ClientException,
+    NotFoundException,
+    PermissionDeniedException,
+)
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
@@ -46,15 +50,57 @@ class UserInputWebContext(ScreenEntityUserWebContext):
         self.tournament = RequestUtils.get_tournament(request)
         self.display_controller = RequestUtils.get_optional_display_controller(request)
         if self.display_controller:
-            screen = self.display_controller.screen
-            assert screen is not None
-            self._screen = screen
+            screens = self.display_controller.screens_for(
+                self.client.can_view_private_screens
+            )
+            if not screens:
+                raise NotFoundException(
+                    f'Display controller [{self.display_controller.id}] shows no screen.'
+                )
+            try:
+                screen_index = int(request.query_params.get('screen_index', 0))
+            except ValueError:
+                screen_index = 0
+            self.rotator_screen_index = screen_index % len(screens)
+            self._screen = screens[self.rotator_screen_index]
         else:
             self._screen = RequestUtils.get_screen(request)
+            self._follow_menu(request)
+
+    def _follow_menu(self, request: HTMXRequest) -> None:
+        """Keeps a page reached through a menu on that menu once the entry is
+        done, when the request says which one and the page really is on it."""
+        menu_id = request.query_params.get('menu_id', '')
+        menu = (
+            self.user_event.menus_by_id.get(int(menu_id)) if menu_id.isdigit() else None
+        )
+        if menu is None:
+            return
+        indexes = menu.screen_indexes(self.client.can_view_private_screens)
+        if self._screen.uniq_id in indexes:
+            self.menu = menu
+            self.rotator_screen_index = indexes[self._screen.uniq_id]
 
     @property
     def screen(self) -> Screen:
         return self._screen
+
+    def require_input(self, results: bool) -> None:
+        """Refuses an entry the screen does not take: results, or check-ins
+        when *results* is False, on a screen accepting input and showing the
+        tournament."""
+        screen_type = self.screen.screen_type
+        takes_it = (
+            screen_type.allows_result_input if results else screen_type.allows_check_in
+        )
+        if not (
+            takes_it
+            and self.screen.accepts_input
+            and screen_type.relates_to_tournament(self.screen, self.tournament)
+        ):
+            raise PermissionDeniedException(
+                f'Screen [{self.screen.uniq_id}] does not take this entry.'
+            )
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -82,8 +128,8 @@ class PlayerUserWebContext(UserInputWebContext):
         super().__init__(request)
         self.tournament_player = RequestUtils.get_tournament_player(request)
         self.board: Board | None = (
-            self.tournament.boards[self.tournament_player.board_id - 1]
-            if self.tournament_player.board_id
+            self.tournament.boards[self.tournament_player.board_id]
+            if self.tournament_player.board_id is not None
             else None
         )
 
@@ -130,6 +176,7 @@ class InputUserController(BaseScreenUserController):
     )
     async def htmx_user_checkin_modal(self, request: HTMXRequest) -> Template:
         web_context = PlayerUserWebContext(request)
+        web_context.require_input(results=False)
         return HTMXTemplate(
             template_name='user/modals/check_in_modal.html',
             context=web_context.template_context,
@@ -154,6 +201,7 @@ class InputUserController(BaseScreenUserController):
         channels: NamedDependency[ChannelsPlugin],
     ) -> Template:
         web_context = PlayerUserWebContext(request)
+        web_context.require_input(results=False)
         tournament = web_context.tournament
         player = web_context.tournament_player
         tournament.check_in_player(player, not player.check_in)
@@ -168,11 +216,16 @@ class InputUserController(BaseScreenUserController):
         return self._user_screen_render(web_context)
 
     @get(
-        path='/view/team-checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{team_id:int}',
+        path=[
+            '/view/team-checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{team_id:int}',
+            '/view/team-checkin-modal/0/{event_uniq_id:str}/'
+            '{display_controller_id:int}/{tournament_id:int}/{team_id:int}',
+        ],
         name='user-team-checkin-modal',
     )
     async def htmx_user_team_checkin_modal(self, request: HTMXRequest) -> Template:
         web_context = TeamUserWebContext(request)
+        web_context.require_input(results=False)
         return HTMXTemplate(
             template_name='user/modals/team_check_in_modal.html',
             context=web_context.template_context,
@@ -182,7 +235,11 @@ class InputUserController(BaseScreenUserController):
         )
 
     @patch(
-        path='/view/team-toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{team_id:int}',
+        path=[
+            '/view/team-toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{team_id:int}',
+            '/view/team-toggle-check-in/0/{event_uniq_id:str}/'
+            '{display_controller_id:int}/{tournament_id:int}/{team_id:int}',
+        ],
         name='user-team-toggle-check-in',
         guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
@@ -192,6 +249,7 @@ class InputUserController(BaseScreenUserController):
         channels: NamedDependency[ChannelsPlugin],
     ) -> Template:
         web_context = TeamUserWebContext(request)
+        web_context.require_input(results=False)
         tournament = web_context.tournament
         team = web_context.team
         with EventDatabase(tournament.event.uniq_id, True) as database:
@@ -214,6 +272,7 @@ class InputUserController(BaseScreenUserController):
 
     def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
         web_context = PlayerUserWebContext(request)
+        web_context.require_input(results=True)
         tournament = web_context.tournament
         player = web_context.tournament_player
         shown_count = self._shown_value(request)
@@ -281,6 +340,7 @@ class InputUserController(BaseScreenUserController):
     )
     async def htmx_user_result_modal(self, request: HTMXRequest) -> Template:
         web_context = ResultUserWebContext(request)
+        web_context.require_input(results=True)
         return HTMXTemplate(
             template_name='user/modals/results_modal.html',
             context=web_context.template_context,
@@ -305,6 +365,7 @@ class InputUserController(BaseScreenUserController):
         channels: NamedDependency[ChannelsPlugin],
     ) -> Template:
         web_context = ResultUserWebContext(request)
+        web_context.require_input(results=True)
         event = web_context.user_event
         tournament = web_context.tournament
         round_ = web_context.round

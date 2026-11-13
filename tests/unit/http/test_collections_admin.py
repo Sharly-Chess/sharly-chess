@@ -20,7 +20,7 @@ EVENT_ID = 'test-collections-http'
 TOURNAMENT_NAME = 'test-collections-http-tournament'
 RESULTS_SCREEN_NAME = 'A results screen'
 IMAGE_SCREEN_NAME = 'An image screen'
-CONTROLLER_NAME = 'A display controller'
+CONTROLLER_NAME = 'A destination'
 FAMILY_UNIQ_ID = 'collections-http-family'
 TINY_IMAGE_DATA_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
 
@@ -107,7 +107,7 @@ def test_a_standalone_screen_is_listed_without_the_multi_screen_columns(
         (ScreenType.IMAGE, IMAGE_SCREEN_NAME),
     ):
         markup = section(listed, screen_type)
-        assert 'Multi-Screen' not in header(markup)
+        assert 'Paged Screen' not in header(markup)
         assert 'Content' not in header(markup)
         assert 'Timer' in header(markup)
         row = item(markup, name)
@@ -126,11 +126,16 @@ def test_the_input_section_names_the_parts_of_a_multi_screen(
         api,
         EVENT_ID,
         'An input screen',
-        ScreenType.INPUT,
-        {'init_set_tournament_id': tournament.id},
+        ScreenType.BOARDS,
+        {'accepts_input': True, 'init_set_tournament_ids': [tournament.id]},
     )
     family = TestUtils.create_family(
-        api, EVENT_ID, tournament, FAMILY_UNIQ_ID, ScreenType.INPUT, {'parts': 2}
+        api,
+        EVENT_ID,
+        tournament,
+        FAMILY_UNIQ_ID,
+        ScreenType.BOARDS,
+        {'accepts_input': True, 'parts': 2},
     )
     TestUtils.update_family_name(EVENT_ID, family, '%t (%f to %l)')
 
@@ -141,9 +146,9 @@ def test_the_input_section_names_the_parts_of_a_multi_screen(
                 params={'collection_view': 'list', 'show_family_screens': 'true'},
             )
         ),
-        ScreenType.INPUT,
+        ScreenType.BOARDS,
     )
-    assert 'Multi-Screen' not in header(markup)
+    assert 'Paged Screen' not in header(markup)
     assert 'Content' in header(markup)
     assert 'Timer' in header(markup)
     assert TOURNAMENT_NAME in item(markup, TOURNAMENT_NAME)

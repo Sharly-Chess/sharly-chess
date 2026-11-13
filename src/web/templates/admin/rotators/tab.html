@@ -1,4 +1,6 @@
 {% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+{% import '/admin/screens/display_switcher.j2' as display_switcher with context %}
 
 {% set collection = get_admin_collection_spec('rotators') %}
 {% set collection_view_mode = get_admin_collection_view_mode('rotators') %}
@@ -6,10 +8,11 @@
 {% set collection_url = url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id) %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(
-        _('Rotators'),
-        'screens-rotators' if client.can_manage_screens else ''
-    ) }}
+    {% if client.can_manage_screens %}
+        {{ display_switcher.title('screens-rotators') }}
+    {% else %}
+        {{ admin_macros.admin_title(_('Rotators'), '') }}
+    {% endif %}
     <script>
         preparePrintModal()
     </script>
@@ -25,7 +28,7 @@
             kind='primary',
             icon='add',
             allowed=admin_event.screens_by_uniq_id | length > 0,
-            reason=_('You must create a screen or a multi-screen before creating a rotator.'),
+            reason=_('You must create a screen or a paged screen before creating a rotator.'),
             tooltip=_('Add a rotator to the event.'),
             attrs={'hx-trigger': 'click, SC_Plus from:body'},
         ) }}
@@ -34,10 +37,8 @@
 
 {% block cards_container_cards %}
     {% if not admin_rotators and client.can_manage_screens %}
-        {% call components.empty_state(_('No rotators')) %}
-            <p>{{ _('Too much information to display on a single projector?') }}</p>
-            <p>{{ _('Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event.') }}</p>
-            <p>{{ _("Input screens can't be part of rotators.") }}</p>
+        {% call components.empty_state(none, class='screens-map-empty') %}
+            {{ screens_map.guide('rotators') }}
             <p>{{ _('Create a rotator now to get started.') }}</p>
         {% endcall %}
     {% else %}
