@@ -468,7 +468,7 @@ class EventDocumentsController(BaseEventAdminController):
                 host = f'[{host}]'
             path = request.app.route_reverse('document-pdf-source', token=token)
             content = await renderer.render(
-                f'http://{host}:{port}{path}', export.margins
+                f'http://{host}:{port}{path}', export.margins, export.landscape
             )
         except PdfRenderingError as error:
             logger.error(

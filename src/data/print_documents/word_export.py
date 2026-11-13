@@ -14,6 +14,7 @@ from typing import Annotated, Literal
 import msgspec
 from docx import Document as new_document
 from docx.document import Document
+from docx.enum.section import WD_ORIENTATION
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import (
     WD_ALIGN_PARAGRAPH,
@@ -130,6 +131,7 @@ class WordExport(msgspec.Struct):
     title: str
     blocks: list[Block]
     margins: PageMargins = msgspec.field(default_factory=PageMargins)
+    landscape: bool = False
 
 
 # The fonts the files of the application provide, embedded in the Word files
@@ -186,8 +188,13 @@ def build_word_document(export: WordExport) -> bytes:
     """The .docx file of an exported document."""
     document = new_document()
     section = document.sections[0]
-    section.page_width = _PAGE_WIDTH
-    section.page_height = _PAGE_HEIGHT
+    if export.landscape:
+        section.orientation = WD_ORIENTATION.LANDSCAPE
+        page_width, page_height = _PAGE_HEIGHT, _PAGE_WIDTH
+    else:
+        page_width, page_height = _PAGE_WIDTH, _PAGE_HEIGHT
+    section.page_width = page_width
+    section.page_height = page_height
     margins = export.margins
     section.top_margin = Pt(margins.top)
     section.right_margin = Pt(margins.right)
@@ -201,7 +208,7 @@ def build_word_document(export: WordExport) -> bytes:
     document.core_properties.title = export.title
     writer = _Writer(document)
     writer.write_blocks(
-        document, export.blocks, Emu(_PAGE_WIDTH - Pt(margins.left) - Pt(margins.right))
+        document, export.blocks, Emu(page_width - Pt(margins.left) - Pt(margins.right))
     )
     for family in sorted(writer.fonts & _EMBEDDED_FONTS.keys()):
         embed_font(document, family, _EMBEDDED_FONTS[family])
