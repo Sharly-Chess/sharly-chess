@@ -281,12 +281,7 @@ class FfePairingSheetDocument(PrintDocument):
         rounds = list(range(1, tournament.rounds + 1))
         all_teams = sorted(
             tournament.teams,
-            key=lambda team: (
-                team.pairing_number
-                if team.pairing_number is not None
-                else float('inf'),
-                team.name.lower(),
-            ),
+            key=lambda team: team.name.lower(),
         )
         # Letters and team count reflect the whole tournament (the table
         # position), even when only some teams are printed.
