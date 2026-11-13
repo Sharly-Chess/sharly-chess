@@ -1,28 +1,25 @@
-{# ========== BORDERS ========== #}
-.rr-table { border-collapse: collapse; }
-.rr-table td.result,
-.rr-table td.tie-break { border-left: 1px solid #000000; }
-{# ========== WIDTH, MARGINS, PADDING ==========#}
-.rr-table { padding: 2px; border-spacing: 0; margin-top: 3rem; }
-.rr-table td { padding: 4px; }
-.rr-table td.result { min-width: 1.5rem; }
-{# ========== FONT WEIGHT ========== #}
-.rr-header * { font-weight: bold; }
-{# ========== TEXT ALIGN ========== #}
-.rr-table .player { text-align: left; }
-.rr-table .rating,
-.rr-table .player-title,
-.rr-table .rr-number { text-align: right; }
-.rr-table .points,
-.rr-table .tie-break,
-.rr-table .result { text-align: center; }
+.rr-table { margin-top: 6pt; font-size: 8.5pt; }
+.rr-table th,
+.rr-table td { padding-left: 2.5pt; padding-right: 2.5pt; }
+.rr-table th,
+.rr-table td { text-align: center; white-space: nowrap; }
+.rr-table thead th.player,
+.rr-table td.player { text-align: left; }
+.rr-table td.number,
+.rr-table td.rating,
+.rr-table td.player-title,
+.rr-table th.rr-number { text-align: right; }
+.rr-table td.result {
+    min-width: 5mm;
+    border-left: 0.5pt solid #C8C8C8;
+}
+.rr-table td.tie-break { font-weight: bold; }
+.rr-table td.result + td.tie-break { border-left: 1pt solid #000000; }
 
 .rr-table td.self-game {
-    background-color: #555 !important;
-}
-
-.rr-table tr:first-of-type td.self-game {
-    position: relative;
+    background-color: #555555 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 {# A participant dropped from the standings (FIDE 6.6) keeps its

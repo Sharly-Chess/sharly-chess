@@ -1,25 +1,25 @@
-{# ========== BORDERS ========== #}
-.player-table { border-collapse:collapse; }
-{# ========== WIDTH, MARGINS, PADDING ==========#}
-.player-table { padding: 2px; border-spacing: 0; }
-{# ========== FONT SIZE ========== #}
-.crosstable .player-header *,
-.crosstable .player-row * { font-size: 10px; }
-@media print {
-    .player-header *,
-    .player-row * { font-size: 10px; }
-}
-{# ========== FONT WEIGHT ========== #}
-.player-header *,
-.player-footer * { font-weight: bold; }
-@media not print {
-    .player-row .name,
-    .player-row .points { font-weight: bold; }
-}
-@media print {
-    .player-table .board,
-    .player-table .color { font-weight: bold; }
-}
+.player-table td { white-space: nowrap; }
+.player-table td.club { white-space: normal; min-width: 25mm; }
+.player-table td.comments { white-space: normal; width: 22%; }
+.player-table td.name,
+.player-table td.player-name,
+.player-row .name { font-weight: bold; }
+.player-table td.points,
+.player-table td.board,
+.player-table td.color { font-weight: bold; }
+.player-table td.plays { font-style: italic; }
+{# The standings and the check-in list have many columns: they are set a
+   little smaller. #}
+.individual-ranking .player-table,
+.player-checkin-list .player-table { font-size: 8.5pt; }
+.individual-ranking .player-table td,
+.individual-ranking .player-table th,
+.player-checkin-list .player-table td,
+.player-checkin-list .player-table th { padding-left: 3pt; padding-right: 3pt; }
+{# The crosstable has a column per round: it is set smaller to fit. #}
+.crosstable .player-table { font-size: 7.5pt; }
+.crosstable .player-table td { padding: calc(1.5pt + 0.27em) 2pt; }
+.crosstable .player-table thead th { font-size: 7pt; padding-left: 2pt; padding-right: 2pt; }
 {# ========== PLAYER NAME TOOLTIP ========== #}
 .player-name {
     position: relative;

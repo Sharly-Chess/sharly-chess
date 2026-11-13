@@ -107,6 +107,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.KnockoutSchedulePrintOption,
             options.NonMonetaryPrintOption,
             options.FederationPrintOption,
+            options.ResultSpacePrintOption,
             options.ClubThresholdPrintOption,
             options.Rule143ExemptionPrintOption,
             options.NormsForecastSortPrintOption,

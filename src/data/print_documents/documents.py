@@ -1,13 +1,15 @@
 import itertools
 import logging
 import math
-from datetime import date
+from datetime import date, datetime
 from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, TYPE_CHECKING, override, cast
 from collections.abc import Callable
+
+from markupsafe import Markup
 
 from common.exception import SharlyChessException, OptionError
 from common.i18n import DEFAULT_LOCALE, _, locale_set_to, ngettext, pgettext
@@ -20,7 +22,12 @@ from data.board import Board
 from data.pairings.fixed_table import FixedPairingTable
 from data.teams.team_board import TeamBoard
 from data.columns import player_table as columns
-from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
+from data.columns.board_table import (
+    BoardColumn,
+    PairingResultColumn,
+    ResultColumn,
+    WrittenResultColumn,
+)
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.columns.player_table import TournamentPlayerTableColumn
 from data.columns.column import ColumnUsage
@@ -70,6 +77,7 @@ from data.print_documents.options import (
     KnockoutSchedulePrintOption,
     NonMonetaryPrintOption,
     FederationPrintOption,
+    ResultSpacePrintOption,
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
@@ -87,6 +95,8 @@ from data.print_documents.options import (
     IndividualTeamDisplayIncompletePrintOption,
     FixedBoardOrderPrintOption,
 )
+from data.print_documents.fonts import print_font_faces
+from data.print_documents.page_layout import page_footer_rule
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
@@ -96,6 +106,7 @@ from data.print_documents.individual_teams import IndividualTeamType, Individual
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
+from utils.date_time import format_datetime
 from utils.enum import (
     Result,
     TitleNorm,
@@ -119,6 +130,16 @@ def provisional_title(title: str, tournament: Tournament, round_: int) -> str:
     if tournament.adjourned_boards(before_round=round_ + 1):
         return _('{title} (provisional)').format(title=title)
     return title
+
+
+def round_start_str(tournament: Tournament, round_: int) -> str | None:
+    """When the round starts, if it is scheduled."""
+    start = tournament.round_datetimes.get(round_)
+    if start is None:
+        return None
+    return _('Round #{round} starts {datetime}').format(
+        round=round_, datetime=format_datetime(start)
+    )
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):
@@ -239,6 +260,25 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             if len(self.tournaments) == len(list(self.get_event().tournaments))
             else ', '.join(tournament.name for tournament in self.tournaments)
         )
+
+    @property
+    def header_meta(self) -> str | None:
+        """A line under the subtitle, such as when the round starts."""
+        return None
+
+    @property
+    def font_faces(self) -> Markup:
+        return print_font_faces()
+
+    @property
+    def page_footer_css(self) -> Markup | None:
+        """The footer of the pages: the event, when the document was
+        printed, and the page number."""
+        event_name = '' if self.event is None else self.event.name
+        printed_at = _('Printed {datetime}').format(
+            datetime=format_datetime(datetime.now())
+        )
+        return page_footer_rule(event_name, printed_at)
 
     @property
     @abstractmethod
@@ -573,8 +613,6 @@ class KnockoutBracketPrintDocument(PrintDocument):
         grouping its matches by bracket round (a round can hold both a
         winners' and a losers' game), with the round's scheduled date/time when
         one has been set."""
-        from utils.date_time import format_datetime
-
         if layout is None:
             return []
         round_datetimes = self.tournament.round_datetimes
@@ -693,26 +731,43 @@ class BoardPrintDocument(PrintDocument, ABC):
         return [TournamentPrintOption, RoundPrintOption]
 
     @property
-    def show_results(self) -> bool:
-        return False
+    @abstractmethod
+    def result_column_type(self) -> type[BoardColumn]:
+        """The column between the two players."""
 
     @property
     def show_federation(self) -> bool:
         return False
 
     @property
+    def table_classes(self) -> str:
+        """The classes of the table, setting how roomy its rows are."""
+        return ''
+
+    @property
     def board_columns(self) -> list[BoardColumn]:
-        return BoardColumnHandler(ColumnUsage.PRINT).get_pairings_columns(
+        columns = BoardColumnHandler(ColumnUsage.PRINT).get_print_pairings_columns(
             self.tournament,
             self.at_round,
-            ResultColumn if self.show_results else NoResultColumn,
+            self.result_column_type,
             show_federation=self.show_federation,
         )
+        boards = self.boards
+        return [
+            column
+            for column in columns
+            if column.print_role != 'title'
+            or any(column.get_cell_content(board) for board in boards)
+        ]
 
     @property
     def boards(self) -> list[Board]:
         self.tournament.set_for_round(self.at_round)
         return self.tournament.get_round_boards(self.at_round)
+
+    @property
+    def header_meta(self) -> str | None:
+        return round_start_str(self.tournament, self.at_round)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -721,6 +776,7 @@ class BoardPrintDocument(PrintDocument, ABC):
             'subtitle': self.tournament.name,
             'boards': self.boards,
             'board_columns': self.board_columns,
+            'table_classes': self.table_classes,
         }
 
     @property
@@ -775,6 +831,7 @@ class PairingPrintDocument(PrintDocument):
             RoundPrintOption,
             FixedBoardOrderPrintOption,
             FederationPrintOption,
+            ResultSpacePrintOption,
         ]
 
     @cached_property
@@ -811,11 +868,24 @@ class BoardPairingPrintDocument(BoardPrintDocument):
             *BoardPrintDocument.available_options(),
             FixedBoardOrderPrintOption,
             FederationPrintOption,
+            ResultSpacePrintOption,
         ]
 
     @property
     def show_federation(self) -> bool:
         return bool(self._get_option(FederationPrintOption).value)
+
+    @property
+    def result_space(self) -> bool:
+        return bool(self._get_option(ResultSpacePrintOption).value)
+
+    @property
+    def result_column_type(self) -> type[BoardColumn]:
+        return WrittenResultColumn if self.result_space else PairingResultColumn
+
+    @property
+    def table_classes(self) -> str:
+        return 'result-space' if self.result_space else ''
 
     @property
     def title(self) -> str:
@@ -897,10 +967,9 @@ class ResultPrintDocument(BoardPrintDocument):
     def title(self) -> str:
         return _('Results for round #{round}').format(round=self.at_round)
 
-    @override
     @property
-    def show_results(self) -> bool:
-        return True
+    def result_column_type(self) -> type[BoardColumn]:
+        return ResultColumn
 
 
 class MatchSheetsPrintDocument(PairingPrintDocument):
@@ -3304,6 +3373,11 @@ class QRCodePrintDocument(PrintDocument):
         return qrcode_type.title(self)
 
     @property
+    @override
+    def page_footer_css(self) -> Markup | None:
+        return None
+
+    @property
     def template_name(self) -> str:
         return '/admin/print/qrcode.html'
 
@@ -3336,6 +3410,11 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def title(self) -> str:
         return ''
+
+    @property
+    @override
+    def page_footer_css(self) -> Markup | None:
+        return None
 
     @property
     def place_card_type(self) -> PlaceCardType:

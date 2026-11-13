@@ -1,16 +1,34 @@
-{# ========== BORDERS ========== #}
-.board-table { border-collapse: collapse; }
-{# ========== WIDTH, MARGINS, PADDING ==========#}
-.board-table { padding: 2px; border-spacing: 0; }
-{# ========== FONT WEIGHT ========== #}
-.board-header * { font-weight: bold; }
-{# ========== TEXT ALIGN ========== #}
-.board-table .player { text-align: left; }
-.board-table .rating,
-.board-table .board-number { text-align: right; }
-.board-table .points,
-.board-table .result { text-align: center; }
+{# The names take the free width; the other columns hug their content. #}
+.board-table th,
+.board-table td { white-space: nowrap; }
+.board-table tbody td { padding-top: calc(1.5pt + 0.27em); padding-bottom: calc(1.5pt + 0.27em); line-height: 1.2; }
+.board-table .name { width: 50%; }
+.board-table td.board { font-weight: bold; font-size: 1.1em; text-align: right; }
+.board-table td.rating { font-size: 0.9em; }
+.board-table td.points { font-weight: bold; text-align: center; }
+.board-table th.result,
+.board-table td.result { text-align: center; padding-left: 6pt; padding-right: 6pt; }
+.board-table td.result { font-weight: bold; }
+.board-table tr.exempt td.name { font-style: italic; }
+{# Pairings printed to write the results on: taller rows, every cell boxed,
+   and a wide result box. #}
+.board-table.result-space { font-size: 10.5pt; }
+.board-table.result-space tr.odd > td { background-color: #FFFFFF; }
+.board-table.result-space tbody td {
+    height: 7mm;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: 0.75pt solid #808080;
+}
+.board-table.result-space td.title { border-right: 0; padding-right: 0; }
+.board-table.result-space td.title + td.name { border-left: 0; }
+.board-table.result-space td.result {
+    min-width: 26mm;
+    width: 26mm;
+    border-left: 1.5pt solid #000000;
+    border-right: 1.5pt solid #000000;
+}
 {# ========== FLAT TEAM BOARDS ========== #}
 .board-table .board-flat-player { display: flex; align-items: center; gap: 4pt; }
-.board-table .board-seat-code { font-size: 80%; color: #555; }
-.board-table .board-team-name { font-size: 80%; color: #555; }
+.board-table .board-seat-code { font-size: 80%; }
+.board-table .board-team-name { font-size: 80%; }

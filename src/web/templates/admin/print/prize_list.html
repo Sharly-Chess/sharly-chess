@@ -1,34 +1,35 @@
 {% extends '/admin/print/base.html' %}
 
+{% block css %}
+    .prize-category { margin-bottom: 10pt; }
+    .prize-category .section-title { margin-bottom: 1pt; }
+    .section-note { font-size: 8.5pt; color: #444444; margin-bottom: 4pt; }
+    .prize-list-table { width: 100%; }
+    .prize-list-table td.rank { width: 12mm; font-weight: bold; text-align: right; }
+{% endblock %}
+
 {% block content %}
     {% for tournament in tournaments %}
-            {% if not loop.first %}
-                <div class="separator"></div>
-            {% endif %}
-            <div class="{% if not loop.first %}no-page-break{% endif %}">
+        <section class="{% if not loop.first %}no-page-break{% endif %}">
             <div class="tournament-title">{{ tournament.name }}</div>
             {% for prize_group in tournament.sorted_prize_groups %}
-                {% if not loop.first %}
-                    <div class="short-separator"></div>
-                {% endif %}
                 {% for prize_category in prize_group.sorted_categories %}
-                    <div class="no-page-break">
+                    <div class="prize-category no-page-break">
                         <div class="section-title">
                             {{ prize_category.name }}
                             {% if prize_category.total_monetary_value %}
                                 ({{ _('total: %(total)s', total=prize_category.format_total_monetary_value(prize_currency)) }})
                             {% endif %}
                         </div>
-                        <div class="section-sub-title">
-                            {{ prize_category.format_shared_prizes(prize_currency) }}
-                        </div>
-                        <table style="margin: auto;">
+                        {% set shared_prizes = prize_category.format_shared_prizes(prize_currency) %}
+                        {% if shared_prizes %}
+                            <div class="section-note">{{ shared_prizes }}</div>
+                        {% endif %}
+                        <table class="doc-table prize-list-table">
                             <tbody>
                                 {% for prize in prize_category.sorted_prizes %}
                                     <tr>
-                                        <td class="important-cell">
-                                            {{ ordinal_integer(loop.index)|safe }}
-                                        </td>
+                                        <td class="rank">{{ ordinal_integer(loop.index)|safe }}</td>
                                         <td>{{ prize.name }}</td>
                                     </tr>
                                 {% endfor %}
@@ -37,6 +38,6 @@
                     </div>
                 {% endfor %}
             {% endfor %}
-        </div>
+        </section>
     {% endfor %}
 {% endblock %}

@@ -7169,6 +7169,10 @@ msgstr "Marge"
 msgid "Page break between matches (one match per page)."
 msgstr "Saut de page entre les matchs (un match par page)."
 
+#, python-brace-format
+msgid "Page {page} of {pages}"
+msgstr "Page {page} sur {pages}"
+
 msgid "Paid"
 msgstr "Payé"
 
@@ -8035,6 +8039,10 @@ msgstr "Imprimer les règles"
 msgid "Print the rules with the settings above, without saving them."
 msgstr "Imprimer les règles avec les paramètres ci-dessus, sans les enregistrer."
 
+#, python-brace-format
+msgid "Printed {datetime}"
+msgstr "Imprimé le {datetime}"
+
 msgid "Prioritise over the local database"
 msgstr "Prioriser sur la base de données locale"
 
@@ -8635,6 +8643,10 @@ msgctxt "knock-out result column"
 msgid "Result"
 msgstr "Résultat"
 
+msgctxt "result column header"
+msgid "Result"
+msgstr "Résultat"
+
 #, python-brace-format
 msgid "Result [{result}] can't be used with a board."
 msgstr "Le résultat [{result}] ne peut être utilisé avec un échiquier."
@@ -8830,6 +8842,10 @@ msgstr "La ronde n°0 est interdite."
 #, python-brace-format
 msgid "Round #{round}"
 msgstr "Ronde n°{round}"
+
+#, python-brace-format
+msgid "Round #{round} starts {datetime}"
+msgstr "Début de la ronde n°{round} : {datetime}"
 
 #, python-format
 msgid "Round %(current)d of %(total)d"
@@ -9733,6 +9749,9 @@ msgstr "Corée du Sud"
 
 msgid "South Sudan"
 msgstr "Soudan du Sud"
+
+msgid "Space for writing results"
+msgstr "Espace pour écrire les résultats"
 
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."

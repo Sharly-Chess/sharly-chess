@@ -5,7 +5,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>{{ document.tab_title }}</title>
         <style>
+            {{ document.font_faces }}
             {% include 'print.css' %}
+            {% if document.page_footer_css %}
+                {{ document.page_footer_css }}
+            {% endif %}
             {{ extra_css }}
             {% block css %}{% endblock %}
         </style>
@@ -20,10 +24,15 @@
         <div class="center-wrapper">
             <div class="page-content">
                 {% if document.title %}
-                    <div class="page-title">{{ document.title }}</div>
-                {% endif %}
-                {% if subtitle %}
-                    <div class="page-subtitle">{{ subtitle }}</div>
+                    <header class="page-header">
+                        <div class="page-title">{{ document.title }}</div>
+                        {% if subtitle %}
+                            <div class="page-subtitle">{{ subtitle }}</div>
+                        {% endif %}
+                        {% if document.header_meta %}
+                            <div class="page-meta">{{ document.header_meta }}</div>
+                        {% endif %}
+                    </header>
                 {% endif %}
                 {% block content %}{% endblock %}
             </div>

@@ -1,83 +1,84 @@
 {% extends '/admin/print/base.html' %}
 
 {% block css %}
-    {% include 'prizes.css' %}
+    .prize-category { margin-bottom: 10pt; }
+    .prize-category .section-title { margin-bottom: 1pt; }
+    .section-note { font-size: 8.5pt; color: #444444; margin-bottom: 4pt; }
+    .prize-table { width: 100%; }
+    .prize-table td.rank,
+    .prize-table td.prize { font-weight: bold; }
+    .prize-table td.not-assigned { font-style: italic; color: #444444; }
+    .prize-table tr.warning td { color: #B00000; white-space: normal; border-bottom: 0; }
 {% endblock %}
 
 {% block content %}
     {% for tournament in tournaments %}
-        {% if not loop.first %}
-            <div class="separator"></div>
-        {% endif %}
-        <div class="{% if not loop.first %}no-page-break{% endif %}">
+        <section class="{% if not loop.first %}no-page-break{% endif %}">
             <div class="tournament-title">{{ tournament.name }}</div>
             {% for prize_group in tournament.sorted_prize_groups %}
-                {% if not loop.first %}
-                    <div class="short-separator"></div>
-                {% endif %}
-                <div class="centered">
-                    <div
-                        class="prize-table"
-                        style="grid-template-columns: max-content {% for column in player_columns %}{{ column.grid_column_template }} {% endfor %} max-content;"
-                    >
-                        {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
-                        {% for prize_category in prize_group.sorted_categories %}
-                            <div class="section-title">
-                                {{ prize_category.name }}
-                                {% if prize_category.total_monetary_value %}
-                                    ({{ _('total: %(total)s', total=prize_category.format_total_monetary_value(prize_currency)) }})
-                                {% endif %}
-                            </div>
-                            <div class="subheading">
-                                {{ prize_category.format_shared_prizes(prize_currency) }}
-                            </div>
-                            <div class="header">{{ pgettext('rank column header', 'Rk.') }}</div>
-                            {% for column in player_columns %}
-                                <div class="header {{ column.header_classes }}">
-                                    {% if column.header_template %}
-                                        {% include column.header_template %}
-                                    {% else %}
-                                        {{ macros.column_header(column) }}
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                            <div class="header">{{ pgettext('prize column header', 'Prize') }}</div>
-                            {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
-                                {% set tournament_player=assigned_prize.assigned_to %}
-                                <div class="cell fw-bold">
-                                    {{ ordinal_integer(loop.index)|safe }}
-                                </div>
-                                {% if tournament_player %}
+                {% set assigned_prizes_by_category_id = prize_group.get_assigned_prizes_by_category_id() %}
+                {% for prize_category in prize_group.sorted_categories %}
+                    <div class="prize-category">
+                        <div class="section-title">
+                            {{ prize_category.name }}
+                            {% if prize_category.total_monetary_value %}
+                                ({{ _('total: %(total)s', total=prize_category.format_total_monetary_value(prize_currency)) }})
+                            {% endif %}
+                        </div>
+                        {% set shared_prizes = prize_category.format_shared_prizes(prize_currency) %}
+                        {% if shared_prizes %}
+                            <div class="section-note">{{ shared_prizes }}</div>
+                        {% endif %}
+                        <table class="doc-table prize-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
                                     {% for column in player_columns %}
-                                        <div class="cell {{ column.get_cell_classes(tournament_player) }}">
-                                            {% if column.cell_template %}
-                                                {% include column.cell_template %}
+                                        <th class="{{ column.header_classes }}">
+                                            {% if column.header_template %}
+                                                {% include column.header_template %}
                                             {% else %}
-                                                {{ macros.column_cell(column, tournament_player) }}
+                                                {{ macros.column_header(column) }}
                                             {% endif %}
-                                        </div>
+                                        </th>
                                     {% endfor %}
-                                {% else %}
-                                    <div class="cell"></div>
-                                    <div class="cell"></div>
-                                    <div class="cell text-start"><i>{{ _('Not assigned') }}</i></div>
-                                    {% for i in range(player_columns|length - 3) %}
-                                        <div class="cell"></div>
-                                    {% endfor %}
-                                {% endif %}
-                                <div class="cell fw-bold">
-                                    {{ assigned_prize.name }}
-                                </div>
-                                {% if show_warnings and assigned_prize.warning %}
-                                    <div class="warning">
-                                        {{ assigned_prize.warning|replace('. ', '.<br>', 1)|safe }}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
+                                    <th>{{ pgettext('prize column header', 'Prize') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
+                                    {% set tournament_player = assigned_prize.assigned_to %}
+                                    <tr>
+                                        <td class="rank text-end">{{ ordinal_integer(loop.index)|safe }}</td>
+                                        {% if tournament_player %}
+                                            {% for column in player_columns %}
+                                                <td class="{{ column.get_cell_classes(tournament_player) }}">
+                                                    {% if column.cell_template %}
+                                                        {% include column.cell_template %}
+                                                    {% else %}
+                                                        {{ macros.column_cell(column, tournament_player) }}
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        {% else %}
+                                            <td colspan="{{ player_columns|length }}" class="not-assigned">{{ _('Not assigned') }}</td>
+                                        {% endif %}
+                                        <td class="prize">{{ assigned_prize.name }}</td>
+                                    </tr>
+                                    {% if show_warnings and assigned_prize.warning %}
+                                        <tr class="warning">
+                                            <td></td>
+                                            <td colspan="{{ player_columns|length + 1 }}">
+                                                {{ assigned_prize.warning|replace('. ', '.<br>', 1)|safe }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                {% endfor %}
             {% endfor %}
-        </div>
+        </section>
     {% endfor %}
 {% endblock %}

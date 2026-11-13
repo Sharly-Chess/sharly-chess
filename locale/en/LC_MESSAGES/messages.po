@@ -7167,6 +7167,10 @@ msgstr ""
 msgid "Page break between matches (one match per page)."
 msgstr ""
 
+#, python-brace-format
+msgid "Page {page} of {pages}"
+msgstr ""
+
 msgid "Paid"
 msgstr ""
 
@@ -8033,6 +8037,10 @@ msgstr ""
 msgid "Print the rules with the settings above, without saving them."
 msgstr ""
 
+#, python-brace-format
+msgid "Printed {datetime}"
+msgstr ""
+
 msgid "Prioritise over the local database"
 msgstr ""
 
@@ -8633,6 +8641,10 @@ msgctxt "knock-out result column"
 msgid "Result"
 msgstr ""
 
+msgctxt "result column header"
+msgid "Result"
+msgstr ""
+
 #, python-brace-format
 msgid "Result [{result}] can't be used with a board."
 msgstr ""
@@ -8827,6 +8839,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Round #{round}"
+msgstr ""
+
+#, python-brace-format
+msgid "Round #{round} starts {datetime}"
 msgstr ""
 
 #, python-format
@@ -9730,6 +9746,9 @@ msgid "South Korea"
 msgstr ""
 
 msgid "South Sudan"
+msgstr ""
+
+msgid "Space for writing results"
 msgstr ""
 
 msgid "Space-separated list of numbers. One prize is created per value in the list."

@@ -1,12 +1,19 @@
-* {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-weight: normal;
+{# ========== BASE ========== #}
+html, body {
+    font-family: "AtkinsonHyperlegibleNext", Arial, Helvetica, sans-serif;
+    font-size: 9.5pt;
+    line-height: 1.25;
     color: #000000;
     background-color: #FFFFFF;
 }
-{# ========== DISPLAY ========== #}
-.opacity-0, .opacity-0 * { opacity: 0; }
+body { margin: 0; }
+* {
+    font-family: inherit;
+    color: inherit;
+    font-variant-numeric: tabular-nums;
+}
+table { font-size: inherit; }
+th { font-weight: bold; }
 sup {
     vertical-align: baseline;
     position: relative;
@@ -16,18 +23,112 @@ sup {
 tspan.ordinal-sup {
     font-size: 0.65em;
 }
+.opacity-0, .opacity-0 * { opacity: 0; }
 .center-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 4rem;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
 }
-{# ========== COLORS ========== #}
-tr.even * { background-color: #FFFFFF !important; }
-tr.odd * {
-    background-color: #E0E0E0 !important;
+.page-content { width: 100%; }
+@media screen {
+    .center-wrapper { padding: 16px; }
+    .page-content { max-width: 190mm; }
+}
+
+{# ========== PAGE HEADER ========== #}
+.page-header {
+    margin: 0 0 10pt;
+    padding-bottom: 6pt;
+    border-bottom: 1.5pt solid #000000;
+}
+.page-title { font-size: 17pt; font-weight: bold; line-height: 1.15; }
+.page-subtitle { font-size: 11pt; font-weight: bold; margin-top: 2pt; }
+.page-meta { font-size: 9.5pt; margin-top: 2pt; }
+.tournament-title {
+    font-size: 13pt;
+    font-weight: bold;
+    margin: 18pt 0 6pt;
+}
+.section-title {
+    font-size: 11pt;
+    font-weight: bold;
+    margin: 14pt 0 5pt;
+}
+.section-title:empty { display: none; }
+.section-sub-title {
+    font-size: 10pt;
+    font-weight: bold;
+    margin: 8pt 0 4pt;
+}
+.error { font-size: 14pt; font-weight: bold; margin: 40pt auto; text-align: center; }
+.separator { width: 50%; height: 1px; margin: 24pt auto; border-top: 1px solid #CCCCCC; }
+.short-separator { width: 10%; height: 1px; margin: 24pt auto; border-top: 1px solid #CCCCCC; }
+
+{# ========== TABLES ========== #}
+{# The list tables: a strong rule under the header, hairlines between the
+   rows, and a light band on every other row to follow wide rows. #}
+.doc-table,
+.player-table,
+.board-table,
+.rr-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.player-table,
+.board-table { width: 100%; }
+.doc-table th,
+.doc-table td,
+.player-table th,
+.player-table td,
+.board-table th,
+.board-table td,
+.rr-table th,
+.rr-table td {
+    padding: 2.5pt 4pt;
+    vertical-align: middle;
+}
+.doc-table thead th,
+.player-table thead th,
+.board-table thead th,
+.rr-table thead th {
+    font-size: 8pt;
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1pt solid #000000;
+    padding-top: 0;
+    white-space: nowrap;
+}
+{# The line box of a cell is trimmed to the capitals, so that the text is
+   centred in the row whatever the browser makes of the font's ascent and
+   descent; the padding gives back the room the trim takes. #}
+.doc-table tbody td,
+.player-table tbody td,
+.board-table tbody td,
+.rr-table tbody td {
+    border-bottom: 0.5pt solid #C8C8C8;
+    text-box: trim-both cap alphabetic;
+    padding-top: calc(2.5pt + 0.27em);
+    padding-bottom: calc(2.5pt + 0.27em);
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+tr.odd > td {
+    background-color: #F2F2F2;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
+tr.even > td { background-color: #FFFFFF; }
+.player-footer td,
+.player-table tbody tr.player-footer td {
+    border-bottom: 0;
+    border-top: 1pt solid #000000;
+    font-weight: bold;
+    background-color: #FFFFFF;
+}
+.player-title-cell,
+td.title,
+td.player-title { font-weight: bold; font-size: 0.85em; }
+
 {# An annulled game (either side dropped from the standings, FIDE 6.6): the
    result stays readable but greyed, with a cross over the cell. Drawn as two
    corner-to-corner gradients so the cross fits whatever the cell size. #}
@@ -52,46 +153,29 @@ td.annulled {
     print-color-adjust: exact;
 }
 
-{# ========== WIDTH, MARGINS, PADDING ==========#}
-body { margin: 4px; }
-tr td, tr th {
-    padding: 2px 4px;
-}
-.section-title { margin: 16px 0 12px; }
-.section-sub-title {margin: 0 0 8px;}
-.separator { width: 50vw; height: 1px; margin: 30pt auto; border-top: 1px solid #CCCCCC; }
-.short-separator { width: 10vw; height: 1px; margin: 30pt auto; border-top: 1px solid #CCCCCC; }
-
-{# ========== FONT SIZE ========== #}
-.page-title { font-size: 24pt; padding-top: 10pt; text-align: center; }
-.page-subtitle { font-size: 16pt; text-align: center; }
-.tournament-title { font-size: 20pt; margin-top: 30pt; text-align: center; }
-.error { font-size: 20pt; font-weight: bold; margin: 40pt auto; text-align: center; }
-.section-title { font-size: 18px; text-align: center; }
-.section-sub-title { font-size: 15px; text-align: center; }
-
-{# ========== FONT WEIGHT ========== #}
-.page-title,
-.page-subtitle,
-.section-title,
-.section-sub-title,
+{# ========== FONT WEIGHT AND STYLE ========== #}
 .important-cell,
-.fw-bold { font-weight: bold; text-align: center; }
-
-{# ========== FONT style ========== #}
-.fst-italic {
-    font-style: italic !important;
-}
+.fw-bold { font-weight: bold; }
+.fst-italic { font-style: italic !important; }
+.text-muted { color: #555555; }
 
 {# ========== TEXT ALIGN ========== #}
-.text-start {
+.doc-table thead th.text-start, .text-start {
     text-align: left;
     justify-self: start;
 }
+.doc-table thead th.text-center,
+.player-table thead th.text-center,
+.board-table thead th.text-center,
+.rr-table thead th.text-center,
 .text-center {
     text-align: center;
     justify-self: center;
 }
+.doc-table thead th.text-end,
+.player-table thead th.text-end,
+.board-table thead th.text-end,
+.rr-table thead th.text-end,
 .text-end {
     text-align: right;
     justify-self: end;
@@ -101,10 +185,36 @@ tr td, tr th {
 }
 
 {# ========== CELLS ========== #}
-.checkin {
-    font-size: 18px;
-    padding: 0 6px 2px;
+.checkin { width: 6mm; text-align: center; }
+.player-table tbody td.checkin {
+    text-box: normal;
+    padding-top: 1pt;
+    padding-bottom: 1pt;
+    line-height: 0;
+}
+.checkin-box {
+    display: inline-block;
     position: relative;
+    box-sizing: border-box;
+    width: 3.3mm;
+    height: 3.3mm;
+    border: 1pt solid #000000;
+    background-color: #FFFFFF;
+    vertical-align: middle;
+}
+{# The tick: the bottom and right borders of a box turned by 45°, its
+   centre raised a little so that the turned shape sits in the middle. #}
+.checkin-box.checked::after {
+    content: "";
+    position: absolute;
+    box-sizing: border-box;
+    left: 50%;
+    top: 50%;
+    width: 1.1mm;
+    height: 2mm;
+    border-right: 1.3pt solid #000000;
+    border-bottom: 1.3pt solid #000000;
+    transform: translate(-38%, -73%) rotate(45deg);
 }
 .qr-code {
     max-width: 80vh;
@@ -122,5 +232,5 @@ tr td, tr th {
     .no-page-break {
         page-break-inside: avoid;
         break-inside: avoid;
-      }
+    }
 }
