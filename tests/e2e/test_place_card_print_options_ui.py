@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
@@ -65,3 +67,9 @@ class TestPlaceCardPrintOptions:
         expect(round_container).to_be_visible()
         expect(boards_container).to_be_visible()
         expect(players_container).to_be_hidden()
+
+    def test_templates_button_opens_the_template_library(self, page: Page):
+        self._open_documents_modal(page)
+        TestUtils.select_and_confirm(page.locator('#document'), 'place-card')
+        page.locator('#place-card-templates-button').click()
+        expect(page).to_have_url(re.compile(r'/place-card-templates$'))

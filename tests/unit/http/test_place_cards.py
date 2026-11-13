@@ -10,6 +10,7 @@ from collections.abc import Iterator
 import pytest
 from litestar.testing import TestClient
 
+from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
 from data.print_documents.place_cards.template import PlaceCardTemplate
 from tests.unit.http.events import EventUnderTest
 
@@ -25,10 +26,12 @@ def template_ids() -> list[str]:
 
 
 @pytest.fixture
-def created(http: TestClient) -> Iterator[str]:
+def created(http: TestClient, request: pytest.FixtureRequest) -> Iterator[str]:
+    """A new template, of player cards unless the test asks for another type."""
+    type_ = getattr(request, 'param', 'player')
     before = set(template_ids())
     response = http.post(
-        '/place-card-template-create', data={'name': NAME, 'type': 'player'}
+        '/place-card-template-create', data={'name': NAME, 'type': type_}
     )
     assert response.status_code == 200
     made = [id_ for id_ in template_ids() if id_ not in before]
@@ -83,6 +86,19 @@ def test_the_templates_page_lists_them(http: TestClient, created: str):
     response = http.get('/place-card-templates')
     assert response.status_code == 200
     assert NAME in response.text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('created', ['pairing'], indirect=True)
+def test_pairing_cards_offer_the_round_schedule(http: TestClient, created: str):
+    """The fields of a pairing card include the date and time of its round."""
+    section = PlaceCardTemplateEditor.add_default_item(created, 'text')
+    response = http.get(
+        f'/place-card-item-props/{created}', params={'section': section}
+    )
+    assert response.status_code == 200
+    assert 'pairing.round_date' in response.text
+    assert 'pairing.round_time' in response.text
 
 
 EVENT = EventUnderTest('test-place-cards-http', 'test-place-cards-http-tournament')
