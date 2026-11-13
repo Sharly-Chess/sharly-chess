@@ -24,6 +24,7 @@
 - On Windows, _Sharly Chess_ is started again as the user after an update, instead of as administrator (5.2.6)
 - An event or championship file that Windows refuses no longer stops _Sharly Chess_ from starting after an update: it is left in the folder of the previous version and the others are carried over (5.2.6)
 - On Windows, the addresses of Hyper-V virtual switches, such as an external switch bridging the network card, are offered among the network interfaces instead of being ignored; the switches Windows creates for its own internal networks (Default Switch, WSL) are still left out (5.2.6)
+- On macOS, the application window is resized once to the tab being displayed, keeping its top in place, instead of moving about while it grows to the settings tab (5.2.7)
 - When the label of a field wraps above its input, the buttons beside the field, such as those of the school, the team affiliation, the tags and the place card template, line up with its input instead of its label, and the label stands apart from the field above (5.2.7)
 
 ## Tournaments
@@ -126,6 +127,7 @@
 - On a slow network, the result window of an input screen no longer shows the previous game's buttons while the next game is loading, which recorded the result tapped for the previous game instead of the one chosen (5.2.6)
 - A result entered on an input screen is refused, with a warning, when another device has changed the game's result since the window opened, and an illegal move tapped twice or sent twice on a slow network is counted once (5.2.6)
 - The team ranking screens show the tie-breaks where the lowest value wins, such as the lowest own average rating of the Loubatière cup, as positive values, as the admin view and the printed documents do (5.2.6)
+- Adding, replacing or removing the image of an image screen gives back the space the previous images took in the event file, which kept it as large as when its biggest images were stored (5.2.7)
 
 ## _Sharly-Chess.com_
 

@@ -2919,10 +2919,28 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
+    def _get_stored_screen_background_image(self, screen_id: int) -> str | None:
+        self.execute(
+            'SELECT `background_image` FROM `screen` WHERE `id` = ?', (screen_id,)
+        )
+        return self.fetchone().get('background_image')
+
     def _write_stored_screen(
         self,
         stored_screen: StoredScreen,
     ) -> StoredScreen:
+        background_image = (
+            stored_screen.background_image if stored_screen.type == 'image' else None
+        )
+        previous_background_image = (
+            self._get_stored_screen_background_image(stored_screen.id)
+            if stored_screen.id is not None
+            else None
+        )
+        if background_image != previous_background_image:
+            # An uploaded image weighs up to 2 MB, which the file keeps once
+            # the image is replaced or removed.
+            self.vacuum_after_commit()
         fields: list[str] = [
             'uniq_id',
             'name',
@@ -2994,7 +3012,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen.ranking_max_points
             if stored_screen.type == 'ranking'
             else None,
-            stored_screen.background_image if stored_screen.type == 'image' else None,
+            background_image,
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,
             stored_screen.message_text,
@@ -3044,6 +3062,8 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_stored_screen(self, screen_id: int) -> None:
+        if self._get_stored_screen_background_image(screen_id):
+            self.vacuum_after_commit()
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
 
     # ---------------------------------------------------------------------------------

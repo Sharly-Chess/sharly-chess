@@ -389,6 +389,10 @@ class SharlyChessServerToga(toga.App):
         self.menu_about_btn: toga.Button | None = None
         self.active_view_name: str | None = None
         self.requested_window_size: tuple[int, int] | None = None
+        #: Whether the window is being resized to the view being displayed,
+        #: which Toga must not grow on its own meanwhile (see
+        #: _on_window_content_refreshed()).
+        self.is_window_resizing = False
         #: The buttons displayed as selected, and whether the window is the
         #: active one, which the colour of their text depends on.
 
@@ -527,6 +531,10 @@ class SharlyChessServerToga(toga.App):
             size=self.compact_size,
         )
         assert isinstance(self.main_window, toga.Window)
+        if sys.platform == 'darwin':
+            self.main_window._impl.container.on_refresh = (  # type: ignore[union-attr]
+                self._on_window_content_refreshed
+            )
         self._build_content()
         self.main_window.show()
 
@@ -1195,6 +1203,7 @@ class SharlyChessServerToga(toga.App):
         if self.active_view_name == name:
             return
         assert self.main_box is not None
+        self.is_window_resizing = True
         for menu_view in self.menu_views:
             if menu_view in self.main_box.children:
                 self.main_box.remove(menu_view)
@@ -1256,6 +1265,7 @@ class SharlyChessServerToga(toga.App):
         displays the view is done, and only the last requested size is used."""
         schedule = self.requested_window_size is None
         self.requested_window_size = size
+        self.is_window_resizing = True
         if schedule:
             self.gui_loop.call_soon_threadsafe(self._apply_requested_window_size)
 
@@ -1278,35 +1288,66 @@ class SharlyChessServerToga(toga.App):
         width = max(size[0], layout.min_width)
         height = max(size[1], layout.min_height)
         if not self._set_window_size_keeping_top(width, height):
+            self.is_window_resizing = False
             position = self.main_window.position
             self.main_window.size = (width, height)
             self.main_window.position = position
 
     def _set_window_size_keeping_top(self, width: int, height: int) -> bool:
-        """Resizes the window keeping its top left corner in place, and returns
-        whether it could be done. Windows are anchored on their bottom left
-        corner on macOS, which makes the window jump every time a view of a
-        different height is displayed."""
+        """Resizes the window to a content of *width* × *height*, keeping its
+        top left corner in place, and returns whether it could be done. Windows
+        are anchored on their bottom left corner on macOS, which makes the
+        window jump every time a view of a different height is displayed.
+
+        The resize is not animated: the window is laid out again on every step
+        of the animation, and the steps of a window as tall as the settings are
+        too far apart for the animation to be smooth."""
         if sys.platform != 'darwin':
             return False
         try:
             from rubicon.objc import CGPoint, CGRect, CGSize
 
-            native = self.main_window._impl.native  # type: ignore[union-attr]
+            impl = self.main_window._impl  # type: ignore[union-attr]
+            native = impl.native
+            # The frame of the window includes its title bar.
+            size = native.frameRectForContentRect(
+                CGRect(CGPoint(0, 0), CGSize(width, height))
+            ).size
             frame = native.frame
             top = frame.origin.y + frame.size.height
             native.setFrame(
-                CGRect(
-                    CGPoint(frame.origin.x, top - height),
-                    CGSize(width, height),
-                ),
+                CGRect(CGPoint(frame.origin.x, top - size.height), size),
                 display=True,
-                animate=True,
+                animate=False,
             )
         except Exception:
             logger.debug('Could not resize the window.', exc_info=True)
             return False
+        self.is_window_resizing = False
+        impl.content_refreshed(impl.container)
         return True
+
+    def _on_window_content_refreshed(self, container: Any) -> None:
+        """Called by Toga every time the content of the window is laid out.
+        Toga grows the window to the minimum size of its content with an
+        animation that every new layout restarts, so that the window would
+        stutter to the size of the view being displayed, and then bounce
+        between that size and the one given by _set_window_size_keeping_top().
+        While a view is being displayed, the window is only allowed to shrink,
+        and _set_window_size_keeping_top() resizes it once to the size of the
+        view."""
+        assert isinstance(self.main_window, toga.Window)
+        impl = self.main_window._impl  # type: ignore[union-attr]
+        if not self.is_window_resizing or self.main_window.content is None:
+            impl.content_refreshed(container)
+            return
+        # Changing a constraint of the window lays it out again, which would
+        # slow down every step of the animation: they are only ever lowered.
+        layout = self.main_window.content.layout
+        if layout.min_width < container.min_width:
+            container.min_width = layout.min_width
+        if layout.min_height < container.min_height:
+            container.min_height = layout.min_height
 
     def _show_networks_view(self, widget: Any) -> None:
         self._show_view('networks')
