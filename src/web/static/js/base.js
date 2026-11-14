@@ -661,6 +661,19 @@ function initInlineSelect2(root) {
         });
 }
 
+// htmx keeps the page as markup to show it again on Back, and the scripts
+// that set the selects up run again then: a select2 still drawn in that
+// markup would stay beside the new one, lifeless.
+document.addEventListener('htmx:beforeHistorySave', (event) => {
+    $(event.detail.historyElt).find('select.select2-hidden-accessible').each(function () {
+        try {
+            $(this).select2('destroy');
+        } catch (e) {
+            console.warn('Could not remove a select2 before saving the page to history', e);
+        }
+    });
+});
+
 htmx.onLoad(initInlineSelect2);
 // htmx announces new content only once it has settled, after the browser may
 // have painted it: set the selects up as soon as they are swapped in, so that

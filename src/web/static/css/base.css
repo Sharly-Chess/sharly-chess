@@ -3567,6 +3567,13 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     cursor: pointer;
 }
 
+/* A badge in a button stays within the line of its label, so that the button
+   keeps the height of its neighbours. */
+.btn .sc-badge {
+    --bs-badge-padding-y: .25rem;
+    --bs-badge-padding-x: .5em;
+}
+
 /* The winner of a knock-out game, pinned on the edge of its result button. */
 .sc-advance-mark {
     justify-content: center;
