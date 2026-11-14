@@ -1,0 +1,230 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+{% set pair_rows = all_tournaments_rows | selectattr('action', 'equalto', 'pair') | list %}
+{% set publish_rows = all_tournaments_rows | selectattr('action', 'equalto', 'publish') | list %}
+{% set other_rows = all_tournaments_rows | rejectattr('action') | list %}
+
+{% macro tournament_checkbox(row) %}
+    <div class="form-check mb-0 flex-grow-1">
+        <input
+            class="form-check-input blue-checkbox"
+            type="checkbox"
+            name="tournament_{{ row.tournament.id }}"
+            id="all-tournament-{{ row.tournament.id }}"
+            {% if row.selected %}checked{% endif %}
+        />
+        <label class="form-check-label" for="all-tournament-{{ row.tournament.id }}">
+            <span class="fw-bold">{{ row.tournament.name }}</span>
+            <span class="text-body-secondary ps-1">
+                {{ _('Round %(round)d', round=row.round) }}
+            </span>
+        </label>
+    </div>
+{% endmacro %}
+
+{% block title %}{{ _('All tournaments') }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-post="{{ url_for(
+            'pairings-all',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round
+        ) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt=".modal-footer .btn"
+    >
+        <input type="hidden" name="mode" id="all-tournaments-mode" value="pair"/>
+        {% if pair_rows %}
+            {{ components.section_heading(_('To pair')) }}
+            {% if pair_rows | selectattr('absent_players') | list %}
+                {% call components.legend(class='ms-3 mb-2') %}
+                    {% call components.legend_item('bi-0-circle-fill') %}
+                        {{ _('Do not pair this round (Zero-Point Bye)') }}
+                    {% endcall %}
+                    {% call components.legend_item('bi-sign-stop') %}
+                        {{ _('Definitive withdrawal') }}
+                    {% endcall %}
+                    {% call components.legend_item('bi-check-circle-fill') %}
+                        {{ _('Pair this round') }}
+                    {% endcall %}
+                {% endcall %}
+            {% endif %}
+            <div class="d-flex flex-column gap-2 mb-3">
+                {% for row in pair_rows %}
+                    {% set tournament = row.tournament %}
+                    {% set prefix = 't' ~ tournament.id ~ '_' %}
+                    <div class="border border-secondary bg-body-tertiary p-2">
+                        <div class="d-flex align-items-center gap-2">
+                            {{ tournament_checkbox(row) }}
+                            {% if row.absent_players %}
+                                <span class="text-body-secondary small text-nowrap">
+                                    {{ ngettext(
+                                        '%(num)d absent player',
+                                        '%(num)d absent players',
+                                        row.absent_players | length,
+                                    ) }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        {% if row.over_half_absent %}
+                            {{ components.note('warning', _('Warning: over half of the players are absent!'), compact=true, class='mt-2 mb-2') }}
+                            <div class="d-flex align-items-center gap-2 ps-4">
+                                <span class="flex-grow-1">
+                                    {{ _('Select an action for the %(count)d absent players:', count=row.absent_players | length) }}
+                                </span>
+                                {% call components.segmented(_('Absent players')) %}
+                                    {{ components.segment_radio(
+                                        prefix ~ 'over_50', 'present',
+                                        _('Mark as "Present" (recommended)'),
+                                        prefix ~ 'over-50-present', icon='bi-check-circle-fill',
+                                        checked=true,
+                                    ) }}
+                                    {{ components.segment_radio(
+                                        prefix ~ 'over_50', 'zpb',
+                                        _('Do not pair for round #%(round)d', round=row.round),
+                                        prefix ~ 'over-50-zpb', icon='bi-0-circle-fill',
+                                    ) }}
+                                {% endcall %}
+                            </div>
+                        {% elif row.absent_players %}
+                            <div class="d-flex flex-column gap-1 mt-2 ps-4">
+                                {% if row.absent_players | length > 1 %}
+                                    {% set apply_all = {'data-apply-all': prefix ~ 'player-'} %}
+                                    <div class="d-flex align-items-center gap-4">
+                                        <div class="flex-grow-1 fw-bold">{{ _('Apply to all') }}</div>
+                                        {% call components.segmented(_('Apply to all'), size='sm') %}
+                                            {{ components.segment_radio(
+                                                prefix ~ 'all', 'zpb',
+                                                _('Do not pair at round %(pairing_round)d', pairing_round=row.round),
+                                                prefix ~ 'zpb-all', icon='bi-0-circle-fill', icon_only=true,
+                                                checked=true, attrs=apply_all,
+                                            ) }}
+                                            {% if row.round < tournament.rounds %}
+                                                {{ components.segment_radio(
+                                                    prefix ~ 'all', 'withdraw', _('Definitive withdrawal'),
+                                                    prefix ~ 'withdraw-all', icon='bi-sign-stop', icon_only=true,
+                                                    attrs=apply_all,
+                                                ) }}
+                                            {% endif %}
+                                            {{ components.segment_radio(
+                                                prefix ~ 'all', 'present',
+                                                _('Pair at round %(pairing_round)d', pairing_round=row.round),
+                                                prefix ~ 'present-all', icon='bi-check-circle-fill', icon_only=true,
+                                                attrs=apply_all,
+                                            ) }}
+                                        {% endcall %}
+                                    </div>
+                                {% endif %}
+                                {% for player in row.absent_players %}
+                                    <div class="d-flex align-items-center gap-4">
+                                        <div class="flex-grow-1">{{ player.full_name }}</div>
+                                        {% call components.segmented(player.full_name, size='sm') %}
+                                            {{ components.segment_radio(
+                                                prefix ~ 'player_' ~ player.id, 'zpb',
+                                                _('Do not pair at round %(pairing_round)d', pairing_round=row.round),
+                                                prefix ~ 'zpb-' ~ player.id, icon='bi-0-circle-fill', icon_only=true,
+                                                checked=true,
+                                                class=prefix ~ 'player-zpb',
+                                            ) }}
+                                            {% if row.round < tournament.rounds %}
+                                                {{ components.segment_radio(
+                                                    prefix ~ 'player_' ~ player.id, 'withdraw', _('Definitive withdrawal'),
+                                                    prefix ~ 'withdraw-' ~ player.id, icon='bi-sign-stop', icon_only=true,
+                                                    class=prefix ~ 'player-withdraw',
+                                                ) }}
+                                            {% endif %}
+                                            {{ components.segment_radio(
+                                                prefix ~ 'player_' ~ player.id, 'present',
+                                                _('Pair at round %(pairing_round)d', pairing_round=row.round),
+                                                prefix ~ 'present-' ~ player.id, icon='bi-check-circle-fill', icon_only=true,
+                                                class=prefix ~ 'player-present',
+                                            ) }}
+                                        {% endcall %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if publish_rows %}
+            {{ components.section_heading(_('To publish')) }}
+            <div class="d-flex flex-column gap-2 mb-3">
+                {% for row in publish_rows %}
+                    <div class="border border-secondary bg-body-tertiary p-2 d-flex">
+                        {{ tournament_checkbox(row) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if not pair_rows and not publish_rows %}
+            <p>{{ _('No tournament can be paired or published from here.') }}</p>
+        {% endif %}
+        {% if other_rows %}
+            {{ components.section_heading(_('Not available')) }}
+            <ul class="list-unstyled mb-0">
+                {% for row in other_rows %}
+                    <li class="mb-1">
+                        <span class="fw-bold">{{ row.tournament.name }}</span>
+                        <span class="text-body-secondary ps-1">{{ row.reason }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </form>
+    <script>
+        $('#modal-form').on('change', 'input[data-apply-all]', function () {
+            $('.' + this.dataset.applyAll + this.value).prop('checked', true);
+        });
+    </script>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if publish_rows %}
+        {{ components.button(
+            _('Publish'),
+            kind='outline' if pair_rows else 'primary',
+            icon='bi-broadcast',
+            type='submit',
+            tooltip=_('Publish the tournaments ticked under "To publish".'),
+            attrs={'form': 'modal-form', 'onclick': "document.getElementById('all-tournaments-mode').value = 'publish'"},
+        ) }}
+    {% endif %}
+    {% if pair_rows %}
+        {% set submit_as = "document.getElementById('all-tournaments-mode').value = '%s'" %}
+        {% set submit_from_menu = submit_as ~ "; document.getElementById('modal-form').requestSubmit()" %}
+        {% set pair_tooltip = _('Pair the tournaments ticked under "To pair", to publish them later.') %}
+        {% set pair_and_publish_tooltip = _('Pair the tournaments ticked under "To pair" and publish them at once, along with those ticked under "To publish".') if publish_rows else _('Pair the tournaments ticked under "To pair" and publish them at once.') %}
+        {% call components.split_button(
+            _('Pair and publish') if pair_and_publish else _('Pair'),
+            icon='bi-shuffle',
+            type='submit',
+            tooltip=pair_and_publish_tooltip if pair_and_publish else pair_tooltip,
+            attrs={
+                'form': 'modal-form',
+                'onclick': submit_as | format('pair_publish' if pair_and_publish else 'pair'),
+            },
+        ) %}
+            {{ components.menu_item(
+                _('Pair'),
+                icon='bi-shuffle',
+                active=not pair_and_publish,
+                tooltip=pair_tooltip,
+                attrs={'onclick': submit_from_menu | format('pair')},
+            ) }}
+            {{ components.menu_item(
+                _('Pair and publish'),
+                icon='bi-broadcast',
+                active=pair_and_publish,
+                tooltip=pair_and_publish_tooltip,
+                attrs={'onclick': submit_from_menu | format('pair_publish')},
+            ) }}
+        {% endcall %}
+    {% endif %}
+{% endblock %}
