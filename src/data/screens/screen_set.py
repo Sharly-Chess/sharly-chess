@@ -234,19 +234,9 @@ class ScreenSet:
                     name = '%t'
             name = name.replace('%t', str(self.tournament.name))
             if r'%f' in name and self.first_board is not None:
-                name = name.replace(
-                    r'%f',
-                    str(self.first_board.id + self.tournament.first_board_number - 1)
-                    if self.first_board and self.first_board.id is not None
-                    else '-',
-                )
+                name = name.replace(r'%f', str(self.first_board.standard_number))
             if r'%l' in name and self.last_board is not None:
-                name = name.replace(
-                    r'%l',
-                    str(self.last_board.id + self.tournament.first_board_number - 1)
-                    if self.last_board and self.last_board.id is not None
-                    else '-',
-                )
+                name = name.replace(r'%l', str(self.last_board.standard_number))
             return name
         return self.name_for_players
 

@@ -185,6 +185,11 @@ class Board:  # noqa: PLW1641
         self.tournament.invalidate_board_layout()
 
     @property
+    def position(self) -> int:
+        """The board's place in its round's pairing order, from 1."""
+        return self.index + 1
+
+    @property
     def white_player_id(self) -> int | None:
         return self.stored_board.white_player_id
 
@@ -283,7 +288,7 @@ class Board:  # noqa: PLW1641
             (
                 position
                 for position, board in enumerate(team_board.boards, start=1)
-                if board.id == self.id
+                if board.identifier == self.identifier
             ),
             None,
         )
@@ -536,14 +541,6 @@ class Board:  # noqa: PLW1641
     # --------------------------------------------------------------------------
     # Legacy
     # --------------------------------------------------------------------------
-
-    @property
-    def board_id(self) -> int:
-        return self.index + 1
-
-    @property
-    def id(self) -> int:
-        return self.index + 1
 
     @property
     def exempt(self) -> bool:

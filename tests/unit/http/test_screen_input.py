@@ -204,10 +204,22 @@ def test_a_result_is_taken_only_through_a_screen_taking_results(
         EVENT_ID, 'Other tournament', json_file='test-screens'
     )
 
+    EventLoader.unload_event(EVENT_ID)
+    event = EventLoader().load_event(EVENT_ID)
+    first_board_ids = {
+        tournament_id: event.tournaments_by_id[tournament_id]
+        .get_round_boards(1)[0]
+        .identifier
+        for tournament_id in (tournament.id, other.id)
+        if tournament_id is not None
+    }
+
     def modal(screen_uniq_id: str, tournament_id: int | None) -> bool:
+        assert tournament_id is not None
+        board_id = first_board_ids[tournament_id]
         return refused(
             http.get(
-                f'/view/result-modal/1/{EVENT_ID}/{screen_uniq_id}/{tournament_id}/1',
+                f'/view/result-modal/1/{EVENT_ID}/{screen_uniq_id}/{tournament_id}/{board_id}',
                 follow_redirects=False,
             )
         )
@@ -218,7 +230,7 @@ def test_a_result_is_taken_only_through_a_screen_taking_results(
     assert modal(taking, other.id)
     assert refused(
         http.put(
-            f'/view/update-result/1/{EVENT_ID}/{read_only}/{tournament.id}/1/1/1',
+            f'/view/update-result/1/{EVENT_ID}/{read_only}/{tournament.id}/1/{first_board_ids[tournament.id]}/1',
             follow_redirects=False,
         )
     )

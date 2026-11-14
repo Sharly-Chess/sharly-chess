@@ -49,7 +49,11 @@ def board(tournament: Tournament) -> Board:
 
 
 def fresh(board: Board) -> Board:
-    return next(b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id)
+    return next(
+        b
+        for b in EVENT.tournament().get_round_boards(1)
+        if b.identifier == board.identifier
+    )
 
 
 def put_result(

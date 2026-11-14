@@ -274,10 +274,6 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_board = next(
                 (b for b in self.admin_boards if b.identifier == board_id), None
             )
-            if self.admin_board is None and not event.is_team_event:
-                self.admin_board = next(
-                    (b for b in self.admin_boards if b.board_id == board_id), None
-                )
 
         self.admin_player: TournamentPlayer | None = None
         if player_id is not None:
@@ -533,7 +529,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             (
                 b
                 for b in self.admin_tournament.get_round_boards(self.admin_round)
-                if b.identifier == board_id or b.board_id == board_id
+                if b.identifier == board_id
             ),
             None,
         )
@@ -1410,7 +1406,7 @@ class PairingsAdminController(BaseEventAdminController):
                 target_board_id = board_id
             else:
                 target_board_id = self._next_board_id(
-                    board_id, web_context.admin_filtered_boards
+                    board, web_context.admin_filtered_boards
                 )
         else:
             if tournament.awaits_publication(round_):
@@ -1459,7 +1455,7 @@ class PairingsAdminController(BaseEventAdminController):
                 channels, event.uniq_id, tournament.id, round_, [board]
             )
             target_board_id = self._next_board_id(
-                board_id, web_context.admin_filtered_boards
+                board, web_context.admin_filtered_boards
             )
             # Refetch the context to get the new default_print_document etc.
             context = web_context.template_context
@@ -1481,15 +1477,8 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @staticmethod
-    def _next_board_id(board_id: int, boards: list[Board]) -> int | None:
-        return next(
-            (
-                b.board_id
-                for b in boards
-                if b.board_id is not None and b.board_id > board_id
-            ),
-            None,
-        )
+    def _next_board_id(board: Board, boards: list[Board]) -> int | None:
+        return next((b.identifier for b in boards if b.index > board.index), None)
 
     @put(
         path='/pairing/set-result/'

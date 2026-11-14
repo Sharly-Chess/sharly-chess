@@ -57,7 +57,6 @@ def _board_range_bounds(screen_set: ScreenSet) -> tuple[str, str]:
     """First/last display values for a boards/input set that has a paired
     round: match table numbers in team mode, board numbers otherwise."""
     dash = '-'
-    tournament = screen_set.tournament
     if screen_set.shows_team_matches:
         first = screen_set.first_team_match
         last = screen_set.last_team_match
@@ -71,14 +70,9 @@ def _board_range_bounds(screen_set: ScreenSet) -> tuple[str, str]:
         )
     first_board = screen_set.first_board
     last_board = screen_set.last_board
-    offset = tournament.first_board_number - 1
     return (
-        str(first_board.id + offset)
-        if first_board and first_board.id is not None
-        else dash,
-        str(last_board.id + offset)
-        if last_board and last_board.id is not None
-        else dash,
+        str(first_board.standard_number) if first_board else dash,
+        str(last_board.standard_number) if last_board else dash,
     )
 
 
@@ -218,17 +212,14 @@ def _board_family_screen_label(screen_set: ScreenSet) -> str:
         first_board = screen_set.first_board
         last_board = screen_set.last_board
         assert first_board is not None and last_board is not None
-        assert first_board.id is not None and last_board.id is not None
         if screen_set.board_selection_mode == BoardSelectionMode.PAIRING:
-            # Pairing positions, shown without the board-number offset.
             return _('Pairings from #%(first)d to #%(last)d') % {
-                'first': first_board.id,
-                'last': last_board.id,
+                'first': first_board.position,
+                'last': last_board.position,
             }
-        offset = tournament.first_board_number - 1
         return _('Boards from #%(first)d to #%(last)d') % {
-            'first': first_board.id + offset,
-            'last': last_board.id + offset,
+            'first': first_board.standard_number,
+            'last': last_board.standard_number,
         }
     return _players_family_screen_label(screen_set)
 

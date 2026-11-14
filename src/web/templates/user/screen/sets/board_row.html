@@ -25,7 +25,7 @@
     ) ~ menu_query %}
 {% endif %}
 <div
-    id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
+    id="tournament-{{ tournament.id }}-board-{{ board.identifier }}-row"
     {% if not tournament.is_fake %}data-live-key="board-{{ board.identifier }}-row"{% endif %}
     class="
         board-row

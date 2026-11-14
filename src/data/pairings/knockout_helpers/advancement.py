@@ -290,7 +290,7 @@ class KnockoutAdvancementMixin:
             matches.append(
                 {
                     'kind': 'player',
-                    'id': board.id,
+                    'id': board.identifier,
                     'a_id': white.id,
                     'a_name': white.full_name,
                     'b_id': black.id,
