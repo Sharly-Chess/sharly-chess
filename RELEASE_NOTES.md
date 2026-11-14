@@ -26,6 +26,7 @@
 - On Windows, the addresses of Hyper-V virtual switches, such as an external switch bridging the network card, are offered among the network interfaces instead of being ignored; the switches Windows creates for its own internal networks (Default Switch, WSL) are still left out (5.2.6)
 - On macOS, the application window is resized once to the tab being displayed, keeping its top in place, instead of moving about while it grows to the settings tab (5.2.7)
 - When the label of a field wraps above its input, the buttons beside the field, such as those of the school, the team affiliation, the tags and the place card template, line up with its input instead of its label, and the label stands apart from the field above (5.2.7)
+- A page shown again with the browser's Back button draws each of its drop-down lists once, instead of drawing a second, lifeless copy beside the round selector of the pairings tab and leaving the tournament selector unusable (5.2.8)
 
 ## Tournaments
 
@@ -90,6 +91,7 @@
 - A pairing engine that does not answer within 30 seconds is stopped and reported, instead of leaving the application unresponsive; its input file is kept for the arbiter to send to the _Sharly Chess_ team (5.2.6)
 - In team Swiss tournaments, changing a lineup no longer changes the colours, and sometimes the opponents, given by the following pairings, and avoiding teams of the same club no longer rejects legal pairings or reports that no pairing exists (5.2.6)
 - In team Swiss tournaments, a round where many teams at the top of the standings may not meet one another, such as the third round of the _FFE_ cups when many teams have won both of their first two matches, is paired at once instead of never finishing (5.2.6)
+- The Log and Prohibited buttons keep the height of the other pairing buttons when they show a count, instead of growing out of line with them (5.2.8)
 
 ## Prizes
 
