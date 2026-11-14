@@ -4128,7 +4128,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 }
 
 [data-sc-interface=admin] .toast-stack .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error) {
-    box-shadow: 0 .75rem 2rem rgba(0, 0, 0, 0.6);
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, 0.12);
 }
 
 [data-sc-interface=admin] .alert:is(.message-debug, .message-info, .message-success, .message-warning, .message-error)::before {

@@ -1,0 +1,59 @@
+{# The button opening the All tournaments modal, with the number of
+   tournaments ready to be paired or published: counted once the page is
+   shown, and again as results, check-ins and changes come in from any
+   tournament of the event. #}
+{% if components is not defined %}
+    {% import '/admin/components/macros.j2' as components with context %}
+{% endif %}
+<div
+    id="all-tournaments-button"
+    class="d-inline-flex round-controls-group"
+    hx-get="{{ url_for(
+        'pairings-all-button',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        round=admin_round,
+    ) }}"
+    hx-trigger="{{ 'load, ' if all_tournaments_ready is not defined }}ws:new-user-results|{{ admin_event.uniq_id }} from:body delay:1s, ws:new-checkins|{{ admin_event.uniq_id }} from:body delay:1s, ws:tournament-changed|{{ admin_event.uniq_id }} from:body delay:1s"
+    hx-target="this"
+    hx-swap="outerHTML"
+>
+    {% set ready = all_tournaments_ready | default(0) %}
+    {% call components.button(
+        _('All tournaments'),
+        icon='bi-collection',
+        icon_only=true,
+        tooltip=(
+            ngettext(
+                'Pair or publish all the tournaments: %(num)d ready.',
+                'Pair or publish all the tournaments: %(num)d ready.',
+                ready,
+            ) if ready else _('Pair or publish all the tournaments.')
+        ),
+        tooltip_placement='bottom',
+        class='position-relative',
+        attrs={
+            'hx-get': url_for(
+                'pairings-all-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round,
+            ),
+            'hx-target': 'body',
+            'hx-swap': 'innerHTML',
+            'hx-trigger': 'click',
+            'hx-indicator': '#please-wait',
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#modal-wrapper',
+        },
+    ) %}
+        {% if ready %}
+            {{ components.badge(
+                'primary',
+                ready,
+                pill=true,
+                class='position-absolute top-0 start-100 translate-middle sc-btn-count-badge',
+            ) }}
+        {% endif %}
+    {% endcall %}
+</div>

@@ -6,8 +6,9 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-from dataclasses import dataclass
-from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
+from enum import StrEnum
+from collections.abc import Callable, Iterable, Mapping
 from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
@@ -104,6 +105,7 @@ from web.session import (
     SessionPairingsSelectedRound,
     SessionPairingsBoardSort,
     SessionPairingsPairAndPublish,
+    SessionPairingsAllUnselectedTournaments,
     SessionSchedulePlayedGamesUnlocked,
 )
 from web.utils import SelectOption
@@ -174,7 +176,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_round = round_
         elif session_round := SessionPairingsSelectedRound(
             self.request, self.admin_tournament
-        ).get():
+        ).round_to_show():
             max_round = (
                 self.admin_tournament.current_round or 1
             ) + self.admin_tournament.finished
@@ -847,6 +849,30 @@ class PairingsLiveUpdate:
     has_unpaired: bool
 
 
+class AllTournamentsAction(StrEnum):
+    PAIR = 'pair'
+    PUBLISH = 'publish'
+
+
+@dataclass
+class AllTournamentsRow:
+    """A tournament of the modal pairing or publishing the tournaments of an
+    event at once: the round it would pair or publish with *action*, or the
+    *reason* it can do neither, the absent players to set aside before
+    pairing, and whether it is ticked."""
+
+    tournament: Tournament
+    round: int
+    action: AllTournamentsAction | None = None
+    reason: str | None = None
+    absent_players: list[TournamentPlayer] = field(default_factory=list)
+    selected: bool = False
+
+    @property
+    def over_half_absent(self) -> bool:
+        return len(self.absent_players) > self.tournament.player_count / 2
+
+
 class PairingsAdminController(BaseEventAdminController):
     # Litestar declares `guards` on `Controller` as an instance variable, so
     # it cannot be narrowed to a class variable here.
@@ -896,7 +922,7 @@ class PairingsAdminController(BaseEventAdminController):
         if tournament := web_context.admin_tournament:
             SessionPairingsSelectedTournament(request, event).set(tournament.id)
             if admin_round := web_context.admin_round:
-                SessionPairingsSelectedRound(request, tournament).set(admin_round)
+                SessionPairingsSelectedRound(request, tournament).set_shown(admin_round)
 
         return self._admin_event_pairings_render(
             web_context, {'skip_ratings_warning': skip_ratings_warning}
@@ -3950,24 +3976,17 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         absent_players = web_context.admin_absent_players
+        choices: dict[int, str | None]
         if len(absent_players) > tournament.player_count / 2:
-            set_present = 'over_50_present' in data
-            for player in absent_players:
-                if set_present:
-                    tournament.check_in_player(player, check_in=True)
-                else:
-                    tournament.set_player_byes(player, {round: Result.ZERO_POINT_BYE})
+            choices = {
+                player.id: 'present' if 'over_50_present' in data else 'zpb'
+                for player in absent_players
+            }
         else:
-            for player in absent_players:
-                match data.get(f'player_{player.id}'):
-                    case 'zpb':
-                        tournament.set_player_byes(
-                            player, {round: Result.ZERO_POINT_BYE}
-                        )
-                    case 'withdraw':
-                        tournament.set_player_participation(player, withdraw=True)
-                    case 'present':
-                        tournament.check_in_player(player, check_in=True)
+            choices = {
+                player.id: data.get(f'player_{player.id}') for player in absent_players
+            }
+        self._set_absent_players_aside(tournament, round, absent_players, choices)
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
         return await self._generate_round_pairings(web_context)
@@ -4027,6 +4046,378 @@ class PairingsAdminController(BaseEventAdminController):
             request, tournament_id=tournament_id, round_=round, reload_event=True
         )
         return self._admin_event_pairings_render(web_context)
+
+    # -------------------------------------------------------------------------
+    # All the tournaments at once
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def _set_absent_players_aside(
+        tournament: Tournament,
+        round_: int,
+        absent_players: list[TournamentPlayer],
+        choices: Mapping[int, str | None],
+    ) -> None:
+        """Give the absent players of *round_* what was chosen for each of
+        them before pairing it: a zero-point bye (``zpb``), a definitive
+        withdrawal (``withdraw``) or a place in the pairing (``present``)."""
+        for player in absent_players:
+            match choices.get(player.id):
+                case 'zpb':
+                    tournament.set_player_byes(player, {round_: Result.ZERO_POINT_BYE})
+                case 'withdraw':
+                    tournament.set_player_participation(player, withdraw=True)
+                case 'present':
+                    tournament.check_in_player(player, check_in=True)
+
+    @staticmethod
+    def _all_tournaments_row(
+        web_context: PairingsAdminWebContext,
+        tournament: Tournament,
+        load_check_in_data: bool = True,
+    ) -> AllTournamentsRow:
+        """What can be done to *tournament* along with the other tournaments
+        of the event: publish its last round when paired but not published,
+        otherwise pair the next one. Without *load_check_in_data*, the
+        check-ins the plugins hold are not fetched."""
+        client = web_context.client
+        system = tournament.pairing_system
+        if system.predetermined_pairings:
+            return PairingsAdminController._all_tournaments_publish_row(
+                web_context, tournament
+            )
+        if not system.round_per_round_pairing_generation:
+            return AllTournamentsRow(
+                tournament,
+                tournament.current_round,
+                reason=_('Its rounds are paired from its own page.'),
+            )
+        last_round = tournament.current_round
+        if last_round == 0:
+            return AllTournamentsRow(
+                tournament,
+                1,
+                reason=_('The first round is paired from the page of the tournament.'),
+            )
+        if last_round > tournament.published_round:
+            return PairingsAdminController._all_tournaments_publish_row(
+                web_context, tournament, last_round
+            )
+        round_ = last_round + 1
+        if round_ > tournament.rounds:
+            return AllTournamentsRow(
+                tournament, last_round, reason=_('Every round is paired.')
+            )
+        permission_handler = system.permission_handler
+        reason = None
+        if not client.can_use_pairing_engine(tournament.id):
+            reason = _('You are not allowed to generate the pairings.')
+        elif (manual_round := tournament.manual_pairing_round) is not None:
+            reason = _('Validate the pairings of round {round} first.').format(
+                round=manual_round
+            )
+        elif tournament.round_starts_period(round_):
+            reason = _(
+                'Round {round} starts a new period: pair it from the '
+                'page of the tournament, which asks for the ratings to be '
+                'checked first.'
+            ).format(round=round_)
+        elif message := tournament.pairings_generation_disabled_message(round_):
+            reason = message
+        elif PairingAction.FULL_PAIRING not in permission_handler.allowed_actions(
+            RoundStatus.from_round(round_, last_round),
+            WarningLevel.NONE,
+            tournament.fide_mode,
+        ):
+            reason = _(
+                'Round {round} cannot be paired without a confirmation: pair '
+                'it from the page of the tournament.'
+            ).format(round=round_)
+        if reason:
+            return AllTournamentsRow(tournament, round_, reason=reason)
+        if load_check_in_data:
+            plugin_manager.hook_for_event(
+                tournament.event, 'load_tournament_check_in_data'
+            )(tournament=tournament)
+        absent_players = sorted(
+            (
+                player
+                for player in tournament.get_unpaired_tournament_players(
+                    tournament.get_round_boards(round_)
+                )
+                if player.check_in_status_for_round(round_) == CheckInStatus.ABSENT
+            ),
+            key=attrgetter('name_sort_key'),
+        )
+        if absent_players and not client.can_set_zero_point_bye(tournament.id):
+            return AllTournamentsRow(
+                tournament,
+                round_,
+                reason=_(
+                    'You are not allowed to decide what becomes of the absent players.'
+                ),
+            )
+        return AllTournamentsRow(
+            tournament,
+            round_,
+            action=AllTournamentsAction.PAIR,
+            absent_players=absent_players,
+        )
+
+    @staticmethod
+    def _all_tournaments_publish_row(
+        web_context: PairingsAdminWebContext,
+        tournament: Tournament,
+        round_: int | None = None,
+    ) -> AllTournamentsRow:
+        """*tournament* with *round_* to publish, by default the round after
+        the last one published, all its rounds being paired at once."""
+        if round_ is None:
+            if not tournament.has_pairings:
+                return AllTournamentsRow(
+                    tournament,
+                    1,
+                    reason=_(
+                        'The first round is paired from the page of the tournament.'
+                    ),
+                )
+            round_ = tournament.published_round + 1
+            if round_ > tournament.rounds:
+                return AllTournamentsRow(
+                    tournament,
+                    tournament.rounds,
+                    reason=_('Every round is published.'),
+                )
+        reason = None
+        if not web_context.client.can_publish_pairings(tournament.id):
+            reason = _('You are not allowed to publish the pairings.')
+        elif (unfinished := tournament.unfinished_round_before(round_)) is not None:
+            reason = _('Round {round} is not finished.').format(round=unfinished)
+        elif not tournament.can_publish_round(round_):
+            reason = _('The pairings of round {round} cannot be published.').format(
+                round=round_
+            )
+        return AllTournamentsRow(
+            tournament,
+            round_,
+            action=None if reason else AllTournamentsAction.PUBLISH,
+            reason=reason,
+        )
+
+    @classmethod
+    def _all_tournaments_rows(
+        cls, web_context: PairingsAdminWebContext, load_check_in_data: bool = True
+    ) -> list[AllTournamentsRow]:
+        unselected_ids = SessionPairingsAllUnselectedTournaments(
+            web_context.request, web_context.get_admin_event()
+        ).get()
+        rows = [
+            cls._all_tournaments_row(web_context, tournament, load_check_in_data)
+            for tournament in web_context.allowed_tournaments
+        ]
+        for row in rows:
+            row.selected = (
+                row.action is not None
+                and row.tournament.id not in unselected_ids
+                and not row.over_half_absent
+            )
+        return rows
+
+    @get(
+        path='/pairings/all-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-all-modal',
+    )
+    async def htmx_pairings_all_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing-all',
+                'all_tournaments_rows': self._all_tournaments_rows(web_context),
+            },
+        )
+
+    @get(
+        path='/pairings/all-button/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-all-button',
+    )
+    async def htmx_pairings_all_button(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        """The All tournaments button, with the number of tournaments ready
+        to be paired or published."""
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        ready = sum(
+            row.action is not None
+            for row in self._all_tournaments_rows(web_context, load_check_in_data=False)
+        )
+        return HTMXTemplate(
+            template_name='/admin/pairings/all_tournaments_button.html',
+            context=web_context.template_context | {'all_tournaments_ready': ready},
+        )
+
+    @post(
+        path='/pairings/all/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-all',
+    )
+    async def htmx_pairings_all(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        """Pair, pair and publish, or publish the tournaments ticked in the
+        modal, one after the other, each as its own Pair or Publish button
+        would; a tournament that fails does not stop the others."""
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        event = web_context.get_admin_event()
+        rows = self._all_tournaments_rows(web_context)
+        selected_ids = {
+            row.tournament.id
+            for row in rows
+            if data.get(f'tournament_{row.tournament.id}')
+        }
+        SessionPairingsAllUnselectedTournaments(request, event).set(
+            [
+                row.tournament.id
+                for row in rows
+                if row.action is not None and row.tournament.id not in selected_ids
+            ]
+        )
+        mode = data.get('mode')
+        if mode in ('pair', 'pair_publish'):
+            SessionPairingsPairAndPublish(request, event).set(mode == 'pair_publish')
+        # Pairing and publishing publishes the rounds ticked to be published
+        # too, so that one action brings every tournament to its next round.
+        actions = {
+            'pair': {AllTournamentsAction.PAIR},
+            'pair_publish': {AllTournamentsAction.PAIR, AllTournamentsAction.PUBLISH},
+            'publish': {AllTournamentsAction.PUBLISH},
+        }.get(mode or '', set())
+        publish = mode in ('publish', 'pair_publish')
+        page_round = round
+        messages: list[str] = []
+        failures: list[dict[str, Any]] = []
+        for row in rows:
+            if row.action not in actions or row.tournament.id not in selected_ids:
+                continue
+            if row.action == AllTournamentsAction.PAIR:
+                row_messages, error = await self._pair_for_all(
+                    web_context, row, data, publish=publish
+                )
+                messages.extend(row_messages)
+                if error is not None:
+                    failures.append(
+                        {
+                            'tournament': row.tournament,
+                            'round': row.round,
+                            'error': error,
+                        }
+                    )
+                elif row.tournament.id == tournament_id:
+                    # The page moves on to the round just paired, which it
+                    # shows again once the summary is closed.
+                    page_round = row.round
+            else:
+                row.tournament.set_published_round(row.round)
+                if row.tournament.id == tournament_id:
+                    page_round = row.round
+                messages.append(
+                    _('{tournament}: round {round} published.').format(
+                        tournament=row.tournament.name, round=row.round
+                    )
+                )
+        web_context = PairingsAdminWebContext(
+            request, tournament_id, page_round, reload_event=True
+        )
+        if not messages and not failures:
+            Message.warning(request, _('No tournament was selected.'))
+            return self._admin_event_pairings_render(web_context)
+        SessionPairingsSelectedRound(
+            request, web_context.get_admin_tournament()
+        ).set_shown(page_round)
+        response = self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing-all-summary',
+                'all_tournaments_messages': messages,
+                'all_tournaments_failures': failures,
+            },
+        )
+        response.headers['HX-Replace-Url'] = request.app.route_reverse(
+            'admin-event-pairings-tab',
+            event_uniq_id=event.uniq_id,
+            tournament_id=tournament_id,
+            round=page_round,
+        )
+        return response
+
+    async def _pair_for_all(
+        self,
+        web_context: PairingsAdminWebContext,
+        row: AllTournamentsRow,
+        data: dict[str, str],
+        publish: bool,
+    ) -> tuple[list[str], str | None]:
+        """Pair the round of *row*, the absent players set aside as chosen in
+        the modal, and publish it if asked; the lines telling how it went, or
+        why the round could not be paired."""
+        request = web_context.request
+        client = web_context.client
+        tournament = row.tournament
+        round_ = row.round
+        prefix = f't{tournament.id}_'
+        choices: dict[int, str | None]
+        if row.over_half_absent:
+            choice = 'present' if data.get(f'{prefix}over_50') == 'present' else 'zpb'
+            choices = {player.id: choice for player in row.absent_players}
+        else:
+            choices = {
+                player.id: data.get(f'{prefix}player_{player.id}')
+                for player in row.absent_players
+            }
+        self._set_absent_players_aside(tournament, round_, row.absent_players, choices)
+        tournament.set_valid_pairing_settings()
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_PAIRING,
+            round_,
+            tournament.id,
+        )
+        try:
+            error = tournament.generate_round_pairings(round_)
+        except SharlyChessException as exception:
+            error = str(exception)
+        if error:
+            return [], error
+        # The tournament holds its event weakly: the event is kept here.
+        event = EventLoader.get(request).load_event(tournament.event.uniq_id)
+        tournament = event.tournaments_by_id[tournament.id]
+        if (
+            publish
+            and client.can_publish_pairings(tournament.id)
+            and tournament.can_publish_round(round_)
+        ):
+            tournament.set_published_round(round_)
+            message = _('{tournament}: round {round} paired and published.')
+        else:
+            message = _('{tournament}: round {round} paired.')
+        messages = [message.format(tournament=tournament.name, round=round_)]
+        if adjourned_boards := tournament.adjourned_boards(before_round=round_):
+            messages.extend(self._adjourned_games_messages(round_, adjourned_boards))
+        return messages, None
 
     # -------------------------------------------------------------------------
     # Prohibited pairings

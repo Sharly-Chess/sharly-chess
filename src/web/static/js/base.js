@@ -719,7 +719,42 @@ function initInlineSelect2(root) {
             select.on('select2:select', function () {
                 this.dispatchEvent(new Event('change', { bubbles: true }));
             });
+            if (select.is('[data-fit-widest-option]')) {
+                document.fonts.ready.then(() => fitSelect2ToWidestOption(select));
+            }
         });
+}
+
+// Widens an inline select to its longest option, so that the buttons beside
+// it stay in place whichever option is chosen. Only the text is measured: the
+// page may not be laid out yet when the select is set up.
+function fitSelect2ToWidestOption(select) {
+    const rendered = select.next('.select2-container')
+        .find('.select2-selection__rendered');
+    if (!rendered.length) {
+        return;
+    }
+    const style = getComputedStyle(rendered[0]);
+    const probe = document.createElement('span');
+    Object.assign(probe.style, {
+        position: 'absolute',
+        visibility: 'hidden',
+        whiteSpace: 'nowrap',
+        fontFamily: style.fontFamily,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        letterSpacing: style.letterSpacing,
+    });
+    document.body.appendChild(probe);
+    const widest = Math.max(...select.find('option').map(function () {
+        probe.textContent = $(this).text().trim();
+        return probe.getBoundingClientRect().width;
+    }).get());
+    probe.remove();
+    const padding = style.boxSizing === 'border-box'
+        ? parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+        : 0;
+    rendered.css('min-width', Math.ceil(widest + padding) + 'px');
 }
 
 htmx.onLoad(initInlineSelect2);

@@ -369,6 +369,19 @@ class SessionPairingsPairAndPublish(EventSessionVariable[bool]):
         return False
 
 
+class SessionPairingsAllUnselectedTournaments(EventSessionVariable[list[int]]):
+    """The tournaments left out the last time all the tournaments of an event
+    were paired or published at once, left out again the next time."""
+
+    @property
+    def key(self) -> str:
+        return 'pairings_all_unselected_tournaments'
+
+    @property
+    def default_value(self) -> list[int]:
+        return []
+
+
 class SessionPairingsBoardSort(SessionVariable[str]):
     """Board column ordering on the pairings tab when a tournament has fixed
     boards and is numbered compactly: ``'board'`` (by display number, default)
@@ -620,14 +633,32 @@ class SessionPairingsSelectedTournament(EventNoneSessionVariable[int]):
         return 'pairings_selected_tournament'
 
 
-class SessionPairingsSelectedRound(TournamentSessionVariable[int | None]):
+class SessionPairingsSelectedRound(TournamentSessionVariable[list[int] | None]):
+    """The round of a tournament last shown on the pairings tab, with the
+    round the tournament had reached then: the tab shows it again when coming
+    back to the tournament, unless the tournament has moved on since."""
+
+    def __init__(self, request: HTMXRequest, tournament: Tournament):
+        super().__init__(request, tournament)
+        self.tournament = tournament
+
     @property
     def key(self) -> str:
         return 'pairings_selected_round'
 
     @property
-    def default_value(self) -> int | None:
+    def default_value(self) -> list[int] | None:
         return None
+
+    def set_shown(self, round_: int) -> None:
+        self.set([round_, self.tournament.current_round])
+
+    def round_to_show(self) -> int | None:
+        value = self.get()
+        if not isinstance(value, list) or len(value) != 2:
+            return None
+        round_, current_round = value
+        return round_ if current_round == self.tournament.current_round else None
 
 
 class SessionSchedulePlayedGamesUnlocked(TournamentSessionVariable[bool]):

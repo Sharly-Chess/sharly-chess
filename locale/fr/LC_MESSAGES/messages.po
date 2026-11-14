@@ -83,6 +83,12 @@ msgstr[0] "Groupe à %(num).1f point"
 msgstr[1] "Groupe à %(num).1f points"
 
 #, python-format
+msgid "%(num)d absent player"
+msgid_plural "%(num)d absent players"
+msgstr[0] "%(num)d joueur·euse absent·e"
+msgstr[1] "%(num)d joueur·euses absent·es"
+
+#, python-format
 msgid "%(num)d absent player without byes"
 msgid_plural "%(num)d absent players without byes"
 msgstr[0] "%(num)d joueur·euse absent·e sans forfait ou bye"
@@ -249,6 +255,12 @@ msgid "%(num)d tournament"
 msgid_plural "%(num)d tournaments"
 msgstr[0] "%(num)d tournoi"
 msgstr[1] "%(num)d tournois"
+
+#, python-format
+msgid "%(num)d tournament could not be paired:"
+msgid_plural "%(num)d tournaments could not be paired:"
+msgstr[0] "%(num)d tournoi n'a pas pu être apparié :"
+msgstr[1] "%(num)d tournois n'ont pas pu être appariés :"
 
 #, python-format
 msgid "%(num)d unknown column (ignored)"
@@ -771,6 +783,9 @@ msgstr "Absentes"
 msgid "Absent (hole in lineup)"
 msgstr "Absent·e (trou dans la composition)"
 
+msgid "Absent players"
+msgstr "Joueur·euses absent·es"
+
 #, python-format
 msgid "Absent players (%(count)d)"
 msgstr "Joueur·euses absent·es (%(count)d)"
@@ -1133,6 +1148,9 @@ msgid "All the text of the certificate may be modified by the arbiter before pri
 msgstr "Tout le texte de l'attestation peut être modifié par l'arbitre avant impression."
 
 msgid "All the tournaments"
+msgstr "Tous les tournois"
+
+msgid "All tournaments"
 msgstr "Tous les tournois"
 
 msgid "All values may be modified by the arbiter if necessary."
@@ -3281,6 +3299,9 @@ msgstr "Ne pas apparier à la ronde %(pairing_round)d (forfait)"
 msgid "Do not pair for round #%(round)d"
 msgstr "Ne pas apparier à la ronde n°%(round)d"
 
+msgid "Do not pair this round (Zero-Point Bye)"
+msgstr "Ne pas apparier à cette ronde (forfait)"
+
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
@@ -3951,8 +3972,14 @@ msgstr "Évènements"
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
 msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi. Les équipes que le fichier laisse vides sont également supprimées."
 
+msgid "Every round is paired."
+msgstr "Toutes les rondes sont appariées."
+
 msgid "Every round is paired: unpair a round to change its matches."
 msgstr "Toutes les rondes sont appariées : désappariez une ronde pour changer ses matchs."
+
+msgid "Every round is published."
+msgstr "Toutes les rondes sont publiées."
 
 msgid "Every screen, menu and rotator"
 msgstr "Tous les écrans, menus et écrans rotatifs"
@@ -5202,6 +5229,9 @@ msgstr "Italie"
 #, python-brace-format
 msgid "Item [{id}] not found."
 msgstr "Élément [{id}] introuvable."
+
+msgid "Its rounds are paired from its own page."
+msgstr "Ses rondes s'apparient depuis sa propre page."
 
 msgid "Jamaica"
 msgstr "Jamaïque"
@@ -6602,8 +6632,14 @@ msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
 msgid "No tournament"
 msgstr "Aucun tournoi"
 
+msgid "No tournament can be paired or published from here."
+msgstr "Aucun tournoi ne peut être apparié ou publié d'ici."
+
 msgid "No tournament has been played yet."
 msgstr "Aucun tournoi n'a encore été joué."
+
+msgid "No tournament was selected."
+msgstr "Aucun tournoi n'a été sélectionné."
 
 msgid "No tournaments."
 msgstr "Aucun tournoi."
@@ -6735,6 +6771,9 @@ msgstr "Numéros qui ne sont pas des identifiants FIDE ({values}), laissés vide
 
 msgid "Not assigned"
 msgstr "Non attribué"
+
+msgid "Not available"
+msgstr "Indisponibles"
 
 msgid "Not checked in yet"
 msgstr "Pas encore pointé·e"
@@ -7288,17 +7327,38 @@ msgstr "Apparier avec les BLANCS"
 msgid "Pair at round %(pairing_round)d"
 msgstr "Apparier à la ronde %(pairing_round)d"
 
+msgid "Pair or publish all the tournaments."
+msgstr "Apparier ou publier tous les tournois."
+
+#, python-format
+msgid "Pair or publish all the tournaments: %(num)d ready."
+msgid_plural "Pair or publish all the tournaments: %(num)d ready."
+msgstr[0] "Apparier ou publier tous les tournois : %(num)d prêt."
+msgstr[1] "Apparier ou publier tous les tournois : %(num)d prêts."
+
 msgid "Pair the rounds and enter the results"
 msgstr "Apparier les rondes et saisir les résultats"
 
 msgid "Pair the tournament before editing its schedule."
 msgstr "Appariez le tournoi avant de modifier son calendrier."
 
+msgid "Pair the tournaments ticked under \"To pair\" and publish them at once, along with those ticked under \"To publish\"."
+msgstr "Apparier les tournois cochés sous \"À apparier\" et les publier aussitôt, avec ceux cochés sous \"À publier\"."
+
+msgid "Pair the tournaments ticked under \"To pair\" and publish them at once."
+msgstr "Apparier les tournois cochés sous \"À apparier\" et les publier aussitôt."
+
+msgid "Pair the tournaments ticked under \"To pair\", to publish them later."
+msgstr "Apparier les tournois cochés sous \"À apparier\", pour les publier plus tard."
+
 msgid "Pair the unpaired players with each other."
 msgstr "Apparier les joueur·euses non apparié·es ensemble."
 
 msgid "Pair the unpaired teams with each other."
 msgstr "Apparier les équipes non appariées ensemble."
+
+msgid "Pair this round"
+msgstr "Apparier à cette ronde"
 
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
@@ -8293,6 +8353,9 @@ msgstr "Publier et dépublier les appariements"
 msgid "Publish round {round} to enter its results."
 msgstr "Publiez la ronde {round} pour en saisir les résultats."
 
+msgid "Publish the tournaments ticked under \"To publish\"."
+msgstr "Publier les tournois cochés sous \"À publier\"."
+
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 
@@ -9033,6 +9096,10 @@ msgid "Round {round}"
 msgstr "Ronde {round}"
 
 #, python-brace-format
+msgid "Round {round} cannot be paired without a confirmation: pair it from the page of the tournament."
+msgstr "La ronde {round} ne peut pas être appariée sans confirmation : appariez-la depuis la page du tournoi."
+
+#, python-brace-format
 msgctxt "individual knock-out"
 msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
 msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner le·la vainqueur·e d'un barrage — ou ajoutez d'autres départages de qualification."
@@ -9065,6 +9132,10 @@ msgstr "Ronde {round} sur {rounds}"
 #, python-brace-format
 msgid "Round {round} of {rounds} could not be paired ({error}): the tournament was not generated."
 msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}) : le tournoi n'a pas été généré."
+
+#, python-brace-format
+msgid "Round {round} starts a new period: pair it from the page of the tournament, which asks for the ratings to be checked first."
+msgstr "La ronde {round} ouvre une nouvelle période : appariez-la depuis la page du tournoi, qui demande d'abord de vérifier les classements."
 
 #, python-brace-format
 msgid "Round {round} was paired with an adjourned game counting as a draw:"
@@ -10573,6 +10644,9 @@ msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] "La première ronde est ingorée."
 msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
+msgid "The first round is paired from the page of the tournament."
+msgstr "La première ronde s'apparie depuis la page du tournoi."
+
 #, python-brace-format
 msgid "The fixed rating must be between 1 and {max}."
 msgstr "Le Elo fixe doit être compris entre 1 et {max}."
@@ -11867,6 +11941,9 @@ msgstr "Pour modifier les rondes précédentes, retourne sur la ronde concernée
 msgid "To pair"
 msgstr "À apparier"
 
+msgid "To publish"
+msgstr "À publier"
+
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -12920,6 +12997,9 @@ msgstr "Vous n'êtes pas autorisé·e à modifier la composition."
 msgid "You are not allowed to create tournaments."
 msgstr "Vous n'êtes pas autorisé·e à créer des tournois."
 
+msgid "You are not allowed to decide what becomes of the absent players."
+msgstr "Vous n'êtes pas autorisé·e à décider du sort des joueur·euses absent·es."
+
 msgid "You are not allowed to delete the tournament."
 msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
 
@@ -13603,6 +13683,10 @@ msgstr "classement de {first} à la fin"
 msgid "ranking from start to #{last}"
 msgstr "classement du début à {last}"
 
+#, python-format
+msgid "round %(round)d:"
+msgstr "ronde %(round)d :"
+
 #, python-brace-format
 msgid "round {rounds}"
 msgid_plural "rounds {rounds}"
@@ -13948,6 +14032,18 @@ msgstr "{title} {full_name} {rating}{rating_type}"
 #, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
+
+#, python-brace-format
+msgid "{tournament}: round {round} paired and published."
+msgstr "{tournament} : ronde {round} appariée et publiée."
+
+#, python-brace-format
+msgid "{tournament}: round {round} paired."
+msgstr "{tournament} : ronde {round} appariée."
+
+#, python-brace-format
+msgid "{tournament}: round {round} published."
+msgstr "{tournament} : ronde {round} publiée."
 
 #, python-brace-format
 msgid "{what}: {pairings}"

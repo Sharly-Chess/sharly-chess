@@ -524,6 +524,20 @@
     --bs-btn-disabled-border-color: transparent;
     --bs-btn-disabled-bg: transparent;
     border-radius: 0;
+    /* The group draws the border: without one of their own, the controls
+       leave it as tall as a field beside it. */
+    --bs-btn-border-width: 0;
+}
+
+/* A count on the corner of a button. */
+.sc-btn-count-badge {
+    --bs-badge-padding-x: .45em;
+    --bs-badge-padding-y: .25em;
+}
+
+[data-sc-interface=admin] .round-controls-group .select2-selection {
+    min-height: 0;
+    height: 100%;
 }
 
 [data-sc-interface=admin] .round-controls-group > :first-child .btn {
