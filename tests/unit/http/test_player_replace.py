@@ -65,3 +65,31 @@ def test_the_player_found_brings_their_own_ratings(http: TestClient, player_id: 
     assert response.status_code == 200
     assert 'value="2823"' in response.text
     assert '1458' not in response.text
+
+
+@pytest.mark.unit
+def test_the_player_found_keeps_the_replaced_player_admin_fields(
+    http: TestClient, player_id: int
+):
+    with EventDatabase(EVENT_ID, write=True) as database:
+        stored = next(p for p in database.load_stored_players() if p.id == player_id)
+        stored.comment = 'CM2 B'
+        stored.mail = 'replaced@example.org'
+        stored.phone = '0102030405'
+        stored.owed = 12.5
+        stored.paid = 7.5
+        database.update_stored_player(stored)
+    EventLoader.unload_event(EVENT_ID)
+    found = StoredPlayer(id=None, last_name='FOUND', fide_id=2)
+    with patch.object(
+        PlayerAdminController,
+        'get_search_stored_player',
+        AsyncMock(return_value=(found, {})),
+    ):
+        response = http.post(
+            f'/player-modal/from-search/{EVENT_ID}/fide/2',
+            data={'player_id': str(player_id)},
+        )
+    assert response.status_code == 200
+    for value in ('CM2 B', 'replaced@example.org', '0102030405', '12.5', '7.5'):
+        assert f'value="{value}"' in response.text
