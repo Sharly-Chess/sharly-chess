@@ -148,6 +148,7 @@
             name="tournament_id"
             class="form-select sharly-chess-select2 inline-select2"
             style="display:none"
+            data-fit-widest-option
             {% if tournament_options|length <= 1 %}
                 disabled
             {% endif %}
@@ -183,5 +184,8 @@
             </button>
         </span>
     </div>
+    {% if not admin_event.is_team_event and tournament_options | length > 1 %}
+        {% include '/admin/pairings/all_tournaments_button.html' %}
+    {% endif %}
 </div>
 {% include '/admin/pairings/print_default_script.html' %}
