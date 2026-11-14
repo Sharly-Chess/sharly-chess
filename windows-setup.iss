@@ -32,6 +32,11 @@ AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
 DefaultDirName={autopf}\{#AppName}
+; Installed for the current user only (in %LOCALAPPDATA%\Programs) unless the
+; user chooses all users, so that each Windows account can run its own version.
+; An update keeps the mode of the installation it updates.
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 UninstallDisplayIcon={app}\{#AppExeName}
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -70,8 +75,9 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 [Tasks]
 #if Int(IsUpdate) == 0
   Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
-  Name: "defenderprogram"; Description: "{cm:DefenderProgram}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
-  Name: "defenderdata"; Description: "{cm:DefenderData}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
+  ; Adding a Defender exclusion needs the administrator rights.
+  Name: "defenderprogram"; Description: "{cm:DefenderProgram}"; GroupDescription: "{cm:DefenderGroup}"; Check: IsAdminInstallMode and GetIsDefenderActive
+  Name: "defenderdata"; Description: "{cm:DefenderData}"; GroupDescription: "{cm:DefenderGroup}"; Check: IsAdminInstallMode and GetIsDefenderActive
 #endif
 
 [InstallDelete]
@@ -274,7 +280,7 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-  if (CurStep = ssInstall) and ({#IsUpdate} = 1) then
+  if (CurStep = ssInstall) and ({#IsUpdate} = 1) and IsAdminInstallMode() then
     CarryDefenderDataException();
   if (CurStep = ssPostInstall) and WizardSilent() then
   begin

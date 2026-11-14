@@ -26,6 +26,7 @@
 - On Windows, the addresses of Hyper-V virtual switches, such as an external switch bridging the network card, are offered among the network interfaces instead of being ignored; the switches Windows creates for its own internal networks (Default Switch, WSL) are still left out (5.2.6)
 - On macOS, the application window is resized once to the tab being displayed, keeping its top in place, instead of moving about while it grows to the settings tab (5.2.7)
 - When the label of a field wraps above its input, the buttons beside the field, such as those of the school, the team affiliation, the tags and the place card template, line up with its input instead of its label, and the label stands apart from the field above (5.2.7)
+- On Windows, the installer offers to install _Sharly Chess_ for the current user only, without the administrator rights, or for all users. Installed for the current user, each Windows account has its own copy, so that a new version can be tried on one account while another keeps the version in use. The Microsoft Defender exclusions, which need the administrator rights, are offered only when installing for all users (5.2.8)
 
 ## Tournaments
 
