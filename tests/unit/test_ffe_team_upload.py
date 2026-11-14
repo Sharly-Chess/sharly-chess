@@ -639,7 +639,11 @@ class MatchReportTestCase(_MatchReportHarness):
         matches = FFETeamSession.round_matches(tournament, 1)
         self.assertEqual(sum(len(m.boards) for m in matches), 6)
         short_team_id = self.team_ids[0]
-        match = next(m for m in matches if holes[0].id in {b.id for b in m.boards})
+        match = next(
+            m
+            for m in matches
+            if holes[0].identifier in {b.identifier for b in m.boards}
+        )
         self.assertIn(short_team_id, (match.team_a.id, match.team_b.id))
         short_side = 0 if match.team_a.id == short_team_id else 1
         # The opponent's forfeit win counts 1; the absent team's −1 is

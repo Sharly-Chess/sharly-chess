@@ -66,7 +66,7 @@ def unpublish(http: TestClient, tournament: Tournament, round_: int) -> None:
 def enter_result(http: TestClient, tournament: Tournament, round_: int) -> None:
     board = EVENT.tournament().get_round_boards(round_)[0]
     response = http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.id}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.identifier}'
         f'/{Result.WIN.value}'
     )
     assert response.status_code == 200
@@ -76,7 +76,7 @@ def enter_all_results(http: TestClient, tournament: Tournament, round_: int) -> 
     for board in EVENT.tournament().get_round_boards(round_):
         if board.black_player_id:
             http.put(
-                f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.id}'
+                f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.identifier}'
                 f'/{Result.DRAW.value}'
             )
     assert EVENT.tournament().is_round_finished(round_)
@@ -282,13 +282,13 @@ def enabled_results(http: TestClient, tournament: Tournament, round_: int) -> se
     set, special ones included (a disabled button carries no request)."""
     board = EVENT.tournament().get_round_boards(round_)[0]
     response = http.get(
-        f'/event/{EVENT_ID}/pairing/{tournament.id}/{round_}/{board.id}'
+        f'/event/{EVENT_ID}/pairing/{tournament.id}/{round_}/{board.identifier}'
     )
     assert response.status_code == 200
     return {
         int(result)
         for result in re.findall(
-            rf'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.id}/(\d+)',
+            rf'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/{board.identifier}/(\d+)',
             response.text,
         )
     }

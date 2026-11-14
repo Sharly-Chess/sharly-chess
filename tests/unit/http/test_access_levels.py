@@ -358,9 +358,9 @@ def first_board_and_players(event_id: str, tournament_id: int) -> tuple[int, int
     EventLoader.unload_event(event_id)
     event = EventLoader().load_event(event_id)
     tournament: Tournament = event.tournaments_by_id[tournament_id]
-    board = sorted(tournament.get_round_boards(1), key=lambda one: one.id)[0]
+    board = sorted(tournament.get_round_boards(1), key=lambda one: one.index)[0]
     assert board.white_player_id is not None
-    return board.id, board.white_player_id
+    return board.identifier, board.white_player_id
 
 
 def record_an_illegal_move_on_the_second_board(
@@ -370,7 +370,7 @@ def record_an_illegal_move_on_the_second_board(
     event = EventLoader().load_event(event_id)
     tournament: Tournament = event.tournaments_by_id[tournament_id]
     tournament.set_for_round()
-    board = sorted(tournament.get_round_boards(1), key=lambda one: one.id)[1]
+    board = sorted(tournament.get_round_boards(1), key=lambda one: one.index)[1]
     tournament.store_illegal_move(board.white_tournament_player)
     EventLoader.unload_event(event_id)
 
@@ -458,7 +458,7 @@ def test_a_result_from_a_screen_that_had_not_caught_up_is_answered(
     EventLoader.unload_event(PUBLIC_EVENT_ID)
     event = EventLoader().load_event(PUBLIC_EVENT_ID)
     tournament = event.tournaments_by_id[events.tournament_id]
-    board = next(b for b in tournament.get_round_boards(1) if b.id == board_id)
+    board = next(b for b in tournament.get_round_boards(1) if b.identifier == board_id)
     assert board.result == Result.WIN
 
 

@@ -2699,7 +2699,7 @@ class Tournament:
             self.event.uniq_id,
             self.name,
             board.round,
-            board.id,
+            board.position,
             board.white_tournament_player.last_name,
             board.white_tournament_player.first_name or '',
             board.white_tournament_player.rating,
@@ -2739,7 +2739,7 @@ class Tournament:
             self.event.uniq_id,
             self.name,
             board.round,
-            board.id,
+            board.position,
             pairing.tournament_player.last_name,
             pairing.tournament_player.first_name or '',
             pairing.tournament_player.rating,
@@ -2763,7 +2763,7 @@ class Tournament:
             self.event.uniq_id,
             self.name,
             board.round,
-            board.id,
+            board.position,
         )
 
         # Remove the cached 'playing' value so that the pairing tab updates correctly

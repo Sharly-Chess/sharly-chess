@@ -43,7 +43,7 @@ def set_result(
 ) -> str:
     response = http.put(
         f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}'
-        f'/{board.id}/{result.value}' + ('?confirmed=1' if confirmed else '')
+        f'/{board.identifier}/{result.value}' + ('?confirmed=1' if confirmed else '')
     )
     assert response.status_code == 200
     return response.text
@@ -153,7 +153,7 @@ def test_a_draw_entered_later_is_not_logged(
     set_result(http, tournament, adjourned, Result.DRAW)
 
     tournament = EVENT.tournament()
-    assert tournament.boards_by_id[adjourned.id].result == Result.DRAW
+    assert tournament.boards_by_id[adjourned.identifier].result == Result.DRAW
     assert not tournament.pibes
 
 
@@ -164,7 +164,7 @@ def test_a_result_entered_before_the_next_round_is_not_logged(
     set_result(http, tournament, adjourned, Result.WIN)
 
     tournament = EVENT.tournament()
-    assert tournament.boards_by_id[adjourned.id].result == Result.WIN
+    assert tournament.boards_by_id[adjourned.identifier].result == Result.WIN
     assert not tournament.pibes
 
 
@@ -177,7 +177,9 @@ def test_another_result_entered_later_asks_for_confirmation(
     page = set_result(http, tournament, adjourned, Result.WIN)
 
     assert 'breaches the integrity of the pairings' in page
-    assert EVENT.tournament().boards_by_id[adjourned.id].result == Result.ADJOURNED
+    assert (
+        EVENT.tournament().boards_by_id[adjourned.identifier].result == Result.ADJOURNED
+    )
 
 
 @pytest.mark.unit
@@ -192,7 +194,7 @@ def test_another_result_entered_later_is_logged(
     set_result(http, tournament, adjourned, Result.WIN, confirmed=True)
 
     tournament = EVENT.tournament()
-    assert tournament.boards_by_id[adjourned.id].result == Result.WIN
+    assert tournament.boards_by_id[adjourned.identifier].result == Result.WIN
     assert [pibe.type for pibe in tournament.pibes] == [PibeType.ADJOURNMENT]
     assert tournament.to_trf().log_comments == [
         f'Adjournment @ Round 1: {white.pairing_number}-{black.pairing_number} 1-0'
@@ -212,7 +214,7 @@ def test_the_result_is_entered_rounds_later_in_fide_mode(
 
     tournament = EVENT.tournament()
     assert tournament.fide_mode
-    assert tournament.boards_by_id[adjourned.id].result == Result.DRAW
+    assert tournament.boards_by_id[adjourned.identifier].result == Result.DRAW
 
 
 @pytest.mark.unit
@@ -295,7 +297,7 @@ def test_the_pairing_modal_offers_to_adjourn(http: TestClient, tournament: Tourn
     board = games(tournament, 1)[1]
 
     response = http.get(
-        f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.id}',
+        f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.identifier}',
         headers={'HX-Request': 'true'},
     )
 

@@ -40,7 +40,11 @@ def board(http: TestClient, tournament: Tournament) -> Board:
 
 
 def white_illegal_moves(board: Board) -> int:
-    fresh = next(b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id)
+    fresh = next(
+        b
+        for b in EVENT.tournament().get_round_boards(1)
+        if b.identifier == board.identifier
+    )
     return fresh.white_pairing.illegal_moves
 
 
@@ -69,7 +73,7 @@ def test_an_illegal_move_recorded_from_the_modal_keeps_it_open(
     """Called with the board it was opened for, the route answers with the
     modal again — retargeted at the modal wrapper, showing the new count —
     so the arbiter can tap once more without reopening it."""
-    response = http.put(f'{add_url(tournament, board)}?board_id={board.id}')
+    response = http.put(f'{add_url(tournament, board)}?board_id={board.identifier}')
     assert response.status_code == 200
     assert response.headers['hx-retarget'] == '#modal-wrapper'
     assert stepper_counts(response.text) == [1, 0]
@@ -82,7 +86,7 @@ def test_the_page_behind_the_modal_is_refreshed_when_it_closes(
 ):
     """The row behind the modal shows the count too, and is only re-read once
     the modal closes."""
-    response = http.put(f'{add_url(tournament, board)}?board_id={board.id}')
+    response = http.put(f'{add_url(tournament, board)}?board_id={board.identifier}')
     assert 'requestRefresh()' in response.text
 
 
@@ -90,9 +94,11 @@ def test_the_page_behind_the_modal_is_refreshed_when_it_closes(
 def test_an_illegal_move_can_be_removed_from_the_modal(
     http: TestClient, tournament: Tournament, board: Board
 ):
-    http.put(f'{add_url(tournament, board)}?board_id={board.id}')
-    http.put(f'{add_url(tournament, board)}?board_id={board.id}')
-    response = http.delete(f'{delete_url(tournament, board)}?board_id={board.id}')
+    http.put(f'{add_url(tournament, board)}?board_id={board.identifier}')
+    http.put(f'{add_url(tournament, board)}?board_id={board.identifier}')
+    response = http.delete(
+        f'{delete_url(tournament, board)}?board_id={board.identifier}'
+    )
     assert response.status_code == 200
     assert response.headers['hx-retarget'] == '#modal-wrapper'
     assert stepper_counts(response.text) == [1, 0]
@@ -104,8 +110,8 @@ def test_the_count_stops_at_the_tournament_maximum(
     http: TestClient, tournament: Tournament, board: Board
 ):
     for _ in range(MAXIMUM):
-        http.put(f'{add_url(tournament, board)}?board_id={board.id}')
-    response = http.put(f'{add_url(tournament, board)}?board_id={board.id}')
+        http.put(f'{add_url(tournament, board)}?board_id={board.identifier}')
+    response = http.put(f'{add_url(tournament, board)}?board_id={board.identifier}')
     assert stepper_counts(response.text) == [MAXIMUM, 0]
     assert white_illegal_moves(board) == MAXIMUM
 
@@ -131,7 +137,9 @@ def test_the_row_shows_the_count_and_offers_no_control(
     http.put(add_url(tournament, board))
     http.put(add_url(tournament, board))
     response = http.get(f'/event/{EVENT_ID}/pairings/{tournament.id}/1')
-    row = re.search(rf'<tr\s+id="pairing-row-{board.id}".*?</tr>', response.text, re.S)
+    row = re.search(
+        rf'<tr\s+id="pairing-row-{board.identifier}".*?</tr>', response.text, re.S
+    )
     assert row is not None
     markup = row.group(0)
     assert markup.count('illegal-move-flag"') == 2
