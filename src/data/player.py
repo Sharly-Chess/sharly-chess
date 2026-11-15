@@ -1436,8 +1436,13 @@ class TournamentPlayer(Player):  # noqa: PLW1641
 
     @cached_property
     def has_withdrawn(self) -> bool:
-        """Returns True if the player has withdrawn from the tournament."""
-        return self.has_withdrawn_for_round(self.tournament.current_round)
+        """Returns True if the player has a Zero-Point Bye in every round from
+        the first one not yet paired."""
+        tournament = self.tournament
+        first_round = tournament.current_round or 1
+        if tournament.round_has_pairings(first_round):
+            first_round += 1
+        return self.has_withdrawn_for_round(first_round)
 
     def has_withdrawn_for_round(self, at_round: int) -> bool:
         """Check that the player only has zpbs for all remaining rounds."""

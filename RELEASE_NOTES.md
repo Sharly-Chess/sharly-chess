@@ -58,6 +58,7 @@
 - Importing players no longer fails with an error when a player of the file is rated only at another cadence than the tournaments of the event: the comparison shows them on their estimate (5.2.6)
 - The comment, email, phone, fixed board, _FIDE_ ID and national ID columns of the players tab can be shown even when no player has a value for them; they are then hidden by default (5.2.6)
 - A player found by the search who replaces another keeps the comment, email, phone, owed and paid amounts, fixed board and byes setting of the player replaced, instead of these being emptied (5.2.8)
+- A player withdrawn from the tournament after their game of the current round was paired, for instance once a forfeit has been entered, can be brought back with the Return to tournament button of their history, instead of being offered a withdrawal again (5.2.8)
 
 ## Teams
 
@@ -68,6 +69,7 @@
 - A player who leaves a team no longer keeps their place in the lineups set for its next rounds, where the pairing still seated them for the team they had left and the match sheet then printed the opposing player in their place; the board they held is left empty (5.2.6)
 - A player who has played for a team, a pairing-allocated bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
 - A team that has been paired can no longer be deleted, which deleted its matches with it; its delete button is no longer offered (5.2.6)
+- A board where the opposing team fielded no player can take a result again: the player present wins by forfeit, or the board is recorded as F-F when that player did not show up either, instead of the result button staying disabled (5.2.8)
 
 ## Pairings
 

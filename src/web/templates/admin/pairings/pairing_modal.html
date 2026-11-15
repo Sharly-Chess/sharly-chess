@@ -133,8 +133,11 @@
     {% set can_update = client.can_update_results(admin_tournament.id) %}
     {% set can_special = client.can_set_special_results(admin_tournament.id) %}
     {% set awaits_publication = admin_tournament.awaits_publication(admin_round) %}
+    {# A team-match board the opposing team left empty takes only a forfeit
+       win for the present player, or F-F when that player is absent too. #}
+    {% set _team_hole = board.team_forfeit_hole_pairing is not none %}
     {% set base_locked = (
-        board.exempt
+        (board.exempt and not _team_hole)
         or awaits_publication
         or not can_enter
         or (board.result and not can_update)
@@ -227,7 +230,25 @@
                     </div>
                 {% endif %}
 
-                {% if not _flat_hole %}
+                {% if _team_hole %}
+                    {% set _present_on_left = left_tp is not none %}
+                    {% set _present_is_white = wtp is not none %}
+                    <div class="row g-2">
+                        <div class="col-4">
+                            {% if _present_on_left %}
+                                {{ result_button(6 if _present_is_white else 4, special_locked, '1 – F') }}
+                            {% endif %}
+                        </div>
+                        <div class="col-4">
+                            {{ result_button(5, special_locked, 'F – F') }}
+                        </div>
+                        <div class="col-4">
+                            {% if not _present_on_left %}
+                                {{ result_button(6 if _present_is_white else 4, special_locked, 'F – 1') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% elif not _flat_hole %}
                     {# Result ids stay white-oriented — only the button
                        placement follows the left/right sides. #}
                     <div class="row g-2">
@@ -287,7 +308,7 @@
                             ) }}
                         </div>
                     </div>
-                {% else %}
+                {% elif not _team_hole %}
                 <div class="row g-2">
                     <div class="col-12 col-md-4">
                         {{ action_button(
@@ -359,7 +380,7 @@
                 </div>
                 {% endif %}
 
-                {% if not _flat_hole %}
+                {% if not _flat_hole and not _team_hole %}
                 <div class="mt-3">
                     {{ components.button(
                         _('Access unrated, penalty and adjourned results.')

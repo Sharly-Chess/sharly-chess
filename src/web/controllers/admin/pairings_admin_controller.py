@@ -1195,12 +1195,22 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         board = web_context.get_admin_board()
 
-        if board.exempt:
+        is_team_forfeit_hole = board.team_forfeit_hole_pairing is not None
+        if board.exempt and not is_team_forfeit_hole:
             return self._admin_event_pairings_render(web_context)
 
         target_board_id: int | None
         if result not in (Result.admin_imputable_results()):
             raise ClientException(f'Invalid result [{result}].')
+        if is_team_forfeit_hole and result not in (
+            Result.FORFEIT_WIN,
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+        ):
+            raise ClientException(
+                f'Board [{board_id}] has a forfeit hole, '
+                f'it cannot take the result [{result}].'
+            )
         if (
             result == Result.ADJOURNED
             and not tournament.pairing_system.supports_adjourned_games

@@ -91,6 +91,9 @@
         board.stored_board.white_player_id is none
         or board.stored_board.black_player_id is none
     ) %}
+    {# The present player of a hole wins by forfeit, or forfeits too (F-F)
+       when absent. #}
+    {% set forfeit_hole = board.team_forfeit_hole_pairing is not none %}
     <td class="pairing-cell-result text-center" style="width: 4.5rem;">
         <span
             {% if not client.can_enter_results(admin_tournament.id) %}
@@ -112,7 +115,7 @@
             {% call components.button(
                 '',
                 size='sm',
-                allowed=allowed and not has_hole and ('MANUAL_UNPAIRING' in existing_actions or not board.exempt),
+                allowed=allowed and (forfeit_hole or (not has_hole and ('MANUAL_UNPAIRING' in existing_actions or not board.exempt))),
                 attrs={
                     'style': 'width: 4.5rem;',
                     'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier),
