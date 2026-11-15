@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated, Any
 
 import requests
@@ -675,7 +676,7 @@ class ScreenAdminController(ScreenAdminRenderer):
         if type_filter.get() not in ('', screen_type):
             type_filter.set(screen_type)
 
-    def _admin_screen_update(
+    async def _admin_screen_update(
         self,
         request: HTMXRequest,
         action: str,
@@ -698,8 +699,9 @@ class ScreenAdminController(ScreenAdminRenderer):
                 raise ValueError(f'action=[{action}]')
 
         event = web_context.get_admin_event()
-        stored_screen: StoredScreen = self._admin_validate_screen_update_data(
-            action, web_context, data
+        # The validation checks that a background image URL answers.
+        stored_screen: StoredScreen = await asyncio.to_thread(
+            self._admin_validate_screen_update_data, action, web_context, data
         )
         if stored_screen.errors:
             return self._admin_event_screens_render(
@@ -807,7 +809,7 @@ class ScreenAdminController(ScreenAdminRenderer):
         ],
         screen_type: FromPath[str],
     ) -> Template | Redirect:
-        return self._admin_screen_update(
+        return await self._admin_screen_update(
             request,
             action='create',
             screen_id=None,
@@ -828,7 +830,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | Redirect:
-        return self._admin_screen_update(
+        return await self._admin_screen_update(
             request,
             action='clone',
             screen_id=screen_id,
@@ -849,7 +851,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | Redirect:
-        return self._admin_screen_update(
+        return await self._admin_screen_update(
             request,
             action='update',
             screen_id=screen_id,
@@ -917,7 +919,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | Redirect:
-        return self._admin_screen_update(
+        return await self._admin_screen_update(
             request,
             action='delete',
             screen_id=screen_id,

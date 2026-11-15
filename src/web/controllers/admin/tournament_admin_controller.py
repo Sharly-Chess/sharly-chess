@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import replace
@@ -2489,9 +2490,9 @@ class TournamentAdminController(BaseEventAdminController):
             ),
         )
         try:
-            importer.validate_options(event)
-            tournament_id = importer.load_tournament(
-                event, web_context.admin_tournament
+            await asyncio.to_thread(importer.validate_options, event)
+            tournament_id = await asyncio.to_thread(
+                importer.load_tournament, event, web_context.admin_tournament
             )
             web_context = TournamentAdminWebContext(
                 request, tournament_id, reload_event=True

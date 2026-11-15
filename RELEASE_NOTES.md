@@ -27,6 +27,7 @@
 - On macOS, the application window is resized once to the tab being displayed, keeping its top in place, instead of moving about while it grows to the settings tab (5.2.7)
 - When the label of a field wraps above its input, the buttons beside the field, such as those of the school, the team affiliation, the tags and the place card template, line up with its input instead of its label, and the label stands apart from the field above (5.2.7)
 - A page shown again with the browser's Back button draws each of its drop-down lists once, instead of drawing a second, lifeless copy beside the round selector of the pairings tab and leaving the tournament selector unusable (5.2.8)
+- _Sharly Chess_ no longer freezes while it waits for the internet: requests to _Sharly-Chess.com_ and the other online services, the pairing engines and the update check run in the background, so the screens, tablets and other pages keep answering. On a network that cannot resolve names yet, such as a phone hotspot still connecting, _Sharly-Chess.com_ is reported as unreachable after 3 seconds instead of blocking the whole application for about 30 seconds each time (5.2.8)
 
 ## Tournaments
 
@@ -136,10 +137,10 @@
 - On an input screen shown through a display controller, tapping a game opens the result window of that game, instead of sometimes opening the window of another board of the round, such as board 1 for board 25 (5.2.8)
 - The illegal moves recorded on an input screen are shown only to the staff allowed to record them, instead of to every player reading the screen (5.2.8)
 
-## _Sharly-Chess.com_
+## __Sharly-Chess.com__
 
-- Several computers can synchronise the same event with Sharly-Chess.com: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)
-- The Sharly-Chess.com window says what each part covers: the registrations and the tournament settings, merged both ways when synchronising, and the pairings and results, published from the computer. Automatic publication is set per tournament for Sharly-Chess.com, the FFE and Chess-Results, the header switch turning it on or off for every tournament; new tournaments publish automatically to Sharly-Chess.com and the FFE (5.2.0)
+- Several computers can synchronise the same event with _Sharly-Chess.com_: each sends only the changes it made, a player removed on the site after playing is kept until the arbiter withdraws or keeps them, a player moved to a tournament held on another computer is no longer deleted, conflicts no longer stop the synchronisation, changes the site refuses are reported, and a copied event asks to be connected again instead of disconnecting the original (5.2.0)
+- The _Sharly-Chess.com_ window says what each part covers: the registrations and the tournament settings, merged both ways when synchronising, and the pairings and results, published from the computer. Automatic publication is set per tournament for _Sharly-Chess.com_, the FFE and Chess-Results, the header switch turning it on or off for every tournament; new tournaments publish automatically to _Sharly-Chess.com_ and the FFE (5.2.0)
 
 ## _FFE_
 

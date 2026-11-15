@@ -1,3 +1,4 @@
+import asyncio
 import shutil
 from collections import defaultdict
 from datetime import date
@@ -2338,7 +2339,7 @@ class IndexAdminController(BaseAdminController):
             database = LocalSourceDatabaseManager().get_object(database_id)
         except KeyError:
             raise NotFoundException(f'Unknown database [{database_id}].') from None
-        database.activate()
+        await asyncio.to_thread(database.activate)
         return self._admin_render(
             web_context=web_context,
             template_context=self._database_modal_context(),
