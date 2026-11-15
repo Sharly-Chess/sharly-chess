@@ -19,6 +19,7 @@ from utils.enum import (
 logger = get_logger()
 
 if TYPE_CHECKING:
+    from data.access_levels.client import Client
     from data.board import Board
     from data.columns.board_table import BoardColumn
     from data.columns.player_table import TournamentPlayerTableColumn
@@ -595,7 +596,7 @@ class ScreenType(IdentifiableEntity, ABC):
                 )
 
     def build_columns(
-        self, screen: Screen, tournament: Tournament, event: Event
+        self, screen: Screen, tournament: Tournament, event: Event, client: Client
     ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         """Table columns rendered for *tournament* in this screen, or ``None``
         when the type has no per-tournament column table. Also performs any
@@ -973,9 +974,12 @@ class InputScreenType(ScreenType):
 
     @override
     def build_columns(
-        self, screen: Screen, tournament: Tournament, event: Event
+        self, screen: Screen, tournament: Tournament, event: Event, client: Client
     ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
-        show_illegal_moves = tournament.record_illegal_moves > 0
+        show_illegal_moves = (
+            tournament.record_illegal_moves > 0
+            and client.can_set_illegal_moves(tournament.id)
+        )
         return _build_board_columns(tournament, show_illegal_moves)
 
     @override
@@ -1109,7 +1113,7 @@ class BoardsScreenType(ScreenType):
 
     @override
     def build_columns(
-        self, screen: Screen, tournament: Tournament, event: Event
+        self, screen: Screen, tournament: Tournament, event: Event, client: Client
     ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         return _build_board_columns(tournament, show_illegal_moves=False)
 
@@ -1712,7 +1716,7 @@ class RankingScreenType(ScreenType):
 
     @override
     def build_columns(
-        self, screen: Screen, tournament: Tournament, event: Event
+        self, screen: Screen, tournament: Tournament, event: Event, client: Client
     ) -> list[TournamentPlayerTableColumn] | list[BoardColumn] | None:
         from data.columns.handlers import PlayerColumnHandler
         from data.columns.column import ColumnUsage

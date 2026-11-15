@@ -102,6 +102,7 @@ if TYPE_CHECKING:
         TrfTournament,
     )
     from data.rule_sets import RuleSet
+    from data.pairing import Pairing
     from data.pairing_dimensions import PairingDimension
     from data.pairings import PairingVariation, PairingSystem
     from data.pairings.keizer import KeizerScorer
@@ -2597,6 +2598,9 @@ class Tournament:
         Stores the `white_result` directly, and uses the opposite result
         as the black's result.
         Assumes that no asymmetric result was entered."""
+        if (hole_pairing := board.team_forfeit_hole_pairing) is not None:
+            self._add_team_forfeit_hole_result(board, hole_pairing, white_result)
+            return
         if board.optional_white_tournament_player is None:
             raise ValueError(
                 f'Board [{board.stored_board.id}] has a forfeit hole, '
@@ -2630,6 +2634,42 @@ class Tournament:
         )
 
         # Remove the cached 'playing' value so that the pairing tab updates correctly
+        self.__dict__.pop('playing', None)
+
+    def _add_team_forfeit_hole_result(
+        self, board: Board, pairing: Pairing, white_result: Result
+    ) -> None:
+        """Stores the result of the present player of a team-match board
+        whose other side is empty: a forfeit win, or a double forfeit when
+        the player did not show up either."""
+        player_result = (
+            white_result
+            if board.optional_white_tournament_player is not None
+            else white_result.opposite_result
+        )
+        if player_result not in (Result.FORFEIT_WIN, Result.DOUBLE_FORFEIT):
+            raise ValueError(
+                f'Board [{board.stored_board.id}] has a forfeit hole, '
+                f'it cannot take the result [{white_result}].'
+            )
+        with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            pairing.update_result(event_database, player_result)
+            board.set_last_result_update(player_result, event_database)
+
+        self.knockout.forget_settled_winners(board)
+
+        logger.info(
+            'Added result: %s %s %d.%d %s %s %d %s.',
+            self.event.uniq_id,
+            self.name,
+            board.round,
+            board.id,
+            pairing.tournament_player.last_name,
+            pairing.tournament_player.first_name or '',
+            pairing.tournament_player.rating,
+            player_result,
+        )
+
         self.__dict__.pop('playing', None)
 
     def delete_result(self, board: Board) -> None:

@@ -10,9 +10,9 @@
     {% set all_auto = documents and documents | rejectattr('auto_upload') | list | length == 0 %}
     <table class="table prominent table-sm w-100 mx-auto justify-content-center">
         <thead>
-            <th class="text-center">
+            <th class="text-center align-middle">
                 <div
-                    class="form-check blue-checkbox form-switch d-inline-block"
+                    class="form-check blue-checkbox form-switch d-inline-flex align-items-center gap-1 ps-0 mb-0"
                     {{ macros.tooltip_attributes('', _(
                         'Upload automatically every %(delay)d minutes.',
                         delay=custom_upload_delay,
@@ -21,7 +21,7 @@
                     <input
                         id="auto-upload-all"
                         name="auto_upload_all"
-                        class="form-check-input blue-checkbox"
+                        class="form-check-input blue-checkbox m-0"
                         type="checkbox"
                         value="on"
                         hx-patch="{{ url_for('custom-upload-auto-upload', event_uniq_id=admin_event.uniq_id) }}"
