@@ -215,7 +215,7 @@ body:not([data-sc-interface=admin]) #copyright-wrapper {
 }
 
 [data-sc-interface=admin] .sidebar .nav-link:hover, [data-sc-interface=admin] .sidebar .btn-link:hover {
-    background-color: var(--pw-surface-raised-bg);
+    background-color: var(--pw-nav-hover-bg);
 }
 
 [data-sc-interface=admin] .sidebar .nav-link.active, [data-sc-interface=admin] .sidebar .nav-link.active:hover {
@@ -2386,6 +2386,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --pw-surface-bg: #1e2126;
     --pw-surface-raised-bg: #2b2f36;
     --pw-control-border-color: #42464f;
+    --pw-nav-hover-bg: #2b2f36;
     --pw-nav-active-bg: #2e2a22;
     --pw-nav-active-color: #efe3c6;
     --bs-border-radius: 0.5rem;
@@ -2500,6 +2501,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
     --pw-surface-bg: #ffffff;
     --pw-surface-raised-bg: #f3f1ec;
     --pw-control-border-color: #d3d0c8;
+    --pw-nav-hover-bg: #e2ded5;
     --pw-nav-active-bg: #e6dfcc;
     --pw-nav-active-color: #3a301b;
     --bs-border-radius: 0.5rem;
