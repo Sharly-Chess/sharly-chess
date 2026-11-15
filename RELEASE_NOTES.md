@@ -132,6 +132,7 @@
 - The team ranking screens show the tie-breaks where the lowest value wins, such as the lowest own average rating of the Loubatière cup, as positive values, as the admin view and the printed documents do (5.2.6)
 - Adding, replacing or removing the image of an image screen gives back the space the previous images took in the event file, which kept it as large as when its biggest images were stored (5.2.7)
 - On an input screen shown through a display controller, tapping a game opens the result window of that game, instead of sometimes opening the window of another board of the round, such as board 1 for board 25 (5.2.8)
+- The illegal moves recorded on an input screen are shown only to the staff allowed to record them, instead of to every player reading the screen (5.2.8)
 
 ## _Sharly-Chess.com_
 

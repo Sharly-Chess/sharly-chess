@@ -137,6 +137,7 @@ def events(api: ApiClient) -> Iterator[Fixtures]:
     )
     assert tournament.id is not None
     assert unpaired.id is not None
+    record_an_illegal_move_on_the_second_board(PUBLIC_EVENT_ID, tournament.id)
     yield Fixtures(
         tournament_id=tournament.id,
         unpaired_tournament_id=unpaired.id,
@@ -305,6 +306,17 @@ def test_whether_an_illegal_move_can_be_recorded_from_a_screen(
 
 
 @pytest.mark.unit
+def test_whether_recorded_illegal_moves_are_shown_on_a_screen(
+    lan: TestClient, level: Rights, events: Fixtures
+):
+    """Players do not see the illegal moves; the staff who may record
+    them do."""
+    response = lan.get(f'/view/screen/{PUBLIC_EVENT_ID}/{events.public_screen.uniq_id}')
+    assert response.status_code == 200
+    assert ('illegal-move-icon' in response.text) is level.illegal_moves
+
+
+@pytest.mark.unit
 def test_whether_a_player_can_be_checked_in_from_a_screen(
     lan: TestClient, level: Rights, events: Fixtures
 ):
@@ -341,6 +353,18 @@ def first_board_and_players(event_id: str, tournament_id: int) -> tuple[int, int
     board = sorted(tournament.get_round_boards(1), key=lambda one: one.id)[0]
     assert board.white_player_id is not None
     return board.id, board.white_player_id
+
+
+def record_an_illegal_move_on_the_second_board(
+    event_id: str, tournament_id: int
+) -> None:
+    EventLoader.unload_event(event_id)
+    event = EventLoader().load_event(event_id)
+    tournament: Tournament = event.tournaments_by_id[tournament_id]
+    tournament.set_for_round()
+    board = sorted(tournament.get_round_boards(1), key=lambda one: one.id)[1]
+    tournament.store_illegal_move(board.white_tournament_player)
+    EventLoader.unload_event(event_id)
 
 
 def first_player(event_id: str, tournament_id: int) -> int:
