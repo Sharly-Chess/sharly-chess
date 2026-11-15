@@ -156,7 +156,9 @@ class BaseScreenUserController(BaseUserController):
             for tournament in {
                 screen_set.tournament for screen_set in screen.sorted_screen_sets
             }:
-                columns = screen_type.build_columns(screen, tournament, event)
+                columns = screen_type.build_columns(
+                    screen, tournament, event, web_context.client
+                )
                 if columns is not None:
                     columns_by_tournament_id[tournament.id] = columns
         request = web_context.request

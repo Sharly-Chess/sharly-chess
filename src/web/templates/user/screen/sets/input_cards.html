@@ -66,7 +66,7 @@
                         <span class="input-card-details">
                             {{ tp.rating_str }} · {{ tp.vpoints_str }} {{ pgettext('points column header', 'Pts') }}{% if show_real_points %} [{{ tp.points_str }}]{% endif %}
                         </span>
-                        {% if tournament.record_illegal_moves %}
+                        {% if tournament.record_illegal_moves and client.can_set_illegal_moves(tournament.id) %}
                             {% set column = namespace(is_black=side == 'black') %}
                             {% include '/user/screen/sets/board_row_illegal_moves_cell.html' %}
                         {% endif %}
