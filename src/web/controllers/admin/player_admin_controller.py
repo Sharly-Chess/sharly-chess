@@ -978,14 +978,16 @@ class PlayerAdminController(BaseEventAdminController):
                     fide_id = stored_player.fide_id or None
                     national_id = stored_player.national_id or None
                     national_source = stored_player.national_source or None
-                # Fields unused by the search, kept on replace
-                mail = stored_player.mail
-                phone = stored_player.phone
-                comment = stored_player.comment
-                owed = stored_player.owed
-                paid = stored_player.paid
-                fixed = stored_player.fixed
-                byes_allowed = stored_player.byes_allowed
+                # Fields the data sources do not provide, kept on replace
+                kept_player = admin_player.stored_player if admin_player else None
+                if kept_player is not None:
+                    mail = kept_player.mail
+                    phone = kept_player.phone
+                    comment = kept_player.comment
+                    owed = kept_player.owed
+                    paid = kept_player.paid
+                    fixed = kept_player.fixed
+                    byes_allowed = kept_player.byes_allowed
                 stored_plugin_data = stored_player.plugin_data
             if action == FormAction.CREATE:
                 if len(event.sorted_not_finished_tournaments) == 1:
