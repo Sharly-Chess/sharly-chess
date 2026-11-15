@@ -68,6 +68,7 @@
 - A player who leaves a team no longer keeps their place in the lineups set for its next rounds, where the pairing still seated them for the team they had left and the match sheet then printed the opposing player in their place; the board they held is left empty (5.2.6)
 - A player who has played for a team, a pairing-allocated bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
 - A team that has been paired can no longer be deleted, which deleted its matches with it; its delete button is no longer offered (5.2.6)
+- A board where the opposing team fielded no player can take a result again: the player present wins by forfeit, or the board is recorded as F-F when that player did not show up either, instead of the result button staying disabled (5.2.8)
 
 ## Pairings
 
