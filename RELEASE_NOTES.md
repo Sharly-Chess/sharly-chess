@@ -56,6 +56,7 @@
 - When the ratings update only has the sources of some ratings to bring up to date, the window says so, instead of saying that all the ratings are up to date beside an enabled Update button (5.2.6)
 - Importing players no longer fails with an error when a player of the file is rated only at another cadence than the tournaments of the event: the comparison shows them on their estimate (5.2.6)
 - The comment, email, phone, fixed board, _FIDE_ ID and national ID columns of the players tab can be shown even when no player has a value for them; they are then hidden by default (5.2.6)
+- A player found by the search who replaces another keeps the comment, email, phone, owed and paid amounts, fixed board and byes setting of the player replaced, instead of these being emptied (5.2.8)
 
 ## Teams
 
