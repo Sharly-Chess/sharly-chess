@@ -1662,7 +1662,9 @@ class SharlyChessServerToga(toga.App):
             config = SharlyChessConfig()
             try:
                 check_beta = config.check_beta_versions
-                VersionUpdater.search_for_latest_version(check_beta)
+                await asyncio.to_thread(
+                    VersionUpdater.search_for_latest_version, check_beta
+                )
             finally:
                 self.version_search_ongoing = False
                 self._update_latest_version_components()

@@ -1,3 +1,4 @@
+import asyncio
 import copy
 from datetime import datetime, timedelta
 from functools import cached_property
@@ -358,8 +359,11 @@ class SCEAdminController(BaseAdminController):
             if expires_at < datetime.now():
                 error_message = _('Authorization expired, please try again.')
             try:
-                tokens = SCESession.get_tokens_from_code(
-                    code, code_verifier, str(request.url).split('?')[0]
+                tokens = await asyncio.to_thread(
+                    SCESession.get_tokens_from_code,
+                    code,
+                    code_verifier,
+                    str(request.url).split('?')[0],
                 )
             except SharlyChessException:
                 error_message = _(
@@ -372,7 +376,9 @@ class SCEAdminController(BaseAdminController):
             match action:
                 case 'import-event':
                     try:
-                        event = self._import_event(sce_event_id, tokens)
+                        event = await asyncio.to_thread(
+                            self._import_event, sce_event_id, tokens
+                        )
                         with EventDatabase(event.uniq_id, write=True) as database:
                             database.set_origin(EventOrigin.IMPORTED_ONLINE)
                         for plugin in plugin_manager.enable_missing_plugins(
@@ -405,7 +411,9 @@ class SCEAdminController(BaseAdminController):
                     plugin_data.tokens = tokens
                     SCEUtils.update_event_plugin_data(event, plugin_data, write=False)
                     try:
-                        SCESession(event).update_event_from_sce_event()
+                        await asyncio.to_thread(
+                            SCESession(event).update_event_from_sce_event
+                        )
                         SCEUtils.clear_auth_error_statuses(event)
                         Message.success(
                             request,
@@ -460,7 +468,8 @@ class SCEAdminController(BaseAdminController):
             has_player_conflicts = bool(web_context.sce_players_with_conflicts)
             try:
                 # Update the event status / ensure all links will work in case slugs have changed
-                SCESession(event).update_event_from_sce_event(
+                await asyncio.to_thread(
+                    SCESession(event).update_event_from_sce_event,
                     update_tournament_conflicts=True,
                     update_player_conflicts=has_player_conflicts,
                 )
@@ -604,12 +613,13 @@ class SCEAdminController(BaseAdminController):
         return HTMXTemplate(template_name='/common/empty.html', re_swap='none')
 
     @classmethod
-    def _render_tournament_conflict_modal(
+    async def _render_tournament_conflict_modal(
         cls, web_context: SCEWebContext, error_message: str | None = None
     ) -> HTMXTemplate:
         event = web_context.get_admin_event()
         try:
-            SCESession(event).update_event_from_sce_event(
+            await asyncio.to_thread(
+                SCESession(event).update_event_from_sce_event,
                 update_tournament_conflicts=True,
             )
         except SharlyChessException as e:
@@ -645,7 +655,7 @@ class SCEAdminController(BaseAdminController):
         self, request: HTMXRequest
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        return self._render_tournament_conflict_modal(web_context)
+        return await self._render_tournament_conflict_modal(web_context)
 
     @post(
         path='/sce/resolve-tournament-conflict/{event_uniq_id:str}/{tournament_id:int}/{choice:str}',
@@ -679,7 +689,11 @@ class SCEAdminController(BaseAdminController):
             raise ClientException(f'Unknown choice: {choice}')
         error_message: str | None = None
         try:
-            SCESession(event).update_sce_tournament(resolve_sync_data, plugin_data.id)
+            await asyncio.to_thread(
+                SCESession(event).update_sce_tournament,
+                resolve_sync_data,
+                plugin_data.id,
+            )
             resolve_sync_data.augment_stored_tournament(
                 tournament.stored_tournament, event
             )
@@ -693,15 +707,16 @@ class SCEAdminController(BaseAdminController):
             logger.exception(e)
             error_message = _('An error occurred, consult the logs for more details.')
 
-        return self._render_tournament_conflict_modal(web_context, error_message)
+        return await self._render_tournament_conflict_modal(web_context, error_message)
 
     @classmethod
-    def _render_player_conflict_modal(
+    async def _render_player_conflict_modal(
         cls, web_context: SCEWebContext, error_message: str | None = None
     ) -> HTMXTemplate:
         event = web_context.get_admin_event()
         try:
-            SCESession(event).update_event_from_sce_event(
+            await asyncio.to_thread(
+                SCESession(event).update_event_from_sce_event,
                 update_player_conflicts=True,
             )
         except SharlyChessException as e:
@@ -738,7 +753,7 @@ class SCEAdminController(BaseAdminController):
         self, request: HTMXRequest
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        return self._render_player_conflict_modal(web_context)
+        return await self._render_player_conflict_modal(web_context)
 
     @post(
         path='/sce/resolve-player-conflict/{event_uniq_id:str}/{player_id:int}/{choice:str}',
@@ -773,7 +788,8 @@ class SCEAdminController(BaseAdminController):
         error_message: str | None = None
         try:
             session = SCESession(event)
-            session.update_sce_player(
+            await asyncio.to_thread(
+                session.update_sce_player,
                 resolve_sync_data,
                 plugin_data.conflict_sync_data.tournament_id,
                 plugin_data.id,
@@ -798,7 +814,7 @@ class SCEAdminController(BaseAdminController):
             logger.exception(e)
             error_message = _('An error occurred, consult the logs for more details.')
 
-        return self._render_player_conflict_modal(web_context, error_message)
+        return await self._render_player_conflict_modal(web_context, error_message)
 
     @post(
         path='/sce/import-tournament/{event_uniq_id:str}/{sce_tournament_id:str}',
@@ -814,7 +830,9 @@ class SCEAdminController(BaseAdminController):
         event = web_context.get_admin_event()
         message_type: str | None = None
         try:
-            SCESession(event).import_tournaments([sce_tournament_id])
+            await asyncio.to_thread(
+                SCESession(event).import_tournaments, [sce_tournament_id]
+            )
             message = _('Tournament successfully imported.')
             plugin_data = SCEUtils.get_event_plugin_data(event)
             if not plugin_data.last_sync_at:
@@ -843,7 +861,9 @@ class SCEAdminController(BaseAdminController):
         session = SCESession(event)
         message_type: str | None = None
         try:
-            duplicate_count = session.create_sce_tournament(tournament)
+            duplicate_count = await asyncio.to_thread(
+                session.create_sce_tournament, tournament
+            )
             message = _('Tournament [{tournament}] successfully uploaded.').format(
                 tournament=tournament.name
             )
@@ -1033,7 +1053,9 @@ class SCEAdminController(BaseAdminController):
         if sce_player:
             assert plugin_data.id is not None
             try:
-                SCESession(event).delete_sce_player(plugin_data.id, sce_player_id)
+                await asyncio.to_thread(
+                    SCESession(event).delete_sce_player, plugin_data.id, sce_player_id
+                )
                 del plugin_data.duplicated_players_by_id[sce_player_id]
                 SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
                 for player in event.players:
@@ -1076,7 +1098,9 @@ class SCEAdminController(BaseAdminController):
             != SCEUtils.get_tournament_plugin_data(tournament).check_in_open
         ):
             try:
-                SCESession(event).toggle_tournament_check_in(tournament)
+                await asyncio.to_thread(
+                    SCESession(event).toggle_tournament_check_in, tournament
+                )
             except SharlyChessException as e:
                 logger.exception(e)
                 return PlayerAdminController.render_check_in_modal(

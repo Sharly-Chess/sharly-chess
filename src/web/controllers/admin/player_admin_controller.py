@@ -2288,9 +2288,12 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_check_in_tournaments_modal(self, request: HTMXRequest) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
-        plugin_manager.hook_for_event(
-            event, 'on_before_load_tournaments_check_in_modal'
-        )(event=event)
+        await asyncio.to_thread(
+            plugin_manager.hook_for_event(
+                event, 'on_before_load_tournaments_check_in_modal'
+            ),
+            event=event,
+        )
         return self.render_check_in_modal(web_context)
 
     @classmethod
