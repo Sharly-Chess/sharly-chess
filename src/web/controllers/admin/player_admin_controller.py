@@ -2127,32 +2127,6 @@ class PlayerAdminController(BaseEventAdminController):
             web_context.template_context | template_context
         )
 
-    def _set_player_participation(
-        self,
-        web_context: PlayerAdminWebContext,
-        withdraw: bool = False,
-    ) -> Template:
-        tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player().single_tournament_player
-
-        # If there aren't any pairings, then the round for the bye is the first round
-        round_for_participation = tournament.current_round or 1
-        if not withdraw and tournament.round_has_pairings(round_for_participation):
-            # If returning to tournament and pairings for this round, then start setting removing ZPBs from the next round only
-            round_for_participation += 1
-        result = Result.ZERO_POINT_BYE if withdraw else Result.NO_RESULT
-        new_byes = {
-            round_: result
-            for round_ in range(
-                round_for_participation,
-                tournament.rounds + 1,
-            )
-            if player.pairings[round_].unpaired
-        }
-        tournament.set_player_byes(player, new_byes)
-        tournament.check_in_player(player, not withdraw)
-        return self._render_player_records_modal(web_context)
-
     @get(
         path='/record-modal/{event_uniq_id:str}/{player_id:int}',
         name='admin-record-modal',

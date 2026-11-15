@@ -58,6 +58,7 @@
 - Importing players no longer fails with an error when a player of the file is rated only at another cadence than the tournaments of the event: the comparison shows them on their estimate (5.2.6)
 - The comment, email, phone, fixed board, _FIDE_ ID and national ID columns of the players tab can be shown even when no player has a value for them; they are then hidden by default (5.2.6)
 - A player found by the search who replaces another keeps the comment, email, phone, owed and paid amounts, fixed board and byes setting of the player replaced, instead of these being emptied (5.2.8)
+- A player withdrawn from the tournament after their game of the current round was paired, for instance once a forfeit has been entered, can be brought back with the Return to tournament button of their history, instead of being offered a withdrawal again (5.2.8)
 
 ## Teams
 
