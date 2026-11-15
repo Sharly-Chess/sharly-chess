@@ -22,6 +22,7 @@ from requests import Session, HTTPError, Response
 from common.computer_identity import computer_identity
 from common.exception import SharlyChessException
 from common.logger import get_logger
+from common.network import HOST_RESOLUTION_TIMEOUT, host_resolves
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
@@ -225,10 +226,22 @@ class SCESession(Session):
                 logger.exception(response.json())
             raise SharlyChessException(str(e)) from e
 
+    @staticmethod
+    def _check_reachable() -> None:
+        if not host_resolves(SCE_BASE_URL):
+            raise requests.ConnectionError(
+                f'[{SCE_BASE_URL}] could not be resolved within '
+                f'{HOST_RESOLUTION_TIMEOUT} seconds.'
+            )
+
     @classmethod
     def get_tokens_from_code(
         cls, code: str, code_verifier: str, redirect_uri: str
     ) -> SCETokens:
+        try:
+            cls._check_reachable()
+        except requests.ConnectionError as e:
+            raise SharlyChessException(str(e)) from e
         response = requests.post(
             SCE_BASE_URL + '/api/oauth/token',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
@@ -343,6 +356,7 @@ class SCESession(Session):
                 f'Event [{self.event.uniq_id}] - Sharly-Chess.com tokens not set'
             )
         try:
+            self._check_reachable()
             if self.tokens.expires_at < datetime.now():
                 logger.debug(
                     'SCE access token expired for [%s] (expired at %s) — refreshing.',

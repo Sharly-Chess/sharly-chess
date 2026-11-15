@@ -1,3 +1,4 @@
+import asyncio
 from operator import attrgetter
 
 from litestar.di import NamedDependency
@@ -6,7 +7,8 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
+from contextlib import asynccontextmanager
 from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
@@ -107,6 +109,22 @@ from web.session import (
 from web.utils import SelectOption
 
 logger = get_logger()
+
+_pairing_locks: dict[tuple[str, int], asyncio.Lock] = defaultdict(asyncio.Lock)
+
+
+@asynccontextmanager
+async def pairing_engine_run(tournament: Tournament) -> AsyncIterator[Tournament]:
+    """Serialises the pairing runs of a tournament and yields the tournament
+    as stored once the previous run is over, for the engine to work on.
+
+    The engine runs in a thread so that the server keeps answering the other
+    clients meanwhile; a second submission waiting here must then see the
+    pairings of the first one, not the tournament it loaded before them."""
+    async with _pairing_locks[(tournament.event.uniq_id, tournament.id)]:
+        event = EventLoader().load_event(tournament.event.uniq_id)
+        yield event.tournaments_by_id[tournament.id]
+
 
 # Bonus / penalty points are exported in the TRF26 299 record, whose
 # point fields are ``[-]11.5``: four columns holding either a sign or a
@@ -2522,14 +2540,17 @@ class PairingsAdminController(BaseEventAdminController):
                         'calculated_rounds': calculated,
                     },
                 )
-        await SnapshotScheduler.snapshot_before_async(
-            tournament.event.uniq_id,
-            SnapshotReason.BEFORE_PAIRING,
-            round_,
-            tournament.id,
-        )
         adjourned_boards: list[Board] = []
-        error = tournament.generate_round_pairings(round_)
+        async with pairing_engine_run(tournament) as stored_tournament:
+            await SnapshotScheduler.snapshot_before_async(
+                tournament.event.uniq_id,
+                SnapshotReason.BEFORE_PAIRING,
+                round_,
+                tournament.id,
+            )
+            error = await asyncio.to_thread(
+                stored_tournament.generate_round_pairings, round_
+            )
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament.id,
@@ -2631,9 +2652,14 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        if error := tournament.pairing_variation.engine.generate_pairings(
-            tournament, round_, True
-        ):
+        async with pairing_engine_run(tournament) as tournament:
+            error = await asyncio.to_thread(
+                tournament.pairing_variation.engine.generate_pairings,
+                tournament,
+                round_,
+                True,
+            )
+        if error:
             Message.error(request, error)
         else:
             unpaired_count = sum(
@@ -2677,6 +2703,15 @@ class PairingsAdminController(BaseEventAdminController):
         )
         return self._admin_event_pairings_render(web_context)
 
+    @staticmethod
+    def _generate_all_round_pairings(tournament: Tournament) -> str:
+        for round_ in range(1, tournament.rounds + 1):
+            if error := tournament.pairing_variation.engine.generate_pairings(
+                tournament, round_
+            ):
+                return error
+        return ''
+
     @post(
         path='/pairings/generate/{event_uniq_id:str}/{tournament_id:int}',
         name='generate-tournament-pairings',
@@ -2713,17 +2748,15 @@ class PairingsAdminController(BaseEventAdminController):
                             'calculated_rounds': calculated,
                         },
                     )
-        await SnapshotScheduler.snapshot_before_async(
-            tournament.event.uniq_id,
-            SnapshotReason.BEFORE_PAIRING,
-            tournament_id=tournament.id,
-        )
-        error: str = ''
-        for round_ in range(1, tournament.rounds + 1):
-            if error := tournament.pairing_variation.engine.generate_pairings(
-                tournament, round_
-            ):
-                break
+        async with pairing_engine_run(tournament) as tournament:
+            await SnapshotScheduler.snapshot_before_async(
+                tournament.event.uniq_id,
+                SnapshotReason.BEFORE_PAIRING,
+                tournament_id=tournament.id,
+            )
+            error = await asyncio.to_thread(
+                self._generate_all_round_pairings, tournament
+            )
         if error:
             Message.error(request, error)
         else:
@@ -3432,8 +3465,12 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: FromPath[int],
         round: FromPath[int],
     ) -> Template:
-        web_context = PairingsAdminWebContext(
-            request, tournament_id, round, load_check_in_data=True
+        web_context = await asyncio.to_thread(
+            PairingsAdminWebContext,
+            request,
+            tournament_id,
+            round,
+            load_check_in_data=True,
         )
         return self._admin_event_pairings_render(
             web_context,
@@ -3797,7 +3834,8 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: FromPath[int],
         round: FromPath[int],
     ) -> Template:
-        web_context = PairingsAdminWebContext(
+        web_context = await asyncio.to_thread(
+            PairingsAdminWebContext,
             request,
             tournament_id=tournament_id,
             round_=round,

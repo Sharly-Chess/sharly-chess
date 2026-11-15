@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated, Any
 
 from litestar import get, patch, post
@@ -519,7 +520,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         default_server_path,
                         transfer_protocol.name,
                     )
-                    CustomUploadUploader.test_file_transfer_connection(
+                    await asyncio.to_thread(
+                        CustomUploadUploader.test_file_transfer_connection,
                         ftp_host,
                         ftp_username,
                         ftp_password,

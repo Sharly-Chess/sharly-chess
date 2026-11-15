@@ -13,12 +13,13 @@ from concurrent.futures import (
 from logging import Logger
 import time
 from urllib.error import URLError
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 import psutil
 import pathlib
 import ctypes
 from ctypes import wintypes
-from threading import Thread
+from threading import Event, Thread
 
 from common.logger import get_logger
 
@@ -389,6 +390,35 @@ def find_lan_interfaces() -> list[dict[str, str]]:
         results.sort(key=lambda d: d['ip'] != primary)
 
     return results
+
+
+HOST_RESOLUTION_TIMEOUT = 3  # seconds
+
+
+def host_resolves(url: str, timeout: float = HOST_RESOLUTION_TIMEOUT) -> bool:
+    """Whether the host of *url* resolves within *timeout* seconds.
+
+    The timeouts of requests and urllib do not cover the DNS lookup, which
+    can hang for about 30 seconds on a network that is up but cannot resolve
+    names yet (a phone hotspot still connecting, for instance). A lookup
+    still hanging is left to finish in a daemon thread, which never holds
+    up the application when it quits."""
+    host = urlparse(url).hostname
+    if not host:
+        return False
+    resolved = Event()
+
+    def _resolve() -> None:
+        try:
+            socket.getaddrinfo(host, None)
+        except OSError:
+            return
+        resolved.set()
+
+    lookup = Thread(target=_resolve, daemon=True)
+    lookup.start()
+    lookup.join(timeout)
+    return resolved.is_set()
 
 
 class NetworkMonitor:
