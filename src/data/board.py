@@ -250,6 +250,21 @@ class Board:  # noqa: PLW1641
         return self.tournament.team_boards_by_id.get(team_board_id)
 
     @property
+    def team_forfeit_hole_pairing(self) -> Pairing | None:
+        """The present player's pairing on a board of a team match where
+        the opposing team fielded no player, or ``None`` for any other
+        board. That player wins by forfeit, or also forfeits when absent
+        (F-F) — the only results such a board can take."""
+        team_board = self.team_board
+        if team_board is None or team_board.stored_team_board.team_b_id is None:
+            return None
+        white_pairing = self.optional_white_pairing
+        black_pairing = self.optional_black_pairing
+        if (white_pairing is None) == (black_pairing is None):
+            return None
+        return white_pairing or black_pairing
+
+    @property
     def team_match_number_str(self) -> str | None:
         """``match.slot`` display for a board inside a team match (e.g.
         ``3.2`` = second board of the match at table 3), or ``None``
