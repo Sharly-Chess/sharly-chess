@@ -11,7 +11,7 @@ from pathlib import Path
 from types import UnionType
 from typing import Any, cast
 
-from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
+from httpdate.httpdate import httpdate_to_unixtime
 from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
@@ -441,7 +441,6 @@ class WebContext:
         return {
             'DEVEL_ENV': DEVEL_ENV,
             'now': now,
-            'now_http_date': unixtime_to_httpdate(int(now)),
             'sharly_chess_config': sharly_chess_config,
             'background_info': self.background_info,
             'theme': self.theme,

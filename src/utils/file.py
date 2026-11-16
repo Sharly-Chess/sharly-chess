@@ -1,6 +1,8 @@
 import base64
 import hashlib
 import os
+import sys
+import time
 from collections.abc import Callable
 from contextlib import suppress
 from pathlib import Path
@@ -72,6 +74,36 @@ def text_files_fingerprint(files: list[Path]) -> bytes:
         except FileNotFoundError:
             pass
     return hash_md5.digest()
+
+
+#: How long a rename waits for another program to let go of the file.
+RENAME_WAIT_SECONDS = 5.0
+#: How long it waits between two attempts.
+RENAME_RETRY_SECONDS = 0.1
+#: Whether an open file stands in the way of a rename.
+ON_WINDOWS: bool = sys.platform == 'win32'
+
+
+def rename_when_released(
+    source: Path, target: Path, wait_seconds: float = RENAME_WAIT_SECONDS
+) -> None:
+    """Renames a file, waiting for the program that holds it open to let go.
+
+    Windows refuses to rename a file another process has open, and something
+    often has one that has just been written to: an antivirus or the search
+    indexer scanning it, a request still reading it, a snapshot being copied.
+    They let go within moments, which is what the rename waits for; elsewhere
+    an open file does not stand in the way and a refusal is final.
+    """
+    deadline = time.monotonic() + wait_seconds
+    while True:
+        try:
+            source.rename(target)
+            return
+        except PermissionError:
+            if not ON_WINDOWS or time.monotonic() >= deadline:
+                raise
+            time.sleep(RENAME_RETRY_SECONDS)
 
 
 def shutil_delete_onexc(

@@ -7,6 +7,9 @@ decided on the server and read back from the HTML here, where the
 browser suite was starting a browser per part to do the same.
 """
 
+import json
+import os
+import time
 from collections.abc import Iterator
 
 import pytest
@@ -14,7 +17,8 @@ from AdvancedHTMLParser import AdvancedHTMLParser
 from litestar.testing import TestClient
 
 from data.loader import EventLoader
-from database.sqlite.event.event_store import StoredTournament
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredEvent, StoredTournament
 from tests.test_config import ScreenType, TestUtils
 from tests.unit.http.client import ApiClient
 
@@ -380,3 +384,59 @@ def test_the_footer_is_left_out_of_image_screens(
     )
     assert response.status_code == 200
     assert ('id="copyright"' in response.text) == shown
+
+
+SCREEN_ID = 'test-screens-http-input'
+
+
+def _refresh_headers(page: str) -> dict[str, str]:
+    """The headers the page sends with its next refresh."""
+    parser = AdvancedHTMLParser()
+    parser.parseStr(page)
+    refresher = next(
+        element
+        for element in parser.getElementsByTagName('div')
+        if 'screen-refresher' in (element.getAttribute('class') or '').split()
+    )
+    return json.loads(refresher.getAttribute('hx-headers'))
+
+
+@pytest.mark.unit
+def test_a_change_made_while_a_screen_is_built_is_shown_by_its_next_refresh(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """The change is committed once the screen has read the event: the page
+    does not show it, so its next refresh must not be told nothing changed."""
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        SCREEN_ID,
+        ScreenType.INPUT,
+        {'init_set_tournament_id': tournament.id},
+    )
+    read = EventLoader._load_stored_event
+    changes: list[float] = []
+
+    def read_then_change(uniq_id: str) -> StoredEvent:
+        stored_event = read(uniq_id)
+        if not changes:
+            time.sleep(0.01)
+            os.utime(EventDatabase.event_database_path(uniq_id))
+            changes.append(time.time())
+        return stored_event
+
+    monkeypatch.setattr(
+        EventLoader, '_load_stored_event', staticmethod(read_then_change)
+    )
+    url = f'/view/screen/{EVENT_ID}/{SCREEN_ID}'
+    page = http.get(url)
+    assert page.status_code == 200
+    assert changes
+
+    refresh = http.get(
+        url, headers={'HX-Request': 'true', **_refresh_headers(page.text)}
+    )
+    assert refresh.status_code == 200

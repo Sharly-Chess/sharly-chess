@@ -43,7 +43,7 @@
                         event_uniq_id=user_event.uniq_id,
                         display_controller_id=display_controller.id,
                     ) }}"
-                    hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
+                    hx-headers='{"If-Modified-Since": "{{ read_since_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ read_since }}"}'
                 {% endif %}
                 hx-trigger="{{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
                 hx-target="body"
@@ -60,7 +60,7 @@
         {% else %}
             <div
                 class="refresher screen-refresher"
-                hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
+                hx-headers='{"If-Modified-Since": "{{ read_since_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ read_since }}"}'
                 hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                 hx-target="body"
                 hx-trigger="{{ becomes_visible }} every {{ sharly_chess_config.user_screen_update_delay }}s[{{ refresh_conditions }}] queue:none"

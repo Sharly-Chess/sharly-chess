@@ -58,6 +58,7 @@ from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
 from utils.enum import Extension, EventOrigin, EventType
+from utils.file import rename_when_released
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -267,7 +268,7 @@ class EventDatabase(MigrationDatabase):
             index += 1
             arch_file = ArchiveLoader.get_archive_path(f'{self.uniq_id}#{index}')
         arch_file.parent.mkdir(parents=True, exist_ok=True)
-        self.file.rename(arch_file)
+        rename_when_released(self.file, arch_file)
         arch_file.touch()
         logger.info('Database has been archived (%s).', arch_file)
         archive_snapshots(self.uniq_id, arch_file.stem)
@@ -281,7 +282,7 @@ class EventDatabase(MigrationDatabase):
         from data.loader import EventLoader
         from data.snapshot import rename_snapshots
 
-        self.file.rename(EventDatabase(new_uniq_id).file)
+        rename_when_released(self.file, EventDatabase(new_uniq_id).file)
         rename_snapshots(self.uniq_id, new_uniq_id)
         EventLoader.unload_event(self.uniq_id)
 
