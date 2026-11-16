@@ -572,8 +572,18 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
 
     def current_round(self, tournament: Tournament) -> int:
         # Every round is paired at once: the round in play is the last one
-        # published.
-        return tournament.published_round or (1 if tournament.has_pairings else 0)
+        # published or, when nothing needs publishing, the last one played.
+        last_played_round = next(
+            (
+                round_
+                for round_ in reversed(range(1, tournament.rounds + 1))
+                if tournament.round_has_played_result(round_)
+            ),
+            0,
+        )
+        return max(tournament.published_round, last_played_round) or (
+            1 if tournament.has_pairings else 0
+        )
 
 
 # ---------------------------------------------------------------------------------
