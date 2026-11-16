@@ -237,10 +237,10 @@ class TestDisplayControllers:
             'hx-get', f'{url}/2{showing}', timeout=20_000
         )
 
-    def test_the_map_on_an_empty_tab_leads_to_the_other_tabs(self, page: Page):
+    def test_an_empty_tab_leads_to_the_guide(self, page: Page):
         page.goto(f'/event/{EVENT_ID}/rotators')
-        page.get_by_test_id('screens-map-displays').click()
-        expect(page).to_have_url(re.compile(f'/event/{EVENT_ID}/display_controllers$'))
-        expect(page.get_by_test_id('screens-map-displays')).to_have_attribute(
+        page.get_by_test_id('display-guide-link').click()
+        expect(page).to_have_url(re.compile(f'/event/{EVENT_ID}/display_guide$'))
+        expect(page.get_by_test_id('display-switcher-guide')).to_have_attribute(
             'aria-current', 'page'
         )

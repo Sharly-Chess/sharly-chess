@@ -10,7 +10,7 @@
 
 {% block top_left_nav %}
     {% if client.can_manage_screens %}
-        {{ display_switcher.title('screens-single') }}
+        {{ display_switcher.title() }}
         <script>
             preparePrintModal()
         </script>

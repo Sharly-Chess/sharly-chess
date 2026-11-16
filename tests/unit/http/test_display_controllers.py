@@ -639,18 +639,9 @@ def test_the_menu_modal_sets_its_destinations(
 
 
 @pytest.mark.parametrize(
-    ('tab', 'nodes'),
-    [
-        ('display_controllers', ['displays']),
-        ('screens', ['screens']),
-        ('rotators', ['rotators']),
-        ('menus', ['menus']),
-        ('timers', ['timers']),
-    ],
+    'tab', ['display_controllers', 'screens', 'rotators', 'menus', 'timers']
 )
-def test_an_empty_tab_shows_where_it_sits_on_the_map(
-    http: TestClient, tab: str, nodes: list[str]
-) -> None:
+def test_an_empty_tab_points_to_the_guide(http: TestClient, tab: str) -> None:
     TestUtils.create_event(EVENT_ID)
     try:
         response = http.get(f'/event/{EVENT_ID}/{tab}')
@@ -658,27 +649,43 @@ def test_an_empty_tab_shows_where_it_sits_on_the_map(
         EventLoader.unload_event(EVENT_ID)
         TestUtils.delete_event(EVENT_ID)
     assert response.status_code == 200
+    assert 'data-testid="display-guide-link"' in response.text
+    assert 'display-explainer' not in response.text
+
+
+def test_the_guide_offers_to_create_each_kind_of_display_item(
+    http: TestClient, tournament: StoredTournament
+) -> None:
+    response = http.get(f'/event/{EVENT_ID}/display_guide')
+    assert response.status_code == 200
+    assert 'display-explainer' in response.text
+    for kind in ('channel', 'screen', 'rotator', 'menu', 'timer'):
+        assert f'data-testid="guide-create-{kind}"' in response.text
     parser = AdvancedHTMLParser()
     parser.parseStr(response.text)
     current = [
         element.getAttribute('data-testid')
         for element in parser.getElementsByAttr('aria-current', 'page')
-        if element.getAttribute('data-testid', '').startswith('screens-map-')
+        if element.getAttribute('data-testid', '').startswith('display-switcher-')
     ]
-    assert current == [f'screens-map-{node}' for node in nodes]
+    assert current == ['display-switcher-guide']
 
 
-def test_the_map_gives_way_once_a_tab_has_content(
-    http: TestClient, api: ApiClient, tournament: StoredTournament
+def display_entry_target(http: TestClient) -> str:
+    """The display tab the Display entry of the side menu opens."""
+    parser = AdvancedHTMLParser()
+    parser.parseStr(http.get(f'/event/{EVENT_ID}/tournaments').text)
+    link = parser.getElementsByAttr('data-testid', 'nav-admin-event-views-link')[0]
+    return link.getAttribute('hx-get')
+
+
+def test_the_display_entry_opens_the_guide_until_there_is_something_to_display(
+    http: TestClient, tournament: StoredTournament
 ) -> None:
-    TestUtils.create_rotator(api, EVENT_ID, 'Lobby')
-    response = http.get(f'/event/{EVENT_ID}/rotators')
-    assert 'screens-map-rotators' not in response.text
-    assert '/screens-map-modal/' in response.text
-
-    modal = http.get(f'/screens-map-modal/{EVENT_ID}?active=rotators')
-    assert modal.status_code == 200
-    assert 'screens-map-rotators' in modal.text
+    http.get(f'/event/{EVENT_ID}/menus')
+    assert display_entry_target(http).endswith('/display_guide')
+    http.post(f'/timer-create/{EVENT_ID}', data={'name': 'Round one'})
+    assert display_entry_target(http).endswith('/menus')
 
 
 def test_the_side_menu_has_a_single_display_entry(
@@ -1060,6 +1067,7 @@ def test_the_display_entry_goes_back_to_the_last_display_tab(
         link = parser.getElementsByAttr('data-testid', 'nav-admin-event-views-link')[0]
         return link.getAttribute('hx-get')
 
+    http.post(f'/timer-create/{EVENT_ID}', data={'name': 'Round one'})
     for tab in ('timers', 'menus'):
         http.get(f'/event/{EVENT_ID}/{tab}')
         assert display_link() == f'/event/{EVENT_ID}/{tab}'

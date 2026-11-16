@@ -316,11 +316,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     'errors': errors,
                     'item_options': cls._item_options(event),
                 }
-            case 'screens_map':
-                template_context |= {
-                    'modal': modal,
-                    'screens_map_active': request.query_params.get('active', ''),
-                }
             case 'display_controller_connect':
                 path = request.url_for(
                     'user-display-controller',
@@ -376,13 +371,34 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/screens-map-modal/{event_uniq_id:str}',
-        name='admin-screens-map-modal',
+        path='/event/{event_uniq_id:str}/display_guide',
+        name='admin-event-display-guide-tab',
         guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
     )
-    async def htmx_admin_screens_map_modal(self, request: HTMXRequest) -> Template:
-        return self._admin_event_display_controllers_render(
-            request, modal='screens_map'
+    async def htmx_admin_event_display_guide_tab(
+        self, request: HTMXRequest
+    ) -> Template:
+        """How the display fits together, with a button to create each kind of
+        thing it involves."""
+        web_context = DisplayControllerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        return self._admin_base_event_render(
+            web_context.template_context
+            | {
+                'admin_event_tab': 'admin-event-display-guide-tab',
+                'guide_screen_types': [
+                    (
+                        screen_type,
+                        not screen_type.has_screen_sets
+                        or any(
+                            screen_type.shows_tournament(tournament)
+                            for tournament in event.tournaments_by_id.values()
+                        ),
+                    )
+                    for screen_type in ScreenTypeManager(event).objects()
+                    if screen_type.supports_event_type(event.event_type)
+                ],
+            }
         )
 
     @get(

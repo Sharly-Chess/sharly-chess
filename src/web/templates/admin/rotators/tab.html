@@ -9,7 +9,7 @@
 
 {% block top_left_nav %}
     {% if client.can_manage_screens %}
-        {{ display_switcher.title('screens-rotators') }}
+        {{ display_switcher.title() }}
     {% else %}
         {{ admin_macros.admin_title(_('Rotators'), '') }}
     {% endif %}

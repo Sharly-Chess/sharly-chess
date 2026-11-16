@@ -942,93 +942,188 @@ if (window.PerformanceObserver && !window.slowRequestObserver) {
     }));
 }
 
-function drawScreensMaps() {
-    document.querySelectorAll('.screens-map:not([data-links-drawn])').forEach((map) => {
-        map.dataset.linksDrawn = '';
-        const draw = () => drawScreensMapLinks(map);
-        new ResizeObserver(draw).observe(map);
-        draw();
+// The explainer of the display tabs: the choices on the left drive a preview
+// of what the devices on the right would show.
+function initDisplayExplainers() {
+    document.querySelectorAll('.display-explainer:not([data-ready])').forEach((root) => {
+        root.dataset.ready = '';
+        startDisplayExplainer(root);
     });
 }
 
-function drawScreensMapLinks(map) {
-    const svg = map.querySelector('.screens-map-links');
-    const origin = map.getBoundingClientRect();
-    const box = (selector) => {
-        const rect = map.querySelector(selector).getBoundingClientRect();
-        const left = rect.left - origin.left;
-        const top = rect.top - origin.top;
-        return {
-            left, top, right: left + rect.width, bottom: top + rect.height,
-            cx: left + rect.width / 2, cy: top + rect.height / 2,
-        };
-    };
-    const screens = box('.screens-map-screens');
-    const navigation = box('.screens-map-navigation');
-    const rotator = box('.screens-map-rotator');
-    const menu = box('.screens-map-menu');
-    const channel = box('.screens-map-channel');
-    const channelHeading = box('.screens-map-heading-channels');
-    const devices = box('.screens-map-devices');
-    const radius = 10;
-    const headLength = 9;
-    const paths = [];
+function startDisplayExplainer(root) {
+    const $ = (selector) => root.querySelector(selector);
+    const $$ = (selector) => [...root.querySelectorAll(selector)];
+    const t = JSON.parse($('.dx-strings').textContent);
+    const escape = (text) => String(text).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+    const fill = (template, values) => template.replace(/\{(\w+)\}/g, (_, key) => values[key]);
 
-    // A path through the given points, its corners rounded; with `kind-head`,
-    // it ends in an arrowhead whose tip is the last point.
-    const path = (kind, points, withHead = false) => {
-        const last = points[points.length - 1];
-        const before = points[points.length - 2];
-        const dx = Math.sign(last[0] - before[0]), dy = Math.sign(last[1] - before[1]);
-        const end = withHead ? [last[0] - dx * headLength, last[1] - dy * headLength] : last;
-        const all = [...points.slice(0, -1), end];
-        let d = `M${all[0][0]},${all[0][1]}`;
-        for (let i = 1; i < all.length - 1; i++) {
-            const [px, py] = all[i - 1], [x, y] = all[i], [nx, ny] = all[i + 1];
-            const inLength = Math.min(radius, Math.hypot(x - px, y - py) / 2);
-            const outLength = Math.min(radius, Math.hypot(nx - x, ny - y) / 2);
-            d += ` L${x - Math.sign(x - px) * inLength},${y - Math.sign(y - py) * inLength}`;
-            d += ` Q${x},${y} ${x + Math.sign(nx - x) * outLength},${y + Math.sign(ny - y) * outLength}`;
-        }
-        d += ` L${end[0]},${end[1]}`;
-        paths.push(`<path class="${kind}" d="${d}"/>`);
-        if (withHead) {
-            const half = 4.5;
-            const [bx, by] = end;
-            paths.push(`<path class="${kind}-head" d="M${last[0]},${last[1]} L${bx - dy * half},${by + dx * half} L${bx + dy * half},${by - dx * half} Z"/>`);
-        }
+    const state = {
+        layout: 'multi',
+        open: 'screen',
+        via: 'local',
+        timer: false,
+        sent: 'screen',
+        page: 0, rotIndex: 0, menuIndex: 0, timerStart: Date.now(),
     };
 
-    if (navigation.left > screens.right) {
-        const through = (rotator.bottom + menu.top) / 2;
-        const merge = (navigation.right + channel.left) / 2;
-        const branch = (screens.right + navigation.left) / 2;
-        path('into', [[screens.right, through], [channel.left, through]], true);
-        path('into', [[branch - radius * 2, through], [branch, through], [branch, rotator.cy], [rotator.left, rotator.cy]], true);
-        path('into', [[branch - radius * 2, through], [branch, through], [branch, menu.cy], [menu.left, menu.cy]], true);
-        path('into', [[rotator.right, rotator.cy], [merge, rotator.cy], [merge, through], [merge + radius * 2, through]]);
-        path('into', [[menu.right, menu.cy], [merge, menu.cy], [merge, through], [merge + radius * 2, through]]);
+    const names = ['ADAM', 'BERTRAND', 'CLAIRE', 'DUPONT', 'FAURE', 'GIRARD', 'HENRY', 'LAMBERT',
+                   'MARTIN', 'NOËL', 'PETIT', 'ROUX', 'SIMON', 'THOMAS', 'VIDAL', 'ZOLA'];
+    const results = ['1-0', '½-½', '0-1', '', ''];
+    const pageLetters = [['A', 'F'], ['G', 'M'], ['N', 'Z']];
 
-        const bottom = Math.max(screens.bottom, navigation.bottom, channel.bottom);
-        const join = bottom + (devices.top - bottom) * .4;
-        const centre = navigation.cx;
-        path('reach', [[screens.cx, screens.bottom], [screens.cx, join], [centre, join], [centre, join + radius * 2]]);
-        path('reach', [[channel.cx, channel.bottom], [channel.cx, join], [centre, join], [centre, join + radius * 2]]);
-        path('reach', [[centre, navigation.bottom], [centre, devices.top]], true);
-    } else {
-        const centre = screens.cx;
-        const level = (rect) => rect.top + 22;
-        path('into', [[centre, screens.bottom], [centre, navigation.top]], true);
-        path('into', [[centre, navigation.bottom], [centre, channel.top]], true);
-        const left = screens.left - 10;
-        const merge = navigation.bottom + (channelHeading.top - navigation.bottom) / 2;
-        path('into', [[screens.left, level(screens)], [left, level(screens)], [left, merge], [centre, merge], [centre, merge + radius * 2]]);
+    const pairingRows = (offset, count) => '<table>' + Array.from({length: count}, (_, i) =>
+        `<tr><td class="n">${i + 1 + offset}</td><td>${names[(offset + i * 2) % 16]}</td>`
+        + `<td class="r">${results[(i + offset) % 5]}</td><td>${names[(offset + i * 2 + 7) % 16]}</td></tr>`
+    ).join('') + '</table>';
+    const alphabeticalRows = ([from, to]) => '<table>' + names
+        .filter((name) => name[0] >= from && name[0] <= to).slice(0, 6)
+        .map((name, i) => `<tr><td>${name}</td><td class="r"><i class="dx-colour ${['white', 'black'][i % 2]}"></i></td><td class="n">${i * 3 + 2}</td></tr>`)
+        .join('') + '</table>';
+    const title = (text, detail) => `<div class="set-title">${escape(text)}${detail ? ` <small>${escape(detail)}</small>` : ''}</div>`;
 
-        const right = screens.right + 12;
-        const join = channel.bottom + (devices.top - channel.bottom) * .4;
-        path('reach', [[screens.right, level(screens)], [right, level(screens)], [right, join], [centre, join], [centre, devices.top]], true);
-        path('reach', [[navigation.right, level(navigation)], [right, level(navigation)]]);
-        path('reach', [[channel.right, level(channel)], [right, level(channel)]]);
+    const screens = {
+        mine: () => state.layout === 'multi'
+            ? {title: t.pairings, html: title('Open A', t.round) + pairingRows(0, 3) + title('Open B', t.round) + pairingRows(5, 2)}
+            : {title: t.tournament_pairings, paged: true,
+               html: title(`Open A · ${t.pages[state.page]}`, t.round) + alphabeticalRows(pageLetters[state.page])},
+        ranking: () => ({title: t.ranking, html: title(t.tournament_ranking, t.after_round) + '<table>'
+            + names.slice(0, 6).map((name, i) => `<tr><td class="n">${i + 1}</td><td>${name}</td><td class="r">${['2', '2', '1½', '1½', '1', '1'][i]}</td></tr>`).join('')
+            + '</table>'}),
+        results: () => ({title: t.results, html: title(t.results) + '<table>'
+            + [0, 1, 2, 3, 4].map((i) => `<tr><td class="n">${i + 1}</td><td>${names[i * 3 % 16]}</td><td class="r">${results[i % 3]}</td><td>${names[(i * 3 + 5) % 16]}</td></tr>`).join('')
+            + '</table>'}),
+    };
+    const group = ['mine', 'ranking', 'results'];
+
+    function timerHtml(shown) {
+        const left = Math.max(0, 300 - Math.floor((Date.now() - state.timerStart) / 1000) * 12);
+        const share = left / 300;
+        const color = share > .5 ? 'var(--dx-green)' : share > .15 ? 'var(--dx-orange)' : 'var(--dx-red)';
+        const text = left > 0
+            ? fill(t.timer_before, {round: 4, minutes: Math.floor(left / 60), seconds: String(left % 60).padStart(2, '0')})
+            : fill(t.timer_after, {round: 4});
+        return `<span class="dx-timer${shown ? ' on' : ''}" style="background:${color}"><i class="bi-stopwatch"></i> ${escape(text)}</span>`;
     }
-    svg.innerHTML = paths.join('');
+
+    function content(what) {
+        if (what === 'screen' || what === 'page') {
+            const screen = screens.mine();
+            const pager = screen.paged && what === 'screen'
+                ? `<div class="dx-pager">${pageLetters.map((_, i) => `<i class="${i === state.page ? 'cur' : ''}"></i>`).join('')}</div>` : '';
+            return {body: screen.html + pager, timer: state.timer};
+        }
+        if (what === 'rotator') {
+            const key = group[state.rotIndex];
+            const trail = group.map((k, i) => (i === state.rotIndex ? `<b>${escape(screens[k]().title)}</b>` : escape(screens[k]().title))).join(' → ') + ' <i class="bi-arrow-repeat"></i>';
+            return {body: screens[key]().html + `<div class="dx-trail">${trail}</div>`,
+                    timer: state.timer};
+        }
+        const key = group[state.menuIndex];
+        const tabs = group.map((k, i) => {
+            const screen = screens[k]();
+            const drop = screen.paged
+                ? `<span class="dx-drop">${t.pages.map((page, p) => `<i data-menu-page="${p}">${escape(page)}</i>`).join('')}</span>` : '';
+            return `<span class="${i === state.menuIndex ? 'cur' : ''}" data-menu-tab="${i}">${escape(screen.title)}${screen.paged ? ' ▾' : ''}${drop}</span>`;
+        }).join('');
+        return {menu: tabs, body: screens[key]().html, timer: key === 'mine' && state.timer};
+    }
+
+    function screenHtml(what) {
+        const c = content(what);
+        return `<div class="dx-scr">${c.menu ? `<div class="dx-menu">${c.menu}</div>` : ''}`
+            + `<div class="dx-scr-body">${timerHtml(c.timer)}${c.body}</div></div>`;
+    }
+
+    const shown = () => (state.open === 'channel' ? state.sent : state.open);
+
+    function sendOptions() {
+        const mine = screens.mine();
+        const options = [['screen', mine.title]];
+        if (state.layout === 'paged') {
+            options.push(['page', fill(t.send_page, {screen: mine.title, page: t.pages[state.page]})]);
+        }
+        return options.concat([['rotator', t.rotator], ['menu', t.menu]]);
+    }
+
+    let lastKey = '';
+    function render(force) {
+        const pressed = (selector, value) => $$(selector).forEach((button) => button.setAttribute('aria-pressed', String(value(button))));
+        pressed('[data-layout]', (b) => b.dataset.layout === state.layout);
+        pressed('[data-open]', (b) => b.dataset.open === state.open);
+        pressed('[data-via]', (b) => b.dataset.via === state.via);
+        pressed('[data-timer-toggle]', () => state.timer);
+        ['layout', 'open', 'via'].forEach((group) => {
+            const chosen = $(`[data-${group}][aria-pressed="true"]`);
+            $(`[data-hint="${group}"]`).textContent = chosen ? chosen.dataset.description : '';
+        });
+        const channel = state.open === 'channel';
+        const local = state.via === 'local';
+        if (state.sent === 'page' && state.layout !== 'paged') state.sent = 'screen';
+        const what = shown();
+        const key = [what, state.layout, state.rotIndex, state.menuIndex, state.page, state.via, channel,
+                     state.timer].join('|');
+        if (!force && key === lastKey) {
+            const c = content(what);
+            $$('[data-devices] .dx-timer').forEach((element) => { element.outerHTML = timerHtml(c.timer); });
+            return;
+        }
+        lastKey = key;
+        $('[data-caption]').textContent = channel ? t.caption_channel
+            : fill(local ? t.caption_local : t.caption_link, {what: t['what_' + state.open]});
+        $('[data-console]').classList.toggle('on', channel);
+        if (channel) {
+            $('[data-send]').innerHTML = sendOptions()
+                .map(([k, label]) => `<button type="button" data-send-item="${k}" aria-pressed="${k === state.sent}">${escape(label)}</button>`)
+                .join('');
+        }
+        const html = screenHtml(what);
+        const devices = $('[data-devices]');
+        const tablets = channel && !local;
+        devices.classList.toggle('many', tablets);
+        const projector = `<div class="dx-device"><div class="dx-frame">${html}</div><div class="dx-stand"></div>`
+            + `<span>${escape(local ? t.local_device : channel ? t.projector : t.any_device)}</span></div>`;
+        devices.innerHTML = projector + (tablets
+            ? `<div class="dx-device"><div class="dx-tablets">${`<div class="dx-frame tablet">${html}</div>`.repeat(3)}</div><span>${escape(t.tablets)}</span></div>`
+            : '');
+    }
+
+    root.addEventListener('click', (event) => {
+        const target = event.target.closest('button, [data-menu-tab], [data-menu-page]');
+        if (!target || !root.contains(target)) return;
+        const data = target.dataset;
+        if (data.layout) { state.layout = data.layout; state.page = 0; }
+        if (data.open) {
+            state.open = data.open;
+            if (data.open !== 'channel') state.sent = data.open;
+            state.rotIndex = 0; state.menuIndex = 0;
+        }
+        if (data.via) { state.via = data.via; }
+        if (data.timerToggle !== undefined) { state.timer = !state.timer; state.timerStart = Date.now(); }
+        if (data.sendItem) {
+            state.sent = data.sendItem;
+            state.rotIndex = 0; state.menuIndex = 0;
+        }
+        if (data.menuPage !== undefined) { state.menuIndex = 0; state.page = Number(data.menuPage); event.stopPropagation(); }
+        else if (data.menuTab !== undefined) { state.menuIndex = Number(data.menuTab); }
+        render(true);
+    });
+
+    let tick = 0;
+    const interval = setInterval(() => {
+        if (!document.contains(root)) { clearInterval(interval); return; }
+        tick++;
+        const what = shown();
+        if (tick % 3 === 0) {
+            if (what === 'rotator') {
+                if (group[state.rotIndex] === 'mine' && state.layout === 'paged' && state.page < pageLetters.length - 1) state.page++;
+                else { state.page = 0; state.rotIndex = (state.rotIndex + 1) % group.length; }
+            } else if (state.layout === 'paged' && what === 'screen') {
+                state.page = (state.page + 1) % pageLetters.length;
+            }
+        }
+        render();
+    }, 1000);
+
+    render(true);
 }
