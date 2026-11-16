@@ -1,5 +1,5 @@
 {% extends '/admin/components/modal.html' %}
-{% set modal_size = 'md' %}
+{% set modal_size = 'lg' %}
 {% set modal_close = true %}
 {% set modal_scrollable = admin_timer.timer_hours | length > 0 %}
 
@@ -26,17 +26,19 @@
                         from_modal=true,
                     ) }}
                 {% endif %}
-                {{ components.modal_button(
-                    url_for(
-                        'admin-timer-usage-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        timer_id=admin_timer.id,
-                    ),
-                    _('Screens'),
-                    icon='bi-window',
-                    tooltip=_('Choose the screens that display the timer'),
-                    from_modal=true,
-                ) }}
+                {% if admin_event.tournaments | selectattr('has_schedule') | list %}
+                    {{ components.modal_button(
+                        url_for(
+                            'admin-timer-hours-copy-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            timer_id=admin_timer.id,
+                        ),
+                        _('Copy a schedule'),
+                        icon='bi-calendar2-check-fill',
+                        tooltip=_('Add or update the rounds of the timer from the schedule of a tournament.'),
+                        from_modal=true,
+                    ) }}
+                {% endif %}
                 {{ components.modal_button(
                     url_for(
                         'admin-timer-hour-create-modal',
@@ -60,30 +62,6 @@
             <div id="timer-hours-container" class="d-flex flex-column gap-2">
                 {% if not admin_timer.timer_hours %}
                     <div class="text-danger">{{ _('No hours.') }}</div>
-                    {% set tournaments_with_schedule = admin_event.tournaments | selectattr('has_schedule') | list %}
-                    {% if tournaments_with_schedule %}
-                        <div class="mt-2 d-flex justify-content-center">
-                            {% call components.menu_button(
-                                _('Create hours from tournament'),
-                                icon='bi-calendar2-check-fill',
-                                align='end',
-                                tooltip=_('Automatically create timer hours matching the round schedule of a specific tournament.'),
-                            ) %}
-                                {% for t in tournaments_with_schedule %}
-                                    {{ components.menu_item(t.name, attrs={
-                                        'hx-post': url_for(
-                                            'admin-timer-hours-from-tournament',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            timer_id=admin_timer.id,
-                                            tournament_id=t.id,
-                                        ),
-                                        'hx-target': 'body',
-                                        'hx-indicator': '#please-wait',
-                                    }) }}
-                                {% endfor %}
-                            {% endcall %}
-                        </div>
-                    {% endif %}
                 {% endif %}
                 {% set has_available_date = admin_timer.has_available_date %}
                 {% for date_str, timer_hours in admin_timer.timer_hours_by_date_str.items() %}
@@ -113,8 +91,8 @@
                                 id=id,
                                 name='date',
                                 placeholder=date_str,
-                                min_date=admin_event.start_date_str,
-                                max_date=admin_event.stop_date_str,
+                                min_date=admin_timer.first_date_str,
+                                max_date=admin_timer.last_date_str,
                                 patch_url=url_for(
                                     'admin-timer-hours-update-date',
                                     event_uniq_id=admin_event.uniq_id,
@@ -139,17 +117,33 @@
                     {% for timer_hour in timer_hours %}
                         <div class="timer-hour-container border border-secondary bg-body-tertiary">
                             <div class="p-2">
-                                <div class="timer-hour-text form-text" style="display:none">
-                                    {{ timer_hour.text_before }}
-                                </div>
                                 <div class="d-flex align-items-center gap-3">
-                                    <b class="text-end" style="min-width: 50px">
+                                    <b class="text-end align-self-start" style="min-width: 50px">
                                         {{ timer_hour.time_str }}
                                     </b>
                                     <div class="text-start flex-grow-1">
-                                        {{ timer_hour.name }}
+                                        <div>{{ timer_hour.name }}</div>
+                                        <div class="timer-hour-wording" data-testid="timer-hour-{{ timer_hour.id }}-wording">
+                                            {{ timer_hour.text_before | replace('%s', '…') }}
+                                            <span class="mx-1">→</span>
+                                            {{ timer_hour.text_after | replace('%s', '…') }}
+                                        </div>
                                     </div>
                                     <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                        {{ components.modal_button(
+                                            url_for(
+                                                'admin-timer-hour-postpone-modal',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                timer_id=admin_timer.id,
+                                                timer_hour_id=timer_hour.id,
+                                            ),
+                                            _('Postpone'),
+                                            icon='bi-skip-forward-fill',
+                                            size='sm',
+                                            tooltip=_('Postpone this hour, and the later ones of its day.'),
+                                            from_modal=true,
+                                            attrs={'data-testid': 'timer-hour-' ~ timer_hour.id ~ '-postpone'},
+                                        ) }}
                                         {{ components.modal_button(
                                             url_for(
                                                 'admin-timer-hour-update-modal',
@@ -195,22 +189,10 @@
                                         ) }}
                                     </div>
                                 </div>
-                                <div class="timer-hour-text form-text" style="display:none">
-                                    {{ timer_hour.text_after }}
-                                </div>
                             </div>
                         </div>
                     {% endfor %}
                 {% endfor %}
-                <script>
-                    $('.timer-hour-container').on('mouseenter', function() {
-                        $('.timer-hour-text').hide();
-                        $(this).find('.timer-hour-text').show();
-                    });
-                    $('#timer-hours-container').on('mouseleave', function() {
-                        $('.timer-hour-text').hide();
-                    });
-                </script>
             </div>
 {% endblock %}
 

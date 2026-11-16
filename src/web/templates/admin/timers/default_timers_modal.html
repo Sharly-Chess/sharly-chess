@@ -1,5 +1,6 @@
 {% extends '/admin/components/modal.html' %}
 {% set modal_size = 'md' %}
+{% import '/admin/timers/timer_phases.j2' as timer_phases with context %}
 
 {% block title %}{{ _('Timer defaults') }}{% endblock %}
 
@@ -11,22 +12,8 @@
         hx-target="body"
         hx-indicator="#please-wait"
     >
-        {{ components.section_heading(_('Timers')) }}
-        <div class="row gy-2 gx-3">
-            {% for num in [1, 2, 3] %}
-                <div class="col-12">
-                    {% with id='delay-'~num, name='delay_'~num %}
-                        {{ admin_macros.number_input(
-                            name='delay_'~num,
-                            label=_('Delay #%(num)d:', num=num),
-                            tooltip_text=timer_delay_texts[num],
-                            placeholder=_('By default: %(minutes)d minutes', minutes=sharly_chess_config.default_timer_delays[num]),
-                            data=data, errors=errors
-                        ) }}
-                    {% endwith %}
-                </div>
-            {% endfor %}
-        </div>
+        <p class="form-text">{{ _('How every timer of the event is coloured around each of its hours, unless the timer has its own delays.') }}</p>
+        {{ timer_phases.phase_inputs(data, errors, sharly_chess_config.default_timer_delays, admin_event.timer_colors) }}
     </form>
 {% endblock %}
 
