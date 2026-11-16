@@ -1,7 +1,6 @@
 {% import '/admin/components/macros.j2' as components with context %}
-{% import '/admin/screens/screens_map.j2' as screens_map with context %}
 
-{% macro title(doc_ref) %}
+{% macro title() %}
     {% set display_tabs = nav_tabs['admin-event-views'].submenu %}
     {% set active = display_tabs[admin_event_tab] %}
     <nav
@@ -10,7 +9,6 @@
         data-page-title="{{ active.name }}"
         data-testid="display-switcher"
     >
-        {{ macros.doc_icon(doc_ref, 'display-tabs-help fs-5') }}
         <div class="display-tabs-items">
             {% for nav_id, display_tab in display_tabs.items() %}
                 {% set is_active = nav_id == admin_event_tab %}
@@ -54,7 +52,6 @@
                     },
                 ) %}<span class="display-tabs-fake-data-label">{{ _('Fake data') }}</span>{% endcall %}
             {% endif %}
-            {{ screens_map.button(active.map_key) }}
         </div>
     </nav>
     {% if admin_event.screens_fake_data %}

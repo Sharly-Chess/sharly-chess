@@ -8,7 +8,7 @@
 {% set collection_url = url_for('admin-event-timers-tab', event_uniq_id=admin_event.uniq_id) %}
 
 {% block top_left_nav %}
-    {{ display_switcher.title('screens-timers') }}
+    {{ display_switcher.title() }}
     <script>
         preparePrintModal()
     </script>

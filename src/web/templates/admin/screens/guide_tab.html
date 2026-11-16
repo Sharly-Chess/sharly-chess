@@ -1,0 +1,58 @@
+{% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/screens/screens_map.j2' as screens_map with context %}
+{% import '/admin/screens/display_switcher.j2' as display_switcher with context %}
+
+{% block top_left_nav %}
+    {{ display_switcher.title() }}
+{% endblock %}
+
+{% block cards_container_cards %}
+    <div class="display-guide" data-testid="display-guide">
+        {{ screens_map.diagram() }}
+        <div class="display-guide-create">
+            {{ components.modal_button(
+                url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id),
+                _('Create a channel'),
+                icon='bi-broadcast',
+                size='sm',
+                attrs={'data-testid': 'guide-create-channel'},
+            ) }}
+            {% call components.menu_button(_('Create a screen'), icon='bi-window', size='sm', toggle_attrs={'data-testid': 'guide-create-screen'}) %}
+                {% for screen_type, creatable in guide_screen_types %}
+                    {{ components.menu_item(
+                        screen_type.name,
+                        icon=screen_type.icon_str,
+                        url=url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.id),
+                        modal=true,
+                        allowed=creatable,
+                        reason=screen_type.no_tournament_reason,
+                        tooltip_placement='left',
+                    ) }}
+                {% endfor %}
+            {% endcall %}
+            {{ components.modal_button(
+                url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id),
+                _('Create a rotator'),
+                icon='bi-arrow-repeat',
+                allowed=admin_event.screens_by_uniq_id | length > 0,
+                reason=_('You must create a screen or a paged screen before creating a rotator.'),
+                size='sm',
+                attrs={'data-testid': 'guide-create-rotator'},
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-menu-create-modal', event_uniq_id=admin_event.uniq_id),
+                _('Create a menu'),
+                icon='bi-list-nested',
+                size='sm',
+                attrs={'data-testid': 'guide-create-menu'},
+            ) }}
+            {{ components.modal_button(
+                url_for('admin-timer-create-modal', event_uniq_id=admin_event.uniq_id),
+                _('Create a timer'),
+                icon='bi-stopwatch',
+                size='sm',
+                attrs={'data-testid': 'guide-create-timer'},
+            ) }}
+        </div>
+    </div>
+{% endblock %}
