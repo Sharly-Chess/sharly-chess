@@ -1,8 +1,10 @@
+import time
 from abc import ABC, abstractmethod
 from functools import cached_property
 from logging import Logger
 from typing import Any
 
+from httpdate.httpdate import unixtime_to_httpdate
 from litestar.datastructures import CacheControlHeader
 from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
@@ -162,10 +164,20 @@ class BaseScreenUserController(BaseUserController):
                 if columns is not None:
                     columns_by_tournament_id[tournament.id] = columns
         request = web_context.request
+        # The page asks to be refreshed once the event changes after the data
+        # it shows. A change committed while a refresh is being built is
+        # missing from it, so a refresh is dated from when the event was read;
+        # a request that writes the event shows its own change, which the time
+        # of the reply covers.
+        read_since = (
+            web_context.user_event.read_at if request.method == 'GET' else time.time()
+        )
         return HTMXTemplate(
             template_name=template_name,
             context=web_context.template_context
             | {
+                'read_since': read_since,
+                'read_since_http_date': unixtime_to_httpdate(int(read_since)),
                 'last_result_updated': SessionLastResultUpdated(request).get(),
                 'last_illegal_move_updated': SessionLastIllegalMoveUpdated(
                     request

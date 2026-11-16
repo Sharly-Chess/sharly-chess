@@ -1,5 +1,6 @@
 import copy
 import itertools
+import time
 from collections import defaultdict
 from contextlib import suppress
 from datetime import date, datetime
@@ -75,8 +76,16 @@ logger: Logger = get_logger()
 class Event:
     """A data wrapper around a StoredEvent."""
 
-    def __init__(self, stored_event: StoredEvent, public_view: bool = False):
+    def __init__(
+        self,
+        stored_event: StoredEvent,
+        public_view: bool = False,
+        read_at: float | None = None,
+    ):
         self.stored_event: StoredEvent = stored_event
+        #: When the event was read from its database: the changes committed
+        #: after that are not in it.
+        self.read_at: float = time.time() if read_at is None else read_at
         # Seen as the public sees it, on the screens and the online services:
         # a round paired but not published yet is not there.
         self.public_view: bool = public_view

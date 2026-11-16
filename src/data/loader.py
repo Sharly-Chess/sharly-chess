@@ -1,7 +1,7 @@
 import re
 import shutil
 import sqlite3
-from time import monotonic, perf_counter
+from time import monotonic, perf_counter, time
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import date, datetime
@@ -298,11 +298,13 @@ class EventLoader:
 
         if current_request_performance() is None:
             self.load_event_ids(uniq_id)
-            return Event(self._load_stored_event(uniq_id), public_view)
+            read_at = time()
+            return Event(self._load_stored_event(uniq_id), public_view, read_at)
         start = perf_counter()
         try:
             self.load_event_ids(uniq_id)
-            return Event(self._load_stored_event(uniq_id), public_view)
+            read_at = time()
+            return Event(self._load_stored_event(uniq_id), public_view, read_at)
         finally:
             record_event_load(perf_counter() - start)
 
