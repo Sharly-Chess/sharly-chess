@@ -117,6 +117,15 @@ class Trf26TournamentExporter(TournamentExporter):
             )
         return None
 
+    def warning_message(self, tournament: Tournament) -> str | None:
+        if tournament.has_replacements:
+            return _(
+                'FIDE has no rule for a player replacing another in an '
+                'individual round-robin: the file states each replacement in '
+                'a comment. Check with the rating officer before submitting it.'
+            )
+        return None
+
     @staticmethod
     def is_final(tournament: Tournament) -> bool:
         """Whether the TRF is the final report of *tournament*: every round

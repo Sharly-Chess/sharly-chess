@@ -113,7 +113,14 @@ class RankColumn(TournamentPlayerTableColumn):
     def header_content(self) -> str:
         return pgettext('rank column header', 'Rk.')
 
+    @override
+    def is_cell_blank_for(self, object_: TournamentPlayer) -> bool:
+        # The crosstable names the opponents by this number.
+        return False
+
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        if tournament_player.is_excluded_from_standings:
+            return f'({tournament_player.rank})'
         return tournament_player.rank
 
     @property

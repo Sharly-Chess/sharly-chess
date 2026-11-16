@@ -246,10 +246,10 @@ class RoundRobinVariation(PairingVariation, ABC):
     def automatic_round_count(self, tournament: Tournament) -> int | None:
         engine = self.engine
         assert isinstance(engine, RoundRobinPairingEngine)
-        player_count = tournament.player_count
-        if player_count < engine.MIN_PLAYERS:
+        seat_count = tournament.seat_count
+        if seat_count < engine.MIN_PLAYERS:
             return None
-        return engine.get_round_count(player_count)
+        return engine.get_round_count(seat_count)
 
 
 class StandardSwissVariation(SwissVariation):

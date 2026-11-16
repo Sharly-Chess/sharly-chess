@@ -531,6 +531,9 @@ msgstr ""
 msgid "Page of the tournament on the FFE website."
 msgstr ""
 
+msgid "Papi cannot record a player replacing another in a round-robin: each of them is exported with the games they played, as if they had been absent from the other rounds."
+msgstr ""
+
 msgid "Papi export does not support bonus / penalty points, which this tournament uses."
 msgstr ""
 

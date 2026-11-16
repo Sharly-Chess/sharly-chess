@@ -316,7 +316,7 @@ class RoundRobinParticipationRuleTestCase(TestCase):
         context = document.template_context
         self.assertEqual(
             context['excluded_grid_ids'],
-            {context['grid_id_by_player_id'][LEAVER_ID]},
+            {document.grid_id_by_seat[LEAVER_ID]},
         )
 
     def test_rule_disabled_keeps_leaver_ranked(self) -> None:

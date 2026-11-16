@@ -8,6 +8,12 @@
 .player-table td.board,
 .player-table td.color { font-weight: bold; }
 .player-table td.plays { font-style: italic; }
+.player-table tr.group-heading td {
+    padding-top: 8pt;
+    border-bottom: 1pt solid #000000;
+    font-weight: bold;
+    text-align: left;
+}
 {# The standings and the check-in list have many columns: they are set a
    little smaller. #}
 .individual-ranking .player-table,

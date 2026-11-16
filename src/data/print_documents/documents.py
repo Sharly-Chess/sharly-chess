@@ -350,6 +350,13 @@ class PlayerPrintDocument(PrintDocument, ABC):
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         """List of all the columns to display in the tables of the document."""
 
+    def heading_before(
+        self, player: TournamentPlayer, previous: TournamentPlayer | None
+    ) -> str | None:
+        """The heading of a group of rows starting with *player*, the row
+        before being *previous*'s."""
+        return None
+
     @property
     def template_context(self) -> dict[str, Any]:
         return {
@@ -443,6 +450,16 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
                 after_round=self.ranking_round
             ).values()
         )
+
+    @override
+    def heading_before(
+        self, player: TournamentPlayer, previous: TournamentPlayer | None
+    ) -> str | None:
+        if player.is_excluded_from_standings and (
+            previous is None or not previous.is_excluded_from_standings
+        ):
+            return _('Not ranked')
+        return None
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1355,16 +1372,26 @@ class RoundRobinGridPrintDocument(PrintDocument):
             )
 
     @cached_property
-    def grid_id_by_player_id(self) -> dict[int, int]:
+    def grid_id_by_seat(self) -> dict[int, int]:
+        """The grid number of each seat: a player and their replacements
+        share a line, placed where the first of them is sorted."""
         grid_player_sorter = self._get_option(
             GridPlayerSortPrintOption
         ).grid_player_sorter
-        return {
-            tournament_player.id: index + 1
-            for index, tournament_player in enumerate(
-                grid_player_sorter.sorted_tournament_players(self.tournament)
-            )
-        }
+        tournament = self.tournament
+        seats: list[int] = []
+        for tournament_player in grid_player_sorter.sorted_tournament_players(
+            tournament
+        ):
+            if (seat := tournament_player.seat_id) not in seats:
+                seats.append(seat)
+        return {seat: index + 1 for index, seat in enumerate(seats)}
+
+    def _seat_dropped(self, seat: int) -> bool:
+        return any(
+            player.is_excluded_from_standings
+            for player in self.tournament.seat_players(seat)
+        )
 
     @cached_property
     def excluded_grid_ids(self) -> set[int]:
@@ -1373,10 +1400,8 @@ class RoundRobinGridPrintDocument(PrintDocument):
         annulled game, shown crossed out."""
         return {
             grid_id
-            for player_id, grid_id in self.grid_id_by_player_id.items()
-            if self.tournament.tournament_players_by_id[
-                player_id
-            ].is_excluded_from_standings
+            for seat, grid_id in self.grid_id_by_seat.items()
+            if self._seat_dropped(seat)
         }
 
     def grid_results_points(self, results: list[list[Result | None]]) -> str:
@@ -1389,64 +1414,68 @@ class RoundRobinGridPrintDocument(PrintDocument):
         )
 
     def build_result_grid(self) -> dict[int, list[list[Result | None]]]:
-        """Build the player results in a grid format ordered by berger numbers.
-        Such a grid is returned per player encounter."""
-        pairing_engine = self.tournament.pairing_variation.engine
+        """Build the results of each seat in a grid format ordered by the
+        grid numbers. Such a grid is returned per encounter."""
+        tournament = self.tournament
+        pairing_engine = tournament.pairing_variation.engine
         assert isinstance(pairing_engine, RoundRobinPairingEngine)
         result_grid: dict[int, list[list[Result | None]]] = {
-            tournament_player.id: [
+            seat: [
                 [None] * pairing_engine.player_encounters
-                for __ in range(self.tournament.player_count)
+                for __ in range(tournament.seat_count)
             ]
-            for tournament_player in sorted(
-                self.tournament.tournament_players,
-                key=lambda p: self.grid_id_by_player_id[p.id],
-            )
+            for seat in self.grid_id_by_seat
         }
-        for tournament_player in self.tournament.tournament_players:
+        for tournament_player in tournament.tournament_players:
             for pairing in tournament_player.pairings.values():
                 if not pairing.opponent_id:
                     continue
-                opponent_grid_id = self.grid_id_by_player_id[pairing.opponent_id]
+                opponent_grid_id = self.grid_id_by_seat[
+                    tournament.seat_of(pairing.opponent_id)
+                ]
                 if not self._set_encounter_result(
-                    tournament_player.id,
+                    tournament_player.seat_id,
                     opponent_grid_id,
                     pairing.result,
                     result_grid,
                 ):
-                    opponent = self.tournament.tournament_players_by_id[
-                        pairing.opponent_id
-                    ]
+                    opponent = tournament.tournament_players_by_id[pairing.opponent_id]
                     raise SharlyChessException(
-                        f'More than {len(result_grid[tournament_player.id][opponent_grid_id - 1])} encounters between '
+                        f'More than {len(result_grid[tournament_player.seat_id][opponent_grid_id - 1])} encounters between '
                         f'players {tournament_player.full_name} and {opponent.full_name}.'
                     )
         return result_grid
 
     @staticmethod
     def _set_encounter_result(
-        player_id: int,
+        seat: int,
         opponent_grid_id: int,
         result: Result,
         result_grid: dict[int, list[list[Result | None]]],
     ) -> bool:
-        for round_, round_result in enumerate(
-            result_grid[player_id][opponent_grid_id - 1]
-        ):
+        for round_, round_result in enumerate(result_grid[seat][opponent_grid_id - 1]):
             if round_result is None:
-                result_grid[player_id][opponent_grid_id - 1][round_] = result
+                result_grid[seat][opponent_grid_id - 1][round_] = result
                 return True
         return False
 
     @property
     def template_context(self) -> dict[str, Any]:
-        self.tournament.compute_tournament_player_ranks()
+        tournament = self.tournament
+        tournament.compute_tournament_player_ranks()
         return {
             'document': self,
-            'tournament': self.tournament,
-            'subtitle': self.tournament.name,
-            'result_grid': self.build_result_grid(),
-            'grid_id_by_player_id': self.grid_id_by_player_id,
+            'tournament': tournament,
+            'subtitle': tournament.name,
+            'rows': [
+                {
+                    'grid_id': self.grid_id_by_seat[seat],
+                    'players': tournament.seat_players(seat),
+                    'results': results,
+                    'dropped': self._seat_dropped(seat),
+                }
+                for seat, results in self.build_result_grid().items()
+            ],
             'excluded_grid_ids': self.excluded_grid_ids,
         }
 
@@ -2025,11 +2054,17 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
             if schedule_round is None:
                 rounds_data.append({'number': round_, 'matches': [], 'exempt': None})
                 continue
-            if (resting := players.get(schedule_round.rest or 0)) is not None:
+
+            def holder(seat: int | None, round_: int = round_) -> Any:
+                if seat is None:
+                    return None
+                return players.get(tournament.seat_holder(seat, round_))
+
+            if (resting := holder(schedule_round.rest)) is not None:
                 exempt = resting.full_name
-            for left_id, right_id in schedule_round.tables:
-                left_player = players.get(left_id or 0)
-                right_player = players.get(right_id or 0)
+            for left_seat, right_seat in schedule_round.tables:
+                left_player = holder(left_seat)
+                right_player = holder(right_seat)
                 if left_player is None or right_player is None:
                     continue
                 left_score = right_score = None

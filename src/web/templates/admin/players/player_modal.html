@@ -252,6 +252,48 @@
                                 <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
                             {% endif %}
                         </div>
+                        {% for replacement_tournament_id, replacement in replacement_contexts.items() %}
+                            <div
+                                class="replacement-fields row gy-2 gx-3 mt-0 {% if data['tournament_id'] != replacement_tournament_id %}d-none{% endif %}"
+                                data-tournament-id="{{ replacement_tournament_id }}"
+                            >
+                                <div class="col-12 form-text mt-2">
+                                    {{ _('The tournament has started: the player joins it to replace a player who leaves, taking over their seat and their opponents from the round chosen.') }}
+                                </div>
+                                <div class="col-12 col-sm-8">
+                                    {{ admin_macros.select_input(
+                                        name=replacement['player_field'],
+                                        label=_('%(string)s:', string=_('Replaces')),
+                                        select_options=replacement['player_options'],
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    {{ admin_macros.select_input(
+                                        name=replacement['round_field'],
+                                        label=_('%(string)s:', string=_('From round')),
+                                        select_options=replacement['round_options'],
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if replacement_contexts %}
+                            <script>
+                                (() => {
+                                    function showReplacementFields() {
+                                        const tournamentId = $('#tournament-id').val() || '';
+                                        $('.replacement-fields').each(function () {
+                                            const shown = $(this).data('tournament-id').toString() === tournamentId;
+                                            $(this).toggleClass('d-none', !shown);
+                                            $(this).find('select').prop('disabled', !shown);
+                                        });
+                                    }
+                                    $('#tournament-id').on('change', showReplacementFields);
+                                    showReplacementFields();
+                                })();
+                            </script>
+                        {% endif %}
 
                         <div class="col-12 col-sm-6">
                             {{ admin_macros.number_input(

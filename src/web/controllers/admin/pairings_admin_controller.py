@@ -563,7 +563,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         ):
             return
         unpaired = self.admin_tournament.get_unpaired_tournament_players(
-            self.admin_boards
+            self.admin_boards, self.admin_round
         )
         if self.admin_tournament.event.is_team_event:
             # Flat team systems (Molter) reach here — team-vs-team systems

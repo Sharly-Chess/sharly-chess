@@ -38,23 +38,29 @@
                         {{ _('Check-in') }}
                     {% endcall %}
                 {% endif %}
-                {% set add_player_error_message = (
-                    _('You are not allowed to add players to the event.')
-                    if not client.can_add_player else
-                    _('Tournaments are finished, you can not add players any longer.')
-                    if not player_addable_tournaments and allowed_tournaments
-                        and not admin_event.is_team_event else
-                    _('Add a tournament before adding players.')
-                    if not player_addable_tournaments
-                        and not admin_event.is_team_event else ''
+                {% macro add_error_message(tournaments) -%}
+                    {{ (
+                        _('You are not allowed to add players to the event.')
+                        if not client.can_add_player else
+                        _('Tournaments are finished, you can not add players any longer.')
+                        if not tournaments and allowed_tournaments
+                            and not admin_event.is_team_event else
+                        _('Add a tournament before adding players.')
+                        if not tournaments
+                            and not admin_event.is_team_event else ''
+                    ) }}
+                {%- endmacro %}
+                {% set import_player_error_message = add_error_message(player_addable_tournaments) %}
+                {% set add_player_error_message = add_error_message(
+                    player_addable_tournaments + player_replaceable_tournaments
                 ) %}
                 {{ components.modal_button(
                     url_for('players-import-modal', event_uniq_id=admin_event.uniq_id),
                     _('Import'),
                     kind='primary',
                     icon='import',
-                    allowed=not add_player_error_message,
-                    reason=add_player_error_message,
+                    allowed=not import_player_error_message,
+                    reason=import_player_error_message,
                     tooltip=_('Import players from a CSV file.'),
                 ) }}
                 {{ components.modal_button(

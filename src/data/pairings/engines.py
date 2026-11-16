@@ -610,10 +610,13 @@ class BbpPairings(PairingEngine):
 
 
 def berger_order(tournament: Tournament) -> list[int]:
-    """The players of *tournament* in the order of the Berger numbers set:
+    """The seats of *tournament* in the order of the Berger numbers set:
     those of players who have left since are dropped, and players without
-    one follow, by starting rank."""
-    players = tournament.tournament_players_by_id
+    one follow, by starting rank. A replacement takes the number of the
+    seat they took over."""
+    players = {
+        seat: tournament.tournament_players_by_id[seat] for seat in tournament.seat_ids
+    }
     numbers: dict[int, int] = {}
     if BergerNumbersSetting.is_set(tournament):
         numbers = BergerNumbersSetting.from_stored_value(
@@ -631,7 +634,7 @@ def berger_order(tournament: Tournament) -> list[int]:
     return ordered + [
         player.id
         for player in tournament.tournament_players_by_starting_rank.values()
-        if player.id not in numbered
+        if player.id in players and player.id not in numbered
     ]
 
 
@@ -763,8 +766,12 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
 
     @override
     def member_namer(self, tournament: Tournament) -> Callable[[int], str]:
-        players = tournament.tournament_players_by_id
-        return lambda player_id: players[player_id].full_name
+        def name(seat: int) -> str:
+            return ' / '.join(
+                player.full_name for player in tournament.seat_players(seat)
+            )
+
+        return name
 
     @override
     def paired_tables(
@@ -778,9 +785,9 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
             if white is None:
                 continue
             if black is None:
-                rests.append(white)
+                rests.append(tournament.seat_of(white))
             else:
-                tables.append((white, black))
+                tables.append((tournament.seat_of(white), tournament.seat_of(black)))
         return tables, rests
 
     @staticmethod
@@ -795,7 +802,7 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
         )
 
     def invalid_player_count_message(self, tournament: Tournament) -> str | None:
-        player_count = tournament.player_count
+        player_count = tournament.seat_count
         if player_count < self.MIN_PLAYERS:
             return _(
                 'Too few players to generate the pairings (minimum: {min}).'
@@ -818,22 +825,24 @@ class RoundRobinPairingEngine(ScheduledRoundRobin, PairingEngine):
         schedule = self.schedule(tournament)
         assert schedule is not None
         schedule_round = schedule.rounds[round_]
+
+        def holder(seat: int | None) -> int | None:
+            return None if seat is None else tournament.seat_holder(seat, round_)
+
         stored_boards = [
             StoredBoard(
                 id=None,
-                white_player_id=white_player_id,
-                black_player_id=black_player_id,
+                white_player_id=holder(white_seat),
+                black_player_id=holder(black_seat),
                 index=index,
             )
-            for index, (white_player_id, black_player_id) in enumerate(
-                schedule_round.tables
-            )
+            for index, (white_seat, black_seat) in enumerate(schedule_round.tables)
         ]
         if schedule_round.rest is not None:
             stored_boards.append(
                 StoredBoard(
                     id=None,
-                    white_player_id=schedule_round.rest,
+                    white_player_id=tournament.seat_holder(schedule_round.rest, round_),
                     black_player_id=None,
                     index=len(stored_boards),
                 )

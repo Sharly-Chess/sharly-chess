@@ -306,7 +306,7 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
             value = data[field]
             if not value or (int_value := int(value)) < 1:
                 errors[field] = _('A positive integer is expected.')
-            elif int_value > tournament.player_count:
+            elif int_value > tournament.seat_count:
                 errors[field] = _(
                     "The pairing number can't be greater than the player count."
                 )
@@ -332,9 +332,19 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
 
     @classmethod
     def default_value(cls, tournament: Tournament) -> dict[int, int]:
+        """The seats by starting rank, a replacement taking the number of
+        the seat they took over."""
+        seats = set(tournament.seat_ids)
         return {
-            tournament_player.id: rank
-            for rank, tournament_player in tournament.tournament_players_by_starting_rank.items()
+            tournament_player.id: number
+            for number, tournament_player in enumerate(
+                (
+                    tournament_player
+                    for tournament_player in tournament.tournament_players_by_starting_rank.values()
+                    if tournament_player.id in seats
+                ),
+                1,
+            )
         }
 
     @classmethod
@@ -342,10 +352,10 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         berger_numbers = value
         if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
             return False
-        for tournament_player in tournament.tournament_players:
-            if tournament_player.id not in berger_numbers:
+        for seat in tournament.seat_ids:
+            if seat not in berger_numbers:
                 return False
-            if berger_numbers[tournament_player.id] > tournament.player_count:
+            if berger_numbers[seat] > tournament.seat_count:
                 return False
         return True
 

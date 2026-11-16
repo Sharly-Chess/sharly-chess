@@ -306,6 +306,11 @@ class StoredTournamentPlayer:
     pairing_number: int | None = None
     manual_tiebreak: int | None = None
     stored_pairings: list[StoredPairing] = field(default_factory=list[StoredPairing])
+    replaces_player_id: int | None = None
+    """The player of a round-robin whose seat this one took over, having
+    joined to replace them."""
+    replaced_from_round: int | None = None
+    """The first round played in the seat of ``replaces_player_id``."""
 
 
 @dataclass

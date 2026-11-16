@@ -74,6 +74,11 @@
             {% set ns.current_key = group_key %}
             <tbody class="sortable with-handles">
         {% endif %}
+        {% if is_excluded and not (loop.previtem and loop.previtem.is_excluded_from_standings) %}
+            <tr class="group-heading non-sortable">
+                <td colspan="99">{{ _('Not ranked') }}</td>
+            </tr>
+        {% endif %}
 
         {% set same_as_prev = loop.previtem and loop.previtem.before_manual_rank_key == group_key %}
         {% set same_as_next = loop.nextitem and loop.nextitem.before_manual_rank_key == group_key %}

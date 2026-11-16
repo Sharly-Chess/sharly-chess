@@ -2379,6 +2379,9 @@ msgstr "Choisir des écrans à ajouter"
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
+msgid "Choose the player to replace."
+msgstr "Choisissez le·la joueur·euse à remplacer."
+
 msgid "Choose the screens and rotators that display this timer."
 msgstr "Choisissez les écrans et les écrans rotatifs qui affichent ce chronomètre."
 
@@ -4224,6 +4227,9 @@ msgstr "colonne FIDE"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
+msgid "FIDE has no rule for a player replacing another in an individual round-robin: the file states each replacement in a comment. Check with the rating officer before submitting it."
+msgstr "La FIDE ne prévoit pas le remplacement d'un·e joueur·euse dans un toutes-rondes individuel : le fichier mentionne chaque remplacement dans un commentaire. Vérifiez auprès du·de la responsable du classement avant de l'envoyer."
+
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "FIDE list: {ratings}"
@@ -4527,6 +4533,9 @@ msgstr "Depuis la gauche"
 
 msgid "From right"
 msgstr "Depuis la droite"
+
+msgid "From round"
+msgstr "À partir de la ronde"
 
 msgid "From round 3, no virtual points are given."
 msgstr "À partir de la ronde 3, aucun point virtuel n'est attribué."
@@ -6940,6 +6949,9 @@ msgstr "Non apparié·e pour cette ronde"
 msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as Zero-Point Byes."
 msgstr "Pas encore apparié ({rounds}) : les cases vides sont lues comme des joueur·euses restant à apparier, et non comme des exemptions à zéro point."
 
+msgid "Not ranked"
+msgstr "Non classé·es"
+
 msgid "Not specified"
 msgstr "Non spécifié"
 
@@ -8883,6 +8895,9 @@ msgstr "Remplacer les valeurs actuelles"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
+
+msgid "Replaces"
+msgstr "Remplace"
 
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
@@ -11175,6 +11190,10 @@ msgstr "Le pourcentage des joueur·euses les mieux classé·es qui reçoivent un
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
+#, python-brace-format
+msgid "The player can be replaced from round {round} only."
+msgstr "Le·la joueur·euse ne peut être remplacé·e qu'à partir de la ronde {round}."
+
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires classé·es FIDE."
 
@@ -11492,6 +11511,9 @@ msgstr "Le tournoi n'est pas encore commencé."
 
 msgid "The tournament has started: in FIDE mode, its tie-breaks are fixed."
 msgstr "Le tournoi a commencé : en mode FIDE, ses départages sont figés."
+
+msgid "The tournament has started: the player joins it to replace a player who leaves, taking over their seat and their opponents from the round chosen."
+msgstr "Le tournoi a commencé : le·la joueur·euse y entre pour remplacer un·e joueur·euse qui s'en va, en reprenant sa place et ses adversaires à partir de la ronde choisie."
 
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
@@ -11820,6 +11842,9 @@ msgstr "Ce·tte joueur·euse existe déjà dans l'évènement."
 #, python-brace-format
 msgid "This player already exists in tournament [{tournament}]."
 msgstr "Ce·tte joueur·euse existe déjà dans le tournoi [{tournament}]."
+
+msgid "This player cannot be replaced."
+msgstr "Ce·tte joueur·euse ne peut pas être remplacé·e."
 
 msgid "This player has already been paired; their team cannot be changed."
 msgstr "Ce·tte joueur·euse a déjà été apparié·e, son équipe ne peut être modifiée."
@@ -13902,8 +13927,16 @@ msgstr[0] "ronde {rounds}"
 msgstr[1] "rondes {rounds}"
 
 #, python-brace-format
+msgid "round {round}"
+msgstr "ronde {round}"
+
+#, python-brace-format
 msgid "round_{round}"
 msgstr "ronde_{round}"
+
+#, python-brace-format
+msgid "rounds {first}-{last}"
+msgstr "rondes {first}-{last}"
 
 msgctxt "seconds"
 msgid "sec"
