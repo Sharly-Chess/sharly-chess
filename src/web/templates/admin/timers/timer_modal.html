@@ -1,5 +1,6 @@
 {% extends '/admin/components/modal.html' %}
-{% set modal_size = 'md' %}
+{% set modal_size = 'wide' if usage_sections else 'md' %}
+{% import '/admin/timers/timer_phases.j2' as timer_phases with context %}
 
 {% block title %}
     {% if action == 'update' %}
@@ -44,22 +45,19 @@
                 ) }}
             </div>
         </div>
-        {{ components.section_heading(_('Delays')) }}
-        <div class="row gy-2 gx-3">
-            {% for num in [1, 2, 3] %}
-                <div class="col-12">
-                    {% with id='delay-'~num, name='delay_'~num %}
-                        {{ admin_macros.number_input(
-                            name='delay_'~num,
-                            label=_('Delay #%(num)d:', num=num),
-                            tooltip_text=timer_delay_texts[num],
-                            placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
-                            data=data, errors=errors
-                        ) }}
-                    {% endwith %}
-                </div>
-            {% endfor %}
-        </div>
+        {{ components.section_heading(_('Shown on')) }}
+        {% if usage_sections %}
+            <p class="form-text">{{ _('A screen or rotator shows one timer: checking it here takes it off the timer it showed.') }}</p>
+            {% include '/admin/timers/timer_usage_list.html' %}
+        {% else %}
+            <p class="text-secondary fst-italic">{{ _('The event has no screens.') }}</p>
+        {% endif %}
+        {% set own_delays = data.get('delay_1') or data.get('delay_2') or data.get('delay_3') %}
+        <details class="mt-3" {% if own_delays or errors | select('in', ['delay_1', 'delay_2', 'delay_3']) | list %}open{% endif %}>
+            <summary class="mb-2">{{ _('Colours and delays of this timer') }}</summary>
+            <p class="form-text">{{ _('Leave a delay empty to use the default of the event.') }}</p>
+            {{ timer_phases.phase_inputs(data, errors, admin_event.timer_delays, admin_event.timer_colors) }}
+        </details>
     </form>
 {% endblock %}
 

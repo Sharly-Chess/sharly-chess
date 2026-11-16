@@ -1,0 +1,113 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+
+{% block title %}{{ _('Quick countdown') }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-post="{{ url_for('admin-timer-quick', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt="find button[type=submit]"
+    >
+        <div class="mb-3">
+            {{ admin_macros.text_input(
+                name='label',
+                label=_('%(string)s:', string=_('Label')),
+                placeholder=_('E.g.: Check-in closes'),
+                data=data, errors=errors
+            ) }}
+        </div>
+        <div class="mb-3">
+            <div class="form-label mb-1">{{ _('%(string)s:', string=_('Ends in')) }}</div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                {% call components.segmented(_('Ends in')) %}
+                    {% for minutes in quick_minutes %}
+                        {{ components.segment_radio(
+                            'minutes',
+                            minutes,
+                            ngettext('%(num)d minute', '%(num)d minutes', minutes),
+                            'quick-minutes-' ~ minutes,
+                            checked=data.get('minutes') == minutes|string and not data.get('at'),
+                        ) }}
+                    {% endfor %}
+                {% endcall %}
+                <span class="d-inline-flex align-items-center gap-2 text-nowrap">
+                    <label class="form-check-label" for="quick-at">{{ _('or at') }}</label>
+                    <input
+                        id="quick-at"
+                        name="at"
+                        type="time"
+                        class="form-control w-auto {% if 'at' in errors %}is-invalid{% endif %}"
+                        data-testid="quick-at"
+                        value="{{ data.get('at', '') }}"
+                    >
+                </span>
+            </div>
+            {% for field in ('minutes', 'at') %}
+                {% if field in errors %}
+                    <div class="form-text invalid-feedback d-block">{{ errors[field] }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="form-label mb-1">{{ _('%(string)s:', string=_('Add it to the timers')) }}</div>
+        <div class="d-flex flex-column gap-1">
+            {% for timer in quick_timers %}
+                {% set id = 'quick-timer-' ~ timer.id %}
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="timer_{{ timer.id }}"
+                        id="{{ id }}"
+                        data-testid="{{ id }}"
+                        value="on"
+                        {% if data.get('timer_' ~ timer.id) %}checked{% endif %}
+                    >
+                    <label class="form-check-label" for="{{ id }}">
+                        {{ timer.name }}
+                        <span class="text-secondary small ms-1">
+                            {{ ngettext('%(num)d screen', '%(num)d screens', timer.screens|length + timer.families|length) }},
+                            {{ ngettext('%(num)d rotator', '%(num)d rotators', timer.rotators|length) }}
+                        </span>
+                    </label>
+                </div>
+            {% endfor %}
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="new_timer"
+                    id="quick-new-timer"
+                    data-testid="quick-new-timer"
+                    value="on"
+                    {% if data.get('new_timer') %}checked{% endif %}
+                >
+                <label class="form-check-label" for="quick-new-timer">
+                    {{ _('A new timer') }}
+                    <span class="text-secondary small ms-1">{{ _('its screens are chosen next') }}</span>
+                </label>
+            </div>
+        </div>
+        {% if 'timers' in errors %}
+            <div class="form-text invalid-feedback d-block">{{ errors['timers'] }}</div>
+        {% endif %}
+    </form>
+    <script>
+        $('#quick-at').on('input', function () {
+            if ($(this).val()) {
+                $('input[name=minutes]').prop('checked', false);
+            }
+        });
+        $('input[name=minutes]').on('change', function () {
+            $('#quick-at').val('');
+        });
+    </script>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Start'), kind='primary', icon='bi-stopwatch', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}

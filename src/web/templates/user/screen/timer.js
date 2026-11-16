@@ -138,7 +138,7 @@ function update_timer(local_delay) {
 	server_time = Math.floor(local_date.getTime() / 1000) + local_delay;
     server_date = new Date(server_time * 1000)
 	clock_html = two_digits(server_date.getHours())+':'+two_digits(server_date.getMinutes());
-{% for timer_hour in timer.timer_hours %}
+{% for timer_hour in timer.sorted_timer_hours %}
 	if (server_time < {{ timer_hour.timestamp_1 }}) {
 		color = 'rgb({{ color_1_r }}, {{ color_1_g }}, {{ color_1_b }})';
 		dur = duration_string({{ timer_hour.timestamp }} - server_time);

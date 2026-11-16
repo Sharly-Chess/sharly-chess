@@ -1,0 +1,104 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+
+{% block title %}{{ _('Postpone') }}{% endblock %}
+
+{% block subtitle %}
+    {{ admin_timer_hour.time_str }} · {{ admin_timer_hour.name }}
+{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-patch="{{ url_for(
+            'admin-timer-hour-postpone',
+            event_uniq_id=admin_event.uniq_id,
+            timer_id=admin_timer.id,
+            timer_hour_id=admin_timer_hour.id,
+        ) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt="find button[type=submit]"
+    >
+        <div class="form-label mb-1">{{ _('%(string)s:', string=_('Postpone by')) }}</div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+            {% call components.segmented(_('Postpone by')) %}
+                {% for minutes in postpone_minutes %}
+                    {{ components.segment_radio(
+                        'minutes',
+                        minutes,
+                        ngettext('%(num)d minute', '%(num)d minutes', minutes),
+                        'postpone-minutes-' ~ minutes,
+                        checked=data.get('minutes') == minutes|string and not data.get('other_minutes'),
+                    ) }}
+                {% endfor %}
+            {% endcall %}
+            <span class="d-inline-flex align-items-center gap-2 text-nowrap">
+                <label class="form-check-label" for="postpone-other-minutes">{{ _('or') }}</label>
+                <input
+                    id="postpone-other-minutes"
+                    name="other_minutes"
+                    type="number"
+                    min="1"
+                    class="form-control w-auto {% if 'other_minutes' in errors %}is-invalid{% endif %}"
+                    style="max-width: 6rem"
+                    placeholder="{{ _('min') }}"
+                    data-testid="postpone-other-minutes"
+                    value="{{ data.get('other_minutes', '') }}"
+                >
+            </span>
+        </div>
+        {% for field in ('minutes', 'other_minutes') %}
+            {% if field in errors %}
+                <div class="form-text invalid-feedback d-block">{{ errors[field] }}</div>
+            {% endif %}
+        {% endfor %}
+        {% if later_hours %}
+            <div class="form-check mt-3">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="later_hours"
+                    id="postpone-later-hours"
+                    data-testid="postpone-later-hours"
+                    value="on"
+                    {% if data.get('later_hours') %}checked{% endif %}
+                >
+                <label class="form-check-label" for="postpone-later-hours">
+                    {{ ngettext(
+                        'Also postpone the later hour of the same day (%(hours)s)',
+                        'Also postpone the %(num)d later hours of the same day (%(hours)s)',
+                        later_hours | length,
+                        hours=later_hours | map(attribute='time_str') | join(', '),
+                    ) }}
+                </label>
+            </div>
+        {% endif %}
+    </form>
+    <script>
+        $('#postpone-other-minutes').on('input', function () {
+            if ($(this).val()) {
+                $('input[name=minutes]').prop('checked', false);
+            }
+        });
+        $('input[name=minutes]').on('change', function () {
+            $('#postpone-other-minutes').val('');
+        });
+    </script>
+{% endblock %}
+
+{% block footer %}
+    {{ components.modal_button(
+        url_for(
+            'admin-timer-hours-modal',
+            event_uniq_id=admin_event.uniq_id,
+            timer_id=admin_timer.id,
+        ),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+    {{ components.button(_('Postpone'), kind='primary', icon='bi-skip-forward-fill', type='submit', attrs={'form': 'modal-form'}) }}
+{% endblock %}

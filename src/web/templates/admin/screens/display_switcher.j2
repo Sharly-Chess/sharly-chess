@@ -52,6 +52,17 @@
                     },
                 ) %}<span class="display-tabs-fake-data-label">{{ _('Fake data') }}</span>{% endcall %}
             {% endif %}
+            {% if admin_event_tab != 'admin-event-timers-tab' %}
+                {{ components.modal_button(
+                    url_for('admin-timer-quick-modal', event_uniq_id=admin_event.uniq_id),
+                    _('Quick countdown'),
+                    icon='bi-stopwatch',
+                    icon_only=true,
+                    size='sm',
+                    tooltip_placement='bottom',
+                    attrs={'data-testid': 'display-quick-countdown'},
+                ) }}
+            {% endif %}
         </div>
     </nav>
     {% if admin_event.screens_fake_data %}

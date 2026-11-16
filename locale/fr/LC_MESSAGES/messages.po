@@ -11,12 +11,8 @@ msgid "#{board_number} with {color}"
 msgstr "N°{board_number} avec les {color}"
 
 #, python-format
-msgid "%%s is replaced by the time elapsed since the hour."
-msgstr "%%s est remplacé par le temps passé depuis l'horaire."
-
-#, python-format
-msgid "%%s is replaced by the time left before the hour."
-msgstr "%%s est remplacé par le temps restant avant l'horaire."
+msgid "%(before)d min before → %(after)d min after"
+msgstr "%(before)d min avant → %(after)d min après"
 
 #, python-format
 msgid "%(bye)s at round %(round)d"
@@ -47,14 +43,6 @@ msgstr "%(first)s à %(last)s"
 #, python-format
 msgid "%(first)s to %(last)s"
 msgstr "%(first)s à %(last)s"
-
-#, python-format
-msgid "%(minutes)d min after"
-msgstr "%(minutes)d min. après"
-
-#, python-format
-msgid "%(minutes)d min before"
-msgstr "%(minutes)d min. avant"
 
 #, python-format
 msgid "%(n)d player has no %(dim)s and joins one shared group."
@@ -129,6 +117,12 @@ msgid "%(num)d informative"
 msgid_plural "%(num)d informative"
 msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informatives"
+
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] "%(num)d minute"
+msgstr[1] "%(num)d minutes"
 
 #, python-format
 msgid "%(num)d missing tournament"
@@ -211,6 +205,12 @@ msgid "%(num)d required"
 msgid_plural "%(num)d required"
 msgstr[0] "%(num)d obligatoire"
 msgstr[1] "%(num)d obligatoires"
+
+#, python-format
+msgid "%(num)d rotator"
+msgid_plural "%(num)d rotators"
+msgstr[0] "%(num)d écran rotatif"
+msgstr[1] "%(num)d écrans rotatifs"
 
 #, python-format
 msgid "%(num)d screen"
@@ -653,6 +653,9 @@ msgstr "Un menu place une barre de boutons en haut d'un appareil, comme une tabl
 msgid "A minimum and a maximum rating are expected."
 msgstr "Un Elo minimum et maximum sont attendus."
 
+msgid "A new timer"
+msgstr "Un nouveau chronomètre"
+
 msgid "A number is expected."
 msgstr "Un nombre est attendu."
 
@@ -732,6 +735,9 @@ msgstr "Un écran rotatif affiche plusieurs écrans à tour de rôle sur un mêm
 msgid "A round between 1 and {max} is expected."
 msgstr "Une ronde comprise entre 1 et {max} est attendue."
 
+msgid "A screen or rotator shows one timer: checking it here takes it off the timer it showed."
+msgstr "Un écran ou un écran rotatif affiche un seul chronomètre : le cocher ici le retire du chronomètre qu'il affichait."
+
 msgid "A screen shows pairings, rankings, results or check-in for one or more tournaments, on one page or over several pages that turn by themselves."
 msgstr "Un écran affiche les appariements, classements, résultats ou le pointage d'un ou plusieurs tournois, sur une page ou sur plusieurs qui défilent toutes seules."
 
@@ -756,6 +762,9 @@ msgstr "Un chronomètre"
 
 msgid "A timer counts down to the times you give it, such as the start of each round, on the screens and rotators you choose."
 msgstr "Un chronomètre décompte le temps jusqu'aux heures que vous lui donnez, comme le début de chaque ronde, sur les écrans et les écrans rotatifs de votre choix."
+
+msgid "A timer shows one hour at a time: two hours cannot share the same time."
+msgstr "Un chronomètre affiche un horaire à la fois : deux horaires ne peuvent pas avoir la même heure."
 
 #, python-brace-format
 msgid "A value between 0 and {max} is expected."
@@ -952,6 +961,12 @@ msgstr "Ajouter un horaire au chronomètre."
 msgid "Add group"
 msgstr "Ajouter un groupe"
 
+msgid "Add it to the timers"
+msgstr "L'ajouter aux chronomètres"
+
+msgid "Add or update the rounds of the timer from the schedule of a tournament."
+msgstr "Ajouter ou mettre à jour les rondes du chronomètre depuis le calendrier d'un tournoi."
+
 msgid "Add period"
 msgstr "Ajouter une période"
 
@@ -1044,6 +1059,9 @@ msgstr "Après la ronde %(round)d"
 
 msgid "After the change to the number of rounds, pairings that differ from those of the pairing engine"
 msgstr "Après le changement du nombre de rondes, appariements différents de ceux du moteur d'appariement"
+
+msgid "After the hour:"
+msgstr "Après l'horaire :"
 
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex æquo depuis l'onglet Appariements."
@@ -1201,6 +1219,15 @@ msgstr "Alphabétique"
 msgid "Alphabetical order"
 msgstr "Ordre alphabétique"
 
+msgid "Already in the timer"
+msgstr "Déjà dans le chronomètre"
+
+#, python-format
+msgid "Also postpone the later hour of the same day (%(hours)s)"
+msgid_plural "Also postpone the %(num)d later hours of the same day (%(hours)s)"
+msgstr[0] "Reporter aussi l'horaire suivant du même jour (%(hours)s)"
+msgstr[1] "Reporter aussi les %(num)d horaires suivants du même jour (%(hours)s)"
+
 msgid "Alternate colours"
 msgstr "Alterner les couleurs"
 
@@ -1244,6 +1271,10 @@ msgstr "Angola"
 
 msgid "Anonymous"
 msgstr "Anonyme"
+
+#, python-brace-format
+msgid "Another hour is already set at {time} on {timers}."
+msgstr "Un autre horaire est déjà fixé à {time} sur {timers}."
 
 msgid "Antigua and Barbuda"
 msgstr "Antigua-et-Barbuda"
@@ -1392,9 +1423,6 @@ msgstr "Automatique"
 #, python-format
 msgid "Automatically build groups of %(members)s sharing the chosen attribute; members of the same group are kept from being paired together."
 msgstr "Construit automatiquement des groupes de %(members)s partageant l'attribut choisi ; les membres d'un même groupe ne sont pas appariés ensemble."
-
-msgid "Automatically create timer hours matching the round schedule of a specific tournament."
-msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'un tournoi."
 
 msgid "Average"
 msgstr "Moyenne"
@@ -1657,6 +1685,9 @@ msgstr "Avant l'inversion des couleurs d'un échiquier"
 
 msgid "Before the first round"
 msgstr "Avant la première ronde"
+
+msgid "Before the hour:"
+msgstr "Avant l'horaire :"
 
 #, python-brace-format
 msgid "Before the number of rounds of [{tournament}] was changed"
@@ -2254,6 +2285,10 @@ msgstr "Taipei chinois"
 msgid "Choose a captain from the team roster, or enter the name of a non-playing captain."
 msgstr "Choisissez un·e capitaine parmi l'effectif de l'équipe, ou saisissez le nom d'un·e capitaine non joueur·euse."
 
+#, python-brace-format
+msgid "Choose a date from {first} to {last}."
+msgstr "Choisir une date entre le {first} et le {last}."
+
 msgid "Choose a random player"
 msgstr "Choisir un·e joueur·euse au hasard"
 
@@ -2262,6 +2297,9 @@ msgstr "Choisir un ensemble…"
 
 msgid "Choose a tie-break…"
 msgstr "Choisir un départage…"
+
+msgid "Choose at least one timer."
+msgstr "Choisir au moins un chronomètre."
 
 msgid "Choose at least one value."
 msgstr "Choisir au moins une valeur."
@@ -2298,6 +2336,9 @@ msgstr "Choisir les écrans qui affichent le chronomètre"
 
 msgid "Choose what to show"
 msgstr "Choisissez ce qui est affiché"
+
+msgid "Choose when the countdown ends."
+msgstr "Choisir quand le compte à rebours se termine."
 
 msgid "Clear"
 msgstr "Vider"
@@ -2407,6 +2448,12 @@ msgstr "Motif des couleurs :"
 
 msgid "Colour rule"
 msgstr "Règle des couleurs"
+
+msgid "Colours"
+msgstr "Couleurs"
+
+msgid "Colours and delays of this timer"
+msgstr "Couleurs et délais de ce chronomètre"
 
 msgid "Colours are drawn at random for each match."
 msgstr "Les couleurs sont tirées au sort pour chaque partie."
@@ -2572,6 +2619,9 @@ msgstr[1] "Continuer avec %(num)d rondes ?"
 msgid "Copy"
 msgstr "Copier"
 
+msgid "Copy a schedule"
+msgstr "Copier un calendrier"
+
 msgid "Copy the category"
 msgstr "Copier la catégorie"
 
@@ -2615,6 +2665,13 @@ msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
 msgid "Count"
 msgstr "Nombre"
+
+msgid "Count down to a moment a few minutes from now on the screens."
+msgstr "Afficher sur les écrans un compte à rebours vers un moment proche."
+
+#, python-brace-format
+msgid "Countdown to [{label}] at {time} added to {timers}."
+msgstr "Compte à rebours vers [{label}] à {time} ajouté à {timers}."
 
 msgid "Counted"
 msgstr "Compté"
@@ -2708,9 +2765,6 @@ msgstr "Créer des évènements"
 
 msgid "Create hour"
 msgstr "Créer un horaire"
-
-msgid "Create hours from tournament"
-msgstr "Créer les horaires depuis un tournoi"
 
 msgid "Create menu"
 msgstr "Créer un menu"
@@ -2857,6 +2911,9 @@ msgstr "Modèles personnalisés"
 
 msgid "Custom tie-break sets"
 msgstr "Ensembles de départages personnalisés"
+
+msgid "Customise wording"
+msgstr "Personnaliser les textes"
 
 msgid "Cut values"
 msgstr "Élaguer des valeurs"
@@ -3020,9 +3077,6 @@ msgstr "Délai n°%(num)d :"
 
 msgid "Delay (seconds):"
 msgstr "Délai (secondes) :"
-
-msgid "Delays"
-msgstr "Délais"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -3519,9 +3573,8 @@ msgstr "Ex. : 4 (répartir les équipes sur 4 pages)"
 msgid "E.g.: Boards %%f to %%l"
 msgstr "Ex. : Échiquiers %%f à %%l"
 
-#, python-format
-msgid "E.g.: Check-in started for %%s"
-msgstr "Ex. : Pointage commencé depuis %%s"
+msgid "E.g.: Check-in closes"
+msgstr "Ex. : Fin du pointage"
 
 msgid "E.g.: DOE"
 msgstr "Ex. : DUPONT"
@@ -3560,13 +3613,6 @@ msgstr "Ex. : Sharly Chess Club"
 
 msgid "E.g.: Sharly Chess Club A"
 msgstr "Exemple : Sharly Chess Club A"
-
-msgid "E.g.: Start of check-in"
-msgstr "Ex. : Début du pointage"
-
-#, python-format
-msgid "E.g.: Start of check-in in %%s"
-msgstr "Ex. : Début du pointage dans %%s"
 
 #, python-format
 msgid "E.g.: Teams %%f to %%l"
@@ -3853,12 +3899,18 @@ msgstr "Mois de fin"
 msgid "End year"
 msgstr "Année de fin"
 
+msgid "Ends in"
+msgstr "Se termine dans"
+
 msgid "England"
 msgstr "Angleterre"
 
 msgctxt "result entry button"
 msgid "Enter"
 msgstr "Saisir"
+
+msgid "Enter a number of minutes."
+msgstr "Saisir un nombre de minutes."
 
 msgid "Enter results"
 msgstr "Entrer des résultats"
@@ -4600,6 +4652,13 @@ msgstr "Attribuer 4 points de score pour une victoire, 2  pour un match nul, 1 p
 msgid "Greece"
 msgstr "Grèce"
 
+#, python-format
+msgid "Green until %(orange)s min before the hour, red at the hour, hidden %(after)s min after."
+msgstr "Vert jusqu'à %(orange)s min avant l'horaire, rouge à l'horaire, masqué %(after)s min après."
+
+msgid "Green, then turns orange over"
+msgstr "Vert, puis passe à l'orange en"
+
 msgid "Grenada"
 msgstr "Grenade"
 
@@ -4718,10 +4777,6 @@ msgid "Hort system"
 msgstr "Système Hort"
 
 #, python-brace-format
-msgid "Hour [{hour}] already exists."
-msgstr "L'horaire [{hour}] existe déjà."
-
-#, python-brace-format
 msgid "Hour [{hour}] has been created."
 msgstr "L'horaire [{hour}] a été créé."
 
@@ -4736,6 +4791,9 @@ msgstr "Comment sont déterminées les couleurs de chaque partie."
 
 msgid "How each source tournament is named in the list."
 msgstr "Comment chaque tournoi source est nommé dans la liste."
+
+msgid "How every timer of the event is coloured around each of its hours, unless the timer has its own delays."
+msgstr "Les couleurs de chaque chronomètre de l'évènement autour de ses horaires, sauf s'il a ses propres délais."
 
 msgid "How it all fits together"
 msgstr "Comment tout s'articule"
@@ -5089,8 +5147,8 @@ msgid "Invalid date format [{date}] (expected: {format})."
 msgstr "Format de date invalide [{date}] (attendu : {format})."
 
 #, python-brace-format
-msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr "Délai non valide [{delay}] (entier positif attendu)."
+msgid "Invalid delay [{delay}] (positive integer or 0 expected)."
+msgstr "Délai invalide [{delay}] (entier positif ou 0 attendu)."
 
 msgid "Invalid email format."
 msgstr "Format de mél invalide."
@@ -5135,6 +5193,10 @@ msgstr "Position invalide."
 msgid "Invalid rating [{rating}] (expected in range [{min}-{max}])."
 msgstr "Classement invalide [{rating}] (attendu entre [{min}-{max}])."
 
+#, python-brace-format
+msgid "Invalid round [{round}]."
+msgstr "Ronde invalide [{round}]."
+
 msgid "Invalid rows"
 msgstr "Lignes invalides"
 
@@ -5143,6 +5205,10 @@ msgstr "Archive de modèle invalide."
 
 msgid "Invalid template path."
 msgstr "Chemin de modèle invalide."
+
+#, python-brace-format
+msgid "Invalid time [{time}]."
+msgstr "Heure invalide [{time}]."
 
 #, python-brace-format
 msgid "Invalid time control format [{time_control}]."
@@ -5282,6 +5348,9 @@ msgstr "Mode de saisie au clavier"
 msgid "Keyboard shortcuts:"
 msgstr "Raccourcis clavier :"
 
+msgid "Kind of hour"
+msgstr "Type d'horaire"
+
 msgid "Kiribati"
 msgstr "Kiribati"
 
@@ -5309,6 +5378,9 @@ msgstr "Kirghizistan"
 msgctxt "team ranking header loss"
 msgid "L"
 msgstr "D"
+
+msgid "Label"
+msgstr "Libellé"
 
 msgid "Language:"
 msgstr "Langue :"
@@ -5385,6 +5457,9 @@ msgstr "Quitter le mode FIDE et continuer"
 
 msgid "Leave FIDE mode…"
 msgstr "Quitter le mode FIDE…"
+
+msgid "Leave a delay empty to use the default of the event."
+msgstr "Laisser un délai vide pour utiliser celui de l'évènement."
 
 msgid "Leave all unchecked to print every match."
 msgstr "Ne cocher aucune case pour imprimer tous les matchs."
@@ -5845,6 +5920,10 @@ msgstr "Hommes"
 msgid "Menu"
 msgstr "Menu"
 
+msgctxt "one menu"
+msgid "Menu"
+msgstr "Menu"
+
 #, python-brace-format
 msgid "Menu [{menu}] has been created."
 msgstr "Le menu [{menu}] a été créé."
@@ -5981,6 +6060,9 @@ msgstr "Déplacer cette ronde vers la période précédente"
 
 msgid "Move to the recommended folder"
 msgstr "Déplacer vers le dossier recommandé"
+
+msgid "Moved"
+msgstr "Déplacé"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -6139,6 +6221,9 @@ msgstr "Réseau"
 
 msgid "Networks"
 msgstr "Réseaux"
+
+msgid "New"
+msgstr "Nouveau"
 
 msgid "New Caledonia"
 msgstr "Nouvelle-Calédonie"
@@ -6381,10 +6466,6 @@ msgstr "Aucune liste nationale installée"
 msgid "No network detected, use the Refresh button when connected."
 msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion."
 
-#, python-brace-format
-msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
-msgstr "Aucun nouvel horaire à créer depuis le tournoi [{name}] (toutes les rondes sont déjà couvertes)."
-
 msgid "No norm is reachable for this player. The IT1 certificate is the right place to inspect the player."
 msgstr "Aucune norme n'est accessible pour ce·tte joueur·euse. Le certificat IT1 est l'endroit approprié pour consulter ce·tte joueur·euse."
 
@@ -6600,6 +6681,9 @@ msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
 
 msgid "No tournament"
 msgstr "Aucun tournoi"
+
+msgid "No tournament has a schedule yet."
+msgstr "Aucun tournoi n'a encore de calendrier."
 
 msgid "No tournament has been played yet."
 msgstr "Aucun tournoi n'a encore été joué."
@@ -7099,8 +7183,14 @@ msgstr "Facultatif"
 msgid "Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy)."
 msgstr "Valeur monétaire optionnelle du prix non monétaire complémentaire (ex. : valeur du trophée)."
 
+msgid "Optional, e.g.: Opens A–D"
+msgstr "Facultatif, ex. : Opens A à D"
+
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
+
+msgid "Or start from the schedule of a tournament:"
+msgstr "Ou partir du calendrier d'un tournoi :"
 
 msgid "Or upload an image (stored with the event, max 2 MB):"
 msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
@@ -8104,6 +8194,15 @@ msgstr "Score positionnel"
 msgid "Positive values are expected."
 msgstr "Des valeurs positives sont attendues."
 
+msgid "Postpone"
+msgstr "Reporter"
+
+msgid "Postpone by"
+msgstr "Reporter de"
+
+msgid "Postpone this hour, and the later ones of its day."
+msgstr "Reporter cet horaire, et les suivants du même jour."
+
 msgctxt "prefix"
 msgid "Pre"
 msgstr "Préf"
@@ -8337,6 +8436,9 @@ msgstr "Qatar"
 
 msgid "Quarterfinals"
 msgstr "Quarts de finale"
+
+msgid "Quick countdown"
+msgstr "Compte à rebours rapide"
 
 msgid "Quick-apply a tie-break set (replace actual tie-breaks)"
 msgstr "Appliquer un ensemble de départages (remplace les départages actuels)"
@@ -8914,6 +9016,10 @@ msgstr "Délai de rotation"
 msgid "Rotator"
 msgstr "Écran rotatif"
 
+msgctxt "one rotator"
+msgid "Rotator"
+msgstr "Écran rotatif"
+
 #, python-brace-format
 msgid "Rotator [{rotator}] has been created."
 msgstr "L'écran rotatif [{rotator}] a été créé."
@@ -8967,9 +9073,6 @@ msgstr "La ronde n°%(round)d doit être programmée après la ronde n°%(prev)d
 msgid "Round #%(round)d:"
 msgstr "Ronde n°%(round)d :"
 
-msgid "Round #0 is forbidden."
-msgstr "La ronde n°0 est interdite."
-
 #, python-brace-format
 msgid "Round #{round}"
 msgstr "Ronde n°{round}"
@@ -9022,9 +9125,6 @@ msgstr "Dates de ronde écrites année, jour, mois lues ainsi, seule lecture com
 
 msgid "Round meets 1.5.6a?"
 msgstr "La ronde satisfait 1.5.6a ?"
-
-msgid "Round number or text"
-msgstr "Numéro de ronde ou texte"
 
 #. i18n: {matches} is the games the round plays, half the participants
 #. still in — a language that names the stage after them (French, '8es
@@ -9091,6 +9191,14 @@ msgstr "La ronde {round} sur {rounds} n'a pas pu être appariée ({error}) : le
 msgid "Round {round} started"
 msgstr "Ronde {round} commencée"
 
+#, python-brace-format, python-format
+msgid "Round {round} started %%s ago"
+msgstr "Ronde {round} commencée depuis %%s"
+
+#, python-brace-format, python-format
+msgid "Round {round} starts in %%s"
+msgstr "Début de la ronde {round} dans %%s"
+
 #, python-brace-format
 msgid "Round {round} was paired with an adjourned game counting as a draw:"
 msgid_plural "Round {round} was paired with {count} adjourned games counting as draws:"
@@ -9100,10 +9208,6 @@ msgstr[1] "La ronde {round} a été appariée avec {count} parties ajournées co
 #, python-brace-format
 msgid "Round {round}: {white} – {black}"
 msgstr "Ronde {round} : {white} – {black}"
-
-#, python-brace-format, python-format
-msgid "Round {} started for %%s"
-msgstr "Ronde {} commencée depuis %%s"
 
 msgid "Round-Robin"
 msgstr "Toutes-rondes"
@@ -9133,6 +9237,9 @@ msgstr "Rondes"
 #, python-format
 msgid "Rounds %(first)d-%(last)d"
 msgstr "Rondes %(first)d-%(last)d"
+
+msgid "Rounds already in the timer are matched by their number. Copy the schedule again after changing it."
+msgstr "Les rondes déjà présentes dans le chronomètre sont reconnues par leur numéro. Copier à nouveau le calendrier après l'avoir modifié."
 
 msgid "Rounds before a rematch"
 msgstr "Rondes avant de rejouer un adversaire"
@@ -9306,6 +9413,10 @@ msgstr "Enregistrer ce·tte joueur·euse modifie l'ordre des numéros d'appariem
 
 msgid "Schedule"
 msgstr "Horaires"
+
+#, python-format
+msgid "Schedule of [%(tournament)s]:"
+msgstr "Calendrier de [%(tournament)s] :"
 
 msgid "Scheduled hours"
 msgstr "Calendrier"
@@ -9783,6 +9894,12 @@ msgstr "Affiche/masque les effectifs des équipes sur les cartes."
 msgid "Showing now"
 msgstr "Affichage en cours"
 
+msgid "Shown on"
+msgstr "Affiché sur"
+
+msgid "Shown on the screens"
+msgstr "Affiché sur les écrans"
+
 msgid "Side A"
 msgstr "Face A"
 
@@ -9856,6 +9973,9 @@ msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les 
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
 msgstr "Certaines des données de Sharly Chess ne sont pas incluses dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation du format SCE est fortement recommandée."
+
+msgid "Something else"
+msgstr "Autre chose"
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -10005,6 +10125,9 @@ msgstr "Système suisse standard"
 msgid "Standard team Swiss"
 msgstr "Suisse par équipes standard"
 
+msgid "Start"
+msgstr "Démarrer"
+
 msgid "Start Sharly Chess"
 msgstr "Démarrer Sharly Chess"
 
@@ -10023,9 +10146,8 @@ msgstr "Partez de l’un de ces ensembles, ou ajoutez vos propres étiquettes."
 msgid "Start month"
 msgstr "Mois de début"
 
-#, python-brace-format, python-format
-msgid "Start of round {} in %%s"
-msgstr "Début de la ronde {} dans %%s"
+msgid "Start of a round"
+msgstr "Début d'une ronde"
 
 msgid "Start of the sporting season"
 msgstr "Début de la saison sportive"
@@ -10047,6 +10169,9 @@ msgstr "Statistiques"
 
 msgid "Status"
 msgstr "Statut"
+
+msgid "Stays red for"
+msgstr "Reste rouge pendant"
 
 msgctxt "standard rating acronym"
 msgid "Std"
@@ -10182,6 +10307,10 @@ msgstr "Tadjikistan"
 
 msgid "Take the screens back to the previous round."
 msgstr "Ramener les écrans à la ronde précédente."
+
+#, python-format
+msgid "Taken by [%(hour)s]"
+msgstr "Occupé par [%(hour)s]"
 
 msgid "Talk to us on Discord"
 msgstr "Discutons-en sur Discord"
@@ -10371,20 +10500,11 @@ msgstr "Texte (double-face, tournoi au dos)"
 msgid "Text (tournament on front)"
 msgstr "Texte (tournoi devant)"
 
-msgid "Text after the hour:"
-msgstr "Texte après l'horaire :"
-
 msgid "Text align"
 msgstr "Alignement du texte"
 
-msgid "Text before the hour:"
-msgstr "Texte avant l'horaire :"
-
 msgid "Text colour"
 msgstr "Couleur du texte"
-
-msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
-msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
 msgctxt "thursday"
 msgid "Th"
@@ -10657,6 +10777,9 @@ msgstr "Les parties déjà jouées ne peuvent pas être modifiées."
 
 msgid "The groups are very uneven, so most of the bracket is byes — consider a different grouping or none."
 msgstr "Les groupes sont très inégaux, la majeure partie du tableau est donc constituée d'exempts — envisagez un autre groupement ou aucun."
+
+msgid "The hours already follow the schedule."
+msgstr "Les horaires suivent déjà le calendrier."
 
 msgid "The image is too large (max 2 MB)."
 msgstr "L'image est trop volumineuse (max. 2 Mo)."
@@ -11254,18 +11377,6 @@ msgstr "Le chronomètre affiché sur les pages de l'écran paginé."
 msgid "The timer displayed on the screen."
 msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
-#, python-brace-format
-msgid "The timer is green until {delay_1} minutes before the start of the rounds, then turns gradually orange until {delay_2} minutes before the start of the rounds."
-msgstr "Le chronomètre est vert jusqu'à {delay_1} minutes avant le début des rondes, puis passe progressivement à l'orange jusqu'à {delay_2} minutes avant le début des rondes."
-
-#, python-brace-format
-msgid "The timer is orange {delay_2} minutes before the start of the rounds, then turns gradually red until the start of the rounds."
-msgstr "Le chronomètre est orange {delay_2} minutes avant le début des rondes, puis passe progressivement au rouge jusqu'au début des rondes."
-
-#, python-brace-format
-msgid "The timer stays red from the start of the rounds and for {delay_3} minutes after."
-msgstr "Le chronomètre reste rouge à partir du début des rondes et pendant les {delay_3} minutes qui suivent."
-
 msgid "The tournament has been added."
 msgstr "Le tournoi a été ajouté."
 
@@ -11341,10 +11452,6 @@ msgstr "L'équipe championne du tableau supérieur atteint la grande finale inva
 
 msgid "There already is an hour defined at this time."
 msgstr "Il y a déjà un horaire défini à cette heure-ci."
-
-#, python-brace-format
-msgid "There already is an hour for round #{round}."
-msgstr "Il y a déjà un horaire pour la ronde n°{round}."
 
 msgid "There are no games played to change."
 msgstr "Aucune partie jouée n'est à modifier."
@@ -11522,9 +11629,6 @@ msgstr "Ce champ ne peut être modifié une fois le tournoi commencé."
 
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
-
-msgid "This field is required (except for rounds)."
-msgstr "Ce champ est obligatoire (excepté pour les rondes)."
 
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
@@ -11753,6 +11857,9 @@ msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es (
 msgid "This tie-break uses a legacy way to compute values."
 msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
+msgid "This time has already passed."
+msgstr "Cette heure est déjà passée."
+
 msgid "This tournament has already been paired; teams can no longer be added."
 msgstr "Ce tournoi a déjà été apparié, il n'est plus possible d'y ajouter des équipes."
 
@@ -11822,10 +11929,6 @@ msgstr "Cadence"
 
 msgid "Time control:"
 msgstr "Cadence :"
-
-#, python-brace-format
-msgid "Time outside of event time range ({range})."
-msgstr "Horaire en dehors des horaires de l'évènement ({range})."
 
 #, python-brace-format
 msgid "Time outside of tournament time range ({range})."
@@ -12035,9 +12138,6 @@ msgstr "Nom du tournoi"
 
 msgid "Tournament not found"
 msgstr "Tournoi introuvable"
-
-msgid "Tournament not found or has no schedule."
-msgstr "Tournoi introuvable ou sans horaire."
 
 msgid "Tournament pairing number"
 msgstr "Numéro d'appariement"
@@ -12908,6 +13008,10 @@ msgstr "Exemptions gagnées lues comme des exemptions d'appariement ({rounds})."
 msgid "Word"
 msgstr "Word"
 
+#, python-format
+msgid "Write %%s where the time goes. Leave a text empty to keep the wording above."
+msgstr "Écrire %%s à l'endroit de la durée. Laisser un texte vide pour garder le texte ci-dessus."
+
 msgid "Written by hand"
 msgstr "À écrire à la main"
 
@@ -13167,6 +13271,10 @@ msgid "[{first}] and [{second}] never meet."
 msgstr "[{first}] et [{second}] ne se rencontrent jamais."
 
 #, python-brace-format
+msgid "[{hour}] already takes that time."
+msgstr "[{hour}] occupe déjà cette heure."
+
+#, python-brace-format
 msgid "[{id}] is a reserved item id."
 msgstr "[{id}] est un identifiant d’élément réservé."
 
@@ -13363,6 +13471,9 @@ msgstr "incomplète"
 msgid "item id"
 msgstr "identifiant d’élément"
 
+msgid "its screens are chosen next"
+msgstr "ses écrans sont choisis ensuite"
+
 msgid "kB"
 msgstr "ko"
 
@@ -13415,9 +13526,18 @@ msgstr "matchs du début au n°{last}, sur {parts} pages"
 msgid "matches on {parts} pages"
 msgstr "matchs sur {parts} pages"
 
+msgid "min"
+msgstr "min"
+
 msgctxt "minutes"
 msgid "min"
-msgstr "min."
+msgstr "min"
+
+msgid "min after the hour"
+msgstr "min après l'horaire"
+
+msgid "min, until the hour"
+msgstr "min, jusqu'à l'horaire"
 
 #, python-brace-format
 msgid "minimum: {value}"
@@ -13477,6 +13597,12 @@ msgstr "en ligne"
 
 msgid "online database tried first"
 msgstr "base en ligne essayée en premier"
+
+msgid "or"
+msgstr "ou"
+
+msgid "or at"
+msgstr "ou à"
 
 #, python-brace-format
 msgid "pages of {number} boards"
@@ -13743,6 +13869,9 @@ msgstr "classement complet"
 msgid "then"
 msgstr "puis"
 
+msgid "then turns red over"
+msgstr "puis passe au rouge en"
+
 #, python-brace-format
 msgid "tie-break: {acronym}"
 msgstr "départage : {acronym}"
@@ -13819,16 +13948,28 @@ msgstr[0] "{count} demi-point"
 msgstr[1] "{count} demi-points"
 
 #, python-brace-format
+msgid "{count} hour added."
+msgid_plural "{count} hours added."
+msgstr[0] "{count} horaire ajouté."
+msgstr[1] "{count} horaires ajoutés."
+
+#, python-brace-format
 msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
 msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
 
 #, python-brace-format
-msgid "{count} hour created."
-msgid_plural "{count} hours created."
-msgstr[0] "{count} horaire créé."
-msgstr[1] "{count} horaires créés."
+msgid "{count} hour moved."
+msgid_plural "{count} hours moved."
+msgstr[0] "{count} horaire déplacé."
+msgstr[1] "{count} horaires déplacés."
+
+#, python-brace-format
+msgid "{count} hour postponed by {minutes} min."
+msgid_plural "{count} hours postponed by {minutes} min."
+msgstr[0] "{count} horaire reporté de {minutes} min."
+msgstr[1] "{count} horaires reportés de {minutes} min."
 
 #, python-brace-format
 msgid "{count} name has no comma between last and first name: it is imported whole as the last name."
@@ -13888,9 +14029,25 @@ msgstr "ecran-{family_type}"
 msgid "{first} — Pairing-Allocated Bye"
 msgstr "{first} — Exemption attribuée par l'appariement"
 
+#, python-brace-format, python-format
+msgid "{label} (%%s ago)"
+msgstr "{label} (depuis %%s)"
+
 #, python-brace-format
 msgid "{label} (best {num} stages)"
 msgstr "{label} ({num} meilleures étapes)"
+
+#, python-brace-format, python-format
+msgid "{label} in %%s"
+msgstr "{label} dans %%s"
+
+#, python-brace-format, python-format
+msgid "{label}: round {round} started %%s ago"
+msgstr "{label} : ronde {round} commencée depuis %%s"
+
+#, python-brace-format, python-format
+msgid "{label}: round {round} starts in %%s"
+msgstr "{label} : début de la ronde {round} dans %%s"
 
 #, python-brace-format
 msgctxt "rating sequence"

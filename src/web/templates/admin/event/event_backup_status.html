@@ -26,6 +26,7 @@
         {{ components.modal_button(
             url_for('event-snapshots-modal', event_uniq_id=snapshots_event_uniq_id),
             _('Backups'),
+            icon='bi-clock-history',
             size='sm',
             attrs={'hx-push-url': 'false'},
         ) }}

@@ -136,6 +136,7 @@
 - Adding, replacing or removing the image of an image screen gives back the space the previous images took in the event file, which kept it as large as when its biggest images were stored (5.2.7)
 - On an input screen shown through a display controller, tapping a game opens the result window of that game, instead of sometimes opening the window of another board of the round, such as board 1 for board 25 (5.2.8)
 - The illegal moves recorded on an input screen are shown only to the staff allowed to record them, instead of to every player reading the screen (5.2.8)
+- Timers are simpler to set up and to keep up to date: each hour is either the start of a round, worded automatically ("Round 3 starts in 4 minutes"), or a moment with a label of its own, with a preview of what the screens will show; a tournament's schedule can be copied into a timer, and copied again after it changes; a quick countdown shows "Next round in 10 minutes" in one step; an hour can be postponed together with the later hours of its day; the delays read as the colours the timer goes through, and may be 0; and the screens showing a timer are chosen in the timer's own form (5.3.0)
 
 ## __Sharly-Chess.com__
 

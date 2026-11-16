@@ -567,9 +567,10 @@ class EventDatabase(MigrationDatabase):
     def _row_to_stored_timer_hour(cls, row: dict[str, Any]) -> StoredTimerHour:
         return StoredTimerHour(
             id=row['id'],
-            uniq_id=row['uniq_id'],
             timer_id=row['timer_id'],
             triggered_at=cls.load_datetime_from_database_field(row['triggered_at']),
+            round=row['round'],
+            label=row['label'],
             text_before=row['text_before'],
             text_after=row['text_after'],
         )
@@ -598,7 +599,8 @@ class EventDatabase(MigrationDatabase):
             stored_timer_hour,
             [
                 'timer_id',
-                'uniq_id',
+                'round',
+                'label',
                 'triggered_at',
                 'text_before',
                 'text_after',
