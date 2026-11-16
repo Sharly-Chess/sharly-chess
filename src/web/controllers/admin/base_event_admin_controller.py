@@ -158,6 +158,14 @@ class BaseEventAdminWebContext(AdminWebContext):
             }
         if self.client.can_manage_screens:
             display_tabs: dict[str, dict[str, str | bool]] = {
+                'admin-event-display-guide-tab': {
+                    'title': _('Guide'),
+                    'name': _('Guide'),
+                    'icon_class': 'bi-signpost-split',
+                    'map_key': 'guide',
+                    'count': '',
+                    'template': 'screens/guide_tab.html',
+                },
                 'admin-event-display-controllers-tab': {
                     'title': pgettext('with shortcut indication', 'Channels'),
                     'name': _('Channels'),
@@ -280,12 +288,22 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     def _last_display_tab(self, event: Event, display_tabs: dict[str, Any]) -> str:
         """The display tab the Display entry of the side menu opens: the one
-        being shown, else the last one opened, else the screens."""
+        being shown, else the guide while the event has nothing to display,
+        else the last one opened, else the screens."""
         last_display_tab = SessionLastDisplayTab(self.request, event)
         route_name = self.request.route_handler.name
         if route_name in display_tabs:
             last_display_tab.set(route_name)
             return route_name
+        if not (
+            event.display_controllers_by_id
+            or event.basic_screens_by_id
+            or event.families_by_id
+            or event.rotators_by_id
+            or event.menus_by_id
+            or event.timers_by_id
+        ):
+            return 'admin-event-display-guide-tab'
         stored = last_display_tab.get()
         return stored if stored in display_tabs else 'admin-event-screens-tab'
 

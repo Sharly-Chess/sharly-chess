@@ -10,7 +10,7 @@
 
 {% block top_left_nav %}
     {% if client.can_manage_screens %}
-        {{ display_switcher.title('screens-display-controllers') }}
+        {{ display_switcher.title() }}
     {% else %}
         {{ admin_macros.admin_title(_('Channels'), '') }}
     {% endif %}
