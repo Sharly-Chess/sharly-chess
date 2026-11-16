@@ -96,6 +96,7 @@
 - In team Swiss tournaments, changing a lineup no longer changes the colours, and sometimes the opponents, given by the following pairings, and avoiding teams of the same club no longer rejects legal pairings or reports that no pairing exists (5.2.6)
 - In team Swiss tournaments, a round where many teams at the top of the standings may not meet one another, such as the third round of the _FFE_ cups when many teams have won both of their first two matches, is paired at once instead of never finishing (5.2.6)
 - The Log and Prohibited buttons keep the height of the other pairing buttons when they show a count, instead of growing out of line with them (5.2.8)
+- A round robin played to the end without publishing its rounds, as happens when it is neither shown on screens nor sent to online services, is finished and shows its final rankings, instead of staying at the first round until its rounds are published (5.2.9)
 
 ## Prizes
 
