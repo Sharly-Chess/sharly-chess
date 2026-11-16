@@ -28,6 +28,7 @@
 - When the label of a field wraps above its input, the buttons beside the field, such as those of the school, the team affiliation, the tags and the place card template, line up with its input instead of its label, and the label stands apart from the field above (5.2.7)
 - A page shown again with the browser's Back button draws each of its drop-down lists once, instead of drawing a second, lifeless copy beside the round selector of the pairings tab and leaving the tournament selector unusable (5.2.8)
 - _Sharly Chess_ no longer freezes while it waits for the internet: requests to _Sharly-Chess.com_ and the other online services, the pairing engines and the update check run in the background, so the screens, tablets and other pages keep answering. On a network that cannot resolve names yet, such as a phone hotspot still connecting, _Sharly-Chess.com_ is reported as unreachable after 3 seconds instead of blocking the whole application for about 30 seconds each time (5.2.8)
+- _Sharly Chess_ no longer crashes when clicking on the `Plugins` and `Logs` buttons on the console (5.2.9)
 
 ## Tournaments
 
