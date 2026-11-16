@@ -15,6 +15,7 @@
     "--share=network",
     "--filesystem=home:rw",
     "--device=dri",
+    "--env=__NV_DISABLE_EXPLICIT_SYNC=1",
     "--env=PYTHONUNBUFFERED=1",
     "--env=PYTHONPATH=/app/lib/python3.14/site-packages"
   ],
