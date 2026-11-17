@@ -1,0 +1,67 @@
+{#
+    The three delays of a timer, read as the colours the timer goes through
+    around the hour. `defaults` fills an empty delay; `summary` shows, as the
+    delays are typed, when each colour is reached.
+#}
+{% macro phase_inputs(data, errors, defaults, colors) %}
+    {% set rows = [
+        (1, colors[1], _('Green, then turns orange over'), pgettext('minutes', 'min')),
+        (2, colors[2], _('then turns red over'), _('min, until the hour')),
+        (3, colors[3], _('Stays red for'), _('min after the hour')),
+    ] %}
+    <div class="timer-phases d-flex flex-column gap-2" data-testid="timer-phases">
+        {% for num, color, before, after in rows %}
+            {% set name = 'delay_' ~ num %}
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="timer-phase-swatch" style="background-color: {{ color }}"></span>
+                <label for="delay-{{ num }}">{{ before }}</label>
+                <input
+                    id="delay-{{ num }}"
+                    name="{{ name }}"
+                    type="number"
+                    min="0"
+                    class="form-control form-control-sm timer-phase-input {% if name in errors %}is-invalid{% endif %}"
+                    placeholder="{{ defaults[num] }}"
+                    value="{{ data.get(name, '') }}"
+                    data-testid="delay-{{ num }}"
+                >
+                <span>{{ after }}</span>
+            </div>
+            {% if name in errors %}
+                <div class="form-text invalid-feedback d-block">{{ errors[name] }}</div>
+            {% endif %}
+        {% endfor %}
+        <div id="timer-phases-bar" class="timer-phase-bar"></div>
+        <div class="form-text" data-testid="timer-phases-summary"></div>
+    </div>
+    <script>
+        (function () {
+            const inputs = [1, 2, 3].map(num => document.getElementById('delay-' + num));
+            const summary = document.querySelector('[data-testid=timer-phases-summary]');
+            const bar = document.getElementById('timer-phases-bar');
+            const colors = {{ [colors[1], colors[2], colors[3]] | tojson }};
+            const text = {{ _('Green until %(orange)s min before the hour, red at the hour, hidden %(after)s min after.', orange='__orange__', after='__after__') | tojson }};
+            function value(input) {
+                const typed = parseInt(input.value, 10);
+                return Number.isNaN(typed) || typed < 0 ? parseInt(input.placeholder, 10) : typed;
+            }
+            function update() {
+                const [fade1, fade2, after] = inputs.map(value);
+                summary.textContent = text
+                    .replace('__orange__', fade1 + fade2)
+                    .replace('__after__', after);
+                const [green, orange, red] = colors;
+                const lead = Math.max(5, (fade1 + fade2) / 3);
+                const total = lead + fade1 + fade2 + after;
+                const at = minutes => (100 * minutes / total).toFixed(1) + '%';
+                bar.style.background = 'linear-gradient(to right, '
+                    + green + ' 0%, ' + green + ' ' + at(lead) + ', '
+                    + orange + ' ' + at(lead + fade1) + ', '
+                    + red + ' ' + at(lead + fade1 + fade2) + ', ' + red + ' 100%)';
+                bar.style.setProperty('--timer-hour-at', at(lead + fade1 + fade2));
+            }
+            inputs.forEach(input => input.addEventListener('input', update));
+            update();
+        })();
+    </script>
+{% endmacro %}

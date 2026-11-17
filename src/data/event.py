@@ -482,7 +482,7 @@ class Event:
 
     @cached_property
     def timer_delays(self) -> dict[int, int]:
-        delays = SharlyChessConfig.default_timer_delays
+        delays = dict(SharlyChessConfig.default_timer_delays)
         stored_delays = self.stored_event.timer_delays
         if stored_delays is not None:
             for i in range(1, 4):

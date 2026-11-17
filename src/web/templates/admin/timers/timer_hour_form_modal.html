@@ -43,63 +43,101 @@
                     ) }}"
                 {% endif %}
             >
-                <div class="col-12 mb-2">
+                {% set is_round = data.get('hour_kind') != 'other' %}
+                <div class="col-12 mb-3">
+                    {% call components.segmented(_('Kind of hour'), class='w-100') %}
+                        {{ components.segment_radio('hour_kind', 'round', _('Start of a round'), 'hour-kind-round', icon='bi-flag-fill', checked=is_round) }}
+                        {{ components.segment_radio('hour_kind', 'other', _('Something else'), 'hour-kind-other', icon='bi-chat-text-fill', checked=not is_round) }}
+                    {% endcall %}
+                </div>
+                <div class="row g-2 mb-2">
+                    <div id="hour-round-column" class="col-12 col-sm-3"{% if not is_round %} style="display: none"{% endif %}>
+                        {{ admin_macros.number_input(
+                            name='hour_round',
+                            label=_('%(string)s:', string=_('Round')),
+                            min=1,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col">
+                        {{ admin_macros.text_input(
+                            name='hour_label',
+                            label=_('%(string)s:', string=_('Label')),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
                     {{ admin_macros.datetime_input(
                         name='triggered_at',
                         label=_('%(string)s:', string=_('Date and time')),
-                        min_date=admin_event.start_date_str,
-                        max_date=admin_event.stop_date_str,
+                        min_date=admin_timer.first_date_str,
+                        max_date=admin_timer.last_date_str,
                         now_button=admin_event.current,
                         data=data, errors=errors
                     ) }}
                 </div>
                 <div class="col-12 mb-2">
-                    {{ admin_macros.text_input(
-                        name='uniq_id',
-                        label=_('%(string)s:', string=_('Round number or text')),
-                        placeholder=_('E.g.: Start of check-in'),
-                        tooltip_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
-                        data=data, errors=errors
-                    ) }}
+                    <div class="form-label mb-1">{{ _('%(string)s:', string=_('Shown on the screens')) }}</div>
+                    <div class="d-flex flex-column gap-1">
+                        <div class="timer-hour-preview" style="border-left-color: {{ admin_timer.colors[1] }}" data-testid="timer-hour-preview-before"></div>
+                        <div class="timer-hour-preview" style="border-left-color: {{ admin_timer.colors[3] }}" data-testid="timer-hour-preview-after"></div>
+                    </div>
                 </div>
-                <div class="col-12 mb-2">
-                    {{ admin_macros.text_input(
-                        name='text_before',
-                        label=_('Text before the hour:'),
-                        tooltip_text=_('%%s is replaced by the time left before the hour.'),
-                        data=data, errors=errors
-                    ) }}
-                </div>
-                <div class="col-12">
-                    {{ admin_macros.text_input(
-                        name='text_after',
-                        label=_('Text after the hour:'),
-                        tooltip_text=_('%%s is replaced by the time elapsed since the hour.'),
-                        data=data, errors=errors
-                    ) }}
-                </div>
+                {% set customised = data.get('text_before') or data.get('text_after') %}
+                <details id="timer-hour-wording" class="col-12"{% if customised or 'text_before' in errors or 'text_after' in errors %} open{% endif %}>
+                    <summary class="mb-2">{{ _('Customise wording') }}</summary>
+                    <div class="form-text mb-2">
+                        {{ _('Write %%s where the time goes. Leave a text empty to keep the wording above.') }}
+                    </div>
+                    <div class="col-12 mb-2">
+                        {{ admin_macros.text_input(
+                            name='text_before',
+                            label=_('Before the hour:'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='text_after',
+                            label=_('After the hour:'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </details>
                 <script>
-                    $('#uniq-id').on('keyup', function () {
-                        const uniqId = $(this).val().trim().replace(/^0+/, '');
-                        const isRound = /^-?\d+$/.test(uniqId);
-                        $('#text-before').prop(
-                            'placeholder',
-                            isRound ? `{{
-                                _('Start of round {} in %%s')
-                            }}`.replace('{}', uniqId) : `{{
-                                _('E.g.: Start of check-in in %%s')
-                            }}`
-                        );
-                        $('#text-after').prop(
-                            'placeholder',
-                            isRound ? `{{
-                                _('Round {} started for %%s')
-                            }}`.replace('{}', uniqId) : `{{
-                                _('E.g.: Check-in started for %%s')
-                            }}`
-                        );
-                    });
-                    $('#uniq-id').trigger('keyup');
+                    (function () {
+                        const defaults = {{ default_texts | tojson }};
+                        const sample = {
+                            before: {{ ngettext('%(num)d minute', '%(num)d minutes', 4) | tojson }},
+                            after: {{ ngettext('%(num)d minute', '%(num)d minutes', 2) | tojson }},
+                        };
+                        const placeholders = {
+                            round: {{ _('Optional, e.g.: Opens A–D') | tojson }},
+                            other: {{ _('E.g.: Check-in closes') | tojson }},
+                        };
+                        function update() {
+                            const isRound = $('#hour-kind-round').is(':checked');
+                            const round = $('#hour-round').val().trim() || '?';
+                            const label = $('#hour-label').val().trim();
+                            $('#hour-round-column').toggle(isRound);
+                            $('#hour-label').prop('placeholder', placeholders[isRound ? 'round' : 'other']);
+                            const kind = isRound ? (label ? 'round_label' : 'round') : 'other';
+                            const texts = defaults[kind].map(
+                                text => text.replace('__round__', round).replace('__label__', label || '…')
+                            );
+                            const custom = [$('#text-before').val().trim(), $('#text-after').val().trim()];
+                            $('#text-before').prop('placeholder', texts[0]);
+                            $('#text-after').prop('placeholder', texts[1]);
+                            const shown = [0, 1].map(
+                                i => (custom[i] ? custom[i].replaceAll('{}', round) : texts[i])
+                            );
+                            $('[data-testid=timer-hour-preview-before]').text(shown[0].replace('%s', sample.before));
+                            $('[data-testid=timer-hour-preview-after]').text(shown[1].replace('%s', sample.after));
+                        }
+                        $('#modal-form').on('input change', 'input', update);
+                        update();
+                    })();
                 </script>
             </form>
 {% endblock %}

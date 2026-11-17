@@ -1,0 +1,117 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'md' %}
+
+{% block title %}{{ _('Copy a schedule') }}{% endblock %}
+
+{% block subtitle %}
+    {{ _('%(string)s:', string=_('Timer')) }}
+    {{ admin_timer.name }}
+{% endblock %}
+
+{% block body %}
+    {% if not schedule_tournament %}
+        <p class="text-secondary">{{ _('No tournament has a schedule yet.') }}</p>
+    {% else %}
+        {% if schedule_tournaments | length > 1 %}
+            <div class="mb-3">
+                <label class="form-label" for="schedule-tournament-id">{{ _('%(string)s:', string=_('Tournament')) }}</label>
+                <select
+                    id="schedule-tournament-id"
+                    name="tournament_id"
+                    class="form-select sharly-chess-select2 inline-select2"
+                    style="display:none"
+                    data-testid="schedule-tournament-id"
+                    hx-get="{{ url_for(
+                        'admin-timer-hours-copy-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
+                    hx-trigger="change"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {% for tournament in schedule_tournaments %}
+                        <option value="{{ tournament.id }}" {% if tournament.id == schedule_tournament.id %}selected{% endif %}>
+                            {{ tournament.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% else %}
+            <p>{{ _('Schedule of [%(tournament)s]:', tournament=schedule_tournament.name) }}</p>
+        {% endif %}
+        <p class="form-text">
+            {{ _('Rounds already in the timer are matched by their number. Copy the schedule again after changing it.') }}
+        </p>
+        <form
+            id="modal-form"
+            hx-trigger="submit, enterKeypressFromModal"
+            hx-post="{{ url_for(
+                'admin-timer-hours-copy',
+                event_uniq_id=admin_event.uniq_id,
+                timer_id=admin_timer.id,
+                tournament_id=schedule_tournament.id,
+            ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <div class="d-flex flex-column gap-1">
+                {% for schedule_round in schedule_rounds %}
+                    {% set id = 'round-' ~ schedule_round.round %}
+                    <div class="form-check" data-testid="{{ id }}-row" data-status="{{ schedule_round.status }}">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="round_{{ schedule_round.round }}"
+                            id="{{ id }}"
+                            data-testid="{{ id }}"
+                            value="on"
+                            {% if schedule_round.selected %}checked{% else %}disabled{% endif %}
+                        />
+                        <label class="form-check-label d-flex flex-wrap gap-2 align-items-baseline" for="{{ id }}">
+                            <span class="fw-semibold">{{ _('Round #{round}').format(round=schedule_round.round) }}</span>
+                            {% if schedule_round.status == 'changed' %}
+                                <span>
+                                    <s class="text-secondary">{{ schedule_round.hour.triggered_at_str }}</s>
+                                    →
+                                    {{ schedule_round.triggered_at_str }}
+                                </span>
+                                {{ components.badge('warning', _('Moved')) }}
+                            {% else %}
+                                <span>{{ schedule_round.triggered_at_str }}</span>
+                                {% if schedule_round.status == 'new' %}
+                                    {{ components.badge('success', _('New')) }}
+                                {% elif schedule_round.status == 'same' %}
+                                    {{ components.badge('neutral', _('Already in the timer')) }}
+                                {% else %}
+                                    {{ components.badge(
+                                        'danger',
+                                        _('Taken by [%(hour)s]', hour=schedule_round.conflicting_hour.name),
+                                        tooltip=_('A timer shows one hour at a time: two hours cannot share the same time.'),
+                                    ) }}
+                                {% endif %}
+                            {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {{ components.modal_button(
+        url_for(
+            'admin-timer-hours-modal',
+            event_uniq_id=admin_event.uniq_id,
+            timer_id=admin_timer.id,
+        ),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+    ) }}
+    {% if schedule_rounds | selectattr('selected') | list %}
+        {{ components.button(_('Copy'), kind='primary', icon='bi-calendar2-check-fill', type='submit', attrs={'form': 'modal-form'}) }}
+    {% endif %}
+{% endblock %}

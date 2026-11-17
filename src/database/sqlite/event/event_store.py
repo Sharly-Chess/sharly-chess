@@ -20,9 +20,10 @@ def set_stored_fields(obj: Any, **fields: Any) -> None:
 @dataclass
 class StoredTimerHour:
     id: int | None
-    uniq_id: str
     timer_id: int
     triggered_at: datetime
+    round: int | None = None
+    label: str | None = None
     text_before: str | None = None
     text_after: str | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])

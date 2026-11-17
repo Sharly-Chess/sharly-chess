@@ -81,15 +81,10 @@
 {% endmacro %}
 
 {% macro thresholds(item, view, placement) %}
-    <div class="timer-thresholds d-flex flex-column align-items-start gap-0 lh-sm">
-        <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            {{ _('%(minutes)d min before', minutes=item.delays[1]) }}
-        </span>
-        <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            {{ _('%(minutes)d min before', minutes=item.delays[2]) }}
-        </span>
-        <span class="d-inline-flex align-items-center gap-1 text-nowrap">
-            {{ _('%(minutes)d min after', minutes=item.delays[3]) }}
+    <div class="timer-thresholds d-flex flex-column gap-1 lh-sm" style="min-width: 8rem">
+        <div class="timer-phase-bar" style="{{ item.phase_bar_style }}"></div>
+        <span class="small text-secondary text-nowrap">
+            {{ _('%(before)d min before → %(after)d min after', before=item.delays[1] + item.delays[2], after=item.delays[3]) }}
         </span>
     </div>
 {% endmacro %}
