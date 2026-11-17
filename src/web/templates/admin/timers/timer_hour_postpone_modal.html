@@ -43,7 +43,7 @@
                     min="1"
                     class="form-control w-auto {% if 'other_minutes' in errors %}is-invalid{% endif %}"
                     style="max-width: 6rem"
-                    placeholder="{{ _('min') }}"
+                    placeholder="{{ pgettext('minutes', 'min') }}"
                     data-testid="postpone-other-minutes"
                     value="{{ data.get('other_minutes', '') }}"
                 >

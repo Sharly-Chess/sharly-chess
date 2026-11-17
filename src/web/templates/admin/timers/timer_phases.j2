@@ -5,7 +5,7 @@
 #}
 {% macro phase_inputs(data, errors, defaults, colors) %}
     {% set rows = [
-        (1, colors[1], _('Green, then turns orange over'), _('min')),
+        (1, colors[1], _('Green, then turns orange over'), pgettext('minutes', 'min')),
         (2, colors[2], _('then turns red over'), _('min, until the hour')),
         (3, colors[3], _('Stays red for'), _('min after the hour')),
     ] %}

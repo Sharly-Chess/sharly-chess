@@ -739,7 +739,7 @@ msgid "A screen"
 msgstr "Un écran"
 
 msgid "A screen or rotator shows one timer: checking it below replaces the timer it showed previously."
-msgstr "Un écran ou un écran rotatif affiche un seul chronomètre : le cocher ci-dessous remplace le chronomètre qu'il affichait précédemment."
+msgstr "Un écran ou un écran rotatif affiche un seul chronomètre : le cocher ci-dessous remplace le chronomètre qu'il affichait précédemment."
 
 msgid "A screen shows pairings, rankings, results or check-in for one or more tournaments, on one page or over several pages that turn by themselves."
 msgstr "Un écran affiche les appariements, classements, résultats ou le pointage d'un ou plusieurs tournois, sur une page ou sur plusieurs qui défilent toutes seules."
@@ -773,7 +773,7 @@ msgid "A timer counts down to the times you give it, such as the start of each r
 msgstr "Un chronomètre décompte le temps jusqu'aux heures que vous lui donnez, comme le début de chaque ronde, sur les écrans et les écrans rotatifs de votre choix."
 
 msgid "A timer shows one hour at a time: two hours cannot share the same time."
-msgstr "Un chronomètre affiche un horaire à la fois : deux horaires ne peuvent pas avoir la même heure."
+msgstr "Un chronomètre affiche un horaire à la fois : deux horaires ne peuvent pas avoir la même heure."
 
 #, python-brace-format
 msgid "A value between 0 and {max} is expected."
@@ -1070,7 +1070,7 @@ msgid "After the change to the number of rounds, pairings that differ from those
 msgstr "Après le changement du nombre de rondes, appariements différents de ceux du moteur d'appariement"
 
 msgid "After the hour:"
-msgstr "Après l'horaire :"
+msgstr "Après l'horaire :"
 
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex æquo depuis l'onglet Appariements."
@@ -1292,7 +1292,7 @@ msgid "Any channel"
 msgstr "Tout canal"
 
 msgid "Any device: TV, projector, tablet, computer"
-msgstr "N'importe quel appareil : téléviseur, vidéoprojecteur, tablette, ordinateur"
+msgstr "N'importe quel appareil : téléviseur, vidéoprojecteur, tablette, ordinateur"
 
 msgid "Any tablet, TV or computer on the same network, by typing this computer's network address or scanning its QR code."
 msgstr "Toute tablette, tout téléviseur ou ordinateur sur le même réseau, en tapant l'adresse réseau de cet ordinateur ou en scannant son QR code."
@@ -1699,7 +1699,7 @@ msgid "Before the first round"
 msgstr "Avant la première ronde"
 
 msgid "Before the hour:"
-msgstr "Avant l'horaire :"
+msgstr "Avant l'horaire :"
 
 #, python-brace-format
 msgid "Before the number of rounds of [{tournament}] was changed"
@@ -1977,7 +1977,7 @@ msgid "By number of groups (balanced player counts)"
 msgstr "Par nombre de groupes (effectifs équilibrés)"
 
 msgid "By pairing number, every player keeps their row and column all through the tournament; by rank, the leaders come first."
-msgstr "Par numéro d'appariement, chaque joueur·euse garde sa ligne et sa colonne pendant tout le tournoi ; par classement, les premier·ères viennent en tête."
+msgstr "Par numéro d'appariement, chaque joueur·euse garde sa ligne et sa colonne pendant tout le tournoi ; par classement, les premier·ères viennent en tête."
 
 msgid "By player"
 msgstr "Par ordre alpha."
@@ -2485,7 +2485,7 @@ msgid "Columns"
 msgstr "Colonnes"
 
 msgid "Columns displayed:"
-msgstr "Colonnes affichées :"
+msgstr "Colonnes affichées :"
 
 msgid "Comma-separated board numbers to show."
 msgstr "Numéros d'échiquier à afficher, séparés par des virgules."
@@ -3589,7 +3589,7 @@ msgid "E.g.: Boards %%f to %%l"
 msgstr "Ex. : Échiquiers %%f à %%l"
 
 msgid "E.g.: Check-in closes"
-msgstr "Ex. : Fin du pointage"
+msgstr "Ex. : Fin du pointage"
 
 msgid "E.g.: DOE"
 msgstr "Ex. : DUPONT"
@@ -3646,7 +3646,7 @@ msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
 
 msgid "E.g.: iPad, Projector, Hall, Entrance, Arbiters"
-msgstr "Ex. : iPad, Vidéoprojecteur, Salle, Entrée, Arbitres"
+msgstr "Ex. : iPad, Vidéoprojecteur, Salle, Entrée, Arbitres"
 
 msgid "E.g.: john.doe@chess.com"
 msgstr "Ex. : pierre.dupont@chess.com"
@@ -4037,7 +4037,7 @@ msgid "Example data"
 msgstr "Données d’exemple"
 
 msgid "Example: Open A and Open B, one above the other."
-msgstr "Exemple : Open A et Open B, l'un au-dessus de l'autre."
+msgstr "Exemple : Open A et Open B, l'un au-dessus de l'autre."
 
 msgid "Exclude"
 msgstr "Exclure"
@@ -4675,7 +4675,7 @@ msgstr "Grèce"
 
 #, python-format
 msgid "Green until %(orange)s min before the hour, red at the hour, hidden %(after)s min after."
-msgstr "Vert jusqu'à %(orange)s min avant l'horaire, rouge à l'horaire, masqué %(after)s min après."
+msgstr "Vert jusqu'à %(orange)s min. avant l'horaire, rouge à l'horaire, masqué %(after)s min. après."
 
 msgid "Green, then turns orange over"
 msgstr "Vert, puis passe à l'orange en"
@@ -7152,7 +7152,7 @@ msgid "Open the profile in a new tab."
 msgstr "Ouvrir la fiche dans un nouvel onglet."
 
 msgid "Open this address once on each device, or scan the code. Use as many devices as you like: they all show whatever you send to this channel."
-msgstr "Ouvrez cette adresse une fois sur chaque appareil, ou scannez le code. Utilisez autant d'appareils que vous le souhaitez : ils affichent tous ce que vous envoyez à ce canal."
+msgstr "Ouvrez cette adresse une fois sur chaque appareil, ou scannez le code. Utilisez autant d'appareils que vous le souhaitez : ils affichent tous ce que vous envoyez à ce canal."
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
@@ -7199,13 +7199,13 @@ msgid "Optional monetary value of the complementary non-monetary prize (e.g. val
 msgstr "Valeur monétaire optionnelle du prix non monétaire complémentaire (ex. : valeur du trophée)."
 
 msgid "Optional, e.g.: Opens A–D"
-msgstr "Facultatif, ex. : Opens A à D"
+msgstr "Facultatif, ex. : Opens A à D"
 
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
 
 msgid "Or start from the schedule of a tournament:"
-msgstr "Ou partir du calendrier d'un tournoi :"
+msgstr "Ou initialiser à partir du calendrier d'un tournoi :"
 
 msgid "Or upload an image (stored with the event, max 2 MB):"
 msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
@@ -7217,10 +7217,10 @@ msgid "Order the still-tied competitors by hand, by dragging them in the ranking
 msgstr "Ordonnez à la main les compétiteurs encore à égalité en les faisant glisser dans le classement."
 
 msgid "Order: by pairing number"
-msgstr "Ordre : par numéro d'appariement"
+msgstr "Ordre : par numéro d'appariement"
 
 msgid "Order: by rank"
-msgstr "Ordre : par classement"
+msgstr "Ordre : par classement"
 
 msgid "Organisation"
 msgstr "Organisation"
@@ -8125,7 +8125,7 @@ msgid "Please wait…"
 msgstr "Veuillez patienter…"
 
 msgid "Plug a projector or a monitor into the computer running Sharly Chess: no network needed."
-msgstr "Branchez un vidéoprojecteur ou un écran sur l'ordinateur où tourne Sharly Chess : aucun réseau nécessaire."
+msgstr "Branchez un vidéoprojecteur ou un écran sur l'ordinateur où tourne Sharly Chess : aucun réseau nécessaire."
 
 #, python-brace-format
 msgid "Plug a projector or a monitor into this computer and open {what} on it, full screen. No network is needed."
@@ -9091,7 +9091,7 @@ msgstr "Ronde n°{round}"
 
 #, python-brace-format
 msgid "Round #{round} starts {datetime}"
-msgstr "Début de la ronde n°{round} : {datetime}"
+msgstr "Début de la ronde n°{round} : {datetime}"
 
 #, python-format
 msgid "Round %(current)d of %(total)d"
@@ -9428,7 +9428,7 @@ msgstr "Horaires"
 
 #, python-format
 msgid "Schedule of [%(tournament)s]:"
-msgstr "Calendrier de [%(tournament)s] :"
+msgstr "Calendrier de [%(tournament)s] :"
 
 msgid "Scheduled hours"
 msgstr "Calendrier"
@@ -9513,7 +9513,7 @@ msgid "Screens"
 msgstr "Écran<u>s</u>"
 
 msgid "Screens designed for this channel:"
-msgstr "Écrans conçus pour ce canal :"
+msgstr "Écrans conçus pour ce canal :"
 
 msgid "Screens list"
 msgstr "Liste d'écrans"
@@ -9864,7 +9864,7 @@ msgid "Show made-up pairings and results on the screens of the tournaments that 
 msgstr "Afficher des appariements et des résultats fictifs sur les écrans des tournois non commencés, pour les mettre en place."
 
 msgid "Show pairings, rankings, results and check-in anywhere in the venue: a projector in the playing hall, a TV at the entrance, tablets where players check in or enter their results."
-msgstr "Affichez appariements, classements, résultats et pointage partout dans la salle : un vidéoprojecteur dans la salle de jeu, un téléviseur à l'entrée, des tablettes où les joueur·euses pointent ou saisissent leurs résultats."
+msgstr "Affichez appariements, classements, résultats et pointage partout dans la salle : un vidéoprojecteur dans la salle de jeu, un téléviseur à l'entrée, des tablettes où les joueur·euses pointent ou saisissent leurs résultats."
 
 msgid "Show the members of each team"
 msgstr "Afficher les membres de chaque équipe"
@@ -10081,7 +10081,7 @@ msgid "Spectator"
 msgstr "Visualisation"
 
 msgid "Split automatically; the pages turn by themselves for non-editable screens."
-msgstr "Réparti automatiquement ; les pages défilent toutes seules pour les écrans sans saisie."
+msgstr "Réparti automatiquement ; les pages défilent toutes seules pour les écrans sans saisie."
 
 msgid "Split by:"
 msgstr "Séparateur :"
@@ -10585,7 +10585,7 @@ msgid "The age categories in which players are distributed. A category is added 
 msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutée pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
 
 msgid "The arbiter decides what the channel shows and changes it at any time: a screen, a rotator or a menu."
-msgstr "L'arbitre décide de ce qu'affiche le canal et le change à tout moment : un écran, un écran rotatif ou un menu."
+msgstr "L'arbitre décide de ce qu'affiche le canal et le change à tout moment : un écran, un écran rotatif ou un menu."
 
 msgid "The arbiter defines the acceleration rule by rule."
 msgstr "L'arbitre définit l'accélération règle par règle."
@@ -10682,11 +10682,11 @@ msgid "The data folder and the backups folder can not be one inside the other."
 msgstr "Le dossier des données et le dossier des sauvegardes ne peuvent pas être l'un dans l'autre."
 
 msgid "The device follows the channel. From the arbiter computer, you decide what the channel shows: a screen, a rotator or a menu. Every device following it shows the same thing, and changes when you change it."
-msgstr "L'appareil suit le canal. Depuis l'ordinateur de l'arbitre, vous décidez de ce qu'affiche le canal : un écran, un écran rotatif ou un menu. Tous les appareils qui le suivent affichent la même chose, et changent quand vous la changez."
+msgstr "L'appareil suit le canal. Depuis l'ordinateur de l'arbitre, vous décidez de ce qu'affiche le canal : un écran, un écran rotatif ou un menu. Tous les appareils qui le suivent affichent la même chose, et changent quand vous la changez."
 
 #, python-brace-format
 msgid "The device opens Sharly Chess over the same network: type this computer's network address into its browser, or scan the QR code shown in the Sharly Chess window. Then choose on the device what it shows: {what}."
-msgstr "L'appareil ouvre Sharly Chess par le même réseau : tapez l'adresse réseau de cet ordinateur dans son navigateur, ou scannez le QR code affiché dans la fenêtre de Sharly Chess. Choisissez ensuite sur l'appareil ce qu'il affiche : {what}."
+msgstr "L'appareil ouvre Sharly Chess par le même réseau : tapez l'adresse réseau de cet ordinateur dans son navigateur, ou scannez le QR code affiché dans la fenêtre de Sharly Chess. Choisissez ensuite sur l'appareil ce qu'il affiche : {what}."
 
 msgid "The devices"
 msgstr "Les appareils"
@@ -11554,7 +11554,7 @@ msgid "This channel is private (not visible by the spectators)."
 msgstr "Ce canal est privé (non visible des spectateur·ices)."
 
 msgid "This channel is private: the device must be signed in with an allowed account."
-msgstr "Ce canal est privé : l'appareil doit être connecté avec un compte autorisé."
+msgstr "Ce canal est privé : l'appareil doit être connecté avec un compte autorisé."
 
 msgid "This channel is public (visible by the spectators)."
 msgstr "Ce canal est public (visible des spectateur·ices)."
@@ -11563,7 +11563,7 @@ msgid "This computer"
 msgstr "Cet ordinateur"
 
 msgid "This computer is not connected to a network, so other devices cannot reach it."
-msgstr "Cet ordinateur n'est connecté à aucun réseau : les autres appareils ne peuvent pas l'atteindre."
+msgstr "Cet ordinateur n'est connecté à aucun réseau : les autres appareils ne peuvent pas l'atteindre."
 
 msgid "This content is too advanced for the block editor."
 msgstr "Ce contenu est trop avancé pour l’éditeur de blocs."
@@ -12969,7 +12969,7 @@ msgid "Winner"
 msgstr "Vainqueur"
 
 msgid "With a channel, the arbiter decides what devices show. A device follows the channel and shows whatever the arbiter puts on it from the arbiter computer: a screen, a rotator or a menu. Any number of devices can follow the same channel."
-msgstr "Avec un canal, l'arbitre décide de ce qu'affichent les appareils. Un appareil suit le canal et affiche ce que l'arbitre y met depuis l'ordinateur de l'arbitre : un écran, un écran rotatif ou un menu. Autant d'appareils que voulu peuvent suivre le même canal."
+msgstr "Avec un canal, l'arbitre décide de ce qu'affichent les appareils. Un appareil suit le canal et affiche ce que l'arbitre y met depuis l'ordinateur de l'arbitre : un écran, un écran rotatif ou un menu. Autant d'appareils que voulu peuvent suivre le même canal."
 
 msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
@@ -13541,18 +13541,15 @@ msgstr "matchs du début au n°{last}, sur {parts} pages"
 msgid "matches on {parts} pages"
 msgstr "matchs sur {parts} pages"
 
-msgid "min"
-msgstr "min"
-
 msgctxt "minutes"
 msgid "min"
-msgstr "min"
+msgstr "min."
 
 msgid "min after the hour"
-msgstr "min après l'horaire"
+msgstr "min. après l'horaire"
 
 msgid "min, until the hour"
-msgstr "min, jusqu'à l'horaire"
+msgstr "min., jusqu'à l'horaire"
 
 #, python-brace-format
 msgid "minimum: {value}"
@@ -13811,7 +13808,7 @@ msgid "sec"
 msgstr "sec."
 
 msgid "sends:"
-msgstr "envoie :"
+msgstr "envoie :"
 
 msgid "some already played each other"
 msgstr "certain·es se sont déjà rencontré·es"
@@ -14058,11 +14055,11 @@ msgstr "{label} dans %%s"
 
 #, python-brace-format, python-format
 msgid "{label}: round {round} started %%s ago"
-msgstr "{label} : ronde {round} commencée depuis %%s"
+msgstr "{label} : ronde {round} commencée depuis %%s"
 
 #, python-brace-format, python-format
 msgid "{label}: round {round} starts in %%s"
-msgstr "{label} : début de la ronde {round} dans %%s"
+msgstr "{label} : début de la ronde {round} dans %%s"
 
 #, python-brace-format
 msgctxt "rating sequence"

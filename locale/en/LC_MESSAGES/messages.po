@@ -13539,9 +13539,6 @@ msgstr ""
 msgid "matches on {parts} pages"
 msgstr ""
 
-msgid "min"
-msgstr ""
-
 msgctxt "minutes"
 msgid "min"
 msgstr ""
