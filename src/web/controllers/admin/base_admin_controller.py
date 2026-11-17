@@ -157,20 +157,6 @@ class BaseAdminController(BaseController):
         }
 
     @staticmethod
-    def _get_timer_delay_texts(delays: dict[int, int]) -> dict[int, str]:
-        return {
-            1: _(
-                'The timer is green until {delay_1} minutes before the start of the rounds, then turns gradually orange until {delay_2} minutes before the start of the rounds.'
-            ).format(delay_1=delays[1], delay_2=delays[2]),
-            2: _(
-                'The timer is orange {delay_2} minutes before the start of the rounds, then turns gradually red until the start of the rounds.'
-            ).format(delay_2=delays[2]),
-            3: _(
-                'The timer stays red from the start of the rounds and for {delay_3} minutes after.'
-            ).format(delay_3=delays[3]),
-        }
-
-    @staticmethod
     def _get_screen_type_options(
         family_screens_only: bool, event: Event
     ) -> dict[str, str]:

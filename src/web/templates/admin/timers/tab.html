@@ -24,6 +24,14 @@
         tooltip_placement='bottom',
     ) }}
     {{ components.modal_button(
+        url_for('admin-timer-quick-modal', event_uniq_id=admin_event.uniq_id),
+        _('Quick countdown'),
+        icon='bi-stopwatch',
+        tooltip=_('Count down to a moment a few minutes from now on the screens.'),
+        tooltip_placement='bottom',
+        attrs={'data-testid': 'timer-quick-button'},
+    ) }}
+    {{ components.modal_button(
         url_for('admin-timer-create-modal', event_uniq_id=admin_event.uniq_id),
         _('Create a timer'),
         kind='primary',
@@ -38,6 +46,31 @@
         {% call components.empty_state(none, class='screens-map-empty') %}
             {{ screens_map.guide('timers') }}
             <p>{{ _('Create a timer now to get started.') }}</p>
+            {% set schedule_tournaments = admin_event.sorted_tournaments | selectattr('has_schedule') | list %}
+            {% if schedule_tournaments %}
+                <p>{{ _('Or start from the schedule of a tournament:') }}</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    {% for tournament in schedule_tournaments %}
+                        {{ components.button(
+                            tournament.name,
+                            icon='bi-calendar2-check-fill',
+                            attrs={
+                                'hx-post': url_for(
+                                    'admin-timer-create-from-schedule',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                ),
+                                'hx-target': 'body',
+                                'hx-indicator': '#please-wait',
+                                'hx-disabled-elt': 'this',
+                                'data-bs-toggle': 'modal',
+                                'data-bs-target': '#modal-wrapper',
+                                'data-testid': 'timer-from-schedule-' ~ tournament.id,
+                            },
+                        ) }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% endcall %}
     {% else %}
         {% with

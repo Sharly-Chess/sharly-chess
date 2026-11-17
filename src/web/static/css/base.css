@@ -3093,7 +3093,7 @@ a.screens-type-filter-chip {
 .modal #alert-message + h4 {
     margin-top: 0;
 }
-.modal h4, .modal * + .collapse-button {
+.modal h4:not(.sc-section-subheading), .modal * + .collapse-button {
     font-size: 1.3rem;
 }
 .modal-dialog:has(.empty-modal) {
@@ -3661,7 +3661,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
 
 /* Section headings in forms are quiet, leaving the accent to the main
    button. */
-[data-sc-interface=admin] .modal-dialog h4 {
+[data-sc-interface=admin] .modal-dialog h4:not(.sc-section-subheading) {
     color: var(--bs-emphasis-color);
     font-size: 1.1rem;
     font-weight: 600;
