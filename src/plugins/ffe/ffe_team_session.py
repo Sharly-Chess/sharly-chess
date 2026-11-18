@@ -4,6 +4,7 @@ import re
 from collections import Counter
 from urllib.parse import urlencode
 from dataclasses import dataclass, field
+from datetime import datetime
 from logging import Logger
 
 from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
@@ -55,6 +56,22 @@ PV_TABLE_ID: str = 'TablePV'
 TEAM_FORM_TITLE_ID: str = MAIN_ID + 'LabelEquipeTitre'
 PV_FORM_TITLE_ID: str = MAIN_ID + 'LabelPV'
 VISIBLE_CHECKBOX: str = MAIN + 'CheckVisible'
+#: The report fields holding a licence number, which the form shows
+#: followed by the person's name: ``N16269 - MARTEL Samuel 1762``.
+LICENCE_FIELDS: tuple[str, ...] = (
+    'TextArbitre',
+    'TextCapitaineBl',
+    'TextCapitaineNr',
+    'TextNrFFEBl',
+    'TextNrFFENr',
+)
+#: The report date as typed (with or without the time) and as the form
+#: shows it (with seconds).
+REPORT_DATE_FORMATS: tuple[str, ...] = (
+    '%d/%m/%Y %H:%M:%S',
+    '%d/%m/%Y %H:%M',
+    '%d/%m/%Y',
+)
 
 CREATE_TEAM_EVENT: str = MAIN + 'LinkCmdEquipeCreer'
 SAVE_TEAM_EVENT: str = MAIN + 'CmdEquipeSave'
@@ -657,11 +674,13 @@ class FFETeamSession(FFESession):
         page.match_reports = new_page.match_reports
         return created.pop()
 
-    def save_report(self, report_id: int, data: MatchReportData) -> GroupPage:
+    def save_report(self, report_id: int, data: MatchReportData) -> GroupPage | None:
         """Fills in and saves a match report and returns the group page
-        the site comes back to. Raises a SharlyChessException when the
-        site refuses it."""
+        the site comes back to, or None when the report already holds
+        *data* and is left as it is. Raises a SharlyChessException when
+        the site refuses it."""
         form_url = f'{PV_FORM_URL}?saison=&Id={report_id}'
+        group_state = dict(self.ffe_state)
         parser = self._get(form_url)
         if parser is None:
             raise SharlyChessException(
@@ -702,6 +721,11 @@ class FFETeamSession(FFESession):
             post_data[prefix + 'TextNrFFEBl'] = left
             post_data[prefix + 'TextNrFFENr'] = right
             post_data[prefix + 'DropDownResult'] = result
+        if self._report_holds(parser, post_data):
+            logger.debug('Match report [%d] is up to date.', report_id)
+            # The group's actions post back from the group page.
+            self.ffe_state = group_state
+            return None
         parser = self._post(form_url, post_data)
         if parser is None:
             raise SharlyChessException(
@@ -715,6 +739,36 @@ class FFETeamSession(FFESession):
         if page is None:
             raise SharlyChessException('The group page could not be read back.')
         return page
+
+    @classmethod
+    def _report_holds(
+        cls, parser: AdvancedHTMLParser, post_data: dict[str, str]
+    ) -> bool:
+        """Whether the report form read in *parser* already holds what
+        *post_data* would save."""
+        current = cls._form_values(parser)
+        checkbox = parser.getElementsByAttr('name', VISIBLE_CHECKBOX)
+        if checkbox and checkbox[0].hasAttribute('checked'):
+            current[VISIBLE_CHECKBOX] = 'on'
+        return all(
+            cls._report_value(name, current.get(name, ''))
+            == cls._report_value(name, value)
+            for name, value in post_data.items()
+            if not name.startswith('__')
+        )
+
+    @staticmethod
+    def _report_value(name: str, value: str) -> str:
+        """*value* of the report field *name* in a form that compares
+        what Sharly posts with what the form shows."""
+        value = value.strip()
+        if name.endswith(LICENCE_FIELDS):
+            return value.split(' - ', 1)[0]
+        if name.endswith('TextDatePV'):
+            for date_format in REPORT_DATE_FORMATS:
+                with contextlib.suppress(ValueError):
+                    return datetime.strptime(value, date_format).isoformat()
+        return value
 
     def delete_report(self, report_id: int) -> GroupPage:
         """Deletes a match report and returns the group page the site
@@ -1036,7 +1090,8 @@ class FFETeamSession(FFESession):
     def upload_match_reports(self) -> FailureFFEUploadStatus | None:
         """Sends the tournament to the team module: registers the teams
         that are not there yet, then fills in one match report per
-        played match (existing reports are overwritten). Returns the
+        played match (existing reports are overwritten unless they
+        already hold the match). Returns the
         failure status, None on success."""
         assert self.tournament is not None
         tournament = self.tournament
@@ -1147,7 +1202,8 @@ class FFETeamSession(FFESession):
         """Fills in one match report per match of every published round,
         reusing the site's reports for the same teams and round, then
         its blank ones, and creating the rest; the group's other reports
-        are deleted. Returns the group page as last read."""
+        are deleted. A report that already holds its match is not saved
+        again. Returns the group page as last read."""
         assert self.tournament is not None
         site_names = {
             site_id: site_name_key(name) for name, site_id in page.teams_by_name.items()
@@ -1179,7 +1235,7 @@ class FFETeamSession(FFESession):
                 if report_id is None:
                     report_id = self.create_blank_report(page)
                 used.add(report_id)
-                page = self.save_report(report_id, data)
+                page = self.save_report(report_id, data) or page
         for report in list(page.match_reports):
             if report.id not in used:
                 page = self.delete_report(report.id)

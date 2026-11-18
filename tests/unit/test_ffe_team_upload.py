@@ -123,6 +123,93 @@ class SitePagesTestCase(TestCase):
         )
         self.assertEqual(posted['ctl00$ContentPlaceHolderMain$CheckVisible'], 'on')
 
+    def _report_form(self, *, visible: bool = True, game_points: str = '2.5') -> str:
+        """A report form as the site shows a saved report: licences
+        followed by the person's name, the date with seconds."""
+        return (
+            '<input name="ctl00$ContentPlaceHolderMain$TextDatePV" type="text"'
+            ' value="20/09/2026 14:00:00" />'
+            '<input name="ctl00$ContentPlaceHolderMain$TextLieu" type="text"'
+            ' value="Rennes - Salle B" />'
+            '<input name="ctl00$ContentPlaceHolderMain$TextArbitre" type="text"'
+            ' value="C69548 - AUBRY Pascal - Arbitre Open" />'
+            '<select name="ctl00$ContentPlaceHolderMain$DropPtsBl$DropDownDecimal">'
+            f'<option selected="selected" value="{game_points}">{game_points}</option>'
+            '</select>'
+            '<input name="ctl00$ContentPlaceHolderMain$CheckVisible" type="checkbox"'
+            + (' checked="checked"' if visible else '')
+            + ' />'
+            '<input name="ctl00$ContentPlaceHolderMain$RepeaterBoards$ctl00$TextNrFFEBl"'
+            ' type="text" value="N16269 - MARTEL Samuel 1762" />'
+        )
+
+    def _holds(self, form: str, **changes: str) -> bool:
+        parser = AdvancedHTMLParser()
+        parser.parseStr(form)
+        post_data = {
+            '__EVENTTARGET': 'save',
+            'ctl00$ContentPlaceHolderMain$TextDatePV': '20/09/2026 14:00',
+            'ctl00$ContentPlaceHolderMain$TextLieu': 'Rennes - Salle B',
+            'ctl00$ContentPlaceHolderMain$TextArbitre': 'C69548',
+            'ctl00$ContentPlaceHolderMain$DropPtsBl$DropDownDecimal': '2.5',
+            'ctl00$ContentPlaceHolderMain$CheckVisible': 'on',
+            'ctl00$ContentPlaceHolderMain$RepeaterBoards$ctl00$TextNrFFEBl': 'N16269',
+        } | {
+            f'ctl00$ContentPlaceHolderMain${name}': value
+            for name, value in changes.items()
+        }
+        return FFETeamSession._report_holds(parser, post_data)
+
+    def test_a_report_that_holds_its_match_is_recognised(self) -> None:
+        self.assertTrue(self._holds(self._report_form()))
+
+    def test_a_report_with_another_result_is_saved_again(self) -> None:
+        self.assertFalse(self._holds(self._report_form(game_points='2.0')))
+
+    def test_a_report_with_another_player_is_saved_again(self) -> None:
+        self.assertFalse(
+            self._holds(
+                self._report_form(), **{'RepeaterBoards$ctl00$TextNrFFEBl': 'K13756'}
+            )
+        )
+
+    def test_a_report_with_another_place_is_saved_again(self) -> None:
+        self.assertFalse(self._holds(self._report_form(), TextLieu='Rennes - Salle C'))
+
+    def test_a_report_with_another_date_is_saved_again(self) -> None:
+        self.assertFalse(
+            self._holds(self._report_form(), TextDatePV='21/09/2026 14:00')
+        )
+
+    def test_a_hidden_report_is_saved_again(self) -> None:
+        self.assertFalse(self._holds(self._report_form(visible=False)))
+
+    def test_an_unchanged_report_is_not_posted(self) -> None:
+        session = FFETeamSession(tournament=None)
+        posted: list[str] = []
+        form = page('match_report_form.html')
+        session._get = lambda url: form  # type: ignore[method-assign]
+        session._post = lambda url, data: posted.append(url)  # type: ignore[method-assign]
+        session._report_holds = lambda parser, post_data: True  # type: ignore[method-assign]
+        data = MatchReportData(
+            round=1,
+            number=1,
+            left_team_id=2213,
+            right_team_id=2214,
+            left_match_points='3',
+            right_match_points='1',
+            left_game_points='2.0',
+            right_game_points='1.0',
+            boards=[],
+            left_captain='',
+            right_captain='',
+            date='20/09/2026 14:00',
+            place='',
+            arbiter='',
+        )
+        self.assertIsNone(session.save_report(4310, data))
+        self.assertEqual(posted, [])
+
     def test_a_refused_login_reads_as_no_connected_account(self) -> None:
         """The site answers a refused login with the page of a
         successful one, minus the account in its "connected" label."""
