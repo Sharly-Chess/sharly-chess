@@ -43,10 +43,8 @@ class Pairing:
         self._result_value = stored_pairing.result
         self._result = Result(self._result_value)
 
-        # NOTE (Molrn) Flag indicating if the stored object exists in the database or not.
-        # Pre-big move, the unpaired rounds had their own *Pairing* objects in the DB
-        # This maintains the legacy usages of the *Pairing* class
-        # TODO Remove all *Pairing* legacy usages (and this flag)
+        # A round the player has no stored pairing for still gets a pairing,
+        # which is inserted the first time it is saved.
         self.exists = exists
 
     @property

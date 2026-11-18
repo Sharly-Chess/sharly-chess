@@ -2372,8 +2372,7 @@ class Tournament:
             return all(
                 player.pairings[round_].result != Result.NO_RESULT
                 for player in self.tournament_players
-                if player.pairings[round_].exists
-                and player.pairings[round_].stored_pairing.board_id is not None
+                if player.pairings[round_].stored_pairing.board_id is not None
             )
         return all(
             player.pairings[round_].result != Result.NO_RESULT
@@ -2418,8 +2417,7 @@ class Tournament:
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.tournament_players
-            if player.pairings[round_].exists
-            and player.pairings[round_].stored_pairing.board_id is not None
+            if player.pairings[round_].stored_pairing.board_id is not None
             # A board whose opponent slot is a hole has no game to
             # play (it's a forfeit), so it never holds up the round.
             and player.pairings[round_].opponent_id is not None

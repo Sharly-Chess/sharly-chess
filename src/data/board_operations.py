@@ -96,7 +96,7 @@ class BoardOperations:
             pairing = self.tournament.tournament_players_by_id[player_id].pairings[
                 round_
             ]
-            if pairing.exists and pairing.stored_pairing.board_id is not None:
+            if pairing.stored_pairing.board_id is not None:
                 raise SharlyChessException(
                     f'Player {player_id} is already paired in round {round_}.'
                 )
