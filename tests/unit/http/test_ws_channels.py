@@ -176,7 +176,7 @@ def test_a_result_changes_nothing_on_screens_beyond_its_boards(
         wait_until_subscribed(http, socket)
         response = http.put(
             f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}/'
-            f'{board.identifier}/{Result.DRAW.value}'
+            f'{board.id}/{Result.DRAW.value}'
         )
         assert response.status_code == 200
         publish(http, 'end', EVENT_ID)

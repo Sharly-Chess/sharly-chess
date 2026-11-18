@@ -188,7 +188,7 @@ class TestSingleScreensFunctionality:
         # Update the first row for some possible results, and check that the result is updated on the screen
         for r in [Result.LOSS, Result.DRAW, Result.WIN]:
             set_result = api_request_context.put(
-                f'/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/{alyx_board.identifier}/{r.value}'
+                f'/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/{alyx_board.id}/{r.value}'
             )
             assert set_result.ok
             expect(row.locator('div.score')).to_contain_text(str(r))

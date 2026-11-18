@@ -54,12 +54,10 @@ def test_a_check_in_of_unknown_players_names_none() -> None:
 def test_a_result_names_its_boards_and_their_players() -> None:
     channels = _Channels()
     boards = [
-        cast(
-            Board, SimpleNamespace(identifier=9, white_player_id=5, black_player_id=2)
-        ),
+        cast(Board, SimpleNamespace(id=9, white_player_id=5, black_player_id=2)),
         cast(
             Board,
-            SimpleNamespace(identifier=7, white_player_id=8, black_player_id=None),
+            SimpleNamespace(id=7, white_player_id=8, black_player_id=None),
         ),
     ]
     PairingsAdminController.publish_new_user_results(
@@ -75,7 +73,7 @@ def test_a_result_names_its_boards_and_their_players() -> None:
 @pytest.mark.unit
 def test_an_illegal_move_names_the_board_of_its_player() -> None:
     channels = _Channels()
-    board = SimpleNamespace(identifier=9, white_player_id=5, black_player_id=2)
+    board = SimpleNamespace(id=9, white_player_id=5, black_player_id=2)
     tournament = cast(
         Tournament,
         SimpleNamespace(id=3, current_round=2, event=SimpleNamespace(uniq_id='open')),

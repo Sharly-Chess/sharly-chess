@@ -18,7 +18,7 @@
 {% for other in lineup_team_board.boards %}
     {% set other_white = other.optional_white_tournament_player %}
     {% set other_black = other.black_tournament_player %}
-    {% if other.identifier != board.identifier %}
+    {% if other.id != board.id %}
         {% if other_white and other_white.team_id == side_team.id %}
             {% do teammates.append(other_white) %}
         {% elif other_black and other_black.team_id == side_team.id %}
@@ -50,7 +50,7 @@
         event_uniq_id=admin_event.uniq_id,
         tournament_id=admin_tournament.id,
         round=admin_round,
-        board_id=board.identifier,
+        board_id=board.id,
         side=side,
     ) }}"
     hx-target="body"

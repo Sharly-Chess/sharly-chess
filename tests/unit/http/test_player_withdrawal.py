@@ -34,7 +34,7 @@ def forfeited_player(http: TestClient, tournament: Tournament) -> TournamentPlay
         if board.black_player_id is not None
     )
     http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
         f'/{Result.FORFEIT_LOSS.value}'
     )
     return the_player(board.white_player_id)

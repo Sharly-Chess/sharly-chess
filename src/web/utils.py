@@ -318,7 +318,7 @@ class RequestUtils:
             raise ValidationException(f'Invalid round number [{round_}].')
         round_boards = tournament.get_round_boards(round_)
         board = next(
-            (board_ for board_ in round_boards if board_.identifier == board_id_param),
+            (board_ for board_ in round_boards if board_.id == board_id_param),
             None,
         )
         if not board:

@@ -272,7 +272,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_board: Board | None = None
         if board_id is not None:
             self.admin_board = next(
-                (b for b in self.admin_boards if b.identifier == board_id), None
+                (b for b in self.admin_boards if b.id == board_id), None
             )
 
         self.admin_player: TournamentPlayer | None = None
@@ -529,7 +529,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             (
                 b
                 for b in self.admin_tournament.get_round_boards(self.admin_round)
-                if b.identifier == board_id
+                if b.id == board_id
             ),
             None,
         )
@@ -977,32 +977,25 @@ class PairingsAdminController(BaseEventAdminController):
         )
         if team_paired:
             filtered_ids = {
-                board.identifier
+                board.id
                 for team_board in context['admin_team_boards']
                 for board in team_board.boards
             }
         else:
-            filtered_ids = {
-                board.identifier for board in web_context.admin_filtered_boards
-            }
+            filtered_ids = {board.id for board in web_context.admin_filtered_boards}
         shown = set(data.shown_board_ids)
-        boards_by_id = {
-            board.identifier: board for board in tournament.get_round_boards(round)
-        }
+        boards_by_id = {board.id: board for board in tournament.get_round_boards(round)}
         changed = [
             boards_by_id[board_id]
             for board_id in data.changed_board_ids
             if board_id in boards_by_id
         ]
-        if any(
-            board.identifier in filtered_ids and board.identifier not in shown
-            for board in changed
-        ):
+        if any(board.id in filtered_ids and board.id not in shown for board in changed):
             return self._pairings_live_update_reload()
         removed = [
-            board.identifier
+            board.id
             for board in changed
-            if board.identifier in shown and board.identifier not in filtered_ids
+            if board.id in shown and board.id not in filtered_ids
         ]
         # A match is shown or hidden as a whole, and a table emptied of its
         # boards says why: both are left to a reload.
@@ -1013,9 +1006,7 @@ class PairingsAdminController(BaseEventAdminController):
             context=context
             | {
                 'live_action': 'patch',
-                'live_boards': [
-                    board for board in changed if board.identifier in filtered_ids
-                ],
+                'live_boards': [board for board in changed if board.id in filtered_ids],
                 'removed_board_ids': removed,
                 'check_ins_changed': data.check_ins_changed,
             },
@@ -1450,7 +1441,7 @@ class PairingsAdminController(BaseEventAdminController):
             tournament.add_result(board, r)
             web_context.log_correction()
             if breaches_adjournment:
-                web_context.log_adjournment(board.identifier)
+                web_context.log_adjournment(board.id)
             self.publish_new_user_results(
                 channels, event.uniq_id, tournament.id, round_, [board]
             )
@@ -1478,7 +1469,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @staticmethod
     def _next_board_id(board: Board, boards: list[Board]) -> int | None:
-        return next((b.identifier for b in boards if b.index > board.index), None)
+        return next((b.id for b in boards if b.index > board.index), None)
 
     @put(
         path='/pairing/set-result/'
@@ -1839,7 +1830,7 @@ class PairingsAdminController(BaseEventAdminController):
         # branch is what the hole-fill path handles).
         other_board: Board | None = None
         for board in team_board.boards:
-            if board.identifier == this_board.identifier:
+            if board.id == this_board.id:
                 continue
             if (
                 board.stored_board.white_player_id == new_player_id
@@ -2012,7 +2003,7 @@ class PairingsAdminController(BaseEventAdminController):
             database.update_stored_board(this_board.stored_board)
             new_pairing = new_player_tp.pairings_by_round[round_]
             new_pairing.stored_pairing.result = Result.NO_RESULT.value
-            new_pairing.stored_pairing.board_id = this_board.identifier
+            new_pairing.stored_pairing.board_id = this_board.id
             new_pairing.stored_pairing.effective_points = None
             new_pairing.stored_pairing.illegal_moves = 0
             new_pairing.update(database)
@@ -5118,7 +5109,7 @@ class PairingsAdminController(BaseEventAdminController):
         boards = list(boards)
         data = {
             'detail': {
-                'board_ids': sorted(board.identifier for board in boards),
+                'board_ids': sorted(board.id for board in boards),
                 'player_ids': sorted(
                     player_id
                     for board in boards

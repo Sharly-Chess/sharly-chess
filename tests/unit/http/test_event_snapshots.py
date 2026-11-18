@@ -237,7 +237,7 @@ def test_changing_a_past_round_is_backed_up_first(http: TestClient):
         http.post(f'/pairings/generate/{PIBE_EVENT_ID}/{tournament.id}/1')
         for board in breach_event.tournament().get_round_boards(1):
             http.put(
-                f'/pairing/set-result/{PIBE_EVENT_ID}/{tournament.id}/1/{board.identifier}'
+                f'/pairing/set-result/{PIBE_EVENT_ID}/{tournament.id}/1/{board.id}'
                 f'/{Result.WIN.value}'
             )
         http.post(f'/pairings/generate/{PIBE_EVENT_ID}/{tournament.id}/2')
@@ -246,7 +246,7 @@ def test_changing_a_past_round_is_backed_up_first(http: TestClient):
         corrected = breach_event.tournament().get_round_boards(1)[0]
 
         response = http.put(
-            f'/pairing/set-result/{PIBE_EVENT_ID}/{tournament.id}/1/{corrected.identifier}'
+            f'/pairing/set-result/{PIBE_EVENT_ID}/{tournament.id}/1/{corrected.id}'
             f'/{Result.DRAW.value}'
         )
 

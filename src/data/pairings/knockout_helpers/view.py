@@ -318,7 +318,7 @@ class KnockoutView:
                     continue
                 if self.board_advancement(match_board) is not None:
                     continue
-                self.set_player_match_winner(match_board.identifier, None)
+                self.set_player_match_winner(match_board.id, None)
         team_board = board.team_board
         if (
             team_board is not None
