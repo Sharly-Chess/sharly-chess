@@ -135,7 +135,7 @@ class RoundRobinParticipationRuleTestCase(TestCase):
                 * tournament.players_by_id[pairing.opponent_id].standings_points(
                     tournament.rounds
                 )
-                for pairing in player.pairings.values()
+                for pairing in player.pairings_by_round.values()
                 if pairing.opponent_id is not None and pairing.opponent_id != LEAVER_ID
             )
             self.assertAlmostEqual(value, manual)
@@ -152,7 +152,7 @@ class RoundRobinParticipationRuleTestCase(TestCase):
                 continue
             vs_leaver = next(
                 pairing
-                for pairing in player.pairings.values()
+                for pairing in player.pairings_by_round.values()
                 if pairing.opponent_id == LEAVER_ID
             )
             raw = player.points_after(tournament.rounds)

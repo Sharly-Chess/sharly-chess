@@ -142,7 +142,7 @@
                     {% set can_set_fpb = client.can_set_full_point_bye(tournament_player.tournament.id) %}
                     {% set k, k_is_estimated = tournament_player.fide_rating_coefficient %}
                     {% set ns = namespace(delta=0) %}
-                    {% for round, pairing in tournament_player.pairings.items() %}
+                    {% for round, pairing in tournament_player.pairings_by_round.items() %}
                         {% set name='round_' ~ round ~ '_result' %}
                         {% set id=name|replace('_', '-') %}
                         {% set bye_modifiable_for_round = round >= tournament_player.tournament.current_round and not pairing.board %}

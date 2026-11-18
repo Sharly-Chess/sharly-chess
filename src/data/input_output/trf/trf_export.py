@@ -598,7 +598,7 @@ class TrfExport:
         return [
             pairing
             for player in self.tournament.tournament_players_by_pairing_number.values()
-            for round_, pairing in player.pairings.items()
+            for round_, pairing in player.pairings_by_round.items()
             if (round_ in window.rounds if window else round_ <= after_round)
         ]
 
@@ -632,7 +632,7 @@ class TrfExport:
             number = player.pairing_number
             unplayed = sum(
                 pairing.paired_no_result
-                for round_, pairing in player.pairings.items()
+                for round_, pairing in player.pairings_by_round.items()
                 if (round_ in window.rounds if window else round_ <= after_round)
             )
             if unplayed and number in trf_player_by_id:
@@ -1051,7 +1051,7 @@ class TrfExport:
                 pairing_number,
                 player,
             ) in numbered_players.items():
-                pairing = player.pairings.get(round_)
+                pairing = player.pairings_by_round.get(round_)
                 if pairing is not None and pairing.result.is_next_round_bye:
                     pairing_numbers_by_bye[pairing.result].append(pairing_number)
             for bye, pairing_numbers in pairing_numbers_by_bye.items():

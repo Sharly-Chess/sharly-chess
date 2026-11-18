@@ -93,9 +93,9 @@ class BoardOperations:
         for player_id in (white_id, black_id):
             if player_id is None:
                 continue
-            pairing = self.tournament.tournament_players_by_id[player_id].pairings[
-                round_
-            ]
+            pairing = self.tournament.tournament_players_by_id[
+                player_id
+            ].pairings_by_round[round_]
             if pairing.stored_pairing.board_id is not None:
                 raise SharlyChessException(
                     f'Player {player_id} is already paired in round {round_}.'
@@ -176,9 +176,9 @@ class BoardOperations:
             if black_player_id
             else None
         )
-        white_pairing = white_tournament_player.pairings[round_nb]
+        white_pairing = white_tournament_player.pairings_by_round[round_nb]
         black_pairing = (
-            black_tournament_player.pairings[round_nb]
+            black_tournament_player.pairings_by_round[round_nb]
             if black_tournament_player
             else None
         )

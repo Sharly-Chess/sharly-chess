@@ -34,7 +34,7 @@ class FakePairing:
 class FakePlayer:
     def __init__(self, player_id: int):
         self.id = player_id
-        self.pairings: dict[int, FakePairing] = {}
+        self.pairings_by_round: dict[int, FakePairing] = {}
 
 
 class FakeTournament:
@@ -60,8 +60,8 @@ class FakeTournament:
 def _play(
     a: FakePlayer, b: FakePlayer, round_: int, a_result: Result, b_result: Result
 ):
-    a.pairings[round_] = FakePairing(a_result, b.id)
-    b.pairings[round_] = FakePairing(b_result, a.id)
+    a.pairings_by_round[round_] = FakePairing(a_result, b.id)
+    b.pairings_by_round[round_] = FakePairing(b_result, a.id)
 
 
 class KeizerScorerTest(TestCase):
@@ -118,7 +118,7 @@ class KeizerScorerTest(TestCase):
 
     def test_excused_absence_earns_a_fraction_of_own_value(self):
         # A takes a half-point bye in round 1; default fraction is 1/3.
-        self.a.pairings[1] = FakePairing(Result.HALF_POINT_BYE, None)
+        self.a.pairings_by_round[1] = FakePairing(Result.HALF_POINT_BYE, None)
         total = self.scorer.totals_after(1)[self.a.id]
         # Own start value 4 * 1/3.
         self.assertAlmostEqual(total, 4 + 4 / 3)
@@ -151,8 +151,8 @@ class KeizerMatcherTest(TestCase):
         players = [FakePlayer(i) for i in range(1, 5)]
         p0, p1 = players[0], players[1]
         # p0 and p1 met in round 1; gap is large, so they must not repeat.
-        p0.pairings[1] = FakePairing(Result.WIN, p1.id)
-        p1.pairings[1] = FakePairing(Result.LOSS, p0.id)
+        p0.pairings_by_round[1] = FakePairing(Result.WIN, p1.id)
+        p1.pairings_by_round[1] = FakePairing(Result.LOSS, p0.id)
         pairs = self.engine._match(
             cast(list[TournamentPlayer], players), round_=2, gap=99
         )

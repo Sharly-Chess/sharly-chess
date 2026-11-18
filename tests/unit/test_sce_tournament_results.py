@@ -42,7 +42,7 @@ class SCETournamentResultsTestCase(TestCase):
         expected = {
             (round_, player.pairing_number, pairing.result.value)
             for player in tournament.tournament_players
-            for round_, pairing in player.pairings.items()
+            for round_, pairing in player.pairings_by_round.items()
             if pairing.board is None and pairing.result != Result.NO_RESULT
         }
         self.assertTrue(expected)

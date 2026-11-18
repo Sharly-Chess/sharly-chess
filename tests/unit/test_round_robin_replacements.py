@@ -152,7 +152,10 @@ class BergerReplacementTestCase(RoundRobinReplacementTestCase):
         self.assertTrue(replacement.holds_seat_in(3))
         self.assertFalse(replacement.holds_seat_in(2))
         self.assertFalse(
-            any(pairing.voluntary_unplayed for pairing in replacement.pairings.values())
+            any(
+                pairing.voluntary_unplayed
+                for pairing in replacement.pairings_by_round.values()
+            )
         )
         self.assertEqual(
             engine.paired_schedule(tournament), engine.schedule(tournament)
@@ -170,12 +173,16 @@ class BergerReplacementTestCase(RoundRobinReplacementTestCase):
             self.assertTrue(
                 all(
                     not player.game_is_annulled(pairing)
-                    for pairing in player.pairings.values()
+                    for pairing in player.pairings_by_round.values()
                 )
             )
             if not player.shares_seat:
                 self.assertEqual(
-                    sum(1 for pairing in player.pairings.values() if pairing.played),
+                    sum(
+                        1
+                        for pairing in player.pairings_by_round.values()
+                        if pairing.played
+                    ),
                     ROUNDS,
                 )
 

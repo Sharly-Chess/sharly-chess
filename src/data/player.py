@@ -937,7 +937,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             return None
         deltas: list[float] = [
             rating_change.delta
-            for pairing in self.pairings.values()
+            for pairing in self.pairings_by_round.values()
             if (rating_change := pairing.fide_rating_change(k_factor)).delta is not None
         ]
         if not deltas:
@@ -949,7 +949,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         """Calculate a players first FIDE rating based on this tournament."""
         games = [
             pairing
-            for pairing in self.pairings.values()
+            for pairing in self.pairings_by_round.values()
             if pairing.played
             and not pairing.result.is_unrated
             and pairing.opponent
@@ -991,7 +991,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 return cached
         value = sum(
             pairing.result.points(self.point_values)
-            for round_, pairing in self.pairings.items()
+            for round_, pairing in self.pairings_by_round.items()
             if round_ < before_round and (pairing.played or not only_played)
         )
         # Bonus / penalty points are part of the score, so they belong in
@@ -1021,7 +1021,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             0.0,
             sum(
                 pairing.result.points(self.point_values)
-                for round_index, pairing in self.pairings.items()
+                for round_index, pairing in self.pairings_by_round.items()
                 if round_index in rounds
             ),
         )
@@ -1030,7 +1030,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         """The team counterpart of :meth:`points_in`."""
         return sum(
             pairing.result.points(self._TEAM_TRF_STANDARD_POINTS)
-            for round_index, pairing in self.pairings.items()
+            for round_index, pairing in self.pairings_by_round.items()
             if round_index in rounds
             and (not pairing.result.is_unplayed or pairing.result == Result.FORFEIT_WIN)
         )
@@ -1044,7 +1044,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 return cached
         value = sum(
             pairing.result.points(self.point_values)
-            for round_index, pairing in self.pairings.items()
+            for round_index, pairing in self.pairings_by_round.items()
             if round_index <= after_round
         )
         # Manual bonus / penalty points count towards the score, so they
@@ -1074,7 +1074,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         don't count — they're informational fillers, not games."""
         return sum(
             pairing.result.points(self._TEAM_TRF_STANDARD_POINTS)
-            for round_index, pairing in self.pairings.items()
+            for round_index, pairing in self.pairings_by_round.items()
             if round_index <= after_round
             and (not pairing.result.is_unplayed or pairing.result == Result.FORFEIT_WIN)
         )
@@ -1094,7 +1094,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 return cached
         value = sum(
             pairing.result.points(self.point_values)
-            for round_, pairing in self.pairings.items()
+            for round_, pairing in self.pairings_by_round.items()
             if round_ <= after_round and self.game_counts_for_tie_breaks(pairing)
         )
         value += self.tournament.point_adjustments.player_total(self.id, after_round)
@@ -1106,7 +1106,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def total_points(self, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
-            for pairing in self.pairings.values()
+            for pairing in self.pairings_by_round.values()
             if pairing.played or not only_played
         )
 
@@ -1117,7 +1117,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def points_total(self) -> float:
         return sum(
             pairing.result.points(self.point_values)
-            for pairing in self.pairings.values()
+            for pairing in self.pairings_by_round.values()
         )
 
     def add_points(self, points: float) -> None:
@@ -1191,7 +1191,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             for correction in rating_corrections or []
             if self.id in correction.player_ids
         }
-        for round_nb, pairing in self.pairings.items():
+        for round_nb, pairing in self.pairings_by_round.items():
             trf_game = pairing.to_trf(
                 round_nb, correction_by_round.get(round_nb), for_engine
             )
@@ -1340,7 +1340,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         games: list[TrfGame] = [
             pairing.to_trf(round_nb)
             for round_nb in window.rounds
-            if (pairing := self.pairings.get(round_nb)) is not None
+            if (pairing := self.pairings_by_round.get(round_nb)) is not None
         ]
 
         trf_dob = ''
@@ -1433,7 +1433,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def has_real_pairings(self) -> bool:
         """Returns True if the player has already been paired with an opponent
         (i.e. can not be deleted from the tournament anymore)."""
-        for pairing in self.pairings.values():
+        for pairing in self.pairings_by_round.values():
             if pairing.opponent_id is not None or pairing.exempt:
                 return True
         return False
@@ -1461,7 +1461,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return next(
             (
                 round_
-                for round_, pairing in self.pairings.items()
+                for round_, pairing in self.pairings_by_round.items()
                 if pairing.result == Result.PAIRING_ALLOCATED_BYE
             ),
             None,
@@ -1473,7 +1473,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         return next(
             (
                 round_
-                for round_, pairing in self.pairings.items()
+                for round_, pairing in self.pairings_by_round.items()
                 if pairing.opponent_id == opponent_id
             ),
             None,
@@ -1572,7 +1572,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
                 if pairing.opponent_id and pairing.color
                 else ''
             )
-            for pairing in self.pairings.values()
+            for pairing in self.pairings_by_round.values()
         ]
 
     @property
@@ -1667,17 +1667,9 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(tournament={self.tournament!r}, stored_tournament_player={self.stored_tournament_player!r})'
 
-    # --------------------------------------------------------------------------
-    # Legacy
-    # --------------------------------------------------------------------------
-
-    @property
-    def pairings(self) -> dict[int, Pairing]:
-        return self.pairings_by_round
-
     @property
     def has_played_games(self) -> bool:
-        return any(pairing.played for pairing in self.pairings.values())
+        return any(pairing.played for pairing in self.pairings_by_round.values())
 
     @property
     def replaced_player(self) -> TournamentPlayer | None:
@@ -1794,7 +1786,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             return team is not None and team.is_excluded_from_standings
         scheduled = [
             pairing
-            for pairing in self.pairings.values()
+            for pairing in self.pairings_by_round.values()
             if pairing.opponent_id is not None
         ]
         decided = [
@@ -1833,7 +1825,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         for the game played in ``round_index``, based on the opponent's rating
         and the result. ``None`` when that round was not played against an
         opponent (unplayed, bye or forfeit)."""
-        pairing = self.pairings.get(round_index)
+        pairing = self.pairings_by_round.get(round_index)
         if pairing is None or not pairing.opponent_id or not pairing.played:
             return None
         opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
@@ -1845,7 +1837,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         """The per-round performance indicators of every game actually played."""
         return [
             performance
-            for round_index in self.pairings
+            for round_index in self.pairings_by_round
             if (performance := self.round_performance(round_index)) is not None
         ]
 

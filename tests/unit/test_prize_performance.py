@@ -48,7 +48,7 @@ class PrizePerformanceTestCase(TestCase):
         tournament = self.tournament
         found_a_game = False
         for player in tournament.tournament_players:
-            for round_index, pairing in player.pairings.items():
+            for round_index, pairing in player.pairings_by_round.items():
                 performance = player.round_performance(round_index)
                 if not pairing.opponent_id or not pairing.played:
                     self.assertIsNone(performance)

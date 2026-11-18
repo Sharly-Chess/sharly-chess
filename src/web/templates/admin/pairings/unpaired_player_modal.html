@@ -5,7 +5,7 @@
 {% set modal_class = 'pairing-modal' %}
 {% set can_set_zpb = client.can_set_zero_point_bye(admin_tournament.id) %}
 {% set no_bye_possible = admin_round > tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes %}
-{% set pairing = tournament_player.pairings[admin_round] %}
+{% set pairing = tournament_player.pairings_by_round[admin_round] %}
 
 {% macro _warning_modal_url(action, action_route) -%}
     {{ url_for(

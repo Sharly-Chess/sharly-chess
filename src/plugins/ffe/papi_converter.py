@@ -786,7 +786,9 @@ class PapiConverter:
 
         for round_ in range(1, tournament.rounds + 1):
             for player in tournament.tournament_players:
-                if msg := cls.check_result(player.pairings[round_].result, tournament):
+                if msg := cls.check_result(
+                    player.pairings_by_round[round_].result, tournament
+                ):
                     return msg
 
         # Papi has nowhere to record a bonus / penalty, so exporting a

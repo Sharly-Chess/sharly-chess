@@ -463,7 +463,7 @@ class FFESession(Session):
                 if not tmp_tournament.last_shown_round:
                     logger.info('Deleting ZPBs...')
                     for player in tmp_tournament.tournament_players:
-                        for pairing in player.pairings.values():
+                        for pairing in player.pairings_by_round.values():
                             if pairing.zero_point_bye:
                                 tmp_event_database.delete_stored_pairing(
                                     pairing.stored_pairing

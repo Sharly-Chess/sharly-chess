@@ -816,7 +816,7 @@ class RecordPlayersTabColumn(PlayersTabColumn):
             return 0.0, 0
         played = 0
         points = 0.0
-        for pairing in tp.pairings.values():
+        for pairing in tp.pairings_by_round.values():
             played += pairing.played
             points += pairing.points
         return points, played

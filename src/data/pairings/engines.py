@@ -527,7 +527,7 @@ class BbpPairings(PairingEngine):
                     black_trf_id
                 ].id
             elif not (
-                white_player.pairings[round_].next_round_bye
+                white_player.pairings_by_round[round_].next_round_bye
                 or (partial_pairings and has_pab)
             ):
                 black_player_id = None

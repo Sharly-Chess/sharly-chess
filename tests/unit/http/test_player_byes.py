@@ -57,7 +57,7 @@ def set_bye(http: TestClient, player: TournamentPlayer, result: Result) -> Resul
         f'/player-set-bye/{EVENT_ID}/{player.id}/1',
         params={'result': result.value},
     )
-    return the_player().pairings[1].result
+    return the_player().pairings_by_round[1].result
 
 
 @pytest.mark.unit

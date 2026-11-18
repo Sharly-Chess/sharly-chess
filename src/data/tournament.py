@@ -1187,7 +1187,7 @@ class Tournament:
             FullPointBye(round_, player_id=player.id)
             for round_ in range(1, self.rounds + 1)
             for player in self.sorted_tournament_players
-            if (pairing := player.pairings.get(round_)) is not None
+            if (pairing := player.pairings_by_round.get(round_)) is not None
             and pairing.full_point_bye
         ]
 
@@ -2370,12 +2370,12 @@ class Tournament:
             # shared title until the arbiter designates a winner, and a
             # mid-bracket tie is caught separately by the pairing gate.
             return all(
-                player.pairings[round_].result != Result.NO_RESULT
+                player.pairings_by_round[round_].result != Result.NO_RESULT
                 for player in self.tournament_players
-                if player.pairings[round_].stored_pairing.board_id is not None
+                if player.pairings_by_round[round_].stored_pairing.board_id is not None
             )
         return all(
-            player.pairings[round_].result != Result.NO_RESULT
+            player.pairings_by_round[round_].result != Result.NO_RESULT
             for player in self.tournament_players
             if player.holds_seat_in(round_)
         )
@@ -2415,12 +2415,12 @@ class Tournament:
         have an envelope — used to decide how far a late-joining team's
         Zero-Point Byes extend."""
         return all(
-            player.pairings[round_].result != Result.NO_RESULT
+            player.pairings_by_round[round_].result != Result.NO_RESULT
             for player in self.tournament_players
-            if player.pairings[round_].stored_pairing.board_id is not None
+            if player.pairings_by_round[round_].stored_pairing.board_id is not None
             # A board whose opponent slot is a hole has no game to
             # play (it's a forfeit), so it never holds up the round.
-            and player.pairings[round_].opponent_id is not None
+            and player.pairings_by_round[round_].opponent_id is not None
         )
 
     def adjourned_boards(self, before_round: int | None = None) -> list[Board]:
@@ -2477,8 +2477,8 @@ class Tournament:
 
     def is_round_paired(self, round_: int) -> bool:
         return all(
-            player.pairings[round_].opponent_id is not None
-            or player.pairings[round_].result.is_bye
+            player.pairings_by_round[round_].opponent_id is not None
+            or player.pairings_by_round[round_].result.is_bye
             for player in self.tournament_players
             if player.holds_seat_in(round_)
         )
@@ -2504,13 +2504,16 @@ class Tournament:
 
     def round_has_result(self, round_: int) -> bool:
         return any(
-            player.pairings[round_].result != Result.NO_RESULT
-            and player.pairings[round_].opponent_id is not None
+            player.pairings_by_round[round_].result != Result.NO_RESULT
+            and player.pairings_by_round[round_].opponent_id is not None
             for player in self.tournament_players
         )
 
     def round_has_played_result(self, round_: int) -> bool:
-        return any(player.pairings[round_].played for player in self.tournament_players)
+        return any(
+            player.pairings_by_round[round_].played
+            for player in self.tournament_players
+        )
 
     def round_has_pairings(self, round_: int) -> bool:
         # Team matches are stored as team-board envelopes; the per-player
@@ -2524,14 +2527,15 @@ class Tournament:
         # A round beyond the current count (e.g. after a double elimination's
         # reset round is toggled off) has no pairing entry, so read defensively.
         return any(
-            (pairing := player.pairings.get(round_)) is not None
+            (pairing := player.pairings_by_round.get(round_)) is not None
             and (pairing.opponent_id is not None or pairing.exempt)
             for player in self.tournament_players
         )
 
     def round_has_pab(self, round_: int) -> bool:
         return any(
-            (pairing := player.pairings.get(round_)) is not None and pairing.exempt
+            (pairing := player.pairings_by_round.get(round_)) is not None
+            and pairing.exempt
             for player in self.tournament_players
         )
 
@@ -2771,16 +2775,16 @@ class Tournament:
         """Store an illegal move for the given `tournament_player`, for the current
         round, unless they have all those the tournament records."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            return tournament_player.pairings[self.current_round].add_illegal_move(
-                database
-            )
+            return tournament_player.pairings_by_round[
+                self.current_round
+            ].add_illegal_move(database)
 
     def delete_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
         """Deletes one illegal move for the given `tournament_player` for the current round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            return tournament_player.pairings[self.current_round].delete_illegal_move(
-                database
-            )
+            return tournament_player.pairings_by_round[
+                self.current_round
+            ].delete_illegal_move(database)
 
     # -------------------------------------------------------------------------
     # Ranking
@@ -3036,7 +3040,7 @@ class Tournament:
                 round_for_participation,
                 self.rounds + 1,
             )
-            if player.pairings[round_].unpaired
+            if player.pairings_by_round[round_].unpaired
         }
         self.set_player_byes(player, new_byes)
         self.check_in_player(player, not withdraw)

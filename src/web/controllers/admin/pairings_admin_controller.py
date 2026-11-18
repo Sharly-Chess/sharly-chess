@@ -1318,8 +1318,8 @@ class PairingsAdminController(BaseEventAdminController):
         admin_tournament = web_context.get_admin_tournament()
 
         byes: int = 0
-        for round_ in tournament_player.pairings:
-            match tournament_player.pairings[round_].result:
+        for round_ in tournament_player.pairings_by_round:
+            match tournament_player.pairings_by_round[round_].result:
                 case Result.HALF_POINT_BYE:
                     byes += 1
                 case Result.FULL_POINT_BYE:
@@ -2144,7 +2144,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         player = web_context.get_admin_player()
         byes: int = 0
-        for pairing in player.pairings.values():
+        for pairing in player.pairings_by_round.values():
             match pairing.result:
                 case Result.HALF_POINT_BYE:
                     byes += 1
@@ -2807,7 +2807,7 @@ class PairingsAdminController(BaseEventAdminController):
             Message.error(request, error)
         else:
             unpaired_count = sum(
-                player.pairings[round_].needs_pairing
+                player.pairings_by_round[round_].needs_pairing
                 for player in tournament.tournament_players
             )
             if unpaired_count:
@@ -5143,7 +5143,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> None:
         """Tell the pages that the illegal moves of a player changed, as a
         change to their board in the current round."""
-        board = tournament_player.pairings[tournament.current_round].board
+        board = tournament_player.pairings_by_round[tournament.current_round].board
         cls.publish_new_user_results(
             channels,
             tournament.event.uniq_id,

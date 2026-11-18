@@ -1192,7 +1192,7 @@ class GamesWonUnratedTestCase(TestCase):
         return cast(
             TournamentPlayer,
             SimpleNamespace(
-                pairings=pairings,
+                pairings_by_round=pairings,
                 tournament=SimpleNamespace(point_values=None),
                 game_counts_for_tie_breaks=lambda pairing: True,
             ),
@@ -1285,7 +1285,9 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
 
     def test_all_players_met_each_other(self):
         results = self.get_player_values(
-            lambda player: [pairing.opponent_id for pairing in player.pairings.values()]
+            lambda player: [
+                pairing.opponent_id for pairing in player.pairings_by_round.values()
+            ]
         )
         expected = {
             1: [5, 2, 3, 4, 6],

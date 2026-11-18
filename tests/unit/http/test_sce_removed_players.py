@@ -181,9 +181,9 @@ def test_withdraw_gives_the_byes_and_closes_the_list(
     assert 'withdrawn' in response.text
     withdrawn = player(removed_player_id)
     assert SCEUtils.get_player_plugin_data(withdrawn).removal_pending is False
-    assert withdrawn.pairings[1].result == Result.PAIRING_ALLOCATED_BYE
+    assert withdrawn.pairings_by_round[1].result == Result.PAIRING_ALLOCATED_BYE
     for round_ in range(2, ROUNDS + 1):
-        assert withdrawn.pairings[round_].result == Result.ZERO_POINT_BYE
+        assert withdrawn.pairings_by_round[round_].result == Result.ZERO_POINT_BYE
     assert 'removed-player-modal' not in sync_modal(http)
 
 
@@ -205,7 +205,7 @@ def test_keep_registers_again_and_starts_a_sync(
     assert plugin_data.removal_pending is False
     assert plugin_data.deleted_id is None
     for round_ in range(2, ROUNDS + 1):
-        assert kept.pairings[round_].unpaired
+        assert kept.pairings_by_round[round_].unpaired
 
 
 @pytest.mark.unit

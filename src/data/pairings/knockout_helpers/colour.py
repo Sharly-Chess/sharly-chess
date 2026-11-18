@@ -188,7 +188,7 @@ class KnockoutColourMixin:
         if player is None:
             return None
         for previous in range(round_ - 1, 0, -1):
-            pairing = player.pairings.get(previous)
+            pairing = player.pairings_by_round.get(previous)
             if (
                 pairing is not None
                 and pairing.opponent_id is not None

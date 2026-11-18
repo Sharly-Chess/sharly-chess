@@ -282,7 +282,8 @@ class InputUserController(BaseScreenUserController):
         shown_count = self._shown_value(request)
         if (
             shown_count is not None
-            and shown_count != player.pairings[tournament.current_round].illegal_moves
+            and shown_count
+            != player.pairings_by_round[tournament.current_round].illegal_moves
         ):
             return self._user_screen_render(web_context)
         session_handler = SessionLastIllegalMoveUpdated(request)

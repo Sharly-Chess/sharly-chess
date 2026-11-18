@@ -491,7 +491,7 @@ class SCESession(Session):
         new_byes = {
             round_: Result.ZERO_POINT_BYE
             for round_ in range(tournament.current_round or 1, tournament.rounds + 1)
-            if player.pairings[round_].needs_pairing
+            if player.pairings_by_round[round_].needs_pairing
         }
         tournament.set_player_byes(player.single_tournament_player, new_byes)
         plugin_data.removal_pending = False

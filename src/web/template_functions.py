@@ -62,7 +62,7 @@ class RecordMark(t.NamedTuple):
 def player_record_marks(player: t.Any) -> list[RecordMark]:
     """The squares of a player's record, one per round."""
     marks: list[RecordMark] = []
-    for pairing in player.single_tournament_player.pairings.values():
+    for pairing in player.single_tournament_player.pairings_by_round.values():
         box = 'player-record-white' if pairing.color == 'W' else 'player-record-black'
         if pairing.zero_point_bye:
             mark = RecordMark(

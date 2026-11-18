@@ -1286,7 +1286,7 @@ class TestDoubleElimination:
 
         tournament = self._load()
         for player in tournament.tournament_players:
-            _ = player.pairings  # prime the per-player cache at rounds == 4
+            _ = player.pairings_by_round  # prime the per-player cache at rounds == 4
         assert tournament.rounds == 4
         tournament.update_pairing_settings(
             {DoubleEliminationResetSetting.static_id(): True}

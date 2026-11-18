@@ -76,7 +76,7 @@ def player_rounds(
             requested_bye=pairing.requested_bye,
             voluntary_unplayed=pairing.voluntary_unplayed,
         )
-        for round_index, pairing in player.pairings.items()
+        for round_index, pairing in player.pairings_by_round.items()
         if not counted_only or player.game_counts_for_tie_breaks(pairing)
     ]
 
@@ -688,7 +688,7 @@ class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
     ) -> int:
         return sum(
             pairing.color == BoardColor.BLACK and pairing.played
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
         )
 
@@ -723,7 +723,7 @@ class GamesWonWithBlackTieBreak(PlayerRecordTieBreak):
         return sum(
             pairing.color == BoardColor.BLACK
             and pairing.result in (Result.WIN, Result.UNRATED_WIN)
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
         )
 
@@ -869,7 +869,7 @@ class RoundsElectedToPlayTieBreak(PlayerRecordTieBreak):
                 Result.HALF_POINT_BYE,
                 Result.REST_GAME,
             )
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
         )
 
@@ -905,7 +905,7 @@ class StandardPointsTieBreak(PlayerRecordTieBreak):
     ) -> float:
         return sum(
             pairing.result.points()
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
         )
 
@@ -1129,7 +1129,7 @@ class KashdanTieBreak(PlayerRecordTieBreak):
     ) -> float:
         pairings: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and player.game_counts_for_tie_breaks(pairing)
         ]
         score_by_result: dict[Result, float] = {
@@ -1249,7 +1249,7 @@ class CutBuchholzTieBreak(BuchholzTieBreak, ABC):
         )
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
-        for round_index, pairing in player.pairings.items():
+        for round_index, pairing in player.pairings_by_round.items():
             if round_index > after_round:
                 continue
             # The played modifier only turns a forfeit into a game against
@@ -1556,7 +1556,7 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
             tournament.players_by_id.get(pairing.opponent_id)
             if pairing.opponent_id
             else None
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and pairing.opponent_id is not None
         ]
         return sum(
@@ -1667,7 +1667,7 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
         tournament: Tournament = player.tournament
         opponents: list[TournamentPlayer] = [
             tournament.players_by_id[pairing.opponent_id]
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and pairing.opponent_id is not None
             and pairing.played
@@ -1801,7 +1801,7 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
         played_modifier = self.played_modifier or round_robin
         pairings: dict[int, Pairing] = {
             round_index: pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
         }
         contributions: list[WeightedContribution] = []
@@ -1958,7 +1958,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
             score_limit += draw_points * self.limit
         pairings: dict[int, Pairing] = {
             round_index: pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
         }
         score = 0.0
@@ -2138,7 +2138,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
             return 0
         pairings: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
         ]
         ratings = []
@@ -2189,7 +2189,7 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
         tournament: Tournament = player.tournament
         pairings: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round and pairing.played
         ]
         ratings = []
@@ -2250,7 +2250,7 @@ class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
         tournament: Tournament = player.tournament
         played_games: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and pairing.played
             and player.game_counts_for_tie_breaks(pairing)
@@ -2302,7 +2302,7 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
     ) -> int:
         played_rounds: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and pairing.played
             and player.game_counts_for_tie_breaks(pairing)
@@ -2511,7 +2511,7 @@ class AveragePerfectPerformanceTieBreak(OpponentRatingTieBreak):
     ) -> int:
         pairings: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and pairing.played
             and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6

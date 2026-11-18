@@ -253,7 +253,7 @@ def test_an_adjourned_game_is_imported(
 
     assert white.pairing_number is not None
     player = imported.tournament_players_by_pairing_number[white.pairing_number]
-    assert player.pairings[1].result == Result.ADJOURNED
+    assert player.pairings_by_round[1].result == Result.ADJOURNED
 
 
 @pytest.mark.unit
@@ -271,7 +271,7 @@ def test_an_unknown_symbol_is_imported_as_an_adjourned_game(
 
     assert black.pairing_number is not None
     player = imported.tournament_players_by_pairing_number[black.pairing_number]
-    assert player.pairings[1].result == Result.ADJOURNED
+    assert player.pairings_by_round[1].result == Result.ADJOURNED
 
 
 @pytest.mark.unit
@@ -287,7 +287,7 @@ def test_an_unknown_result_worth_nothing_is_a_game_not_played_yet(
 
     assert white.pairing_number is not None
     player = imported.tournament_players_by_pairing_number[white.pairing_number]
-    assert player.pairings[1].result == Result.NO_RESULT
+    assert player.pairings_by_round[1].result == Result.NO_RESULT
 
 
 @pytest.mark.unit

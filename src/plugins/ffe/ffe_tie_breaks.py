@@ -125,7 +125,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         # this function must be used instead of Player.points_after
         return sum(
             pairing.result.points(player.point_values)
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
             and (
@@ -253,7 +253,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         tournament: Tournament = player.tournament
         pairings: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and pairing.played
             and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
@@ -306,7 +306,7 @@ class PapiKashdanTieBreak(BasePapiTieBreak):
 
         pairings: list[Pairing] = [
             pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
         ]
@@ -557,7 +557,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
             score = player.seat_points(after_round)  # FIDE 6.6
         else:
             score = 0.0
-            for round_index, pairing in player.pairings.items():
+            for round_index, pairing in player.pairings_by_round.items():
                 if round_index > after_round:
                     continue
                 if pairing.unplayed:
@@ -566,7 +566,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
                 if pairing.requested_bye:
                     if all(
                         p.voluntary_unplayed
-                        for index, p in player.pairings.items()
+                        for index, p in player.pairings_by_round.items()
                         if round_index < index <= after_round
                     ):
                         score += tournament.draw_points
@@ -629,7 +629,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
             return 0
         pairings: dict[int, Pairing] = {
             round_index: pairing
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
         }
         pairing_system = tournament.pairing_system
@@ -701,7 +701,7 @@ class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
         tournament: Tournament = player.tournament
         opponents: list[TournamentPlayer | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
-            for round_index, pairing in player.pairings.items()
+            for round_index, pairing in player.pairings_by_round.items()
             if round_index <= after_round
             and pairing.opponent_id is not None
             and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6

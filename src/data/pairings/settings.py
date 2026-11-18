@@ -212,7 +212,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
             return cls._computed_team_value(tournament)
         return next(
             (
-                player.pairings[1].color
+                player.pairings_by_round[1].color
                 for player in sorted(
                     tournament.tournament_players,
                     key=lambda player: (
@@ -221,7 +221,8 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
                         player.starting_rank_sort_key,
                     ),
                 )
-                if 1 in player.pairings and player.pairings[1].color is not None
+                if 1 in player.pairings_by_round
+                and player.pairings_by_round[1].color is not None
             ),
             None,
         )

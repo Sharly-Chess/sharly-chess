@@ -113,7 +113,7 @@ class TestKeizerEngine:
         bye = tournament.tournament_players_by_id[
             tournament.get_round_boards(1)[-1].white_tournament_player.id
         ]
-        assert bye.pairings[1].result == Result.PAIRING_ALLOCATED_BYE
+        assert bye.pairings_by_round[1].result == Result.PAIRING_ALLOCATED_BYE
 
     def test_round_two_follows_the_keizer_standings(self):
         tournament = self._pair(1)
@@ -182,7 +182,7 @@ class TestKeizerEngine:
         byes = {
             player.last_name: sum(
                 pairing.result == Result.PAIRING_ALLOCATED_BYE
-                for pairing in player.pairings.values()
+                for pairing in player.pairings_by_round.values()
             )
             for player in tournament.tournament_players
         }

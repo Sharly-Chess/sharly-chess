@@ -157,7 +157,7 @@ class KeizerScorer:
             # smaller bonus — so it steadies the ranking without freezing the
             # start order in. Off means the score is earned purely from results.
             total = values.get(player.id, 0.0) if self._start_attribution else 0.0
-            for round_, pairing in player.pairings.items():
+            for round_, pairing in player.pairings_by_round.items():
                 if round_ > up_to_round:
                     continue
                 total += self._game_points(player, pairing, values)
@@ -350,7 +350,7 @@ class KeizerPairingEngine(PairingEngine):
         players = [
             player
             for player in tournament.tournament_players
-            if player.pairings[round_].needs_pairing
+            if player.pairings_by_round[round_].needs_pairing
             and self._is_present(tournament, player)
         ]
         return sorted(
@@ -488,7 +488,9 @@ class KeizerPairingEngine(PairingEngine):
         *players* is standings-ordered, so the later entries are the
         lower-ranked ones."""
         for player in reversed(players):
-            if not any(pairing.result.is_bye for pairing in player.pairings.values()):
+            if not any(
+                pairing.result.is_bye for pairing in player.pairings_by_round.values()
+            ):
                 return player
         return players[-1]
 
@@ -499,7 +501,7 @@ class KeizerPairingEngine(PairingEngine):
         round_: int,
         gap: int,
     ) -> bool:
-        for past_round, pairing in player.pairings.items():
+        for past_round, pairing in player.pairings_by_round.items():
             if past_round >= round_:
                 continue
             if pairing.opponent_id != opponent.id:
@@ -535,7 +537,7 @@ class KeizerPairingEngine(PairingEngine):
     def _color_balance(player: TournamentPlayer, round_: int) -> int:
         """Whites minus Blacks over the player's played rounds so far."""
         balance = 0
-        for past_round, pairing in player.pairings.items():
+        for past_round, pairing in player.pairings_by_round.items():
             if past_round >= round_ or not pairing.played:
                 continue
             if pairing.color == BoardColor.WHITE:

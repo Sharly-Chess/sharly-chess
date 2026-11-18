@@ -210,7 +210,7 @@ class KnockoutDisplayMixin:
             )
         first_loss: int | None = None
         for round_ in range(1, after_round + 1):
-            pairing = player.pairings[round_]
+            pairing = player.pairings_by_round[round_]
             if pairing.exists and self._player_lost(tournament, player, pairing):
                 first_loss = round_
                 break

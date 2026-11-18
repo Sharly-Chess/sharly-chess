@@ -694,7 +694,7 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
             return []
         results: list[tuple[TournamentPlayer, TournamentPlayer, Result, float]] = []
         for tournament_player in self.tournament.tournament_players:
-            pairing = tournament_player.pairings[ranking_round]
+            pairing = tournament_player.pairings_by_round[ranking_round]
             rating_change = tournament_player.round_performance(ranking_round)
             if pairing.opponent_id and pairing.played and rating_change is not None:
                 opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
@@ -1427,7 +1427,7 @@ class RoundRobinGridPrintDocument(PrintDocument):
             for seat in self.grid_id_by_seat
         }
         for tournament_player in tournament.tournament_players:
-            for pairing in tournament_player.pairings.values():
+            for pairing in tournament_player.pairings_by_round.values():
                 if not pairing.opponent_id:
                     continue
                 opponent_grid_id = self.grid_id_by_seat[

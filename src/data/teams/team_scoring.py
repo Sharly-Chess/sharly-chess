@@ -531,7 +531,7 @@ class TeamScoring:
                     players_by_id.get(player.id) if player is not None else None
                 )
                 pairing = (
-                    tournament_player.pairings.get(round_)
+                    tournament_player.pairings_by_round.get(round_)
                     if tournament_player is not None
                     else None
                 )

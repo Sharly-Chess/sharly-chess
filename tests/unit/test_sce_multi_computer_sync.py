@@ -334,8 +334,10 @@ class TestRegistrationRemovedOnSCE(MultiComputerSyncTestCase):
         assert plugin_data.deleted_id == 'SCE-A'
         assert plugin_data.removal_pending is True
         for round_ in range(2, ROUNDS + 1):
-            assert player.pairings[round_].unpaired, f'round {round_} got a bye'
-        assert player.pairings[1].result == Result.PAIRING_ALLOCATED_BYE
+            assert player.pairings_by_round[round_].unpaired, (
+                f'round {round_} got a bye'
+            )
+        assert player.pairings_by_round[1].result == Result.PAIRING_ALLOCATED_BYE
 
     def test_paired_player_removal_sends_nothing_to_sce(self) -> None:
         self.add_player('SCE-A', paired=True)
@@ -466,9 +468,9 @@ class TestRegistrationMovedToTournamentNotHeldHere(MultiComputerSyncTestCase):
 
         player = self.player(player_id)
         assert player.tournament.id == self.t1_id
-        assert player.pairings[1].result == Result.PAIRING_ALLOCATED_BYE
+        assert player.pairings_by_round[1].result == Result.PAIRING_ALLOCATED_BYE
         for round_ in range(2, ROUNDS + 1):
-            assert player.pairings[round_].unpaired
+            assert player.pairings_by_round[round_].unpaired
 
     def test_registrations_of_other_tournaments_are_not_imported(self) -> None:
         self.harness.run(
@@ -638,9 +640,9 @@ class TestRemovedPlayerDecisions(MultiComputerSyncTestCase):
         SCESession.withdraw_removed_player(self.player(player_id))
 
         player = self.player(player_id)
-        assert player.pairings[1].result == Result.PAIRING_ALLOCATED_BYE
+        assert player.pairings_by_round[1].result == Result.PAIRING_ALLOCATED_BYE
         for round_ in range(2, ROUNDS + 1):
-            assert player.pairings[round_].result == Result.ZERO_POINT_BYE
+            assert player.pairings_by_round[round_].result == Result.ZERO_POINT_BYE
 
     def test_withdraw_keeps_byes_already_requested(self) -> None:
         player_id = self.remove_paired_player()
@@ -652,10 +654,10 @@ class TestRemovedPlayerDecisions(MultiComputerSyncTestCase):
         SCESession.withdraw_removed_player(self.player(player_id))
 
         player = self.player(player_id)
-        assert player.pairings[4].result == Result.HALF_POINT_BYE
-        assert player.pairings[5].result == Result.FULL_POINT_BYE
+        assert player.pairings_by_round[4].result == Result.HALF_POINT_BYE
+        assert player.pairings_by_round[5].result == Result.FULL_POINT_BYE
         for round_ in (2, 3, 6, 7):
-            assert player.pairings[round_].result == Result.ZERO_POINT_BYE
+            assert player.pairings_by_round[round_].result == Result.ZERO_POINT_BYE
 
     def test_withdraw_closes_the_decision(self) -> None:
         player_id = self.remove_paired_player()
@@ -700,9 +702,9 @@ class TestRemovedPlayerDecisions(MultiComputerSyncTestCase):
         SCESession.register_removed_player_again(self.player(player_id))
 
         player = self.player(player_id)
-        assert player.pairings[1].result == Result.PAIRING_ALLOCATED_BYE
+        assert player.pairings_by_round[1].result == Result.PAIRING_ALLOCATED_BYE
         for round_ in range(2, ROUNDS + 1):
-            assert player.pairings[round_].unpaired
+            assert player.pairings_by_round[round_].unpaired
 
     def test_decisions_ignore_players_not_pending(self) -> None:
         player_id = self.add_player('SCE-A', paired=True)
@@ -713,7 +715,7 @@ class TestRemovedPlayerDecisions(MultiComputerSyncTestCase):
         player = self.player(player_id)
         assert SCEUtils.get_player_plugin_data(player).id == 'SCE-A'
         for round_ in range(2, ROUNDS + 1):
-            assert player.pairings[round_].unpaired
+            assert player.pairings_by_round[round_].unpaired
 
     def test_soft_deletion_from_earlier_versions_is_not_pending(self) -> None:
         self.add_player(

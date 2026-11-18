@@ -57,9 +57,9 @@ def test_a_player_withdrawn_after_a_forfeit_can_return(
     records = http.patch(f'/records/withdraw-player/{EVENT_ID}/{player.id}')
     assert records.status_code == 200
     player = the_player(player.id)
-    assert player.pairings[1].result == Result.FORFEIT_LOSS
+    assert player.pairings_by_round[1].result == Result.FORFEIT_LOSS
     assert all(
-        player.pairings[round_].result == Result.ZERO_POINT_BYE
+        player.pairings_by_round[round_].result == Result.ZERO_POINT_BYE
         for round_ in range(2, tournament.rounds + 1)
     )
     assert player.has_withdrawn
@@ -69,9 +69,10 @@ def test_a_player_withdrawn_after_a_forfeit_can_return(
     records = http.patch(f'/records/return-player/{EVENT_ID}/{player.id}')
     assert records.status_code == 200
     player = the_player(player.id)
-    assert player.pairings[1].result == Result.FORFEIT_LOSS
+    assert player.pairings_by_round[1].result == Result.FORFEIT_LOSS
     assert all(
-        player.pairings[round_].unpaired for round_ in range(2, tournament.rounds + 1)
+        player.pairings_by_round[round_].unpaired
+        for round_ in range(2, tournament.rounds + 1)
     )
     assert not player.has_withdrawn
     assert 'Withdraw from tournament' in records.text

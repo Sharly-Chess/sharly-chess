@@ -3415,7 +3415,7 @@ class TournamentAdminController(BaseEventAdminController):
         board: Board | None = None
         opponent: TournamentPlayer | None = None
         if tournament_player and tournament.started:
-            pairing = tournament_player.pairings[tournament.current_round]
+            pairing = tournament_player.pairings_by_round[tournament.current_round]
             board = pairing.board
             opponent = pairing.opponent
 

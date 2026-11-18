@@ -126,7 +126,9 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(ffe_data.league, 'IDF')
 
         results_player = tournament.tournament_players_by_pairing_number[9]
-        results = [pairing.result for pairing in results_player.pairings.values()]
+        results = [
+            pairing.result for pairing in results_player.pairings_by_round.values()
+        ]
         expected_results = [
             Result.LOSS,
             Result.LOSS,
@@ -152,10 +154,14 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(tournament.rounds, 7)
         self.assertEqual(tournament.pairing_variation.id, StandardSwissVariation().id)
         pab_player = tournament.tournament_players_by_pairing_number[282]
-        self.assertEqual(pab_player.pairings[5].result, Result.PAIRING_ALLOCATED_BYE)
+        self.assertEqual(
+            pab_player.pairings_by_round[5].result, Result.PAIRING_ALLOCATED_BYE
+        )
         forfeit_player = tournament.tournament_players_by_pairing_number[13]
-        self.assertEqual(forfeit_player.pairings[1].result, Result.FORFEIT_LOSS)
-        self.assertEqual(forfeit_player.pairings[1].color, BoardColor.WHITE)
+        self.assertEqual(
+            forfeit_player.pairings_by_round[1].result, Result.FORFEIT_LOSS
+        )
+        self.assertEqual(forfeit_player.pairings_by_round[1].color, BoardColor.WHITE)
         self.assertEqual(forfeit_player.date_of_birth, date(1934, 6, 20))
         adjustments = '\n'.join(importer.adjustments)
         self.assertIn('pairing-allocated', adjustments)
@@ -175,7 +181,9 @@ class TournamentImporterTestCase(TestCase):
             )
         tournament = self._import_trf(TrfTournament(name='Byes', players=players))
         results = [
-            tournament.tournament_players_by_pairing_number[number].pairings[1].result
+            tournament.tournament_players_by_pairing_number[number]
+            .pairings_by_round[1]
+            .result
             for number in (3, 4, 5)
         ]
         self.assertEqual(
@@ -236,7 +244,9 @@ class TournamentImporterTestCase(TestCase):
         players[0].points = players[1].points = players[2].points = 1.0
         tournament = self._import_trf(TrfTournament(name='Missing', players=players))
         self.assertEqual(
-            tournament.tournament_players_by_pairing_number[1].pairings[2].result,
+            tournament.tournament_players_by_pairing_number[1]
+            .pairings_by_round[2]
+            .result,
             Result.ZERO_POINT_BYE,
         )
 
@@ -253,9 +263,11 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(tournament.rounds, 3)
         by_number = tournament.tournament_players_by_pairing_number
         for number in (1, 2, 4):
-            self.assertFalse(by_number[number].pairings[2].exists)
+            self.assertFalse(by_number[number].pairings_by_round[2].exists)
             self.assertFalse(by_number[number].has_withdrawn_for_round(2))
-        self.assertEqual(by_number[3].pairings[2].result, Result.HALF_POINT_BYE)
+        self.assertEqual(
+            by_number[3].pairings_by_round[2].result, Result.HALF_POINT_BYE
+        )
 
     def test_trf_blank_game_of_a_paired_round_is_a_zero_point_bye(self):
         players = [self._trf_player(number, gender='m') for number in range(1, 4)]
@@ -265,7 +277,9 @@ class TournamentImporterTestCase(TestCase):
         players[0].points = 1.0
         tournament = self._import_trf(TrfTournament(name='Absent', players=players))
         self.assertEqual(
-            tournament.tournament_players_by_pairing_number[3].pairings[1].result,
+            tournament.tournament_players_by_pairing_number[3]
+            .pairings_by_round[1]
+            .result,
             Result.ZERO_POINT_BYE,
         )
 
@@ -295,16 +309,16 @@ class TournamentImporterTestCase(TestCase):
             source_player = source_by_name[tournament_player.full_name]
             for round_ in range(2, tournament.rounds + 1):
                 self.assertEqual(
-                    tournament_player.pairings[round_].exists,
-                    source_player.pairings[round_].exists,
+                    tournament_player.pairings_by_round[round_].exists,
+                    source_player.pairings_by_round[round_].exists,
                     (tournament_player.full_name, round_),
                 )
                 self.assertEqual(
-                    tournament_player.pairings[round_].result,
-                    source_player.pairings[round_].result,
+                    tournament_player.pairings_by_round[round_].result,
+                    source_player.pairings_by_round[round_].result,
                     (tournament_player.full_name, round_),
                 )
-                requested_byes += source_player.pairings[round_].exists
+                requested_byes += source_player.pairings_by_round[round_].exists
         self.assertTrue(requested_byes)
 
     def test_trf_file_without_players_is_refused(self):
@@ -328,7 +342,9 @@ class TournamentImporterTestCase(TestCase):
         players[3].points = 0.5
         tournament = self._import_trf(TrfTournament(name='Byes', players=players))
         by_number = tournament.tournament_players_by_pairing_number
-        self.assertEqual(by_number[3].pairings[1].result, Result.HALF_POINT_BYE)
+        self.assertEqual(
+            by_number[3].pairings_by_round[1].result, Result.HALF_POINT_BYE
+        )
 
     def test_trf06_partial_birth_dates_keep_their_year(self):
         players = [self._trf_player(number, gender='m') for number in range(1, 3)]
@@ -389,7 +405,9 @@ class TournamentImporterTestCase(TestCase):
         players[3].games = [TrfGame(3, 'b', '0', 1), TrfGame(1, 'w', '0', 2)]
         tournament = self._import_trf(TrfTournament(name='Cut short', players=players))
         by_number = tournament.tournament_players_by_pairing_number
-        self.assertEqual(by_number[3].pairings[2].result, Result.ZERO_POINT_BYE)
+        self.assertEqual(
+            by_number[3].pairings_by_round[2].result, Result.ZERO_POINT_BYE
+        )
         self.assertTrue(tournament.is_round_finished(2))
 
     def test_trf_export_ranks_as_of_the_last_round_played(self):
@@ -425,9 +443,13 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(importer.trf_version, TrfVersion.TRF16)
         self.assertEqual(tournament.rounds, 9)
         by_number = tournament.tournament_players_by_pairing_number
-        self.assertEqual(by_number[1].pairings[5].result, Result.NO_RESULT)
-        self.assertEqual(by_number[22].pairings[5].result, Result.ZERO_POINT_BYE)
-        self.assertEqual(by_number[43].pairings[5].result, Result.HALF_POINT_BYE)
+        self.assertEqual(by_number[1].pairings_by_round[5].result, Result.NO_RESULT)
+        self.assertEqual(
+            by_number[22].pairings_by_round[5].result, Result.ZERO_POINT_BYE
+        )
+        self.assertEqual(
+            by_number[43].pairings_by_round[5].result, Result.HALF_POINT_BYE
+        )
         self.assertEqual(by_number[1].year_of_birth, 1978)
         adjustments = '\n'.join(importer.adjustments)
         self.assertIn('XXR', adjustments)
@@ -440,9 +462,9 @@ class TournamentImporterTestCase(TestCase):
         by_number = tournament.tournament_players_by_pairing_number
         for number in (22, 28, 43):
             self.assertEqual(
-                by_number[number].pairings[5].result, Result.ZERO_POINT_BYE
+                by_number[number].pairings_by_round[5].result, Result.ZERO_POINT_BYE
             )
-        self.assertEqual(by_number[1].pairings[5].result, Result.NO_RESULT)
+        self.assertEqual(by_number[1].pairings_by_round[5].result, Result.NO_RESULT)
 
     def test_trf_individual_point_system_is_imported(self):
         trf_tournament = TrfTournament(
@@ -623,7 +645,7 @@ class TournamentImporterTestCase(TestCase):
         first = tournament.tournament_players_by_pairing_number[1]
         second = tournament.tournament_players_by_pairing_number[2]
         self.assertEqual(first.rating, second.rating)
-        self.assertEqual(first.pairings[1].color, BoardColor.WHITE)
+        self.assertEqual(first.pairings_by_round[1].color, BoardColor.WHITE)
         self.assertEqual(ColorSeedSetting.get_value(tournament), BoardColor.WHITE)
 
     def test_trf_starting_rank_method_is_the_one_of_the_preference(self):
@@ -1523,7 +1545,7 @@ class TournamentImporterTestCase(TestCase):
         aubry = next(
             tp for tp in tournament.tournament_players if tp.last_name == 'AUBRY'
         )
-        round_1_pairing = aubry.pairings[1]
+        round_1_pairing = aubry.pairings_by_round[1]
         self.assertEqual(round_1_pairing.result, Result.WIN)
         opponent = round_1_pairing.opponent
         assert opponent is not None

@@ -79,7 +79,8 @@ def test_an_illegal_move_names_the_board_of_its_player() -> None:
         SimpleNamespace(id=3, current_round=2, event=SimpleNamespace(uniq_id='open')),
     )
     tournament_player = cast(
-        TournamentPlayer, SimpleNamespace(pairings={2: SimpleNamespace(board=board)})
+        TournamentPlayer,
+        SimpleNamespace(pairings_by_round={2: SimpleNamespace(board=board)}),
     )
     PairingsAdminController.publish_illegal_moves(
         cast(ChannelsPlugin, channels), tournament, tournament_player

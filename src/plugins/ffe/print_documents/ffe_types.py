@@ -897,8 +897,8 @@ class FFET5Type(FFEMandatoryPlayerDocumentType):
     @property
     def player_last_forfeit_round(self) -> str:
         for round_ in range(self.player.tournament.rounds, 0, -1):
-            if self.player.pairings[round_].paired:
-                if self.player.pairings[round_].forfeit_loss:
+            if self.player.pairings_by_round[round_].paired:
+                if self.player.pairings_by_round[round_].forfeit_loss:
                     return str(round_)
                 break
         return ''

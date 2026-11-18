@@ -307,7 +307,7 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
         for player in tournament.tournament_players_by_pairing_number.values():
             if player.is_excluded_from_standings:
                 continue
-            pairing = player.pairings[round_]
+            pairing = player.pairings_by_round[round_]
             if pairing.board is not None or pairing.result == Result.NO_RESULT:
                 continue
             pairings.append(

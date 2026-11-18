@@ -1,5 +1,5 @@
 {% if tournament.current_round %}
-    {% with pairing=tournament_player.pairings[tournament.current_round] %}
+    {% with pairing=tournament_player.pairings_by_round[tournament.current_round] %}
     {% with opponent_id=pairing.opponent_id %}
         {% set board = tournament.boards[tournament_player.board_id] if (screen.accepts_input and not tournament.is_fake) and opponent_id and tournament_player.board_id is not none else none %}
         {% set editable =

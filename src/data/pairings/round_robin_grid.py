@@ -203,7 +203,7 @@ def team_player_grid(
     for row in rows:
         tournament_player = row.tournament_player
         points = 0.0
-        for pairing in tournament_player.pairings.values():
+        for pairing in tournament_player.pairings_by_round.values():
             opponent_id = pairing.opponent_id
             if (
                 not shows_result(pairing.round)
