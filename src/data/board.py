@@ -346,16 +346,34 @@ class Board:  # noqa: PLW1641
 
     @property
     def result_str(self) -> str:
-        if self.result == Result.PAIRING_ALLOCATED_BYE:
-            tournament = self.tournament
-            if tournament.pab_points == tournament.win_points:
-                return str(Result.PAIRING_ALLOCATED_BYE)
-            if tournament.pab_points == tournament.draw_points:
-                return str(Result.PENALTY_DL)
-            if tournament.pab_points == tournament.loss_points:
-                return str(Result.REST_GAME)
-            return str(Result.PAIRING_ALLOCATED_BYE)
-        return str(self.result)
+        """The result read from the white side. A bye is written from the
+        side of its player, so it is turned round when that player sits on
+        black, as on some boards of a team given the bye."""
+        result = self.result
+        result_str = str(
+            self._pab_shown_result if result == Result.PAIRING_ALLOCATED_BYE else result
+        )
+        if (
+            result.is_bye
+            and self.optional_white_tournament_player is None
+            and '-' in result_str
+        ):
+            white_str, black_str = result_str.split('-')
+            return f'{black_str}-{white_str}'
+        return result_str
+
+    @property
+    def _pab_shown_result(self) -> Result:
+        """The result a pairing-allocated bye is shown as, from the points it
+        gives."""
+        tournament = self.tournament
+        if tournament.pab_points == tournament.win_points:
+            return Result.PAIRING_ALLOCATED_BYE
+        if tournament.pab_points == tournament.draw_points:
+            return Result.PENALTY_DL
+        if tournament.pab_points == tournament.loss_points:
+            return Result.REST_GAME
+        return Result.PAIRING_ALLOCATED_BYE
 
     @property
     def last_result_update(self) -> datetime | None:

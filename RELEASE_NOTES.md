@@ -9,6 +9,10 @@
 - The players tab follows the check-ins and results entered elsewhere, on another computer, a screen or the pairings tab, without being reloaded: the rows that change are updated in place and light up briefly, and a player who no longer matches the filters leaves the table, so that the list of the players not yet checked in shrinks as they arrive. A player checked in from the tab keeps their row while its countdown runs (5.3.0)
 - The rows of the players tab are lighter, so that long lists load faster (5.3.0)
 
+## Teams
+
+- Every board of a team given the pairing-allocated bye shows its player winning by "1 - F", on the screens, the pairings tab and the match sheets, instead of "F - 1" on the boards where the colour pattern seats that player on black. The team matches screen shows the empty seat of those boards as a dash instead of "Forfeit", and their result can no longer be changed from the result window, whichever side their player sits on (5.3.0)
+
 ## Pairings
 
 - The pairings tab follows the results and check-ins entered elsewhere without being reloaded: the boards whose result changes are updated in place and light up briefly, the players and teams checked in move between the lists, and the button to the next round appears once the round is finished. Nothing changes while the arbiter is typing, choosing, dragging or has a window open: the update waits until they have finished (5.3.0)
