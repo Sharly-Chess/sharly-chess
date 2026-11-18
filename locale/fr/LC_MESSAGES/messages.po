@@ -5742,6 +5742,9 @@ msgstr "Nombre maximum de points (inclus) :"
 msgid "Maximum number of results displayed:"
 msgstr "Nombre maximum de résultats affichés :"
 
+msgid "Maximum points"
+msgstr "Points maximum"
+
 msgid "Maximum rating"
 msgstr "Elo maximum"
 
