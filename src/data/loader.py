@@ -133,14 +133,14 @@ class EventLoader:
                 cls._corrupted_uniq_ids.discard(event_id)
                 cls._last_known_metadata[event_id] = metadata_by_event_id[event_id]
             except DatabaseInaccessibleException as e:
-                logger.debug('Event [%s] could not be opened: %s', event_id, e)
+                logger.warning('Event [%s] could not be opened: %s', event_id, e)
                 cls._inaccessible_uniq_ids.add(event_id)
                 cls._inaccessible_tried_at[event_id] = monotonic()
             except DatabaseCorruptedException as e:
-                logger.debug('Event [%s] could not be read: %s', event_id, e)
+                logger.warning('Event [%s] could not be read: %s', event_id, e)
                 cls._corrupted_uniq_ids.add(event_id)
             except SharlyChessException as e:
-                logger.debug('Event [%s] could not be loaded: %s', event_id, e)
+                logger.warning('Event [%s] could not be loaded: %s', event_id, e)
                 cls._invalid_uniq_ids.add(event_id)
         return metadata_by_event_id
 
