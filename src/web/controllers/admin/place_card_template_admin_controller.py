@@ -181,7 +181,7 @@ class PlaceCardTemplateAdminController(BaseAdminController):
         groups: list[dict[str, Any]] = []
 
         def player_group(prefix: str, label: str) -> dict[str, Any]:
-            fields = (
+            fields: tuple[tuple[str, str], ...] = (
                 (_('Full name'), 'full_name'),
                 (_('First name'), 'first_name'),
                 (_('Last name'), 'last_name'),
@@ -196,7 +196,10 @@ class PlaceCardTemplateAdminController(BaseAdminController):
                 (_('Year of birth'), 'year_of_birth'),
                 (_('Gender'), 'gender'),
                 (_('Team name'), 'team_name'),
+                (_('Points'), 'points'),
             )
+            if prefix == 'player':
+                fields += ((_('Rank'), 'rank'),)
             return group(
                 label,
                 [(lbl, '{{ ' + prefix + '.' + attr + ' }}') for lbl, attr in fields],
@@ -239,20 +242,22 @@ class PlaceCardTemplateAdminController(BaseAdminController):
                 )
             )
         for obj, obj_label in (('event', _('Event')), ('tournament', _('Tournament'))):
-            groups.append(
-                group(
-                    obj_label,
-                    [
-                        (_('Name'), '{{ ' + obj + '.name }}'),
-                        (_('Start day'), '{{ ' + obj + '.start.day }}'),
-                        (_('Start month'), '{{ ' + obj + '.start.month }}'),
-                        (_('Start year'), '{{ ' + obj + '.start.year }}'),
-                        (_('End day'), '{{ ' + obj + '.stop.day }}'),
-                        (_('End month'), '{{ ' + obj + '.stop.month }}'),
-                        (_('End year'), '{{ ' + obj + '.stop.year }}'),
-                    ],
-                )
-            )
+            tokens = [
+                (_('Name'), '{{ ' + obj + '.name }}'),
+                (_('Start day'), '{{ ' + obj + '.start.day }}'),
+                (_('Start month'), '{{ ' + obj + '.start.month }}'),
+                (_('Start year'), '{{ ' + obj + '.start.year }}'),
+                (_('End day'), '{{ ' + obj + '.stop.day }}'),
+                (_('End month'), '{{ ' + obj + '.stop.month }}'),
+                (_('End year'), '{{ ' + obj + '.stop.year }}'),
+            ]
+            if obj == 'tournament':
+                tokens += [
+                    (_('Number of rounds'), '{{ tournament.rounds }}'),
+                    (_('Number of players'), '{{ tournament.player_count }}'),
+                    (_('Maximum points'), '{{ tournament.max_points }}'),
+                ]
+            groups.append(group(obj_label, tokens))
         groups.extend(cls._plugin_field_groups())
         return groups
 

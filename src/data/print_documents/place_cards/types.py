@@ -14,6 +14,7 @@ from data.print_documents.place_cards.data import (
     PlaceCardTeam,
 )
 from data.tournament import Tournament
+from utils import Utils
 from utils.entity import IdentifiableEntity
 from utils.enum import PlayerRatingType, PlayerGender, PlayerTitle
 
@@ -86,6 +87,8 @@ class PlaceCardType(IdentifiableEntity, ABC):
         place_card_player.category = random.choice(
             config.default_player_category_set.categories
         ).name
+        place_card_player.points = Utils.points_str(random.randint(0, 18) / 2)
+        place_card_player.rank = str(random.randint(1, 99))
         place_card_player.color = color
         return place_card_player
 
@@ -189,6 +192,7 @@ class PlayerCardType(PlaceCardType):
         tournament: Tournament,
         player_ids: list[int] | None = None,
     ) -> list[PlaceCardPlayer]:
+        ranks: dict[int, int] = {}
         if tournament.event.is_team_event:
             # Cards come out grouped by team, in roster order.
             tournament_players = sorted(
@@ -202,13 +206,22 @@ class PlayerCardType(PlaceCardType):
             tournament_players = list(
                 tournament.tournament_players_by_starting_rank.values()
             )
+            tournament.compute_tournament_player_ranks()
+            ranks = tournament.ex_aequo_rank_by_player_id
         if player_ids:
             tournament_players = [
                 tournament_player
                 for tournament_player in tournament_players
                 if tournament_player.id in player_ids
             ]
-        return [PlaceCardPlayer(player) for player in tournament_players]
+        place_card_players: list[PlaceCardPlayer] = []
+        for tournament_player in tournament_players:
+            place_card_player = PlaceCardPlayer(tournament_player)
+            if tournament_player.id in ranks:
+                place_card_player.rank = str(ranks[tournament_player.id])
+                place_card_player.points = tournament_player.points_str
+            place_card_players.append(place_card_player)
+        return place_card_players
 
     @classmethod
     def preview_players(
