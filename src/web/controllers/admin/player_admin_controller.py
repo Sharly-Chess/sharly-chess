@@ -1756,6 +1756,10 @@ class PlayerAdminController(BaseEventAdminController):
                 str(round_): str(round_)
                 for round_ in range(first_round, tournament.rounds + 1)
             },
+            'rounds_by_player': {
+                '': list(range(first_round, tournament.rounds + 1)),
+            }
+            | {str(player_id): rounds for player_id, rounds in replaceable.items()},
         }
 
     @classmethod
@@ -1992,6 +1996,13 @@ class PlayerAdminController(BaseEventAdminController):
                 return self._render_players_form_modal(
                     web_context, action, data=data, errors=replacement_errors
                 )
+            if replaced_player_id is not None:
+                await SnapshotScheduler.snapshot_before_async(
+                    event.uniq_id,
+                    SnapshotReason.BEFORE_PLAYER_REPLACEMENT,
+                    replaced_from_round,
+                    tournament.id,
+                )
             player_id = event.add_player(
                 stored_player,
                 [tournament],
@@ -2063,7 +2074,10 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         data: dict[str, str],
         action: FormAction,
+        replacing: bool = False,
     ) -> Template | Redirect:
+        """Save the player of the form; with *replacing*, as a player
+        replacing them, the event being backed up first."""
         request = web_context.request
         event = web_context.get_admin_event()
         player = web_context.get_admin_player()
@@ -2091,6 +2105,13 @@ class PlayerAdminController(BaseEventAdminController):
                 SnapshotReason.BEFORE_RENUMBERING,
                 renumbered.current_round,
                 renumbered.id,
+            )
+        elif replacing:
+            replaced_in = player.optional_single_tournament
+            await SnapshotScheduler.snapshot_before_async(
+                event.uniq_id,
+                SnapshotReason.BEFORE_PLAYER_REPLACEMENT,
+                tournament_id=replaced_in.id if replaced_in is not None else None,
             )
         event.update_player(player, stored_player)
         player_edited(event)
@@ -2170,7 +2191,10 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: FromPath[int],
     ) -> Template | Redirect:
         return await self._update_player(
-            PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
+            PlayerAdminWebContext(request, player_id),
+            data,
+            FormAction.UPDATE,
+            replacing=True,
         )
 
     @delete(

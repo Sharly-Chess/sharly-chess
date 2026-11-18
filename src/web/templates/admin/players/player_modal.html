@@ -256,6 +256,9 @@
                             <div
                                 class="replacement-fields row gy-2 gx-3 mt-0 {% if data['tournament_id'] != replacement_tournament_id %}d-none{% endif %}"
                                 data-tournament-id="{{ replacement_tournament_id }}"
+                                data-player-field="{{ replacement['player_field'] }}"
+                                data-round-field="{{ replacement['round_field'] }}"
+                                data-rounds-by-player="{{ replacement['rounds_by_player']|tojson|forceescape }}"
                             >
                                 <div class="col-12 form-text mt-2">
                                     {{ _('The tournament has started: the player joins it to replace a player who leaves, taking over their seat and their opponents from the round chosen.') }}
@@ -286,11 +289,30 @@
                                         $('.replacement-fields').each(function () {
                                             const shown = $(this).data('tournament-id').toString() === tournamentId;
                                             $(this).toggleClass('d-none', !shown);
-                                            $(this).find('select').prop('disabled', !shown);
                                         });
+                                    }
+                                    // The rounds offered are those from which the
+                                    // player chosen can be replaced.
+                                    function offerRounds($fields) {
+                                        const roundsByPlayer = $fields.data('rounds-by-player');
+                                        const playerId = $fields.find(`select[name="${$fields.data('player-field')}"]`).val() || '';
+                                        const rounds = roundsByPlayer[playerId] || roundsByPlayer[''];
+                                        const roundField = $fields.data('round-field');
+                                        const $round = $fields.find(`select[name="${roundField}"]`);
+                                        const current = Number($round.val());
+                                        $fields.find(`input[type="hidden"][name="${roundField}"]`).remove();
+                                        $round.empty().append(rounds.map(round => new Option(round, round)));
+                                        $round.prop('disabled', false);
+                                        $round.val(String(rounds.includes(current) ? current : rounds[0])).trigger('change');
                                     }
                                     $('#tournament-id').on('change', showReplacementFields);
                                     showReplacementFields();
+                                    $('.replacement-fields').each(function () {
+                                        const $fields = $(this);
+                                        $fields.find(`select[name="${$fields.data('player-field')}"]`)
+                                            .on('change', () => offerRounds($fields));
+                                        offerRounds($fields);
+                                    });
                                 })();
                             </script>
                         {% endif %}

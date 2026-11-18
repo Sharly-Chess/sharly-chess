@@ -1646,6 +1646,17 @@ msgstr ""
 msgid "Before a bye was changed"
 msgstr ""
 
+#, python-brace-format
+msgid "Before a player of [{tournament}] was replaced"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a player of [{tournament}] was replaced from round {round}"
+msgstr ""
+
+msgid "Before a player was replaced"
+msgstr ""
+
 msgid "Before a restoration"
 msgstr ""
 
@@ -9305,12 +9316,12 @@ msgstr ""
 msgid "Round {round} started %%s ago"
 msgstr ""
 
-#, python-brace-format, python-format
-msgid "Round {round} starts in %%s"
-msgstr ""
-
 #, python-brace-format
 msgid "Round {round} starts a new period: pair it from the page of the tournament, which asks for the ratings to be checked first."
+msgstr ""
+
+#, python-brace-format, python-format
+msgid "Round {round} starts in %%s"
 msgstr ""
 
 #, python-brace-format
