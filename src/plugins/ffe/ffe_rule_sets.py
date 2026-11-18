@@ -482,7 +482,8 @@ class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
         engaged = any(
             player is not None
             and (tp := players_by_id.get(player.id)) is not None
-            and round_ in tp.pairings_by_round
+            and (pairing := tp.pairings_by_round.get(round_)) is not None
+            and pairing.board is not None
             for player in slots
         )
         if not engaged:

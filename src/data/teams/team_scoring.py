@@ -215,10 +215,10 @@ class TeamScoring:
             if after_round is not None and board.round > after_round:
                 continue
             for player_id, pairing in (
-                (board.stored_board.white_player_id, board.white_pairing),
-                (board.stored_board.black_player_id, board.black_pairing),
+                (board.stored_board.white_player_id, board.optional_white_pairing),
+                (board.stored_board.black_player_id, board.optional_black_pairing),
             ):
-                if player_id is None:
+                if player_id is None or pairing is None:
                     continue
                 player = tournament.event.players_by_id.get(player_id)
                 if player is None or player.team_id not in standings:

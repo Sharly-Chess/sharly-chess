@@ -1,4 +1,4 @@
-"""A team-match board the opposing team left empty takes a result from the
+"""A team board the other team left empty takes a result from the
 pairings page: a forfeit win for the present player, or F-F when they did
 not show up either."""
 
@@ -51,8 +51,14 @@ def white_result(board: Board, player_result: Result) -> Result:
     return player_result.opposite_result
 
 
-@pytest.fixture
-def tournament() -> Iterator[Tournament]:
+@pytest.fixture(
+    params=[('TEAM_SWISS_STANDARD', TEAMS), ('MOLTER_STANDARD', 3)],
+    ids=['team-match', 'molter'],
+)
+def tournament(request: pytest.FixtureRequest) -> Iterator[Tournament]:
+    """Team1 leaves its second board empty in round 1, in a team match or
+    in a Molter round paired board by board."""
+    pairing, teams = request.param
     TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
     stored_tournament = TestUtils.create_tournament(
         EVENT_ID,
@@ -60,14 +66,14 @@ def tournament() -> Iterator[Tournament]:
         overrides={
             'rounds': 1,
             'team_player_count': BOARDS,
-            'pairing': 'TEAM_SWISS_STANDARD',
+            'pairing': pairing,
         },
     )
     tournament_id = stored_tournament.id
     assert tournament_id is not None
     first_team_players: list[int | None] = []
     with EventDatabase(EVENT_ID, write=True) as database:
-        for seed in range(1, TEAMS + 1):
+        for seed in range(1, teams + 1):
             team_id = database.add_stored_team(
                 StoredTeam(
                     id=None,
@@ -132,6 +138,23 @@ def test_the_result_dialog_of_a_hole_offers_only_forfeits(
     assert response.status_code == 200
     assert 'F – F' in response.text
     assert '½ – ½' not in response.text
+
+
+@pytest.mark.unit
+def test_the_result_dialog_of_a_hole_names_both_teams(
+    http: TestClient, tournament: Tournament
+):
+    board = hole_board(tournament)
+    present = board.team_forfeit_hole_pairing
+    assert present is not None
+    present_team = present.tournament_player.team
+    assert present_team is not None
+    response = http.get(
+        f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.identifier}'
+    )
+    assert response.status_code == 200
+    assert 'Team1' in response.text
+    assert present_team.name in response.text
 
 
 @pytest.mark.unit
