@@ -10,6 +10,7 @@ from data.board import Board
 from data.event import Event
 from data.player import TournamentPlayer
 from data.tournament import Tournament
+from utils import Utils
 from utils.date_time import format_date, format_time
 
 logger: logging.Logger = get_logger()
@@ -22,6 +23,7 @@ class PlaceCardPlayer:
         self,
         tournament_player: TournamentPlayer | None = None,
         color: str = '',
+        after_round: int | None = None,
     ):
         self.rating: str = ''
         self.rating_type: str = ''
@@ -42,6 +44,8 @@ class PlaceCardPlayer:
         self.color_background: str = '#fff'
         self.color_text: str = '#000'
         self.team_name: str = ''
+        self.points: str = ''
+        self.rank: str = ''
         if tournament_player:
             team = tournament_player.team
             if team is not None:
@@ -61,6 +65,13 @@ class PlaceCardPlayer:
             self.club = tournament_player.club.name
             self.category = tournament_player.category.name
             self.color = color
+            self.points = Utils.points_str(
+                tournament_player.standings_points(
+                    tournament_player.tournament.rounds
+                    if after_round is None
+                    else after_round
+                )
+            )
             plugin_manager.hook_for_event(
                 tournament_player.event, 'augment_place_card_player'
             )(tournament_player=tournament_player, place_card_player=self)
@@ -146,10 +157,12 @@ class PlaceCardPairing:
                 self.white_player = PlaceCardPlayer(
                     left_tp,
                     color=white_marker if white_is_team_a else black_marker,
+                    after_round=round_ - 1,
                 )
                 self.black_player = PlaceCardPlayer(
                     right_tp,
                     color=black_marker if white_is_team_a else white_marker,
+                    after_round=round_ - 1,
                 )
                 self.white_player.color_background = (
                     '#fff' if white_is_team_a else '#000'
@@ -163,10 +176,12 @@ class PlaceCardPairing:
                 self.white_player = PlaceCardPlayer(
                     board.optional_white_tournament_player,
                     color=pgettext('white color for place cards', 'W'),
+                    after_round=round_ - 1,
                 )
                 self.black_player = PlaceCardPlayer(
                     board.black_tournament_player,
                     color=pgettext('black color for place cards', 'B'),
+                    after_round=round_ - 1,
                 )
                 self.black_player.color_background = '#000'
                 self.black_player.color_text = '#fff'
@@ -195,15 +210,26 @@ class PlaceCardTournament:
         self.name: str
         self.start: PlaceCardDate
         self.stop: PlaceCardDate
+        self.rounds: int
+        self.player_count: int
+        self.max_points: str
         if tournament:
             self.name = tournament.name
             self.start = PlaceCardDate(tournament.start_date)
             self.stop = PlaceCardDate(tournament.stop_date)
+            self.rounds = tournament.rounds
+            self.player_count = tournament.player_count
+            self.max_points = Utils.points_str(
+                tournament.rounds * tournament.win_points
+            )
         else:
             self.name = _('Tournament name')
             today = date.today()
             self.start = PlaceCardDate(today)
             self.stop = PlaceCardDate(today)
+            self.rounds = 9
+            self.player_count = 99
+            self.max_points = Utils.points_str(9)
 
 
 class PlaceCardEvent:

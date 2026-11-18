@@ -125,6 +125,7 @@
 - The printed documents have a new, more legible look: a common font, header and table style, and a footer on every page giving the event, when the document was printed and the page number. The pairings and results are laid out around the result, with the players' points at the edges, and the pairings can leave a boxed space to write the results in by hand; the prize list, the prize assignment and the ranking by club are set out as tables (5.2.6)
 - The Templates button of the place cards opens the place card templates again, instead of only closing the documents window (5.2.7)
 - Pairing place cards can print the scheduled date and time of their round (5.2.7)
+- Place card templates can print the players' points, and player cards their rank in the standings, so that a template can be used to print certificates at the end of a tournament; pairing cards print each player's points before the round. The templates can also print the number of rounds, the number of players and the maximum points of the tournament, to print a score as "6½ / 9" or a rank as "3rd of 42" (5.2.9)
 
 ## Screens
 
