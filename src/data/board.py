@@ -251,16 +251,23 @@ class Board:  # noqa: PLW1641
 
     @property
     def team_forfeit_hole_pairing(self) -> Pairing | None:
-        """The present player's pairing on a board of a team match where
-        the opposing team fielded no player, or ``None`` for any other
-        board. That player wins by forfeit, or also forfeits when absent
-        (F-F) — the only results such a board can take."""
-        team_board = self.team_board
-        if team_board is None or team_board.stored_team_board.team_b_id is None:
-            return None
+        """The present player's pairing on a board of a team tournament
+        where the other team fielded no player, in a team match or in a
+        round paired board by board, or ``None`` for any other board. That
+        player wins by forfeit, or also forfeits when absent (F-F) — the
+        only results such a board can take."""
         white_pairing = self.optional_white_pairing
         black_pairing = self.optional_black_pairing
         if (white_pairing is None) == (black_pairing is None):
+            return None
+        team_board = self.team_board
+        if team_board is not None:
+            if team_board.stored_team_board.team_b_id is None:
+                return None
+        elif not (
+            self.tournament.is_team_tournament
+            and not self.tournament.pairing_system.paired_by_team
+        ):
             return None
         return white_pairing or black_pairing
 
