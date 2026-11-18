@@ -446,13 +446,6 @@ class ScreenType(IdentifiableEntity, ABC):
     ``insert_screen_types`` hook."""
 
     @property
-    def value(self) -> str:
-        """Alias of ``id`` mirroring the ``ScreenType`` enum member, so screen
-        types read the same way as the enum in templates during the
-        migration."""
-        return self.id
-
-    @property
     @abstractmethod
     def icon_str(self) -> str:
         """Bootstrap icon class representing the type."""

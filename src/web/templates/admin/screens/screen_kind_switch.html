@@ -10,7 +10,7 @@
                 active=paged == screen_kind_paged,
                 class='w-50',
                 attrs={} if paged == screen_kind_paged else {
-                    'hx-get': url_for(route, event_uniq_id=admin_event.uniq_id, **{argument: screen_kind_type.value}),
+                    'hx-get': url_for(route, event_uniq_id=admin_event.uniq_id, **{argument: screen_kind_type.id}),
                     'hx-target': 'body',
                     'hx-indicator': '#please-wait',
                     'data-testid': 'screen-kind-' ~ ('paged' if paged else 'single'),

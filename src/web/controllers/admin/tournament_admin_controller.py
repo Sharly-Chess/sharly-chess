@@ -2131,7 +2131,7 @@ class TournamentAdminController(BaseEventAdminController):
                         if not screen_type.shows_tournament(tournament):
                             continue
                         variants: list[tuple[str, str, dict[str, Any]]] = [
-                            (screen_type.value, screen_type.name, {})
+                            (screen_type.id, screen_type.name, {})
                         ]
                         # The pairings by board come twice: to read, and to
                         # enter the results on.
@@ -2152,7 +2152,7 @@ class TournamentAdminController(BaseEventAdminController):
                                             f'{tournament.name}-{uniq_suffix}'
                                         )
                                     ),
-                                    type=screen_type.value,
+                                    type=screen_type.id,
                                     public=True,
                                     name=f'{name} ({tournament.name})',
                                     columns=columns,

@@ -1148,7 +1148,7 @@ class Event:
             if screen_type is None:
                 raise ValueError('Either screen_type or base_uniq_id must be provided.')
             screen_uniq_id = _('{screen_type}-screen').format(
-                screen_type=screen_type.value
+                screen_type=screen_type.id
             )
 
         return Utils.get_unused_item_uniq_id(
@@ -1240,7 +1240,7 @@ class Event:
             if family_type is None:
                 raise ValueError('Either family_type or base_uniq_id must be provided.')
             family_uniq_id = _('{family_type}-screen').format(
-                family_type=family_type.value
+                family_type=family_type.id
             )
         return Utils.get_unused_item_uniq_id(
             family_uniq_id,

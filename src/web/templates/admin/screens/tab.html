@@ -26,12 +26,12 @@
                 {{ components.menu_item(
                     screen_type_data['title'],
                     icon=screen_type.icon_str,
-                    url=url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value),
+                    url=url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.id),
                     modal=true,
                     allowed=screen_type_data['creatable'],
                     reason=screen_type.no_tournament_reason,
                     tooltip_placement='left',
-                    attrs={'data-testid': 'create-screen-type-' ~ screen_type.value},
+                    attrs={'data-testid': 'create-screen-type-' ~ screen_type.id},
                 ) }}
             {% endfor %}
         {% endcall %}
