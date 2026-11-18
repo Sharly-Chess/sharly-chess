@@ -5968,6 +5968,9 @@ msgstr ""
 msgid "Maximum number of results displayed:"
 msgstr ""
 
+msgid "Maximum points"
+msgstr ""
+
 msgid "Maximum rating"
 msgstr ""
 
