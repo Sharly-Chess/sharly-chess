@@ -72,6 +72,9 @@
 - A player who has played for a team, a pairing-allocated bye included, can no longer leave it, whether removed from its roster or moved to another team (5.2.6)
 - A team that has been paired can no longer be deleted, which deleted its matches with it; its delete button is no longer offered (5.2.6)
 - A board where the opposing team fielded no player can take a result again: the player present wins by forfeit, or the board is recorded as F-F when that player did not show up either, instead of the result button staying disabled (5.2.8)
+- A team round is paired on the match points of the standings when a game-point penalty or bonus changes the result of a match, such as the penalty for a game lost by forfeit in the Jean-Claude Loubatière Cup turning a drawn match into a defeat, instead of on the points of the result over the board (5.2.9)
+- In a Molter tournament, a team with fewer players than boards no longer stops the pairings of the next rounds from opening with an internal server error, and the boards it leaves empty are penalised only in the rounds that have been paired (5.2.9)
+- In a Molter tournament, a board where the other team fielded no player can be recorded as F-F when the player present did not show up either, as in a team match, instead of only being unpaired (5.2.9)
 
 ## Pairings
 

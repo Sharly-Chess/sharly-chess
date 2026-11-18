@@ -291,6 +291,78 @@ class FixedTablePairingTestCase(TestCase):
         full_team = self._event.teams_by_id[self.team_ids[1]]
         self.assertIsNone(rule_set._forfeit_loss_penalty(full_team, 1))
 
+    def _pair_round_one_with_a_short_roster(self):
+        """Two rounds, team 0 one player short; round 1 paired, every board
+        with two players won by White."""
+        self._seed(team_sizes=(N - 1, N, N, N))
+        with EventDatabase(EVENT_ID, write=True) as db:
+            stored_tournament = next(
+                t for t in db.load_stored_tournaments() if t.name == TOURNAMENT_NAME
+            )
+            stored_tournament.rounds = 2
+            db.update_stored_tournament(stored_tournament)
+        self.assertEqual(self._load().generate_round_pairings(1), '')
+        tournament = self._load()
+        with EventDatabase(EVENT_ID, write=True) as db:
+            for board in tournament.get_round_boards(1):
+                if (
+                    board.optional_white_tournament_player is not None
+                    and board.black_tournament_player is not None
+                ):
+                    board.white_pairing.update_result(db, Result.WIN)
+        return self._load()
+
+    def test_team_standings_count_a_board_with_an_empty_seat(self) -> None:
+        """The board where the short team fields no player scores the forfeit
+        win of the player facing the empty seat in the team standings."""
+        tournament = self._pair_round_one_with_a_short_roster()
+        [hole] = [
+            board
+            for board in tournament.get_round_boards(1)
+            if board.optional_white_tournament_player is None
+            or board.black_tournament_player is None
+        ]
+        present = (
+            hole.optional_white_pairing
+            if hole.optional_white_tournament_player is not None
+            else hole.optional_black_pairing
+        )
+        assert present is not None
+        self.assertEqual(present.result, Result.FORFEIT_WIN)
+        present_team_id = present.tournament_player.team_id
+        assert present_team_id is not None
+
+        expected = dict.fromkeys(self.team_ids, 0.0)
+        for board in tournament.get_round_boards(1):
+            for pairing in (board.optional_white_pairing, board.optional_black_pairing):
+                if pairing is not None:
+                    team_id = pairing.tournament_player.team_id
+                    assert team_id is not None
+                    expected[team_id] += pairing.result.points(
+                        tournament.team_game_points
+                    )
+        self.assertGreaterEqual(expected[present_team_id], 1.0)
+
+        self.assertEqual(
+            {row.team.id: row.gp for row in tournament.team_standings(after_round=1)},
+            expected,
+        )
+
+    def test_no_forfeit_penalty_for_a_round_not_paired(self) -> None:
+        """A short team is penalised for the board it left empty in a round
+        it played, not for a round that has not been paired yet."""
+        tournament = self._pair_round_one_with_a_short_roster()
+        short_team = self._event.teams_by_id[self.team_ids[0]]
+        rule_set = CoupeJeanClaudeLoubatiereRuleSet()
+        played = rule_set._forfeit_loss_penalty(short_team, 1)
+        assert played is not None
+        self.assertEqual(played.gp, -1.0)
+        self.assertIsNone(rule_set._forfeit_loss_penalty(short_team, 2))
+        self.assertEqual(
+            [row.gp for row in tournament.team_standings(after_round=2)],
+            [row.gp for row in tournament.team_standings(after_round=1)],
+        )
+
     def test_all_short_rosters_pair_without_error(self) -> None:
         """Every team short the same seat still pairs cleanly: no error, no
         double-booking. (A board where BOTH seats are empty is currently
