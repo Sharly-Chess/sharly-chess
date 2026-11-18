@@ -29,6 +29,8 @@ from data.print_documents.options import TournamentPrintOption
 from data.tie_breaks.tie_breaks import TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
+from plugins.ffe.papi_converter import PapiConverter
+from plugins.ffe.papi_mappers import PapiRound
 from tests.test_config import TestUtils
 from utils.enum import Result
 
@@ -272,6 +274,28 @@ class BergerReplacementTestCase(RoundRobinReplacementTestCase):
         self.assertNotIn(
             'Z', [game.result for game in games[leaver.pairing_number][2:]]
         )
+
+    def test_the_papi_gives_the_replacement_as_forfeit_before_joining(
+        self,
+    ) -> None:
+        self._play_rounds(1, 2)
+        leaver_id, replacement_id = self._replace('Player1', 3)
+        self._play_rounds(3, 4, 5)
+        tournament = self.tournament
+        players = list(tournament.tournament_players)
+        papi_players = PapiConverter().tournament_to_papi_data(tournament).players
+        papi_by_id = {
+            player.id: papi_player
+            for player, papi_player in zip(players, papi_players, strict=True)
+        }
+        replacement_rounds = papi_by_id[replacement_id].rounds
+        for round_ in (1, 2):
+            self.assertEqual(replacement_rounds[round_], PapiRound.zero_point_bye())
+        for round_ in (3, 4, 5):
+            self.assertIsNotNone(replacement_rounds[round_].opponent)
+        leaver_rounds = papi_by_id[leaver_id].rounds
+        for round_ in (1, 2):
+            self.assertIsNotNone(leaver_rounds[round_].opponent)
 
     def test_a_replacement_yet_to_play_can_be_taken_back(self) -> None:
         self._play_rounds(1, 2)
