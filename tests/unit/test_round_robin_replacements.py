@@ -288,6 +288,49 @@ class BergerReplacementTestCase(RoundRobinReplacementTestCase):
         self.assertFalse(tournament.has_replacements)
         self.assertEqual(self._opponents(tournament, leaver_id), leaver_before)
 
+    def _assert_every_game_has_both_players(self) -> None:
+        tournament = self.tournament
+        for round_ in range(1, ROUNDS + 1):
+            for board in tournament.get_round_boards(round_):
+                for player_id in (
+                    board.stored_board.white_player_id,
+                    board.stored_board.black_player_id,
+                ):
+                    assert player_id is not None
+                    pairing = tournament.tournament_players_by_id[
+                        player_id
+                    ].pairings_by_round[round_]
+                    self.assertTrue(pairing.exists, (round_, player_id))
+                    self.assertEqual(
+                        pairing.stored_pairing.board_id,
+                        board.stored_board.id,
+                        (round_, player_id),
+                    )
+
+    def test_taking_a_replacement_back_leaves_every_game_with_both_players(
+        self,
+    ) -> None:
+        self._play_rounds(1, 2)
+        _leaver_id, replacement_id = self._replace('Player1', 3)
+        event = EventLoader().load_event(EVENT_ID)
+        event.delete_player(event.players_by_id[replacement_id])
+        EventLoader.unload_event(EVENT_ID)
+        self._assert_every_game_has_both_players()
+
+    def test_taking_back_the_last_of_a_chain_of_replacements(self) -> None:
+        self._play_rounds(1)
+        _leaver_id, first_id = self._replace('Player1', 2)
+        self._play_rounds(2)
+        second_id = self._add_player(
+            'Second', replaced_player_id=first_id, replaced_from_round=3
+        )
+        event = EventLoader().load_event(EVENT_ID)
+        event.delete_player(event.players_by_id[second_id])
+        EventLoader.unload_event(EVENT_ID)
+        self._assert_every_game_has_both_players()
+        tournament = self.tournament
+        self.assertEqual(sorted(self._opponents(tournament, first_id)), [2, 3, 4, 5])
+
     def test_a_replacement_who_played_cannot_be_taken_back(self) -> None:
         self._play_rounds(1, 2)
         _leaver_id, replacement_id = self._replace('Player1', 3)

@@ -412,8 +412,6 @@ class RoundRobinScheduleEditor:
         schedule = self.engine.schedule(tournament)
         if schedule is None or not self.engine.schedule_fits(tournament, schedule):
             return
-        for player in tournament.tournament_players:
-            Utils.reset_cached_properties(player, 'pairings_by_round')
         self._pair_from(schedule, only_changed_games=True)
 
     def _number_newcomers(self) -> None:
