@@ -33,6 +33,10 @@ logger: Logger = get_logger()
 
 FFE_PUBLIC_URL: str = 'http://echecs.asso.fr'
 FFE_ADMIN_URL: str = 'http://admin.echecs.asso.fr'
+#: Seconds to connect to the FFE website, then to wait for its answer: a
+#: site that stops answering must not hold an upload, and the uploads
+#: queued behind it, forever. The answer to a Papi file can be slow.
+FFE_REQUEST_TIMEOUT: tuple[int, int] = (15, 120)
 
 VIEW_STATE_INPUT_ID: str = '__VIEWSTATE'
 VIEW_STATE_GENERATOR_INPUT_ID: str = '__VIEWSTATEGENERATOR'
@@ -85,7 +89,7 @@ class FFESession(Session):
                 'read_url(%s), method=%s', url, 'POST' if data or files else 'GET'
             )
             if not data and not files:
-                response = self.get(url)
+                response = self.get(url, timeout=FFE_REQUEST_TIMEOUT)
             else:
                 if data:
                     logger.debug('- data:')
@@ -109,7 +113,7 @@ class FFESession(Session):
                     for field_id, file in files.items():
                         logger.debug('  - %s: [%s]', field_id, file)
                 if not files:
-                    response = self.post(url, data=data)
+                    response = self.post(url, data=data, timeout=FFE_REQUEST_TIMEOUT)
                 else:
                     # The stack closes every handle once the request is done,
                     # including when it raises one of the errors caught below.
@@ -118,7 +122,9 @@ class FFESession(Session):
                             file_id: stack.enter_context(open(file_name, 'rb'))
                             for file_id, file_name in files.items()
                         }
-                        response = self.post(url, data=data, files=handlers)
+                        response = self.post(
+                            url, data=data, files=handlers, timeout=FFE_REQUEST_TIMEOUT
+                        )
             return response.content.decode()
         except ConnectionError as ex:
             logger.exception('Failed to read [%s] (connection error): [%s].', url, ex)

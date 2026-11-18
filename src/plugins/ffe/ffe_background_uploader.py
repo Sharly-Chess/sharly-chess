@@ -2,7 +2,7 @@ from typing import ClassVar
 import time
 from datetime import datetime, timedelta
 from functools import partial
-from threading import Thread, Timer
+from threading import Lock, Thread, Timer, current_thread
 
 from common.i18n import set_locale
 from common.logger import (
@@ -26,6 +26,7 @@ from plugins.ffe.utils import (
     FFEUtils,
     FfeTournamentPluginData,
     FFE_UPLOAD_DELAY,
+    FFE_UPLOAD_RETRY_DELAYS,
 )
 from plugins.utils import PluginUtils
 from utils import Utils
@@ -41,6 +42,9 @@ class FfeBackgroundUploader:
     ongoing_result_ids: ClassVar[set[str]] = set()
     ongoing_period_result_ids: ClassVar[set[str]] = set()
     pending_period_result_ids: ClassVar[set[str]] = set()
+    upload_locks: ClassVar[dict[str, Lock]] = {}
+    upload_locks_guard: ClassVar[Lock] = Lock()
+    sending_threads: ClassVar[dict[str, Thread]] = {}
 
     @staticmethod
     def result_id(event_uniq_id: str, tournament_id: int) -> str:
@@ -140,6 +144,7 @@ class FfeBackgroundUploader:
         tournament_id: int,
         set_visible: bool = False,
         period_id: int | None = None,
+        attempt: int = 0,
     ) -> None:
         """Upload a tournament to FFE.
 
@@ -147,12 +152,43 @@ class FfeBackgroundUploader:
         under the registration that period was declared with — which is
         how a period already submitted is sent again after a correction.
         Without it the whole tournament goes to its own registration, and
-        the period being played to its, as the FFE procedure has it."""
+        the period being played to its, as the FFE procedure has it.
 
+        The uploads of a tournament run one at a time: one asked for while
+        another is running waits for it, queued, then sends the data as
+        they are when its turn comes.
+
+        A failed upload that may succeed later is tried again, after each
+        of the delays of ``FFE_UPLOAD_RETRY_DELAYS``; *attempt* counts the
+        new attempts made so far."""
+        result_id = cls.result_id(event_uniq_id, tournament_id)
+        with cls.upload_locks_guard:
+            lock = cls.upload_locks.setdefault(result_id, Lock())
+        if not lock.acquire(blocking=False):
+            cls.group_upload_wait_queue.add(result_id)
+            cls.publish_upload_event()
+            lock.acquire()
+        try:
+            cls._upload_tournament(
+                event_uniq_id, tournament_id, set_visible, period_id, attempt
+            )
+        finally:
+            lock.release()
+
+    @classmethod
+    def _upload_tournament(
+        cls,
+        event_uniq_id: str,
+        tournament_id: int,
+        set_visible: bool,
+        period_id: int | None,
+        attempt: int,
+    ) -> None:
         # Set the locale (called in a new thread)
         set_locale(SharlyChessConfig().locale)
         result_id = cls.result_id(event_uniq_id, tournament_id)
         cls.ongoing_result_ids.add(result_id)
+        cls.sending_threads[result_id] = current_thread()
         cls.group_upload_wait_queue.discard(result_id)
         cls.publish_upload_event(start=True)
 
@@ -166,6 +202,9 @@ class FfeBackgroundUploader:
         # upload, the tournament for the whole-tournament one.
         uploaded_period: TournamentPeriod | None = None
         failure_status: FailureFFEUploadStatus | None = None
+        # The data sent are those read now: what changes during the upload
+        # is newer than the upload, which can take minutes.
+        loaded_at = datetime.now()
         try:
             loader = EventLoader()
             if event_uniq_id not in loader.event_uniq_ids:
@@ -244,7 +283,7 @@ class FfeBackgroundUploader:
                     current_period.rounds_str,
                     tournament.name,
                 )
-                cls._record_upload(tournament, None, None)
+                cls._record_upload(tournament, None, None, loaded_at)
                 uploaded_period = current_period
                 cls._start_period_upload(current_period)
                 # The period follows the tournament for rating, not for
@@ -256,12 +295,63 @@ class FfeBackgroundUploader:
             failure_status = UnexpectedFailureFFEUploadStatus()
         finally:
             cls.ongoing_result_ids.discard(result_id)
+            cls.sending_threads.pop(result_id, None)
             for period in tournament.periods if tournament else []:
                 cls.ongoing_period_result_ids.discard(cls.period_result_id(period))
                 cls.pending_period_result_ids.discard(cls.period_result_id(period))
             if tournament:
-                cls._record_upload(tournament, uploaded_period, failure_status)
+                cls._record_upload(
+                    tournament, uploaded_period, failure_status, loaded_at
+                )
+                if failure_status is not None and failure_status.retryable:
+                    cls._schedule_retry(tournament, set_visible, period_id, attempt + 1)
             cls.publish_upload_event()
+
+    @classmethod
+    def _schedule_retry(
+        cls,
+        tournament: Tournament,
+        set_visible: bool,
+        period_id: int | None,
+        attempt: int,
+    ) -> None:
+        """Try a failed upload again after the delay of *attempt*, unless
+        the attempts are used up. A new upload of the tournament replaces
+        the attempt still to come."""
+        if attempt > len(FFE_UPLOAD_RETRY_DELAYS):
+            logger.error(
+                'Upload of tournament [%s] to the FFE website failed %d times, '
+                'giving up until the next change.',
+                tournament.name,
+                attempt,
+            )
+            return
+        delay = FFE_UPLOAD_RETRY_DELAYS[attempt - 1]
+        logger.warning(
+            'Upload of tournament [%s] to the FFE website failed, '
+            'new attempt (%d/%d) in %d min.',
+            tournament.name,
+            attempt,
+            len(FFE_UPLOAD_RETRY_DELAYS),
+            delay,
+        )
+        timer = Timer(
+            delay * 60,
+            cls.upload_tournament,
+            args=(tournament.event.uniq_id, tournament.id),
+            kwargs={
+                'set_visible': set_visible,
+                'period_id': period_id,
+                'attempt': attempt,
+            },
+        )
+        timer.daemon = True
+        if period_id is None:
+            result_id = cls.tournament_result_id(tournament)
+            if previous := cls.timeout_threads.get(result_id):
+                previous.cancel()
+            cls.timeout_threads[result_id] = timer
+        timer.start()
 
     @classmethod
     def _start_period_upload(cls, period: TournamentPeriod) -> None:
@@ -277,10 +367,12 @@ class FfeBackgroundUploader:
         tournament: Tournament,
         period: TournamentPeriod | None,
         failure_status: FailureFFEUploadStatus | None,
+        loaded_at: datetime,
     ) -> None:
         """Record how an upload went, against what was uploaded: a period
         answers for its own submission, the tournament for the file
-        published entire."""
+        published entire. A successful upload is dated from when its data
+        were read."""
         plugin_data = (
             FFEUtils.get_period_own_plugin_data(period)
             if period is not None
@@ -293,7 +385,7 @@ class FfeBackgroundUploader:
         else:
             plugin_data.upload_failure_id = None
             plugin_data.upload_failure_message = None
-            plugin_data.last_upload_at = now
+            plugin_data.last_upload_at = loaded_at
         plugin_data.last_upload_attempt_at = now
         if period is not None:
             period.set_plugin_data(PLUGIN_NAME, plugin_data)
@@ -321,7 +413,9 @@ class FfeBackgroundUploader:
             tournament
             for tournament in tournaments
             if not FFEUtils.ffe_actions_unavailable_message(tournament)
-            and cls.tournament_result_id(tournament) not in cls.ongoing_result_ids
+            # One already waiting for its turn will send the data as they
+            # are then.
+            and not cls.is_upload_queued(tournament)
         ]
         if not eligible:
             return
@@ -360,8 +454,13 @@ class FfeBackgroundUploader:
         assert stored_tournament.id is not None
         result_id = cls.result_id(stored_event.uniq_id, stored_tournament.id)
         thread = cls.timeout_threads.get(result_id)
-        if thread and thread.is_alive():
-            # There's already a thread running for this tournament
+        if (
+            thread
+            and thread.is_alive()
+            and cls.sending_threads.get(result_id) is not thread
+        ):
+            # The upload already scheduled will send the change: one being
+            # sent read its data before it.
             return False
 
         # Last of a chain of guard clauses; collapsing it would break the shape
@@ -382,6 +481,10 @@ class FfeBackgroundUploader:
         delay = FFE_UPLOAD_DELAY
         wait_time = 0.1
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
+        if result_id in cls.group_upload_wait_queue:
+            # An upload already waiting for its turn will send the data as
+            # they are then.
+            return
         if (
             not force
             and ffe_last_upload
@@ -390,6 +493,9 @@ class FfeBackgroundUploader:
             elapsed = (datetime.now() - ffe_last_upload).total_seconds()
             wait_time = max(delay * 60 - elapsed, 0.1)
 
+        # A timer that has not fired yet would send the same data again.
+        if previous := cls.timeout_threads.get(result_id):
+            previous.cancel()
         timer = Timer(
             wait_time,
             cls.upload_tournament,
