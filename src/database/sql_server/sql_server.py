@@ -86,7 +86,7 @@ class SqlServer:
             # Connect using python-tds (pure Python, no ODBC needed)
             self.database = await asyncio.to_thread(
                 pytds.connect,
-                server=self.credentials.host,
+                dsn=self.credentials.host,
                 database=self.credentials.database,
                 user=self.credentials.user,
                 password=self.credentials.password,
