@@ -1204,6 +1204,14 @@ class PapiConverter:
             ):
                 papi_round = PapiRound.zero_point_bye()
 
+            # A player who took over a round-robin seat is given as forfeit
+            # in the rounds before they joined.
+            if (
+                tournament_player.replaced_from_round is not None
+                and round_ < tournament_player.replaced_from_round
+            ):
+                papi_round = PapiRound.zero_point_bye()
+
             papi_player.rounds[round_] = papi_round
 
         return papi_player
