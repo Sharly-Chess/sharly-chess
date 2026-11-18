@@ -27,8 +27,8 @@ from data.championship.scoring import (
     championship_rule_class,
     championship_rules,
     rank_competitors,
-    rank_players,
 )
+from tests.unit.championship_ranking import rank_players
 
 
 class FakeFieldPlayer:

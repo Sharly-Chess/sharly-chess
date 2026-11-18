@@ -21,8 +21,8 @@ from data.championship.scoring import (
     ScoringContext,
     TotalPointsRule,
     rank_competitors,
-    rank_players,
 )
+from tests.unit.championship_ranking import rank_players
 
 
 def _rp(source, tp):

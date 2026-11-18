@@ -19,7 +19,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from statistics import fmean
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Any, Self, cast
+from typing import TYPE_CHECKING, Any, Self
 
 from common.i18n import _
 from data.championship.options import TeamScoreBasis
@@ -1418,11 +1418,3 @@ def rank_competitors(
                 refined.extend(rule.split(group, context))
         ordered = refined
     return ordered
-
-
-def rank_players(
-    players: list[ReconciledPlayer], rules: list[ChampionshipRule]
-) -> list[list[ReconciledPlayer]]:
-    """Backward-compatible individual-ranking entry point."""
-    competitors: list[ReconciledCompetitor] = [*players]
-    return cast(list[list['ReconciledPlayer']], rank_competitors(competitors, rules))

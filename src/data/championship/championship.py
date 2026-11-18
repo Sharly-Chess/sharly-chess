@@ -30,8 +30,6 @@ class RankingEntry:
     ):
         self.rank: int = rank
         self.competitor = competitor
-        # Backward compatibility for individual GP consumers.
-        self.player = competitor
         self.tied: bool = tied
 
 
