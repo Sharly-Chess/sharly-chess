@@ -113,9 +113,9 @@ class StoredBoard:
     index: int
     last_result_update: datetime | None = None
     team_board_id: int | None = None
-    # Fixed table number in force when the board was paired. ``None`` on
-    # legacy boards (derive live from the seated players), ``0`` when the
-    # board was snapshotted with no fixed player, a positive value for a
+    # Fixed table number in force when the board was paired. ``None`` until
+    # the board is saved (derive live from the seated players), ``0`` when
+    # the board was snapshotted with no fixed player, a positive value for a
     # snapshotted fixed board.
     #
     # We snapshot the fixed *input*, not the resolved display number, because

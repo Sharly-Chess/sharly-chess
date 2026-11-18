@@ -1869,6 +1869,17 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Board insertion failed')
         return board_id
 
+    def freeze_board_fixed_numbers(self) -> None:
+        """Give the boards written without a fixed table number the higher
+        fixed table of their players, or ``0`` when neither has one."""
+        self.execute(
+            'UPDATE `board` SET `fixed_number` = MAX('
+            '    COALESCE((SELECT `fixed` FROM `player` WHERE `id` = `board`.`white_player_id`), 0),'
+            '    COALESCE((SELECT `fixed` FROM `player` WHERE `id` = `board`.`black_player_id`), 0)'
+            ') '
+            'WHERE `fixed_number` IS NULL'
+        )
+
     def update_stored_board(self, stored_board: StoredBoard) -> None:
         fields = self._get_fields_dict(
             stored_board,

@@ -233,6 +233,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             tournament_id = self._write_stored_tournament(
                 stored_tournament, stored_players, database
             )
+            database.freeze_board_fixed_numbers()
             if self.stored_event_modified:
                 database.update_stored_event(event.stored_event)
         event.notify_players_deleted(dropped_players)

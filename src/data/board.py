@@ -216,8 +216,8 @@ class Board:  # noqa: PLW1641
     def fixed_number(self) -> int | None:
         # A snapshot taken when the board was paired (``0`` = no fixed player)
         # freezes the number so editing a player's fixed table can't renumber
-        # the rounds they have already played. Legacy boards stored no
-        # snapshot (``None``) and keep deriving from the seated players.
+        # the rounds they have already played. A board not saved yet has no
+        # snapshot (``None``) and derives it from the seated players.
         snapshot = self.stored_board.fixed_number
         if snapshot is not None:
             return snapshot or None
