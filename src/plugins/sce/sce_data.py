@@ -885,11 +885,10 @@ class SCEPlayerPluginData(PluginData):
     # `updated_at` of the registration read as conflict_sync_data
     conflict_updated_at: str | None = None
     duplicated_registration_id: str | None = None
-    _legacy_is_duplicated: bool = False
 
     @property
     def is_duplicated(self) -> bool:
-        return self._legacy_is_duplicated or bool(self.duplicated_registration_id)
+        return bool(self.duplicated_registration_id)
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -911,7 +910,6 @@ class SCEPlayerPluginData(PluginData):
             ),
             conflict_updated_at=stored_value.get('conflict_updated_at'),
             duplicated_registration_id=stored_value.get('duplicated_registration_id'),
-            _legacy_is_duplicated=stored_value.get('is_duplicated', False),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -929,7 +927,6 @@ class SCEPlayerPluginData(PluginData):
             ),
             'conflict_updated_at': self.conflict_updated_at,
             'duplicated_registration_id': self.duplicated_registration_id,
-            'is_duplicated': self._legacy_is_duplicated,
         }
 
     @classmethod
