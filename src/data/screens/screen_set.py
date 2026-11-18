@@ -77,10 +77,6 @@ class ScreenSet:
                 self.board_selection_mode = BoardSelectionMode(raw_mode)
             except ValueError:
                 self.board_selection_mode = BoardSelectionMode.PAIRING
-        elif stored_fixed_boards_str is not None:
-            # Legacy row saved before the mode existed: an explicit board list
-            # means "specific board numbers".
-            self.board_selection_mode = BoardSelectionMode.SPECIFIC
         else:
             self.board_selection_mode = BoardSelectionMode.PAIRING
         self.fixed_board_numbers: list[int] | None = None

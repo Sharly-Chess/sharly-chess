@@ -355,11 +355,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             ),
                             'fixed_board_order': WebContext.value_to_form_data(
                                 stored_screen_set.fixed_board_order
-                                or (
-                                    BoardSelectionMode.SPECIFIC.value
-                                    if stored_screen_set.fixed_boards_str is not None
-                                    else BoardSelectionMode.PAIRING.value
-                                )
+                                or BoardSelectionMode.PAIRING.value
                             ),
                         }
                     else:
