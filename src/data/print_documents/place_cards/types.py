@@ -397,7 +397,7 @@ class PairingCardType(PlaceCardType):
                 round_start=tournament.round_datetimes.get(round_),
             )
             for board in boards
-            if not board.exempt
+            if board.black_tournament_player is not None
         ]
 
     @classmethod

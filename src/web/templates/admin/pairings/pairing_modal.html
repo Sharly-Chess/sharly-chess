@@ -137,7 +137,7 @@
        the present player, or F-F when that player is absent too. #}
     {% set _team_hole = board.team_forfeit_hole_pairing is not none %}
     {% set base_locked = (
-        (board.exempt and not _team_hole)
+        board.is_pab_board
         or awaits_publication
         or not can_enter
         or (board.result and not can_update)
@@ -322,7 +322,7 @@
                             ),
                             (
                                 board.no_result
-                                or board.exempt
+                                or board.is_pab_board
                                 or awaits_publication
                                 or is_team_forfeit_lock
                                 or not can_update
@@ -351,7 +351,7 @@
                                 ),
                                 (
                                     'MANUAL_UNPAIRING' not in existing_actions
-                                    or (not board.no_result and not board.exempt)
+                                    or (not board.no_result and not board.is_pab_board)
                                     or not client.can_unpair_boards(admin_tournament.id)
                                 ),
                                 _('Unpair'),
@@ -370,7 +370,7 @@
                                 round=admin_round,
                                 board_id=board.id,
                             ),
-                            (board.exempt or not client.can_permute_boards(admin_tournament.id)),
+                            (board.is_pab_board or not client.can_permute_boards(admin_tournament.id)),
                             _('Permute White/Black'),
                             'outline',
                         ) }}
@@ -420,7 +420,7 @@
                                 {% for result_id, label in results %}
                                     <div class="col-4">
                                         {{ result_button(
-                                            result_id, board.exempt or awaits_publication,
+                                            result_id, board.is_pab_board or awaits_publication,
                                             label,
                                         ) }}
                                     </div>

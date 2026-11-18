@@ -74,9 +74,9 @@
                 {# Flat team (Molter): open the modal whenever a board has at
                    least one player, so a forfeit/hole board can take its
                    result or be unpaired. #}
-                {% set _modal_disabled = not_allowed or (not wtp and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt and board.team_forfeit_hole_pairing is none) %}
+                {% set _modal_disabled = not_allowed or (not wtp and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.is_pab_board) %}
             {% else %}
-                {% set _modal_disabled = not_allowed or not wtp or (admin_event.is_team_event and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                {% set _modal_disabled = not_allowed or not wtp or (admin_event.is_team_event and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.is_pab_board) %}
             {% endif %}
             {# A locked round is read-only: show the result as plain text
                rather than an editable button. #}

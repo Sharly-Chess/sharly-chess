@@ -1334,7 +1334,7 @@ class PairingsAdminController(BaseEventAdminController):
                     (
                         b.white_tournament_player
                         for b in web_context.admin_boards
-                        if b.exempt
+                        if b.is_pab_board
                     ),
                     None,
                 ),
@@ -1365,7 +1365,7 @@ class PairingsAdminController(BaseEventAdminController):
         board = web_context.get_admin_board()
 
         is_team_forfeit_hole = board.team_forfeit_hole_pairing is not None
-        if board.exempt and not is_team_forfeit_hole:
+        if board.is_pab_board:
             return self._admin_event_pairings_render(web_context)
 
         target_board_id: int | None

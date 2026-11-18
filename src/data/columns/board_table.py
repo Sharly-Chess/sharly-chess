@@ -348,7 +348,7 @@ class BlackNameColumn(BoardColumn):
 
     def get_cell_classes(self, board: Board) -> str:
         return 'text-start text-nowrap overflow-hidden text-ellipsis' + (
-            ' fst-italic' if board.exempt else ''
+            ' fst-italic' if board.black_tournament_player is None else ''
         )
 
 

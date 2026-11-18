@@ -254,6 +254,18 @@ class Board:  # noqa: PLW1641
         return self.tournament.team_boards_by_id.get(team_board_id)
 
     @property
+    def is_pab_board(self) -> bool:
+        """A board of the pairing-allocated bye. Outside a team match, the
+        player given the bye sits on the white side with no opponent. Every
+        board of a team given the bye is one, on whichever side the colour
+        pattern seats its player, unlike a board of a team match the
+        opposing team left empty."""
+        team_board = self.team_board
+        if team_board is not None:
+            return team_board.stored_team_board.team_b_id is None
+        return self.black_tournament_player is None
+
+    @property
     def team_forfeit_hole_pairing(self) -> Pairing | None:
         """The present player's pairing on a board of a team tournament
         where the other team fielded no player, in a team match or in a
@@ -536,11 +548,3 @@ class Board:  # noqa: PLW1641
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(tournament={self.tournament!r}, round_={self.round!r}, stored_board={self.stored_board!r})'
-
-    # --------------------------------------------------------------------------
-    # Legacy
-    # --------------------------------------------------------------------------
-
-    @property
-    def exempt(self) -> bool:
-        return self.black_tournament_player is None

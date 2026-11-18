@@ -118,7 +118,7 @@ class BoardOperations:
         board_indexes = [
             board.index
             for board in tournament.get_round_boards(round_)
-            if not board.exempt
+            if board.black_tournament_player is not None
         ]
         max_board_count = (
             len(tournament.tournament_players) // 2
@@ -146,7 +146,7 @@ class BoardOperations:
         board_indexes = [
             board.index
             for board in self.tournament.get_round_boards(round_)
-            if not board.exempt
+            if board.black_tournament_player is not None
         ] + (new_indexes or [])
         if not board_indexes:
             return 0
