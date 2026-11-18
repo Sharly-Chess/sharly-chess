@@ -201,6 +201,8 @@ def is_ffe_estimate(value: int) -> bool:
 
 
 FFE_UPLOAD_DELAY = 3
+#: The delays, in minutes, of the new attempts made after a failed upload.
+FFE_UPLOAD_RETRY_DELAYS: tuple[int, ...] = (1, 5, 15)
 FFE_EPOCH = datetime(2000, 1, 1)
 
 # The FFE league names.

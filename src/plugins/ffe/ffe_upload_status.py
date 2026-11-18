@@ -181,6 +181,9 @@ class OngoingFFEUploadStatus(FFEUploadStatus):
 
 
 class FailureFFEUploadStatus(FFEUploadStatus, ABC):
+    #: Whether the upload can succeed when tried again later, unchanged.
+    retryable: bool = True
+
     def __init__(self, message: str | None = None) -> None:
         # The text behind the failure (what the site answered), shown
         # with the tooltip once stored on the tournament.
@@ -249,6 +252,8 @@ class NotReachableFFEUploadStatus(FailureFFEUploadStatus):
 
 
 class AuthFailureFFEUploadStatus(FailureFFEUploadStatus):
+    retryable = False
+
     @staticmethod
     def static_id() -> str:
         return 'AUTH_FAILURE'
@@ -259,6 +264,8 @@ class AuthFailureFFEUploadStatus(FailureFFEUploadStatus):
 
 
 class FinishedFailureFFEUploadStatus(FailureFFEUploadStatus):
+    retryable = False
+
     @staticmethod
     def static_id() -> str:
         return 'FINISHED_FAILURE'
@@ -269,6 +276,8 @@ class FinishedFailureFFEUploadStatus(FailureFFEUploadStatus):
 
 
 class PapiConversionFailureFFEUploadStatus(FailureFFEUploadStatus):
+    retryable = False
+
     @staticmethod
     def static_id() -> str:
         return 'PAPI_CONVERSION_FAILURE'
@@ -279,6 +288,8 @@ class PapiConversionFailureFFEUploadStatus(FailureFFEUploadStatus):
 
 
 class GroupNotFoundFFEUploadStatus(FailureFFEUploadStatus):
+    retryable = False
+
     @staticmethod
     def static_id() -> str:
         return 'GROUP_NOT_FOUND'
