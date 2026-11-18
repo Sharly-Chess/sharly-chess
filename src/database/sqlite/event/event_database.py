@@ -1498,8 +1498,8 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             (
                 'SELECT `tournament_id`, `player_id`, `pairing_number`, '
-                '`manual_tiebreak` FROM `tournament_player` '
-                'WHERE `tournament_id` = ?'
+                '`manual_tiebreak`, `replaces_player_id`, `replaced_from_round` '
+                'FROM `tournament_player` WHERE `tournament_id` = ?'
             ),
             (tournament_id,),
         )
@@ -1515,6 +1515,8 @@ class EventDatabase(MigrationDatabase):
             player_id,
             pairing_number,
             manual_tiebreak,
+            replaces_player_id,
+            replaced_from_round,
         ) in tournament_player_rows:
             stored_tournament_player = StoredTournamentPlayer(
                 tournament_id=stored_tournament_id,
@@ -1522,6 +1524,8 @@ class EventDatabase(MigrationDatabase):
                 pairing_number=pairing_number,
                 manual_tiebreak=manual_tiebreak,
                 stored_pairings=pairings_by_player.get(player_id, []),
+                replaces_player_id=replaces_player_id,
+                replaced_from_round=replaced_from_round,
             )
 
             assert stored_tournament_player.player_id is not None
@@ -1568,7 +1572,14 @@ class EventDatabase(MigrationDatabase):
         if persist_player_row:
             fields = self._get_fields_dict(
                 stored_tournament_player,
-                ['tournament_id', 'player_id', 'pairing_number', 'manual_tiebreak'],
+                [
+                    'tournament_id',
+                    'player_id',
+                    'pairing_number',
+                    'manual_tiebreak',
+                    'replaces_player_id',
+                    'replaced_from_round',
+                ],
             )
             fields_str = ', '.join(f'`{f}`' for f in fields)
             values_str = ', '.join(['?'] * len(fields))

@@ -13,7 +13,7 @@
                 <th class="player">{{ pgettext('name column header', 'Name') }}</th>
                 <th>{{ pgettext('federation column header', 'Fed.') }}</th>
                 <th>{{ tournament.cadence.print_view_header }}</th>
-                {% for berger_number in range(1, tournament.player_count + 1) %}
+                {% for berger_number in range(1, tournament.seat_count + 1) %}
                     <th>{{ berger_number }}</th>
                 {% endfor %}
                 {% for tie_break in tournament.tie_breaks %}
@@ -22,20 +22,33 @@
             </tr>
         </thead>
         <tbody>
-            {% for player_id, results in result_grid.items() %}
-                {% set excluded = tournament.tournament_players_by_id[player_id].is_excluded_from_standings %}
+            {% for row in rows %}
+                {% set players = row['players'] %}
+                {% set shared = players|length > 1 %}
+                {% set excluded = row['dropped'] %}
                 <tr
                     class="row gy-2 gx-3 {% if loop.index is even %}even{% else %}odd{% endif %} {% if excluded %}excluded-from-standings{% endif %}"
                     {% if excluded %}title="{{ _('Excluded from the final standings: completed less than 50%% of the games (FIDE 6.6).') }}"{% endif %}
                 >
-                    <td class="number">{{ grid_id_by_player_id[player_id] }}</td>
-                    {% with player=tournament.tournament_players_by_id[player_id] %}
-                        <td class="player-title">{{ player.display_title }}</td>
-                        <td class="player">{{ player.full_name }}</td>
-                        <td class="federation">{{ player.federation }}</td>
-                        <td class="rating">{{ player.rating_str }}</td>
-                    {% endwith %}
-                    {% for round_results in results %}
+                    <td class="number">{{ row['grid_id'] }}</td>
+                    <td class="player-title">
+                        {% for player in players %}<div>{{ player.display_title }}&nbsp;</div>{% endfor %}
+                    </td>
+                    <td class="player">
+                        {% for player in players %}
+                            <div>
+                                {{ player.full_name }}
+                                {% if shared %}<span class="seat-rounds">({{ player.seat_rounds_str }})</span>{% endif %}
+                            </div>
+                        {% endfor %}
+                    </td>
+                    <td class="federation">
+                        {% for player in players %}<div>{{ player.federation }}&nbsp;</div>{% endfor %}
+                    </td>
+                    <td class="rating">
+                        {% for player in players %}<div>{{ player.rating_str }}&nbsp;</div>{% endfor %}
+                    </td>
+                    {% for round_results in row['results'] %}
                         {% if round_results[0] is none %}
                             <td class="result self-game"></td>
                         {% else %}
@@ -54,13 +67,14 @@
                             </td>
                         {% endif %}
                     {% endfor %}
-                    {% with player=tournament.tournament_players_by_id[player_id] %}
-                        {% for tie_break_value in player.tie_break_values %}
-                            <td class="tie-break text-nowrap">
-                                {{ '' if excluded else tie_break_value }}
-                            </td>
-                        {% endfor %}
-                    {% endwith %}
+                    {% for tie_break in tournament.tie_breaks %}
+                        {% set tie_break_index = loop.index0 %}
+                        <td class="tie-break text-nowrap">
+                            {% if not excluded %}
+                                {% for player in players %}<div>{{ player.tie_break_values[tie_break_index] }}</div>{% endfor %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
                 </tr>
             {% endfor %}
         </tbody>

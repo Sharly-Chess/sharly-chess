@@ -83,6 +83,7 @@ class SnapshotReason(StrEnum):
     BEFORE_TIE_BREAKS_CHANGE = 'before_tie_breaks_change'
     BEFORE_TOURNAMENT_DELETION = 'before_tournament_deletion'
     BEFORE_TEAM_DELETION = 'before_team_deletion'
+    BEFORE_PLAYER_REPLACEMENT = 'before_player_replacement'
     BEFORE_RESTORE = 'before_restore'
     BEFORE_UPGRADE = 'before_upgrade'
 
@@ -207,6 +208,17 @@ class SnapshotReason(StrEnum):
                         'Before the tie-breaks of [{tournament}] were changed'
                     ).format(tournament=tournament)
                 return _('Before the tie-breaks were changed')
+            case SnapshotReason.BEFORE_PLAYER_REPLACEMENT:
+                if round_ and tournament:
+                    return _(
+                        'Before a player of [{tournament}] was replaced '
+                        'from round {round}'
+                    ).format(tournament=tournament, round=round_)
+                if tournament:
+                    return _('Before a player of [{tournament}] was replaced').format(
+                        tournament=tournament
+                    )
+                return _('Before a player was replaced')
             case SnapshotReason.BEFORE_TOURNAMENT_DELETION:
                 if tournament:
                     return _('Before [{tournament}] was deleted').format(

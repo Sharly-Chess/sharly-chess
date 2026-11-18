@@ -21,6 +21,12 @@
             </thead>
             <tbody>
                 {% for tournament_player in tournament_players %}
+                    {% set heading = document.heading_before(tournament_player, loop.previtem) %}
+                    {% if heading %}
+                        <tr class="group-heading">
+                            <td colspan="{{ player_columns|length }}">{{ heading }}</td>
+                        </tr>
+                    {% endif %}
                     <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                         {% for column in player_columns %}
                             <td class="{{ column.get_cell_classes(tournament_player) }}">

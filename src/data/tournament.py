@@ -1639,6 +1639,71 @@ class Tournament:
     def player_count(self) -> int:
         return len(self.tournament_players_by_id)
 
+    # -------------------------------------------------------------------------
+    # Seats
+    # -------------------------------------------------------------------------
+    # A round-robin is played seat by seat: a player who leaves can be
+    # replaced, the newcomer taking over the seat, its Berger number and its
+    # opponents. A seat is known by the id of the player who held it first.
+
+    @cached_property
+    def replacements_by_replaced_id(self) -> dict[int, TournamentPlayer]:
+        """The players who replaced another, by the id of the one replaced."""
+        players = self.tournament_players_by_id
+        return {
+            replaced_id: player
+            for player in players.values()
+            if (replaced_id := player.stored_tournament_player.replaces_player_id)
+            in players
+        }
+
+    @cached_property
+    def seat_ids(self) -> list[int]:
+        """The seats of the tournament, by the id of their first holder."""
+        return [
+            player.id
+            for player in self.tournament_players
+            if player.replaced_player is None
+        ]
+
+    @cached_property
+    def seat_count(self) -> int:
+        """The participants a round-robin is played between: its players,
+        a replacement taking the seat of the player they replaced."""
+        return len(self.seat_ids)
+
+    @property
+    def has_replacements(self) -> bool:
+        return bool(self.replacements_by_replaced_id)
+
+    def seat_of(self, player_id: int) -> int:
+        """The seat of the player *player_id*."""
+        players = self.tournament_players_by_id
+        seat = player_id
+        while (player := players.get(seat)) is not None and (
+            replaced := player.replaced_player
+        ) is not None:
+            seat = replaced.id
+        return seat
+
+    def seat_players(self, seat: int) -> list[TournamentPlayer]:
+        """The players who held the seat *seat*, in the order they took it."""
+        player = self.tournament_players_by_id.get(seat)
+        players: list[TournamentPlayer] = []
+        while player is not None:
+            players.append(player)
+            player = self.replacements_by_replaced_id.get(player.id)
+        return players
+
+    def seat_holder(self, seat: int, round_: int) -> int:
+        """The id of the player holding the seat *seat* in *round_*."""
+        holder = seat
+        for player in self.seat_players(seat)[1:]:
+            if (player.replaced_from_round or 0) > round_:
+                break
+            holder = player.id
+        return holder
+
     @cached_property
     def exclusive_player_ids(self) -> set[int]:
         """The players this tournament would take with it if deleted:
@@ -2313,6 +2378,7 @@ class Tournament:
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.tournament_players
+            if player.holds_seat_in(round_)
         )
 
     def round_sections(self, boards: list) -> list[tuple[str | None, list]]:
@@ -2416,6 +2482,7 @@ class Tournament:
             player.pairings[round_].opponent_id is not None
             or player.pairings[round_].result.is_bye
             for player in self.tournament_players
+            if player.holds_seat_in(round_)
         )
 
     def is_round_partially_paired(self, round_: int) -> bool:
@@ -2572,8 +2639,10 @@ class Tournament:
         return BoardOperations(self)
 
     def get_unpaired_tournament_players(
-        self, boards: list[Board]
+        self, boards: list[Board], round_: int | None = None
     ) -> list[TournamentPlayer]:
+        """The players not on *boards*; of *round_*, when given, only
+        those holding their seat in it."""
         # Knock-out: the bracket seats every player still in, so an
         # unboarded player is knocked out, not waiting to be paired. There
         # is nothing to hand-pair, so the "to pair" list stays empty.
@@ -2589,6 +2658,7 @@ class Tournament:
             tournament_player
             for tournament_player in self.tournament_players
             if tournament_player.id not in paired_player_ids
+            and (round_ is None or tournament_player.holds_seat_in(round_))
         ]
 
     @property
@@ -2781,18 +2851,62 @@ class Tournament:
             not self.has_pairings or self.pairing_system.allow_team_addition_once_paired
         )
 
+    @cached_property
+    def can_add_replacements(self) -> bool:
+        """Whether players can join the tournament to replace a player who
+        leaves, the field being closed to newcomers."""
+        return (
+            not self.finished
+            and self.pairing_system.new_players_replace(self)
+            and bool(self.replaceable_rounds_by_player_id)
+        )
+
+    @cached_property
+    def replaceable_rounds_by_player_id(self) -> dict[int, list[int]]:
+        """The players who can be replaced, with the rounds the replacement
+        can take their seat from: those after the last game they played,
+        while they hold the seat."""
+        rounds_by_player_id: dict[int, list[int]] = {}
+        for player in self.tournament_players:
+            if player.replacement is not None:
+                continue
+            first_round = max(
+                (
+                    round_ + 1
+                    for round_, pairing in player.pairings_by_round.items()
+                    if pairing.result not in (Result.NO_RESULT, Result.REST_GAME)
+                ),
+                default=1,
+            )
+            first_round = max(first_round, (player.replaced_from_round or 0) + 1)
+            if rounds := list(range(first_round, self.rounds + 1)):
+                rounds_by_player_id[player.id] = rounds
+        return rounds_by_player_id
+
     def add_player_to_tournament(
         self,
         stored_player: StoredPlayer,
         event_database: EventDatabase | None = None,
+        replaced_player_id: int | None = None,
+        replaced_from_round: int | None = None,
     ) -> None:
+        """Enter *stored_player* in the tournament; with
+        *replaced_player_id*, to take the seat of that player from the round
+        *replaced_from_round* on."""
         assert stored_player.id is not None
-        current_round = self.current_round
-        last_zpb_round = (
-            current_round
-            if current_round == 0 or self.is_round_finished(current_round)
-            else current_round - 1
-        )
+        if replaced_player_id is not None:
+            assert replaced_from_round in self.replaceable_rounds_by_player_id.get(
+                replaced_player_id, []
+            )
+            # The rounds before are not theirs to play: they leave no trace.
+            last_zpb_round = 0
+        else:
+            current_round = self.current_round
+            last_zpb_round = (
+                current_round
+                if current_round == 0 or self.is_round_finished(current_round)
+                else current_round - 1
+            )
         stored_tournament_player = StoredTournamentPlayer(
             tournament_id=self.id,
             player_id=stored_player.id,
@@ -2808,6 +2922,10 @@ class Tournament:
                 )
                 for round_ in range(1, last_zpb_round + 1)
             ],
+            replaces_player_id=replaced_player_id,
+            replaced_from_round=(
+                replaced_from_round if replaced_player_id is not None else None
+            ),
         )
         if event_database:
             event_database.add_stored_tournament_player(stored_tournament_player)
@@ -2817,6 +2935,31 @@ class Tournament:
         self.tournament_players_by_id[stored_player.id] = TournamentPlayer(
             self, stored_tournament_player
         )
+        if replaced_player_id is not None:
+            self.reset_player_derived_cache()
+
+    def withdraw_replacement(self, player: TournamentPlayer) -> None:
+        """Take back *player*, who replaced another without playing in the
+        seat yet: the player replaced gets their seat back."""
+        from data.pairings.round_robin_editor import RoundRobinScheduleEditor
+
+        assert player.is_withdrawable_replacement
+        self.board_operations.unpair(
+            [
+                pairing.board
+                for pairing in player.pairings_by_round.values()
+                if pairing.board is not None
+            ]
+        )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_tournament_player(self.id, player.id)
+        del self.tournament_players_by_id[player.id]
+        if player.stored_tournament_player in (
+            stored_players := self.stored_tournament.stored_tournament_players
+        ):
+            stored_players.remove(player.stored_tournament_player)
+        self.reset_player_derived_cache()
+        RoundRobinScheduleEditor(self).follow_seats()
 
     def register_rostered_player(self, player_id: int) -> None:
         """Take note that a player has joined a team of this tournament.
@@ -2864,6 +3007,11 @@ class Tournament:
         Utils.reset_cached_properties(
             self,
             'player_count',
+            'replacements_by_replaced_id',
+            'replaceable_rounds_by_player_id',
+            'can_add_replacements',
+            'seat_ids',
+            'seat_count',
             'exclusive_player_ids',
             'tournament_players_by_fide_id',
             'tournament_players_by_starting_rank',

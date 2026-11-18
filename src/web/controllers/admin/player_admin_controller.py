@@ -11,6 +11,7 @@ from itertools import islice
 import json
 from logging import Logger
 import math
+from operator import attrgetter
 from pathlib import Path
 from typing import Annotated, Any, cast, ClassVar
 from collections.abc import Collection, Iterable
@@ -208,6 +209,16 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             tournament
             for tournament in self.allowed_tournaments
             if tournament.can_add_players
+        ]
+
+    @property
+    def player_replaceable_tournaments(self) -> list[Tournament]:
+        """The tournaments a player can join only to replace one who
+        leaves."""
+        return [
+            tournament
+            for tournament in self.allowed_tournaments
+            if tournament.can_add_replacements
         ]
 
     @cached_property
@@ -476,6 +487,9 @@ class PlayerAdminController(BaseEventAdminController):
             'columns': web_context.column_handler.columns,
             'visible_columns': web_context.column_handler.visible_columns,
             'player_addable_tournaments': web_context.player_addable_tournaments,
+            'player_replaceable_tournaments': (
+                web_context.player_replaceable_tournaments
+            ),
             'federations': SharlyChessConfig().federations,
         }
 
@@ -1115,6 +1129,19 @@ class PlayerAdminController(BaseEventAdminController):
         if errors is None:
             errors = {}
         tournaments = web_context.player_addable_tournaments
+        replacement_contexts: dict[str, dict[str, Any]] = {}
+        if action == FormAction.CREATE:
+            for tournament in web_context.player_replaceable_tournaments:
+                if tournament not in tournaments:
+                    tournaments.append(tournament)
+                replacement_contexts[str(tournament.id)] = (
+                    cls._replacement_form_context(tournament)
+                )
+                data.setdefault(cls._replaced_player_field(tournament), '')
+                data.setdefault(
+                    cls._replaced_from_round_field(tournament),
+                    str(cls._default_replacement_round(tournament)),
+                )
         tournament_options: dict[str, str] = {}
         if action == FormAction.CREATE:
             # force the choice of the tournament on player creation if several tournaments
@@ -1232,6 +1259,7 @@ class PlayerAdminController(BaseEventAdminController):
             'woman_gender_value': PlayerGender.WOMAN.value,
             'federation_options': cls._get_federation_options(),
             'tournament_options': tournament_options,
+            'replacement_contexts': replacement_contexts,
             'team_options': team_options,
             'team_locked': team_locked,
             'byes_locked': admin_player is not None
@@ -1692,6 +1720,77 @@ class PlayerAdminController(BaseEventAdminController):
             ),
         )
 
+    @staticmethod
+    def _replaced_player_field(tournament: Tournament) -> str:
+        return f'replaces_player_id_{tournament.id}'
+
+    @staticmethod
+    def _replaced_from_round_field(tournament: Tournament) -> str:
+        return f'replaced_from_round_{tournament.id}'
+
+    @staticmethod
+    def _default_replacement_round(tournament: Tournament) -> int:
+        """The first round that can be taken over in some seat."""
+        return min(
+            rounds[0] for rounds in tournament.replaceable_rounds_by_player_id.values()
+        )
+
+    @classmethod
+    def _replacement_form_context(cls, tournament: Tournament) -> dict[str, Any]:
+        """What the form offers to replace a player of *tournament*."""
+        players = tournament.tournament_players_by_id
+        replaceable = tournament.replaceable_rounds_by_player_id
+        first_round = cls._default_replacement_round(tournament)
+        return {
+            'player_field': cls._replaced_player_field(tournament),
+            'round_field': cls._replaced_from_round_field(tournament),
+            'player_options': {'': '-'}
+            | {
+                str(player.id): player.full_name
+                for player in sorted(
+                    (players[player_id] for player_id in replaceable),
+                    key=attrgetter('name_sort_key'),
+                )
+            },
+            'round_options': {
+                str(round_): str(round_)
+                for round_ in range(first_round, tournament.rounds + 1)
+            },
+            'rounds_by_player': {
+                '': list(range(first_round, tournament.rounds + 1)),
+            }
+            | {str(player_id): rounds for player_id, rounds in replaceable.items()},
+        }
+
+    @classmethod
+    def _form_replacement(
+        cls, tournament: Tournament, data: dict[str, str]
+    ) -> tuple[int | None, int | None, dict[str, str]]:
+        """The player the form replaces in *tournament* and the round from
+        which, with the errors of the fields."""
+        if not tournament.can_add_replacements:
+            return None, None, {}
+        player_field = cls._replaced_player_field(tournament)
+        round_field = cls._replaced_from_round_field(tournament)
+        player_id = WebContext.form_data_to_int(data, player_field)
+        from_round = WebContext.form_data_to_int(data, round_field)
+        if player_id is None:
+            return None, None, {player_field: _('Choose the player to replace.')}
+        rounds = tournament.replaceable_rounds_by_player_id.get(player_id)
+        if rounds is None:
+            return None, None, {player_field: _('This player cannot be replaced.')}
+        if from_round not in rounds:
+            return (
+                None,
+                None,
+                {
+                    round_field: _(
+                        'The player can be replaced from round {round} only.'
+                    ).format(round=rounds[0])
+                },
+            )
+        return player_id, from_round, {}
+
     @classmethod
     def _form_tournament(cls, event: Event, data: dict[str, str]) -> Tournament | None:
         """The tournament the player of the form is placed in."""
@@ -1890,7 +1989,26 @@ class PlayerAdminController(BaseEventAdminController):
         else:
             tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
             tournament = event.tournaments_by_id[tournament_id]
-            player_id = event.add_player(stored_player, [tournament])
+            replaced_player_id, replaced_from_round, replacement_errors = (
+                self._form_replacement(tournament, data)
+            )
+            if replacement_errors:
+                return self._render_players_form_modal(
+                    web_context, action, data=data, errors=replacement_errors
+                )
+            if replaced_player_id is not None:
+                await SnapshotScheduler.snapshot_before_async(
+                    event.uniq_id,
+                    SnapshotReason.BEFORE_PLAYER_REPLACEMENT,
+                    replaced_from_round,
+                    tournament.id,
+                )
+            player_id = event.add_player(
+                stored_player,
+                [tournament],
+                replaced_player_id=replaced_player_id,
+                replaced_from_round=replaced_from_round,
+            )
             self.set_players_search_results(web_context)
             player = tournament.tournament_players_by_id[player_id]
             if not player.matches_tournament_criteria:
@@ -1956,7 +2074,10 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         data: dict[str, str],
         action: FormAction,
+        replacing: bool = False,
     ) -> Template | Redirect:
+        """Save the player of the form; with *replacing*, as a player
+        replacing them, the event being backed up first."""
         request = web_context.request
         event = web_context.get_admin_event()
         player = web_context.get_admin_player()
@@ -1984,6 +2105,13 @@ class PlayerAdminController(BaseEventAdminController):
                 SnapshotReason.BEFORE_RENUMBERING,
                 renumbered.current_round,
                 renumbered.id,
+            )
+        elif replacing:
+            replaced_in = player.optional_single_tournament
+            await SnapshotScheduler.snapshot_before_async(
+                event.uniq_id,
+                SnapshotReason.BEFORE_PLAYER_REPLACEMENT,
+                tournament_id=replaced_in.id if replaced_in is not None else None,
             )
         event.update_player(player, stored_player)
         player_edited(event)
@@ -2063,7 +2191,10 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: FromPath[int],
     ) -> Template | Redirect:
         return await self._update_player(
-            PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
+            PlayerAdminWebContext(request, player_id),
+            data,
+            FormAction.UPDATE,
+            replacing=True,
         )
 
     @delete(

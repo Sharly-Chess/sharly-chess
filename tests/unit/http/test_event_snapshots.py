@@ -10,10 +10,11 @@ from litestar.testing import TestClient
 
 from common import EVENTS_DIR
 from data.loader import ArchiveLoader, EventLoader
+from data.pairings.variations import BergerRoundRobinVariation
 from data.snapshot import Snapshot, SnapshotLoader, SnapshotReason, snapshots_dir
 from data.snapshot import write_snapshot
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTeam
+from database.sqlite.event.event_store import StoredPlayer, StoredTeam
 from plugins.manager import plugin_manager
 from tests.test_config import TestUtils
 from tests.unit.http.events import EventUnderTest
@@ -351,3 +352,89 @@ def test_deleting_a_team_backs_the_event_up_first(http: TestClient, event: str):
     with EventDatabase(file_path=snapshot.file) as database:
         assert [team.name for team in database.load_stored_teams()] == ['Rooks']
     assert snapshot.label == 'Before a team of [Main] was deleted'
+
+
+@pytest.mark.unit
+def test_replacing_a_player_backs_the_event_up_first(http: TestClient, event: str):
+    """The backup holds the round-robin as it was, its leaver still playing
+    the rounds the replacement takes over."""
+    stored_tournament = TestUtils.create_tournament(
+        event, 'Closed', overrides={'pairing': BergerRoundRobinVariation.static_id()}
+    )
+    assert stored_tournament.id is not None
+    for index in range(4):
+        loaded = EventLoader().load_event(event)
+        loaded.add_player(
+            StoredPlayer(id=None, last_name=f'PLAYER{index + 1}'),
+            [loaded.tournaments_by_id[stored_tournament.id]],
+        )
+    loaded = EventLoader().load_event(event)
+    tournament = loaded.tournaments_by_id[stored_tournament.id]
+    for round_ in range(1, tournament.rounds + 1):
+        assert tournament.generate_round_pairings(round_) == ''
+    loaded = EventLoader().load_event(event)
+    tournament = loaded.tournaments_by_id[stored_tournament.id]
+    for board in tournament.get_round_boards(1):
+        tournament.add_result(board, Result.DRAW)
+    leaver_id = next(iter(tournament.tournament_players_by_id))
+    EventLoader.unload_event(event)
+
+    response = http.post(
+        f'/player-create/{event}',
+        data={
+            'federation': 'FRA',
+            'gender': '',
+            'title': '',
+            'last_name': 'Newcomer',
+            'tournament_id': str(stored_tournament.id),
+            f'replaces_player_id_{stored_tournament.id}': str(leaver_id),
+            f'replaced_from_round_{stored_tournament.id}': '2',
+        },
+    )
+
+    assert response.status_code == 200
+    (snapshot,) = milestones(event, SnapshotReason.BEFORE_PLAYER_REPLACEMENT)
+    assert snapshot.label == 'Before a player of [Closed] was replaced from round 2'
+    with EventDatabase(file_path=snapshot.file) as database:
+        names = [player.last_name for player in database.load_stored_players()]
+    assert 'Newcomer' not in names
+    EventLoader.unload_event(event)
+    loaded = EventLoader().load_event(event)
+    tournament = loaded.tournaments_by_id[stored_tournament.id]
+    assert any(
+        player.replaced_player is not None for player in tournament.tournament_players
+    )
+
+
+@pytest.mark.unit
+def test_replacing_a_player_by_another_backs_the_event_up_first(
+    http: TestClient, event: str
+):
+    """The backup holds the player as they were before another took their
+    place."""
+    stored_tournament = TestUtils.create_tournament(event, 'Open')
+    assert stored_tournament.id is not None
+    loaded = EventLoader().load_event(event)
+    player_id = loaded.add_player(
+        StoredPlayer(id=None, last_name='Leaving'),
+        [loaded.tournaments_by_id[stored_tournament.id]],
+    )
+    EventLoader.unload_event(event)
+
+    response = http.patch(
+        f'/player-replace/{event}/{player_id}',
+        data={
+            'federation': 'FRA',
+            'gender': '',
+            'title': '',
+            'last_name': 'Arriving',
+            'tournament_id': str(stored_tournament.id),
+        },
+    )
+
+    assert response.status_code == 200
+    (snapshot,) = milestones(event, SnapshotReason.BEFORE_PLAYER_REPLACEMENT)
+    assert snapshot.label == 'Before a player of [Open] was replaced'
+    with EventDatabase(file_path=snapshot.file) as database:
+        names = [player.last_name for player in database.load_stored_players()]
+    assert 'Leaving' in names

@@ -159,11 +159,14 @@ class PairingNumbers:
         # numbers 1-2 clear off the end of the field.
         numbers_already_attributed = bool(current_tournament_players)
         for tournament_player in inserted_tournament_players:
+            # A replacement joins a field already numbered and keeps it as
+            # it is, taking the next number.
             tournament_player_index = next(
                 (
                     index
                     for index, player_ in enumerate(sorted_tournament_players)
-                    if player_.starting_rank_sort_key
+                    if tournament_player.replaced_player is None
+                    and player_.starting_rank_sort_key
                     > tournament_player.starting_rank_sort_key
                 ),
                 len(sorted_tournament_players),

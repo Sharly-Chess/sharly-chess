@@ -44,6 +44,7 @@
 - In individual Swiss tournaments, the players with the same rating and title can be ordered in the starting rank by drawing of lots instead of alphabetically (5.2.0)
 - On wide screens, the tournaments tab shows three cards per row instead of two (5.2.4)
 - The TRF export of a team tournament lists each team's players in their registration order, as the format requires, instead of in the lineup of the round being paired; the lineups of the rounds played are given by their own records (5.2.6)
+- A player who leaves an individual round-robin can be replaced, from the player form, by a newcomer who takes over their seat from a chosen round: their Berger number, their remaining opponents and their colours. The tournament keeps its rounds and its schedule, both players are ranked on the games they played, and in the tie-breaks the seat counts as a single opponent worth the points of all who held it. The Berger grid gives the seat one line, and the TRF gives the tournament as a custom round-robin with a comment for each replacement (5.3.0)
 
 ## Players
 

@@ -198,6 +198,11 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     def players_joined(self, tournament: Tournament) -> None:
         """Players have just been added to *tournament*."""
 
+    def new_players_replace(self, tournament: Tournament) -> bool:
+        """Whether a player joining *tournament* can only do so to replace
+        a player who leaves, taking over their seat."""
+        return False
+
     @property
     def allow_team_addition_once_paired(self) -> bool:
         """Determines if teams can be added on a tournament with
@@ -555,10 +560,16 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         )
 
     @override
+    def new_players_replace(self, tournament: Tournament) -> bool:
+        return not self.allows_player_addition(tournament)
+
+    @override
     def players_joined(self, tournament: Tournament) -> None:
         from data.pairings.round_robin_editor import RoundRobinScheduleEditor
 
-        RoundRobinScheduleEditor(tournament).admit_newcomers()
+        editor = RoundRobinScheduleEditor(tournament)
+        editor.seat_replacements()
+        editor.admit_newcomers()
 
     @property
     def allow_bye_definition(self) -> bool:

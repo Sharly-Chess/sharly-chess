@@ -407,7 +407,7 @@ class ChessResultsSession(Session):
                 )
                 last_board_id = max(last_board_id, table_number)
 
-            for player in tournament.get_unpaired_tournament_players(boards):
+            for player in tournament.get_unpaired_tournament_players(boards, round_):
                 if player.is_excluded_from_standings:
                     continue
                 last_board_id += 1

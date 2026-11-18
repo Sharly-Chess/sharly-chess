@@ -825,6 +825,14 @@ class PapiConverter:
                     'those of the tournament.'
                 )
             )
+        if tournament.has_replacements:
+            warnings.append(
+                _(
+                    'Papi cannot record a player replacing another in a '
+                    'round-robin: each of them is exported with the games they '
+                    'played, as if they had been absent from the other rounds.'
+                )
+            )
         return '<br/>'.join(warnings) or None
 
     def write_papi_file(

@@ -536,6 +536,9 @@ msgstr "Page du groupe sur le site de la FFE (compte de groupe requis)."
 msgid "Page of the tournament on the FFE website."
 msgstr "Page du tournoi sur le site FFE."
 
+msgid "Papi cannot record a player replacing another in a round-robin: each of them is exported with the games they played, as if they had been absent from the other rounds."
+msgstr "Papi ne sait pas représenter le remplacement d'un·e joueur·euse dans un toutes-rondes : chacun·e est exporté·e avec les parties qu'il·elle a jouées, comme s'il·elle avait été absent·e des autres rondes."
+
 msgid "Papi export does not support bonus / penalty points, which this tournament uses."
 msgstr "L'export Papi ne prend pas en charge les points de bonus / pénalité, utilisés par ce tournoi."
 

@@ -284,12 +284,18 @@ class RoundRobinScheduleEditor:
         return members
 
     def _played_pairs(self, round_: int) -> set[Table]:
+        """The seats of the games of *round_* already played."""
         if self.is_team:
             return set()
+        tournament = self.tournament
         return {
-            (board.stored_board.white_player_id, board.stored_board.black_player_id)
-            for board in self.tournament.get_round_boards(round_)
-            if board.stored_board.black_player_id is not None
+            (
+                tournament.seat_of(board.stored_board.white_player_id),
+                tournament.seat_of(board.stored_board.black_player_id),
+            )
+            for board in tournament.get_round_boards(round_)
+            if board.stored_board.white_player_id is not None
+            and board.stored_board.black_player_id is not None
             and board.result != Result.NO_RESULT
         }
 
@@ -391,6 +397,23 @@ class RoundRobinScheduleEditor:
             Utils.reset_cached_properties(player, 'pairings_by_round')
         tournament.board_operations.unpair(list(tournament.boards_by_id.values()))
 
+    def seat_replacements(self) -> None:
+        """Seat the players who replaced another in the games of the seat
+        they took over, from the round they took it."""
+        if self.tournament.has_replacements:
+            self.follow_seats()
+
+    def follow_seats(self) -> None:
+        """Make the games of a paired round-robin follow the players holding
+        each seat, keeping the others."""
+        tournament = self.tournament
+        if self.is_team or not tournament.has_pairings:
+            return
+        schedule = self.engine.schedule(tournament)
+        if schedule is None or not self.engine.schedule_fits(tournament, schedule):
+            return
+        self._pair_from(schedule, only_changed_games=True)
+
     def _number_newcomers(self) -> None:
         """Give the players who joined the next Berger numbers, after those
         already set, whose order is kept."""
@@ -416,21 +439,29 @@ class RoundRobinScheduleEditor:
             }
         )
 
-    def _pair_from(self, schedule: RoundRobinSchedule) -> None:
+    def _pair_from(
+        self, schedule: RoundRobinSchedule, only_changed_games: bool = False
+    ) -> None:
         """Make the boards of every round follow *schedule*, keeping the
-        games already played."""
+        games already played and, with *only_changed_games*, every game
+        it does not change."""
         tournament = self.tournament
         engine = self.engine
         assert isinstance(engine, RoundRobinPairingEngine)
         operations = tournament.board_operations
         for round_, schedule_round in sorted(schedule.rounds.items()):
             wanted: list[tuple[int, int | None]] = [
-                (white, black)
+                (
+                    tournament.seat_holder(white, round_),
+                    tournament.seat_holder(black, round_),
+                )
                 for white, black in schedule_round.tables
                 if white is not None and black is not None
             ]
             if schedule_round.rest is not None:
-                wanted.append((schedule_round.rest, None))
+                wanted.append(
+                    (tournament.seat_holder(schedule_round.rest, round_), None)
+                )
             boards = tournament.get_round_boards(round_)
             existing = {
                 (board.stored_board.white_player_id, board.stored_board.black_player_id)
@@ -438,8 +469,7 @@ class RoundRobinScheduleEditor:
             }
             if existing == set(wanted):
                 continue
-            played = self._played_pairs(round_)
-            if played:
+            if only_changed_games or self._played_pairs(round_):
                 obsolete = [
                     board
                     for board in boards

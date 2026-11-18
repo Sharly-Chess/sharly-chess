@@ -28,3 +28,8 @@
 .rr-table tr.excluded-from-standings td.player {
     text-decoration: line-through;
 }
+
+.rr-table td .seat-rounds {
+    font-size: 7pt;
+    color: #555555;
+}

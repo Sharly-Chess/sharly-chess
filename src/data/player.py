@@ -412,7 +412,11 @@ class Player:
         A player paired anywhere can no longer be deleted."""
         for tournament in self.event.tournaments:
             tournament_player = tournament.tournament_players_by_id.get(self.id)
-            if tournament_player is not None and tournament_player.has_real_pairings:
+            if (
+                tournament_player is not None
+                and tournament_player.has_real_pairings
+                and not tournament_player.is_withdrawable_replacement
+            ):
                 return tournament
         return None
 
@@ -1675,6 +1679,85 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     def has_played_games(self) -> bool:
         return any(pairing.played for pairing in self.pairings.values())
 
+    @property
+    def replaced_player(self) -> TournamentPlayer | None:
+        """The player whose round-robin seat this one took over."""
+        replaced_id = self.stored_tournament_player.replaces_player_id
+        if replaced_id is None:
+            return None
+        return self.tournament.tournament_players_by_id.get(replaced_id)
+
+    @property
+    def replacement(self) -> TournamentPlayer | None:
+        """The player who took over this one's round-robin seat."""
+        return self.tournament.replacements_by_replaced_id.get(self.id)
+
+    @property
+    def replaced_from_round(self) -> int | None:
+        """The first round this player played in the seat of the player
+        they replaced."""
+        if self.replaced_player is None:
+            return None
+        return self.stored_tournament_player.replaced_from_round
+
+    @property
+    def is_withdrawable_replacement(self) -> bool:
+        """Whether this player replaced another without playing a game in
+        the seat yet, nor being replaced in turn: they can be taken back,
+        the player replaced getting their seat back."""
+        return (
+            self.replaced_player is not None
+            and self.replacement is None
+            and all(
+                pairing.result in (Result.NO_RESULT, Result.REST_GAME)
+                for pairing in self.pairings_by_round.values()
+            )
+        )
+
+    @property
+    def seat_id(self) -> int:
+        return self.tournament.seat_of(self.id)
+
+    @property
+    def seat_players(self) -> list[TournamentPlayer]:
+        """The players who held this one's seat, this one included."""
+        return self.tournament.seat_players(self.seat_id)
+
+    @property
+    def shares_seat(self) -> bool:
+        """Whether this player held their round-robin seat for part of the
+        tournament only, having replaced a player or been replaced."""
+        return self.replaced_player is not None or self.replacement is not None
+
+    @property
+    def seat_rounds(self) -> tuple[int, int]:
+        """The first and the last round this player holds their seat."""
+        replacement = self.replacement
+        return (
+            self.replaced_from_round or 1,
+            (replacement.replaced_from_round or 1) - 1
+            if replacement is not None
+            else self.tournament.rounds,
+        )
+
+    @property
+    def seat_rounds_str(self) -> str:
+        """The rounds this player holds their seat, for a player who shares
+        it."""
+        first, last = self.seat_rounds
+        if first == last:
+            return _('round {round}').format(round=first)
+        return _('rounds {first}-{last}').format(first=first, last=last)
+
+    def holds_seat_in(self, round_: int) -> bool:
+        """Whether this player holds their seat in *round_*."""
+        return self.tournament.seat_holder(self.seat_id, round_) == self.id
+
+    def seat_points(self, after_round: int) -> float:
+        """The points scored in this player's seat by all who held it: what
+        the seat counts for in its opponents' tie-breaks."""
+        return sum(player.standings_points(after_round) for player in self.seat_players)
+
     @cached_property
     def is_excluded_from_standings(self) -> bool:
         """FIDE 6.6: in a round-robin, a player who completed less than 50%
@@ -1699,6 +1782,9 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         if not tournament.round_robin_participation_rule:
             return False
         if not tournament.pairing_system.supports_participation_rule:
+            return False
+        if self.shares_seat:
+            # Their seat is played to the end: the schedule stays complete.
             return False
         if tournament.is_team_tournament:
             # A team tournament applies the rule to the teams, which is

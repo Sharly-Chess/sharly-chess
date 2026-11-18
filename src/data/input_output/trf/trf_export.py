@@ -122,7 +122,7 @@ class TrfExport:
             else self._starting_rank_method(rating_report),
             starting_rank_federation=tournament.event.federation or '',
             pairing_controller_id='Sharly Chess',
-            encoded_type=tournament.pairing_variation.trf_encoded_type,
+            encoded_type=self._encoded_type(),
             # Record 212 is the ordered list of criteria that define the
             # standings, PTS included — no longer prefixed here, since the
             # Points tie-break carries its own place in the list.
@@ -185,6 +185,15 @@ class TrfExport:
             )
         return trf
 
+    def _encoded_type(self) -> str:
+        """The pairing system of the file. A round-robin whose seats changed
+        hands lists more players than the Berger tables pair: its games
+        follow a schedule of its own."""
+        tournament = self.tournament
+        if tournament.has_replacements:
+            return 'CUSTOM_ROUNDROBIN'
+        return tournament.pairing_variation.trf_encoded_type
+
     def _log_comments(
         self, after_round: int, corrections: list[RatingCorrection]
     ) -> list[str]:
@@ -200,6 +209,16 @@ class TrfExport:
             for entry in entries
             if entry.round_ <= after_round
         ]
+        for replacement in tournament.replacements_by_replaced_id.values():
+            replaced = replacement.replaced_player
+            from_round = replacement.replaced_from_round
+            if replaced is None or from_round is None or from_round > after_round:
+                continue
+            comments.append(
+                f'Replacement @ Round {from_round}: player '
+                f'{replacement.pairing_number or 0} takes over the seat of player '
+                f'{replaced.pairing_number or 0}'
+            )
         exit_round = tournament.fide_mode_exit_round
         if exit_round is not None and exit_round <= after_round:
             comments.append(fide_mode_exit_trf_comment(exit_round))

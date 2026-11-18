@@ -554,7 +554,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
             if cached is not None:
                 return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            score = player.standings_points(after_round)  # FIDE 6.6
+            score = player.seat_points(after_round)  # FIDE 6.6
         else:
             score = 0.0
             for round_index, pairing in player.pairings.items():

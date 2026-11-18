@@ -1646,6 +1646,17 @@ msgstr ""
 msgid "Before a bye was changed"
 msgstr ""
 
+#, python-brace-format
+msgid "Before a player of [{tournament}] was replaced"
+msgstr ""
+
+#, python-brace-format
+msgid "Before a player of [{tournament}] was replaced from round {round}"
+msgstr ""
+
+msgid "Before a player was replaced"
+msgstr ""
+
 msgid "Before a restoration"
 msgstr ""
 
@@ -2377,6 +2388,9 @@ msgid "Choose screens to add"
 msgstr ""
 
 msgid "Choose the columns displayed."
+msgstr ""
+
+msgid "Choose the player to replace."
 msgstr ""
 
 msgid "Choose the screens and rotators that display this timer."
@@ -4224,6 +4238,9 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
+msgid "FIDE has no rule for a player replacing another in an individual round-robin: the file states each replacement in a comment. Check with the rating officer before submitting it."
+msgstr ""
+
 #, python-brace-format
 msgctxt "rating sequence"
 msgid "FIDE list: {ratings}"
@@ -4526,6 +4543,9 @@ msgid "From left"
 msgstr ""
 
 msgid "From right"
+msgstr ""
+
+msgid "From round"
 msgstr ""
 
 msgid "From round 3, no virtual points are given."
@@ -6940,6 +6960,9 @@ msgstr ""
 msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as Zero-Point Byes."
 msgstr ""
 
+msgid "Not ranked"
+msgstr ""
+
 msgid "Not specified"
 msgstr ""
 
@@ -8882,6 +8905,9 @@ msgstr ""
 msgid "Replace the player to update this field."
 msgstr ""
 
+msgid "Replaces"
+msgstr ""
+
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
 msgstr ""
@@ -9290,12 +9316,12 @@ msgstr ""
 msgid "Round {round} started %%s ago"
 msgstr ""
 
-#, python-brace-format, python-format
-msgid "Round {round} starts in %%s"
-msgstr ""
-
 #, python-brace-format
 msgid "Round {round} starts a new period: pair it from the page of the tournament, which asks for the ratings to be checked first."
+msgstr ""
+
+#, python-brace-format, python-format
+msgid "Round {round} starts in %%s"
 msgstr ""
 
 #, python-brace-format
@@ -11173,6 +11199,10 @@ msgstr ""
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
+#, python-brace-format
+msgid "The player can be replaced from round {round} only."
+msgstr ""
+
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr ""
 
@@ -11489,6 +11519,9 @@ msgid "The tournament has not yet started."
 msgstr ""
 
 msgid "The tournament has started: in FIDE mode, its tie-breaks are fixed."
+msgstr ""
+
+msgid "The tournament has started: the player joins it to replace a player who leaves, taking over their seat and their opponents from the round chosen."
 msgstr ""
 
 msgid "The tournament is finished."
@@ -11817,6 +11850,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "This player already exists in tournament [{tournament}]."
+msgstr ""
+
+msgid "This player cannot be replaced."
 msgstr ""
 
 msgid "This player has already been paired; their team cannot be changed."
@@ -13900,7 +13936,15 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
+msgid "round {round}"
+msgstr ""
+
+#, python-brace-format
 msgid "round_{round}"
+msgstr ""
+
+#, python-brace-format
+msgid "rounds {first}-{last}"
 msgstr ""
 
 msgctxt "seconds"

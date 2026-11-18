@@ -419,8 +419,10 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                 return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
             # Use the standings score so a game against an excluded player
-            # (FIDE 6.6) does not inflate this opponent's contribution.
-            score = player.standings_points(after_round)
+            # (FIDE 6.6) does not inflate this opponent's contribution. A
+            # seat taken over by a replacement counts as one opponent, with
+            # the points of all who held it.
+            score = player.seat_points(after_round)
             if caching:
                 player._compute_cache[cache_key] = score
             return score
@@ -1946,7 +1948,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
         win_points = tournament.win_points
         games = self.possible_games(
             after_round,
-            tournament.player_count
+            tournament.seat_count
             if tournament.pairing_system == RoundRobinPairingSystem()
             else None,
         )
@@ -1966,7 +1968,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
             if not player.game_counts_for_tie_breaks(pairing):
                 continue
             opponent = tournament.players_by_id[pairing.opponent_id]
-            opponent_score = opponent.standings_points(after_round)
+            opponent_score = opponent.seat_points(after_round)
             if opponent_score >= score_limit:
                 score += pairing.result.points(tournament.point_values)
         return score

@@ -80,7 +80,10 @@ class PairingNumberGridPlayerSorter(GridPlayerSorter):
         berger_nb_by_player_id = BergerNumbersSetting.get_value(tournament)
         return sorted(
             tournament.tournament_players,
-            key=lambda p: berger_nb_by_player_id[p.id],
+            key=lambda p: (
+                berger_nb_by_player_id[tournament.seat_of(p.id)],
+                p.replaced_from_round or 0,
+            ),
         )
 
 

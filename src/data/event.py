@@ -675,14 +675,27 @@ class Event:
         )
 
     def add_player(
-        self, stored_player: StoredPlayer, tournaments: list[Tournament]
+        self,
+        stored_player: StoredPlayer,
+        tournaments: list[Tournament],
+        replaced_player_id: int | None = None,
+        replaced_from_round: int | None = None,
     ) -> int:
+        """Add *stored_player* to the event and to *tournaments*; with
+        *replaced_player_id*, to take the seat of that player of the single
+        tournament given from the round *replaced_from_round* on."""
+        assert replaced_player_id is None or len(tournaments) == 1
         with EventDatabase(self.uniq_id, True) as database:
             stored_player.id = database.add_stored_player(stored_player)
             self.stored_event.stored_players.append(stored_player)
             self.clear_player_cache()
             for tournament in tournaments:
-                tournament.add_player_to_tournament(stored_player, database)
+                tournament.add_player_to_tournament(
+                    stored_player,
+                    database,
+                    replaced_player_id=replaced_player_id,
+                    replaced_from_round=replaced_from_round,
+                )
         for tournament in tournaments:
             tournament.pairing_system.players_joined(tournament)
         assert stored_player.id is not None
@@ -695,6 +708,15 @@ class Event:
             raise PairedDeletionError(
                 f'Player [{player.full_name}] has pairings and cannot be deleted.'
             )
+        for entered_tournament in self.tournaments:
+            tournament_player = entered_tournament.tournament_players_by_id.get(
+                player.id
+            )
+            if (
+                tournament_player is not None
+                and tournament_player.is_withdrawable_replacement
+            ):
+                entered_tournament.withdraw_replacement(tournament_player)
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
         del self.players_by_id[player.id]
