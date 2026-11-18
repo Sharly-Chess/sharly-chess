@@ -49,11 +49,7 @@ def board(tournament: Tournament) -> Board:
 
 
 def fresh(board: Board) -> Board:
-    return next(
-        b
-        for b in EVENT.tournament().get_round_boards(1)
-        if b.identifier == board.identifier
-    )
+    return next(b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id)
 
 
 def put_result(
@@ -65,7 +61,7 @@ def put_result(
 ) -> str:
     response = http.put(
         f'/view/update-result/1/{EVENT_ID}/{SCREEN_ID}/{tournament.id}/1'
-        f'/{board.identifier}/{result.value}?shown={shown.value}'
+        f'/{board.id}/{result.value}?shown={shown.value}'
     )
     assert response.status_code == 200
     return response.text
@@ -84,7 +80,7 @@ def test_the_result_window_sends_the_result_it_shows(
 ):
     put_result(http, tournament, board, Result.WIN, Result.NO_RESULT)
     response = http.get(
-        f'/view/result-modal/1/{EVENT_ID}/{SCREEN_ID}/{tournament.id}/{board.identifier}'
+        f'/view/result-modal/1/{EVENT_ID}/{SCREEN_ID}/{tournament.id}/{board.id}'
     )
     assert f'?shown={Result.WIN.value}' in response.text
 

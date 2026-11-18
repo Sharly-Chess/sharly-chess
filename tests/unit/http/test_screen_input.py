@@ -207,9 +207,7 @@ def test_a_result_is_taken_only_through_a_screen_taking_results(
     EventLoader.unload_event(EVENT_ID)
     event = EventLoader().load_event(EVENT_ID)
     first_board_ids = {
-        tournament_id: event.tournaments_by_id[tournament_id]
-        .get_round_boards(1)[0]
-        .identifier
+        tournament_id: event.tournaments_by_id[tournament_id].get_round_boards(1)[0].id
         for tournament_id in (tournament.id, other.id)
         if tournament_id is not None
     }

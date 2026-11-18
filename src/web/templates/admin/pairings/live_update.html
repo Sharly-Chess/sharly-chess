@@ -13,7 +13,7 @@
         id="pairings-live"
         data-action="patch"
         data-removed-board-ids="{{ removed_board_ids|tojson }}"
-        data-updated-board-ids="{{ live_boards|map(attribute='identifier')|list|tojson }}"
+        data-updated-board-ids="{{ live_boards|map(attribute='id')|list|tojson }}"
     ></div>
     {% for live_board in live_boards %}
         {% with

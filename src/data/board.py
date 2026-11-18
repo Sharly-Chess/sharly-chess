@@ -170,8 +170,7 @@ class Board:  # noqa: PLW1641
         return self.black_tournament_player.pairings_by_round[self.round]
 
     @property
-    def identifier(self) -> int:
-        # TODO (Molrn - Big move) rename to *id* once *Board.id*'s usages have been replaced
+    def id(self) -> int:
         assert self.stored_board.id is not None
         return self.stored_board.id
 
@@ -288,7 +287,7 @@ class Board:  # noqa: PLW1641
             (
                 position
                 for position, board in enumerate(team_board.boards, start=1)
-                if board.identifier == self.identifier
+                if board.id == self.id
             ),
             None,
         )
@@ -383,7 +382,7 @@ class Board:  # noqa: PLW1641
         set_stored_fields(
             self.stored_board,
             last_result_update=database.update_board_last_result_update(
-                self.identifier, clear=new_result == Result.NO_RESULT
+                self.id, clear=new_result == Result.NO_RESULT
             ),
         )
 

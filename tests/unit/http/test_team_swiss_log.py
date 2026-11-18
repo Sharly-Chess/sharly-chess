@@ -138,11 +138,11 @@ def test_a_change_to_a_round_paired_from_is_logged(
 
     http.put(
         f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}'
-        f'/{board.identifier}/{Result.DRAW.value}'
+        f'/{board.id}/{Result.DRAW.value}'
     )
 
     tournament = load()
-    assert tournament.boards_by_id[board.identifier].result == Result.DRAW
+    assert tournament.boards_by_id[board.id].result == Result.DRAW
     assert [(pibe.type, pibe.round_) for pibe in tournament.pibes] == [
         (PibeType.CORRECTION, round_)
     ]
@@ -167,7 +167,7 @@ def test_a_team_swiss_has_no_rating_report_correction(
 
     http.put(
         f'/pairing/rating-correction/{EVENT_ID}/{tournament.id}/1'
-        f'/{board.identifier}/{board.white_player_id}/{Result.DRAW.value}'
+        f'/{board.id}/{board.white_player_id}/{Result.DRAW.value}'
     )
 
     assert load().rating_corrections == []

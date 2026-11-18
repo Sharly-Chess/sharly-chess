@@ -57,14 +57,14 @@ def test_a_result_is_recorded_for_both_players(
     http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
     board = EVENT.tournament().get_round_boards(1)[0]
     response = http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
         f'/{Result.WIN.value}'
     )
     assert response.status_code == 200
     played = next(
         board_
         for board_ in EVENT.tournament().get_round_boards(1)
-        if board_.identifier == board.identifier
+        if board_.id == board.id
     )
     assert played.white_pairing.result == Result.WIN
     assert played.black_pairing.result == Result.LOSS
@@ -78,14 +78,14 @@ def test_a_board_of_another_round_is_refused(http: TestClient, tournament: Tourn
     http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
     board = EVENT.tournament().get_round_boards(1)[0]
     response = http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/2/{board.identifier}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/2/{board.id}'
         f'/{Result.WIN.value}'
     )
     assert response.status_code < 500
     played = next(
         board_
         for board_ in EVENT.tournament().get_round_boards(1)
-        if board_.identifier == board.identifier
+        if board_.id == board.id
     )
     assert played.white_pairing.result == Result.NO_RESULT
     assert not EVENT.tournament().get_round_boards(2)
@@ -102,15 +102,9 @@ def test_permuting_a_board_turns_it_round(http: TestClient, tournament: Tourname
     way round for the players in front of them."""
     board = board_of_round_one(http, tournament)
     white, black = board.white_player_id, board.black_player_id
-    response = http.patch(
-        f'/pairing/permute/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
-    )
+    response = http.patch(f'/pairing/permute/{EVENT_ID}/{tournament.id}/1/{board.id}')
     assert response.status_code == 200
-    turned = next(
-        b
-        for b in EVENT.tournament().get_round_boards(1)
-        if b.identifier == board.identifier
-    )
+    turned = next(b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id)
     assert (turned.white_player_id, turned.black_player_id) == (black, white)
 
 
@@ -121,17 +115,13 @@ def test_a_hotkey_enters_a_draw(http: TestClient, tournament: Tournament):
     response = http.put(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
         data={
-            'board_id': str(board.identifier),
+            'board_id': str(board.id),
             'key': 'Digit3',
             'validate_result': 'false',
         },
     )
     assert response.status_code == 200
-    played = next(
-        b
-        for b in EVENT.tournament().get_round_boards(1)
-        if b.identifier == board.identifier
-    )
+    played = next(b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id)
     assert played.white_pairing.result == Result.DRAW
     assert played.black_pairing.result == Result.DRAW
 
@@ -146,16 +136,14 @@ def test_a_key_that_means_nothing_enters_nothing(
     response = http.put(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
         data={
-            'board_id': str(board.identifier),
+            'board_id': str(board.id),
             'key': 'KeyQ',
             'validate_result': 'false',
         },
     )
     assert response.status_code == 200
     untouched = next(
-        b
-        for b in EVENT.tournament().get_round_boards(1)
-        if b.identifier == board.identifier
+        b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id
     )
     assert untouched.white_pairing.result == Result.NO_RESULT
 
@@ -209,7 +197,7 @@ def test_a_second_entry_that_disagrees_is_not_taken(
     silently kept."""
     board = board_of_round_one(http, tournament)
     entered = {
-        'board_id': str(board.identifier),
+        'board_id': str(board.id),
         'key': 'Digit3',
         'validate_result': 'false',
     }
@@ -226,9 +214,7 @@ def test_a_second_entry_that_disagrees_is_not_taken(
     assert response.status_code == 200
     assert 'highlight-warning' in response.text
     checked = next(
-        b
-        for b in EVENT.tournament().get_round_boards(1)
-        if b.identifier == board.identifier
+        b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id
     )
     assert checked.white_pairing.result == Result.DRAW
 
@@ -236,7 +222,7 @@ def test_a_second_entry_that_disagrees_is_not_taken(
 @pytest.fixture
 def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int, list[int]]]:
     """The websocket events sent out for new results, as (event, tournament,
-    round, board identifiers) tuples."""
+    round, board ids) tuples."""
     calls: list[tuple[str, int, int, list[int]]] = []
     monkeypatch.setattr(
         PairingsAdminController,
@@ -248,7 +234,7 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int, list
                         event_uniq_id,
                         tournament_id,
                         round_,
-                        [board.identifier for board in boards],
+                        [board.id for board in boards],
                     )
                 )
             )
@@ -268,18 +254,18 @@ def test_a_result_entered_by_the_arbiter_is_announced(
     page, from a button or from the keyboard."""
     board = board_of_round_one(http, tournament)
     http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
         f'/{Result.WIN.value}'
     )
     http.put(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
         data={
-            'board_id': str(board.identifier),
+            'board_id': str(board.id),
             'key': 'Digit3',
             'validate_result': 'false',
         },
     )
-    assert published == [(EVENT_ID, tournament.id, 1, [board.identifier])] * 2
+    assert published == [(EVENT_ID, tournament.id, 1, [board.id])] * 2
 
 
 @pytest.mark.unit
@@ -292,7 +278,7 @@ def test_checking_a_result_announces_nothing(
     tell the other screens about."""
     board = board_of_round_one(http, tournament)
     entered = {
-        'board_id': str(board.identifier),
+        'board_id': str(board.id),
         'key': 'Digit3',
         'validate_result': 'false',
     }
@@ -398,17 +384,14 @@ def test_unpairing_a_board_keeps_the_other_table_numbers(
     http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
     boards = sorted(EVENT.tournament().get_round_boards(1), key=lambda b: b.index)
     assert len(boards) > 3
-    before = {board.identifier: board.number for board in boards}
+    before = {board.id: board.number for board in boards}
     unpaired = boards[1]
     response = http.delete(
-        f'/pairing/unpair/{EVENT_ID}/{tournament.id}/1/{unpaired.identifier}?confirmed=1'
+        f'/pairing/unpair/{EVENT_ID}/{tournament.id}/1/{unpaired.id}?confirmed=1'
     )
     assert response.status_code == 200
-    after = {
-        board.identifier: board.number
-        for board in EVENT.tournament().get_round_boards(1)
-    }
-    del before[unpaired.identifier]
+    after = {board.id: board.number for board in EVENT.tournament().get_round_boards(1)}
+    del before[unpaired.id]
     assert after == before
 
 
@@ -419,21 +402,18 @@ def test_pairing_again_after_unpairing_fills_the_vacated_table(
     tournament = compact_tournament
     http.post(f'/pairings/generate/{EVENT_ID}/{tournament.id}/1')
     boards = sorted(EVENT.tournament().get_round_boards(1), key=lambda b: b.index)
-    before = {board.identifier: board.number for board in boards}
+    before = {board.id: board.number for board in boards}
     unpaired = boards[1]
     http.delete(
-        f'/pairing/unpair/{EVENT_ID}/{tournament.id}/1/{unpaired.identifier}?confirmed=1'
+        f'/pairing/unpair/{EVENT_ID}/{tournament.id}/1/{unpaired.id}?confirmed=1'
     )
     for player_id in (unpaired.white_player_id, unpaired.black_player_id):
         response = http.patch(
             f'/pairings/pair-player/{EVENT_ID}/{tournament.id}/{player_id}/1'
         )
         assert response.status_code == 200
-    after = {
-        board.identifier: board.number
-        for board in EVENT.tournament().get_round_boards(1)
-    }
-    table = before.pop(unpaired.identifier)
+    after = {board.id: board.number for board in EVENT.tournament().get_round_boards(1)}
+    table = before.pop(unpaired.id)
     repaired = next(board_id for board_id in after if board_id not in before)
     assert after.pop(repaired) == table
     assert after == before
@@ -469,11 +449,11 @@ def test_a_live_update_sends_the_rows_of_the_boards_that_changed(
     button to the next round, which the result can change."""
     board = board_of_round_one(http, tournament)
     boards = EVENT.tournament().get_round_boards(1)
-    shown = [b.identifier for b in boards]
-    text = _pairings_live_update(http, tournament, shown, [board.identifier])
+    shown = [b.id for b in boards]
+    text = _pairings_live_update(http, tournament, shown, [board.id])
     assert 'data-action="patch"' in text
-    assert f'id="pairing-row-{board.identifier}"' in text
-    assert f'id="pairing-row-{boards[1].identifier}"' not in text
+    assert f'id="pairing-row-{board.id}"' in text
+    assert f'id="pairing-row-{boards[1].id}"' not in text
     assert 'id="round-next-button"' in text
 
 
@@ -484,13 +464,13 @@ def test_a_live_update_asks_for_a_reload_when_it_cannot_put_the_change_in_place(
     """A board the page does not show, a change that is not known, or the
     column of the players to pair coming or going, reload the page."""
     board = board_of_round_one(http, tournament)
-    shown = [b.identifier for b in EVENT.tournament().get_round_boards(1)]
+    shown = [b.id for b in EVENT.tournament().get_round_boards(1)]
     assert 'data-action="reload"' in _pairings_live_update(
-        http, tournament, [], [board.identifier]
+        http, tournament, [], [board.id]
     )
     assert 'data-action="reload"' in _pairings_live_update(
         http, tournament, shown, None
     )
     assert 'data-action="reload"' in _pairings_live_update(
-        http, tournament, shown, [board.identifier], has_unpaired=True
+        http, tournament, shown, [board.id], has_unpaired=True
     )

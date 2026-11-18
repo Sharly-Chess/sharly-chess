@@ -2268,7 +2268,7 @@ class Tournament:
             board_numbers = self._round_board_numbers(round_)
             for board in self.get_round_boards(round_):
                 if board.stored_board.id is not None:
-                    number = board_numbers[board.identifier]
+                    number = board_numbers[board.id]
                 else:
                     number = board.fixed_number or board.standard_number
                 white_tp = board.optional_white_tournament_player
@@ -2575,7 +2575,7 @@ class Tournament:
         ) in self.stored_tournament.stored_boards_by_round.items():
             for stored_board in stored_boards:
                 board = Board(self, round_, stored_board)
-                boards_by_id[board.identifier] = board
+                boards_by_id[board.id] = board
         return boards_by_id
 
     def boards_without_result(self, at_round: int) -> list[Board]:
@@ -2620,7 +2620,7 @@ class Tournament:
         if cached is not None:
             return cached
         entries = [
-            (board.identifier, board.fixed_number, board.standard_number)
+            (board.id, board.fixed_number, board.standard_number)
             for board in self.get_round_boards(round_)
         ]
         board_numbers = compute_round_board_numbers(
@@ -2632,7 +2632,7 @@ class Tournament:
     def board_number(self, board: Board) -> int:
         if board.stored_board.id is None:
             return board.fixed_number or board.standard_number
-        return self._round_board_numbers(board.round)[board.identifier]
+        return self._round_board_numbers(board.round)[board.id]
 
     @cached_property
     def board_operations(self) -> BoardOperations:

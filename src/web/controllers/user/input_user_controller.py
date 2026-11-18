@@ -422,7 +422,7 @@ class InputUserController(BaseScreenUserController):
                 round=round_,
                 # DB identifier, not the display id — display ids repeat
                 # across team match blocks.
-                board_id=board.identifier,
+                board_id=board.id,
                 expiration=time.time() + 20,
             )
         )

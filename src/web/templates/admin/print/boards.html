@@ -18,7 +18,7 @@
         <tbody>
             {% for board in boards %}
                 <tr
-                    id="board-{{ board.identifier }}"
+                    id="board-{{ board.id }}"
                     class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}{% if board.exempt %} exempt{% endif %}"
                 >
                     {% for column in board_columns %}

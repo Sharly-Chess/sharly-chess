@@ -14,25 +14,25 @@
         event_uniq_id=user_event.uniq_id,
         display_controller_id=display_controller.id,
         tournament_id=tournament.id,
-        board_id=board.identifier
+        board_id=board.id
     ) ~ display_controller_query if display_controller else url_for(
         'user-result-modal',
         is_screen=1,
         event_uniq_id=user_event.uniq_id,
         screen_uniq_id=screen.uniq_id,
         tournament_id=tournament.id,
-        board_id=board.identifier
+        board_id=board.id
     ) ~ menu_query %}
 {% endif %}
 <div
-    id="tournament-{{ tournament.id }}-board-{{ board.identifier }}-row"
-    {% if not tournament.is_fake %}data-live-key="board-{{ board.identifier }}-row"{% endif %}
+    id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
+    {% if not tournament.is_fake %}data-live-key="board-{{ board.id }}-row"{% endif %}
     class="
         board-row
         {% if editable %}editable{% endif %}
         {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
         {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
-        {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
+        {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
     {% if editable %}
         hx-get="{{ result_url }}"
         hx-target="body"

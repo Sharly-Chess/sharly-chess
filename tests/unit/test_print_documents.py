@@ -459,8 +459,8 @@ def test_match_sheets_print_the_pairings_of_a_flat_team_system(
     pairings = _build(event, documents.PairingPrintDocument, option_values)
     assert document.template_name == pairings.template_name
     assert document.title == pairings.title
-    assert [board.identifier for board in document.template_context['boards']] == [
-        board.identifier for board in pairings.template_context['boards']
+    assert [board.id for board in document.template_context['boards']] == [
+        board.id for board in pairings.template_context['boards']
     ]
 
 

@@ -27,7 +27,7 @@ def play_round(http: TestClient, tournament: Tournament, round_: int) -> None:
         if board.black_player_id is not None:
             http.put(
                 f'/pairing/set-result/{EVENT_ID}/{tournament.id}/{round_}'
-                f'/{board.identifier}/{Result.WIN.value}'
+                f'/{board.id}/{Result.WIN.value}'
             )
 
 
@@ -60,7 +60,7 @@ def correct(
 ) -> int:
     return http.put(
         f'/pairing/rating-correction/{EVENT_ID}/{tournament.id}/{round_}'
-        f'/{board.identifier}/{white_player_id}/{result.value}'
+        f'/{board.id}/{white_player_id}/{result.value}'
     ).status_code
 
 
@@ -83,7 +83,7 @@ def test_the_rating_report_gives_the_corrected_result(
     rating_report = tournament.to_trf(rating_report=True)
     assert trf_game(rating_report, white.pairing_number, 1).result == '='
     assert trf_game(tournament.to_trf(), white.pairing_number, 1).result == '1'
-    assert tournament.boards_by_id[board.identifier].result == Result.WIN
+    assert tournament.boards_by_id[board.id].result == Result.WIN
     points = next(p for p in rating_report.players if p.id == white.pairing_number)
     assert points.points == white.points_after(3)
 
@@ -146,9 +146,7 @@ def test_a_correction_is_removed(http: TestClient, tournament: Tournament):
     assert board.white_player_id is not None
     correct(http, tournament, board, board.white_player_id, Result.DRAW)
 
-    http.delete(
-        f'/pairing/rating-correction/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
-    )
+    http.delete(f'/pairing/rating-correction/{EVENT_ID}/{tournament.id}/1/{board.id}')
 
     assert EVENT.tournament().rating_corrections == []
 
