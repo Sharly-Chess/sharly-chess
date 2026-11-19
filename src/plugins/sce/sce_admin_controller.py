@@ -1,5 +1,6 @@
-import asyncio
 import copy
+from data.journal import JournalAction
+import asyncio
 from datetime import datetime, timedelta
 from functools import cached_property
 from typing import Annotated, Any, ClassVar
@@ -694,9 +695,15 @@ class SCEAdminController(BaseAdminController):
                 resolve_sync_data,
                 plugin_data.id,
             )
+            before = copy.copy(tournament.stored_tournament)
             resolve_sync_data.augment_stored_tournament(
                 tournament.stored_tournament, event
             )
+            if tournament.stored_tournament != before:
+                tournament.record(
+                    JournalAction.TOURNAMENT_SETTINGS_CHANGED,
+                    data={'source': 'Sharly-Chess.com'},
+                )
             plugin_data.last_sync_data = resolve_sync_data
 
             plugin_data.conflict_sync_data = None

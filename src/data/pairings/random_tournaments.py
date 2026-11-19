@@ -388,6 +388,12 @@ class RandomTournamentGenerator:
 
     def generate(self, settings: TournamentSettings, uniq_id: str) -> int:
         """Build one tournament into the event ``uniq_id`` and return its id."""
+        from data.journal import not_journaled
+
+        with not_journaled('a tournament made up for testing'):
+            return self._generate(settings, uniq_id)
+
+    def _generate(self, settings: TournamentSettings, uniq_id: str) -> int:
         from data.input_output.trf.trf_importer import TrfTournamentImporter
         from data.loader import EventLoader
         from data.pairings.acceleration import BakuSwissVariation

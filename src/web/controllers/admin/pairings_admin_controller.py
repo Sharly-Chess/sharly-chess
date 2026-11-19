@@ -15,6 +15,7 @@ from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
 from data.input_output import DataSourceManager
+from data.journal import JournalAction, not_journaled
 from data.pairings.bbp_history import TeamTournamentHistory
 from data.pairings.engines import BbpPairings, ScheduledRoundRobin, TeamSwissEngine
 from data.pairings.round_robin_editor import RoundRobinScheduleEditor
@@ -1291,6 +1292,7 @@ class PairingsAdminController(BaseEventAdminController):
         if team_board is None:
             raise NotFoundException(f'Team board {team_board_id} not found.')
         await web_context.snapshot_before_breach(SnapshotReason.BEFORE_UNPAIRING)
+        tournament.record_games(JournalAction.BOARDS_UNPAIRED, round, [team_board])
         tournament.board_operations.unpair_team(team_board)
         web_context = PairingsAdminWebContext(
             request,
@@ -1520,6 +1522,7 @@ class PairingsAdminController(BaseEventAdminController):
         board = web_context.get_admin_board()
         tournament = web_context.get_admin_tournament()
         await web_context.snapshot_before_breach(SnapshotReason.BEFORE_UNPAIRING)
+        tournament.record_games(JournalAction.BOARDS_UNPAIRED, round, [board])
         tournament.board_operations.unpair([board])
 
         web_context = PairingsAdminWebContext(
@@ -1601,6 +1604,17 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament.knockout.set_team_match_winner(team_board_id, team_id or None)
+        if (team_board := tournament.team_boards_by_id.get(team_board_id)) is not None:
+            team = tournament.event.teams_by_id.get(team_id) if team_id else None
+            tournament.record(
+                JournalAction.KNOCKOUT_WINNER,
+                round,
+                team_id=team_id or None,
+                data={
+                    'board': team_board.display_number,
+                    'winner': team.name if team else None,
+                },
+            )
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, round_=round, reload_event=True
         )
@@ -1626,6 +1640,18 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament.knockout.set_player_match_winner(board_id, player_id or None)
+        if (board := tournament.boards_by_id.get(board_id)) is not None:
+            player = tournament.tournament_players_by_id.get(player_id)
+            tournament.record(
+                JournalAction.KNOCKOUT_WINNER,
+                round,
+                board_id=board_id,
+                player_id=player_id or None,
+                data={
+                    'board': board.number,
+                    'winner': player.full_name if player else None,
+                },
+            )
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, round_=round, reload_event=True
         )
@@ -1800,6 +1826,7 @@ class PairingsAdminController(BaseEventAdminController):
             self._punch_lineup_hole_for_team(
                 event, tournament, this_board, team_board, side_team, old_player_id
             )
+            side_team.record(JournalAction.LINEUP_CHANGED, round)
             return self._admin_event_pairings_render(web_context)
 
         # Fill a hole.
@@ -1816,6 +1843,7 @@ class PairingsAdminController(BaseEventAdminController):
                 this_side,
                 new_tp,
             )
+            side_team.record(JournalAction.LINEUP_CHANGED, round)
             return self._admin_event_pairings_render(web_context)
 
         new_player = event.players_by_id.get(new_player_id)
@@ -1860,6 +1888,7 @@ class PairingsAdminController(BaseEventAdminController):
             this_side,
             new_player_tp,
         )
+        side_team.record(JournalAction.LINEUP_CHANGED, round)
         return self._admin_event_pairings_render(web_context)
 
     @staticmethod
@@ -2429,6 +2458,18 @@ class PairingsAdminController(BaseEventAdminController):
             if warning is not None:
                 return warning
         tb = tournament.board_operations.pair_teams(pairing_round, team.id)
+        tournament.record(
+            JournalAction.BOARD_PAIRED,
+            pairing_round,
+            team_id=team.id,
+            data={
+                'games': [
+                    [exempt_team.name, team.name]
+                    if exempt_team is not None
+                    else [team.name, None]
+                ]
+            },
+        )
         if exempt_team is not None:
             message = _(
                 'Team [{team}] has been paired against [{opponent}] at board #{board}.'
@@ -2509,6 +2550,20 @@ class PairingsAdminController(BaseEventAdminController):
                 exempt_tournament_player.id,
                 tournament_player.id,
             )
+            tournament.record(
+                JournalAction.BOARD_PAIRED,
+                pairing_round,
+                board_id=board.id,
+                player_id=tournament_player.id,
+                data={
+                    'games': [
+                        [
+                            exempt_tournament_player.full_name,
+                            tournament_player.full_name,
+                        ]
+                    ]
+                },
+            )
             message = _(
                 'Player [{player}] has been paired against '
                 '[{opponent}] at board #{board}.'
@@ -2525,10 +2580,17 @@ class PairingsAdminController(BaseEventAdminController):
                 )
                 if warning is not None:
                     return warning
-            tournament.board_operations.pair(
+            board = tournament.board_operations.pair(
                 pairing_round,
                 tournament_player.id,
                 None,
+            )
+            tournament.record(
+                JournalAction.BOARD_PAIRED,
+                pairing_round,
+                board_id=board.id,
+                player_id=tournament_player.id,
+                data={'games': [[tournament_player.full_name, None]]},
             )
             message = _('Pairing-Allocated Bye assigned to player [{player}].').format(
                 player=tournament_player.full_name
@@ -2597,6 +2659,20 @@ class PairingsAdminController(BaseEventAdminController):
                 index = tournament.board_operations.first_unused_index(pairing_round)
             tournament.board_operations.create_flat_manual(
                 pairing_round, white_id, black_id, index
+            )
+            tournament.record(
+                JournalAction.BOARD_PAIRED,
+                pairing_round,
+                data={
+                    'games': [
+                        [
+                            tournament.tournament_players_by_id[player_id].full_name
+                            if player_id is not None
+                            else None
+                            for player_id in (white_id, black_id)
+                        ]
+                    ]
+                },
             )
             Message.success(request, _('Pairing added.'))
         except (SharlyChessException, ValueError, KeyError, IndexError) as error:
@@ -2803,18 +2879,23 @@ class PairingsAdminController(BaseEventAdminController):
                 round_,
                 True,
             )
+            unpaired_count = 0
+            round_has_pab = False
+            if not error:
+                tournament.record_round_paired(round_, partial=True)
+                unpaired_count = sum(
+                    player.pairings[round_].needs_pairing
+                    for player in tournament.tournament_players
+                )
+                round_has_pab = tournament.round_has_pab(round_)
         if error:
             Message.error(request, error)
         else:
-            unpaired_count = sum(
-                player.pairings[round_].needs_pairing
-                for player in tournament.tournament_players
-            )
             if unpaired_count:
                 if unpaired_count == 1:
                     reason = (
                         _('PAB is already assigned')
-                        if tournament.round_has_pab(round_)
+                        if round_has_pab
                         else _('player already received a PAB in a previous round')
                     )
                 else:
@@ -2854,6 +2935,7 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament, round_
             ):
                 return error
+            tournament.record_round_paired(round_)
         return ''
 
     @post(
@@ -2952,6 +3034,7 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament.id,
             )
             tournament.board_operations.unpair(web_context.admin_boards)
+            tournament.record(JournalAction.ROUND_UNPAIRED, round)
             # A fully-unpaired round loses its prohibited-pairing snapshot;
             # re-pairing writes a fresh one.
             with EventDatabase(tournament.event.uniq_id, True) as database:
@@ -2984,6 +3067,7 @@ class PairingsAdminController(BaseEventAdminController):
             tournament_id=tournament.id,
         )
         tournament.board_operations.unpair(list(tournament.boards_by_id.values()))
+        tournament.record(JournalAction.ROUND_UNPAIRED, data={'all': True})
         if (manual_pairing_round := tournament.manual_pairing_round) is not None:
             tournament.cancel_manual_pairing(manual_pairing_round)
 
@@ -3479,37 +3563,39 @@ class PairingsAdminController(BaseEventAdminController):
             for board in tournament.get_round_boards(round)
             if board.stored_board.black_player_id is not None and not board.no_result
         }
-        tournament.board_operations.unpair(tournament.get_round_boards(round))
-        tournament = PairingsAdminWebContext(
-            request, tournament_id, round, reload_event=True
-        ).get_admin_tournament()
-        if start_boards:
-            tournament.board_operations.create(
-                [stored_board for stored_board, _result in start_boards],
-                round,
-                tournament.pairing_variation.engine.pab_result,
-            )
+        with not_journaled('the round put back as it was, journaled as one'):
+            tournament.board_operations.unpair(tournament.get_round_boards(round))
             tournament = PairingsAdminWebContext(
                 request, tournament_id, round, reload_event=True
             ).get_admin_tournament()
-            for stored_board, start_result in start_boards:
-                if stored_board.black_player_id is None:
-                    continue
-                pair = (stored_board.white_player_id, stored_board.black_player_id)
-                result = result_by_pair.get(pair, start_result)
-                if result == Result.NO_RESULT:
-                    continue
-                board = next(
-                    board
-                    for board in tournament.get_round_boards(round)
-                    if (
-                        board.stored_board.white_player_id,
-                        board.stored_board.black_player_id,
-                    )
-                    == pair
+            if start_boards:
+                tournament.board_operations.create(
+                    [stored_board for stored_board, _result in start_boards],
+                    round,
+                    tournament.pairing_variation.engine.pab_result,
                 )
-                tournament.add_result(board, result)
-        tournament.end_manual_pairing()
+                tournament = PairingsAdminWebContext(
+                    request, tournament_id, round, reload_event=True
+                ).get_admin_tournament()
+                for stored_board, start_result in start_boards:
+                    if stored_board.black_player_id is None:
+                        continue
+                    pair = (stored_board.white_player_id, stored_board.black_player_id)
+                    result = result_by_pair.get(pair, start_result)
+                    if result == Result.NO_RESULT:
+                        continue
+                    board = next(
+                        board
+                        for board in tournament.get_round_boards(round)
+                        if (
+                            board.stored_board.white_player_id,
+                            board.stored_board.black_player_id,
+                        )
+                        == pair
+                    )
+                    tournament.add_result(board, result)
+            tournament.end_manual_pairing()
+        tournament.record(JournalAction.MANUAL_PAIRING_CANCELLED, round)
         Message.success(
             request,
             _('The pairings of round {round} are back as they were.').format(
@@ -5437,6 +5523,17 @@ class PairingsAdminController(BaseEventAdminController):
                 database.set_tournament_players_manual_tiebreak(
                     tournament_id, players_to_update
                 )
+                tournament.record(
+                    JournalAction.MANUAL_TIE_BREAKS_SET,
+                    tournament.current_round or None,
+                    data={
+                        'players': [
+                            tournament.tournament_players_by_id[player_id].full_name
+                            for player_id, value in players_to_update.items()
+                            if value is not None
+                        ]
+                    },
+                )
 
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, reload_event=True
@@ -5459,6 +5556,14 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         with EventDatabase(event_uniq_id, True) as database:
             tournament.tie_break_configuration.delete_manual_values(database)
+            if any(
+                player.manual_tiebreak is not None
+                for player in tournament.tournament_players
+            ):
+                tournament.record(
+                    JournalAction.MANUAL_TIE_BREAKS_RESET,
+                    tournament.current_round or None,
+                )
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, reload_event=True
         )

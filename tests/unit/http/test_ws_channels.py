@@ -185,3 +185,24 @@ def test_a_result_changes_nothing_on_screens_beyond_its_boards(
             f'new-user-results|{EVENT_ID}',
             'end',
         ]
+
+
+@pytest.mark.unit
+def test_a_journal_entry_is_announced_to_the_administration_pages(
+    http: TestClient, tournament: Tournament
+) -> None:
+    with http.websocket_connect(f'/ws/event/{EVENT_ID}') as socket:
+        wait_until_subscribed(http, socket)
+        http.post(f'/event/{EVENT_ID}/journal/note', data={'text': 'A remark'})
+        assert receive(socket)['event'] == f'journal-changed|{EVENT_ID}'
+
+
+@pytest.mark.unit
+def test_a_journal_entry_is_not_announced_to_the_screens(
+    http: TestClient, tournament: Tournament
+) -> None:
+    with http.websocket_connect(f'/ws/event/{EVENT_ID}/screens') as socket:
+        wait_until_subscribed(http, socket)
+        http.post(f'/event/{EVENT_ID}/journal/note', data={'text': 'A remark'})
+        publish(http, 'end', EVENT_ID)
+        assert receive(socket)['event'] == 'end'

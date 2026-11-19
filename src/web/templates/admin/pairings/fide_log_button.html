@@ -2,8 +2,8 @@
 {% set log_count = admin_tournament.log_entries | length %}
 {% if (admin_tournament.pairing_system.logs_pairing_breaches and (log_count or admin_tournament.fide_mode_exit_round)) or (schedule_editor and log_count) %}
     {% call components.button(
-        _('Log'),
-        icon='bi-journal-text',
+        _('Deviations'),
+        icon='bi-exclamation-diamond',
         tooltip=_('What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report.'),
         attrs={
             'hx-get': url_for(
@@ -19,7 +19,7 @@
             'hx-indicator': '#please-wait',
         },
     ) %}
-        {{ _('Log') }}
+        {{ _('Deviations') }}
         {% if log_count %}
             {{ components.badge('warning', log_count, pill=true) }}
         {% endif %}

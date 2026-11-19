@@ -22,6 +22,12 @@ def event_channel(event_uniq_id: str) -> str:
     return f'event:{event_uniq_id}'
 
 
+def event_admin_channel(event_uniq_id: str) -> str:
+    """The channel of the events only the administration pages of an event
+    follow, not its screens."""
+    return f'event:{event_uniq_id}:admin'
+
+
 def publish_ws_event(
     event: str,
     detail: Mapping[str, object] | None = None,
@@ -51,6 +57,7 @@ _changed_tournament_ids: defaultdict[str, set[int]] = defaultdict(set)
 _changed_screens: set[str] = set()
 _announced_tournament_ids: defaultdict[str, set[int]] = defaultdict(set)
 _announced_screens: set[str] = set()
+_journal_changed: set[str] = set()
 _flush_scheduled: bool = False
 
 
@@ -96,6 +103,8 @@ def _flush_changes() -> None:
         for event_uniq_id, tournament_ids in _changed_tournament_ids.items()
     }
     screens = _changed_screens - _announced_screens
+    journals = set(_journal_changed)
+    _journal_changed.clear()
     _changed_tournament_ids.clear()
     _changed_screens.clear()
     _announced_tournament_ids.clear()
@@ -116,6 +125,23 @@ def _flush_changes() -> None:
             {'event': f'screens-changed|{event_uniq_id}', 'data': ''},
             [event_channel(event_uniq_id)],
         )
+    for event_uniq_id in journals:
+        channels_plugin.publish(
+            {'event': f'journal-changed|{event_uniq_id}', 'data': ''},
+            [event_admin_channel(event_uniq_id)],
+        )
+
+
+def notify_journal_changed(event_uniq_id: str) -> None:
+    """Records that entries were written to the journal of the event
+    *event_uniq_id*, announced once with the other changes. May be called from
+    any thread."""
+
+    def record() -> None:
+        _journal_changed.add(event_uniq_id)
+        _schedule_flush()
+
+    _on_server_loop(record)
 
 
 def notify_changes(

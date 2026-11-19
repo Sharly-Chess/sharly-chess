@@ -70,6 +70,7 @@ class AuthAction(StrEnum):
     RENAME_EVENT = auto()
     UPDATE_EVENT = auto()
     VIEW_EVENT_CONFIG = auto()
+    VIEW_JOURNAL = auto()
 
     # Access
     MANAGE_ACCOUNTS = auto()
@@ -147,6 +148,7 @@ class AuthAction(StrEnum):
                 | AuthAction.RENAME_EVENT
                 | AuthAction.UPDATE_EVENT
                 | AuthAction.VIEW_EVENT_CONFIG
+                | AuthAction.VIEW_JOURNAL
             ):
                 return AuthActionCategory.EVENTS
             case AuthAction.MANAGE_ACCOUNTS:
@@ -233,6 +235,8 @@ class AuthAction(StrEnum):
                 return _('Update event', locale)
             case AuthAction.VIEW_EVENT_CONFIG:
                 return _('View event configuration', locale)
+            case AuthAction.VIEW_JOURNAL:
+                return _('View the journal of the event and write notes in it', locale)
             case AuthAction.MANAGE_ACCOUNTS:
                 return _('Manage accounts', locale)
             case AuthAction.VIEW_TOURNAMENTS_TAB:

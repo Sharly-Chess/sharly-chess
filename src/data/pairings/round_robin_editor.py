@@ -3,6 +3,7 @@ seat by seat, then saved once it keeps the round-robin rules. The games
 already played cannot be changed; in a team round-robin, neither can the
 rounds already paired, whose lineups are set."""
 
+from data.journal import JournalAction, not_journaled
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -138,9 +139,10 @@ class RoundRobinScheduleEditor:
         self._set_draft(self._initial_draft())
 
     def cancel(self) -> None:
-        self.tournament.set_round_robin_schedule(
-            self.tournament.round_robin_schedule, None
-        )
+        with not_journaled('a draft of the schedule'):
+            self.tournament.set_round_robin_schedule(
+                self.tournament.round_robin_schedule, None
+            )
 
     def can_force(self, violations: list[ScheduleViolation]) -> bool:
         """Whether a schedule breaking the rules with *violations* can be
@@ -169,13 +171,17 @@ class RoundRobinScheduleEditor:
                     'The schedule changes games already played in round {round}.'
                 ).format(round=round_)
         tournament = self.tournament
-        if self.follows_berger_tables and draft != self.engine.berger_schedule(
-            tournament
-        ):
-            tournament.set_pairing_variation(self._custom_variation_id)
-        tournament.set_round_robin_schedule(draft, None)
-        if not self.is_team:
-            self._pair_from(draft)
+        with not_journaled('the steps of the schedule saved, journaled as one'):
+            if self.follows_berger_tables and draft != self.engine.berger_schedule(
+                tournament
+            ):
+                tournament.set_pairing_variation(self._custom_variation_id)
+            tournament.set_round_robin_schedule(draft, None)
+            if not self.is_team:
+                self._pair_from(draft)
+        tournament.record(
+            JournalAction.ROUND_ROBIN_SCHEDULE_SAVED, tournament.current_round or None
+        )
         return None
 
     @property
@@ -197,9 +203,10 @@ class RoundRobinScheduleEditor:
         return CustomRoundRobinVariation.static_id()
 
     def _set_draft(self, draft: RoundRobinSchedule) -> None:
-        self.tournament.set_round_robin_schedule(
-            self.tournament.round_robin_schedule, draft
-        )
+        with not_journaled('a draft of the schedule'):
+            self.tournament.set_round_robin_schedule(
+                self.tournament.round_robin_schedule, draft
+            )
 
     def _refitted(self, schedule: RoundRobinSchedule) -> RoundRobinSchedule:
         """*schedule*, made for other participants, for those of the

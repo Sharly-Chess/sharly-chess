@@ -241,6 +241,14 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-person-lock',
                 },
             }
+        if self.client.can_view_journal:
+            nav_tabs |= {
+                'admin-event-journal-tab': {
+                    'title': _('Journal'),
+                    'template': 'journal/tab.html',
+                    'icon_class': 'bi-journal-text',
+                },
+            }
         if self.client.can_publish_results:
             event = self.get_admin_event()
             per_plugin_data_transfer_items = plugin_manager.hook_for_event(

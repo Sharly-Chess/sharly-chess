@@ -955,6 +955,12 @@ msgstr "Ajouter un groupe à la liste"
 msgid "Add a new affiliation to the options."
 msgstr "Ajouter une nouvelle affiliation aux options."
 
+msgid "Add a note"
+msgstr "Ajouter une remarque"
+
+msgid "Add a note to the journal"
+msgstr "Ajouter une remarque au journal"
+
 msgid "Add a permission to the account."
 msgstr "Ajouter une permission au compte."
 
@@ -1041,6 +1047,9 @@ msgstr "L'ajout d'un·e joueur·euse trouvé·e dans une autre liste et la véri
 
 msgid "Additional information"
 msgstr "Informations complémentaires"
+
+msgid "Address"
+msgstr "Adresse"
 
 msgid "Adjourned"
 msgstr "Ajournée"
@@ -1204,6 +1213,9 @@ msgstr "Tou·tes les joueur·euses du tournoi sélectionné seront supprimé·es
 msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·es « {status} »."
 
+msgid "All the rounds unpaired"
+msgstr "Toutes les rondes désappariées"
+
 msgid "All the tables"
 msgstr "Toutes les tables"
 
@@ -1316,6 +1328,9 @@ msgstr "Angola"
 
 msgid "Anonymous"
 msgstr "Anonyme"
+
+msgid "Another device"
+msgstr "Autre appareil"
 
 #, python-brace-format
 msgid "Another hour is already set at {time} on {timers}."
@@ -1572,6 +1587,10 @@ msgstr "URL de l'image de fond :"
 #, python-brace-format
 msgid "Backup of event [{uniq_id}] taken at {time}."
 msgstr "Sauvegarde de l'évènement [{uniq_id}] effectuée à {time}."
+
+#, python-brace-format
+msgid "Backup of {date} restored"
+msgstr "Sauvegarde du {date} restaurée"
 
 msgid "Backups"
 msgstr "Sauvegardes"
@@ -1887,6 +1906,10 @@ msgstr "Numéro d'échiquier"
 msgid "Board numbers:"
 msgstr "Numéros des échiquiers :"
 
+#, python-brace-format
+msgid "Board order of team {team} changed"
+msgstr "Ordre des échiquiers de l'équipe {team} modifié"
+
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
 
@@ -1896,6 +1919,30 @@ msgstr "Sélection des échiquiers :"
 #, python-format
 msgid "Board sets of screen %(screen_name)s"
 msgstr "Ensembles d'échiquiers de l'écran %(screen_name)s"
+
+#, python-brace-format
+msgid "Board {board}: colours swapped, now {white} – {black}"
+msgstr "Échiquier {board} : couleurs inversées, désormais {white} – {black}"
+
+#, python-brace-format
+msgid "Board {board}: winner no longer designated"
+msgstr "Échiquier {board} : vainqueur·e plus désigné·e"
+
+#, python-brace-format
+msgid "Board {board}: {white} – {black}, result changed from {old} to {new}"
+msgstr "Échiquier {board} : {white} – {black}, résultat modifié de {old} en {new}"
+
+#, python-brace-format
+msgid "Board {board}: {white} – {black}, result {new}"
+msgstr "Échiquier {board} : {white} – {black}, résultat {new}"
+
+#, python-brace-format
+msgid "Board {board}: {white} – {black}, result {old} cleared"
+msgstr "Échiquier {board} : {white} – {black}, résultat {old} effacé"
+
+#, python-brace-format
+msgid "Board {board}: {winner} designated as the winner"
+msgstr "Échiquier {board} : {winner} désigné·e vainqueur·e"
 
 #, python-brace-format
 msgid "Board {number}"
@@ -2308,6 +2355,12 @@ msgstr "Vérifier les classements avec les listes"
 msgid "Check-in"
 msgstr "Pointage"
 
+msgid "Check-in closed"
+msgstr "Pointage fermé"
+
+msgid "Check-in opened"
+msgstr "Pointage ouvert"
+
 msgid "Check-in players"
 msgstr "Pointer les joueur·euses"
 
@@ -2707,6 +2760,10 @@ msgstr "Corrigez les paramètres d'appariement avant d'imprimer les règles."
 
 msgid "Correction"
 msgstr "Correction"
+
+#, python-brace-format
+msgid "Correction for the rating report removed: {white} – {black}"
+msgstr "Correction pour le rapport Elo retirée : {white} – {black}"
 
 #, python-brace-format
 msgid "Correction logged: {correction}"
@@ -3225,6 +3282,9 @@ msgstr "Supprimer les joueur·euses existant·es"
 msgid "Delete the menu."
 msgstr "Supprimer le menu."
 
+msgid "Delete the note"
+msgstr "Supprimer la remarque"
+
 msgid "Delete the paged screen."
 msgstr "Supprimer l'écran paginé."
 
@@ -3254,6 +3314,9 @@ msgstr "Supprimer cette catégorie de Grand Prix ?"
 
 msgid "Delete this championship."
 msgstr "Supprimer ce Grand Prix."
+
+msgid "Delete this note?"
+msgstr "Supprimer cette remarque ?"
 
 msgid "Delete this rule."
 msgstr "Supprimer cette règle."
@@ -3321,6 +3384,9 @@ msgstr "Détailler la grille par joueur·euse (une ligne par joueur·euse, résu
 
 msgid "Details"
 msgstr "Détails"
+
+msgid "Deviations"
+msgstr "Écarts"
 
 msgid "Different for White / Black"
 msgstr "Différent pour Blancs / Noirs"
@@ -3485,6 +3551,9 @@ msgstr "Télécharger le document au format Word, avec les valeurs saisies dans 
 
 msgid "Download the players matching the search into a file."
 msgstr "Télécharger un fichier contenant les joueur·euses correspondant à la recherche."
+
+msgid "Download the whole journal as a spreadsheet (CSV)."
+msgstr "Télécharger tout le journal sous forme de tableur (CSV)."
 
 msgid "Download tournament fees"
 msgstr "Télécharger les droits d'homologation"
@@ -3694,6 +3763,9 @@ msgstr "Ex.: Championnat du monde"
 
 msgid "E.g.: Youth"
 msgstr "Ex. : Jeunes"
+
+msgid "E.g.: appeal on board 12, result confirmed after hearing both players"
+msgstr "Ex. : réclamation sur l'échiquier 12, résultat confirmé après avoir entendu les deux joueur·euses"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
@@ -3905,6 +3977,15 @@ msgstr "Modifier le chronomètre"
 msgid "Edit tournament"
 msgstr "Modifier le tournoi"
 
+msgid "Editing of the pairings cancelled, the round put back as it was"
+msgstr "Modification des appariements annulée, la ronde remise comme elle était"
+
+msgid "Editing of the pairings started"
+msgstr "Modification des appariements commencée"
+
+msgid "Editing of the pairings validated"
+msgstr "Modification des appariements validée"
+
 msgid "Editor mode"
 msgstr "Mode d’édition"
 
@@ -4049,14 +4130,27 @@ msgstr "Évènement et tournoi"
 msgid "Event content"
 msgstr "Contenu de l'évènement"
 
+msgid "Event created"
+msgstr "Évènement créé"
+
+#, python-brace-format
+msgid "Event created as a copy of [{event}]"
+msgstr "Évènement créé comme copie de [{event}]"
+
 msgid "Event export"
 msgstr "Export d'évènement"
+
+msgid "Event imported"
+msgstr "Évènement importé"
 
 msgid "Event name"
 msgstr "Nom de l'évènement"
 
 msgid "Event not found"
 msgstr "Événement introuvable"
+
+msgid "Event settings changed"
+msgstr "Paramètres de l'évènement modifiés"
 
 msgid "Event tournaments"
 msgstr "Tournois de l'évènement"
@@ -4088,6 +4182,18 @@ msgstr "Tous les écrans, menus et écrans rotatifs"
 
 msgid "Every seat whose game has not been played will be emptied."
 msgstr "Toutes les places dont la partie n'a pas été jouée seront libérées."
+
+msgid "Everyone"
+msgstr "Tout le monde"
+
+msgid "Everything"
+msgstr "Tout"
+
+msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
+msgstr "Tout ce qui est fait sur l'évènement (résultats, appariements, joueur·euses, tournois) est inscrit ici, avec quand et par qui."
+
+msgid "Everywhere"
+msgstr "Partout"
 
 msgid "Example"
 msgstr "Exemple"
@@ -4248,6 +4354,9 @@ msgstr "Liste FIDE : {ratings}"
 
 msgid "FIDE mode"
 msgstr "Mode FIDE"
+
+msgid "FIDE mode left"
+msgstr "Mode FIDE quitté"
 
 #, python-format
 msgid "FIDE mode was left at round %(round)d."
@@ -4471,6 +4580,10 @@ msgstr "Pour le rapport Elo : {corrected} au lieu de {used}."
 #, python-brace-format
 msgid "For the rating report: {corrected}."
 msgstr "Pour le rapport Elo : {corrected}."
+
+#, python-brace-format
+msgid "For the rating report: {white} – {black} {result}"
+msgstr "Pour le rapport Elo : {white} – {black} {result}"
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
@@ -5086,6 +5199,9 @@ msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
 msgid "Include teams and players"
 msgstr "Inclure les équipes et les joueur·euses"
 
+msgid "Include the journal (what was done, when and by whom)"
+msgstr "Inclure le journal (ce qui a été fait, quand et par qui)"
+
 msgid "Includes adjourned games, counted as draws."
 msgstr "Comprend des parties ajournées, comptées comme nulles."
 
@@ -5386,6 +5502,9 @@ msgstr "Jersey"
 msgid "Jordan"
 msgstr "Jordanie"
 
+msgid "Journal"
+msgstr "Journal"
+
 msgctxt "july"
 msgid "Jul"
 msgstr "Juil"
@@ -5613,6 +5732,10 @@ msgstr[1] "Limite {operator} {count} demi-points"
 msgid "Line not recognized: {line}"
 msgstr "Ligne non reconnue : {line}"
 
+#, python-brace-format
+msgid "Line-up of {team} changed"
+msgstr "Composition de {team} modifiée"
+
 msgid "Lineup"
 msgstr "Composition"
 
@@ -5645,6 +5768,9 @@ msgstr "Lituanie"
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
 
+msgid "Loading…"
+msgstr "Chargement…"
+
 msgid "Lobby rotator"
 msgstr "Écran rotatif du hall"
 
@@ -5656,9 +5782,6 @@ msgstr "Lieu"
 
 msgid "Locked: team is already paired."
 msgstr "Verrouillé : l'équipe est déjà appariée."
-
-msgid "Log"
-msgstr "Journal"
 
 msgid "Log in"
 msgstr "Connexion"
@@ -5826,6 +5949,13 @@ msgstr "Appariement manuel"
 
 msgid "Manual tie-break"
 msgstr "Départage manuel"
+
+#, python-brace-format
+msgid "Manual tie-break set for {players}"
+msgstr "Départage manuel pour {players}"
+
+msgid "Manual tie-breaks reset"
+msgstr "Départages manuels réinitialisés"
 
 msgid "Manually pair players"
 msgstr "Appairer des joueur·euses manuellement"
@@ -6836,6 +6966,9 @@ msgstr "N° {number}"
 msgid "No. {number} ({name})"
 msgstr "N° {number} ({name})"
 
+msgid "Nobody"
+msgstr "Personne"
+
 msgid "Nobody is kept apart."
 msgstr "Personne n'est séparé·e."
 
@@ -6864,6 +6997,9 @@ msgstr "Aucune"
 
 msgid "None (no colour preferences)"
 msgstr "Aucune (pas de préférences de couleur)"
+
+msgid "None in particular"
+msgstr "Aucun en particulier"
 
 msgid "None, the player is unrated for FIDE."
 msgstr "Aucun, le·la joueur·euse n'est pas classé·e FIDE."
@@ -6978,6 +7114,9 @@ msgstr "Remarque"
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
 
+msgid "Notes"
+msgstr "Remarques"
+
 msgctxt "notes column header"
 msgid "Notes"
 msgstr "Notes"
@@ -6987,6 +7126,9 @@ msgstr "Rien de plus — laisser les équipes à égalité"
 
 msgid "Nothing has been recorded."
 msgstr "Rien n'a été enregistré."
+
+msgid "Nothing matches these filters"
+msgstr "Rien ne correspond à ces filtres"
 
 msgid "Nothing to show"
 msgstr "Rien à afficher"
@@ -7077,6 +7219,10 @@ msgstr "Nombre de rondes ({rounds}) lu dans XXR."
 #, python-brace-format
 msgid "Number of rounds changed from {before} to {after}."
 msgstr "Nombre de rondes passé de {before} à {after}."
+
+#, python-brace-format
+msgid "Number of rounds changed from {old} to {new}"
+msgstr "Nombre de rondes modifié de {old} à {new}"
 
 #, python-brace-format
 msgid "Number of rounds set to {rounds}, from the rounds in the file: the file does not give it."
@@ -7527,6 +7673,10 @@ msgstr "Apparié·es"
 msgid "Paired against: %(opponent_name)s"
 msgstr "Apparié·e contre : %(opponent_name)s"
 
+#, python-brace-format
+msgid "Paired by hand: {boards}"
+msgstr "Apparié à la main : {boards}"
+
 msgid "Pairing"
 msgstr "Appariement"
 
@@ -7596,11 +7746,18 @@ msgstr "Règles d'appariement enfreintes"
 msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
 
+msgid "Pairing settings changed"
+msgstr "Paramètres d'appariement modifiés"
+
 msgid "Pairing style:"
 msgstr "Format d’appariement :"
 
 msgid "Pairing system"
 msgstr "Système d'appariements"
+
+#, python-brace-format
+msgid "Pairing system changed from {old} to {new}"
+msgstr "Système d'appariements modifié de {old} en {new}"
 
 #, python-brace-format
 msgid "Pairing system set to FIDE Dutch: {reason}."
@@ -8021,6 +8178,9 @@ msgstr "Joueur·euses dans ce groupe à la ronde n°1 : {0} (nombre impair)."
 msgid "Players in this group at round #1: {0}."
 msgstr "Joueur·euses dans ce groupe à la ronde n°1 : {0}."
 
+msgid "Players left out of the round paired"
+msgstr "Joueur·euses restant·es de la ronde apparié·es"
+
 #, python-format
 msgid "Players of category [%(category)s]"
 msgstr "Joueur·euses de la catégorie [%(category)s]"
@@ -8033,6 +8193,9 @@ msgstr "Joueur·euses par match d'équipe :"
 
 msgid "Players per tournament"
 msgstr "Joueur·euses par tournoi"
+
+msgid "Players renumbered"
+msgstr "Joueur·euses renuméroté·es"
 
 #, python-format
 msgid "Players rewarded (%%):"
@@ -8227,6 +8390,9 @@ msgstr "Merci de valider la cadence avant de continuer."
 
 msgid "Please wait…"
 msgstr "Veuillez patienter…"
+
+msgid "Please write the note."
+msgstr "Veuillez écrire la remarque."
 
 msgid "Plug a projector or a monitor into the computer running Sharly Chess: no network needed."
 msgstr "Branchez un vidéoprojecteur ou un écran sur l'ordinateur où tourne Sharly Chess : aucun réseau nécessaire."
@@ -8484,6 +8650,9 @@ msgstr "Interdit en mode FIDE"
 
 msgid "Prohibited pairings"
 msgstr "Protections d'appariement"
+
+msgid "Prohibited pairings changed"
+msgstr "Protections d'appariement modifiées"
 
 msgid "Projector plugged into this computer"
 msgstr "Vidéoprojecteur branché sur cet ordinateur"
@@ -9255,8 +9424,14 @@ msgstr "La ronde satisfait 1.5.6a ?"
 msgid "Round of {count}"
 msgstr "{matches}es de finale"
 
+msgid "Round paired"
+msgstr "Ronde appariée"
+
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
+
+msgid "Round published"
+msgstr "Ronde publiée"
 
 msgid "Round time"
 msgstr "Heure de la ronde"
@@ -9266,6 +9441,12 @@ msgstr "Arrondir au point entier"
 
 msgid "Round to a half point"
 msgstr "Arrondir au demi-point"
+
+msgid "Round unpaired"
+msgstr "Ronde désappariée"
+
+msgid "Round unpublished"
+msgstr "Ronde dépubliée"
 
 #, python-brace-format
 msgid "Round {round}"
@@ -9350,6 +9531,9 @@ msgstr "Les écrans de grille toutes-rondes montrent chaque joueur·euse d'un to
 
 msgid "Round-robin schedule"
 msgstr "Calendrier toutes-rondes"
+
+msgid "Round-robin schedule saved"
+msgstr "Grille du toutes-rondes enregistrée"
 
 #, python-format
 msgid "Round: %(round)d"
@@ -9610,6 +9794,10 @@ msgstr "L'écran [{screen_uniq_id}] a été envoyé au canal [{display_controlle
 #, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr "L'écran [{screen_uniq_id}] a été modifié."
+
+#, python-brace-format
+msgid "Screen [{screen}]"
+msgstr "Écran [{screen}]"
 
 msgid "Screen configuration has been updated."
 msgstr "La configuration des écrans a été mise à jour."
@@ -9922,6 +10110,9 @@ msgstr "Prix partagés"
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
+msgid "Sharly Chess"
+msgstr "Sharly Chess"
+
 msgid "Sharly Chess is already open"
 msgstr "Sharly Chess est déjà en cours d'exécution"
 
@@ -10219,6 +10410,18 @@ msgstr "Superposition"
 msgid "Staff"
 msgstr "Staff"
 
+#, python-brace-format
+msgid "Staff account {account} created"
+msgstr "Compte du staff {account} créé"
+
+#, python-brace-format
+msgid "Staff account {account} deleted"
+msgstr "Compte du staff {account} supprimé"
+
+#, python-brace-format
+msgid "Staff account {account} modified"
+msgstr "Compte du staff {account} modifié"
+
 msgid "Staff default configuration"
 msgstr "Staff configuré par défaut"
 
@@ -10500,6 +10703,9 @@ msgstr "L'équipe [{team}] compte {count} joueur·euses, plus que les {max} auto
 msgid "Team [{team}] is full ({max} players max)."
 msgstr "L'équipe [{team}] est complète ({max} joueur·euses maximum)."
 
+msgid "Team affiliations changed"
+msgstr "Affiliations des équipes modifiées"
+
 msgid "Team captain."
 msgstr "Capitaine de l'équipe."
 
@@ -10561,6 +10767,42 @@ msgstr "Un fichier de tournoi par équipes ne peut pas être importé dans un é
 msgid "Team tournament file in an individual event — create a team event first."
 msgstr "Fichier de tournoi par équipes dans un événement individuel — créer d'abord un événement par équipes."
 
+#, python-brace-format
+msgid "Team {old} renamed {new}"
+msgstr "Équipe {old} renommée {new}"
+
+#, python-brace-format
+msgid "Team {team} added"
+msgstr "Équipe {team} ajoutée"
+
+#, python-brace-format
+msgid "Team {team} checked in"
+msgstr "Équipe {team} pointée"
+
+#, python-brace-format
+msgid "Team {team} checked out"
+msgstr "Équipe {team} dépointée"
+
+#, python-brace-format
+msgid "Team {team} deleted"
+msgstr "Équipe {team} supprimée"
+
+#, python-brace-format
+msgid "Team {team} entered in [{new}]"
+msgstr "Équipe {team} inscrite dans [{new}]"
+
+#, python-brace-format
+msgid "Team {team} modified"
+msgstr "Équipe {team} modifiée"
+
+#, python-brace-format
+msgid "Team {team} moved from [{old}] to [{new}]"
+msgstr "Équipe {team} déplacée de [{old}] vers [{new}]"
+
+#, python-brace-format
+msgid "Team {team} taken out of [{old}]"
+msgstr "Équipe {team} retirée de [{old}]"
+
 msgid "Team's score"
 msgstr "Score de l'équipe"
 
@@ -10583,6 +10825,9 @@ msgstr "Équipes de %(first)s à %(last)s"
 
 msgid "Teams not assigned to a tournament"
 msgstr "Équipes non assignées à un tournoi"
+
+msgid "Teams renumbered"
+msgstr "Équipes renumérotées"
 
 msgid "Teams still tied"
 msgstr "Équipes encore à égalité"
@@ -10917,6 +11162,9 @@ msgstr "Les horaires suivent déjà le calendrier."
 msgid "The image is too large (max 2 MB)."
 msgstr "L'image est trop volumineuse (max. 2 Mo)."
 
+msgid "The journal is empty"
+msgstr "Le journal est vide"
+
 msgid "The label used for this paged screen in menus. Its range is appended automatically."
 msgstr "Le libellé utilisé pour cet écran paginé dans les menus. Sa plage est ajoutée automatiquement."
 
@@ -11020,6 +11268,12 @@ msgstr "Le nouveau dossier ne peut être un sous-dossier do dossier actuel."
 
 msgid "The new folder is in use, but the backups already taken could not be moved to it. They are still in the previous folder."
 msgstr "Le nouveau dossier est utilisé, mais les sauvegardes déjà effectuées n'ont pas pu y être déplacées. Elles sont toujours dans le dossier précédent."
+
+msgid "The note has been added to the journal."
+msgstr "La remarque a été ajoutée au journal."
+
+msgid "The note has been deleted."
+msgstr "La remarque a été supprimée."
 
 msgid "The number of boards per page, optional (the number of pages adapts to the number of boards)."
 msgstr "Le nombre d'échiquiers par page, facultatif (le nombre de pages s'adapte au nombre d'échiquiers)."
@@ -12054,9 +12308,16 @@ msgstr "Départages"
 msgid "Tie-breaks are managed by rule set \"{name}\". Change the rule set on the tournament to edit them."
 msgstr "Les départages sont gérés par le jeu de règles « {name} ». Changez le jeu de règles du tournoi pour les modifier."
 
+msgid "Tie-breaks changed"
+msgstr "Départages modifiés"
+
 #, python-brace-format
 msgid "Tie-breaks changed from {before} to {after}."
 msgstr "Départages modifiés de {before} en {after}."
+
+#, python-brace-format
+msgid "Tie-breaks changed from {old} to {new}"
+msgstr "Départages modifiés de {old} en {new}"
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr "Les départages déterminent le classement des joueur·euses ayant le même nombre de points."
@@ -12233,6 +12494,10 @@ msgid "Tournament [%(tournament)s] will leave FIDE mode for good: it can never r
 msgstr "Le tournoi [%(tournament)s] quittera définitivement le mode FIDE : il ne pourra jamais y revenir."
 
 #, python-brace-format
+msgid "Tournament [{old}] renamed [{new}]"
+msgstr "Tournoi [{old}] renommé [{new}]"
+
+#, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
 
@@ -12264,6 +12529,12 @@ msgstr "Le tournoi [{tournament}] a quitté le mode FIDE."
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
+msgid "Tournament created"
+msgstr "Tournoi créé"
+
+msgid "Tournament deleted"
+msgstr "Tournoi supprimé"
+
 msgid "Tournament export"
 msgstr "Export de tournoi"
 
@@ -12275,6 +12546,14 @@ msgstr[1] "{count} tournois générés à partir de la graine {seed}."
 
 msgid "Tournament has no team-player count configured."
 msgstr "Le tournoi n'a pas de nombre de joueur·euses par équipe configuré."
+
+#, python-brace-format
+msgid "Tournament imported from {source}"
+msgstr "Tournoi importé depuis {source}"
+
+#, python-brace-format
+msgid "Tournament imported with {count} players"
+msgstr "Tournoi importé avec {count} joueur·euses"
 
 msgid "Tournament list"
 msgstr "Liste des tournois"
@@ -12300,6 +12579,9 @@ msgstr "Plage Elo du tournoi : %(min_rating)d - %(max_rating)d"
 
 msgid "Tournament record"
 msgstr "Historique"
+
+msgid "Tournament settings changed"
+msgstr "Paramètres du tournoi modifiés"
 
 #, python-brace-format
 msgid "Tournament {tournament} ({numbers_str})"
@@ -12565,6 +12847,10 @@ msgstr "Non apparié·es : affiché·es"
 
 msgid "Unpaired: hidden"
 msgstr "Non apparié·es : caché·es"
+
+#, python-brace-format
+msgid "Unpaired: {boards}"
+msgstr "Désapparié : {boards}"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
@@ -12908,6 +13194,9 @@ msgstr "Voir l'onglet Tournois"
 msgid "View the backups of the event."
 msgstr "Voir les sauvegardes de l'évènement."
 
+msgid "View the journal of the event and write notes in it"
+msgstr "Voir le journal de l'évènement et y écrire des remarques"
+
 msgid "View the menu."
 msgstr "Voir le menu."
 
@@ -13058,6 +13347,9 @@ msgstr "Lorsque deux équipes ont le même score, celle qui a le meilleur score 
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (Zero-Point Bye) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."
 
+msgid "Where"
+msgstr "Où"
+
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
 msgstr "La combinaison du score de l'adversaire et du score propre utilisée. Les points de match (PM) récompensent la victoire du match ; les points de partie (PP) récompensent l'écart de score."
 
@@ -13078,6 +13370,9 @@ msgstr "Victoire Blancs"
 
 msgid "White wins by forfeit"
 msgstr "Victoire Blancs par forfait"
+
+msgid "Who"
+msgstr "Qui"
 
 msgid "Who advances"
 msgstr "Qui se qualifie"
@@ -13160,6 +13455,9 @@ msgstr "Word"
 #, python-format
 msgid "Write %%s where the time goes. Leave a text empty to keep the wording above."
 msgstr "Écrire %%s à l'endroit de la durée. Laisser un texte vide pour garder le texte ci-dessus."
+
+msgid "Write in the journal what the actions do not say: a decision, an appeal, a remark."
+msgstr "Inscrire au journal ce que les actions ne disent pas : une décision, une réclamation, une remarque."
 
 msgid "Written by hand"
 msgstr "À écrire à la main"
@@ -13604,8 +13902,14 @@ msgstr "de"
 msgid "from move 1"
 msgstr "depuis le 1er coup"
 
+msgid "full-point bye"
+msgstr "bye point entier"
+
 msgid "game points"
 msgstr "les points de partie"
+
+msgid "half-point bye"
+msgstr "bye"
 
 msgid "https://thp.sharly-chess.com/changelog/"
 msgstr "https://thp.sharly-chess.com/fr/changelog/"
@@ -13833,6 +14137,9 @@ msgstr "pages de {number} équipes du n°{first} à la fin"
 msgid "pages of {number} teams from start to #{last}"
 msgstr "pages de {number} équipes du début au n°{last}"
 
+msgid "pairing-allocated bye"
+msgstr "exempt"
+
 #, python-brace-format
 msgid "pairings from #{first} to #{last}"
 msgstr "appariements du n°{first} au n°{last}"
@@ -14015,6 +14322,9 @@ msgstr "le nombre de coups doit être un entier positif."
 msgid "the number of moves must not be specified for the final period."
 msgstr "le nombre de coups ne doit pas être spécifié pour la période finale."
 
+msgid "the rating lists"
+msgstr "les listes de classement"
+
 msgid "the rotator"
 msgstr "l'écran rotatif"
 
@@ -14058,6 +14368,25 @@ msgstr "victoire requise"
 
 msgid "yes"
 msgstr "oui"
+
+msgid "zero-point bye"
+msgstr "forfait"
+
+#, python-brace-format
+msgid "{account} (deleted account)"
+msgstr "{account} (compte supprimé)"
+
+#, python-brace-format
+msgid "{account}: access level {level} granted"
+msgstr "{account} : niveau d'accès {level} accordé"
+
+#, python-brace-format
+msgid "{account}: access level {level} modified"
+msgstr "{account} : niveau d'accès {level} modifié"
+
+#, python-brace-format
+msgid "{account}: access level {level} revoked"
+msgstr "{account} : niveau d'accès {level} retiré"
 
 #, python-brace-format
 msgid "{after} instead of {before}."
@@ -14161,14 +14490,50 @@ msgid "{count} players"
 msgstr "{count} joueur·euses"
 
 #, python-brace-format
+msgid "{count} players checked in at once"
+msgstr "{count} joueur·euses pointé·es en une fois"
+
+#, python-brace-format
+msgid "{count} players checked out at once"
+msgstr "{count} joueur·euses dépointé·es en une fois"
+
+#, python-brace-format
+msgid "{count} players distributed between the tournaments"
+msgstr "{count} joueur·euses réparti·es entre les tournois"
+
+#, python-brace-format
+msgid "{count} players imported"
+msgstr "{count} joueur·euses importé·es"
+
+#, python-brace-format
+msgid "{count} players imported, replacing the players there were"
+msgstr "{count} joueur·euses importé·es, en remplacement des joueur·euses existant·es"
+
+#, python-brace-format
 msgid "{count} players stored…"
 msgstr "{count} joueur·euses enregistré·es…"
+
+#, python-brace-format
+msgid "{count} players updated"
+msgstr "{count} joueur·euses mis·es à jour"
+
+#, python-brace-format
+msgid "{count} players updated from {source}"
+msgstr "{count} joueur·euses mis·es à jour depuis {source}"
 
 #, python-brace-format
 msgid "{count} prize category successfully generated."
 msgid_plural "{count} prize categories successfully generated."
 msgstr[0] "{count} catégorie de prix générée."
 msgstr[1] "{count} catégories de prix générées."
+
+#, python-brace-format
+msgid "{count} teams checked in at once"
+msgstr "{count} équipes pointées en une fois"
+
+#, python-brace-format
+msgid "{count} teams checked out at once"
+msgstr "{count} équipes dépointées en une fois"
 
 #, python-brace-format
 msgid "{date_format} HH:MM"
@@ -14246,6 +14611,10 @@ msgstr[0] "{n} place(s) n'est pas attribuée."
 msgstr[1] "{n} place(s) ne sont pas attribuée(s)."
 
 #, python-brace-format
+msgid "{old} renamed {new}"
+msgstr "{old} renommé·e {new}"
+
+#, python-brace-format
 msgid "{opponent}, with Black"
 msgstr "{opponent}, avec les noirs"
 
@@ -14262,6 +14631,74 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] "{players} joueur·euse reste non apparié·e"
 msgstr[1] "{players} joueur·euses restent non apparié·es"
+
+#, python-brace-format
+msgid "{player} added"
+msgstr "{player} ajouté·e"
+
+#, python-brace-format
+msgid "{player} added to team {team}"
+msgstr "{player} ajouté·e à l'équipe {team}"
+
+#, python-brace-format
+msgid "{player} back in the tournament"
+msgstr "{player} de retour dans le tournoi"
+
+#, python-brace-format
+msgid "{player} checked in"
+msgstr "{player} pointé·e"
+
+#, python-brace-format
+msgid "{player} checked out"
+msgstr "{player} dépointé·e"
+
+#, python-brace-format
+msgid "{player} deleted"
+msgstr "{player} supprimé·e"
+
+#, python-brace-format
+msgid "{player} modified"
+msgstr "{player} modifié·e"
+
+#, python-brace-format
+msgid "{player} moved from [{old}] to [{new}]"
+msgstr "{player} déplacé·e de [{old}] vers [{new}]"
+
+#, python-brace-format
+msgid "{player} no longer replaces {replaced}, who takes the seat back"
+msgstr "{player} ne remplace plus {replaced}, qui reprend sa place"
+
+#, python-brace-format
+msgid "{player} removed from team {team}"
+msgstr "{player} retiré·e de l'équipe {team}"
+
+#, python-brace-format
+msgid "{player} replaces {replaced}"
+msgstr "{player} remplace {replaced}"
+
+#, python-brace-format
+msgid "{player} withdrawn from the tournament"
+msgstr "{player} retiré·e du tournoi"
+
+#, python-brace-format
+msgid "{player}: bonus or penalty changed from {old} to {new}"
+msgstr "{player} : bonus ou pénalité modifié de {old} à {new}"
+
+#, python-brace-format
+msgid "{player}: illegal move ({count})"
+msgstr "{player} : coup illégal ({count})"
+
+#, python-brace-format
+msgid "{player}: illegal move removed ({count} left)"
+msgstr "{player} : coup illégal retiré ({count} restant)"
+
+#, python-brace-format
+msgid "{player}: {bye}"
+msgstr "{player} : {bye}"
+
+#, python-brace-format
+msgid "{player}: {bye} removed"
+msgstr "{player} : {bye} retiré"
 
 #, python-brace-format
 msgid "{plugin} (disabled)"
@@ -14286,6 +14723,10 @@ msgstr "ecran-{screen_type}"
 #, python-brace-format
 msgid "{screen}, page {page}"
 msgstr "{screen}, page {page}"
+
+#, python-brace-format
+msgid "{source} ({address})"
+msgstr "{source} ({address})"
 
 #, python-brace-format
 msgid "{source} ID:"
@@ -14314,6 +14755,10 @@ msgstr "{string} :"
 #, python-brace-format
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#, python-brace-format
+msgid "{team}: bonus or penalty changed from {old_mp} MP / {old_gp} GP to {new_mp} MP / {new_gp} GP"
+msgstr "{team} : bonus ou pénalité modifié de {old_mp} PM / {old_gp} PP à {new_mp} PM / {new_gp} PP"
 
 #, python-brace-format
 msgid "{title} (provisional)"

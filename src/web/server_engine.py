@@ -34,6 +34,7 @@ from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from utils.instance_lock import InstanceLock
 from web.channels import bind_server_loop, channels_plugin
 from web.garbage_collection import RequestGarbageCollectionMiddleware
+from web.journal import close_journal_scope, open_journal_scope
 from web.performance import PerformanceMiddleware
 from web.settings import (
     route_handlers,
@@ -205,6 +206,8 @@ class ServerEngine:
                 },
             ),
             after_exception=[log_http_exception],
+            before_request=open_journal_scope,
+            after_request=close_journal_scope,
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,

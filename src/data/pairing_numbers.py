@@ -6,11 +6,13 @@ inserted later takes the place their rank gives them and the others
 shift, as do the settings that address numbers.
 """
 
+from contextlib import nullcontext
 from bisect import bisect_left
 from functools import cached_property
 from operator import attrgetter
 from typing import TYPE_CHECKING
 
+from data.journal import JournalAction, not_journaled
 from data.pibes import Pibe, PibeType
 from database.sqlite.event.event_database import EventDatabase
 
@@ -208,7 +210,14 @@ class PairingNumbers:
             # throwaway copy whose database is already closed — from
             # reopening a database that is no longer there.
             return
-        with EventDatabase(tournament.event.uniq_id, True) as database:
+        with (
+            (
+                nullcontext()
+                if regeneration
+                else not_journaled('numbers given to the players not numbered yet')
+            ),
+            EventDatabase(tournament.event.uniq_id, True) as database,
+        ):
             for (
                 tournament_player
             ) in tournament_players_by_updated_pairing_number.values():
@@ -227,6 +236,9 @@ class PairingNumbers:
                     regeneration,
                     members=numbering_before,
                 )
+            )
+            tournament.record(
+                JournalAction.PLAYERS_RENUMBERED, tournament.current_round or None
             )
 
     def pending_regeneration(self) -> str:
