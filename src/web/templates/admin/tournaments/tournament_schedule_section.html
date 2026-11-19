@@ -46,7 +46,7 @@
     {# Shown as Bootstrap's own open collapse — the class the section is
        re-rendered with is what says whether it was open, and an element
        without `show` reads as closed. #}
-    <div id="schedule-collapse" class="collapse{% if force_schedule_open %} show{% endif %}">
+    <div id="schedule-collapse" class="collapse collapse-state-not-saved{% if force_schedule_open %} show{% endif %}">
         {% if schedule_rounds < 1 %}
             <div class="text-muted mx-3 my-2">
                 {{ _('Set the number of rounds to lay out a schedule.') }}

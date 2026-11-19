@@ -263,8 +263,8 @@ msgstr[1] "%(num)d tournois"
 #, python-format
 msgid "%(num)d tournament could not be paired:"
 msgid_plural "%(num)d tournaments could not be paired:"
-msgstr[0] "%(num)d tournoi n'a pas pu être apparié :"
-msgstr[1] "%(num)d tournois n'ont pas pu être appariés :"
+msgstr[0] "%(num)d tournoi n'a pas pu être apparié :"
+msgstr[1] "%(num)d tournois n'ont pas pu être appariés :"
 
 #, python-format
 msgid "%(num)d tournament paired and published."
@@ -7696,7 +7696,7 @@ msgstr "Apparié·e contre : %(opponent_name)s"
 
 #, python-brace-format
 msgid "Paired by hand: {boards}"
-msgstr "Apparié à la main : {boards}"
+msgstr "Appariés à la main : {boards}"
 
 msgid "Pairing"
 msgstr "Appariement"
@@ -12901,7 +12901,7 @@ msgstr "Non apparié·es : caché·es"
 
 #, python-brace-format
 msgid "Unpaired: {boards}"
-msgstr "Désapparié : {boards}"
+msgstr "Désappariés : {boards}"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
