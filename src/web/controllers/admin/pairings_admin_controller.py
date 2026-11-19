@@ -4527,6 +4527,7 @@ class PairingsAdminController(BaseEventAdminController):
         manual_form_index: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        left_fide_mode: bool = False,
     ) -> Template:
         tournament = web_context.get_admin_tournament()
         round_ = web_context.admin_round
@@ -4616,6 +4617,7 @@ class PairingsAdminController(BaseEventAdminController):
             'pp_round': round_,
             'pp_locked': locked,
             'pp_fide_locked': fide_locked,
+            'pp_left_fide_mode': left_fide_mode,
             'pp_is_team': is_team,
             'pp_dimension_options': dimension_options,
             'pp_dimension': tournament.prohibited_pairings.dimension_id or '',
@@ -4874,15 +4876,16 @@ class PairingsAdminController(BaseEventAdminController):
         tournament has started, the double warning having been confirmed."""
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
-        if self._prohibited_pairings_fixed(tournament):
-            tournament.leave_fide_mode()
-            Message.warning(
-                request,
-                _('Tournament [{tournament}] has left FIDE mode.').format(
-                    tournament=tournament.name
-                ),
-            )
-        return self._render_prohibited_pairings_modal(web_context)
+        if not self._prohibited_pairings_fixed(tournament):
+            return self._render_prohibited_pairings_modal(web_context)
+        tournament.leave_fide_mode()
+        Message.warning(
+            request,
+            _('Tournament [{tournament}] has left FIDE mode.').format(
+                tournament=tournament.name
+            ),
+        )
+        return self._render_prohibited_pairings_modal(web_context, left_fide_mode=True)
 
     @put(
         path='/tournament/add-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
