@@ -18,7 +18,6 @@ from data.input_output import TournamentImporter
 from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.player import Player
-from utils.types import PlayerRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -53,7 +52,7 @@ from plugins.chessevent.tournament_importer.mappers import (
     ChessEventGender,
 )
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
-from plugins.ffe.utils import FfePlayerPluginData, FFE_LEAGUES
+from plugins.ffe.utils import FfePlayerPluginData, FFE_LEAGUES, ffe_list_ratings
 from plugins.manager import plugin_manager
 from utils.enum import Cadence, Result
 
@@ -304,17 +303,14 @@ class ChessEventTournamentImporter(TournamentImporter):
         except KeyError:
             raise unknown_exception('blitz_rating_type') from None
 
-        ratings = {
-            Cadence.STANDARD.value: PlayerRating.from_type(
-                player.standard_rating, standard_rating_type
-            ).stored_value,
-            Cadence.RAPID.value: PlayerRating.from_type(
-                player.rapid_rating, rapid_rating_type
-            ).stored_value,
-            Cadence.BLITZ.value: PlayerRating.from_type(
-                player.blitz_rating, blitz_rating_type
-            ).stored_value,
-        }
+        ratings = ffe_list_ratings(
+            {
+                Cadence.STANDARD: (player.standard_rating, standard_rating_type),
+                Cadence.RAPID: (player.rapid_rating, rapid_rating_type),
+                Cadence.BLITZ: (player.blitz_rating, blitz_rating_type),
+            },
+            None,
+        )
         try:
             ffe_licence = ChessEventFFELicence.get_core_object(player.ffe_license)
         except KeyError:
