@@ -21,6 +21,10 @@
 - The pairings tab follows the results and check-ins entered elsewhere without being reloaded: the boards whose result changes are updated in place and light up briefly, the players and teams checked in move between the lists, and the button to the next round appears once the round is finished. Nothing changes while the arbiter is typing, choosing, dragging or has a window open: the update waits until they have finished (5.3.0)
 - The tournaments of an event can be paired and published at once from the All tournaments button of the pairings tab, whose badge tells how many are ready: the next round of the Swiss, Keizer and knock-out tournaments is paired, deciding what becomes of their absent players as the Pair button does, and the next round of the round robins and fixed-table tournaments is published once the rounds before it are finished. The first round, a round opening a new period and a round that needs a confirmation are still paired from the page of their tournament, and a tournament left out, such as a one-off blitz, is left out again the next time (5.3.0)
 
+## Staff
+
+- Choosing a person among the search results of the account form no longer fails with an error when a role has already been given for several tournaments (5.3.0)
+
 ## Screens
 
 - The screens follow the changes as they happen rather than every ten seconds: a result updates only the games and players it concerns on the pairings, result entry, players and check-in screens, the rankings are drawn again at once, and a change to a screen, such as its font size, shows straight away, as does what is sent to a channel, even one going through several screens (5.3.0)
