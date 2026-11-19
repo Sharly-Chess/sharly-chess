@@ -265,6 +265,29 @@
 | `origin_date`                    | `TEXT`    |                                   | When the event was created, imported or restored                                                                                                    |
 | `screens_fake_data`              | `INTEGER` | NOT NULL<br/>DEFAULT 0            | Boolean: whether the screens show a made-up first round for the tournaments without pairings, while they are being set up (never saved)             |
 
+### `journal` table (what was done to the event, by whom and from where)
+
+> [!NOTE]
+> :information_source: An entry points at the tournament, board, player, team and staff account it concerns without a foreign key, so that it outlives them, and copies into `data` the names its sentence needs. The sentence is built from `action` and `data` when the journal is shown, in the language of the reader. A staff account is shown by the name it has; the `account_deleted` entry of an account keeps its name and ID in `data` once it is deleted.
+
+| Field           | Type      | Constraint                                 | Description                                                                                                                                                       |
+|-----------------|-----------|--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The entry's identifier, in the order the entries were written                                                                                                     |
+| `at`            | `TEXT`    | NOT NULL                                   | When the action was done                                                                                                                                          |
+| `action`        | `TEXT`    | NOT NULL                                   | The action, as a stable key (`result_changed`, `round_paired`, `player_added`, `note`...); an action unknown to the version reading it is shown by its `text`     |
+| `tournament_id` | `INTEGER` |                                            | The ID of the tournament concerned                                                                                                                                |
+| `round`         | `INTEGER` |                                            | The round concerned                                                                                                                                               |
+| `board_id`      | `INTEGER` |                                            | The ID of the board concerned                                                                                                                                     |
+| `player_id`     | `INTEGER` |                                            | The ID of the player concerned                                                                                                                                    |
+| `team_id`       | `INTEGER` |                                            | The ID of the team concerned                                                                                                                                      |
+| `author_kind`   | `TEXT`    |                                            | Who acted: `administrator` or `account` (a staff account), `NULL` for nobody (a public screen, a synchronisation or the application acting on its own)            |
+| `account_id`    | `INTEGER` |                                            | The ID of the account who acted                                                                                                                                   |
+| `source_kind`   | `TEXT`    | NOT NULL<br/>DEFAULT 'application'         | Where the action came from: `computer` (the computer running _Sharly Chess_), `network` (another device), `screen`, `plugin` or `application`                     |
+| `source_name`   | `TEXT`    |                                            | The name of the screen or plugin the action came from                                                                                                             |
+| `host`          | `TEXT`    |                                            | The network address of the device the action came from                                                                                                            |
+| `data`          | `TEXT`    |                                            | The values the sentence of the entry is built from (the names, the results before and after...), in JSON format                                                   |
+| `text`          | `TEXT`    |                                            | The free text of the entry: the note of an arbiter, or the description of an action with no sentence of its own                                                  |
+
 ### `menu` table (menus)
 
 | Field          | Type      | Constraint                                 | Description                                                |

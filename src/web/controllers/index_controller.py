@@ -28,7 +28,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from web.channels import APP_CHANNEL, event_channel
+from web.channels import APP_CHANNEL, event_admin_channel, event_channel
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
@@ -205,8 +205,13 @@ class IndexController(BaseController):
     ) -> None:
         """Forwards the events published on the channels to the page until it
         goes away. A page can go away while an event is being sent to it, so a
-        failed send ends the connection just as a failed read does."""
-        await socket.accept()
+        failed send ends the connection just as a failed read does; it can
+        also be gone before its connection is accepted, when it is left or
+        drawn again at once."""
+        try:
+            await socket.accept()
+        except WebSocketDisconnect, ClientDisconnected:
+            return
         async with channels.start_subscription(channel_names) as subscriber:
 
             async def forward_events() -> None:
@@ -238,7 +243,13 @@ class IndexController(BaseController):
         """The events of the administration pages of an event: those of the
         application and those of the event."""
         await self._forward_events(
-            socket, channels, [APP_CHANNEL, event_channel(event_uniq_id)]
+            socket,
+            channels,
+            [
+                APP_CHANNEL,
+                event_channel(event_uniq_id),
+                event_admin_channel(event_uniq_id),
+            ],
         )
 
     @websocket(

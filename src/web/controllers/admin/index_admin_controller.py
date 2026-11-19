@@ -1,3 +1,4 @@
+from dataclasses import fields
 import asyncio
 import shutil
 from collections import defaultdict
@@ -27,7 +28,9 @@ from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from data import journal
 from data.access_levels.actions import AuthAction
+from data.journal import JournalAction
 from data.rating_sequences import DEFAULT_UNRATED_RATING
 from utils.enum import PlayerRatingType, RatingPreference
 from data.event import Event
@@ -948,6 +951,7 @@ class IndexAdminController(BaseAdminController):
         with EventDatabase(uniq_id, write=True) as database:
             database.update_stored_event(stored_event)
             database.set_origin(EventOrigin.CREATED)
+            journal.record(uniq_id, JournalAction.EVENT_CREATED)
         DataSourceManager().activate_for_federation(stored_event.federation)
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
@@ -1065,6 +1069,12 @@ class IndexAdminController(BaseAdminController):
                     database.update_stored_tournament(stored_tournament)
             plugin_manager.hook.on_event_duplicated(event_database=database)
             database.set_origin(EventOrigin.CREATED)
+            # The journal tells what was done to the event copied, not to
+            # the copy.
+            database.delete_all_stored_journal_entries()
+            journal.record(
+                uniq_id, JournalAction.EVENT_CREATED, data={'copy_of': event.name}
+            )
 
         # Carry the current login into the duplicate: the clone copies the
         # accounts (same ids and password hashes), so a remote organiser stays
@@ -1120,8 +1130,16 @@ class IndexAdminController(BaseAdminController):
             )
 
         uniq_id = stored_event.uniq_id
+        changed = any(
+            getattr(stored_event, field.name) != getattr(event.stored_event, field.name)
+            for field in fields(stored_event)
+            if not field.name.startswith('stored_')
+            and field.name not in ('plugin_data', 'tag_ids', 'origin', 'origin_date')
+        )
         with EventDatabase(uniq_id, write=True) as database:
             database.update_stored_event(stored_event)
+            if changed:
+                journal.record(uniq_id, JournalAction.EVENT_SETTINGS_CHANGED)
 
         Message.success(
             request,
@@ -1955,6 +1973,7 @@ class IndexAdminController(BaseAdminController):
                             'include_players': True,
                             'include_private_player_data': False,
                             'include_connection_data': False,
+                            'include_journal': True,
                         }
                     ),
                     'errors': {},
@@ -1973,6 +1992,7 @@ class IndexAdminController(BaseAdminController):
         include_players: FromQuery[str | None] = None,
         include_private_player_data: FromQuery[str | None] = None,
         include_connection_data: FromQuery[str | None] = None,
+        include_journal: FromQuery[str | None] = None,
     ) -> File | Template:
         web_context = AdminWebContext(request)
         event = web_context.get_admin_event()
@@ -1997,8 +2017,12 @@ class IndexAdminController(BaseAdminController):
                 tmp_event_database.delete_all_stored_team_groups()
                 tmp_event_database.delete_all_prohibited_pairing_groups()
                 tmp_event_database.delete_all_stored_pairings()
+                # The journal names the players.
+                tmp_event_database.delete_all_stored_journal_entries()
             elif include_private_player_data != 'on':
                 tmp_event_database.delete_players_personal_data()
+            if include_journal != 'on':
+                tmp_event_database.delete_all_stored_journal_entries()
             if include_connection_data != 'on':
                 plugin_manager.hook.on_event_duplicated(
                     event_database=tmp_event_database

@@ -1,12 +1,14 @@
 import weakref
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from collections.abc import Sequence
 
 from common.i18n import _, ngettext
+from data import journal
+from data.journal import JournalAction
 from database.sqlite.event.event_database import EventDatabase
-from utils.enum import TeamByeType
+from utils.enum import Result, TeamByeType
 from database.sqlite.event.event_store import (
     StoredTeam,
     StoredTeamGroup,
@@ -656,6 +658,22 @@ class Team:
         database.set_team_pairing_number(self.id, None)
         self.stored_team.tournament_id = tournament_id
         database.set_team_tournament(self.id, tournament_id)
+        new_tournament_name = (
+            tournament.name
+            if tournament_id is not None
+            and (tournament := self.event.tournaments_by_id.get(tournament_id))
+            else None
+        )
+        journal.record(
+            self.event.uniq_id,
+            JournalAction.TEAM_MOVED,
+            team_id=self.id,
+            data={
+                'team': self.name,
+                'old': old_tournament.name if old_tournament else None,
+                'new': new_tournament_name,
+            },
+        )
         if tournament_id is not None:
             new_tournament = self.event.tournaments_by_id.get(tournament_id)
             if new_tournament is not None:
@@ -688,8 +706,34 @@ class Team:
         database.set_team_group(self.id, group_id)
 
     def set_check_in(self, check_in: bool, database: EventDatabase) -> None:
+        changed = self.stored_team.check_in != check_in
         self.stored_team.check_in = check_in
         database.set_team_check_in(self.id, check_in)
+        if changed:
+            self.record(
+                JournalAction.TEAM_CHECKED_IN
+                if check_in
+                else JournalAction.TEAM_CHECKED_OUT
+            )
+
+    def record(
+        self,
+        action: JournalAction,
+        round_: int | None = None,
+        *,
+        player_id: int | None = None,
+        data: dict[str, Any] | None = None,
+    ) -> None:
+        """Journal *action*, done to this team."""
+        journal.record(
+            self.event.uniq_id,
+            action,
+            tournament=self.tournament,
+            round_=round_,
+            player_id=player_id,
+            team_id=self.id,
+            data={'team': self.name} | (data or {}),
+        )
 
     def set_round_lineup(
         self,
@@ -783,11 +827,15 @@ class Team:
                 database.delete_stored_team_board(existing.id)
                 round_list.remove(existing)
                 tournament.clear_team_cache()
+                self._record_bye(JournalAction.BYE_REMOVED, round_, existing.bye_type)
             return
         if existing is not None:
+            old_bye_type = existing.bye_type
             existing.bye_type = bye_type
             database.update_stored_team_board(existing)
             tournament.clear_team_cache()
+            if old_bye_type != bye_type:
+                self._record_bye(JournalAction.BYE_SET, round_, bye_type)
             return
         from database.sqlite.event.event_store import StoredTeamBoard
 
@@ -816,6 +864,23 @@ class Team:
         stb.id = database.add_stored_team_board(stb)
         round_list.append(stb)
         tournament.clear_team_cache()
+        self._record_bye(JournalAction.BYE_SET, round_, bye_type)
+
+    def _record_bye(
+        self, action: JournalAction, round_: int, bye_type: str | None
+    ) -> None:
+        results = {
+            TeamByeType.PAB: Result.PAIRING_ALLOCATED_BYE,
+            TeamByeType.HPB: Result.HALF_POINT_BYE,
+            TeamByeType.FPB: Result.FULL_POINT_BYE,
+            TeamByeType.ZPB: Result.ZERO_POINT_BYE,
+        }
+        bye = results.get(TeamByeType(bye_type)) if bye_type else None
+        self.record(
+            action,
+            round_,
+            data={'player': self.name, 'bye': int(bye) if bye else None},
+        )
 
     def give_byes_for_paired_rounds(self, database: EventDatabase) -> None:
         """Zero-point-bye this team for every already-paired round —
@@ -894,6 +959,11 @@ class Team:
         player.stored_player.team_id = self.id
         player.stored_player.team_index = next_index
         database.set_player_team(player.id, self.id, next_index)
+        self.record(
+            JournalAction.TEAM_PLAYER_ADDED,
+            player_id=player.id,
+            data={'player': player.full_name},
+        )
         self._invalidate_players()
         player.invalidate_team_derived_cache()
         if self.tournament is not None:
@@ -942,6 +1012,11 @@ class Team:
         player.stored_player.team_id = None
         player.stored_player.team_index = None
         database.set_player_team(player.id, None, None)
+        self.record(
+            JournalAction.TEAM_PLAYER_REMOVED,
+            player_id=player.id,
+            data={'player': player.full_name},
+        )
         self._invalidate_players()
         player.invalidate_team_derived_cache()
         if self.tournament is not None:
@@ -969,6 +1044,8 @@ class Team:
         for pid in current_ids:
             if pid not in filtered:
                 filtered.append(pid)
+        if filtered != [p.id for p in self.players]:
+            self.record(JournalAction.TEAM_ORDER_CHANGED)
         for new_index, pid in enumerate(filtered):
             player = self.event.players_by_id[pid]
             player.stored_player.team_index = new_index

@@ -1,5 +1,9 @@
 # _Sharly Chess_ release notes
 
+## General
+
+- Each event keeps a journal of what is done to it, shown in a new Journal page: results entered, changed or cleared, pairings, byes, penalties, players, teams, tournaments and staff accounts, with when it was done, by whom (the administrator or a staff account, even one deleted since) and from where (the computer running _Sharly Chess_, another device, a screen or _Sharly-Chess.com_), the names being kept as they were at the time. The arbiters can add notes to it, filter it by tournament, kind of action, person or origin, and download it; it follows the changes as they happen, and travels with the event when it is exported unless left out (5.3.0)
+
 ## Tournaments
 
 - A player who leaves an individual round-robin can be replaced, from the player form, by a newcomer who takes over their seat from a chosen round: their Berger number, their remaining opponents and their colours. The tournament keeps its rounds and its schedule, both players are ranked on the games they played, and in the tie-breaks the seat counts as a single opponent worth the points of all who held it. The Berger grid gives the seat one line, and the TRF gives the tournament as a custom round-robin with a comment for each replacement (5.3.0)

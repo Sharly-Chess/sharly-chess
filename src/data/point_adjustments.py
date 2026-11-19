@@ -9,6 +9,7 @@ records, the screens and the TRF export.
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
+from data.journal import JournalAction
 from database.sqlite.event.event_store import (
     StoredPlayerPointAdjustment,
     StoredTeamPointAdjustment,
@@ -82,9 +83,25 @@ class PointAdjustments:
         """Upsert the manual (MP, GP) adjustment for (team, round) and
         keep the in-memory stored list in sync."""
         tournament = self.tournament
+        old_mp, old_gp = self.manual(team_id, round_)
         database.set_stored_team_point_adjustment(
             tournament.id, team_id, round_, mp_delta, gp_delta, reason
         )
+        if (old_mp, old_gp) != (mp_delta, gp_delta):
+            team = tournament.event.teams_by_id.get(team_id)
+            tournament.record(
+                JournalAction.TEAM_POINT_ADJUSTMENT,
+                round_,
+                team_id=team_id,
+                data={
+                    'team': team.name if team else '?',
+                    'old_mp': old_mp,
+                    'old_gp': old_gp,
+                    'new_mp': mp_delta,
+                    'new_gp': gp_delta,
+                },
+                text=reason,
+            )
         _replace(
             tournament.stored_tournament.stored_team_point_adjustments,
             lambda adjustment: (
@@ -152,9 +169,24 @@ class PointAdjustments:
         """Upsert the manual adjustment for (player, round) and keep the
         in-memory stored list in sync."""
         tournament = self.tournament
+        stored = self.stored_for_player(player_id, round_)
+        old_delta = stored.delta if stored else 0.0
         database.set_stored_player_point_adjustment(
             tournament.id, player_id, round_, delta, reason
         )
+        if old_delta != delta:
+            player = tournament.tournament_players_by_id.get(player_id)
+            tournament.record(
+                JournalAction.POINT_ADJUSTMENT,
+                round_,
+                player_id=player_id,
+                data={
+                    'player': player.full_name if player else '?',
+                    'old': old_delta,
+                    'new': delta,
+                },
+                text=reason,
+            )
         _replace(
             tournament.stored_tournament.stored_player_point_adjustments,
             lambda adjustment: (

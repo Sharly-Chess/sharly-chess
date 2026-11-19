@@ -244,6 +244,10 @@ class Client:
         """Returns true if the client can the event config."""
         return AuthAction.VIEW_EVENT_CONFIG in self.allowed_actions
 
+    @property
+    def can_view_journal(self) -> bool:
+        return AuthAction.VIEW_JOURNAL in self.allowed_actions
+
     # ---------------------------------------------------------------------------------
     # Accounts
     # ---------------------------------------------------------------------------------

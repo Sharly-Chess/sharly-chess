@@ -209,6 +209,16 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         If tournament is provided, update this tournament, otherwise create a new one.
         Returns the ID of the tournament.
         Raises if the tournament already has players."""
+        from data.journal import not_journaled
+
+        with not_journaled('the steps of the import, journaled as one by its caller'):
+            return self._load_tournament(event, tournament)
+
+    def _load_tournament(
+        self,
+        event: Event,
+        tournament: Tournament | None = None,
+    ) -> int:
         existing_stored_tournament: StoredTournament | None = None
         if tournament:
             existing_stored_tournament = copy(tournament.stored_tournament)

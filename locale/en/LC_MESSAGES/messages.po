@@ -955,6 +955,12 @@ msgstr ""
 msgid "Add a new affiliation to the options."
 msgstr ""
 
+msgid "Add a note"
+msgstr ""
+
+msgid "Add a note to the journal"
+msgstr ""
+
 msgid "Add a permission to the account."
 msgstr ""
 
@@ -1040,6 +1046,9 @@ msgid "Adding a player found in another list, and checking the ratings, read the
 msgstr ""
 
 msgid "Additional information"
+msgstr ""
+
+msgid "Address"
 msgstr ""
 
 msgid "Adjourned"
@@ -1210,6 +1219,9 @@ msgstr ""
 msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr ""
 
+msgid "All the rounds unpaired"
+msgstr ""
+
 msgid "All the tables"
 msgstr ""
 
@@ -1321,6 +1333,9 @@ msgid "Angola"
 msgstr ""
 
 msgid "Anonymous"
+msgstr ""
+
+msgid "Another device"
 msgstr ""
 
 #, python-brace-format
@@ -1583,6 +1598,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Backup of event [{uniq_id}] taken at {time}."
+msgstr ""
+
+#, python-brace-format
+msgid "Backup of {date} restored"
 msgstr ""
 
 msgid "Backups"
@@ -1899,6 +1918,10 @@ msgstr ""
 msgid "Board numbers:"
 msgstr ""
 
+#, python-brace-format
+msgid "Board order of team {team} changed"
+msgstr ""
+
 msgid "Board selection (by number)"
 msgstr ""
 
@@ -1907,6 +1930,30 @@ msgstr ""
 
 #, python-format
 msgid "Board sets of screen %(screen_name)s"
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}: colours swapped, now {white} – {black}"
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}: winner no longer designated"
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}: {white} – {black}, result changed from {old} to {new}"
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}: {white} – {black}, result {new}"
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}: {white} – {black}, result {old} cleared"
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}: {winner} designated as the winner"
 msgstr ""
 
 #, python-brace-format
@@ -2326,6 +2373,12 @@ msgstr ""
 msgid "Check-in"
 msgstr ""
 
+msgid "Check-in closed"
+msgstr ""
+
+msgid "Check-in opened"
+msgstr ""
+
 msgid "Check-in players"
 msgstr ""
 
@@ -2724,6 +2777,10 @@ msgid "Correct the pairing settings before printing the rules."
 msgstr ""
 
 msgid "Correction"
+msgstr ""
+
+#, python-brace-format
+msgid "Correction for the rating report removed: {white} – {black}"
 msgstr ""
 
 #, python-brace-format
@@ -3243,6 +3300,9 @@ msgstr ""
 msgid "Delete the menu."
 msgstr ""
 
+msgid "Delete the note"
+msgstr ""
+
 msgid "Delete the paged screen."
 msgstr ""
 
@@ -3271,6 +3331,9 @@ msgid "Delete this championship category?"
 msgstr ""
 
 msgid "Delete this championship."
+msgstr ""
+
+msgid "Delete this note?"
 msgstr ""
 
 msgid "Delete this rule."
@@ -3338,6 +3401,9 @@ msgid "Detail the grid by player (one row per player, individual results)."
 msgstr ""
 
 msgid "Details"
+msgstr ""
+
+msgid "Deviations"
 msgstr ""
 
 msgid "Different for White / Black"
@@ -3502,6 +3568,9 @@ msgid "Download the document as a Word file, with the values entered in its fiel
 msgstr ""
 
 msgid "Download the players matching the search into a file."
+msgstr ""
+
+msgid "Download the whole journal as a spreadsheet (CSV)."
 msgstr ""
 
 msgid "Download tournament fees"
@@ -3711,6 +3780,9 @@ msgid "E.g.: World championship"
 msgstr ""
 
 msgid "E.g.: Youth"
+msgstr ""
+
+msgid "E.g.: appeal on board 12, result confirmed after hearing both players"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -3923,6 +3995,15 @@ msgstr ""
 msgid "Edit tournament"
 msgstr ""
 
+msgid "Editing of the pairings cancelled, the round put back as it was"
+msgstr ""
+
+msgid "Editing of the pairings started"
+msgstr ""
+
+msgid "Editing of the pairings validated"
+msgstr ""
+
 msgid "Editor mode"
 msgstr ""
 
@@ -4067,13 +4148,26 @@ msgstr ""
 msgid "Event content"
 msgstr ""
 
+msgid "Event created"
+msgstr ""
+
+#, python-brace-format
+msgid "Event created as a copy of [{event}]"
+msgstr ""
+
 msgid "Event export"
+msgstr ""
+
+msgid "Event imported"
 msgstr ""
 
 msgid "Event name"
 msgstr ""
 
 msgid "Event not found"
+msgstr ""
+
+msgid "Event settings changed"
 msgstr ""
 
 msgid "Event tournaments"
@@ -4105,6 +4199,18 @@ msgid "Every screen, menu and rotator"
 msgstr ""
 
 msgid "Every seat whose game has not been played will be emptied."
+msgstr ""
+
+msgid "Everyone"
+msgstr ""
+
+msgid "Everything"
+msgstr ""
+
+msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
+msgstr ""
+
+msgid "Everywhere"
 msgstr ""
 
 msgid "Example"
@@ -4265,6 +4371,9 @@ msgid "FIDE list: {ratings}"
 msgstr ""
 
 msgid "FIDE mode"
+msgstr ""
+
+msgid "FIDE mode left"
 msgstr ""
 
 #, python-format
@@ -4488,6 +4597,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "For the rating report: {corrected}."
+msgstr ""
+
+#, python-brace-format
+msgid "For the rating report: {white} – {black} {result}"
 msgstr ""
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
@@ -5104,6 +5217,9 @@ msgstr ""
 msgid "Include teams and players"
 msgstr ""
 
+msgid "Include the journal (what was done, when and by whom)"
+msgstr ""
+
 msgid "Includes adjourned games, counted as draws."
 msgstr ""
 
@@ -5404,6 +5520,9 @@ msgstr ""
 msgid "Jordan"
 msgstr ""
 
+msgid "Journal"
+msgstr ""
+
 msgctxt "july"
 msgid "Jul"
 msgstr ""
@@ -5631,6 +5750,10 @@ msgstr[1] ""
 msgid "Line not recognized: {line}"
 msgstr ""
 
+#, python-brace-format
+msgid "Line-up of {team} changed"
+msgstr ""
+
 msgid "Lineup"
 msgstr ""
 
@@ -5663,6 +5786,9 @@ msgstr ""
 msgid "Loading more results…"
 msgstr ""
 
+msgid "Loading…"
+msgstr ""
+
 msgid "Lobby rotator"
 msgstr ""
 
@@ -5673,9 +5799,6 @@ msgid "Location"
 msgstr ""
 
 msgid "Locked: team is already paired."
-msgstr ""
-
-msgid "Log"
 msgstr ""
 
 msgid "Log in"
@@ -5843,6 +5966,13 @@ msgid "Manual pairing"
 msgstr ""
 
 msgid "Manual tie-break"
+msgstr ""
+
+#, python-brace-format
+msgid "Manual tie-break set for {players}"
+msgstr ""
+
+msgid "Manual tie-breaks reset"
 msgstr ""
 
 msgid "Manually pair players"
@@ -6854,6 +6984,9 @@ msgstr ""
 msgid "No. {number} ({name})"
 msgstr ""
 
+msgid "Nobody"
+msgstr ""
+
 msgid "Nobody is kept apart."
 msgstr ""
 
@@ -6881,6 +7014,9 @@ msgid "None"
 msgstr ""
 
 msgid "None (no colour preferences)"
+msgstr ""
+
+msgid "None in particular"
 msgstr ""
 
 msgid "None, the player is unrated for FIDE."
@@ -6996,6 +7132,9 @@ msgstr ""
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr ""
 
+msgid "Notes"
+msgstr ""
+
 msgctxt "notes column header"
 msgid "Notes"
 msgstr ""
@@ -7004,6 +7143,9 @@ msgid "Nothing further — leave the teams tied"
 msgstr ""
 
 msgid "Nothing has been recorded."
+msgstr ""
+
+msgid "Nothing matches these filters"
 msgstr ""
 
 msgid "Nothing to show"
@@ -7097,6 +7239,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Number of rounds changed from {before} to {after}."
+msgstr ""
+
+#, python-brace-format
+msgid "Number of rounds changed from {old} to {new}"
 msgstr ""
 
 #, python-brace-format
@@ -7546,6 +7692,10 @@ msgstr ""
 msgid "Paired against: %(opponent_name)s"
 msgstr ""
 
+#, python-brace-format
+msgid "Paired by hand: {boards}"
+msgstr ""
+
 msgid "Pairing"
 msgstr ""
 
@@ -7615,10 +7765,17 @@ msgstr ""
 msgid "Pairing settings"
 msgstr ""
 
+msgid "Pairing settings changed"
+msgstr ""
+
 msgid "Pairing style:"
 msgstr ""
 
 msgid "Pairing system"
+msgstr ""
+
+#, python-brace-format
+msgid "Pairing system changed from {old} to {new}"
 msgstr ""
 
 #, python-brace-format
@@ -8040,6 +8197,9 @@ msgstr ""
 msgid "Players in this group at round #1: {0}."
 msgstr ""
 
+msgid "Players left out of the round paired"
+msgstr ""
+
 #, python-format
 msgid "Players of category [%(category)s]"
 msgstr ""
@@ -8051,6 +8211,9 @@ msgid "Players per team match:"
 msgstr ""
 
 msgid "Players per tournament"
+msgstr ""
+
+msgid "Players renumbered"
 msgstr ""
 
 #, python-format
@@ -8248,6 +8411,9 @@ msgid "Please validate the time control to continue."
 msgstr ""
 
 msgid "Please wait…"
+msgstr ""
+
+msgid "Please write the note."
 msgstr ""
 
 msgid "Plug a projector or a monitor into the computer running Sharly Chess: no network needed."
@@ -8523,6 +8689,9 @@ msgid "Prohibited in FIDE mode"
 msgstr ""
 
 msgid "Prohibited pairings"
+msgstr ""
+
+msgid "Prohibited pairings changed"
 msgstr ""
 
 msgid "Projector plugged into this computer"
@@ -9298,7 +9467,13 @@ msgstr ""
 msgid "Round of {count}"
 msgstr ""
 
+msgid "Round paired"
+msgstr ""
+
 msgid "Round performance indicators"
+msgstr ""
+
+msgid "Round published"
 msgstr ""
 
 msgid "Round time"
@@ -9308,6 +9483,12 @@ msgid "Round to a full point"
 msgstr ""
 
 msgid "Round to a half point"
+msgstr ""
+
+msgid "Round unpaired"
+msgstr ""
+
+msgid "Round unpublished"
 msgstr ""
 
 #, python-brace-format
@@ -9392,6 +9573,9 @@ msgid "Round-robin grid screens show every player of a round robin against every
 msgstr ""
 
 msgid "Round-robin schedule"
+msgstr ""
+
+msgid "Round-robin schedule saved"
 msgstr ""
 
 #, python-format
@@ -9652,6 +9836,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been updated."
+msgstr ""
+
+#, python-brace-format
+msgid "Screen [{screen}]"
 msgstr ""
 
 msgid "Screen configuration has been updated."
@@ -9965,6 +10153,9 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
+msgid "Sharly Chess"
+msgstr ""
+
 msgid "Sharly Chess is already open"
 msgstr ""
 
@@ -10262,6 +10453,18 @@ msgstr ""
 msgid "Staff"
 msgstr ""
 
+#, python-brace-format
+msgid "Staff account {account} created"
+msgstr ""
+
+#, python-brace-format
+msgid "Staff account {account} deleted"
+msgstr ""
+
+#, python-brace-format
+msgid "Staff account {account} modified"
+msgstr ""
+
 msgid "Staff default configuration"
 msgstr ""
 
@@ -10543,6 +10746,9 @@ msgstr ""
 msgid "Team [{team}] is full ({max} players max)."
 msgstr ""
 
+msgid "Team affiliations changed"
+msgstr ""
+
 msgid "Team captain."
 msgstr ""
 
@@ -10604,6 +10810,42 @@ msgstr ""
 msgid "Team tournament file in an individual event — create a team event first."
 msgstr ""
 
+#, python-brace-format
+msgid "Team {old} renamed {new}"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} added"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} checked in"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} checked out"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} deleted"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} entered in [{new}]"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} modified"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} moved from [{old}] to [{new}]"
+msgstr ""
+
+#, python-brace-format
+msgid "Team {team} taken out of [{old}]"
+msgstr ""
+
 msgid "Team's score"
 msgstr ""
 
@@ -10625,6 +10867,9 @@ msgid "Teams from %(first)s to %(last)s"
 msgstr ""
 
 msgid "Teams not assigned to a tournament"
+msgstr ""
+
+msgid "Teams renumbered"
 msgstr ""
 
 msgid "Teams still tied"
@@ -10960,6 +11205,9 @@ msgstr ""
 msgid "The image is too large (max 2 MB)."
 msgstr ""
 
+msgid "The journal is empty"
+msgstr ""
+
 msgid "The label used for this paged screen in menus. Its range is appended automatically."
 msgstr ""
 
@@ -11062,6 +11310,12 @@ msgid "The new folder can't be a sub folder of the current folder."
 msgstr ""
 
 msgid "The new folder is in use, but the backups already taken could not be moved to it. They are still in the previous folder."
+msgstr ""
+
+msgid "The note has been added to the journal."
+msgstr ""
+
+msgid "The note has been deleted."
 msgstr ""
 
 msgid "The number of boards per page, optional (the number of pages adapts to the number of boards)."
@@ -12097,8 +12351,15 @@ msgstr ""
 msgid "Tie-breaks are managed by rule set \"{name}\". Change the rule set on the tournament to edit them."
 msgstr ""
 
+msgid "Tie-breaks changed"
+msgstr ""
+
 #, python-brace-format
 msgid "Tie-breaks changed from {before} to {after}."
+msgstr ""
+
+#, python-brace-format
+msgid "Tie-breaks changed from {old} to {new}"
 msgstr ""
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
@@ -12276,6 +12537,10 @@ msgid "Tournament [%(tournament)s] will leave FIDE mode for good: it can never r
 msgstr ""
 
 #, python-brace-format
+msgid "Tournament [{old}] renamed [{new}]"
+msgstr ""
+
+#, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
@@ -12307,6 +12572,12 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
+msgid "Tournament created"
+msgstr ""
+
+msgid "Tournament deleted"
+msgstr ""
+
 msgid "Tournament export"
 msgstr ""
 
@@ -12317,6 +12588,14 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Tournament has no team-player count configured."
+msgstr ""
+
+#, python-brace-format
+msgid "Tournament imported from {source}"
+msgstr ""
+
+#, python-brace-format
+msgid "Tournament imported with {count} players"
 msgstr ""
 
 msgid "Tournament list"
@@ -12342,6 +12621,9 @@ msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
 msgstr ""
 
 msgid "Tournament record"
+msgstr ""
+
+msgid "Tournament settings changed"
 msgstr ""
 
 #, python-brace-format
@@ -12613,6 +12895,10 @@ msgid "Unpaired: displayed"
 msgstr ""
 
 msgid "Unpaired: hidden"
+msgstr ""
+
+#, python-brace-format
+msgid "Unpaired: {boards}"
 msgstr ""
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
@@ -12957,6 +13243,9 @@ msgstr ""
 msgid "View the backups of the event."
 msgstr ""
 
+msgid "View the journal of the event and write notes in it"
+msgstr ""
+
 msgid "View the menu."
 msgstr ""
 
@@ -13107,6 +13396,9 @@ msgstr ""
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (Zero-Point Bye) players and the players with a Half-Point Bye)."
 msgstr ""
 
+msgid "Where"
+msgstr ""
+
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
 msgstr ""
 
@@ -13126,6 +13418,9 @@ msgid "White wins"
 msgstr ""
 
 msgid "White wins by forfeit"
+msgstr ""
+
+msgid "Who"
 msgstr ""
 
 msgid "Who advances"
@@ -13208,6 +13503,9 @@ msgstr ""
 
 #, python-format
 msgid "Write %%s where the time goes. Leave a text empty to keep the wording above."
+msgstr ""
+
+msgid "Write in the journal what the actions do not say: a decision, an appeal, a remark."
 msgstr ""
 
 msgid "Written by hand"
@@ -13656,7 +13954,13 @@ msgstr ""
 msgid "from move 1"
 msgstr ""
 
+msgid "full-point bye"
+msgstr ""
+
 msgid "game points"
+msgstr ""
+
+msgid "half-point bye"
 msgstr ""
 
 msgid "https://thp.sharly-chess.com/changelog/"
@@ -13885,6 +14189,9 @@ msgstr ""
 msgid "pages of {number} teams from start to #{last}"
 msgstr ""
 
+msgid "pairing-allocated bye"
+msgstr ""
+
 #, python-brace-format
 msgid "pairings from #{first} to #{last}"
 msgstr ""
@@ -14067,6 +14374,9 @@ msgstr ""
 msgid "the number of moves must not be specified for the final period."
 msgstr ""
 
+msgid "the rating lists"
+msgstr ""
+
 msgid "the rotator"
 msgstr ""
 
@@ -14109,6 +14419,25 @@ msgid "win required"
 msgstr ""
 
 msgid "yes"
+msgstr ""
+
+msgid "zero-point bye"
+msgstr ""
+
+#, python-brace-format
+msgid "{account} (deleted account)"
+msgstr ""
+
+#, python-brace-format
+msgid "{account}: access level {level} granted"
+msgstr ""
+
+#, python-brace-format
+msgid "{account}: access level {level} modified"
+msgstr ""
+
+#, python-brace-format
+msgid "{account}: access level {level} revoked"
 msgstr ""
 
 #, python-brace-format
@@ -14213,7 +14542,35 @@ msgid "{count} players"
 msgstr ""
 
 #, python-brace-format
+msgid "{count} players checked in at once"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} players checked out at once"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} players distributed between the tournaments"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} players imported"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} players imported, replacing the players there were"
+msgstr ""
+
+#, python-brace-format
 msgid "{count} players stored…"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} players updated"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} players updated from {source}"
 msgstr ""
 
 #, python-brace-format
@@ -14221,6 +14578,14 @@ msgid "{count} prize category successfully generated."
 msgid_plural "{count} prize categories successfully generated."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} teams checked in at once"
+msgstr ""
+
+#, python-brace-format
+msgid "{count} teams checked out at once"
+msgstr ""
 
 #, python-brace-format
 msgid "{date_format} HH:MM"
@@ -14298,6 +14663,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
+msgid "{old} renamed {new}"
+msgstr ""
+
+#, python-brace-format
 msgid "{opponent}, with Black"
 msgstr ""
 
@@ -14314,6 +14683,74 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-brace-format
+msgid "{player} added"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} added to team {team}"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} back in the tournament"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} checked in"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} checked out"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} deleted"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} modified"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} moved from [{old}] to [{new}]"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} no longer replaces {replaced}, who takes the seat back"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} removed from team {team}"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} replaces {replaced}"
+msgstr ""
+
+#, python-brace-format
+msgid "{player} withdrawn from the tournament"
+msgstr ""
+
+#, python-brace-format
+msgid "{player}: bonus or penalty changed from {old} to {new}"
+msgstr ""
+
+#, python-brace-format
+msgid "{player}: illegal move ({count})"
+msgstr ""
+
+#, python-brace-format
+msgid "{player}: illegal move removed ({count} left)"
+msgstr ""
+
+#, python-brace-format
+msgid "{player}: {bye}"
+msgstr ""
+
+#, python-brace-format
+msgid "{player}: {bye} removed"
+msgstr ""
 
 #, python-brace-format
 msgid "{plugin} (disabled)"
@@ -14337,6 +14774,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{screen}, page {page}"
+msgstr ""
+
+#, python-brace-format
+msgid "{source} ({address})"
 msgstr ""
 
 #, python-brace-format
@@ -14365,6 +14806,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{string}: {value}"
+msgstr ""
+
+#, python-brace-format
+msgid "{team}: bonus or penalty changed from {old_mp} MP / {old_gp} GP to {new_mp} MP / {new_gp} GP"
 msgstr ""
 
 #, python-brace-format

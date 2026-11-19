@@ -1,0 +1,73 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+{% for entry in journal_entries %}
+    <tr data-testid="journal-entry" data-entry-id="{{ entry.id }}" data-action="{{ entry.stored.action }}">
+        <td class="text-nowrap text-secondary">{{ entry.at_str }}</td>
+        <td class="text-nowrap">{{ journal_tournament_label(entry) or '' }}</td>
+        <td class="text-end">{{ entry.round or '' }}</td>
+        <td>
+            {% if entry.category %}
+                {% call components.icon_text(
+                    entry.category.icon_class,
+                    icon_class='text-secondary',
+                    attrs={'title': entry.category.label},
+                ) %}
+                    {% if entry.is_note %}
+                        <span class="journal-note">{{ entry.text }}</span>
+                    {% else %}
+                        {{ entry.sentence }}
+                        {% if entry.text %}
+                            <span class="d-block text-secondary">{{ entry.text }}</span>
+                        {% endif %}
+                    {% endif %}
+                {% endcall %}
+            {% else %}
+                {{ entry.sentence }}
+            {% endif %}
+        </td>
+        <td class="text-nowrap">{{ journal_author_label(entry.author) }}</td>
+        <td class="text-nowrap">
+            {% set source = entry.source %}
+            {% if source.host and source.kind in ('screen', 'network') %}
+                <span {{ macros.tooltip_attributes('info', source.host, 'left') }}>{{ journal_source_label(source) }}</span>
+            {% else %}
+                {{ journal_source_label(source) }}
+            {% endif %}
+        </td>
+        <td class="text-end">
+            {% if entry.is_note %}
+                {{ components.button(
+                    _('Delete the note'),
+                    kind='link',
+                    icon='delete',
+                    icon_only=true,
+                    size='sm',
+                    attrs={
+                        'hx-delete': url_for(
+                            'admin-journal-note-delete',
+                            event_uniq_id=admin_event.uniq_id,
+                            entry_id=entry.id,
+                        ),
+                        'hx-target': 'body',
+                        'hx-confirm': _('Delete this note?'),
+                        'data-testid': 'journal-note-delete',
+                    },
+                ) }}
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+{% if journal_more %}
+    {# Brings the next page of older entries once the end of the list is in
+       view, and takes its place. #}
+    <tr
+        hx-get="{{ url_for('admin-event-journal-entries', event_uniq_id=admin_event.uniq_id) }}?before_id={{ (journal_entries | last).id }}"
+        hx-include="#journal-filters"
+        hx-trigger="intersect once"
+        hx-target="this"
+        hx-swap="outerHTML"
+        data-testid="journal-more"
+    >
+        <td colspan="7" class="text-center text-secondary">{{ _('Loading…') }}</td>
+    </tr>
+{% endif %}

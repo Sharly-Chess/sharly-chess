@@ -1,4 +1,5 @@
 import copy
+from dataclasses import replace
 import json
 from datetime import datetime, timedelta
 from functools import partial
@@ -25,9 +26,11 @@ from common.exception import SharlyChessException
 from common.logger import get_logger
 from common.network import HOST_RESOLUTION_TIMEOUT, host_resolves
 from common.sharly_chess_config import SharlyChessConfig
+from data import journal
 from data.event import Event
+from data.journal import JournalAction, Source, coming_from
 from data.loader import EventLoader
-from data.player import TournamentPlayer
+from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -579,6 +582,17 @@ class SCESession(Session):
                     tournament_id=tournament.id,
                 )
             )
+            journal.record(
+                self.event.uniq_id,
+                JournalAction.PLAYER_ADDED,
+                tournament=tournament,
+                player_id=stored_player.id,
+                data={
+                    'player': Player.player_full_name(
+                        stored_player.first_name, stored_player.last_name
+                    )
+                },
+            )
             log_operation('Creation (local)')
             return True
         duplicate_tournament_player = duplicate_player.single_tournament_player
@@ -616,12 +630,15 @@ class SCESession(Session):
     def update_local_player(
         self, player: TournamentPlayer, data: SCEPlayerSyncData
     ) -> None:
+        stored_player = player.stored_player
+        before = copy.copy(stored_player)
         data.augment_stored_player(
-            player.stored_player,
+            stored_player,
             player.tournament,
             player.rating,
             player.rating_type,
         )
+        self._record_local_player_changes(player, before)
         sce_tournament_id = SCEUtils.get_tournament_plugin_data(player.tournament).id
         if sce_tournament_id != data.tournament_id:
             # Player changed tournament
@@ -629,6 +646,41 @@ class SCESession(Session):
                 self.event, data.tournament_id
             )
             self.event.move_player_to_tournament(player, new_tournament)
+
+    def _record_local_player_changes(
+        self, player: TournamentPlayer, before: StoredPlayer
+    ) -> None:
+        """Journal what Sharly-Chess.com changed in *player*: a check-in, a
+        new name, or anything else."""
+        after = player.stored_player
+        old_name = Player.player_full_name(before.first_name, before.last_name)
+        new_name = Player.player_full_name(after.first_name, after.last_name)
+        if after.check_in != before.check_in:
+            journal.record(
+                self.event.uniq_id,
+                JournalAction.PLAYER_CHECKED_IN
+                if after.check_in
+                else JournalAction.PLAYER_CHECKED_OUT,
+                tournament=player.tournament,
+                player_id=player.id,
+                data={'player': new_name},
+            )
+        if new_name != old_name:
+            journal.record(
+                self.event.uniq_id,
+                JournalAction.PLAYER_RENAMED,
+                tournament=player.tournament,
+                player_id=player.id,
+                data={'old': old_name, 'new': new_name},
+            )
+        elif replace(before, check_in=after.check_in) != after:
+            journal.record(
+                self.event.uniq_id,
+                JournalAction.PLAYER_EDITED,
+                tournament=player.tournament,
+                player_id=player.id,
+                data={'player': new_name},
+            )
 
     def _import_sce_payment(
         self,
@@ -887,15 +939,19 @@ class SCESession(Session):
         stored_tournament.id = database.add_stored_tournament(stored_tournament)
         tournament = Tournament(self.event, stored_tournament)
         self.event.tournaments_by_id[tournament.id] = tournament
-        for registration_data in raw_data['registrations']:
-            self._create_local_player(
-                registration_data['id'],
-                SCEPlayerSyncData.from_sce_data(
-                    self.event, registration_data, sce_id, with_mail=True
-                ),
-                tournament,
-                database,
-            )
+        with journal.not_journaled('the players of the tournament imported'):
+            for registration_data in raw_data['registrations']:
+                self._create_local_player(
+                    registration_data['id'],
+                    SCEPlayerSyncData.from_sce_data(
+                        self.event, registration_data, sce_id, with_mail=True
+                    ),
+                    tournament,
+                    database,
+                )
+        tournament.record(
+            JournalAction.TOURNAMENT_IMPORTED, data={'source': 'Sharly-Chess.com'}
+        )
 
     def _create_tournament_request(
         self, data: SCETournamentSyncData
@@ -1182,7 +1238,10 @@ class SCESession(Session):
             'allow_multiple_tournament_registrations'
         ]
         with EventDatabase(stored_event.uniq_id, True) as database:
-            database.update_stored_event(stored_event)
+            with journal.not_journaled(
+                'the event settings kept in step with Sharly-Chess.com'
+            ):
+                database.update_stored_event(stored_event)
             if is_create:
                 for tournament_data in data['tournaments']:
                     self._create_local_tournament(tournament_data, database)
@@ -1273,6 +1332,12 @@ class SCESession(Session):
     def sync_event(self) -> SCESyncStatus:
         """Synchronize the event with its SC.com equivalent.
         Raises a SharlyChessException if it fails."""
+        # What the synchronisation changes comes from Sharly-Chess.com, on
+        # behalf of whoever started it, if anybody.
+        with coming_from(Source.plugin('Sharly-Chess.com')):
+            return self._sync_event()
+
+    def _sync_event(self) -> SCESyncStatus:
         self._log_sync_operation('Sync started', is_info=True)
         builder = SCEBatchBuilder()
         batch_counters = _BatchSyncCounters()
@@ -1603,3 +1668,9 @@ class SCESession(Session):
         self._run_with_token_validation(partial(request_function, tournament_id=sce_id))
         plugin_data.check_in_open = not check_in_open
         SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        tournament.record(
+            JournalAction.CHECK_IN_CLOSED
+            if check_in_open
+            else JournalAction.CHECK_IN_OPENED,
+            data={'source': 'Sharly-Chess.com'},
+        )

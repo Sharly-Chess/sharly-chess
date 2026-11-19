@@ -16,7 +16,9 @@ from common.i18n import _, pgettext
 from common.i18n.utils import by, normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data import journal
 from data.account import Account, Permission
+from data.journal import JournalAction
 from data.rating_sequences import (
     DEFAULT_UNRATED_RATING,
     PrescribedRatingRule,
@@ -696,6 +698,28 @@ class Event:
                     replaced_player_id=replaced_player_id,
                     replaced_from_round=replaced_from_round,
                 )
+            name = Player.player_full_name(
+                stored_player.first_name, stored_player.last_name
+            )
+            if replaced_player_id is not None:
+                [tournament] = tournaments
+                replaced = tournament.tournament_players_by_id[replaced_player_id]
+                journal.record(
+                    self.uniq_id,
+                    JournalAction.PLAYER_REPLACED,
+                    tournament=tournament,
+                    round_=replaced_from_round,
+                    player_id=stored_player.id,
+                    data={'player': name, 'replaced': replaced.full_name},
+                )
+            else:
+                journal.record(
+                    self.uniq_id,
+                    JournalAction.PLAYER_ADDED,
+                    tournament=tournaments[0] if len(tournaments) == 1 else None,
+                    player_id=stored_player.id,
+                    data={'player': name},
+                )
         for tournament in tournaments:
             tournament.pairing_system.players_joined(tournament)
         assert stored_player.id is not None
@@ -719,6 +743,13 @@ class Event:
                 entered_tournament.withdraw_replacement(tournament_player)
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
+            journal.record(
+                self.uniq_id,
+                JournalAction.PLAYER_DELETED,
+                tournament=player.optional_single_tournament,
+                player_id=player.id,
+                data={'player': player.full_name},
+            )
         del self.players_by_id[player.id]
         tournament = player.optional_single_tournament
         if tournament is not None:
@@ -776,14 +807,46 @@ class Event:
     def update_player(self, player: Player, new_stored_player: StoredPlayer) -> None:
         new_stored_player.id = player.id
         new_stored_player.check_in = player.check_in
+        old_stored_player = player.stored_player
+        old_name = Player.player_full_name(
+            old_stored_player.first_name, old_stored_player.last_name
+        )
+        new_name = Player.player_full_name(
+            new_stored_player.first_name, new_stored_player.last_name
+        )
         player.replace_stored_player(new_stored_player)
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_player(player.stored_player)
+            tournament = player.optional_single_tournament
+            if new_name != old_name:
+                journal.record(
+                    self.uniq_id,
+                    JournalAction.PLAYER_RENAMED,
+                    tournament=tournament,
+                    player_id=player.id,
+                    data={'old': old_name, 'new': new_name},
+                )
+            elif old_stored_player != new_stored_player:
+                journal.record(
+                    self.uniq_id,
+                    JournalAction.PLAYER_EDITED,
+                    tournament=tournament,
+                    player_id=player.id,
+                    data={'player': new_name},
+                )
 
-    def update_players(self, players: list[Player]) -> None:
+    def update_players(self, players: list[Player], source: str | None = None) -> None:
+        """Save *players*, updated from *source* (a rating list, a data
+        source)."""
         with EventDatabase(self.uniq_id, True) as database:
             for player in players:
                 database.update_stored_player(player.stored_player)
+            if players:
+                journal.record(
+                    self.uniq_id,
+                    JournalAction.PLAYERS_UPDATED,
+                    data={'count': len(players), 'source': source},
+                )
 
     def _are_player_duplicates(
         self, stored_player: StoredPlayer, player: Player
@@ -955,6 +1018,17 @@ class Event:
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
+            journal.record(
+                self.uniq_id,
+                JournalAction.PLAYER_MOVED,
+                tournament=destination_tournament,
+                player_id=player.id,
+                data={
+                    'player': player.full_name,
+                    'old': source_tournament.name,
+                    'new': destination_tournament.name,
+                },
+            )
         player.optional_single_tournament_id = destination_tournament.id
         self.clear_player_cache()
         destination_tournament.pairing_system.players_joined(destination_tournament)
@@ -982,6 +1056,11 @@ class Event:
                 )
                 del source_tournament.tournament_players_by_id[player.id]
                 player.optional_single_tournament_id = target_tournament.id
+            journal.record(
+                self.uniq_id,
+                JournalAction.PLAYERS_DISTRIBUTED,
+                data={'count': len(target_tournament_ids_by_player_id)},
+            )
         self.clear_player_cache()
         for target_tournament_id in set(target_tournament_ids_by_player_id.values()):
             target_tournament = self.tournaments_by_id[target_tournament_id]
@@ -1090,6 +1169,17 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             stored_team.id = database.add_stored_team(stored_team)
             self.stored_event.stored_teams.append(stored_team)
+            journal.record(
+                self.uniq_id,
+                JournalAction.TEAM_ADDED,
+                tournament=(
+                    self.tournaments_by_id.get(stored_team.tournament_id)
+                    if stored_team.tournament_id is not None
+                    else None
+                ),
+                team_id=stored_team.id,
+                data={'team': stored_team.name},
+            )
         self.clear_team_cache()
         for tournament in self.tournaments:
             tournament.clear_team_cache()
@@ -1105,6 +1195,13 @@ class Event:
             )
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_team(team.id)
+            journal.record(
+                self.uniq_id,
+                JournalAction.TEAM_DELETED,
+                tournament=team.tournament,
+                team_id=team.id,
+                data={'team': team.name},
+            )
         self.stored_event.stored_teams = [
             stored_team
             for stored_team in self.stored_event.stored_teams
@@ -1468,7 +1565,12 @@ class Event:
         """Sets own accounts if not already done"""
         if not self.predefined_accounts:
             raise ValueError('Default accounts already exist.')
-        with EventDatabase(self.uniq_id, True) as database:
+        with (
+            journal.not_journaled(
+                'the default accounts, already in effect, written down'
+            ),
+            EventDatabase(self.uniq_id, True) as database,
+        ):
             for account in self.accounts:
                 stored_account = account.stored_account
                 database.add_stored_account(stored_account)
@@ -1488,6 +1590,7 @@ class Event:
             for stored_role in stored_account.stored_roles:
                 stored_role.account_id = account_id
                 self.set_account_role(database, stored_role)
+            self._record_account(JournalAction.ACCOUNT_CREATED, Account(stored_account))
         self.stored_event.stored_accounts.append(stored_account)
         account = Account(stored_account)
         self.accounts_by_id[account.id] = account
@@ -1500,10 +1603,29 @@ class Event:
             for stored_role in stored_account.stored_roles:
                 stored_role.account_id = stored_account.id
                 self.set_account_role(database, stored_role)
+            self._record_account(JournalAction.ACCOUNT_UPDATED, Account(stored_account))
+
+    def _record_account(
+        self,
+        action: JournalAction,
+        account: Account,
+        permission: Permission | None = None,
+    ) -> None:
+        journal.record(
+            self.uniq_id,
+            action,
+            data={'account': account.full_name, 'account_id': account.id}
+            | (
+                {'level': permission.access_level.localized_name()}
+                if permission is not None
+                else {}
+            ),
+        )
 
     def delete_account(self, account: Account) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_account(account.id)
+            self._record_account(JournalAction.ACCOUNT_DELETED, account)
             database.commit()
         with suppress(ValueError):
             self.stored_event.stored_accounts.remove(account.stored_account)
@@ -1546,6 +1668,9 @@ class Event:
             database.add_stored_permission(stored_permission)
             account.stored_account.stored_permissions.append(stored_permission)
             self._delete_redundant_account_permissions(account, database)
+            self._record_account(
+                JournalAction.PERMISSION_GRANTED, account, Permission(stored_permission)
+            )
 
     def update_account_permission(
         self,
@@ -1560,6 +1685,9 @@ class Event:
             stored_permissions.remove(permission.stored_permission)
             stored_permissions.append(stored_permission)
             self._delete_redundant_account_permissions(account, database)
+            self._record_account(
+                JournalAction.PERMISSION_CHANGED, account, Permission(stored_permission)
+            )
 
     def delete_account_permission(
         self, account: Account, permission: Permission
@@ -1567,6 +1695,7 @@ class Event:
         stored_permission = permission.stored_permission
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_permission(stored_permission)
+            self._record_account(JournalAction.PERMISSION_REVOKED, account, permission)
         account.stored_account.stored_permissions.remove(stored_permission)
 
     @property
