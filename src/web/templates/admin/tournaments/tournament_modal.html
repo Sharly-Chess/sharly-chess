@@ -838,7 +838,7 @@
                         class="collapse-button {% if not force_points_open %}collapsed{% endif %} mt-3"
                         data-bs-toggle="collapse"
                         data-bs-target="#points-collapse"
-                        aria-expanded="false"
+                        aria-expanded="{{ 'true' if force_points_open else 'false' }}"
                     >
                         <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                             <i class="bi-chevron-down text-body"></i>
@@ -848,7 +848,7 @@
                             </span>
                         </h4>
                     </button>
-                    <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
+                    <div id="points-collapse" class="collapse collapse-state-not-saved{% if force_points_open %} show{% endif %}">
                         {% if is_team_event %}
                             {{ components.section_heading(_('Game points'), sub=true) }}
                         {% endif %}
@@ -1103,7 +1103,7 @@
                         class="collapse-button {% if not force_criteria_open %}collapsed{% endif %} mt-3"
                         data-bs-toggle="collapse"
                         data-bs-target="#criteria-collapse"
-                        aria-expanded="false"
+                        aria-expanded="{{ 'true' if force_criteria_open else 'false' }}"
                     >
                         <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                             <i class="bi-chevron-down text-body"></i>
@@ -1115,7 +1115,7 @@
                             {% endif %}
                         </h4>
                     </button>
-                    <div id="criteria-collapse" class="{% if not force_criteria_open %}collapse{% endif %}">
+                    <div id="criteria-collapse" class="collapse collapse-state-not-saved{% if force_criteria_open %} show{% endif %}">
                         <div class="row">
                             {% for criterion in tournament_criteria %}
                                 {% include criterion.template_name %}

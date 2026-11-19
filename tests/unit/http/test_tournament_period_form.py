@@ -374,7 +374,10 @@ def test_an_open_schedule_says_so_in_its_markup(http: TestClient, event: str):
     whether it was open by reading its own `show` class back, so an open
     one that does not carry it comes back collapsed."""
     section = _section(http, event, round_3_period_start='on')
-    assert 'id="schedule-collapse" class="collapse show"' in section
+    assert (
+        'id="schedule-collapse" class="collapse collapse-state-not-saved show"'
+        in section
+    )
     assert 'aria-expanded="true"' in section
 
 
@@ -389,7 +392,10 @@ def test_a_collapsed_schedule_stays_collapsed(http: TestClient, event: str):
         },
     )
     assert response.status_code == 200
-    assert 'id="schedule-collapse" class="collapse"' in response.text
+    assert (
+        'id="schedule-collapse" class="collapse collapse-state-not-saved"'
+        in response.text
+    )
     assert 'aria-expanded="false"' in response.text
 
 
