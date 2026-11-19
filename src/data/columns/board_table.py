@@ -86,7 +86,7 @@ class NumberColumn(BoardColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-end'
+        return 'text-center'
 
 
 class WhitePointsColumn(BoardColumn):

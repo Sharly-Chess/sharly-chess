@@ -545,6 +545,15 @@ class ScreenType(IdentifiableEntity, ABC):
             return _('Check-in')
         return _('Result entry')
 
+    def client_can_input(self, client: Client, tournament_id: int) -> bool:
+        """Whether *client* may use a screen of this type that accepts input
+        for the tournament *tournament_id*."""
+        if self.allows_check_in:
+            return client.can_check_in_players(tournament_id)
+        return client.can_enter_results(tournament_id) or client.can_update_results(
+            tournament_id
+        )
+
     def input_form_values(self, data: dict[str, str]) -> dict:
         """The input switches read from the submitted form *data*."""
         from web.controllers.base_controller import WebContext

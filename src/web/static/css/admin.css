@@ -129,6 +129,12 @@
     opacity: 75%;
 }
 
+.fixed-board-number {
+    border: 1px solid var(--bs-secondary-color);
+    border-radius: var(--bs-border-radius);
+    padding: .25rem;
+}
+
 .pairing-modal .result-button {
     border: 3px white solid;
     display: flex;

@@ -1,14 +1,19 @@
 {% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/screens/screen_badges.j2' as screen_badges with context %}
 
 {% set display_url = url_for('admin-event-display-tab', event_uniq_id=admin_event.uniq_id) %}
 
-{% macro _tile(name, url, preview_url, testid, icon=none, links=[], pages=0) %}
+{% macro _tile(name, url, preview_url, testid, icon=none, links=[], pages=0, screen=none) %}
     <div class="card feed-preview {% if pages > 1 %}feed-preview-paged{% endif %}" data-testid="{{ testid }}">
         <a class="card-header d-flex align-items-center gap-2 min-width-0 text-reset text-decoration-none" href="{{ url }}">
             {% if icon %}{{ icon }}{% endif %}
             <span class="fw-bold text-truncate">{{ name }}</span>
-            {% if pages > 1 %}
-                <span class="ms-auto">{{ components.badge('neutral', ngettext('%(num)d page', '%(num)d pages', pages), icon='bi-window-split') }}</span>
+            {% set editable = screen is not none and screen.accepts_input_from(client) %}
+            {% if editable or pages > 1 %}
+                <span class="ms-auto d-flex flex-shrink-0 gap-1">
+                    {% if editable %}{{ screen_badges.input(screen) }}{% endif %}
+                    {% if pages > 1 %}{{ components.badge('neutral', ngettext('%(num)d page', '%(num)d pages', pages), icon='bi-window-split') }}{% endif %}
+                </span>
             {% endif %}
         </a>
         <a class="feed-preview-frame" href="{{ url }}" aria-label="{{ name }}">
@@ -150,10 +155,10 @@
                             {% for page in pages %}
                                 {% do links.append((page.range_label, url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=page.uniq_id))) %}
                             {% endfor %}
-                            {{ _tile(item.display_name, open_url, _preview(first_url), 'display-screen', links=links, pages=pages|length) }}
+                            {{ _tile(item.display_name, open_url, _preview(first_url), 'display-screen', links=links, pages=pages|length, screen=item) }}
                         {% else %}
                             {% set screen_url = url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=item.uniq_id) %}
-                            {{ _tile(item.name, screen_url, _preview(screen_url), 'display-screen') }}
+                            {{ _tile(item.name, screen_url, _preview(screen_url), 'display-screen', screen=item) }}
                         {% endif %}
                     {% endfor %}
                 </div>
