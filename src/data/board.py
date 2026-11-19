@@ -4,6 +4,7 @@ from functools import total_ordering
 from typing import TYPE_CHECKING, Literal
 
 from common.i18n import _
+from data.journal import JournalAction
 from database.sqlite.event.event_store import StoredBoard, set_stored_fields
 from database.sqlite.event.event_database import EventDatabase
 from utils.date_time import format_time
@@ -374,6 +375,16 @@ class Board:  # noqa: PLW1641
         self.replace_player(white_player, 'black')
         with EventDatabase(self.tournament.event.uniq_id, True) as database:
             database.update_stored_board(self.stored_board)
+            self.tournament.record(
+                JournalAction.COLOURS_SWAPPED,
+                self.round,
+                board_id=self.id,
+                data={
+                    'board': self.number,
+                    'white': black_player.full_name,
+                    'black': white_player.full_name,
+                },
+            )
 
     def set_last_result_update(
         self, new_result: Result, database: EventDatabase

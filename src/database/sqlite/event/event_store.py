@@ -215,6 +215,27 @@ class StoredTeamPointAdjustment:
 
 
 @dataclass
+class StoredJournalEntry:
+    """Something done to the event, as the journal recorded it."""
+
+    id: int | None
+    at: datetime
+    action: str
+    source_kind: str
+    source_name: str | None = None
+    host: str | None = None
+    author_kind: str | None = None
+    account_id: int | None = None
+    tournament_id: int | None = None
+    round_: int | None = None
+    board_id: int | None = None
+    player_id: int | None = None
+    team_id: int | None = None
+    data: dict[str, Any] = field(default_factory=dict)
+    text: str | None = None
+
+
+@dataclass
 class StoredPibe:
     """A pairing integrity breaching event: something done to a round after
     the rounds that followed were paired from it."""

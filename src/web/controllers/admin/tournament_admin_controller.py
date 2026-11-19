@@ -1,7 +1,7 @@
 import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from dataclasses import replace
+from dataclasses import fields, replace
 import json
 import random
 from collections import defaultdict, Counter
@@ -39,6 +39,7 @@ from data.rating_sequences import (
 from utils.enum import PlayerRatingType, RatingPreference
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
+from data.journal import JournalAction
 from data.snapshot import SnapshotReason
 from data.snapshot_worker import SnapshotScheduler
 from data.championship.championship_loader import ChampionshipLoader
@@ -54,7 +55,11 @@ from data.input_output.tournament_importer_options import (
 )
 from data.input_output.tournament_importers import TournamentImporter
 from data.input_output.trf.trf_importer import TrfTournamentImporter
-from data.pairings import PairingSystem, PairingSystemManager
+from data.pairings import (
+    PairingSystem,
+    PairingSystemManager,
+    PairingVariationManager,
+)
 from data.pairings.systems import (
     SwissPairingSystem,
     TeamSwissPairingSystem,
@@ -214,6 +219,32 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
                 AuthAction.VIEW_TOURNAMENTS_TAB
             ),
         }
+
+
+#: The fields of a tournament its form does not set, or whose change is
+#: journaled on its own.
+_TOURNAMENT_FIELDS_NOT_SETTINGS = frozenset(
+    {
+        'id',
+        'index',
+        'name',
+        'rounds',
+        'pairing',
+        'pairing_settings',
+        'published_round',
+        'check_in_open',
+        'last_update',
+        'last_player_update',
+        'last_pairing_update',
+        'fide_mode_exit_round',
+        'manual_pairing_round',
+        'manual_pairing_boards',
+        'tie_break_rating',
+        'round_robin_schedule',
+        'round_robin_schedule_draft',
+        'plugin_data',
+    }
+)
 
 
 class TournamentAdminController(BaseEventAdminController):
@@ -1600,6 +1631,15 @@ class TournamentAdminController(BaseEventAdminController):
         overrides = rule_set.tie_breaks_for_pairing(system_id)
         if not overrides:
             return
+        existing = [
+            (stored_tie_break.type, stored_tie_break.options)
+            for stored_tie_break in sorted(
+                database.load_tournament_stored_tie_breaks(stored_tournament.id),
+                key=lambda stored_tie_break: stored_tie_break.index,
+            )
+        ]
+        if existing == [(tb_type, dict(options)) for tb_type, options in overrides]:
+            return
         # Rule sets carry standings criteria, so the list replaced here is a
         # standings one.
         database.delete_all_tournament_stored_tie_breaks(stored_tournament.id)
@@ -1612,6 +1652,12 @@ class TournamentAdminController(BaseEventAdminController):
                     options=dict(options),
                     index=index,
                 )
+            )
+        if (
+            tournament := event.tournaments_by_id.get(stored_tournament.id)
+        ) is not None:
+            tournament.record(
+                JournalAction.TIE_BREAKS_CHANGED, tournament.current_round or None
             )
 
     @get(
@@ -2066,12 +2112,14 @@ class TournamentAdminController(BaseEventAdminController):
                         stored_tournament.id, None, None
                     )
                 self._apply_rule_set_tie_breaks(database, event, stored_tournament)
+                self._record_tournament_changes(tournament, stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
                 ).format(tournament=stored_tournament.name)
             else:
                 stored_tournament.id = database.add_stored_tournament(stored_tournament)
                 tournament = Tournament(event, stored_tournament)
+                tournament.record(JournalAction.TOURNAMENT_CREATED)
                 if action == FormAction.CLONE:
                     base_tournament = web_context.get_admin_tournament()
                     assert tournament.id is not None
@@ -2198,6 +2246,58 @@ class TournamentAdminController(BaseEventAdminController):
         Message.success(request, success_message)
         return self._admin_event_tournaments_render(web_context)
 
+    @staticmethod
+    def _record_tournament_changes(
+        tournament: Tournament, stored_tournament: StoredTournament
+    ) -> None:
+        """Journal what the update of *tournament* to *stored_tournament*
+        changes that matters to the arbitration."""
+        old = tournament.stored_tournament
+        current_round = tournament.current_round or None
+        if stored_tournament.name != old.name:
+            tournament.record(
+                JournalAction.TOURNAMENT_RENAMED,
+                data={'old': old.name, 'new': stored_tournament.name},
+            )
+        if stored_tournament.rounds != old.rounds:
+            tournament.record(
+                JournalAction.ROUNDS_CHANGED,
+                current_round,
+                data={'old': old.rounds, 'new': stored_tournament.rounds},
+            )
+        settings = [
+            field.name
+            for field in fields(StoredTournament)
+            if not field.name.startswith('stored_')
+            and field.name not in _TOURNAMENT_FIELDS_NOT_SETTINGS
+        ]
+        if any(
+            getattr(stored_tournament, name) != getattr(old, name) for name in settings
+        ) or [
+            stored_period.first_round
+            for stored_period in stored_tournament.stored_tournament_periods
+        ] != [
+            stored_period.first_round for stored_period in old.stored_tournament_periods
+        ]:
+            tournament.record(JournalAction.TOURNAMENT_SETTINGS_CHANGED, current_round)
+        if stored_tournament.pairing != old.pairing:
+            manager = PairingVariationManager(tournament.event)
+
+            def variation_name(variation_id: str) -> str:
+                try:
+                    return manager.get_object(variation_id).name
+                except Exception:
+                    return variation_id
+
+            tournament.record(
+                JournalAction.PAIRING_SYSTEM_CHANGED,
+                current_round,
+                data={
+                    'old': variation_name(old.pairing),
+                    'new': variation_name(stored_tournament.pairing),
+                },
+            )
+
     @post(
         path='/tournament-create/{event_uniq_id:str}',
         name='admin-tournament-create',
@@ -2305,6 +2405,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
+            web_context.get_admin_tournament().record(JournalAction.TOURNAMENT_DELETED)
         Message.success(
             request,
             _('Tournament [{tournament}] has been deleted.').format(
@@ -2514,6 +2615,10 @@ class TournamentAdminController(BaseEventAdminController):
                 request, tournament_id, reload_event=True
             )
             tournament = web_context.get_admin_tournament()
+            tournament.record(
+                JournalAction.TOURNAMENT_IMPORTED,
+                data={'count': len(tournament.tournament_players)},
+            )
             Message.success(
                 request,
                 _('Tournament [{tournament}] successfully imported.').format(
@@ -3223,7 +3328,10 @@ class TournamentAdminController(BaseEventAdminController):
             and tournament.started
             and tournament.tie_break_config_purpose != TieBreakPurpose.ADVANCEMENT
         ):
+            before = self._tie_break_list(tournament)
+            configuration = self._tie_break_configuration(tournament)
             yield
+            self._record_tie_breaks_change(tournament, before, configuration)
             return
         if self.tie_breaks_fixed(tournament) and not SessionTieBreaksUnlocked(
             web_context.request
@@ -3232,6 +3340,7 @@ class TournamentAdminController(BaseEventAdminController):
                 f'The tie-breaks of tournament [{tournament.name}] are fixed.'
             )
         before = self._tie_break_list(tournament)
+        configuration = self._tie_break_configuration(tournament)
         # Changing the tie-breaks of a started tournament is a pairing
         # integrity breaching event: the arbiter has to be able to put them
         # back as they were.
@@ -3249,6 +3358,37 @@ class TournamentAdminController(BaseEventAdminController):
                     f'{before} => {after}',
                 )
             )
+        self._record_tie_breaks_change(tournament, before, configuration)
+
+    @classmethod
+    def _record_tie_breaks_change(
+        cls,
+        tournament: Tournament,
+        before: str,
+        configuration: list[tuple[str, dict[str, Any]]],
+    ) -> None:
+        """Journal the change of the tie-breaks, naming them when their
+        names changed: an option may change without them."""
+        if cls._tie_break_configuration(tournament) == configuration:
+            return
+        after = cls._tie_break_list(tournament)
+        tournament.record(
+            JournalAction.TIE_BREAKS_CHANGED,
+            tournament.current_round or None,
+            data={'old': before, 'new': after} if after != before else None,
+        )
+
+    @staticmethod
+    def _tie_break_configuration(
+        tournament: Tournament,
+    ) -> list[tuple[str, dict[str, Any]]]:
+        return [
+            (stored.type, stored.options)
+            for stored in (
+                tie_break.to_stored_value()
+                for tie_break in tournament.tie_break_configuration.all
+            )
+        ]
 
     @staticmethod
     def _tie_break_list(tournament: Tournament) -> str:

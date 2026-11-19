@@ -19,7 +19,9 @@ from common.logger import get_logger
 from data.account import Account
 from data.board import Board, compute_round_board_numbers
 from data.board_operations import BoardOperations
+from data import journal
 from data.criteria.managers import TournamentCriterionManager
+from data.journal import JournalAction
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
 from data.pairings.round_robin_schedule import RoundRobinSchedule, ScheduleBreach
@@ -309,9 +311,14 @@ class Tournament:
         return self.stored_tournament.tie_break_rating or ''
 
     def set_tie_break_rating(self, tie_break_rating: str) -> None:
+        changed = self.stored_tournament.tie_break_rating != tie_break_rating
         self.stored_tournament.tie_break_rating = tie_break_rating
         with EventDatabase(self.event.uniq_id, True) as database:
             database.update_stored_tournament(self.stored_tournament)
+            if changed:
+                self.record(
+                    JournalAction.TIE_BREAKS_CHANGED, self.current_round or None
+                )
 
     def tie_break_period(self, round_: int) -> TournamentPeriod | None:
         """The period whose ratings a tie-break reads for a game of this
@@ -898,6 +905,7 @@ class Tournament:
         exit_round = self.current_round if self.has_pairings else None
         with EventDatabase(self.event.uniq_id, True) as database:
             database.leave_tournament_fide_mode(self.id, exit_round)
+            self.record(JournalAction.FIDE_MODE_LEFT, exit_round)
         self.stored_tournament.fide_mode = False
         self.stored_tournament.fide_mode_exit_round = exit_round
 
@@ -929,6 +937,7 @@ class Tournament:
                 if board.stored_board.white_player_id is not None
             ],
         )
+        self.record(JournalAction.MANUAL_PAIRING_STARTED, round_)
 
     @property
     def manual_pairing_start_boards(self) -> list[tuple[StoredBoard, Result]]:
@@ -972,7 +981,9 @@ class Tournament:
         differ from the pairing engine's."""
         if pibe is not None:
             self.log_pibe(pibe)
+        round_ = self.stored_tournament.manual_pairing_round
         self._set_manual_pairing(None, [])
+        self.record(JournalAction.MANUAL_PAIRING_ENDED, round_)
 
     def cancel_manual_pairing(self, round_: int) -> None:
         """*round_* has been unpaired: nothing is left to check, and its
@@ -1109,9 +1120,11 @@ class Tournament:
         it was played needs no correction."""
         white_id, black_id = board.white_player_id, board.black_player_id
         assert white_id is not None and black_id is not None
-        self.remove_rating_correction(board)
         if white_player_id == white_id and result == board.result:
+            self.remove_rating_correction(board)
             return
+        with journal.not_journaled('replaced by the correction that follows'):
+            self.remove_rating_correction(board)
         stored = StoredRatingCorrection(
             id=None,
             tournament_id=self.id,
@@ -1122,6 +1135,17 @@ class Tournament:
         )
         with EventDatabase(self.event.uniq_id, True) as database:
             database.add_stored_rating_correction(stored)
+            players = self.tournament_players_by_id
+            self.record(
+                JournalAction.RATING_CORRECTION_SET,
+                board.round,
+                board_id=board.id,
+                data={
+                    'white': players[stored.white_player_id].full_name,
+                    'black': players[stored.black_player_id].full_name,
+                    'result': int(result),
+                },
+            )
         self.stored_tournament.stored_rating_corrections.append(stored)
         self.stored_tournament.stored_rating_corrections.sort(
             key=lambda correction: correction.round_
@@ -1130,10 +1154,23 @@ class Tournament:
     def remove_rating_correction(self, board: Board) -> None:
         white_id, black_id = board.white_player_id, board.black_player_id
         assert white_id is not None and black_id is not None
+        corrected = any(
+            stored.round_ == board.round
+            and {stored.white_player_id, stored.black_player_id} == {white_id, black_id}
+            for stored in self.stored_tournament.stored_rating_corrections
+        )
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_rating_correction(
                 self.id, board.round, (white_id, black_id)
             )
+            if corrected:
+                white, black = self.journal_game(board)
+                self.record(
+                    JournalAction.RATING_CORRECTION_REMOVED,
+                    board.round,
+                    board_id=board.id,
+                    data={'white': white, 'black': black},
+                )
         self.stored_tournament.stored_rating_corrections = [
             stored
             for stored in self.stored_tournament.stored_rating_corrections
@@ -1414,13 +1451,19 @@ class Tournament:
                 setting.default_value(self)
             )
         if modified_settings:
-            self.update_pairing_settings(
-                self.stored_pairing_settings | modified_settings
-            )
+            with journal.not_journaled('settings given their default value'):
+                self.update_pairing_settings(
+                    self.stored_pairing_settings | modified_settings
+                )
 
     def update_pairing_settings(self, pairing_settings: dict[str, Any]) -> None:
+        changed = self.stored_pairing_settings != pairing_settings
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
+            if changed:
+                self.record(
+                    JournalAction.PAIRING_SETTINGS_CHANGED, self.current_round or None
+                )
         self.stored_tournament.pairing_settings = pairing_settings
         Utils.reset_cached_properties(self, 'pairing_settings')
 
@@ -2120,8 +2163,13 @@ class Tournament:
         )
 
     def set_published_round(self, round_: int) -> None:
+        old_round = self.stored_tournament.published_round
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_published_round(self.id, round_)
+            if round_ > old_round:
+                self.record(JournalAction.ROUND_PUBLISHED, round_)
+            elif round_ < old_round:
+                self.record(JournalAction.ROUND_UNPUBLISHED, old_round)
         self.stored_tournament.published_round = round_
 
     @property
@@ -2291,10 +2339,75 @@ class Tournament:
             return _(
                 'Round {round} is already paired. Unpair it before pairing it again.'
             ).format(round=at_round)
-        self.persist_pairing_variation()
-        self.persist_automatic_rounds()
-        return self.pairing_variation.engine.generate_pairings(
+        with journal.not_journaled('fixed by the pairing of the round'):
+            self.persist_pairing_variation()
+            self.persist_automatic_rounds()
+        error = self.pairing_variation.engine.generate_pairings(
             self, at_round, partial_pairings
+        )
+        if not error:
+            self.record_round_paired(at_round, partial_pairings)
+        return error
+
+    def record(
+        self,
+        action: JournalAction,
+        round_: int | None = None,
+        *,
+        board_id: int | None = None,
+        player_id: int | None = None,
+        team_id: int | None = None,
+        data: dict[str, Any] | None = None,
+        text: str | None = None,
+    ) -> None:
+        """Journal *action*, done to this tournament."""
+        journal.record(
+            self.event.uniq_id,
+            action,
+            tournament=self,
+            round_=round_,
+            board_id=board_id,
+            player_id=player_id,
+            team_id=team_id,
+            data=data,
+            text=text,
+        )
+
+    @staticmethod
+    def journal_game(board: Board | TeamBoard) -> list[str | None]:
+        """The two sides of *board* by name, for the journal."""
+        if isinstance(board, TeamBoard):
+            team_b = board.team_b
+            return [board.team_a.name, team_b.name if team_b else None]
+        white = board.optional_white_tournament_player
+        black = board.black_tournament_player
+        return [
+            white.full_name if white else None,
+            black.full_name if black else None,
+        ]
+
+    def record_games(
+        self,
+        action: JournalAction,
+        round_: int,
+        boards: list[Board] | list[TeamBoard],
+    ) -> None:
+        self.record(
+            action,
+            round_,
+            board_id=(
+                boards[0].id
+                if len(boards) == 1 and isinstance(boards[0], Board)
+                else None
+            ),
+            data={'games': [self.journal_game(board) for board in boards]},
+        )
+
+    def record_round_paired(self, round_: int, partial: bool = False) -> None:
+        self.record(
+            JournalAction.ROUND_PAIRED,
+            round_,
+            data={'partial': True} if partial else None,
         )
 
     def persist_pairing_variation(self) -> None:
@@ -2684,6 +2797,7 @@ class Tournament:
             )
         assert board.black_tournament_player is not None
 
+        old_result = board.white_pairing.result
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             board.white_pairing.update_result(event_database, white_result)
             board.black_pairing.update_result(
@@ -2691,6 +2805,7 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
+            self._record_result(board, old_result, white_result)
 
         self.knockout.forget_settled_winners(board)
 
@@ -2728,9 +2843,16 @@ class Tournament:
                 f'Board [{board.stored_board.id}] has a forfeit hole, '
                 f'it cannot take the result [{white_result}].'
             )
+        old_result = pairing.result
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             pairing.update_result(event_database, player_result)
             board.set_last_result_update(player_result, event_database)
+            if board.optional_white_tournament_player is not None:
+                self._record_result(board, old_result, player_result)
+            else:
+                self._record_result(
+                    board, old_result.opposite_result, player_result.opposite_result
+                )
 
         self.knockout.forget_settled_winners(board)
 
@@ -2751,10 +2873,12 @@ class Tournament:
     def delete_result(self, board: Board) -> None:
         """Deletes the result for the given `board`."""
         assert board.black_tournament_player is not None
+        old_result = board.white_pairing.result
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
+            self._record_result(board, old_result, Result.NO_RESULT)
 
         self.knockout.forget_settled_winners(board)
 
@@ -2769,20 +2893,66 @@ class Tournament:
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
 
+    def _record_result(self, board: Board, old: Result, new: Result) -> None:
+        """Journal the result of *board* going from *old* to *new*, both
+        given from white's side."""
+        if old == new:
+            return
+        if old == Result.NO_RESULT:
+            action = JournalAction.RESULT_ENTERED
+        elif new == Result.NO_RESULT:
+            action = JournalAction.RESULT_CLEARED
+        else:
+            action = JournalAction.RESULT_CHANGED
+        white, black = self.journal_game(board)
+        self.record(
+            action,
+            board.round,
+            board_id=board.id,
+            data={
+                'board': board.number,
+                'white': white or '—',
+                'black': black or '—',
+                'old': int(old),
+                'new': int(new),
+            },
+        )
+
     def store_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
         """Store an illegal move for the given `tournament_player`, for the current
         round, unless they have all those the tournament records."""
+        pairing = tournament_player.pairings[self.current_round]
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            return tournament_player.pairings[self.current_round].add_illegal_move(
-                database
-            )
+            if stored := pairing.add_illegal_move(database):
+                self._record_illegal_moves(
+                    JournalAction.ILLEGAL_MOVE_ADDED, tournament_player
+                )
+            return stored
 
     def delete_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
         """Deletes one illegal move for the given `tournament_player` for the current round."""
+        pairing = tournament_player.pairings[self.current_round]
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            return tournament_player.pairings[self.current_round].delete_illegal_move(
-                database
-            )
+            if deleted := pairing.delete_illegal_move(database):
+                self._record_illegal_moves(
+                    JournalAction.ILLEGAL_MOVE_REMOVED, tournament_player
+                )
+            return deleted
+
+    def _record_illegal_moves(
+        self, action: JournalAction, tournament_player: TournamentPlayer
+    ) -> None:
+        self.record(
+            action,
+            self.current_round,
+            player_id=tournament_player.id,
+            data={
+                'player': tournament_player.full_name,
+                'count': tournament_player.pairings[
+                    self.current_round
+                ].stored_pairing.illegal_moves,
+            },
+        )
 
     # -------------------------------------------------------------------------
     # Ranking
@@ -2944,6 +3114,16 @@ class Tournament:
         from data.pairings.round_robin_editor import RoundRobinScheduleEditor
 
         assert player.is_withdrawable_replacement
+        replaced = player.replaced_player
+        self.record(
+            JournalAction.REPLACEMENT_WITHDRAWN,
+            player.replaced_from_round,
+            player_id=player.id,
+            data={
+                'player': player.full_name,
+                'replaced': replaced.full_name if replaced else None,
+            },
+        )
         self.board_operations.unpair(
             [
                 pairing.board
@@ -3040,8 +3220,17 @@ class Tournament:
             )
             if player.pairings[round_].unpaired
         }
-        self.set_player_byes(player, new_byes)
-        self.check_in_player(player, not withdraw)
+        with journal.not_journaled('the steps of the withdrawal, journaled as one'):
+            self.set_player_byes(player, new_byes)
+            self.check_in_player(player, not withdraw)
+        self.record(
+            JournalAction.PLAYER_WITHDRAWN
+            if withdraw
+            else JournalAction.PLAYER_RETURNED,
+            round_for_participation,
+            player_id=player.id,
+            data={'player': player.full_name},
+        )
         player.__dict__.pop('has_withdrawn', None)
         player.__dict__.pop('check_in_status', None)
 
@@ -3053,12 +3242,34 @@ class Tournament:
             for round_, result in byes.items():
                 pairing = player.pairings_by_round[round_]
                 if pairing.unpaired:
+                    old_result = pairing.result
                     pairing.update_result(database, result)
+                    if old_result == result:
+                        continue
+                    if result == Result.NO_RESULT:
+                        action, bye = JournalAction.BYE_REMOVED, old_result
+                    else:
+                        action, bye = JournalAction.BYE_SET, result
+                    self.record(
+                        action,
+                        round_,
+                        player_id=player.id,
+                        data={'player': player.full_name, 'bye': int(bye)},
+                    )
 
     def check_in_player(self, player: Player, check_in: bool) -> None:
         """Stores the `check_in` status for the given `player`."""
+        changed = player.stored_player.check_in != check_in
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
+            if changed:
+                self.record(
+                    JournalAction.PLAYER_CHECKED_IN
+                    if check_in
+                    else JournalAction.PLAYER_CHECKED_OUT,
+                    player_id=player.id,
+                    data={'player': player.full_name},
+                )
         player.stored_player.check_in = check_in
         player.__dict__.pop('check_in_status', None)
 
@@ -3073,6 +3284,12 @@ class Tournament:
             return
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_team_check_in_for_tournament(self.id, check_in)
+            self.record(
+                JournalAction.TEAMS_CHECKED_IN
+                if check_in
+                else JournalAction.TEAMS_CHECKED_OUT,
+                data={'count': len(teams)},
+            )
             for team in teams:
                 team.stored_team.check_in = check_in
 
@@ -3084,6 +3301,13 @@ class Tournament:
                 player.stored_player.check_in = check_in
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_players_check_in(player_ids, check_in)
+            if player_ids:
+                self.record(
+                    JournalAction.PLAYERS_CHECKED_IN
+                    if check_in
+                    else JournalAction.PLAYERS_CHECKED_OUT,
+                    data={'count': len(player_ids)},
+                )
 
     @property
     def absent_teams(self) -> list[Team]:
@@ -3102,6 +3326,11 @@ class Tournament:
         check_in_open = not self.check_in_open
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_check_in_open(self.id, check_in_open)
+            self.record(
+                JournalAction.CHECK_IN_OPENED
+                if check_in_open
+                else JournalAction.CHECK_IN_CLOSED
+            )
         self.stored_tournament.check_in_open = check_in_open
 
     # -------------------------------------------------------------------------

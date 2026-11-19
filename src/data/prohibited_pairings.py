@@ -7,6 +7,7 @@ a round. A knock-out reuses the same dimensions for a different purpose (seeding
 groups), so the dimension type itself lives in :mod:`data.pairing_dimensions`.
 """
 
+from data.journal import JournalAction
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
@@ -147,11 +148,16 @@ class ProhibitedPairings:
         database: EventDatabase,
     ) -> None:
         tournament = self.tournament
-        tournament.stored_tournament.prohibited_pairing_dimension = dimension_id or None
-        tournament.stored_tournament.prohibited_pairing_dimension_constraint = (
-            dimension_constraint.value
-        )
-        database.update_stored_tournament(tournament.stored_tournament)
+        stored = tournament.stored_tournament
+        changed = (
+            stored.prohibited_pairing_dimension,
+            stored.prohibited_pairing_dimension_constraint,
+        ) != (dimension_id or None, dimension_constraint.value)
+        stored.prohibited_pairing_dimension = dimension_id or None
+        stored.prohibited_pairing_dimension_constraint = dimension_constraint.value
+        database.update_stored_tournament(stored)
+        if changed:
+            tournament.record(JournalAction.PROHIBITED_PAIRINGS_CHANGED)
 
     @property
     def _members(self) -> list:
@@ -184,6 +190,7 @@ class ProhibitedPairings:
         tournament.stored_tournament.stored_prohibited_pairing_groups = (
             database.load_tournament_stored_prohibited_pairing_groups(tournament.id)
         )
+        tournament.record(JournalAction.PROHIBITED_PAIRINGS_CHANGED)
 
     def dimension_buckets(self) -> list[tuple[str, list[int]]]:
         """Live dimension buckets of ≥2 members, each ``(key, member_ids)``

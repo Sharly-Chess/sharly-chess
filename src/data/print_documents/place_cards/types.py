@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import random
+from dataclasses import dataclass
 from datetime import date, datetime, time
 from typing import TYPE_CHECKING
 
@@ -11,6 +12,7 @@ from data.print_documents.place_cards.data import (
     PlaceCardPlayer,
     PlaceCardBoard,
     PlaceCardPairing,
+    PlaceCardPrize,
     PlaceCardTeam,
 )
 from data.tournament import Tournament
@@ -20,6 +22,19 @@ from utils.enum import PlayerRatingType, PlayerGender, PlayerTitle
 
 if TYPE_CHECKING:
     from data.print_documents import PrintOption
+    from data.prize.prize_category import PrizeCategory
+    from data.prize.prize_group import PrizeGroup
+
+
+@dataclass
+class PrizeCardSelection:
+    """The players of the prize category cards: those of one category of a prize
+    group, or of all its categories, and optionally only the prize winners."""
+
+    prize_group: PrizeGroup
+    # None for all the categories of the group.
+    prize_category: PrizeCategory | None
+    winners_only: bool
 
 
 class PlaceCardType(IdentifiableEntity, ABC):
@@ -97,6 +112,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
         cls,
         tournament: Tournament,
         player_ids: list[int] | None = None,
+        prize_selection: PrizeCardSelection | None = None,
     ) -> list[PlaceCardPlayer]:
         return []
 
@@ -191,6 +207,7 @@ class PlayerCardType(PlaceCardType):
         cls,
         tournament: Tournament,
         player_ids: list[int] | None = None,
+        prize_selection: PrizeCardSelection | None = None,
     ) -> list[PlaceCardPlayer]:
         ranks: dict[int, int] = {}
         if tournament.event.is_team_event:
@@ -230,6 +247,135 @@ class PlayerCardType(PlaceCardType):
         return [
             cls.get_random_player(_("PLAYER'S NAME")),
         ]
+
+
+class PrizeCategoryCardType(PlaceCardType):
+    @staticmethod
+    def static_id() -> str:
+        return 'prize-category'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Appreciation Certificates')
+
+    @staticmethod
+    def static_singular_name() -> str:
+        return _('Appreciation certificate')
+
+    @property
+    def includes_player_data(self) -> bool:
+        return True
+
+    @classmethod
+    def supports_event_type(cls, is_team_event: bool) -> bool:
+        return not is_team_event
+
+    @staticmethod
+    def get_valid_option_types() -> list[type[PrintOption]]:
+        from data.print_documents.options import (
+            OptionalPlayersPrintOption,
+            PlaceCardPrizeCategoryPrintOption,
+            PlaceCardPrizeWinnersPrintOption,
+        )
+
+        return [
+            *PlaceCardType.get_valid_option_types(),
+            PlaceCardPrizeCategoryPrintOption,
+            PlaceCardPrizeWinnersPrintOption,
+            OptionalPlayersPrintOption,
+        ]
+
+    @classmethod
+    def tournament_players(
+        cls,
+        tournament: Tournament,
+        player_ids: list[int] | None = None,
+        prize_selection: PrizeCardSelection | None = None,
+    ) -> list[PlaceCardPlayer]:
+        if prize_selection is None:
+            return []
+        prize_group = prize_selection.prize_group
+        # Assigning the prizes computes the standings the categories rank by.
+        prizes_by_category_id = (
+            prize_group.get_prizes_assigned_to_players_by_category_id(
+                monetary_only=False
+            )
+        )
+        ranks = tournament.ex_aequo_rank_by_player_id
+        categories = (
+            [prize_selection.prize_category]
+            if prize_selection.prize_category
+            else prize_group.sorted_categories
+        )
+        place_card_players: list[PlaceCardPlayer] = []
+        for category in categories:
+            category_players = category.sorted_tournament_players
+            category_ranks: dict[int, int] = {}
+            previous_key: tuple[float | None, int | None] | None = None
+            category_rank = 0
+            for index, tournament_player in enumerate(category_players, start=1):
+                key = (
+                    category.ranking_metric(tournament_player),
+                    ranks.get(tournament_player.id),
+                )
+                if key != previous_key:
+                    category_rank = index
+                    previous_key = key
+                category_ranks[tournament_player.id] = category_rank
+            places_by_player_id = {
+                assigned_prize.assigned_to.id: (place, assigned_prize)
+                for place, assigned_prize in enumerate(
+                    prizes_by_category_id.get(category.id, []), start=1
+                )
+                if assigned_prize.assigned_to
+            }
+            if prize_selection.winners_only:
+                tournament_players = [
+                    assigned_prize.assigned_to
+                    for assigned_prize in prizes_by_category_id.get(category.id, [])
+                    if assigned_prize.assigned_to
+                ]
+            else:
+                tournament_players = category_players
+            for tournament_player in tournament_players:
+                if player_ids and tournament_player.id not in player_ids:
+                    continue
+                place_card_player = PlaceCardPlayer(tournament_player)
+                if tournament_player.id in ranks:
+                    place_card_player.rank = str(ranks[tournament_player.id])
+                    place_card_player.points = tournament_player.points_str
+                metric = category.ranking_metric(tournament_player)
+                prize = PlaceCardPrize(
+                    group=prize_group.name,
+                    category=category.name,
+                    category_rank=str(category_ranks.get(tournament_player.id, '')),
+                    category_player_count=str(len(category_players)),
+                    performance=str(round(metric)) if metric is not None else '',
+                )
+                if tournament_player.id in places_by_player_id:
+                    place, assigned_prize = places_by_player_id[tournament_player.id]
+                    prize.place = str(place)
+                    prize.name = assigned_prize.name
+                place_card_player.prize = prize
+                place_card_players.append(place_card_player)
+        return place_card_players
+
+    @classmethod
+    def preview_players(
+        cls,
+    ) -> list[PlaceCardPlayer]:
+        place_card_player = cls.get_random_player(_("PLAYER'S NAME"))
+        player_count = random.randint(10, 40)
+        category_rank = random.randint(1, player_count)
+        place_card_player.prize = PlaceCardPrize(
+            group=_('Prize group'),
+            category=place_card_player.category,
+            category_rank=str(category_rank),
+            category_player_count=str(player_count),
+            place=str(category_rank) if category_rank <= 3 else '',
+            name=_('Trophy') if category_rank <= 3 else '',
+        )
+        return [place_card_player]
 
 
 class BoardCardType(PlaceCardType):

@@ -70,6 +70,8 @@ from data.rating_sequences import (
     other_ratings,
     resolve_rating,
 )
+from data import journal
+from data.journal import JournalAction
 from data.pibes import Pibe, PibeType
 from data.snapshot import SnapshotReason
 from data.snapshot_worker import SnapshotScheduler
@@ -3178,6 +3180,15 @@ class PlayerAdminController(BaseEventAdminController):
                             resort_tournament_ids.add(team.tournament_id)
                 if any(column.save_stored_event for column in used_columns):
                     database.update_stored_event(event.stored_event)
+                journal.record(
+                    event.uniq_id,
+                    JournalAction.PLAYERS_IMPORTED,
+                    tournament=tournament,
+                    data={
+                        'count': len(stored_players),
+                        'replaced': overwrite_players,
+                    },
+                )
             event.notify_players_deleted(dropped_players)
             Message.success(
                 request,
@@ -3557,7 +3568,7 @@ class PlayerAdminController(BaseEventAdminController):
             event, self._ratings_check_players(web_context)
         )
         updated_players = rating_check.apply(player_ids)
-        event.update_players(updated_players)
+        event.update_players(updated_players, _('the rating lists'))
         forget_automatic_check(event)
         count = len([player for player in updated_players if player.id in player_ids])
         sources = len(updated_players) - count
@@ -3630,7 +3641,8 @@ class PlayerAdminController(BaseEventAdminController):
                 [
                     comparator.updated_player_from_match(fields)
                     for comparator in player_comparators
-                ]
+                ],
+                data_source.name,
             )
             forget_automatic_check(event)
             count: int = len(player_comparators)

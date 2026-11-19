@@ -1,0 +1,90 @@
+{% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+
+{% block top_left_nav %}
+    {{ admin_macros.admin_title(_('Journal'), none, fide_mode_badge=false) }}
+{% endblock %}
+
+{% block top_right_nav %}
+    {% if journal_has_entries %}
+        {{ components.button(
+            _('Download'),
+            kind='outline',
+            icon='download',
+            href=url_for('admin-journal-download', event_uniq_id=admin_event.uniq_id),
+            tooltip=_('Download the whole journal as a spreadsheet (CSV).'),
+            tooltip_placement='bottom',
+            attrs={'download': true, 'data-testid': 'journal-download'},
+        ) }}
+    {% endif %}
+    {{ components.modal_button(
+        url_for('admin-journal-note-modal', event_uniq_id=admin_event.uniq_id),
+        _('Add a note'),
+        kind='primary',
+        icon='bi-sticky',
+        tooltip=_('Write in the journal what the actions do not say: a decision, an appeal, a remark.'),
+        tooltip_placement='bottom',
+        attrs={'hx-trigger': 'click, SC_Plus from:body', 'data-testid': 'journal-add-note'},
+    ) }}
+{% endblock %}
+
+{% block cards_container_cards %}
+    {% if not journal_has_entries %}
+        {% call components.empty_state(_('The journal is empty')) %}
+            <p>{{ _(
+                'Everything done to the event (results, pairings, players, '
+                'tournaments) is written here, with when it was done and by whom.'
+            ) }}</p>
+        {% endcall %}
+        {# The first entry brings the filters along with it. #}
+        <div
+            hidden
+            hx-get="{{ url_for('admin-event-journal-tab', event_uniq_id=admin_event.uniq_id) }}"
+            hx-trigger="ws:journal-changed|{{ admin_event.uniq_id }} from:body"
+            hx-target="body"
+        ></div>
+    {% else %}
+        {% include '/admin/journal/filters.html' %}
+        {% set entries_url = url_for('admin-event-journal-entries', event_uniq_id=admin_event.uniq_id) %}
+        {# The entries written since the most recent one shown go on top, the
+           page keeping the older ones it shows and where it is scrolled to. #}
+        <div
+            hidden
+            hx-get="{{ entries_url }}"
+            hx-include="#journal-filters"
+            hx-vals="js:{after_id: $('#journal-rows tr[data-entry-id]').first().attr('data-entry-id') || 0, options_key: $('#journal-filters').attr('data-options-key') || ''}"
+            hx-trigger="ws:journal-changed|{{ admin_event.uniq_id }} from:body"
+            hx-target="#journal-entries"
+            hx-sync="#journal-filters:queue last"
+            id="journal-live"
+            data-testid="journal-live"
+        ></div>
+        <script>
+            {# The page drawn again by an action of its own already shows the
+               entries the announcement of that action brings. #}
+            if (!window.journalRowsDeduplicated) {
+                window.journalRowsDeduplicated = true;
+                document.body.addEventListener('htmx:beforeSwap', (event) => {
+                    if (event.detail.requestConfig?.elt?.id !== 'journal-live') {
+                        return;
+                    }
+                    const shown = new Set(
+                        $('#journal-rows tr[data-entry-id]').map((_, row) => row.dataset.entryId).get()
+                    );
+                    const template = document.createElement('template');
+                    template.innerHTML = event.detail.serverResponse;
+                    template.content.querySelectorAll('tr[data-entry-id]').forEach((row) => {
+                        if (shown.has(row.dataset.entryId)) {
+                            row.remove();
+                        }
+                    });
+                    event.detail.serverResponse = template.innerHTML;
+                });
+            }
+        </script>
+        <div id="journal-entries">
+            {% include '/admin/journal/entries.html' %}
+        </div>
+    {% endif %}
+{% endblock %}

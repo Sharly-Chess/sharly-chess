@@ -1,3 +1,4 @@
+from data.journal import JournalAction
 from litestar import get, patch
 from litestar.params import FromQuery, FromPath
 from litestar.response import Template
@@ -98,6 +99,9 @@ class ChessEventController(BaseEventAdminController):
         )
         try:
             importer.load_tournament(tournament.event, tournament)
+            tournament.record(
+                JournalAction.TOURNAMENT_IMPORTED, data={'source': 'ChessEvent'}
+            )
             return True
         except ImporterError:
             """Already said in the status."""
