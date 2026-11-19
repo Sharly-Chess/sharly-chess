@@ -4257,7 +4257,7 @@ msgid "FIDE database"
 msgstr "Base de données FIDE"
 
 msgid "FIDE has no rule for a player replacing another in an individual round-robin: the file states each replacement in a comment. Check with the rating officer before submitting it."
-msgstr "La FIDE ne prévoit pas le remplacement d'un·e joueur·euse dans un toutes-rondes individuel : le fichier mentionne chaque remplacement dans un commentaire. Vérifiez auprès du·de la responsable du classement avant de l'envoyer."
+msgstr "La FIDE ne prévoit pas le remplacement d'un·e joueur·euse dans un toutes-rondes individuel : le fichier mentionne chaque remplacement dans un commentaire. Vérifiez auprès du·de la responsable du classement avant de l'envoyer."
 
 #, python-brace-format
 msgctxt "rating sequence"
@@ -7511,8 +7511,8 @@ msgstr "Apparier ou publier tous les tournois."
 #, python-format
 msgid "Pair or publish all the tournaments: %(num)d ready."
 msgid_plural "Pair or publish all the tournaments: %(num)d ready."
-msgstr[0] "Apparier ou publier tous les tournois : %(num)d prêt."
-msgstr[1] "Apparier ou publier tous les tournois : %(num)d prêts."
+msgstr[0] "Apparier ou publier tous les tournois : %(num)d prêt."
+msgstr[1] "Apparier ou publier tous les tournois : %(num)d prêts."
 
 msgid "Pair the rounds and enter the results"
 msgstr "Apparier les rondes et saisir les résultats"
@@ -8451,7 +8451,7 @@ msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
 
 msgid "Prize category:"
-msgstr "Catégorie de prix :"
+msgstr "Catégorie de prix :"
 
 msgid "Prize currency"
 msgstr "Monnaie des prix"
@@ -9318,7 +9318,7 @@ msgstr "Ronde {round}"
 
 #, python-brace-format
 msgid "Round {round} cannot be paired without a confirmation: pair it from the page of the tournament."
-msgstr "La ronde {round} ne peut pas être appariée sans confirmation : appariez-la depuis la page du tournoi."
+msgstr "La ronde {round} ne peut pas être appariée sans confirmation : appariez-la depuis la page du tournoi."
 
 #, python-brace-format
 msgctxt "individual knock-out"
@@ -9368,7 +9368,7 @@ msgstr "Ronde {round} commencée depuis %%s"
 
 #, python-brace-format
 msgid "Round {round} starts a new period: pair it from the page of the tournament, which asks for the ratings to be checked first."
-msgstr "La ronde {round} ouvre une nouvelle période : appariez-la depuis la page du tournoi, qui demande d'abord de vérifier les classements."
+msgstr "La ronde {round} ouvre une nouvelle période : appariez-la depuis la page du tournoi, qui demande d'abord de vérifier les classements."
 
 #, python-brace-format, python-format
 msgid "Round {round} starts in %%s"
@@ -11572,7 +11572,7 @@ msgid "The tournament has started: in FIDE mode, its tie-breaks are fixed."
 msgstr "Le tournoi a commencé : en mode FIDE, ses départages sont figés."
 
 msgid "The tournament has started: the player joins it to replace a player who leaves, taking over their seat and their opponents from the round chosen."
-msgstr "Le tournoi a commencé : le·la joueur·euse y entre pour remplacer un·e joueur·euse qui s'en va, en reprenant sa place et ses adversaires à partir de la ronde choisie."
+msgstr "Le tournoi a commencé : le·la joueur·euse y entre pour remplacer un·e joueur·euse qui s'en va, en reprenant sa place et ses adversaires à partir de la ronde choisie."
 
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
@@ -12420,7 +12420,7 @@ msgid "Type of teams:"
 msgstr "Type d'équipes :"
 
 msgid "Type:"
-msgstr "Type :"
+msgstr "Type :"
 
 #, python-format
 msgid "Type: %(screen_type)s"
@@ -13983,7 +13983,7 @@ msgstr "classement du début à {last}"
 
 #, python-format
 msgid "round %(round)d:"
-msgstr "ronde %(round)d :"
+msgstr "ronde %(round)d :"
 
 #, python-brace-format
 msgid "round {rounds}"
