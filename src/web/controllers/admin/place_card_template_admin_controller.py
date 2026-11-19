@@ -207,6 +207,25 @@ class PlaceCardTemplateAdminController(BaseAdminController):
 
         if type_id == 'player':
             groups.append(player_group('player', _('Player')))
+        elif type_id == 'prize-category':
+            groups.append(player_group('player', _('Player')))
+            groups.append(
+                group(
+                    _('Prize category'),
+                    [
+                        (_('Prize group'), '{{ prize.group }}'),
+                        (_('Category name'), '{{ prize.category }}'),
+                        (_('Rank in the category'), '{{ prize.category_rank }}'),
+                        (
+                            _('Number of players in the category'),
+                            '{{ prize.category_player_count }}',
+                        ),
+                        (_('Performance'), '{{ prize.performance }}'),
+                        (_('Prize place'), '{{ prize.place }}'),
+                        (_('Prize won'), '{{ prize.name }}'),
+                    ],
+                )
+            )
         elif type_id == 'board':
             groups.append(
                 group(

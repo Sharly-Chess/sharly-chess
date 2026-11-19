@@ -23,6 +23,7 @@ from data.print_documents.place_cards.types import (
     PlayerCardType,
     BoardCardType,
     PairingCardType,
+    PrizeCategoryCardType,
     TeamCardType,
 )
 from data.print_documents.player_sorters import (
@@ -113,6 +114,8 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.NormsForecastSortPrintOption,
             options.QRCodeNetworkPrintOption,
             options.PlaceCardBoardNumbersPrintOption,
+            options.PlaceCardPrizeCategoryPrintOption,
+            options.PlaceCardPrizeWinnersPrintOption,
             options.PlaceCardMirrorPrintOption,
             options.PlaceCardCropMarksPrintOption,
             options.PlayerHistoryOption,
@@ -207,6 +210,7 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
             PairingCardType,
             BoardCardType,
             TeamCardType,
+            PrizeCategoryCardType,
         ]
 
 

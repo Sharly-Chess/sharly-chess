@@ -316,6 +316,7 @@ class PlaceCardText(PlaceCardItem):
                 'event': event,
                 'tournament': tournament,
                 'player': player,
+                'prize': player.prize if player else None,
                 'board': board,
                 'pairing': pairing,
                 'team': team,

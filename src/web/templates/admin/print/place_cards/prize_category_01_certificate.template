@@ -1,0 +1,60 @@
+type = "prize-category"
+name = "{{ _('Standard') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 200.0
+height = 138.0
+padding = 8.0
+
+[title]
+text = "{{ _('Certificate') }}"
+font_size = 36.0
+bold = true
+uppercase = true
+h_align = "center"
+v_pos = 6.0
+
+[player_name]
+text = "{% if player.title %}{{ player.title }} {% endif %}{{ player.full_name }}"
+font_size = 26.0
+bold = true
+h_align = "center"
+v_pos = 36.0
+
+[player_club]
+text = "{{ player.club }}"
+font_size = 14.0
+h_align = "center"
+v_pos = 50.0
+
+[tournament]
+text = "{{ tournament.name }}"
+font_size = 18.0
+italic = true
+h_align = "center"
+v_pos = 64.0
+
+[category_rank]
+text = "{% if prize.category %}{{ prize.category }} - {% endif %}{{ prize.category_rank }}/{{ prize.category_player_count }}"
+font_size = 18.0
+bold = true
+h_align = "center"
+v_pos = 80.0
+
+[prize]
+text = "{{ prize.name }}"
+font_size = 16.0
+h_align = "center"
+v_pos = 92.0
+
+[points]
+text = "{{ player.points }}/{{ tournament.max_points }}"
+font_size = 12.0
+h_align = "center"
+v_pos = 103.0
+
+[event]
+text = "{{ event.name }}"
+italic = true
+h_align = "center"
+v_align = "bottom"
