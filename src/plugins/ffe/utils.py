@@ -152,12 +152,13 @@ def ffe_database_name_keys(stored_player: StoredPlayer) -> set[FfeNameKey]:
 
 def ffe_list_ratings(
     ratings: dict[Cadence, tuple[int | None, PlayerRatingType]],
-    origin: RatingOrigin,
+    origin: RatingOrigin | None,
 ) -> dict[int, dict[str, Any]]:
     """The ratings of a player of the FFE list, each typed F, N or E. The
     estimates are those typed E, and those of the published file typed N,
     which only their value tells apart from a national rating (see
-    `ffe_estimate_rating`)."""
+    `ffe_estimate_rating`). The FFE's Papi database, which Chess-Event
+    reads, types its rapid and blitz estimates N in the same way."""
     return {
         tournament_rating.value: (
             ffe_estimate_rating(value, tournament_rating)

@@ -119,3 +119,41 @@ def test_the_migration_drops_the_ffe_estimates_of_the_events_of_the_plugin(
         for table in ('player', 'player_period'):
             database.execute(f'SELECT ratings FROM {table}')
             assert json.loads(database.fetchone()['ratings']) == expected
+
+
+@pytest.mark.unit
+def test_the_chessevent_estimates_typed_n_are_imported_as_estimates() -> None:
+    from plugins.chessevent.tournament_importer.data import ChessEventPlayer
+    from plugins.chessevent.tournament_importer.importer import (
+        ChessEventTournamentImporter,
+    )
+
+    player = ChessEventPlayer(
+        last_name='PLAYER',
+        first_name='Player',
+        federation='FRA',
+        birth=0,
+        ffe_id=0,
+        ffe_license=0,
+        ffe_license_number='',
+        ffe_league='',
+        standard_rating=1199,
+        standard_rating_type=1,
+        rapid_rating=1199,
+        rapid_rating_type=2,
+        blitz_rating=1230,
+        blitz_rating_type=2,
+        title=0,
+        email='',
+        phone='',
+        fee=0,
+        paid=0,
+        check_in=False,
+        board=0,
+    )
+    stored_player = ChessEventTournamentImporter._read_chessevent_player(player, 1)
+    assert stored_player.ratings == {
+        Cadence.STANDARD.value: {'manual': 1199},
+        Cadence.RAPID.value: {'manual': 1199},
+        Cadence.BLITZ.value: {'national': 1230},
+    }

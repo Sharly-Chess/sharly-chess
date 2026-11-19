@@ -3,11 +3,14 @@
 ## Tournaments
 
 - A player who leaves an individual round-robin can be replaced, from the player form, by a newcomer who takes over their seat from a chosen round: their Berger number, their remaining opponents and their colours. The tournament keeps its rounds and its schedule, both players are ranked on the games they played, and in the tie-breaks the seat counts as a single opponent worth the points of all who held it. The Berger grid gives the seat one line, and the TRF gives the tournament as a custom round-robin with a comment for each replacement (5.3.0)
+- The "Export event (SCE)" button of the warning shown before a tournament export that loses data opens the event export options, with the players included by default: the file it produced held no players, teams or pairings (5.3.0)
 
 ## Players
 
 - The players tab follows the check-ins and results entered elsewhere, on another computer, a screen or the pairings tab, without being reloaded: the rows that change are updated in place and light up briefly, and a player who no longer matches the filters leaves the table, so that the list of the players not yet checked in shrinks as they arrive. A player checked in from the tab keeps their row while its countdown runs (5.3.0)
 - The rows of the players tab are lighter, so that long lists load faster (5.3.0)
+- The rapid and blitz estimates of the FFE imported from Chess-Event arrive as estimates rather than as national ratings: the FFE database Chess-Event reads types them N (5.3.0)
+- The rating check proposes to remove a national rating that no list gave, such as an FFE estimate imported as a national rating, when the national list finds the player and gives them no national rating at that cadence (5.3.0)
 
 ## Pairings
 
