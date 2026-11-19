@@ -20,7 +20,7 @@
     {% set _ko_loser_id = admin_tournament.knockout.board_loser_id(board) %}
     {% set _white_molter_code = wtp.team.player_round_label(wtp, admin_round) if (wtp and wtp.team) else (molter_code[0] if molter_code is defined and molter_code else none) %}
     {% set _black_molter_code = btp.team.player_round_label(btp, admin_round) if (btp and btp.team) else (molter_code[1] if molter_code is defined and molter_code else none) %}
-    <td class="pairing-cell-board text-center text-nowrap">{% if board.fixed_number %}<span class="border border-light rounded p-1" data-bs-toggle="tooltip" data-bs-title="{{ _('Fixed table') }}">{{ board.number_str }}</span>{% else %}{{ board.number_str }}{% endif %}</td>
+    <td class="pairing-cell-board text-center text-nowrap">{% if board.fixed_number %}<span class="fixed-board-number" data-bs-toggle="tooltip" data-bs-title="{{ _('Fixed table') }}">{{ board.number_str }}</span>{% else %}{{ board.number_str }}{% endif %}</td>
     {% if not admin_tournament.hide_pairing_points %}
         <td class="pairing-cell-points-white text-center">{% if wtp %}{{ wtp.vpoints_str }}{% endif %}</td>
         {% if admin_tournament.print_real_points(admin_round) %}
