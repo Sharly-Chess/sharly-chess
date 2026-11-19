@@ -17,13 +17,17 @@
         ) }}
     </p>
     <div class="d-flex flex-column align-items-stretch gap-2">
-        {{ components.button(
+        {{ components.modal_button(
+            url_for('event-export-modal', event_uniq_id=admin_event.uniq_id),
             _('Export event') ~ ' ' ~ _('(%(format)s format)', format='SCE'),
             icon='bi-star-fill',
+            allowed=client.can_manage_events,
+            reason=_('You are not allowed to export events.'),
             tooltip=_('Export ALL the data of the event.'),
             tooltip_placement='right',
-            class='export-button w-100',
-            attrs={'data-export-url': url_for('admin-event-export', event_uniq_id=admin_event.uniq_id)},
+            from_modal=true,
+            class='w-100',
+            attrs={'hx-push-url': 'false'},
         ) }}
         {% if admin_tournament.player_count %}
             {{ components.button(

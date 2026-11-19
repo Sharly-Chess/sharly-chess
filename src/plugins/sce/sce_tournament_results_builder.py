@@ -284,12 +284,8 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
 
             entry: dict[str, Any] = {
                 'round': round_,
-                'table': (
-                    board.number
-                    if not tournament.leave_fixed_board_holes
-                    else board.standard_number
-                ),
-                'board': board.id,
+                'table': board.number,
+                'board': board.position,
                 'whitePairingNumber': board.white_tournament_player.pairing_number,
                 'blackPairingNumber': black.pairing_number if black else -1,
                 'whiteResult': board.white_pairing.result.value,

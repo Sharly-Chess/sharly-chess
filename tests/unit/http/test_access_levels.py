@@ -358,7 +358,7 @@ def first_board_and_players(event_id: str, tournament_id: int) -> tuple[int, int
     EventLoader.unload_event(event_id)
     event = EventLoader().load_event(event_id)
     tournament: Tournament = event.tournaments_by_id[tournament_id]
-    board = sorted(tournament.get_round_boards(1), key=lambda one: one.id)[0]
+    board = sorted(tournament.get_round_boards(1), key=lambda one: one.index)[0]
     assert board.white_player_id is not None
     return board.id, board.white_player_id
 
@@ -370,7 +370,7 @@ def record_an_illegal_move_on_the_second_board(
     event = EventLoader().load_event(event_id)
     tournament: Tournament = event.tournaments_by_id[tournament_id]
     tournament.set_for_round()
-    board = sorted(tournament.get_round_boards(1), key=lambda one: one.id)[1]
+    board = sorted(tournament.get_round_boards(1), key=lambda one: one.index)[1]
     tournament.store_illegal_move(board.white_tournament_player)
     EventLoader.unload_event(event_id)
 

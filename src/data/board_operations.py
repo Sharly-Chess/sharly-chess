@@ -162,8 +162,8 @@ class BoardOperations:
             if player is not None:
                 player.delete_pairing(board.round, database)
                 player.reset_board()
-        database.delete_stored_board(board.identifier)
-        self.tournament.boards_by_id.pop(board.identifier, None)
+        database.delete_stored_board(board.id)
+        self.tournament.boards_by_id.pop(board.id, None)
 
     def pair(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
@@ -198,7 +198,7 @@ class BoardOperations:
                 result = Result.NO_RESULT
                 board = self.pab_board(round_nb)
                 assert board is not None
-                board_id = board.identifier
+                board_id = board.id
                 board.index = self.available_indexes(round_nb)[0]
                 board.replace_player(black_tournament_player, 'black')
                 # Re-freeze the fixed number now the second seat is filled.
@@ -296,7 +296,7 @@ class BoardOperations:
                 # Drop the PAB-side individual boards; new ones with
                 # both lineups will be built below.
                 boards_to_delete.extend(
-                    board.identifier
+                    board.id
                     for board in list(tournament.boards_by_id.values())
                     if board.stored_board.team_board_id == pab_stb.id
                 )

@@ -55,9 +55,9 @@
     or board.stored_board.black_player_id is none
 ) %}
 <tr
-    id="pairing-row-{{ board.identifier }}"
+    id="pairing-row-{{ board.id }}"
     class="pairing-row {{ row_class }} {{ extra_row_class }}"
-    data-board-id="{{ board.identifier }}"
+    data-board-id="{{ board.id }}"
     {% if wtp %}data-player-id="{{ wtp.id }}"{% endif %}
     {% if _row_has_hole %}data-no-result-entry="1"{% endif %}
     {% if swap_oob %}
@@ -118,7 +118,7 @@
                 allowed=allowed and (forfeit_hole or (not has_hole and ('MANUAL_UNPAIRING' in existing_actions or not board.exempt))),
                 attrs={
                     'style': 'width: 4.5rem;',
-                    'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier),
+                    'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id),
                     'hx-target': 'body',
                     'hx-indicator': '#please-wait',
                     'data-bs-toggle': 'modal',

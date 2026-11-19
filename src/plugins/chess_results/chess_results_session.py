@@ -380,7 +380,7 @@ class ChessResultsSession(Session):
                     )
                 ):
                     continue
-                table_number = board.number if compact_numbering else board.board_id
+                table_number = board.number if compact_numbering else board.position
                 ET.SubElement(
                     ppair,
                     'playerpairing',

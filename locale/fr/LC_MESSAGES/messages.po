@@ -13294,6 +13294,9 @@ msgstr "Vous n'êtes pas autorisé·e à modifier le calendrier."
 msgid "You are not allowed to enter results."
 msgstr "Vous n'êtes pas autorisé·e à entrer des résultats."
 
+msgid "You are not allowed to export events."
+msgstr "Vous n'êtes pas autorisé·e à exporter les évènements."
+
 msgid "You are not allowed to generate complementary pairings."
 msgstr "Vous n'êtes pas autorisé·e à générer les appariements complémentaires."
 

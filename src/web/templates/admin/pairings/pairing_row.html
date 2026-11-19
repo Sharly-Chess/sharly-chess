@@ -1,9 +1,9 @@
 {% set board_excluded = (wtp and wtp.is_excluded_from_standings) or (btp and btp.is_excluded_from_standings) %}
 <tr
-    id="pairing-row-{{ board.identifier }}"
+    id="pairing-row-{{ board.id }}"
     class="pairing-row {{ row_class }} {{ extra_row_class }} {% if board_excluded %}board-excluded{% endif %}"
     {% if board_excluded %}data-bs-toggle="tooltip" data-bs-title="{{ _('The result of this game is not taken into account for the final standings because at least one of the players did not play 50%% of the games (FIDE 6.6).') }}"{% endif %}
-    data-board-id="{{ board.identifier }}"
+    data-board-id="{{ board.id }}"
     data-player-id="{{ wtp.id if wtp }}"
     {# A flat team (Molter) board with a missing side is a forfeit hole —
        it can't take a keyboard result, so keyboard navigation skips it. #}
@@ -108,7 +108,7 @@
                     class='position-relative',
                     attrs={
                         'style': 'width: 4.5rem;',
-                        'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier),
+                        'hx-get': url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id),
                         'hx-target': 'body',
                         'hx-indicator': '#please-wait',
                         'data-bs-toggle': 'modal',
