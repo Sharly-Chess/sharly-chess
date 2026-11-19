@@ -174,11 +174,21 @@ class TestSingleScreensFunctionality:
 
         row = rows.filter(has_text='ALYX')
         expect(row.locator('div.score')).to_contain_text('#1')
+        assert paired_tournament.id is not None
+        with EventDatabase(EVENT_ID) as database:
+            event = Event(database.load_stored_event())
+            alyx_board = next(
+                board
+                for board in event.tournaments_by_id[
+                    paired_tournament.id
+                ].get_round_boards(1)
+                if board.white_tournament_player.last_name == 'ALYX'
+            )
 
         # Update the first row for some possible results, and check that the result is updated on the screen
         for r in [Result.LOSS, Result.DRAW, Result.WIN]:
             set_result = api_request_context.put(
-                f'/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/1/{r.value}'
+                f'/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/{alyx_board.id}/{r.value}'
             )
             assert set_result.ok
             expect(row.locator('div.score')).to_contain_text(str(r))

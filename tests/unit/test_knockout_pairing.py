@@ -578,7 +578,7 @@ class TestIndividualKnockout:
             for board in tournament.get_round_boards(3)
             if board.black_tournament_player is not None
         )
-        final_id = final.identifier
+        final_id = final.id
         winner_name = final.optional_white_tournament_player.last_name
         winner_id = final.optional_white_tournament_player.id
         loser_name = final.black_tournament_player.last_name
@@ -703,7 +703,7 @@ class TestIndividualKnockout:
             for board in tournament.get_round_boards(1)
             if board.black_tournament_player is not None
         )
-        board_id = drawn.identifier
+        board_id = drawn.id
         white_id = drawn.optional_white_tournament_player.id
         tournament.add_result(drawn, Result.DRAW)
         tournament = self._load()
@@ -733,7 +733,7 @@ class TestIndividualKnockout:
             for board in tournament.get_round_boards(1)
             if board.black_tournament_player is not None
         )
-        board_id = drawn.identifier
+        board_id = drawn.id
         white_id = drawn.optional_white_tournament_player.id
         tournament.add_result(drawn, Result.DRAW)
         tournament = self._load()
@@ -761,7 +761,7 @@ class TestIndividualKnockout:
             for board in tournament.get_round_boards(1)
             if board.black_tournament_player is not None
         )
-        board_id = drawn.identifier
+        board_id = drawn.id
         white_id = drawn.optional_white_tournament_player.id
         tournament.add_result(drawn, Result.DRAW)
         tournament = self._load()

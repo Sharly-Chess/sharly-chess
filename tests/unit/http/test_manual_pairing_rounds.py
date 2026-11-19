@@ -37,7 +37,7 @@ def tournament(http: TestClient) -> Iterator[Tournament]:
         for board in games(EVENT.tournament(), round_):
             http.put(
                 f'/pairing/set-result/{EVENT_ID}/{tournament_id}/{round_}'
-                f'/{board.identifier}/{Result.WIN.value}'
+                f'/{board.id}/{Result.WIN.value}'
             )
     http.post(f'/pairings/generate/{EVENT_ID}/{tournament_id}/3')
     yield EVENT.tournament()
@@ -46,7 +46,7 @@ def tournament(http: TestClient) -> Iterator[Tournament]:
 
 def unpair(http: TestClient, tournament: Tournament, round_: int) -> None:
     board = games(EVENT.tournament(), round_)[0]
-    route = f'/{EVENT_ID}/{tournament.id}/{round_}/{board.identifier}'
+    route = f'/{EVENT_ID}/{tournament.id}/{round_}/{board.id}'
     http.put(f'/pairing/set-result{route}/{Result.NO_RESULT.value}')
     http.delete(f'/pairing/unpair{route}')
 
@@ -66,7 +66,7 @@ def test_the_pairings_of_another_round_wait_for_the_validation(
 ):
     unpair(http, tournament, 2)
     board = games(EVENT.tournament(), 3)[0]
-    route = f'/pairing/unpair/{EVENT_ID}/{tournament.id}/3/{board.identifier}'
+    route = f'/pairing/unpair/{EVENT_ID}/{tournament.id}/3/{board.id}'
 
     response = http.get(
         f'/pairings/warning-modal/{EVENT_ID}/{tournament.id}/3'
@@ -75,7 +75,7 @@ def test_the_pairings_of_another_round_wait_for_the_validation(
 
     assert 'are being edited: validate or cancel them' in response.text
     assert EVENT.tournament().manual_pairing_round == 2
-    assert board.identifier in EVENT.tournament().boards_by_id
+    assert board.id in EVENT.tournament().boards_by_id
 
 
 @pytest.mark.unit
@@ -88,7 +88,7 @@ def test_pairings_the_engine_cannot_check_are_listed(
     monkeypatch.setattr(PairingEngine, 'expected_round_pairs', fail)
     http.patch(
         f'/pairing/permute/{EVENT_ID}/{tournament.id}/3'
-        f'/{games(tournament, 3)[0].identifier}?confirmed=1'
+        f'/{games(tournament, 3)[0].id}?confirmed=1'
     )
 
     response = http.post(

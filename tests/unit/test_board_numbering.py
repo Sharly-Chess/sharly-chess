@@ -143,8 +143,8 @@ def test_facing_fixed_players_are_numbered_once_in_a_compact_round():
     entries = [
         (1, None, 1),
         (2, None, 2),
-        (board.identifier, board.fixed_number, 3),
+        (board.id, board.fixed_number, 3),
     ]
     result = compute_round_board_numbers(entries, 1, leave_holes=False)
-    assert result[board.identifier] == 5
+    assert result[board.id] == 5
     assert sorted(result.values()) == [1, 2, 5]
