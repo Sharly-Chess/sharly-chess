@@ -18,6 +18,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
+    from data.access_levels.client import Client
     from data.event import Event
     from data.screens.display_controller import DisplayController
     from data.screens.family import Family
@@ -341,6 +342,14 @@ class Screen:
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.accepts_input
+
+    def accepts_input_from(self, client: Client) -> bool:
+        """Whether *client* may enter results, or check players in, on this
+        screen."""
+        return self.accepts_input and any(
+            self.screen_type.client_can_input(client, screen_set.tournament_id)
+            for screen_set in self.screen_sets
+        )
 
     @property
     def allowed_in_rotators(self) -> bool:

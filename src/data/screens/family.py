@@ -14,6 +14,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
+    from data.access_levels.client import Client
     from data.event import Event
     from data.screens.display_controller import DisplayController
     from data.tournament import Tournament
@@ -228,6 +229,13 @@ class Family:
         """Whether results can be entered, or players checked in, on the
         pages of this multi-screen."""
         return self.screen_type.input_option and self.stored_family.accepts_input
+
+    def accepts_input_from(self, client: Client) -> bool:
+        """Whether *client* may enter results, or check players in, on the
+        pages of this multi-screen."""
+        return self.accepts_input and self.screen_type.client_can_input(
+            client, self.tournament_id
+        )
 
     @property
     def allowed_in_rotators(self) -> bool:
