@@ -441,6 +441,7 @@ class ChiefArbitrationAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_EVENT,
+            AuthAction.VIEW_JOURNAL,
             AuthAction.MANAGE_ACCOUNTS,
             AuthAction.ADD_TOURNAMENTS,
             AuthAction.DELETE_TOURNAMENTS,

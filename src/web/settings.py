@@ -88,6 +88,7 @@ from web.controllers.admin.team_admin_controller import TeamAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.admin.account_admin_controller import AccountAdminController
+from web.controllers.admin.journal_admin_controller import JournalAdminController
 from web.controllers.index_controller import IndexController
 from web.controllers.document_pdf_source_controller import (
     DocumentPdfSourceController,
@@ -140,6 +141,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     QRCodeController,
     DocumentPdfSourceController,
     AccountAdminController,
+    JournalAdminController,
     ProfileController,
     *([ComponentGalleryAdminController] if DEVEL_ENV else []),
     static_files_router,

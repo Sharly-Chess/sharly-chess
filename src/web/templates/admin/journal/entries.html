@@ -1,0 +1,22 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+{% if not journal_entries %}
+    {% call components.empty_state(_('Nothing matches these filters')) %}{% endcall %}
+{% else %}
+    <table class="table table-sm align-middle journal-table" data-testid="journal-table">
+        <thead>
+            <tr>
+                <th scope="col" class="text-nowrap">{{ _('Date') }}</th>
+                <th scope="col">{{ _('Tournament') }}</th>
+                <th scope="col" class="text-end">{{ _('Round') }}</th>
+                <th scope="col" class="w-100">{{ _('Action') }}</th>
+                <th scope="col">{{ _('Who') }}</th>
+                <th scope="col">{{ _('Where') }}</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody id="journal-rows">
+            {% include '/admin/journal/rows.html' %}
+        </tbody>
+    </table>
+{% endif %}

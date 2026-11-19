@@ -48,8 +48,19 @@ def _pair_from_menu(page: Page, item: str) -> None:
     if mark_present.count():
         mark_present.click()
     split = page.locator('#pairing-buttons .sc-split-button')
-    split.locator('.dropdown-toggle-split').click()
-    split.locator('.dropdown-menu').get_by_role('button', name=item, exact=True).click()
+    menu_item = split.locator('.dropdown-menu').get_by_role(
+        'button', name=item, exact=True
+    )
+    # Marking the players present draws the buttons again, and so can the
+    # live update that follows: a menu opened on buttons being replaced
+    # closes with them, so it is opened again until its item shows.
+    for _ in range(10):
+        TestUtils.wait_for_htmx_idle(page)
+        split.locator('.dropdown-toggle-split').click()
+        with contextlib.suppress(AssertionError):
+            expect(menu_item).to_be_visible(timeout=1000)
+            break
+    menu_item.click()
     # The modals shown before pairing (ratings reminder, settings) are
     # confirmed until the round is paired.
     unpair = page.get_by_role('button', name='Unpair')

@@ -396,4 +396,7 @@
     {% with pp_button_oob=true %}
         {% include 'prohibited_button.html' %}
     {% endwith %}
+    {% if pp_left_fide_mode %}
+        <script>requestRefresh()</script>
+    {% endif %}
 {% endblock %}

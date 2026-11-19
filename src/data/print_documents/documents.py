@@ -89,6 +89,8 @@ from data.print_documents.options import (
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
     PlayerHistoryOption,
+    PlaceCardPrizeCategoryPrintOption,
+    PlaceCardPrizeWinnersPrintOption,
     IndividualTeamTypePrintOption,
     IndividualTeamSizePrintOption,
     IndividualTeamMinGenderCountPrintOption,
@@ -102,7 +104,11 @@ from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
-from data.print_documents.place_cards.types import PlaceCardType
+from data.print_documents.place_cards.types import (
+    PlaceCardType,
+    PrizeCardSelection,
+    PrizeCategoryCardType,
+)
 from data.print_documents.individual_teams import IndividualTeamType, IndividualTeam
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
@@ -3346,7 +3352,7 @@ class PlaceCardPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Place Cards')
+        return _('Place Cards and Certificates')
 
     @property
     def title(self) -> str:
@@ -3385,12 +3391,35 @@ class PlaceCardPrintDocument(PrintDocument):
     def crop_marks(self) -> PlaceCardCropMarks:
         return self._get_option(PlaceCardCropMarksPrintOption).place_card_crop_marks
 
+    @property
+    def prize_selection(self) -> PrizeCardSelection | None:
+        if not isinstance(self.place_card_type, PrizeCategoryCardType):
+            return None
+        category_option = self._get_option(PlaceCardPrizeCategoryPrintOption)
+        prize_group, prize_category = category_option.prize_group_and_category(
+            self.tournament
+        )
+        winners_only = self._get_option(PlaceCardPrizeWinnersPrintOption).value
+        if prize_category is None and not winners_only:
+            # A player would get a card for each category they belong to.
+            raise OptionError(
+                _('All the categories can only be printed for the prize winners.'),
+                category_option,
+            )
+        return PrizeCardSelection(
+            prize_group=prize_group,
+            prize_category=prize_category,
+            winners_only=winners_only,
+        )
+
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [
             PlaceCardPrintOption,
             PlaceCardTemplatePrintOption,
             TournamentPrintOption,
+            PlaceCardPrizeCategoryPrintOption,
+            PlaceCardPrizeWinnersPrintOption,
             OptionalPlayersPrintOption,
             RoundPrintOption,
             PlaceCardMirrorPrintOption,
@@ -3408,6 +3437,7 @@ class PlaceCardPrintDocument(PrintDocument):
             place_card_crop_marks=self.crop_marks,
             board_numbers=self.board_numbers,
             player_ids=self.player_ids,
+            prize_selection=self.prize_selection,
         )
 
     @property
@@ -3428,6 +3458,7 @@ class PlaceCardPrintDocument(PrintDocument):
             raise OptionError(
                 f'Unknown template [{template_option.value}]', template_option
             ) from None
+        _prize_selection = self.prize_selection
 
 
 class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):

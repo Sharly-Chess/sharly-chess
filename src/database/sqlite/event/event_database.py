@@ -1,9 +1,11 @@
 from collections import defaultdict
+from contextvars import ContextVar, Token
 from datetime import datetime
-from collections.abc import Iterator
+from collections.abc import Collection, Iterable, Iterator
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
+import re
 import sqlite3
 from typing import Any, ClassVar, Self, TYPE_CHECKING, override, cast
 from collections.abc import Sequence
@@ -50,6 +52,7 @@ from database.sqlite.event.event_store import (
     StoredTeamGroup,
     StoredTeamPairingBlock,
     StoredTeamPointAdjustment,
+    StoredJournalEntry,
     StoredPibe,
     StoredRatingCorrection,
     StoredPlayerPointAdjustment,
@@ -66,6 +69,10 @@ if TYPE_CHECKING:
     from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
+
+_open_writers: ContextVar[tuple[EventDatabase, ...]] = ContextVar(
+    'sharly_chess_open_event_writers', default=()
+)
 
 
 class EventDatabase(MigrationDatabase):
@@ -112,9 +119,146 @@ class EventDatabase(MigrationDatabase):
             )
         super().__enter__()
         self.screens_changed = False
+        self.written: set[tuple[str, str | None]] = set()
+        self._watching_changes = False
+        self._watched_tables: set[str] = set()
+        self.journal_written = False
+        self._writer_token: Token[tuple[EventDatabase, ...]] | None = None
         if self.write and self.database is not None:
             self.database.set_authorizer(self._note_screens_change)
+            self._writer_token = _open_writers.set((*_open_writers.get(), self))
+            from data.journal import watches_writes
+
+            # The migrations change the tables the watch is made of.
+            self._watching_changes = (
+                watches_writes() and self.snapshot_on_commit and self.is_event_file
+            )
         return self
+
+    @property
+    def is_event_file(self) -> bool:
+        """Whether this instance holds the file of the event itself, rather
+        than a copy (the uploads and the exports work on one)."""
+        return self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
+
+    _watching_changes = False
+
+    #: The table a statement writes to directly.
+    _WRITTEN_TABLE: ClassVar[re.Pattern[str]] = re.compile(
+        r'^\s*(?:INSERT(?:\s+OR\s+\w+)?\s+INTO|REPLACE\s+INTO'
+        r'|UPDATE(?:\s+OR\s+\w+)?|DELETE\s+FROM)\s+[`"]?(\w+)',
+        re.IGNORECASE,
+    )
+    _change_triggers: ClassVar[dict[tuple[str, str], list[str]]] = {}
+
+    @override
+    def execute(self, query: str, params: tuple | dict[str, Any] = ()) -> None:
+        if self._watching_changes:
+            self._watch_statement(query)
+        super().execute(query, params)
+
+    @override
+    def executemany(
+        self, query: str, params: Iterable[tuple | dict[str, Any]] = ()
+    ) -> None:
+        if self._watching_changes:
+            self._watch_statement(query)
+        super().executemany(query, params)
+
+    def _watch_statement(self, query: str) -> None:
+        """Notes, for the journal, what the write changes: a row inserted or
+        deleted, a column given another value. Temporary triggers do it,
+        added to a table the first time the connection writes to it and gone
+        with the connection; a column written again with the value it had is
+        no change. What follows from a write (a cascade, the triggers of the
+        file) follows from what the write is journaled as."""
+        from data.journal import UNJOURNALED_COLUMNS, UNJOURNALED_TABLES
+
+        if (match := self._WRITTEN_TABLE.match(query)) is None:
+            return
+        table = match.group(1)
+        if (
+            table in self._watched_tables
+            or table in UNJOURNALED_TABLES
+            or table.startswith('sqlite_')
+        ):
+            return
+        self._watched_tables.add(table)
+        assert self.cursor is not None
+        self.cursor.execute(
+            "SELECT `sql` FROM `sqlite_master` WHERE `type` = 'table' AND `name` = ?",
+            (table,),
+        )
+        if (row := self.cursor.fetchone()) is None:
+            return
+        key = (table, row[0] or '')
+        if (statements := self._change_triggers.get(key)) is None:
+            self.cursor.execute(f'PRAGMA main.table_info(`{table}`)')
+            columns = [
+                column[1]
+                for column in self.cursor.fetchall()
+                if (table, column[1]) not in UNJOURNALED_COLUMNS
+            ]
+            statements = [
+                f'CREATE TEMP TRIGGER `journal_{event.lower()}_{table}` '
+                f'AFTER {event} ON main.`{table}` BEGIN '
+                f"INSERT INTO `journal_change` VALUES ('{table}', NULL); END"
+                for event in ('INSERT', 'DELETE')
+            ]
+            if columns:
+                statements.append(
+                    f'CREATE TEMP TRIGGER `journal_update_{table}` '
+                    f'AFTER UPDATE ON main.`{table}` BEGIN '
+                    + ' '.join(
+                        'INSERT INTO `journal_change` '
+                        f"SELECT '{table}', '{column}' "
+                        f'WHERE OLD.`{column}` IS NOT NEW.`{column}`;'
+                        for column in columns
+                    )
+                    + ' END'
+                )
+            self._change_triggers[key] = statements
+        if len(self._watched_tables) == 1:
+            self.cursor.execute(
+                'CREATE TEMP TABLE `journal_change` (`tbl` TEXT, `col` TEXT)'
+            )
+        for statement in statements:
+            self.cursor.execute(statement)
+
+    def _read_changes(self) -> None:
+        if not self._watched_tables:
+            return
+        assert self.cursor is not None
+        self.cursor.execute('SELECT DISTINCT `tbl`, `col` FROM temp.`journal_change`')
+        self.written = set(self.cursor.fetchall())
+
+    @classmethod
+    def open_writer(cls, uniq_id: str) -> EventDatabase | None:
+        """The write to the file of the event in progress in the current
+        context, which what goes with it is written through: a second write
+        would wait for the first one to end, which it never does."""
+        for database in reversed(_open_writers.get()):
+            if (
+                database.uniq_id == uniq_id
+                and database.database is not None
+                and database.file.resolve()
+                == cls.event_database_path(uniq_id).resolve()
+            ):
+                return database
+        return None
+
+    def _forget_writer(self) -> None:
+        if self._writer_token is None:
+            return
+        try:
+            _open_writers.reset(self._writer_token)
+        except ValueError:
+            _open_writers.set(
+                tuple(
+                    database for database in _open_writers.get() if database is not self
+                )
+            )
+        self._writer_token = None
 
     # The writes that cannot change what a screen shows beyond the data of
     # the tournaments, either because the timestamps of the tournaments follow
@@ -125,7 +269,7 @@ class EventDatabase(MigrationDatabase):
         {'pairing', 'player', 'tournament_player'}
     )
     TABLES_OFF_SCREENS: ClassVar[frozenset[str]] = frozenset(
-        {'metadata', 'plugin_metadata'}
+        {'metadata', 'plugin_metadata', 'journal'}
     )
     UPDATED_COLUMNS_OFF_SCREENS: ClassVar[dict[str, frozenset[str]]] = {
         'tournament': frozenset(
@@ -149,13 +293,15 @@ class EventDatabase(MigrationDatabase):
         action: int,
         table: str | None,
         column: str | None,
-        _database: str | None,
+        database_name: str | None,
         _source: str | None,
     ) -> int:
         """Notes, as SQLite prepares each statement, whether it writes what
         the screens may show beyond the data of the tournaments."""
         if (
             self.screens_changed
+            or database_name == 'temp'
+            or (table is not None and table.startswith('sqlite_'))
             or table is None
             or action
             not in (sqlite3.SQLITE_INSERT, sqlite3.SQLITE_DELETE, sqlite3.SQLITE_UPDATE)
@@ -183,9 +329,7 @@ class EventDatabase(MigrationDatabase):
         # The event is the one the snapshots follow only when this instance
         # holds the file of the event itself: the uploads and the exports work
         # on a copy in a temporary directory.
-        is_event_file = (
-            self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
-        )
+        is_event_file = self.is_event_file
         changed = (
             self.write
             and exc_type is None
@@ -223,7 +367,10 @@ class EventDatabase(MigrationDatabase):
                         'Error in EventDatabase.__exit__ pre-cleanup: %s',
                         e,
                     )
+            if exc_type is None:
+                self._read_changes()
         finally:
+            self._forget_writer()
             # Always release DB
             super().__exit__(exc_type, exc_value, tb)
 
@@ -246,6 +393,16 @@ class EventDatabase(MigrationDatabase):
                 ),
                 self.screens_changed,
             )
+
+        if changed and is_event_file:
+            from data.journal import note_writes
+
+            note_writes(self.uniq_id, self.written)
+
+        if changed and is_event_file and self.journal_written:
+            from web.channels import notify_journal_changed
+
+            notify_journal_changed(self.uniq_id)
 
         if changed and is_event_file and self.snapshot_on_commit:
             from data.snapshot_worker import SnapshotScheduler
@@ -323,7 +480,9 @@ class EventDatabase(MigrationDatabase):
                 logger.warning(
                     '%sNo snapshot taken before the upgrade: %s', self.log_prefix, e
                 )
-        with suppress_snapshots(self.uniq_id):
+        from data.journal import not_journaled
+
+        with suppress_snapshots(self.uniq_id), not_journaled('the file upgraded'):
             super().upgrade()
 
     @staticmethod
@@ -2467,6 +2626,187 @@ class EventDatabase(MigrationDatabase):
             'WHERE `tournament_id` = ? AND `type` = ? AND `round` = ?',
             (tournament_id, type_, round_),
         )
+
+    # ---------------------------------------------------------------------------------
+    # Journal
+    # ---------------------------------------------------------------------------------
+
+    def add_stored_journal_entry(self, entry: StoredJournalEntry) -> int:
+        self.execute(
+            'INSERT INTO `journal` (`at`, `action`, `tournament_id`, `round`, '
+            '`board_id`, `player_id`, `team_id`, `author_kind`, `account_id`, '
+            '`source_kind`, `source_name`, `host`, `data`, `text`) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            (
+                self.dump_datetime_to_database_field(entry.at),
+                entry.action,
+                entry.tournament_id,
+                entry.round_,
+                entry.board_id,
+                entry.player_id,
+                entry.team_id,
+                entry.author_kind,
+                entry.account_id,
+                entry.source_kind,
+                entry.source_name,
+                entry.host,
+                self.dump_to_json_database_field(entry.data or None),
+                entry.text,
+            ),
+        )
+        entry_id = self._last_inserted_id()
+        assert entry_id is not None
+        self.journal_written = True
+        return entry_id
+
+    @staticmethod
+    def _journal_filter(
+        tournament_id: int | None,
+        actions: Collection[str] | None,
+        author: tuple[str | None, int | str | None, str | None] | None,
+        source: tuple[str | None, int | str | None, str | None] | None,
+        after_id: int | None = None,
+        before_id: int | None = None,
+    ) -> tuple[str, list[Any]]:
+        conditions: list[str] = []
+        params: list[Any] = []
+        if after_id is not None:
+            conditions.append('`id` > ?')
+            params.append(after_id)
+        if before_id is not None:
+            conditions.append('`id` < ?')
+            params.append(before_id)
+        if tournament_id is not None:
+            conditions.append('`tournament_id` = ?')
+            params.append(tournament_id)
+        if actions is not None:
+            conditions.append(
+                f'`action` IN ({", ".join("?" * len(actions))})' if actions else '0'
+            )
+            params.extend(actions)
+        if author is not None:
+            kind, account_id, _name = author
+            conditions.append('`author_kind` IS ? AND `account_id` IS ?')
+            params.extend((kind, account_id))
+        if source is not None:
+            kind, name, host = source
+            conditions.append('`source_kind` IS ? AND `source_name` IS ?')
+            params.extend((kind, name))
+            # The devices of the network are told apart by their address; a
+            # screen is the same screen on whichever device it is open.
+            if host is not None:
+                conditions.append('`host` = ?')
+                params.append(host)
+        where = f' WHERE {" AND ".join(conditions)}' if conditions else ''
+        return where, params
+
+    def load_stored_journal_entries(
+        self,
+        *,
+        tournament_id: int | None = None,
+        actions: Collection[str] | None = None,
+        author: tuple[str | None, int | str | None, str | None] | None = None,
+        source: tuple[str | None, int | str | None, str | None] | None = None,
+        limit: int | None = None,
+        after_id: int | None = None,
+        before_id: int | None = None,
+    ) -> list[StoredJournalEntry]:
+        """The entries of the journal matching the filters, the most recent
+        first, *limit* of them at most, and only those written after the entry
+        *after_id*, or before the entry *before_id*, when given."""
+        where, params = self._journal_filter(
+            tournament_id, actions, author, source, after_id, before_id
+        )
+        query = f'SELECT * FROM `journal`{where} ORDER BY `id` DESC'
+        if limit is not None:
+            query += ' LIMIT ?'
+            params.append(limit)
+        self.execute(query, tuple(params))
+        return [self._row_to_stored_journal_entry(row) for row in self.fetchall()]
+
+    def load_stored_journal_entry(self, entry_id: int) -> StoredJournalEntry | None:
+        self.execute('SELECT * FROM `journal` WHERE `id` = ?', (entry_id,))
+        row = self.fetchone()
+        return self._row_to_stored_journal_entry(row) if row else None
+
+    def _row_to_stored_journal_entry(self, row: dict[str, Any]) -> StoredJournalEntry:
+        return StoredJournalEntry(
+            id=row['id'],
+            at=self.load_datetime_from_database_field(row['at']),
+            action=row['action'],
+            author_kind=row['author_kind'],
+            account_id=row['account_id'],
+            source_kind=row['source_kind'],
+            source_name=row['source_name'],
+            host=row['host'],
+            tournament_id=row['tournament_id'],
+            round_=row['round'],
+            board_id=row['board_id'],
+            player_id=row['player_id'],
+            team_id=row['team_id'],
+            data=self.load_json_from_database_field(row['data'], {}) or {},
+            text=row['text'],
+        )
+
+    def has_journal_entries(self) -> bool:
+        self.execute('SELECT EXISTS (SELECT 1 FROM `journal`) AS `found`')
+        return bool(self.fetchone()['found'])
+
+    def load_journal_tournament_names(self) -> dict[int, str | None]:
+        """The tournaments the journal talks about, each with the name it
+        had in its last entry."""
+        self.execute(
+            'SELECT `tournament_id`, '
+            "json_extract(`data`, '$.tournament') AS `name` FROM `journal` "
+            'WHERE `id` IN (SELECT MAX(`id`) FROM `journal` '
+            'WHERE `tournament_id` IS NOT NULL GROUP BY `tournament_id`)'
+        )
+        return {row['tournament_id']: row['name'] for row in self.fetchall()}
+
+    def load_journal_actions(self) -> set[str]:
+        self.execute('SELECT DISTINCT `action` FROM `journal`')
+        return {row['action'] for row in self.fetchall()}
+
+    def load_journal_authors(
+        self,
+    ) -> list[tuple[str | None, int | str | None, str | None]]:
+        self.execute('SELECT DISTINCT `author_kind`, `account_id` FROM `journal`')
+        return [
+            (row['author_kind'], row['account_id'], None) for row in self.fetchall()
+        ]
+
+    def load_journal_deleted_account_names(self) -> dict[int, str]:
+        """The names the staff accounts deleted had, as the entries of their
+        deletion give them."""
+        self.execute(
+            "SELECT json_extract(`data`, '$.account_id') AS `account_id`, "
+            "json_extract(`data`, '$.account') AS `name` FROM `journal` "
+            "WHERE `action` = 'account_deleted'"
+        )
+        return {
+            row['account_id']: row['name']
+            for row in self.fetchall()
+            if row['account_id'] is not None
+        }
+
+    def load_journal_sources(
+        self,
+    ) -> list[tuple[str | None, int | str | None, str | None]]:
+        self.execute(
+            'SELECT DISTINCT `source_kind`, `source_name`, '
+            "CASE `source_kind` WHEN 'network' THEN `host` END AS `device` "
+            'FROM `journal`'
+        )
+        return [
+            (row['source_kind'], row['source_name'], row['device'])
+            for row in self.fetchall()
+        ]
+
+    def delete_stored_journal_entry(self, entry_id: int) -> None:
+        self.execute('DELETE FROM `journal` WHERE `id` = ?', (entry_id,))
+
+    def delete_all_stored_journal_entries(self) -> None:
+        self.execute('DELETE FROM `journal`')
 
     # ---------------------------------------------------------------------------------
     # StoredRatingCorrection

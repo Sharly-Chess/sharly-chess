@@ -19,6 +19,8 @@ from data.board import Board
 from data.event import Event
 from data.player import Player
 from data.snapshot import SnapshotReason
+from data import journal
+from data.journal import JournalAction
 from data.snapshot_worker import SnapshotScheduler
 from data.teams.team import PlayerPairedError, RosterFullError, Team, TeamGroup
 from data.tournament import Tournament
@@ -389,7 +391,8 @@ class TeamAdminController(BaseEventAdminController):
         name = (data.get('team_group_name') or '').strip()
         errors = self._validate_team_group_name(event, name)
         if not errors:
-            group = event.add_team_group(name)
+            with journal.not_journaled('an affiliation no team has yet'):
+                group = event.add_team_group(name)
             return self._render_team_group_fields(
                 web_context,
                 data={'team_group_name': '', 'group_id': str(group.id)},
@@ -420,7 +423,8 @@ class TeamAdminController(BaseEventAdminController):
         name = (data.get('team_group_name') or '').strip()
         errors = self._validate_team_group_name(event, name, ignore_group_id=group_id)
         if not errors:
-            event.update_team_group(group_id, name)
+            with journal.not_journaled('the teams keep their affiliation'):
+                event.update_team_group(group_id, name)
             return self._render_team_group_fields(
                 web_context,
                 data={'team_group_name': name, 'group_id': str(group_id)},
@@ -444,7 +448,9 @@ class TeamAdminController(BaseEventAdminController):
         self, request: HTMXRequest, group_id: FromPath[int]
     ) -> Template:
         web_context = TeamAdminWebContext(request)
-        web_context.get_admin_event().delete_team_group(group_id)
+        event = web_context.get_admin_event()
+        event.delete_team_group(group_id)
+        journal.record(event.uniq_id, JournalAction.TEAM_AFFILIATIONS_CHANGED)
         return self._render_team_group_fields(
             web_context, data={'team_group_name': '', 'group_id': ''}
         )
@@ -597,6 +603,8 @@ class TeamAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, write=True) as database:
             for team, name in resolved:
                 team.set_group(group_id_by_name[name], database)
+            if resolved:
+                journal.record(event.uniq_id, JournalAction.TEAM_AFFILIATIONS_CHANGED)
         messages = [
             _('Set the affiliation of %(filled)d team(s) from “%(source)s”.')
             % {'filled': len(resolved), 'source': source.label}
@@ -1099,6 +1107,14 @@ class TeamAdminController(BaseEventAdminController):
                 # the other modes and once a round is paired).
                 if tournament is not None:
                     tournament.resort_teams(database)
+        journal.record(
+            event.uniq_id,
+            JournalAction.LINEUP_CHANGED,
+            tournament=tournament,
+            round_=round_,
+            team_id=team.id,
+            data={'team': team.name},
+        )
         return self._admin_event_teams_render(
             web_context,
             self._team_lineups_modal_context(web_context, requested_round=round_),
@@ -1410,6 +1426,7 @@ class TeamAdminController(BaseEventAdminController):
                         team.set_pairing_number(None, database)
             database.update_stored_tournament(tournament.stored_tournament)
             tournament.resort_teams(database)
+            tournament.record(JournalAction.TEAMS_RENUMBERED)
         return self._admin_event_teams_render(web_context)
 
     @patch(
@@ -1757,6 +1774,13 @@ class TeamAdminController(BaseEventAdminController):
         tournament_changed = team.stored_team.tournament_id != stored_team.tournament_id
         # The team leaves this tournament when it changes — renumber what's left.
         old_tournament = team.tournament if tournament_changed else None
+        old_name = team.stored_team.name
+        old_details = (
+            team.stored_team.group_id,
+            team.stored_team.captain_id,
+            team.stored_team.captain_name,
+            team.stored_team.federation,
+        )
         team.stored_team.name = stored_team.name
         team.stored_team.group_id = stored_team.group_id
         team.stored_team.captain_id = stored_team.captain_id
@@ -1767,6 +1791,21 @@ class TeamAdminController(BaseEventAdminController):
             if tournament_changed:
                 team.set_tournament(stored_team.tournament_id, database)
             team.update(database)
+            if old_name != stored_team.name:
+                journal.record(
+                    event.uniq_id,
+                    JournalAction.TEAM_RENAMED,
+                    tournament=team.tournament,
+                    team_id=team.id,
+                    data={'old': old_name, 'new': stored_team.name},
+                )
+            elif old_details != (
+                stored_team.group_id,
+                stored_team.captain_id,
+                stored_team.captain_name,
+                stored_team.federation,
+            ):
+                team.record(JournalAction.TEAM_EDITED)
         event.clear_team_cache()
         for tournament in event.tournaments:
             tournament.clear_team_cache()

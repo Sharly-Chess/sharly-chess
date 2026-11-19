@@ -1,3 +1,5 @@
+from data import journal
+from data.journal import JournalAction
 import re
 import shutil
 import sqlite3
@@ -236,6 +238,7 @@ class EventLoader:
             with EventDatabase(uniq_id, write=True) as database:
                 database.delete_all_tags()
                 database.set_origin(EventOrigin.IMPORTED_FILE)
+                journal.record(uniq_id, JournalAction.EVENT_IMPORTED)
             return uniq_id
         except Exception as e:
             new_path.unlink(missing_ok=True)

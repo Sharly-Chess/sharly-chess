@@ -36,6 +36,13 @@
                     data=data, errors=errors
                 ) }}
             </div>
+            <div class="col-12">
+                {{ admin_macros.switch_input(
+                    name='include_journal',
+                    placeholder=_('Include the journal (what was done, when and by whom)'),
+                    data=data, errors=errors
+                ) }}
+            </div>
         </div>
     </form>
 {% endblock %}

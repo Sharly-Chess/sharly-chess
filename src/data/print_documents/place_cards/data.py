@@ -46,6 +46,7 @@ class PlaceCardPlayer:
         self.team_name: str = ''
         self.points: str = ''
         self.rank: str = ''
+        self.prize: PlaceCardPrize | None = None
         if tournament_player:
             team = tournament_player.team
             if team is not None:
@@ -88,6 +89,32 @@ class PlaceCardPlayer:
             'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
         )
         return f'<img class="federation-flag {self.federation}" src="{blank}" alt="" />'
+
+
+class PlaceCardPrize:
+    """A utility class to pass a player's standing in a prize category, and the
+    prize the player won in it, to print documents."""
+
+    def __init__(
+        self,
+        group: str = '',
+        category: str = '',
+        category_rank: str = '',
+        category_player_count: str = '',
+        performance: str = '',
+        place: str = '',
+        name: str = '',
+    ):
+        self.group: str = group
+        self.category: str = category
+        # Tied players share the rank of the first of them.
+        self.category_rank: str = category_rank
+        self.category_player_count: str = category_player_count
+        # Empty when the category ranks by the final standing.
+        self.performance: str = performance
+        # Empty when the player won no prize in the category.
+        self.place: str = place
+        self.name: str = name
 
 
 class PlaceCardBoard:

@@ -535,6 +535,7 @@ class Snapshot:
                     f'Snapshot [{self.file.name}] could not be restored: {e}'
                 ) from e
             self._carry_over_plugin_data(previous)
+            self._record_restoration(self.uniq_id)
             EventLoader().load_event(self.uniq_id)
         logger.info(
             'Event [%s] restored from snapshot [%s]', self.uniq_id, self.file.name
@@ -565,6 +566,19 @@ class Snapshot:
                 self.uniq_id,
             )
 
+    def _record_restoration(self, uniq_id: str) -> None:
+        """Journal the restoration in the event restored: the entries of
+        what the backup does not hold are gone with it, and this one says
+        why."""
+        from data import journal
+        from data.journal import JournalAction
+
+        journal.record(
+            uniq_id,
+            JournalAction.SNAPSHOT_RESTORED,
+            data={'snapshot': self.taken_at_str},
+        )
+
     def restore_as_copy(self) -> str:
         """Restores the snapshot as a new event and returns its uniq_id.
 
@@ -592,6 +606,7 @@ class Snapshot:
                 # would send its own state to what the first one feeds.
                 plugin_manager.hook.on_event_duplicated(event_database=database)
                 database.set_origin(EventOrigin.RESTORED)
+                self._record_restoration(uniq_id)
         except SharlyChessException as e:
             file.unlink(missing_ok=True)
             raise RestoreException(

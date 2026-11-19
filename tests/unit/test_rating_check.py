@@ -235,6 +235,29 @@ class TestRatingCheck:
         check = self._check(player)
         assert check.changes == [] and check.arbiter_values == []
 
+    def test_a_national_value_with_no_source_the_list_does_not_give_is_dropped(
+        self, monkeypatch
+    ):
+        player = self._setup({'national': 799}, monkeypatch, {})
+        self._list_national(player, monkeypatch, {})
+        check = self._check(player)
+        assert check.arbiter_values == []
+        [row] = check.changes
+        assert row.proposed[Cadence.STANDARD].national is None
+        assert row.proposed_rating.prescribed
+        [updated] = check.apply({player.id})
+        assert updated.ratings[Cadence.STANDARD].national is None
+
+    def test_a_national_correction_the_list_does_not_give_is_kept(self, monkeypatch):
+        player = self._setup(
+            {'national': 1520, 'origins': {'n': {'source': '', 'original': 1500}}},
+            monkeypatch,
+            {},
+        )
+        self._list_national(player, monkeypatch, {})
+        check = self._check(player)
+        assert check.rows == []
+
     def test_a_rating_the_fide_list_no_longer_gives_is_dropped(self, monkeypatch):
         player = self._setup(
             {'fide': 1575, 'origins': {'f': {'source': 'fide'}}},

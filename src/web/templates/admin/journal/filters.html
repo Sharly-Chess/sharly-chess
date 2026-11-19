@@ -1,0 +1,41 @@
+{% set entries_url = url_for('admin-event-journal-entries', event_uniq_id=admin_event.uniq_id) %}
+{# Drawn again when the journal comes to hold a tournament, a kind of action or
+   an author its options lack, keeping what is chosen. #}
+<form
+    id="journal-filters"
+    class="d-flex flex-wrap align-items-end gap-3 mb-3"
+    data-options-key="{{ journal_options_key }}"
+    hx-get="{{ url_for('admin-event-journal-filters', event_uniq_id=admin_event.uniq_id) }}"
+    hx-trigger="journal-filters-stale from:body"
+    hx-include="this"
+    hx-target="this"
+    hx-swap="outerHTML"
+>
+    {% for name, options, label in [
+        ('tournament_id', journal_tournament_options, _('Tournament')),
+        ('category', journal_category_options, _('Category')),
+        ('author', journal_author_options, _('Who')),
+        ('source', journal_source_options, _('Where')),
+    ] %}
+        <div>
+            <label class="form-label" for="journal-filter-{{ name }}">{{ _('%(string)s:', string=label) }}</label>
+            <select
+                id="journal-filter-{{ name }}"
+                name="{{ name }}"
+                class="form-select sharly-chess-select2 inline-select2"
+                data-fit-widest-option
+                data-testid="journal-filter-{{ name }}"
+                hx-trigger="change"
+                hx-get="{{ entries_url }}"
+                hx-include="#journal-filters"
+                hx-target="#journal-entries"
+                hx-swap="innerHTML"
+                hx-sync="#journal-filters:replace"
+            >
+                {% for value, text in options.items() %}
+                    <option value="{{ value }}" {% if journal_filters[name] == value %}selected{% endif %}>{{ text }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endfor %}
+</form>

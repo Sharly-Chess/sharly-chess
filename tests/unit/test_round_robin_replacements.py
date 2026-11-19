@@ -15,6 +15,7 @@ from data.columns.player_table import (
 )
 from data.event import Event
 from data.input_output.trf.trf_export import TrfExport
+from data.journal import JournalAction, load_journal
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.loader import EventLoader
 from data.pairings.engines import RoundRobinPairingEngine
@@ -311,6 +312,21 @@ class BergerReplacementTestCase(RoundRobinReplacementTestCase):
         self.assertNotIn(replacement_id, tournament.tournament_players_by_id)
         self.assertFalse(tournament.has_replacements)
         self.assertEqual(self._opponents(tournament, leaver_id), leaver_before)
+
+    def test_a_replacement_and_its_withdrawal_are_journaled(self) -> None:
+        self._play_rounds(1, 2)
+        _leaver_id, replacement_id = self._replace('Player1', 3)
+        event = EventLoader().load_event(EVENT_ID)
+        event.delete_player(event.players_by_id[replacement_id])
+
+        deleted, withdrawn, replaced = load_journal(EVENT_ID)[:3]
+        self.assertEqual(replaced.action, JournalAction.PLAYER_REPLACED)
+        self.assertEqual(replaced.round, 3)
+        self.assertIn('REPLACEMENT', replaced.sentence.upper())
+        self.assertIn('PLAYER1', replaced.sentence.upper())
+        self.assertEqual(withdrawn.action, JournalAction.REPLACEMENT_WITHDRAWN)
+        self.assertIn('PLAYER1', withdrawn.sentence.upper())
+        self.assertEqual(deleted.action, JournalAction.PLAYER_DELETED)
 
     def _assert_every_game_has_both_players(self) -> None:
         tournament = self.tournament

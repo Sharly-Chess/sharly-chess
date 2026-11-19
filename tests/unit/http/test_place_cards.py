@@ -128,3 +128,17 @@ def test_the_sidebar_does_not_link_to_the_templates_page(
     response = http.get(path.format(event=event))
     assert response.status_code == 200
     assert '/place-card-templates"' not in response.text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('created', ['prize-category'], indirect=True)
+def test_prize_category_cards_offer_the_category_standing(
+    http: TestClient, created: str
+):
+    section = PlaceCardTemplateEditor.add_default_item(created, 'text')
+    response = http.get(
+        f'/place-card-item-props/{created}', params={'section': section}
+    )
+    assert response.status_code == 200
+    assert 'prize.category_rank' in response.text
+    assert 'prize.name' in response.text
