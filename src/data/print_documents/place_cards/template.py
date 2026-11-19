@@ -36,7 +36,7 @@ from data.print_documents.place_cards.items import (
     PlaceCardText,
 )
 from data.print_documents.place_cards.toml_container import TOMLContainer
-from data.print_documents.place_cards.types import PlaceCardType
+from data.print_documents.place_cards.types import PlaceCardType, PrizeCardSelection
 from data.player import Player
 from data.tournament import Tournament
 from utils.enum import Extension
@@ -397,6 +397,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         place_card_crop_marks: PlaceCardCropMarks,
         board_numbers: set[int],
         player_ids: list[int],
+        prize_selection: PrizeCardSelection | None = None,
     ) -> dict[str, Any]:
         return self._template_context(
             event=PlaceCardEvent(event),
@@ -404,7 +405,9 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             round_=round_,
             mirror=mirror,
             place_card_crop_marks=place_card_crop_marks,
-            players=self.type.tournament_players(tournament, player_ids=player_ids),
+            players=self.type.tournament_players(
+                tournament, player_ids=player_ids, prize_selection=prize_selection
+            ),
             boards=self.type.boards(tournament, board_numbers=board_numbers),
             pairings=self.type.pairings(
                 tournament, round_, board_numbers=board_numbers

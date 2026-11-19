@@ -1160,6 +1160,9 @@ msgstr "Toutes absentes"
 msgid "All caps"
 msgstr "Majuscules"
 
+msgid "All categories"
+msgstr "Toutes les catégories"
+
 msgid "All games count for rating: TRF06 cannot mark a game that should not (less than one move played)."
 msgstr "Toutes les parties comptent pour le Elo : le TRF06 ne peut pas signaler une partie qui ne doit pas compter (moins d'un coup joué)."
 
@@ -1190,6 +1193,9 @@ msgstr "Toutes les équipes sont assignées à un tournoi."
 
 msgid "All the boards"
 msgstr "Tous les échiquiers"
+
+msgid "All the categories can only be printed for the prize winners."
+msgstr "Toutes les catégories ne peuvent être imprimées que pour les lauréat·es."
 
 msgid "All the dependant objects will also be deleted:"
 msgstr "Tous les objets dépendants seront également supprimés :"
@@ -1353,6 +1359,12 @@ msgstr "Appliquer à tout·es"
 
 msgid "Apply tournament’s coefficient"
 msgstr "Appliquer le coefficient des tournois"
+
+msgid "Appreciation Certificates"
+msgstr "Diplômes"
+
+msgid "Appreciation certificate"
+msgstr "Diplôme"
 
 msgctxt "april"
 msgid "Apr"
@@ -2191,6 +2203,9 @@ msgstr "Catégorie"
 msgid "Category [%(category)s] successfully created!"
 msgstr "La catégorie [%(category)s] créée avec succès !"
 
+msgid "Category name"
+msgstr "Nom de la catégorie"
+
 msgid "Category not specified"
 msgstr "Catégorie non spécifiée"
 
@@ -2205,6 +2220,9 @@ msgstr "République centrafricaine"
 
 msgid "Centre"
 msgstr "Centrer"
+
+msgid "Certificate"
+msgstr "Diplôme"
 
 msgid "Chad"
 msgstr "Tchad"
@@ -7052,6 +7070,9 @@ msgstr "Nombre de places"
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
 
+msgid "Number of players in the category"
+msgstr "Nombre de joueur·euses dans la catégorie"
+
 msgid "Number of players in the roster."
 msgstr "Nombre de joueur·euses dans l'effectif."
 
@@ -7757,6 +7778,9 @@ msgstr "Vérifications par règle"
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
 
+msgid "Performance"
+msgstr "Performance"
+
 msgid "Performance bonus (dp), from 1.4.9 table"
 msgstr "Bonus de performance (dp), table 1.4.9"
 
@@ -7811,17 +7835,14 @@ msgstr "Numéro de téléphone"
 msgid "Pick at least one player — two empty tables cannot pair."
 msgstr "Choisissez au moins un·e joueur·euse — deux tables vides ne peuvent pas être appariées."
 
-msgid "Place Cards"
-msgstr "Chevalets"
+msgid "Place Cards and Certificates"
+msgstr "Chevalets et diplômes"
 
 msgid "Place card editor"
 msgstr "Éditeur de chevalets"
 
 msgid "Place card templates"
 msgstr "Modèles de chevalets"
-
-msgid "Place card type:"
-msgstr "Type de chevalet :"
 
 msgid "Place:"
 msgstr "Place :"
@@ -8128,6 +8149,9 @@ msgstr "Veuillez choisir le document."
 msgid "Please choose the form."
 msgstr "Veuillez choisir le formulaire."
 
+msgid "Please choose the prize category."
+msgstr "Veuillez choisir la catégorie de prix."
+
 msgid "Please choose the template."
 msgstr "Veuillez choisir le modèle."
 
@@ -8403,6 +8427,9 @@ msgstr "Groupe non cumulable"
 msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
 msgstr "Le groupe non cumulable [{prize_group}] a été copié vers : {tournaments}."
 
+msgid "Prize category"
+msgstr "Catégorie de prix"
+
 #, python-brace-format
 msgid "Prize category [{prize_category}] has been copied to [{tournament} / {prize_group}]."
 msgstr "La catégorie [{prize_category}] a été copiée vers [{tournament} / {prize_group}]."
@@ -8423,11 +8450,17 @@ msgstr "La catégorie de prix [{prize_category}] a été supprimée avec succès
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
 
+msgid "Prize category:"
+msgstr "Catégorie de prix :"
+
 msgid "Prize currency"
 msgstr "Monnaie des prix"
 
 msgid "Prize defaults have been updated."
 msgstr "Les paramètres par défaut des prix ont été mis à jour."
+
+msgid "Prize group"
+msgstr "Groupe de prix"
 
 #, python-brace-format
 msgid "Prize group [{prize_group}] successfully created."
@@ -8435,6 +8468,9 @@ msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
 
 msgid "Prize list"
 msgstr "Liste des prix"
+
+msgid "Prize place"
+msgstr "Place du prix"
 
 msgid "Prize receipts"
 msgstr "Reçus financiers des prix"
@@ -8444,6 +8480,12 @@ msgstr "Paramètres des prix"
 
 msgid "Prize sharing"
 msgstr "Partage des prix"
+
+msgid "Prize winners only"
+msgstr "Lauréat·es uniquement"
+
+msgid "Prize won"
+msgstr "Prix remporté"
 
 msgid "Prizes"
 msgstr "Prix"
@@ -8635,6 +8677,9 @@ msgstr "Tirer les numéros d'appariement aléatoirement."
 
 msgid "Rank"
 msgstr "Classement"
+
+msgid "Rank in the category"
+msgstr "Classement dans la catégorie"
 
 msgid "Rank the higher pairing numbers first, instead of the lower ones."
 msgstr "Classer en premier les numéros d'appariement les plus élevés, au lieu des plus bas."
@@ -12334,6 +12379,9 @@ msgstr "Virement"
 msgid "Trinidad & Tobago"
 msgstr "Trinité-et-Tobago"
 
+msgid "Trophy"
+msgstr "Trophée"
+
 msgid "Trophy, medal"
 msgstr "Trophée, médaille"
 
@@ -12370,6 +12418,9 @@ msgstr "Type B (préférences fortes + faibles)"
 
 msgid "Type of teams:"
 msgstr "Type d'équipes :"
+
+msgid "Type:"
+msgstr "Type :"
 
 #, python-format
 msgid "Type: %(screen_type)s"

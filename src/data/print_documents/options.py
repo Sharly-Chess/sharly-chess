@@ -37,6 +37,9 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.print_documents import PrintIndividualTeamTypeManager
     from data.print_documents.place_cards.template import PlaceCardTemplate
+    from data.prize.prize_category import PrizeCategory
+    from data.prize.prize_group import PrizeGroup
+    from data.tournament import Tournament
 
 
 class PrintOption[V](Option[V], ABC):
@@ -1247,6 +1250,87 @@ class PlaceCardBoardNumbersPrintOption(PrintOption[str | None]):
     def validate(self) -> None:
         super().validate()
         _board_numbers = self.board_numbers
+
+
+class PlaceCardPrizeCategoryPrintOption(PrintOption[str | None]):
+    """The prize category of the prize category cards, as
+    ``<prize group id>:<prize category id>``, or ``<prize group id>:*`` for all
+    the categories of the group."""
+
+    ALL_CATEGORIES = '*'
+
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-prize-category'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> str | None:
+        return None
+
+    @property
+    def prize_category_options_per_tournament_id(
+        self,
+    ) -> dict[int, list[dict[str, str]]]:
+        """The categories offered for each tournament, the categories of each
+        prize group followed by the whole group."""
+        if self.event is None:
+            return {}
+        options_per_tournament_id: dict[int, list[dict[str, str]]] = {}
+        for tournament in self.event.tournaments:
+            prize_groups = tournament.sorted_prize_groups
+            options: list[dict[str, str]] = []
+            for prize_group in prize_groups:
+                prefix = f'{prize_group.name} - ' if len(prize_groups) > 1 else ''
+                options.extend(
+                    {
+                        'id': f'{prize_group.id}:{category.id}',
+                        'name': f'{prefix}{category.name}',
+                    }
+                    for category in prize_group.sorted_categories
+                )
+                if len(prize_group.categories) > 1:
+                    options.append(
+                        {
+                            'id': f'{prize_group.id}:{self.ALL_CATEGORIES}',
+                            'name': f'{prefix}{_("All categories")}',
+                        }
+                    )
+            options_per_tournament_id[tournament.id] = options
+        return options_per_tournament_id
+
+    def prize_group_and_category(
+        self, tournament: Tournament
+    ) -> tuple[PrizeGroup, PrizeCategory | None]:
+        """The prize group and category chosen for ``tournament``, the category
+        being None for all the categories of the group."""
+        if not self.value:
+            raise OptionError(_('Please choose the prize category.'), self)
+        group_id_str, _separator, category_id_str = self.value.partition(':')
+        try:
+            prize_group = tournament.prize_groups_by_id[int(group_id_str)]
+            if category_id_str == self.ALL_CATEGORIES:
+                return prize_group, None
+            return prize_group, prize_group.categories_by_id[int(category_id_str)]
+        except KeyError, ValueError:
+            raise OptionError(_('Please choose the prize category.'), self) from None
+
+
+class PlaceCardPrizeWinnersPrintOption(PrintOption[bool]):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-prize-winners'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> bool:
+        return False
 
 
 class AccountPrintOption(PrintOption[int | None]):
