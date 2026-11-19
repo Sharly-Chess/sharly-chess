@@ -13241,6 +13241,9 @@ msgstr ""
 msgid "You are not allowed to enter results."
 msgstr ""
 
+msgid "You are not allowed to export events."
+msgstr ""
+
 msgid "You are not allowed to generate complementary pairings."
 msgstr ""
 
