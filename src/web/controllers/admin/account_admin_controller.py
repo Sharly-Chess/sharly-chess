@@ -210,13 +210,14 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         data_source_id: FromPath[str],
         player_source_id: FromPath[str],
     ) -> Template:
         web_context = AccountAdminWebContext(request)
+        form_data = WebContext.flatten_list_data(data)
         try:
             data_source = DataSourceManager().get_object(data_source_id)
         except KeyError:
@@ -237,8 +238,8 @@ class AccountAdminController(BaseEventAdminController):
                 fide_arbiter_title=stored_player.transient_arbiter_titles.get(
                     'fide', ''
                 ),
-                mail=WebContext.form_data_to_str(data, 'mail'),
-                phone=WebContext.form_data_to_str(data, 'phone'),
+                mail=WebContext.form_data_to_str(form_data, 'mail'),
+                phone=WebContext.form_data_to_str(form_data, 'phone'),
                 plugin_data={
                     plugin_id: plugin_data_class.from_stored_player(
                         stored_player
@@ -246,9 +247,9 @@ class AccountAdminController(BaseEventAdminController):
                     for plugin_id, plugin_data_class in Account.plugin_data_class_by_plugin_id().items()
                 },
             )
-            data = self._account_form_data_from_account(Account(stored_account))
+            form_data = self._account_form_data_from_account(Account(stored_account))
         template_context = self._account_form_modal_context(
-            web_context, FormAction.CREATE, data, errors
+            web_context, FormAction.CREATE, form_data, errors
         )
         return HTMXTemplate(
             template_name='/admin/accounts/account_information_form_section.html',
