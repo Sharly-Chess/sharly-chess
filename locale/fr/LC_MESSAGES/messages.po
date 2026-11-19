@@ -263,8 +263,8 @@ msgstr[1] "%(num)d tournois"
 #, python-format
 msgid "%(num)d tournament could not be paired:"
 msgid_plural "%(num)d tournaments could not be paired:"
-msgstr[0] "%(num)d tournoi n'a pas pu être apparié :"
-msgstr[1] "%(num)d tournois n'ont pas pu être appariés :"
+msgstr[0] "%(num)d tournoi n'a pas pu être apparié :"
+msgstr[1] "%(num)d tournois n'ont pas pu être appariés :"
 
 #, python-format
 msgid "%(num)d tournament paired and published."
