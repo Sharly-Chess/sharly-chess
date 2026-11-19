@@ -95,6 +95,10 @@ def _event() -> Event:
 
 def _open_modal(page: Page) -> None:
     page.goto(f'/event/{EVENT_ID}/pairings/{_event().tournaments_by_name[OPEN_A].id}/1')
+    # The button is swapped for one showing the ready count once the page is
+    # shown: a click on the button replaced is lost.
+    TestUtils.wait_for_htmx_idle(page)
+    TestUtils.wait_for_htmx_bound(page, '#all-tournaments-button button')
     page.get_by_role('button', name='All tournaments').click()
     expect(page.locator('#modal-wrapper .modal-title')).to_have_text('All tournaments')
     TestUtils.wait_for_htmx_idle(page)
