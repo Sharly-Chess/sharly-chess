@@ -695,10 +695,7 @@ def current_board_ids() -> list[int]:
     EventLoader.unload_event(EVENT_ID)
     event = EventLoader().load_event(EVENT_ID)
     tournament = event.tournaments_by_name[TOURNAMENT_NAME]
-    return [
-        board.identifier
-        for board in tournament.get_round_boards(tournament.current_round)
-    ]
+    return [board.id for board in tournament.get_round_boards(tournament.current_round)]
 
 
 @pytest.mark.unit

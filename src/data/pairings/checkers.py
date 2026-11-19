@@ -94,7 +94,7 @@ class CheckerBoard:
     ) -> CheckerBoard | None:
         return (
             CheckerBoard(
-                board.id,
+                board.position,
                 CheckerPlayer.from_object(board.optional_white_tournament_player)
                 if board.optional_white_tournament_player
                 else None,

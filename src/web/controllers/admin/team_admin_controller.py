@@ -1346,7 +1346,7 @@ class TeamAdminController(BaseEventAdminController):
                     board.replace_player(new_tp, side)  # type: ignore[arg-type]
                     new_pairing = new_tp.pairings_by_round[round_]
                     new_pairing.stored_pairing.result = Result.NO_RESULT.value
-                    new_pairing.stored_pairing.board_id = board.identifier
+                    new_pairing.stored_pairing.board_id = board.id
                     new_pairing.stored_pairing.effective_points = None
                     new_pairing.stored_pairing.illegal_moves = 0
                     new_pairing.update(database)
