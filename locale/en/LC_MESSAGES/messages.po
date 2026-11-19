@@ -1169,6 +1169,9 @@ msgstr ""
 msgid "All caps"
 msgstr ""
 
+msgid "All categories"
+msgstr ""
+
 msgid "All games count for rating: TRF06 cannot mark a game that should not (less than one move played)."
 msgstr ""
 
@@ -1198,6 +1201,9 @@ msgid "All teams are assigned to a tournament."
 msgstr ""
 
 msgid "All the boards"
+msgstr ""
+
+msgid "All the categories can only be printed for the prize winners."
 msgstr ""
 
 msgid "All the dependant objects will also be deleted:"
@@ -1367,6 +1373,12 @@ msgid "Apply to all"
 msgstr ""
 
 msgid "Apply tournament’s coefficient"
+msgstr ""
+
+msgid "Appreciation Certificates"
+msgstr ""
+
+msgid "Appreciation certificate"
 msgstr ""
 
 msgctxt "april"
@@ -2238,6 +2250,9 @@ msgstr ""
 msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
+msgid "Category name"
+msgstr ""
+
 msgid "Category not specified"
 msgstr ""
 
@@ -2251,6 +2266,9 @@ msgid "Central African Republic"
 msgstr ""
 
 msgid "Centre"
+msgstr ""
+
+msgid "Certificate"
 msgstr ""
 
 msgid "Chad"
@@ -7194,6 +7212,9 @@ msgstr ""
 msgid "Number of players"
 msgstr ""
 
+msgid "Number of players in the category"
+msgstr ""
+
 msgid "Number of players in the roster."
 msgstr ""
 
@@ -7912,6 +7933,9 @@ msgstr ""
 msgid "Perfect tournament performance"
 msgstr ""
 
+msgid "Performance"
+msgstr ""
+
 msgid "Performance bonus (dp), from 1.4.9 table"
 msgstr ""
 
@@ -7966,16 +7990,13 @@ msgstr ""
 msgid "Pick at least one player — two empty tables cannot pair."
 msgstr ""
 
-msgid "Place Cards"
+msgid "Place Cards and Certificates"
 msgstr ""
 
 msgid "Place card editor"
 msgstr ""
 
 msgid "Place card templates"
-msgstr ""
-
-msgid "Place card type:"
 msgstr ""
 
 msgid "Place:"
@@ -8289,6 +8310,9 @@ msgstr ""
 msgid "Please choose the form."
 msgstr ""
 
+msgid "Please choose the prize category."
+msgstr ""
+
 msgid "Please choose the template."
 msgstr ""
 
@@ -8567,6 +8591,9 @@ msgstr ""
 msgid "Prize bracket [{prize_group}] has been copied to: {tournaments}."
 msgstr ""
 
+msgid "Prize category"
+msgstr ""
+
 #, python-brace-format
 msgid "Prize category [{prize_category}] has been copied to [{tournament} / {prize_group}]."
 msgstr ""
@@ -8587,10 +8614,16 @@ msgstr ""
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
+msgid "Prize category:"
+msgstr ""
+
 msgid "Prize currency"
 msgstr ""
 
 msgid "Prize defaults have been updated."
+msgstr ""
+
+msgid "Prize group"
 msgstr ""
 
 #, python-brace-format
@@ -8600,6 +8633,9 @@ msgstr ""
 msgid "Prize list"
 msgstr ""
 
+msgid "Prize place"
+msgstr ""
+
 msgid "Prize receipts"
 msgstr ""
 
@@ -8607,6 +8643,12 @@ msgid "Prize settings"
 msgstr ""
 
 msgid "Prize sharing"
+msgstr ""
+
+msgid "Prize winners only"
+msgstr ""
+
+msgid "Prize won"
 msgstr ""
 
 msgid "Prizes"
@@ -8801,6 +8843,9 @@ msgid "Randomly select the pairing numbers."
 msgstr ""
 
 msgid "Rank"
+msgstr ""
+
+msgid "Rank in the category"
 msgstr ""
 
 msgid "Rank the higher pairing numbers first, instead of the lower ones."
@@ -12614,6 +12659,9 @@ msgstr ""
 msgid "Trinidad & Tobago"
 msgstr ""
 
+msgid "Trophy"
+msgstr ""
+
 msgid "Trophy, medal"
 msgstr ""
 
@@ -12649,6 +12697,9 @@ msgid "Type B (strong + mild preferences)"
 msgstr ""
 
 msgid "Type of teams:"
+msgstr ""
+
+msgid "Type:"
 msgstr ""
 
 #, python-format
@@ -13537,6 +13588,9 @@ msgid "You are not allowed to edit the schedule."
 msgstr ""
 
 msgid "You are not allowed to enter results."
+msgstr ""
+
+msgid "You are not allowed to export events."
 msgstr ""
 
 msgid "You are not allowed to generate complementary pairings."

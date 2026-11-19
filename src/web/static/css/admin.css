@@ -691,6 +691,9 @@
     outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
     outline-offset: 0;
 }
+[data-sc-interface=admin] .select2-container--bootstrap-5 .select2-dropdown {
+    border-color: var(--bs-border-color);
+}
 [data-sc-interface=admin] .input-group .select2-container--bootstrap-5.select2-container--focus .select2-selection,
 [data-sc-interface=admin] .input-group .select2-container--bootstrap-5.select2-container--open .select2-selection {
     outline: none;

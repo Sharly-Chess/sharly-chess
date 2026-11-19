@@ -1,0 +1,37 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Prize category:'),
+        select_options={},
+        data=data, errors=errors
+    ) }}
+</div>
+
+<script>
+    (() => {
+        const optionsPerTournamentId = {{ option.prize_category_options_per_tournament_id | tojson }};
+        const $tournamentSelect = $('.modal #tournament');
+        const $categorySelect = $('.modal #{{ option.id }}');
+        let selected = {{ (data[option.id] or '') | tojson }};
+
+        function updateCategories() {
+            const tournamentId = parseInt($tournamentSelect.val(), 10);
+            const options = optionsPerTournamentId[tournamentId] || [];
+            $categorySelect.empty();
+            options.forEach(option => {
+                $categorySelect.append($('<option>', {value: option.id, text: option.name}));
+            });
+            if (options.some(option => option.id === selected)) {
+                $categorySelect.val(selected);
+            }
+            $categorySelect.prop('disabled', options.length === 0);
+            $categorySelect.trigger('change');
+        }
+
+        $categorySelect.on('change', () => {
+            selected = $categorySelect.val() || selected;
+        });
+        $tournamentSelect.on('change', updateCategories);
+        updateCategories();
+    })();
+</script>

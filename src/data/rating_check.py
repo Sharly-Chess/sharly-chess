@@ -54,16 +54,21 @@ def _set_listed(
     rating_type: PlayerRatingType,
     listed: dict[Cadence, PlayerRating],
     source: str,
+    clears_unsourced: bool = False,
 ) -> None:
     """Replace the values of a kind with those a list gives, sources
     included and corrections dropped. A value the list does not give is
-    only cleared when that list was its source."""
+    only cleared when that list was its source, or, with
+    *clears_unsourced*, when the value has no source at all, such as an
+    estimate imported as a rating."""
     for tournament_rating in Cadence:
         rating = ratings[tournament_rating]
         listed_rating = listed[tournament_rating]
         value = listed_rating.get_type_value(rating_type)
         origin = rating.origins.get(rating_type)
-        if value is None and (origin is None or origin.source != source):
+        if value is None and (
+            origin.source != source if origin is not None else not clears_unsourced
+        ):
             continue
         rating.set_value_from_type(
             value, rating_type, listed_rating.origins.get(rating_type)
@@ -513,7 +518,13 @@ async def check_ratings(event: Event, players: list[Player]) -> RatingCheck:
         )
         if national_ratings is not None:
             source = player.national_source or ''
-            _set_listed(listed, PlayerRatingType.NATIONAL, national_ratings, source)
+            _set_listed(
+                listed,
+                PlayerRatingType.NATIONAL,
+                national_ratings,
+                source,
+                clears_unsourced=True,
+            )
             _set_listed(listed, PlayerRatingType.FIDE, national_ratings, source)
         if fide_match is not None:
             fide_ratings = _stored_ratings(fide_match)
