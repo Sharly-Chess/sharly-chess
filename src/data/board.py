@@ -170,8 +170,7 @@ class Board:  # noqa: PLW1641
         return self.black_tournament_player.pairings_by_round[self.round]
 
     @property
-    def identifier(self) -> int:
-        # TODO (Molrn - Big move) rename to *id* once *Board.id*'s usages have been replaced
+    def id(self) -> int:
         assert self.stored_board.id is not None
         return self.stored_board.id
 
@@ -183,6 +182,11 @@ class Board:  # noqa: PLW1641
     def index(self, value: int) -> None:
         set_stored_fields(self.stored_board, index=value)
         self.tournament.invalidate_board_layout()
+
+    @property
+    def position(self) -> int:
+        """The board's place in its round's pairing order, from 1."""
+        return self.index + 1
 
     @property
     def white_player_id(self) -> int | None:
@@ -378,7 +382,7 @@ class Board:  # noqa: PLW1641
         set_stored_fields(
             self.stored_board,
             last_result_update=database.update_board_last_result_update(
-                self.identifier, clear=new_result == Result.NO_RESULT
+                self.id, clear=new_result == Result.NO_RESULT
             ),
         )
 
@@ -536,14 +540,6 @@ class Board:  # noqa: PLW1641
     # --------------------------------------------------------------------------
     # Legacy
     # --------------------------------------------------------------------------
-
-    @property
-    def board_id(self) -> int:
-        return self.index + 1
-
-    @property
-    def id(self) -> int:
-        return self.index + 1
 
     @property
     def exempt(self) -> bool:

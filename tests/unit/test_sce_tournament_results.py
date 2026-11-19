@@ -10,7 +10,11 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
+from database.sqlite.event.event_store import (
+    StoredPlayer,
+    StoredTournamentPlayer,
+    set_stored_fields,
+)
 from plugins.sce.sce_tournament_results_builder import build_tournament_results
 from tests.test_config import TestUtils
 from utils.enum import Result
@@ -94,6 +98,35 @@ class SCETournamentResultsTestCase(TestCase):
             else:
                 self.assertEqual(position, standing['rank'])
         self.assertLess(len({s['rank'] for s in standings}), len(standings))
+
+    def test_each_board_is_sent_with_the_table_number_shown(self) -> None:
+        for leave_holes in (False, True):
+            with self.subTest(leave_holes=leave_holes):
+                with suppress(KeyError):
+                    EventLoader.unload_event(EVENT_ID)
+                self._event = EventLoader().load_event(EVENT_ID)
+                tournament = self._event.tournaments_by_name[TOURNAMENT_ID]
+                tournament.__dict__['leave_fixed_board_holes'] = leave_holes
+                fixed_board = tournament.get_round_boards(1)[2]
+                set_stored_fields(fixed_board.stored_board, fixed_number=1)
+                tournament._round_board_numbers_cache.clear()
+                self.assertNotEqual(fixed_board.standard_number, fixed_board.number)
+                payload = build_tournament_results(
+                    tournament, 'sce-event', 'sce-tournament'
+                )
+
+                tables = {
+                    pairing['board']: pairing['table']
+                    for pairing in payload['pairings']
+                    if pairing['round'] == 1 and pairing['board'] > 0
+                }
+                self.assertEqual(
+                    {
+                        board.position: board.number
+                        for board in tournament.get_round_boards(1)
+                    },
+                    tables,
+                )
 
 
 KEIZER_EVENT_ID = 'test-sce-keizer-results-event'

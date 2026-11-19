@@ -135,7 +135,11 @@ def test_a_key_that_means_nothing_enters_nothing(
     board = board_of_round_one(http, tournament)
     response = http.put(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
-        data={'board_id': str(board.id), 'key': 'KeyQ', 'validate_result': 'false'},
+        data={
+            'board_id': str(board.id),
+            'key': 'KeyQ',
+            'validate_result': 'false',
+        },
     )
     assert response.status_code == 200
     untouched = next(
@@ -218,7 +222,7 @@ def test_a_second_entry_that_disagrees_is_not_taken(
 @pytest.fixture
 def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int, list[int]]]:
     """The websocket events sent out for new results, as (event, tournament,
-    round, board identifiers) tuples."""
+    round, board ids) tuples."""
     calls: list[tuple[str, int, int, list[int]]] = []
     monkeypatch.setattr(
         PairingsAdminController,
@@ -230,7 +234,7 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int, list
                         event_uniq_id,
                         tournament_id,
                         round_,
-                        [board.identifier for board in boards],
+                        [board.id for board in boards],
                     )
                 )
             )
@@ -255,9 +259,13 @@ def test_a_result_entered_by_the_arbiter_is_announced(
     )
     http.put(
         f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
-        data={'board_id': str(board.id), 'key': 'Digit3', 'validate_result': 'false'},
+        data={
+            'board_id': str(board.id),
+            'key': 'Digit3',
+            'validate_result': 'false',
+        },
     )
-    assert published == [(EVENT_ID, tournament.id, 1, [board.identifier])] * 2
+    assert published == [(EVENT_ID, tournament.id, 1, [board.id])] * 2
 
 
 @pytest.mark.unit
@@ -269,7 +277,11 @@ def test_checking_a_result_announces_nothing(
     """The second, checking pass writes nothing, so there is nothing to
     tell the other screens about."""
     board = board_of_round_one(http, tournament)
-    entered = {'board_id': str(board.id), 'key': 'Digit3', 'validate_result': 'false'}
+    entered = {
+        'board_id': str(board.id),
+        'key': 'Digit3',
+        'validate_result': 'false',
+    }
     http.put(f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1', data=entered)
     published.clear()
     for key in ('Digit3', 'Digit1'):
@@ -437,11 +449,11 @@ def test_a_live_update_sends_the_rows_of_the_boards_that_changed(
     button to the next round, which the result can change."""
     board = board_of_round_one(http, tournament)
     boards = EVENT.tournament().get_round_boards(1)
-    shown = [b.identifier for b in boards]
-    text = _pairings_live_update(http, tournament, shown, [board.identifier])
+    shown = [b.id for b in boards]
+    text = _pairings_live_update(http, tournament, shown, [board.id])
     assert 'data-action="patch"' in text
-    assert f'id="pairing-row-{board.identifier}"' in text
-    assert f'id="pairing-row-{boards[1].identifier}"' not in text
+    assert f'id="pairing-row-{board.id}"' in text
+    assert f'id="pairing-row-{boards[1].id}"' not in text
     assert 'id="round-next-button"' in text
 
 
@@ -452,13 +464,13 @@ def test_a_live_update_asks_for_a_reload_when_it_cannot_put_the_change_in_place(
     """A board the page does not show, a change that is not known, or the
     column of the players to pair coming or going, reload the page."""
     board = board_of_round_one(http, tournament)
-    shown = [b.identifier for b in EVENT.tournament().get_round_boards(1)]
+    shown = [b.id for b in EVENT.tournament().get_round_boards(1)]
     assert 'data-action="reload"' in _pairings_live_update(
-        http, tournament, [], [board.identifier]
+        http, tournament, [], [board.id]
     )
     assert 'data-action="reload"' in _pairings_live_update(
         http, tournament, shown, None
     )
     assert 'data-action="reload"' in _pairings_live_update(
-        http, tournament, shown, [board.identifier], has_unpaired=True
+        http, tournament, shown, [board.id], has_unpaired=True
     )

@@ -22,3 +22,8 @@
 - The screens follow the changes as they happen rather than every ten seconds: a result updates only the games and players it concerns on the pairings, result entry, players and check-in screens, the rankings are drawn again at once, and a change to a screen, such as its font size, shows straight away, as does what is sent to a channel, even one going through several screens (5.3.0)
 - A screen is drawn again only when something it shows has changed: a player withdrawn from another tournament no longer redraws every screen of the event (5.3.0)
 - Timers are simpler to set up and to keep up to date: each hour is either the start of a round, worded automatically ("Round 3 starts in 4 minutes"), or a moment with a label of its own, with a preview of what the screens will show; a tournament's schedule can be copied into a timer, and copied again after it changes; a quick countdown shows "Next round in 10 minutes" in one step; an hour can be postponed together with the later hours of its day; the delays read as the colours the timer goes through, and may be 0; and the screens showing a timer are chosen in the timer's own form (5.3.0)
+- On a players screen shown through a display controller, tapping a player opens the result window of their game, instead of sometimes opening the window of another board of the round; a game is always found by its own identifier, so that no screen can open another board's result window (5.3.0)
+
+## __Sharly-Chess.com__
+
+- The pairings published on _Sharly-Chess.com_ show the table numbers shown in _Sharly Chess_: when a fixed board leaves the board it displaces empty, as in FFE events, a player with a fixed board is shown at that board instead of at the board the game would have had without it (5.3.0)

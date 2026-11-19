@@ -54,9 +54,9 @@ def test_each_board_of_a_display_controller_opens_its_own_result_window(
         api, EVENT_ID, CONTROLLER_NAME, screen_uniq_id=SCREEN_ID
     )
     boards = tournament.get_round_boards(1)
-    assert any(board.identifier != board.id for board in boards)
+    assert any(board.id != board.position for board in boards)
     assert any(
-        board.id in {other.identifier for other in boards if other is not board}
+        board.position in {other.id for other in boards if other is not board}
         for board in boards
     )
 

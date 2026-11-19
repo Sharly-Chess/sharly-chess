@@ -122,9 +122,7 @@ def test_the_pairings_page_opens_the_result_of_a_hole(
     board = hole_board(tournament)
     response = http.get(f'/event/{EVENT_ID}/pairings/{tournament.id}/1')
     assert response.status_code == 200
-    assert f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.identifier}' in (
-        response.text
-    )
+    assert f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.id}' in (response.text)
 
 
 @pytest.mark.unit
@@ -132,9 +130,7 @@ def test_the_result_dialog_of_a_hole_offers_only_forfeits(
     http: TestClient, tournament: Tournament
 ):
     board = hole_board(tournament)
-    response = http.get(
-        f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.identifier}'
-    )
+    response = http.get(f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.id}')
     assert response.status_code == 200
     assert 'F – F' in response.text
     assert '½ – ½' not in response.text
@@ -149,9 +145,7 @@ def test_the_result_dialog_of_a_hole_names_both_teams(
     assert present is not None
     present_team = present.tournament_player.team
     assert present_team is not None
-    response = http.get(
-        f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.identifier}'
-    )
+    response = http.get(f'/event/{EVENT_ID}/pairing/{tournament.id}/1/{board.id}')
     assert response.status_code == 200
     assert 'Team1' in response.text
     assert present_team.name in response.text
@@ -163,10 +157,10 @@ def test_an_absent_present_player_is_recorded_as_a_double_forfeit(
 ):
     board = hole_board(tournament)
     http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
         f'/{white_result(board, Result.DOUBLE_FORFEIT).value}'
     )
-    board = load().boards_by_id[board.identifier]
+    board = load().boards_by_id[board.id]
     pairing = board.team_forfeit_hole_pairing
     assert pairing is not None
     assert pairing.result == Result.DOUBLE_FORFEIT
@@ -176,9 +170,9 @@ def test_an_absent_present_player_is_recorded_as_a_double_forfeit(
 def test_a_played_result_is_refused_on_a_hole(http: TestClient, tournament: Tournament):
     board = hole_board(tournament)
     http.put(
-        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.identifier}'
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
         f'/{Result.DRAW.value}'
     )
-    pairing = load().boards_by_id[board.identifier].team_forfeit_hole_pairing
+    pairing = load().boards_by_id[board.id].team_forfeit_hole_pairing
     assert pairing is not None
     assert pairing.result == Result.FORFEIT_WIN
