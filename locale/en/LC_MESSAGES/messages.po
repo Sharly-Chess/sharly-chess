@@ -1860,6 +1860,15 @@ msgstr ""
 msgid "Blitz rating"
 msgstr ""
 
+msgid "Blur the background of the screen"
+msgstr ""
+
+msgid "Blur the background of the screen with the image (the background colour is then not used)."
+msgstr ""
+
+msgid "Blurred background"
+msgstr ""
+
 msgctxt "blitz rating acronym"
 msgid "Blz"
 msgstr ""

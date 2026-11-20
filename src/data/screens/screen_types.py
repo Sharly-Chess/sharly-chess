@@ -2252,7 +2252,14 @@ class ImageScreenType(ScreenType):
         # bytes of the image being needed for both.
         uploaded = WebContext.form_data_to_str(data, 'background_image_upload', '')
         url = WebContext.form_data_to_str(data, 'background_image', '')
-        values: dict = {'background_image': uploaded or url}
+        values: dict = {
+            'background_image': uploaded or url,
+            'background_blurred': WebContext.form_data_to_bool(
+                data, 'background_blurred'
+            ),
+        }
+        # A blurred background makes no use of a colour, and the form disables
+        # the fields of the colour, which are then not submitted at all.
         if not WebContext.form_data_to_bool(data, 'background_color_checkbox'):
             field = 'background_color'
             try:
@@ -2274,6 +2281,7 @@ class ImageScreenType(ScreenType):
             'background_image': '' if is_upload else stored_image,
             'background_image_upload': stored_image if is_upload else '',
             'background_color': screen.background_color,
+            'background_blurred': screen.stored_screen.background_blurred,
             # Asking for the colour of the image is an action of the form, not
             # a setting of the screen: a screen that already has a colour
             # keeps it unless the box is ticked again.
@@ -2284,7 +2292,7 @@ class ImageScreenType(ScreenType):
     def create_form_data(self, event: Event) -> dict:
         # A screen being created has no colour yet, so the image gives it one
         # unless the arbiter unticks the box and chooses themselves.
-        return {'background_color_auto': True}
+        return {'background_color_auto': True, 'background_blurred': False}
 
     @override
     def default_screen_name(self, screen: Screen) -> str:
@@ -2333,6 +2341,7 @@ class ImageScreenType(ScreenType):
             'image_url': screen.background_url,
             'background_color': screen.background_color,
             'background_color_default': not screen.stored_screen.background_color,
+            'background_blurred': screen.stored_screen.background_blurred,
         }
 
     @override

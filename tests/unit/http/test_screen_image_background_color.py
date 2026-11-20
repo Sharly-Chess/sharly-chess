@@ -237,3 +237,47 @@ class TestImageScreenBackgroundColor:
             background_color_auto='on',
         )
         assert stored_screen.background_color == '#111111'
+
+
+@pytest.mark.unit
+class TestImageScreenBlurredBackground:
+    """An image laid blurred behind itself fills the screen, which then makes
+    no use of a background colour. Unlike the box that reads the colour, this
+    one is a setting of the screen and is kept with it."""
+
+    def test_the_background_is_not_blurred_by_default(self, api: ApiClient, event: str):
+        stored_screen = _create(
+            api, 'Poster', background_image_upload=_uploaded(_bordered())
+        )
+        assert stored_screen.background_blurred is False
+
+    def test_the_box_blurs_the_background_and_is_kept(self, api: ApiClient, event: str):
+        image = _uploaded(_bordered())
+        stored_screen = _create(
+            api, 'Poster', background_image_upload=image, background_blurred='on'
+        )
+        assert stored_screen.background_blurred is True
+        stored_screen = _update(api, stored_screen, background_image_upload=image)
+        assert stored_screen.background_blurred is False
+
+    def test_the_colour_waits_under_the_blur(self, api: ApiClient, event: str):
+        """The form disables the fields of the colour while the blur hides it,
+        so they are not submitted; the colour is kept all the same, and the
+        screen shows it again once the blur is unticked."""
+        image = _uploaded(_bordered())
+        stored_screen = _create(
+            api, 'Poster', background_image_upload=image, background_color='#ABCDEF'
+        )
+        stored_screen = _update(
+            api, stored_screen, background_image_upload=image, background_blurred='on'
+        )
+        assert stored_screen.background_blurred is True
+        assert stored_screen.background_color == '#ABCDEF'
+        stored_screen = _update(
+            api,
+            stored_screen,
+            background_image_upload=image,
+            background_color='#ABCDEF',
+        )
+        assert stored_screen.background_blurred is False
+        assert stored_screen.background_color == '#ABCDEF'

@@ -649,6 +649,19 @@ class ScreenAdminController(ScreenAdminRenderer):
                         data, 'background_color_auto'
                     ):
                         type_values['background_color'] = border_color(image_data)
+                    previous_screen = (
+                        web_context.admin_screen.stored_screen
+                        if web_context.admin_screen
+                        else None
+                    )
+                    if type_values.get('background_blurred') and previous_screen:
+                        # The colour the blur hides is kept, so that unticking
+                        # the blur gives the screen its colour back: the form
+                        # disables the colour fields, which are then not
+                        # submitted at all.
+                        type_values['background_color'] = (
+                            previous_screen.background_color
+                        )
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox'

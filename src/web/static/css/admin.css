@@ -841,21 +841,36 @@
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
     background-color: var(--bs-tertiary-bg);
+    background-image: var(--screen-image);
     background-origin: content-box;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
+    /* The blur of a thumbnail is scaled down to its size, so that it reads
+       like the blur of the screen it stands for. */
+    --blurred-image-radius: .125rem;
+    --blurred-image-padding: .1875rem;
+}
+
+.screen-image-thumbnail.blurred-image-background {
+    /* The layers of the blur carry the image: this stylesheet comes after the
+       one the blur is defined in, so the background of the box is dropped
+       here too. */
+    background-image: none;
 }
 
 .screen-image-thumbnail-lg {
     height: 7.5rem;
+    --blurred-image-radius: .25rem;
 }
 
 .screen-color-swatch {
     display: inline-block;
     width: .875rem;
     height: .875rem;
-    border-radius: var(--bs-border-radius-sm);
+    /* A square, barely softened: the Bootstrap radius rounds a box this
+       small into a dot. */
+    border-radius: .125rem;
     border: 1px solid var(--bs-border-color);
     vertical-align: -.125rem;
 }

@@ -1860,6 +1860,15 @@ msgstr "Blitz"
 msgid "Blitz rating"
 msgstr "Classement blitz"
 
+msgid "Blur the background of the screen"
+msgstr "Flouter le fond de l'écran"
+
+msgid "Blur the background of the screen with the image (the background colour is then not used)."
+msgstr "Flouter le fond de l'écran avec l'image (dans ce cas la couleur de fond d'écran n'est pas utilisée)."
+
+msgid "Blurred background"
+msgstr "Floutage de l'arrière-plan"
+
 msgctxt "blitz rating acronym"
 msgid "Blz"
 msgstr "Blz"

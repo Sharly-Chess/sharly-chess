@@ -8,18 +8,22 @@
         {% endif %}
         <div>
             <div
-                class="screen-image-thumbnail mt-1"
-                style="background-color: {{ data.background_color }}; background-image: url('{{ data.image_url }}');"
+                class="screen-image-thumbnail mt-1{% if data.background_blurred %} blurred-image-background{% endif %}"
+                style="background-color: {{ data.background_color }}; --screen-image: url('{{ data.image_url }}');"
             ></div>
         </div>
     {% endif %}
 </div>
 <div>
-    {{ _('%(string)s:', string=_('Background color')) }}
-    <span class="screen-color-swatch" style="background-color: {{ data.background_color }};"></span>
-    {% if data.background_color_default %}
-        <span class="fst-italic">
-            {{ _('(by default)') }}
-        </span>
+    {% if data.background_blurred %}
+        {{ _('Blurred background') }}
+    {% else %}
+        {{ _('%(string)s:', string=_('Background color')) }}
+        <span class="screen-color-swatch" style="background-color: {{ data.background_color }};"></span>
+        {% if data.background_color_default %}
+            <span class="fst-italic">
+                {{ _('(by default)') }}
+            </span>
+        {% endif %}
     {% endif %}
 </div>

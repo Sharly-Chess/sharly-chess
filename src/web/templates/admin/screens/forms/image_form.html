@@ -26,8 +26,8 @@
         <div class="mt-2">
             <div
                 id="background-image-preview"
-                class="screen-image-thumbnail screen-image-thumbnail-lg{% if not _current %} d-none{% endif %}"
-                {% if _current %}style="background-image: url('{{ _current }}');"{% endif %}
+                class="screen-image-thumbnail screen-image-thumbnail-lg{% if data.get('background_blurred') == 'on' %} blurred-image-background{% endif %}{% if not _current %} d-none{% endif %}"
+                {% if _current %}style="--screen-image: url('{{ _current }}');"{% endif %}
             ></div>
         </div>
         {% if errors.get('background_image') %}
@@ -35,6 +35,12 @@
         {% endif %}
     </div>
     <div class="col-12 screen-background-color">
+        {{ admin_macros.checkbox_input(
+            name='background_blurred',
+            placeholder=_('Blur the background of the screen'),
+            tooltip_text=_('Blur the background of the screen with the image (the background colour is then not used).'),
+            data=data, errors=errors
+        ) }}
         {{ admin_macros.checkbox_input(
             name='background_color_auto',
             placeholder=_('Set the background color automatically'),
@@ -54,20 +60,32 @@
     (() => {
         // The ids of the colour fields are shared with the screens settings
         // modal, which is always on the page, so the fields of this form are
-        // reached through the block they are in.
-        const fields = document.currentScript.previousElementSibling.querySelector(
-            '.screen-background-color'
-        );
+        // reached through the row they are in.
+        const row = document.currentScript.previousElementSibling;
+        const fields = row.querySelector('.screen-background-color');
+        const blurred = fields.querySelector('[name="background_blurred"]');
         const auto = fields.querySelector('[name="background_color_auto"]');
         const useDefault = fields.querySelector('[name="background_color_checkbox"]');
         const color = fields.querySelector('[name="background_color"]');
-        // A colour read from the image leaves none to choose.
+        const preview = row.querySelector('#background-image-preview');
+        // A blurred background makes no use of a colour, and a colour read
+        // from the image leaves none to choose; either way there is none to
+        // lay the preview on, the read one being known once the screen is
+        // saved.
         const apply = () => {
-            useDefault.disabled = auto.checked;
-            color.disabled = auto.checked || useDefault.checked;
+            auto.disabled = blurred.checked;
+            useDefault.disabled = blurred.checked || auto.checked;
+            color.disabled = blurred.checked || auto.checked || useDefault.checked;
+            preview.classList.toggle('blurred-image-background', blurred.checked);
+            preview.style.backgroundColor =
+                blurred.checked || auto.checked ? '' : color.value;
         };
+        // The box of the default colour fills the field in before this runs,
+        // its own handler being bound on the click.
+        blurred.addEventListener('change', apply);
         auto.addEventListener('change', apply);
         useDefault.addEventListener('change', apply);
+        color.addEventListener('input', apply);
         apply();
     })();
 </script>
@@ -150,7 +168,7 @@
             if (urlInput) {
                 urlInput.value = '';
             }
-            preview.style.backgroundImage = `url('${image}')`;
+            preview.style.setProperty('--screen-image', `url('${image}')`);
             preview.classList.remove('d-none');
         });
     })();
