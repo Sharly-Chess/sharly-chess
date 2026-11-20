@@ -1860,6 +1860,15 @@ msgstr ""
 msgid "Blitz rating"
 msgstr ""
 
+msgid "Blur the background of the screen"
+msgstr ""
+
+msgid "Blur the background of the screen with the image (the background colour is then not used)."
+msgstr ""
+
+msgid "Blurred background"
+msgstr ""
+
 msgctxt "blitz rating acronym"
 msgid "Blz"
 msgstr ""
@@ -10125,6 +10134,9 @@ msgstr ""
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr ""
 
+msgid "Set the background colour from the image"
+msgstr ""
+
 msgid "Set the coefficient"
 msgstr ""
 
@@ -11018,6 +11030,9 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
+msgid "The background colour cannot be set from this image."
+msgstr ""
+
 #, python-brace-format
 msgid "The backup of event [{uniq_id}] failed: {error}"
 msgstr ""
@@ -11067,6 +11082,9 @@ msgid "The coefficient has been saved."
 msgstr ""
 
 msgid "The colour attributed to the highest ranked player at the first round."
+msgstr ""
+
+msgid "The colour the image is laid on is read from its border, so that no band of another colour shows around it."
 msgstr ""
 
 msgid "The competitors have been unmerged."
