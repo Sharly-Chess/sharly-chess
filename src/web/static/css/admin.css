@@ -831,6 +831,14 @@
     width: 15%;
 }
 
+.screen-background-color a.disabled {
+    /* Bootstrap greys a disabled button or nav link, not a plain one: the
+       link that reads the colour of the image is one of the colour fields
+       the blur turns off. */
+    pointer-events: none;
+    opacity: .5;
+}
+
 .screen-image-thumbnail {
     /* A screen is landscape, so the thumbnail frames the image the way the
        screen will: contained and centred inside a 16/9 box, on the colour of

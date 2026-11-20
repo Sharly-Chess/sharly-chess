@@ -3,9 +3,9 @@
 An image laid on a flat colour — a poster with a coloured border, a logo on
 a white card — shows a band of the event's colour around it unless the
 screen is given the same colour. The form of the screen offers to read that
-colour from the image's border instead, so that the arbiter has nothing to
-match by hand. The box is theirs for one save: it is not kept with the
-screen, so a colour already chosen stays until the box is ticked again.
+colour from the image's border and fill the colour field with it, so that
+the arbiter has nothing to match by hand; the field stays theirs, to change
+or to leave on the colour of the event.
 """
 
 import base64
@@ -137,106 +137,68 @@ def _update(api: ApiClient, screen: StoredScreen, **overrides: str) -> StoredScr
     return stored_screen
 
 
+def _read_color(api: ApiClient, **image: str) -> str:
+    """What the link of the form reads from the image it is given."""
+    response = api.post(
+        f'/screen-image-color/{EVENT_ID}',
+        headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        data=TestUtils.prepare_form_data(dict(image)),
+    )
+    TestUtils.check_api_response(response)
+    return response.text()
+
+
 @pytest.mark.unit
 class TestImageScreenBackgroundColor:
-    def test_an_uploaded_image_sets_the_colour_it_is_laid_on(
-        self, api: ApiClient, event: str
-    ):
-        stored_screen = _create(
-            api,
-            'Poster',
-            background_image_upload=_uploaded(_bordered()),
-            background_color_auto='on',
+    def test_the_colour_of_an_uploaded_image_is_read(self, api: ApiClient, event: str):
+        assert _read_color(api, background_image_upload=_uploaded(_bordered())) == (
+            BORDER_HEXA
         )
-        assert stored_screen.background_color == BORDER_HEXA
 
-    def test_nothing_is_read_while_the_box_is_not_ticked(
+    def test_an_image_laid_on_no_colour_reads_as_nothing(
         self, api: ApiClient, event: str
     ):
-        """A screen saved without the box keeps the colour of the event
-        behind its image."""
-        stored_screen = _create(
-            api, 'Poster', background_image_upload=_uploaded(_bordered())
-        )
-        assert stored_screen.background_color is None
+        """A photograph bleeding to its edges is laid on no colour: the form
+        is told so and leaves its field alone."""
+        assert _read_color(api, background_image_upload=_uploaded(_photograph())) == ''
 
-    def test_an_image_laid_on_no_colour_leaves_the_event_colour(
+    def test_an_image_that_cannot_be_read_reads_as_nothing(
         self, api: ApiClient, event: str
     ):
-        """No colour of the screen's own: the screen falls back to the
-        colour configured for the event."""
-        stored_screen = _create(
-            api,
-            'Photograph',
-            background_image_upload=_uploaded(_photograph()),
-            background_color_auto='on',
+        assert (
+            _read_color(api, background_image_upload='data:image/png;base64,??') == ''
         )
-        assert stored_screen.background_color is None
+        assert _read_color(api, background_image='not a URL') == ''
+        assert _read_color(api) == ''
 
     def test_a_colour_chosen_by_hand_is_kept(self, api: ApiClient, event: str):
+        """The colour read from an image is set in the form, and saved as any
+        other colour the arbiter chooses."""
         stored_screen = _create(
             api,
             'Poster',
             background_image_upload=_uploaded(_bordered()),
-            background_color='#ABCDEF',
-        )
-        assert stored_screen.background_color == '#ABCDEF'
-
-    def test_the_box_can_be_ticked_on_a_screen_that_has_a_colour(
-        self, api: ApiClient, event: str
-    ):
-        image = _uploaded(_bordered())
-        stored_screen = _create(
-            api, 'Poster', background_image_upload=image, background_color='#ABCDEF'
-        )
-        stored_screen = _update(
-            api,
-            stored_screen,
-            background_image_upload=image,
-            background_color_auto='on',
-        )
-        assert stored_screen.background_color == BORDER_HEXA
-
-    def test_a_colour_read_once_is_not_read_again(self, api: ApiClient, event: str):
-        """The box is not kept with the screen: a screen saved again without
-        it keeps the colour it was given, and the arbiter may choose another
-        one."""
-        image = _uploaded(_bordered())
-        stored_screen = _create(
-            api, 'Poster', background_image_upload=image, background_color_auto='on'
-        )
-        assert stored_screen.background_color == BORDER_HEXA
-        stored_screen = _update(
-            api,
-            stored_screen,
-            background_image_upload=image,
             background_color=BORDER_HEXA,
         )
         assert stored_screen.background_color == BORDER_HEXA
         stored_screen = _update(
             api,
             stored_screen,
-            background_image_upload=image,
+            background_image_upload=_uploaded(_bordered()),
             background_color='#ABCDEF',
         )
         assert stored_screen.background_color == '#ABCDEF'
 
-    def test_a_new_image_sets_the_colour_it_is_laid_on(
+    def test_a_screen_saved_without_a_colour_keeps_the_event_colour(
         self, api: ApiClient, event: str
     ):
         stored_screen = _create(
             api,
             'Poster',
             background_image_upload=_uploaded(_bordered()),
-            background_color_auto='on',
+            background_color_checkbox='on',
         )
-        stored_screen = _update(
-            api,
-            stored_screen,
-            background_image_upload=_uploaded(_bordered((17, 17, 17))),
-            background_color_auto='on',
-        )
-        assert stored_screen.background_color == '#111111'
+        assert stored_screen.background_color is None
 
 
 @pytest.mark.unit

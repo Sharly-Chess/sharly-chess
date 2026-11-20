@@ -10136,8 +10136,8 @@ msgstr "Noter des résultats spéciaux"
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr "Affiliation définie pour %(filled)d équipe(s) à partir de « %(source)s »."
 
-msgid "Set the background color automatically"
-msgstr "Choisir la couleur de fond automatiquement"
+msgid "Set the background colour from the image"
+msgstr "Définir la couleur de fond à partir de l'image"
 
 msgid "Set the coefficient"
 msgstr "Définir le coefficient"
@@ -11031,6 +11031,9 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
+
+msgid "The background colour cannot be set from this image."
+msgstr "Impossible de définir la couleur de fond à partir de l'image."
 
 #, python-brace-format
 msgid "The backup of event [{uniq_id}] failed: {error}"

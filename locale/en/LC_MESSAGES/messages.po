@@ -10134,7 +10134,7 @@ msgstr ""
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr ""
 
-msgid "Set the background color automatically"
+msgid "Set the background colour from the image"
 msgstr ""
 
 msgid "Set the coefficient"
@@ -11028,6 +11028,9 @@ msgid "The average of the [{tie_break}] scores of the opponents played over the 
 msgstr ""
 
 msgid "The average of the ratings of the opponents played over the board."
+msgstr ""
+
+msgid "The background colour cannot be set from this image."
 msgstr ""
 
 #, python-brace-format

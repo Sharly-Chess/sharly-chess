@@ -41,12 +41,14 @@
             tooltip_text=_('Blur the background of the screen with the image (the background colour is then not used).'),
             data=data, errors=errors
         ) }}
-        {{ admin_macros.checkbox_input(
-            name='background_color_auto',
-            placeholder=_('Set the background color automatically'),
-            tooltip_text=_('The colour the image is laid on is read from its border, so that no band of another colour shows around it.'),
-            data=data, errors=errors
-        ) }}
+        <div class="mb-2">
+            <a
+                href="#"
+                id="background-color-from-image"
+                data-url="{{ url_for('admin-screen-image-color', event_uniq_id=admin_event.uniq_id) }}"
+                {{ macros.tooltip_attributes('', _('The colour the image is laid on is read from its border, so that no band of another colour shows around it.'), 'top') }}
+            >{{ _('Set the background colour from the image') }}</a>
+        </div>
         {{ admin_macros.color_input(
             name='background_color',
             label=_('%(string)s:', string=_('Background colour')),
@@ -64,29 +66,56 @@
         const row = document.currentScript.previousElementSibling;
         const fields = row.querySelector('.screen-background-color');
         const blurred = fields.querySelector('[name="background_blurred"]');
-        const auto = fields.querySelector('[name="background_color_auto"]');
         const useDefault = fields.querySelector('[name="background_color_checkbox"]');
         const color = fields.querySelector('[name="background_color"]');
+        const fromImage = fields.querySelector('#background-color-from-image');
         const preview = row.querySelector('#background-image-preview');
-        // A blurred background makes no use of a colour, and a colour read
-        // from the image leaves none to choose; either way there is none to
-        // lay the preview on, the read one being known once the screen is
-        // saved.
+        const urlInput = row.querySelector('[name="background_image"]');
+        const upload = row.querySelector('[name="background_image_upload"]');
+        // A blurred background makes no use of a colour: nothing to choose,
+        // nothing to read from the image, and nothing to lay the preview on.
         const apply = () => {
-            auto.disabled = blurred.checked;
-            useDefault.disabled = blurred.checked || auto.checked;
-            color.disabled = blurred.checked || auto.checked || useDefault.checked;
+            useDefault.disabled = blurred.checked;
+            color.disabled = blurred.checked || useDefault.checked;
+            fromImage.classList.toggle('disabled', blurred.checked);
             preview.classList.toggle('blurred-image-background', blurred.checked);
-            preview.style.backgroundColor =
-                blurred.checked || auto.checked ? '' : color.value;
+            preview.style.backgroundColor = blurred.checked ? '' : color.value;
         };
         // The box of the default colour fills the field in before this runs,
         // its own handler being bound on the click.
         blurred.addEventListener('change', apply);
-        auto.addEventListener('change', apply);
         useDefault.addEventListener('change', apply);
         color.addEventListener('input', apply);
         apply();
+
+        // The colour the image is laid on is read by the server, which has
+        // the bytes of an upload and can fetch a URL; the field it fills in
+        // is the arbiter's own, to change afterwards as they please.
+        fromImage.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const url = urlInput ? urlInput.value.trim() : '';
+            const uploaded = upload ? upload.value : '';
+            // Nothing to read from until an image is given.
+            if (blurred.checked || !(uploaded || url)) {
+                return;
+            }
+            const response = await fetch(fromImage.dataset.url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({
+                    background_image: url,
+                    background_image_upload: uploaded,
+                }),
+            });
+            const read = response.ok ? (await response.text()).trim() : '';
+            if (!read) {
+                alert({{ _('The background colour cannot be set from this image.') | tojson }});
+                return;
+            }
+            useDefault.checked = false;
+            color.value = read;
+            apply();
+        });
     })();
 </script>
 <script>
