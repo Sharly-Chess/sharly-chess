@@ -7,12 +7,18 @@
             {{ _('Image: %(image)s', image=data.image) }}
         {% endif %}
         <div>
-            <img src="{{ data.image_url }}" alt="" class="img-thumbnail mt-1" style="max-height: 60px;" />
+            <img
+                src="{{ data.image_url }}"
+                alt=""
+                class="img-thumbnail mt-1"
+                style="max-height: 60px; background-color: {{ data.background_color }};"
+            />
         </div>
     {% endif %}
 </div>
 <div>
-    {{ _('%(string)s: %(value)s', string=_('Background color'), value=data.background_color) }}
+    {{ _('%(string)s:', string=_('Background color')) }}
+    <span class="screen-color-swatch" style="background-color: {{ data.background_color }};"></span>
     {% if data.background_color_default %}
         <span class="fst-italic">
             {{ _('(by default)') }}

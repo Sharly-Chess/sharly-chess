@@ -831,6 +831,15 @@
     width: 15%;
 }
 
+.screen-color-swatch {
+    display: inline-block;
+    width: .875rem;
+    height: .875rem;
+    border-radius: var(--bs-border-radius-sm);
+    border: 1px solid var(--bs-border-color);
+    vertical-align: -.125rem;
+}
+
 .screens-collection-list-sections {
     display: grid;
     grid-template-columns: var(--collection-list-columns);
