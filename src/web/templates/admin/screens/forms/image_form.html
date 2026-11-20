@@ -24,13 +24,11 @@
         />
         {% set _current = data.get('background_image_upload') or data.get('background_image') %}
         <div class="mt-2">
-            <img
+            <div
                 id="background-image-preview"
-                class="img-thumbnail{% if not _current %} d-none{% endif %}"
-                style="max-height: 120px;"
-                src="{{ _current or '' }}"
-                alt=""
-            />
+                class="screen-image-thumbnail screen-image-thumbnail-lg{% if not _current %} d-none{% endif %}"
+                {% if _current %}style="background-image: url('{{ _current }}');"{% endif %}
+            ></div>
         </div>
         {% if errors.get('background_image') %}
             <div class="invalid-feedback d-block">{{ errors.get('background_image') }}</div>
@@ -152,7 +150,7 @@
             if (urlInput) {
                 urlInput.value = '';
             }
-            preview.src = image;
+            preview.style.backgroundImage = `url('${image}')`;
             preview.classList.remove('d-none');
         });
     })();

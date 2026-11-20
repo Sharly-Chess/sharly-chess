@@ -7,12 +7,10 @@
             {{ _('Image: %(image)s', image=data.image) }}
         {% endif %}
         <div>
-            <img
-                src="{{ data.image_url }}"
-                alt=""
-                class="img-thumbnail mt-1"
-                style="max-height: 60px; background-color: {{ data.background_color }};"
-            />
+            <div
+                class="screen-image-thumbnail mt-1"
+                style="background-color: {{ data.background_color }}; background-image: url('{{ data.image_url }}');"
+            ></div>
         </div>
     {% endif %}
 </div>
