@@ -485,15 +485,29 @@ class AccountAdminController(BaseEventAdminController):
             event.anonymous_account.stored_account.stored_permissions
         )
         account = event.create_account(stored_account)
-
         Message.success(
             request,
             _('Account [{account_name}] has been created.').format(
                 account_name=account.full_name
             ),
         )
+        return self._created_account_render(request, account.id)
+
+    @classmethod
+    def _created_account_render(cls, request: HTMXRequest, account_id: int) -> Template:
         web_context = AccountAdminWebContext(request, reload_event=True)
-        return self.admin_event_account_render(web_context)
+        account = web_context.get_admin_event().accounts_by_id[account_id]
+        web_context.admin_account = account
+        if account.edit_permissions and web_context.client.can_manage_account(
+            account.id
+        ):
+            template_context = (
+                cls._permissions_modal_context(web_context)
+                if account.permissions
+                else cls._permission_form_modal_context(web_context, FormAction.CREATE)
+            )
+            return cls.admin_event_account_render(web_context, template_context)
+        return cls.admin_event_account_render(web_context)
 
     @patch(
         path='/account-update/{event_uniq_id:str}/{account_id:int}',
@@ -575,8 +589,7 @@ class AccountAdminController(BaseEventAdminController):
                 account_name=account.full_name
             ),
         )
-        web_context = AccountAdminWebContext(request, reload_event=True)
-        return self.admin_event_account_render(web_context)
+        return self._created_account_render(request, account.id)
 
     @delete(
         path='/account-delete/{event_uniq_id:str}/{account_id:int}',

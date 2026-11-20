@@ -29,7 +29,7 @@
                 <input type="text" style="display:none">
                 <input type="password" style="display:none">
 
-                <div class="row gy-2 gx-3">
+                <div class="row gy-2 gx-3 align-items-center">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
                             name='active',
@@ -56,9 +56,47 @@
                     </div>
                 </div>
 
+                {{ components.section_heading(_('Staff information')) }}
                 {% include 'account_information_form_section.html' %}
 
                 {{ components.section_heading(_('Staff member roles')) }}
+                {% call components.note('info', compact=true) %}
+                    <p class="mb-1">{{ _(
+                        'Staff member roles are used in documents (reports, standards, '
+                        'match sheets, etc.) as well as in TRF exports.'
+                    ) }}</p>
+                    <p class="mb-0">
+                        {% if action == 'update' %}
+                            {% if admin_account.edit_permissions and client.can_manage_account(admin_account.id) %}
+                                {% set link_attributes -%}
+                                    href="#" hx-target="body" hx-indicator="#please-wait" hx-get="{{ url_for(
+                                        'admin-account-permissions-modal'
+                                        if admin_account.permissions
+                                        else 'admin-account-permission-create-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        account_id=admin_account.id,
+                                    ) }}"
+                                {%- endset %}
+                                {{ _(
+                                    'They do not determine the operations that the account will be able to perform; '
+                                    'to set these, you must <a %(link_attributes)s>edit the account\'s permissions</a>.',
+                                    link_attributes=link_attributes,
+                                ) }}
+                            {% else %}
+                                {{ _(
+                                    'They do not determine the operations that the account will be able to perform; '
+                                    'to set these, you must edit the account\'s permissions.'
+                                ) }}
+                            {% endif %}
+                        {% else %}
+                            {{ _(
+                                'They do not determine the operations that the new account will be able to perform; '
+                                'to set these, you must edit the account\'s permissions in the window that appears '
+                                'immediately after the account is created.'
+                            ) }}
+                        {% endif %}
+                    </p>
+                {% endcall %}
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(

@@ -6826,8 +6826,8 @@ msgstr "Pas de résultat"
 msgid "No results."
 msgstr "Aucun résultat."
 
-msgid "No role required"
-msgstr "Aucun rôle requis"
+msgid "No role required for system accounts"
+msgstr "Aucun rôle requis pour les comptes système"
 
 msgid "No roles defined"
 msgstr "Aucun rôle défini"
@@ -9322,6 +9322,9 @@ msgstr "Rde.Ech"
 msgid "Roles"
 msgstr "Rôles"
 
+msgid "Roles (documents and exports)"
+msgstr "Rôles (documents et exports)"
+
 msgid "Romania"
 msgstr "Roumanie"
 
@@ -10475,6 +10478,9 @@ msgstr "Informations"
 
 msgid "Staff member roles"
 msgstr "Rôles"
+
+msgid "Staff member roles are used in documents (reports, standards, match sheets, etc.) as well as in TRF exports."
+msgstr "Les rôles des membres du staff sont utilisés dans les documents (rapports, normes, feuilles de match, etc.) ainsi que dans les exports TRF."
 
 msgid "Stage"
 msgstr "Étape"
@@ -11940,6 +11946,16 @@ msgstr "Ces étiquettes sont partagées par tous les évènements de cette insta
 
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
+
+#, python-format
+msgid "They do not determine the operations that the account will be able to perform; to set these, you must <a %(link_attributes)s>edit the account's permissions</a>."
+msgstr "Ils ne déterminent pas les opérations que le compte pourra effectuer ; pour les définir, vous devez <a %(link_attributes)s>modifier les permissions du compte</a>."
+
+msgid "They do not determine the operations that the account will be able to perform; to set these, you must edit the account's permissions."
+msgstr "Ils ne déterminent pas les opérations que le compte pourra effectuer ; pour les définir, vous devez modifier les permissions du compte."
+
+msgid "They do not determine the operations that the new account will be able to perform; to set these, you must edit the account's permissions in the window that appears immediately after the account is created."
+msgstr "Ils ne déterminent pas les opérations que le nouveau compte pourra effectuer ; pour les définir, vous devez modifier les permissions du compte dans la fenêtre qui apparaît juste après sa création."
 
 msgid "Third place"
 msgstr "Troisième place"
