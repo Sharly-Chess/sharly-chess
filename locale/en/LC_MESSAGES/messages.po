@@ -10125,6 +10125,9 @@ msgstr ""
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr ""
 
+msgid "Set the background color automatically"
+msgstr ""
+
 msgid "Set the coefficient"
 msgstr ""
 
@@ -11067,6 +11070,9 @@ msgid "The coefficient has been saved."
 msgstr ""
 
 msgid "The colour attributed to the highest ranked player at the first round."
+msgstr ""
+
+msgid "The colour the image is laid on is read from its border, so that no band of another colour shows around it."
 msgstr ""
 
 msgid "The competitors have been unmerged."

@@ -13,6 +13,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common import REQUEST_TIMEOUT
+from common.background import border_color, inline_image_data
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
@@ -604,6 +605,9 @@ class ScreenAdminController(ScreenAdminRenderer):
                 if 'background_image' in type_values:
                     field = 'background_image'
                     background_image = type_values[field]
+                    # The image's own bytes, kept to read the colour it is
+                    # laid on once it is known to be a usable image.
+                    image_data: bytes | None = None
                     if not background_image:
                         errors[field] = _('Please enter an image URL or upload a file.')
                     elif background_image.startswith('data:'):
@@ -612,6 +616,8 @@ class ScreenAdminController(ScreenAdminRenderer):
                             errors[field] = _(
                                 'The uploaded image is too large (max 2 MB).'
                             )
+                        else:
+                            image_data = inline_image_data(background_image)
                     elif not validators.url(background_image):
                         errors[field] = _('Invalid URL [{background_image}].').format(
                             background_image=background_image
@@ -627,10 +633,22 @@ class ScreenAdminController(ScreenAdminRenderer):
                                 ).format(
                                     url=background_image, code=response.status_code
                                 )
+                            else:
+                                image_data = response.content
                         except requests.RequestException as ce:
                             errors[field] = _(
                                 'URL [{url}] did not respond (error: [{error}]).'
                             ).format(url=background_image, error=str(ce))
+                    # The form can ask for the colour the image is laid on,
+                    # read from its border so that no band of another colour
+                    # shows around the image. The box speaks for this save
+                    # alone, nothing of it being kept with the screen, and the
+                    # event's colour is kept when the image has no colour of
+                    # its own, such as a photograph bleeding to its edges.
+                    if image_data and WebContext.form_data_to_bool(
+                        data, 'background_color_auto'
+                    ):
+                        type_values['background_color'] = border_color(image_data)
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox'
@@ -858,7 +876,8 @@ class ScreenAdminController(ScreenAdminRenderer):
                 raise ValueError(f'action=[{action}]')
 
         event = web_context.get_admin_event()
-        # The validation checks that a background image URL answers.
+        # The validation checks that a background image URL answers, and
+        # reads the colour the image is laid on.
         stored_screen: StoredScreen = await asyncio.to_thread(
             self._admin_validate_screen_update_data, action, web_context, data
         )

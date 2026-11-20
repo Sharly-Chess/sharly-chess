@@ -2247,7 +2247,9 @@ class ImageScreenType(ScreenType):
 
         # An uploaded image (base64 data URI in ``background_image_upload``)
         # takes precedence over a typed URL. The value's format/size is
-        # validated web-side (network I/O for URLs) once the controller sees it.
+        # validated web-side (network I/O for URLs) once the controller sees it,
+        # as is the colour read from the image when the form asks for it, the
+        # bytes of the image being needed for both.
         uploaded = WebContext.form_data_to_str(data, 'background_image_upload', '')
         url = WebContext.form_data_to_str(data, 'background_image', '')
         values: dict = {'background_image': uploaded or url}
@@ -2272,7 +2274,17 @@ class ImageScreenType(ScreenType):
             'background_image': '' if is_upload else stored_image,
             'background_image_upload': stored_image if is_upload else '',
             'background_color': screen.background_color,
+            # Asking for the colour of the image is an action of the form, not
+            # a setting of the screen: a screen that already has a colour
+            # keeps it unless the box is ticked again.
+            'background_color_auto': False,
         }
+
+    @override
+    def create_form_data(self, event: Event) -> dict:
+        # A screen being created has no colour yet, so the image gives it one
+        # unless the arbiter unticks the box and chooses themselves.
+        return {'background_color_auto': True}
 
     @override
     def default_screen_name(self, screen: Screen) -> str:
