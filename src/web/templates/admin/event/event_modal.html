@@ -36,6 +36,9 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
                 {# Where the sub-modals (tags, category sets) come back to. Built
                    here, the only place with the action / tab / event context,
                    and carried along with the rest of the form. #}
