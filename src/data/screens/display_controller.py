@@ -44,6 +44,11 @@ class DisplayController:
         return self.stored_display_controller.public
 
     @property
+    def remote(self) -> bool:
+        """Whether this may be reached from outside the venue."""
+        return self.stored_display_controller.remote
+
+    @property
     def name(self) -> str:
         return self.stored_display_controller.name
 
@@ -245,11 +250,13 @@ class DisplayController:
             return obj.resolved_screens()
         return []
 
-    def screens_for(self, include_private: bool) -> list[Screen]:
+    def screens_for(self, include_private: bool, *, remote: bool) -> list[Screen]:
         """The screens a viewer can reach: a menu only offers a viewer the
-        screens they may see."""
+        screens they may see, and only what leaves the venue leaves it."""
         if menu := self.menu:
-            return menu.screens_for(include_private)
+            return menu.screens_for(include_private, remote=remote)
+        if remote:
+            return [screen for screen in self.screens if screen.remote]
         return self.screens
 
     @property

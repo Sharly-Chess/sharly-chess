@@ -540,6 +540,7 @@ class StoredScreen:
     )
     last_update: datetime = field(default_factory=datetime.now)
     public: bool = True
+    remote: bool = False
     message_default: bool = True
     message_text: str | None = None
     plugin_data: dict[str, dict[str, Any]] = field(
@@ -580,6 +581,7 @@ class StoredFamily:
     page_delay: int | None = None
     fixed_board_order: str | None = None
     public: bool = True
+    remote: bool = False
     message_default: bool = True
     message_text: str | None = None
     last_update: datetime = field(default_factory=datetime.now)
@@ -601,6 +603,7 @@ class StoredRotator:
     name: str
     delay: int | None = None
     public: bool = True
+    remote: bool = False
     message_default: bool = True
     message_text: str | None = None
     timer_id: int | None = None
@@ -635,6 +638,7 @@ class StoredDisplayController:
     id: int | None
     name: str
     public: bool = True
+    remote: bool = False
     screen_id: int | None = None
     rotator_id: int | None = None
     family_id: int | None = None

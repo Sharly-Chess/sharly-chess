@@ -70,6 +70,17 @@ class StoredConfig:
     #: leaves the computer.
     computer_private_key: str | None = None
     computer_public_key: str | None = None
+    #: What the remote access control plane calls this computer, which it is
+    #: told once the key pair above has been registered with it.
+    remote_install_id: str | None = None
+    #: The account remote access is opened under, signed in to on this computer.
+    remote_access_token: str | None = None
+    remote_access_refresh_token: str | None = None
+    remote_access_token_expires_at: float | None = None
+    #: Whether the screens of this server are reachable over the internet, and
+    #: the identity the address is issued against.
+    remote_access: bool = False
+    remote_uniq_id: str | None = None
 
 
 @dataclass

@@ -30,6 +30,9 @@ from tests.unit.http.events import EventUnderTest
 from utils.enum import Result
 
 EVENT_ID = 'test-journal-http'
+
+#: The address the relay reports for a caller on the internet.
+CALLER_IP = '203.0.113.7'
 TOURNAMENT_NAME = 'test-journal-http-tournament'
 SCREEN_ID = 'test-journal-http-screen'
 
@@ -279,3 +282,39 @@ def test_a_staff_account_is_named_as_it_is_called_now_then_once_deleted(
     page = http.get(f'/event/{EVENT_ID}/journal')
     name = Player.player_full_name('Jane', 'SMITH')
     assert f'{name} (deleted account)' in page.text
+
+
+@pytest.mark.unit
+def test_a_result_entered_from_the_internet_names_the_caller(
+    api: ApiClient, http: TestClient, remote: TestClient, tournament: Tournament
+):
+    """The address of a caller from the internet is the one the relay saw.
+
+    Every tunnelled request reaches the server from the tunnel client running
+    on this machine, so recording the address it arrives from would file every
+    caller on the internet under the loopback address and under the same
+    device.
+    """
+    TestUtils.create_screen(
+        api,
+        EVENT_ID,
+        SCREEN_ID,
+        ScreenType.BOARDS,
+        {
+            'init_set_tournament_ids': [tournament.id],
+            'accepts_input': True,
+            'public': True,
+            'remote': True,
+        },
+    )
+    board = tournament.get_round_boards(1)[0]
+    response = remote.put(
+        f'/view/update-result/1/{EVENT_ID}/{SCREEN_ID}/{tournament.id}/1'
+        f'/{board.id}/{Result.DRAW.value}?shown={Result.NO_RESULT.value}',
+        headers={'x-forwarded-for': f'10.0.0.9, {CALLER_IP}'},
+    )
+    assert response.status_code == 200
+
+    [entry] = _results(load_journal(EVENT_ID))
+    assert entry.source.kind == SourceKind.SCREEN
+    assert entry.host == CALLER_IP
