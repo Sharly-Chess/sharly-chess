@@ -4711,6 +4711,25 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 input[type="color"].form-control {
     height: calc(1.5em + 0.75rem + 2px); /* line-height * font-size + padding-y + border */
     padding: 0;
+    overflow: hidden;
+}
+
+/* The swatch fills the field, so its square corners would show over the
+   rounded ones of the field: it is given the radius of the field itself,
+   which an input group sets to 0 on the side the next field is on. */
+input[type="color"].form-control::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: inherit;
+}
+
+input[type="color"].form-control::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+}
+
+input[type="color"].form-control::-moz-color-swatch {
+    border: none;
+    border-radius: inherit;
 }
 
 .form-fields-container {
