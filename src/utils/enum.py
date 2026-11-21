@@ -235,7 +235,7 @@ class Result(IntEnum):
                 | Result.PAIRING_ALLOCATED_BYE
             ):
                 value = values.get(Result.WIN)
-        return value or self.point_value
+        return self.point_value if value is None else value
 
     @property
     def opposite_result(self) -> Result:
