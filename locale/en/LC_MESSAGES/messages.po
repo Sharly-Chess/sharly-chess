@@ -6826,7 +6826,7 @@ msgstr ""
 msgid "No results."
 msgstr ""
 
-msgid "No role required for system accounts"
+msgid "No role required"
 msgstr ""
 
 msgid "No roles defined"
@@ -9320,9 +9320,6 @@ msgstr ""
 msgid "Roles"
 msgstr ""
 
-msgid "Roles (documents and exports)"
-msgstr ""
-
 msgid "Romania"
 msgstr ""
 
@@ -10475,9 +10472,6 @@ msgid "Staff information"
 msgstr ""
 
 msgid "Staff member roles"
-msgstr ""
-
-msgid "Staff member roles are used in documents (reports, standards, match sheets, etc.) as well as in TRF exports."
 msgstr ""
 
 msgid "Stage"
@@ -11943,16 +11937,6 @@ msgid "These tags are shared by every event of this installation."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
-msgstr ""
-
-#, python-format
-msgid "They do not determine the operations that the account will be able to perform; to set these, you must <a %(link_attributes)s>edit the account's permissions</a>."
-msgstr ""
-
-msgid "They do not determine the operations that the account will be able to perform; to set these, you must edit the account's permissions."
-msgstr ""
-
-msgid "They do not determine the operations that the new account will be able to perform; to set these, you must edit the account's permissions in the window that appears immediately after the account is created."
 msgstr ""
 
 msgid "Third place"
