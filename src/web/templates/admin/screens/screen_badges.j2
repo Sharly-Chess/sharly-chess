@@ -1,6 +1,7 @@
 {% import '/admin/components/macros.j2' as components with context %}
 
 {% macro badges(item) %}
+    {{ input(item) }}
     {% for display_controller in item.display_controllers %}
         {{ components.badge('neutral', display_controller.name) }}
     {% endfor %}
