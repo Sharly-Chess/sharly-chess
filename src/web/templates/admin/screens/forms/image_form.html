@@ -53,7 +53,7 @@
                     'data-url': url_for('admin-screen-image-color', event_uniq_id=admin_event.uniq_id),
                     'data-bs-toggle': 'tooltip',
                     'data-sc-tooltip': true,
-                    'data-bs-title': _('The colour the image is laid on is read from its border, so that no band of another colour shows around it.'),
+                    'data-bs-title': _('The colour the image is laid on is read from its border, so that no band of another colour shows around it; an image bleeding to its edges gives the colour it holds itself.'),
                 }
             ) }}
         {% endset %}
@@ -83,12 +83,19 @@
         const preview = row.querySelector('#background-image-preview');
         const urlInput = row.querySelector('[name="background_image"]');
         const upload = row.querySelector('[name="background_image_upload"]');
+        // The background of the screen is what the image is laid on: with no
+        // image given, there is nothing to blur and nothing to lay it on.
+        const given = () => Boolean(
+            (upload && upload.value) || (urlInput && urlInput.value.trim())
+        );
         // A blurred background makes no use of a colour: nothing to choose,
         // nothing to read from the image, and nothing to lay the preview on.
         const apply = () => {
-            useDefault.disabled = blurred.checked;
-            color.disabled = blurred.checked || useDefault.checked;
-            fromImage.disabled = blurred.checked;
+            const image = given();
+            blurred.disabled = !image;
+            useDefault.disabled = !image || blurred.checked;
+            color.disabled = !image || blurred.checked || useDefault.checked;
+            fromImage.disabled = !image || blurred.checked;
             preview.classList.toggle('blurred-image-background', blurred.checked);
             preview.style.backgroundColor = blurred.checked ? '' : color.value;
         };
@@ -97,6 +104,14 @@
         blurred.addEventListener('change', apply);
         useDefault.addEventListener('change', apply);
         color.addEventListener('input', apply);
+        // The URL is typed in, while an upload is written into its hidden
+        // field by the script below, which says so with a change event.
+        if (urlInput) {
+            urlInput.addEventListener('input', apply);
+        }
+        if (upload) {
+            upload.addEventListener('change', apply);
+        }
         apply();
 
         // The colour the image is laid on is read by the server, which has
@@ -210,6 +225,9 @@
             }
             preview.style.setProperty('--screen-image', `url('${image}')`);
             preview.classList.remove('d-none');
+            // A hidden field fires nothing of its own: the colour fields are
+            // told that the screen now has an image.
+            hidden.dispatchEvent(new Event('change', {bubbles: true}));
         });
     })();
 </script>

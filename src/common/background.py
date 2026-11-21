@@ -1,5 +1,6 @@
 import base64
 import binascii
+from collections import Counter
 from collections.abc import Sequence
 from io import BytesIO
 from logging import Logger
@@ -18,14 +19,30 @@ logger: Logger = get_logger()
 # At most this many pixels are read along each side of the image: enough to
 # tell a bordered image from a photograph, cheap even on a full-size image.
 BORDER_SAMPLES_PER_SIDE = 100
+# The side of the grid the whole image is read on, when its border says
+# nothing of the background: a 64 x 64 sample describes the colours of an
+# image well enough and costs nothing to walk through.
+IMAGE_SAMPLES_PER_SIDE = 64
 # Pixels this close to the border's median colour, on every channel, count as
 # that colour: a JPEG leaves the pixels of a flat border a shade apart.
 SAME_SHADE_DISTANCE = 16
-# That colour has to cover at least this share of the border to be taken as
-# the one the image is laid on.
-MIN_DOMINANT_BORDER_SHARE = 0.6
-# A border pixel more transparent than this is not read as a colour.
+# That colour has to cover at least this share of the pixels to be taken as
+# the one they are made of.
+MIN_FLAT_SHARE = 0.6
+# The number of shades the pixels are sorted into to find the dominant one of
+# an image that is laid on no flat colour.
+QUANTIZED_SHADES = 16
+# A shade has to cover at least this share of the pixels to pass as their
+# dominant colour; under that, they are averaged out instead.
+MIN_DOMINANT_SHADE_SHARE = 0.35
+# A pixel more transparent than this is not read as a colour.
 MIN_OPAQUE_ALPHA = 128
+# A border has to be opaque over at least this share of itself to say what the
+# image is laid on: what shows through a transparent border is the background.
+MIN_OPAQUE_BORDER_SHARE = 0.6
+# An image, on the other hand, is read wherever it holds ink, a logo being
+# transparent all around itself; under this share it is read as transparent.
+MIN_OPAQUE_IMAGE_SHARE = 0.05
 
 
 def inline_image_url(image: str | None) -> str:
@@ -84,6 +101,24 @@ def _border_pixels(image: Image.Image) -> list[tuple[int, int, int, int]]:
     return pixels
 
 
+def _image_pixels(image: Image.Image) -> list[tuple[int, int, int, int]]:
+    """The RGBA pixels of *image* read on a small grid: the whole of its
+    surface rather than its sides."""
+    width, height = image.size
+    grid = image.resize(
+        (min(width, IMAGE_SAMPLES_PER_SIDE), min(height, IMAGE_SAMPLES_PER_SIDE)),
+        # Nearest neighbour keeps the colours of the image as they are:
+        # another filter blends them, transparent pixels included, and makes
+        # up colours the image does not hold.
+        Image.Resampling.NEAREST,
+    )
+    data = grid.tobytes()
+    return [
+        (data[index], data[index + 1], data[index + 2], data[index + 3])
+        for index in range(0, len(data), 4)
+    ]
+
+
 def _shade_distance(pixel: tuple[int, int, int], color: tuple[int, int, int]) -> int:
     """How far *pixel* is from *color*, as its largest gap on a channel."""
     return max(
@@ -99,37 +134,87 @@ def _average_color(pixels: Sequence[tuple[int, int, int]]) -> RGB:
     )
 
 
-def border_color(image_data: bytes) -> str | None:
-    """The colour the image held in *image_data* is laid on, read from its
-    border pixels and returned in #rrggbb format.
+def _flat_color(pixels: Sequence[tuple[int, int, int]]) -> RGB | None:
+    """The one colour the given pixels are made of, when most of them are a
+    shade of it, as a JPEG leaves a flat border. ``None`` when they hold more
+    than one colour.
 
-    Returns ``None`` when no colour can be read: an image the imaging library
-    does not open (an SVG, for one), a border left transparent, or a border
-    holding no dominant colour (a photograph bleeding to its edges). The
-    colour configured for the event is then the better background.
+    Pixels made of one colour have that colour on either side of their
+    median, whichever side the rest of them falls on; those a shade away from
+    the median are then that colour, and they are only read as flat when they
+    make up most of the pixels.
+    """
+    median = RGB(*(median_low(channel) for channel in zip(*pixels, strict=True)))
+    flat = [
+        pixel
+        for pixel in pixels
+        if _shade_distance(pixel, median) <= SAME_SHADE_DISTANCE
+    ]
+    if len(flat) < MIN_FLAT_SHARE * len(pixels):
+        return None
+    return _average_color(flat)
+
+
+def _dominant_color(pixels: Sequence[tuple[int, int, int]]) -> RGB | None:
+    """The colour the given pixels mostly fall on, their shades sorted into a
+    small palette: the blue of a sky, the green of a lawn. ``None`` when no
+    shade stands out among the others.
+    """
+    strip = Image.new('RGB', (len(pixels), 1))
+    strip.putdata(pixels)
+    shades = list(strip.quantize(colors=QUANTIZED_SHADES).getdata())
+    shade, count = Counter(shades).most_common(1)[0]
+    if count < MIN_DOMINANT_SHADE_SHARE * len(pixels):
+        return None
+    # A shade of the palette stands for a range of colours: the pixels it
+    # holds are averaged out rather than read off the palette itself.
+    return _average_color(
+        [
+            pixel
+            for pixel, pixel_shade in zip(pixels, shades, strict=True)
+            if pixel_shade == shade
+        ]
+    )
+
+
+def _laid_on_color(
+    pixels: Sequence[tuple[int, int, int, int]], min_opaque_share: float
+) -> RGB | None:
+    """The colour the given pixels read as: the flat colour they are made of,
+    or the dominant shade of a sky or a lawn, or what they all average out to.
+
+    Returns ``None`` only when fewer than *min_opaque_share* of them are
+    opaque: what shows through a transparent image is the background itself.
+    """
+    opaque = [pixel[:3] for pixel in pixels if pixel[3] >= MIN_OPAQUE_ALPHA]
+    if not opaque or len(opaque) < min_opaque_share * len(pixels):
+        return None
+    return _flat_color(opaque) or _dominant_color(opaque) or _average_color(opaque)
+
+
+def image_background_color(image_data: bytes) -> str | None:
+    """The colour the image held in *image_data* is laid on, in #rrggbb
+    format: the colour of its border, or, when its border says nothing of the
+    background, the colour of the image itself.
+
+    Returns ``None`` only when the image holds no colour to read: one the
+    imaging library does not open (an SVG, for one) or one left transparent.
+    The colour configured for the event is then the better background.
     """
     try:
         with Image.open(BytesIO(image_data)) as image:
-            pixels = _border_pixels(image.convert('RGBA'))
+            rgba = image.convert('RGBA')
+            # The border is where the image meets the background, so that no
+            # band of another colour shows around it. A border left
+            # transparent says nothing of the background, and the image is
+            # then read over its whole surface instead.
+            color = _laid_on_color(
+                _border_pixels(rgba), MIN_OPAQUE_BORDER_SHARE
+            ) or _laid_on_color(_image_pixels(rgba), MIN_OPAQUE_IMAGE_SHARE)
     except Exception as e:
         # Whatever the imaging library makes of the bytes it is handed, an
         # image it cannot read simply has no colour to read: saving the
         # screen must not fail over it.
-        logger.debug('No border colour read from the image: %s', e)
+        logger.debug('No background colour read from the image: %s', e)
         return None
-    opaque = [pixel[:3] for pixel in pixels if pixel[3] >= MIN_OPAQUE_ALPHA]
-    if not opaque or len(opaque) < MIN_DOMINANT_BORDER_SHARE * len(pixels):
-        return None
-    # A border made of one colour has that colour on either side of its
-    # median, whichever side the rest of the border falls on; the pixels
-    # a shade away from the median are then that colour, and the border is
-    # only taken as flat when they make up most of it.
-    median = RGB(*(median_low(channel) for channel in zip(*opaque, strict=True)))
-    flat = [
-        pixel
-        for pixel in opaque
-        if _shade_distance(pixel, median) <= SAME_SHADE_DISTANCE
-    ]
-    if len(flat) < MIN_DOMINANT_BORDER_SHARE * len(opaque):
-        return None
-    return rgb_to_hexa(_average_color(flat))
+    return rgb_to_hexa(color) if color else None

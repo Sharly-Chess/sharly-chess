@@ -11086,8 +11086,8 @@ msgstr "Le coefficient a été enregistré."
 msgid "The colour attributed to the highest ranked player at the first round."
 msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
-msgid "The colour the image is laid on is read from its border, so that no band of another colour shows around it."
-msgstr "La couleur sur laquelle l'image est posée est lue sur sa bordure, afin qu'aucune bande d'une autre couleur n'apparaisse autour d'elle."
+msgid "The colour the image is laid on is read from its border, so that no band of another colour shows around it; an image bleeding to its edges gives the colour it holds itself."
+msgstr "La couleur sur laquelle l'image est posée est lue sur sa bordure, afin qu'aucune bande d'une autre couleur n'apparaisse autour d'elle ; une image qui va jusqu'à ses bords donne la couleur qu'elle contient elle-même."
 
 msgid "The competitors have been unmerged."
 msgstr "Les compétiteurs ont été séparés."

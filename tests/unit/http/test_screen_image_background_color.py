@@ -3,9 +3,15 @@
 An image laid on a flat colour — a poster with a coloured border, a logo on
 a white card — shows a band of the event's colour around it unless the
 screen is given the same colour. The form of the screen offers to read that
-colour from the image's border and fill the colour field with it, so that
-the arbiter has nothing to match by hand; the field stays theirs, to change
-or to leave on the colour of the event.
+colour from the image and fill the colour field with it, so that the arbiter
+has nothing to match by hand; the field stays theirs, to change or to leave
+on the colour of the event.
+
+The image always answers with a colour: the colour of its border when it has
+a flat one, the colour that covers most of its border when it has several,
+and what its border averages out to when it bleeds to its edges. An image
+left transparent all around itself, a logo, is read over its whole surface
+instead.
 """
 
 import base64
@@ -17,7 +23,7 @@ import pytest
 from PIL import Image, ImageDraw
 
 from common import hexa_to_rgb
-from common.background import border_color, inline_image_data
+from common.background import image_background_color, inline_image_data
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 from tests.test_config import ScreenType, TestUtils
@@ -28,6 +34,10 @@ EVENT_ID = 'test-screen-image-color-http'
 EVENT = EventUnderTest(EVENT_ID)
 BORDER = (31, 61, 122)
 BORDER_HEXA = '#1F3D7A'
+OTHER_BORDER = (255, 255, 255)
+# The colour a photograph of its own averages out to, its pixels being drawn
+# at random over the whole range of each channel.
+MID_GREY = (128, 128, 128)
 
 
 def _bordered(color: tuple[int, int, int] = BORDER, format_: str = 'PNG') -> bytes:
@@ -38,16 +48,30 @@ def _bordered(color: tuple[int, int, int] = BORDER, format_: str = 'PNG') -> byt
     return _data(image, format_)
 
 
-def _photograph() -> bytes:
+def _photograph(size: tuple[int, int] = (200, 200)) -> bytes:
     """A photograph bleeding to its edges, which is laid on no colour."""
+    return _data(_photograph_image(size))
+
+
+def _photograph_image(size: tuple[int, int] = (200, 200)) -> Image.Image:
     random = Random(0)
-    image = Image.new('RGB', (200, 200))
+    image = Image.new('RGB', size)
     image.putdata(
         [
             (random.randrange(256), random.randrange(256), random.randrange(256))
-            for _ in range(200 * 200)
+            for _ in range(size[0] * size[1])
         ]
     )
+    return image
+
+
+def _on_two_colors() -> bytes:
+    """A photograph laid on two colours: half of its border is the first one,
+    under a third of it the second one, and the rest the photograph itself."""
+    image = _photograph_image((400, 400))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((0, 0, 399, 199), fill=BORDER)
+    draw.rectangle((0, 360, 399, 399), fill=OTHER_BORDER)
     return _data(image)
 
 
@@ -71,23 +95,15 @@ def _distance(hexa: str | None, color: tuple[int, int, int]) -> int:
 
 
 @pytest.mark.unit
-class TestBorderColor:
+class TestImageBackgroundColor:
     def test_a_flat_border_gives_its_colour(self):
-        assert border_color(_bordered()) == BORDER_HEXA
+        assert image_background_color(_bordered()) == BORDER_HEXA
 
     def test_the_artefacts_of_a_jpeg_border_are_averaged_out(self):
         """A JPEG leaves every pixel of a flat border a shade off, which
         reading the pixels around the border's median as one colour sees
         through."""
-        assert _distance(border_color(_bordered(format_='JPEG')), BORDER) <= 4
-
-    def test_a_photograph_gives_no_colour(self):
-        assert border_color(_photograph()) is None
-
-    def test_a_transparent_border_gives_no_colour(self):
-        image = Image.new('RGBA', (200, 200), (0, 0, 0, 0))
-        ImageDraw.Draw(image).rectangle((50, 50, 150, 150), fill=(255, 0, 0, 255))
-        assert border_color(_data(image)) is None
+        assert _distance(image_background_color(_bordered(format_='JPEG')), BORDER) <= 4
 
     def test_an_image_laid_on_a_colour_on_two_sides_gives_that_colour(self):
         """A landscape photograph on a portrait screen is laid on the colour
@@ -95,11 +111,36 @@ class TestBorderColor:
         image = Image.new('RGB', (400, 600), BORDER)
         photograph = Image.open(BytesIO(_photograph()))
         image.paste(photograph.resize((400, 300)), (0, 150))
-        assert border_color(_data(image)) == BORDER_HEXA
+        assert image_background_color(_data(image)) == BORDER_HEXA
+
+    def test_a_border_of_several_colours_gives_the_one_covering_most_of_it(self):
+        """No colour is flat enough to be the one the image is laid on, so
+        the shade that covers most of the border wins: the other colour and
+        the photograph itself are each on less of it."""
+        assert _distance(image_background_color(_on_two_colors()), BORDER) <= 8
+
+    def test_a_photograph_gives_what_its_border_averages_out_to(self):
+        """A photograph bleeding to its edges is laid on no colour of its
+        own, and a colour is wanted all the same: its border averages out to
+        the colour that shows the least around it."""
+        assert _distance(image_background_color(_photograph()), MID_GREY) <= 30
+
+    def test_an_image_transparent_around_itself_is_read_over_its_surface(self):
+        """A logo on no background of its own says nothing along its border:
+        the colour is read from the image itself."""
+        image = Image.new('RGBA', (200, 200), (0, 0, 0, 0))
+        ImageDraw.Draw(image).rectangle((50, 50, 150, 150), fill=(255, 0, 0, 255))
+        assert image_background_color(_data(image)) == '#FF0000'
+
+    def test_an_image_left_transparent_gives_no_colour(self):
+        image = Image.new('RGBA', (200, 200), (0, 0, 0, 0))
+        assert image_background_color(_data(image)) is None
 
     def test_an_image_that_cannot_be_read_gives_no_colour(self):
-        assert border_color(b'not an image') is None
-        assert border_color(b'<svg xmlns="http://www.w3.org/2000/svg"/>') is None
+        assert image_background_color(b'not an image') is None
+        assert (
+            image_background_color(b'<svg xmlns="http://www.w3.org/2000/svg"/>') is None
+        )
 
     def test_an_uploaded_image_is_decoded(self):
         image_data = _bordered()
@@ -155,16 +196,18 @@ class TestImageScreenBackgroundColor:
             BORDER_HEXA
         )
 
-    def test_an_image_laid_on_no_colour_reads_as_nothing(
+    def test_a_photograph_reads_as_a_colour_of_its_own(
         self, api: ApiClient, event: str
     ):
-        """A photograph bleeding to its edges is laid on no colour: the form
-        is told so and leaves its field alone."""
-        assert _read_color(api, background_image_upload=_uploaded(_photograph())) == ''
+        """A photograph bleeding to its edges is laid on no colour, and the
+        form is answered with a colour all the same."""
+        read = _read_color(api, background_image_upload=_uploaded(_photograph()))
+        assert _distance(read, MID_GREY) <= 30
 
     def test_an_image_that_cannot_be_read_reads_as_nothing(
         self, api: ApiClient, event: str
     ):
+        """Nothing is answered only when there is no image to read."""
         assert (
             _read_color(api, background_image_upload='data:image/png;base64,??') == ''
         )

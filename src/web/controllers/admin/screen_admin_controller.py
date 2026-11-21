@@ -13,7 +13,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common import REQUEST_TIMEOUT
-from common.background import border_color, inline_image_data
+from common.background import image_background_color, inline_image_data
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
@@ -842,10 +842,11 @@ class ScreenAdminController(ScreenAdminRenderer):
         )
 
     @staticmethod
-    def _image_border_color(image: str) -> str | None:
-        """The colour the image given by the form is laid on, read from the
-        border of an upload's bytes or of what its URL answers. ``None`` when
-        the image cannot be read or is laid on no colour of its own."""
+    def _image_background_color(image: str) -> str | None:
+        """The colour the image given by the form is laid on, read from an
+        upload's bytes or from what its URL answers. ``None`` when there is
+        no image to read: none given, a URL that does not answer, or an image
+        the imaging library does not open."""
         if not image:
             return None
         if image.startswith('data:'):
@@ -860,7 +861,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             if response.status_code != 200:
                 return None
             image_data = response.content
-        return border_color(image_data) if image_data else None
+        return image_background_color(image_data) if image_data else None
 
     @post(
         path='/screen-image-color/{event_uniq_id:str}',
@@ -875,14 +876,15 @@ class ScreenAdminController(ScreenAdminRenderer):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> str:
-        """The colour of the image the screen form holds, for the link that
-        fills the colour field in; an empty answer when no colour can be
-        read. The image is read in a worker thread, a URL being fetched."""
+        """The colour of the image the screen form holds, for the button
+        that fills the colour field in; an empty answer when there is no
+        image to read it from. The image is read in a worker thread, a URL
+        being fetched."""
         form_data = WebContext.flatten_list_data(data)
         image = form_data.get('background_image_upload') or form_data.get(
             'background_image', ''
         )
-        return await asyncio.to_thread(self._image_border_color, image) or ''
+        return await asyncio.to_thread(self._image_background_color, image) or ''
 
     @staticmethod
     def _show_screen_type(request: HTMXRequest, screen_type: str) -> None:
