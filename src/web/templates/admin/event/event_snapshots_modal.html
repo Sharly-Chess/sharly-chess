@@ -160,7 +160,14 @@
                                     {{ snapshot.taken_at_str }}
                                 </th>
                                 <td class="small">
-                                    {% if snapshot.is_milestone %}
+                                    {% if snapshot.comment %}
+                                        {# What the user wrote when they asked
+                                           for the backup, with its reason kept
+                                           as a tooltip. #}
+                                        <span {{ macros.tooltip_attributes(
+                                            'info', snapshot.reason_label, 'top'
+                                        ) }}>{{ snapshot.comment }}</span>
+                                    {% elif snapshot.is_milestone %}
                                         {{ snapshot.label }}
                                     {% else %}
                                         <span class="text-secondary">{{ snapshot.label }}</span>
@@ -227,6 +234,29 @@
             </table>
 {% endblock %}
 
+{# The comment rides along with the button next to it: a backup asked for
+   while a test or a setup is in progress reads as what it was taken for
+   rather than as "Manual", which every one of them would read as. #}
+{% block footer_start %}
+    {% if event_is_accessible and snapshots_enabled %}
+        <input
+            type="text"
+            class="form-control"
+            style="width: 22rem"
+            id="snapshot-comment"
+            name="snapshot_comment"
+            maxlength="{{ snapshot_comment_max_length }}"
+            autocomplete="off"
+            placeholder="{{ _('Comment (optional)') }}"
+            aria-label="{{ _('Comment of the backup') }}"
+            {{ macros.tooltip_attributes('info', _(
+                'This comment is shown in place of the reason of the backup, '
+                'which tells apart the backups taken by hand.'
+            ), 'top') }}
+        >
+    {% endif %}
+{% endblock %}
+
 {% block footer %}
     {{ components.cancel_button(_('Close')) }}
     {% if event_is_accessible and snapshots_enabled %}
@@ -236,6 +266,7 @@
             icon='bi-camera-fill',
             attrs={
                 'hx-post': url_for('event-snapshot-now', event_uniq_id=snapshots_event_uniq_id),
+                'hx-include': '#snapshot-comment',
                 'hx-target': 'body',
                 'hx-indicator': '#please-wait',
             },

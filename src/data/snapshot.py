@@ -8,7 +8,14 @@ for it.
 Snapshots live in one directory per event, and the file name carries what the
 listing and the retention need of it, so neither has to open the databases:
 
-    <snapshots dir>/<event uniq_id>/<timestamp>__<version>__<reason>[-<round>[-<tournament>]].scs
+    <snapshots dir>/<event uniq_id>/
+        <timestamp>__<version>__<reason>[-<round>[-<tournament>]][__<comment>].scs
+
+The comment is the one the user wrote when they asked for the backup, kept
+escaped so that whatever they typed stays a name every filesystem accepts and
+nothing on the way decodes further: it travels in a URL, and the databases are
+opened through a `file:` URI, which would read a percent sign as an escape of
+its own and look for a file that is not there — hence `~` and not `%`.
 
 What a snapshot *holds* is read from the snapshot itself, not from its name —
 see `read_snapshot_content`.
@@ -24,22 +31,25 @@ from enum import StrEnum
 from errno import EACCES, ENOSPC
 from pathlib import Path
 from sqlite3 import connect
+from string import ascii_letters, digits
 from tempfile import TemporaryDirectory
 from threading import Lock, get_ident
 from typing import TYPE_CHECKING
+from urllib.parse import unquote
 from uuid import uuid4
 
 from packaging.version import InvalidVersion, Version
 
 from common import SHARLY_CHESS_VERSION, TEMPFILE_DIR
 from common.exception import SharlyChessException
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from utils import Utils
 from plugins.manager import plugin_manager
 from utils.date_time import format_datetime
 from utils.enum import EventOrigin, Extension, Result
+from utils.file import sqlite_file_uri
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
@@ -58,6 +68,64 @@ LEFTOVER_MIN_AGE = timedelta(hours=1)
 _TIMESTAMP_FORMAT = '%Y%m%d-%H%M%S-%f'
 _FIELD_SEPARATOR = '__'
 _ROUND_SEPARATOR = '-'
+
+#: The longest comment kept with a backup, in characters typed. Long enough to
+#: tell two backups of a test apart, short enough to read in the panel.
+COMMENT_MAX_LENGTH = 60
+
+#: The longest the comment may be once escaped, which is the form that has to
+#: fit in a file name: an accented character takes six characters there, and the
+#: rest of the name, the folder it sits in and the limits of the filesystem all
+#: come on top.
+_ENCODED_COMMENT_MAX_LENGTH = 120
+
+#: What a comment keeps as it is in a file name. Everything else is escaped,
+#: including the space: the name travels in a URL and in the `file:` URI the
+#: databases are opened through, and what either of them may read as something
+#: else has no business in it.
+_COMMENT_SAFE = frozenset(ascii_letters + digits + "-._,()'")
+
+#: Introduces the two hexadecimal digits of an escaped byte. Not the percent
+#: sign a URL would use: SQLite decodes the percent escapes of the `file:` URI
+#: it opens a database with, and would look for a file whose name no longer
+#: matches. `~` is left alone by both, and is escaped itself.
+_COMMENT_ESCAPE = '~'
+
+
+def encode_comment(comment: str) -> str:
+    """The comment as it is written into the file name.
+
+    Escaped, so that a comment holding a separator, a space, a path character
+    or anything else a filesystem refuses still makes a legal name that is read
+    back as it was typed, and shortened until it is short enough to be one.
+    """
+    text = ' '.join(comment.split())[:COMMENT_MAX_LENGTH]
+    while text:
+        encoded = ''.join(
+            character
+            if character in _COMMENT_SAFE
+            else ''.join(
+                f'{_COMMENT_ESCAPE}{byte:02X}' for byte in character.encode('utf-8')
+            )
+            for character in text
+        )
+        if len(encoded) <= _ENCODED_COMMENT_MAX_LENGTH:
+            return encoded
+        text = text[:-1]
+    return ''
+
+
+def decode_comment(field: str) -> str | None:
+    """The comment a file name carries, None when it carries none.
+
+    Read with `unquote`, the escapes being percent escapes under another sign:
+    it leaves alone what does not follow one, so a name written by hand or by
+    another version is read as far as it makes sense rather than refused.
+    """
+    comment = unquote(
+        field.replace('%', '%25').replace(_COMMENT_ESCAPE, '%'), errors='replace'
+    ).strip()
+    return comment or None
 
 
 class SnapshotReason(StrEnum):
@@ -106,7 +174,7 @@ class SnapshotReason(StrEnum):
             case SnapshotReason.AUTO:
                 return _('Automatic')
             case SnapshotReason.MANUAL:
-                return _('Manual')
+                return pgettext('backup', 'Manual')
             case SnapshotReason.BEFORE_PAIRING:
                 if round_ and tournament:
                     return _(
@@ -353,15 +421,22 @@ class Snapshot:
     #: to a name from the snapshot's own content, so that it is the name the
     #: tournament had then and it can be read from a damaged event.
     reason_tournament_id: int | None = None
+    #: What the user wrote when they asked for the backup, when they wrote
+    #: something: it is what the backup reads as, in place of its reason.
+    comment: str | None = None
 
     @classmethod
     def from_file(cls, file: Path, uniq_id: str) -> Snapshot | None:
         """Reads a snapshot from its file name, None if the name does not
         follow the convention."""
-        fields = file.stem.split(_FIELD_SEPARATOR)
-        if len(fields) != 3:
+        # The comment is the last field and holds whatever the user typed,
+        # percent-encoded — including the separator itself, which is why the
+        # split stops once the fields before it have been taken.
+        fields = file.stem.split(_FIELD_SEPARATOR, 3)
+        if not 3 <= len(fields) <= 4:
             return None
-        timestamp, version, reason = fields
+        timestamp, version, reason = fields[:3]
+        comment = decode_comment(fields[3]) if len(fields) == 4 else None
         try:
             taken_at = datetime.strptime(timestamp, _TIMESTAMP_FORMAT)
             parsed_version = Version(version)
@@ -389,6 +464,7 @@ class Snapshot:
             parsed_reason,
             reason_round,
             reason_tournament_id,
+            comment,
         )
 
     @property
@@ -441,12 +517,23 @@ class Snapshot:
         )
 
     @property
-    def label(self) -> str:
+    def reason_label(self) -> str:
+        """Why the snapshot was taken, in the words of its reason."""
         if not self.reason:
             return _('Unknown')
         return self.reason.label(
             self.reason_round, self.reason_tournament, self.version
         )
+
+    @property
+    def label(self) -> str:
+        """How the snapshot reads in the panel.
+
+        A backup the user asked for and wrote a comment on reads as that
+        comment: "Manual" is what every one of them would otherwise read as,
+        and telling them apart is the whole point of asking for one.
+        """
+        return self.comment or self.reason_label
 
     @property
     def stored_event(self) -> StoredEvent | None:
@@ -953,6 +1040,7 @@ def snapshot_file(
     reason: SnapshotReason,
     round_: int | None = None,
     tournament_id: int | None = None,
+    comment: str | None = None,
 ) -> Path:
     """The file a snapshot taken now for `reason` is written to."""
     timestamp = datetime.now().strftime(_TIMESTAMP_FORMAT)
@@ -965,13 +1053,13 @@ def snapshot_file(
         )
     elif round_:
         reason_field = f'{reason_field}{_ROUND_SEPARATOR}{round_}'
-    return directory / _FIELD_SEPARATOR.join(
-        (
-            timestamp,
-            f'{SHARLY_CHESS_VERSION}',
-            f'{reason_field}.{Extension.SNAPSHOT}',
-        )
-    )
+    fields = [timestamp, f'{SHARLY_CHESS_VERSION}', reason_field]
+    # A comment made of nothing but spaces encodes to nothing and is left out:
+    # the field only exists when there is something to read in it.
+    encoded_comment = encode_comment(comment) if comment else ''
+    if encoded_comment:
+        fields.append(encoded_comment)
+    return directory / f'{_FIELD_SEPARATOR.join(fields)}.{Extension.SNAPSHOT}'
 
 
 def _source_failure(error: Exception) -> SnapshotFailure:
@@ -1016,6 +1104,7 @@ def write_snapshot(
     reason: SnapshotReason,
     round_: int | None = None,
     tournament_id: int | None = None,
+    comment: str | None = None,
 ) -> Snapshot:
     """Writes a snapshot of the event `uniq_id` and returns it.
 
@@ -1040,7 +1129,7 @@ def write_snapshot(
         ) from e
 
     try:
-        database = connect(f'file:{source}?mode=ro', uri=True)
+        database = connect(sqlite_file_uri(source, 'ro'), uri=True)
     except sqlite3.Error as e:
         raise SnapshotException(
             f'Event database [{source}] could not be read: {e}',
@@ -1063,7 +1152,7 @@ def write_snapshot(
     finally:
         database.close()
 
-    file = snapshot_file(directory, reason, round_, tournament_id)
+    file = snapshot_file(directory, reason, round_, tournament_id, comment)
     try:
         temp_file.replace(file)
     except OSError as e:

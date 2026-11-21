@@ -2614,6 +2614,12 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
+msgid "Comment (optional)"
+msgstr ""
+
+msgid "Comment of the backup"
+msgstr ""
+
 msgid "Comments"
 msgstr ""
 
@@ -5956,6 +5962,23 @@ msgstr ""
 msgid "Manage the team roster."
 msgstr ""
 
+msgctxt "backup"
+msgid "Manual"
+msgstr ""
+
+msgctxt "individual knock-out"
+msgid "Manual"
+msgstr ""
+
+msgctxt "team knock-out"
+msgid "Manual"
+msgstr ""
+
+msgctxt "team sort mode"
+msgid "Manual"
+msgstr ""
+
+msgctxt "tie-break"
 msgid "Manual"
 msgstr ""
 
@@ -11998,6 +12021,9 @@ msgid "This channel is private: the device must be signed in with an allowed acc
 msgstr ""
 
 msgid "This channel is public (visible by the spectators)."
+msgstr ""
+
+msgid "This comment is shown in place of the reason of the backup, which tells apart the backups taken by hand."
 msgstr ""
 
 msgid "This computer"

@@ -11,7 +11,7 @@ from statistics import fmean
 from typing import TYPE_CHECKING, SupportsFloat, Any
 
 from common.exception import OptionError
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import (
@@ -2780,7 +2780,7 @@ class ManualTieBreak(TieBreak):
 
     @classmethod
     def static_name(cls) -> str:
-        return _('Manual')
+        return pgettext('tie-break', 'Manual')
 
     @property
     def base_acronym(self) -> str:
