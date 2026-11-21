@@ -234,42 +234,18 @@
             </table>
 {% endblock %}
 
-{# The comment rides along with the button next to it: a backup asked for
-   while a test or a setup is in progress reads as what it was taken for
-   rather than as "Manual", which every one of them would read as. #}
-{% block footer_start %}
-    {% if event_is_accessible and snapshots_enabled %}
-        <input
-            type="text"
-            class="form-control"
-            style="width: 22rem"
-            id="snapshot-comment"
-            name="snapshot_comment"
-            maxlength="{{ snapshot_comment_max_length }}"
-            autocomplete="off"
-            placeholder="{{ _('Comment (optional)') }}"
-            aria-label="{{ _('Comment of the backup') }}"
-            {{ macros.tooltip_attributes('info', _(
-                'This comment is shown in place of the reason of the backup, '
-                'which tells apart the backups taken by hand.'
-            ), 'top') }}
-        >
-    {% endif %}
-{% endblock %}
-
 {% block footer %}
     {{ components.cancel_button(_('Close')) }}
     {% if event_is_accessible and snapshots_enabled %}
-        {{ components.button(
+        {# The backup is asked for in a modal of its own, which the comment is
+           typed in: see event_snapshot_now_modal.html. #}
+        {{ components.modal_button(
+            url_for('event-snapshot-now-modal', event_uniq_id=snapshots_event_uniq_id),
             _('Back up now'),
             kind='primary',
             icon='bi-camera-fill',
-            attrs={
-                'hx-post': url_for('event-snapshot-now', event_uniq_id=snapshots_event_uniq_id),
-                'hx-include': '#snapshot-comment',
-                'hx-target': 'body',
-                'hx-indicator': '#please-wait',
-            },
+            from_modal=true,
+            attrs={'hx-push-url': 'false'},
         ) }}
     {% endif %}
 {% endblock %}

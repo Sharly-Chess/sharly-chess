@@ -2617,9 +2617,6 @@ msgstr ""
 msgid "Comment (optional)"
 msgstr ""
 
-msgid "Comment of the backup"
-msgstr ""
-
 msgid "Comments"
 msgstr ""
 
@@ -12023,7 +12020,7 @@ msgstr ""
 msgid "This channel is public (visible by the spectators)."
 msgstr ""
 
-msgid "This comment is shown in place of the reason of the backup, which tells apart the backups taken by hand."
+msgid "This comment is displayed as a reason in the list of backups."
 msgstr ""
 
 msgid "This computer"
@@ -13912,6 +13909,9 @@ msgid "any OTB result"
 msgstr ""
 
 msgid "auto"
+msgstr ""
+
+msgid "before the test of round 2"
 msgstr ""
 
 #, python-brace-format

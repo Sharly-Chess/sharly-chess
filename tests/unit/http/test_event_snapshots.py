@@ -87,6 +87,19 @@ def test_backing_up_now_takes_one(http: TestClient, event: str):
 
 
 @pytest.mark.unit
+def test_the_comment_is_asked_for_in_a_modal_of_its_own(http: TestClient, event: str):
+    """The panel's Back up now button opens it, and the panel is what it goes
+    back to, whether the backup is taken or not."""
+    assert f'event-snapshot-now-modal/{event}' in panel(http, event)
+
+    response = http.get(f'/event-snapshot-now-modal/{event}')
+
+    assert response.is_success
+    assert 'name="snapshot_comment"' in response.text
+    assert f'event-snapshots-modal/{event}' in response.text
+
+
+@pytest.mark.unit
 def test_a_comment_is_what_the_backup_reads_as(http: TestClient, event: str):
     """Every backup taken by hand reads "Manual", which tells none of them
     apart: the comment the user writes takes its place."""
@@ -95,6 +108,8 @@ def test_a_comment_is_what_the_backup_reads_as(http: TestClient, event: str):
     )
 
     assert response.is_success
+    # The panel is shown again, the new backup in it.
+    assert 'id="event-snapshots-modal"' in response.text
     snapshot = only_snapshot(event)
     assert snapshot.reason == SnapshotReason.MANUAL
     assert snapshot.comment == 'Essai n°2'
