@@ -338,7 +338,7 @@ class EventDocumentsController(BaseEventAdminController):
                 document = document_type(client, options)
                 document.validate_options()
             except OptionError as error:
-                errors[error.option.id] = str(error)
+                errors[error.field_id] = str(error)
 
             if not errors:
                 tournament_ids = self._get_tournament_ids_from_options(options)
@@ -512,7 +512,7 @@ class EventDocumentsController(BaseEventAdminController):
             document = document_type(client, options)
             document.validate_options()
         except OptionError as error:
-            errors[error.option.id] = str(error)
+            errors[error.field_id] = str(error)
             return document_id, '', '', errors
 
         options_string = '|'.join(
