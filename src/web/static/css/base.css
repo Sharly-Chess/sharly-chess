@@ -98,6 +98,16 @@ a:focus, a:active {
     --side-bar-width: 50px;
 }
 
+/* The client screens are always white with black text. Bootstrap paints the
+   body from the theme's custom properties; a television browser that resolves
+   none of them falls back to a dark system canvas, which showed the screens
+   white-on-black. Literal colours keep them readable there, and the server
+   marks the interface on the body so the rule holds even if the scripts fail. */
+body:not([data-sc-interface=admin]) {
+    background-color: #fff;
+    color: #000;
+}
+
 body:not([data-sc-interface=admin]) #main-wrapper {
     --side-bar-width: 0px;
 }
@@ -3360,6 +3370,7 @@ body:not([data-sc-interface=admin]) .btn-outline-primary {
 /* The light theme of the administration: the same components on warm
    off-white, with the accent darkened so that it reads on white. */
 [data-sc-interface=admin][data-bs-theme=light] {
+    color-scheme: light;
     --side-bar-width: 260px;
     --bs-primary: #7d683a;
     --bs-primary-rgb: 125, 104, 58;
