@@ -533,7 +533,11 @@ class Snapshot:
         comment: "Manual" is what every one of them would otherwise read as,
         and telling them apart is the whole point of asking for one.
         """
-        return self.comment or self.reason_label
+        return (
+            pgettext('backup label', 'Manual: {reason}').format(reason=self.comment)
+            if self.comment
+            else self.reason_label
+        )
 
     @property
     def stored_event(self) -> StoredEvent | None:

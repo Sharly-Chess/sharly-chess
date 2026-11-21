@@ -5995,6 +5995,11 @@ msgstr ""
 msgid "Manual tie-breaks reset"
 msgstr ""
 
+#, python-brace-format
+msgctxt "backup label"
+msgid "Manual: {reason}"
+msgstr ""
+
 msgid "Manually pair players"
 msgstr ""
 
