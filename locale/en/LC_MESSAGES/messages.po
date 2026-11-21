@@ -12112,6 +12112,9 @@ msgid "This file is incorrectly formatted, the extension has most likely been ch
 msgstr ""
 
 #, python-brace-format
+msgid "This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file."
+msgstr ""
+
 msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
 msgstr ""
 

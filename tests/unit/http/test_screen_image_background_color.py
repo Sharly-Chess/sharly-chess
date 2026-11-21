@@ -15,6 +15,7 @@ instead.
 """
 
 import base64
+import re
 from collections.abc import Iterator
 from io import BytesIO
 from random import Random
@@ -23,7 +24,11 @@ import pytest
 from PIL import Image, ImageDraw
 
 from common import hexa_to_rgb
-from common.background import image_background_color, inline_image_data
+from common.background import (
+    image_background_color,
+    inline_image_data,
+    uploaded_image_is_an_image,
+)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 from tests.test_config import ScreenType, TestUtils
@@ -86,6 +91,12 @@ def _uploaded(image_data: bytes, media_type: str = 'image/png') -> str:
     return f'data:{media_type};base64,{base64.b64encode(image_data).decode()}'
 
 
+def _field_error(page: str, field_id: str) -> str | None:
+    """The message shown under a field of the form."""
+    match = re.search(rf'id="{field_id}-error"[^>]*>\s*([^<]*)', page)
+    return match.group(1).strip() if match else None
+
+
 def _distance(hexa: str | None, color: tuple[int, int, int]) -> int:
     """How far a read colour is from the one the image was drawn with."""
     assert hexa is not None
@@ -140,6 +151,21 @@ class TestImageBackgroundColor:
         assert image_background_color(b'not an image') is None
         assert (
             image_background_color(b'<svg xmlns="http://www.w3.org/2000/svg"/>') is None
+        )
+
+    def test_a_file_renamed_with_the_extension_of_an_image_is_no_image(self):
+        """The browser hands a file over on its extension alone, so a
+        database renamed poster.jpg arrives as an image/jpeg upload."""
+        assert uploaded_image_is_an_image(_uploaded(_bordered())) is True
+        assert uploaded_image_is_an_image(_uploaded(b'Standard Jet DB')) is False
+        assert uploaded_image_is_an_image(_uploaded(b'', 'application/pdf')) is False
+        # A drawing is not opened by the imaging library and is an image all
+        # the same.
+        assert (
+            uploaded_image_is_an_image(
+                _uploaded(b'<svg xmlns="http://www.w3.org/2000/svg"/>', 'image/svg+xml')
+            )
+            is True
         )
 
     def test_an_uploaded_image_is_decoded(self):
@@ -213,6 +239,25 @@ class TestImageScreenBackgroundColor:
         )
         assert _read_color(api, background_image='not a URL') == ''
         assert _read_color(api) == ''
+
+    def test_a_file_that_is_no_image_is_not_saved(self, api: ApiClient, event: str):
+        """The form keeps a file that is no image from being uploaded; a
+        form sent all the same is answered with the error of the field."""
+        response = api.post(
+            f'/screen-create/{EVENT_ID}/{ScreenType.IMAGE.value}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+            data=TestUtils.prepare_form_data(
+                {
+                    'name': 'Poster',
+                    'public': True,
+                    'background_image_upload': _uploaded(b'Standard Jet DB'),
+                }
+            ),
+        )
+        assert response.ok
+        error = _field_error(response.text(), 'background-image')
+        assert error is not None
+        assert 'not an image' in error
 
     def test_a_colour_chosen_by_hand_is_kept(self, api: ApiClient, event: str):
         """The colour read from an image is set in the form, and saved as any

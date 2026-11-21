@@ -37,6 +37,9 @@ QUANTIZED_SHADES = 16
 MIN_DOMINANT_SHADE_SHARE = 0.35
 # A pixel more transparent than this is not read as a colour.
 MIN_OPAQUE_ALPHA = 128
+# The media types of the images the browser draws but the imaging library does
+# not open: a drawing, which is text rather than pixels.
+VECTOR_MEDIA_TYPES = ('image/svg+xml',)
 # A border has to be opaque over at least this share of itself to say what the
 # image is laid on: what shows through a transparent border is the background.
 MIN_OPAQUE_BORDER_SHARE = 0.6
@@ -79,6 +82,34 @@ def inline_image_data(image: str) -> bytes | None:
     except binascii.Error as e:
         logger.warning('Uploaded image not decoded: %s', e)
         return None
+
+
+def uploaded_image_is_an_image(image: str) -> bool:
+    """Whether the data: URI *image* holds an image at all: a file given the
+    extension of an image is handed over as one by the browser, and a
+    database renamed poster.jpg is no image.
+
+    A drawing is taken on its media type, the imaging library not opening
+    one; anything else has to be opened to pass.
+    """
+    media_type = image.removeprefix('data:').partition(';')[0]
+    if not media_type.startswith('image/'):
+        return False
+    if media_type in VECTOR_MEDIA_TYPES:
+        return True
+    data = inline_image_data(image)
+    if not data:
+        return False
+    try:
+        # The header alone tells an image from a file that is none, and the
+        # pixels are left unread: an image missing its last bytes is still an
+        # image, and the browser draws what it holds.
+        with Image.open(BytesIO(data)):
+            pass
+    except Exception as e:
+        logger.debug('Uploaded image is no image: %s', e)
+        return False
+    return True
 
 
 def _border_pixels(image: Image.Image) -> list[tuple[int, int, int, int]]:

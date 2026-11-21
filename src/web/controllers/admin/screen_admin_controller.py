@@ -13,7 +13,11 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common import REQUEST_TIMEOUT
-from common.background import image_background_color, inline_image_data
+from common.background import (
+    image_background_color,
+    inline_image_data,
+    uploaded_image_is_an_image,
+)
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
@@ -612,6 +616,13 @@ class ScreenAdminController(ScreenAdminRenderer):
                         if len(background_image) > MAX_UPLOADED_IMAGE_CHARS:
                             errors[field] = _(
                                 'The uploaded image is too large (max 2 MB).'
+                            )
+                        elif not uploaded_image_is_an_image(background_image):
+                            # The form keeps a file that is no image from
+                            # being uploaded at all; a form sent all the same
+                            # is answered with the same message.
+                            errors[field] = _(
+                                'This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file.'
                             )
                     elif not validators.url(background_image):
                         errors[field] = _('Invalid URL [{background_image}].').format(

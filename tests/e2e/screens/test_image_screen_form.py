@@ -28,6 +28,11 @@ def setup(api_request_context: APIRequestContext):
     TestUtils.delete_event(EVENT_ID, via_api_request_context=api_request_context)
 
 
+# A file given the extension of an image and holding something else: the
+# header of a database, as a file renamed poster.jpg would hand over.
+NOT_AN_IMAGE = b'\x00\x01\x00\x00Standard Jet DB\x00'
+
+
 @pytest.mark.e2e
 class TestImageScreenFormBackground:
     @staticmethod
@@ -106,3 +111,57 @@ class TestImageScreenFormBackground:
         expect(modal.locator('[name="background_blurred"]')).to_be_enabled()
         expect(modal.locator('[name="background_color_checkbox"]')).to_be_enabled()
         expect(modal.locator('#background-color-from-image')).to_be_enabled()
+
+    def test_a_file_that_is_no_image_is_refused(self, page: Page):
+        """A file renamed with the extension of an image is handed over as an
+        image by the browser: the form says so on the modal and keeps the
+        background fields off, there being no image to describe."""
+        modal = self._open_creation_form(page)
+        modal.locator('#background-image-file').set_input_files(
+            files=[
+                {
+                    'name': 'challenger.jpg',
+                    'mimeType': 'image/jpeg',
+                    'buffer': NOT_AN_IMAGE,
+                }
+            ]
+        )
+        alert = modal.locator('#background-image-alert')
+        expect(alert).to_be_visible()
+        expect(alert).to_contain_text('not an image')
+        expect(modal.locator('[name="background_blurred"]')).to_be_disabled()
+        expect(modal.locator('[name="background_color_checkbox"]')).to_be_disabled()
+        expect(modal.locator('[name="background_color"]')).to_be_disabled()
+        expect(modal.locator('#background-color-from-image')).to_be_disabled()
+        expect(modal.locator('#background-image-preview')).to_be_hidden()
+        # An image chosen afterwards leaves nothing of the error.
+        modal.locator('#background-image-file').set_input_files(
+            files=[
+                {
+                    'name': 'poster.png',
+                    'mimeType': 'image/png',
+                    'buffer': ONE_PIXEL_PNG,
+                }
+            ]
+        )
+        expect(alert).to_be_hidden()
+        expect(modal.locator('[name="background_blurred"]')).to_be_enabled()
+
+    def test_the_error_is_closed_by_its_cross_and_shown_again(self, page: Page):
+        """The cross of the banner hides it; the next file that is no image
+        shows it again, which taking it out of the form would not."""
+        modal = self._open_creation_form(page)
+        alert = modal.locator('#background-image-alert')
+        for _closed in range(2):
+            modal.locator('#background-image-file').set_input_files(
+                files=[
+                    {
+                        'name': 'challenger.jpg',
+                        'mimeType': 'image/jpeg',
+                        'buffer': NOT_AN_IMAGE,
+                    }
+                ]
+            )
+            expect(alert).to_be_visible()
+            alert.locator('.btn-close').click()
+            expect(alert).to_be_hidden()

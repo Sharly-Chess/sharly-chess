@@ -1,4 +1,12 @@
 <div class="row gy-2 gx-3">
+    {# The banner the scripts below show their errors in; its cross hides it
+       rather than removing it, another file having its own error to show. #}
+    <div class="col-12 d-none" id="background-image-alert">
+        {{ components.banner(
+            'error',
+            '<span id="background-image-alert-text"></span>'
+        ) }}
+    </div>
     <div class="col-12">
         {{ admin_macros.text_input(
             name='background_image',
@@ -153,6 +161,31 @@
         if (!fileInput) {
             return;
         }
+        const alertBox = document.getElementById('background-image-alert');
+        const alertText = document.getElementById('background-image-alert-text');
+        const MESSAGES = {
+            notAnImage: {{ _(
+                'This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file.'
+            ) | tojson }},
+            tooLarge: {{ _('The image is too large (max 2 MB).') | tojson }},
+        };
+        // The errors of the image are shown on the modal, as the errors of
+        // the fields are; no message means no banner.
+        function show(message) {
+            alertText.textContent = message || '';
+            alertBox.classList.toggle('d-none', !message);
+        }
+        // The cross of the banner would take it out of the form for good:
+        // it is hidden instead, and shown again by the next error.
+        alertBox.addEventListener('close.bs.alert', (event) => {
+            event.preventDefault();
+            show('');
+        });
+        if (urlInput) {
+            // A URL typed instead of the file is another choice: the error
+            // of the file has nothing left to say.
+            urlInput.addEventListener('input', () => show(''));
+        }
         // The image is stored in the event and read with it on every request,
         // so a photo is brought down to what a screen can show.
         const MAX_SIDE = 1920;
@@ -177,6 +210,25 @@
                 }
             }
             return false;
+        }
+
+        function decodes(file) {
+            // A file is only an image if the browser draws it: one named
+            // with the extension of an image is given its media type all
+            // the same, so the type says nothing of the bytes.
+            return new Promise((resolve) => {
+                const url = URL.createObjectURL(file);
+                const image = new Image();
+                image.onload = () => {
+                    URL.revokeObjectURL(url);
+                    resolve(true);
+                };
+                image.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    resolve(false);
+                };
+                image.src = url;
+            });
         }
 
         async function shrink(file, original) {
@@ -213,12 +265,20 @@
             if (!file) {
                 return;
             }
-            const image = await shrink(file, await readAsDataURL(file));
-            if (image.length > MAX_DATA_URL_LENGTH) {
-                alert({{ _('The image is too large (max 2 MB).') | tojson }});
+            // A file that is no image is not kept at all: the screen would
+            // show nothing, and its background has nothing to describe.
+            if (!(await decodes(file))) {
+                show(MESSAGES.notAnImage);
                 fileInput.value = '';
                 return;
             }
+            const image = await shrink(file, await readAsDataURL(file));
+            if (image.length > MAX_DATA_URL_LENGTH) {
+                show(MESSAGES.tooLarge);
+                fileInput.value = '';
+                return;
+            }
+            show('');
             hidden.value = image;
             if (urlInput) {
                 urlInput.value = '';
