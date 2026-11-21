@@ -24,7 +24,6 @@
 ## Staff
 
 - Choosing a person among the search results of the account form no longer fails with an error when a role has already been given for several tournaments (5.3.0)
-- The account form explains that the staff member roles are used in the documents and the TRF exports but grant no permission, with a link to the account's permissions, which open straight away once an account is created or duplicated; the staff tab names its roles column "Roles (documents and exports)" and shows the anonymous account as a system account, like the administrator (5.3.0)
 
 ## Screens
 

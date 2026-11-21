@@ -31,7 +31,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ),
             ListColumn(
                 'roles_summary',
-                label=_('Roles (documents and exports)'),
+                label=_('Roles'),
                 width='minmax(min-content, 1fr)',
             ),
             ListColumn(

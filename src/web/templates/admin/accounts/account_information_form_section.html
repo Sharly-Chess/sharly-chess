@@ -2,6 +2,9 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
 <div id="information-section">
+    <h4>
+        {{ _('Staff information') }}
+    </h4>
 
     {% with usage = 'account' %}
         {% include '/admin/common/player_search.html' %}
