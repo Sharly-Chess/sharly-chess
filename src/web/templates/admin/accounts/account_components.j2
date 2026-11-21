@@ -62,8 +62,10 @@
 {% endmacro %}
 
 {% macro status(item, view, placement) %}
-    {% if item.administrator or item.anonymous %}
+    {% if item.administrator %}
         {% call components.icon_text('bi-shield-fill-check', class='text-primary text-nowrap') %}{{ _('System') }}{% endcall %}
+    {% elif item.anonymous %}
+        {% call components.icon_text('bi-incognito', class='text-secondary text-nowrap') %}{{ _('Anonymous') }}{% endcall %}
     {% elif item.active %}
         <span
             class="text-success text-nowrap"
@@ -85,7 +87,7 @@
     {% elif item.user_account %}
         <span class="text-secondary">{{ _('None') }}</span>
     {% else %}
-        <span class="text-secondary">{{ _('No role required for system accounts') }}</span>
+        <span class="text-secondary">{{ _('No role required') }}</span>
     {% endif %}
 {% endmacro %}
 
@@ -265,7 +267,7 @@
             {% elif account.user_account %}
                 <span class="text-secondary">{{ _('None') }}</span>
             {% else %}
-                <span class="text-secondary">{{ _('No role required for system accounts') }}</span>
+                <span class="text-secondary">{{ _('No role required') }}</span>
             {% endif %}
         </section>
         <section class="collection-detail-section">
