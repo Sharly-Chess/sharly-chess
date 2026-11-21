@@ -2614,6 +2614,12 @@ msgstr "Numéros d'échiquier à afficher, séparés par des virgules."
 msgid "Comment"
 msgstr "Commentaire"
 
+msgid "Comment (optional)"
+msgstr "Commentaire (facultatif)"
+
+msgid "Comment of the backup"
+msgstr "Commentaire de la sauvegarde"
+
 msgid "Comments"
 msgstr "Commentaires"
 
@@ -5956,6 +5962,23 @@ msgstr "Gérer les étiquettes."
 msgid "Manage the team roster."
 msgstr "Gérer l'effectif de l'équipe."
 
+msgctxt "backup"
+msgid "Manual"
+msgstr "Manuelle"
+
+msgctxt "individual knock-out"
+msgid "Manual"
+msgstr "Manuel"
+
+msgctxt "team knock-out"
+msgid "Manual"
+msgstr "Manuel"
+
+msgctxt "team sort mode"
+msgid "Manual"
+msgstr "Manuel"
+
+msgctxt "tie-break"
 msgid "Manual"
 msgstr "Manuel"
 
@@ -12001,6 +12024,9 @@ msgstr "Ce canal est privé : l'appareil doit être connecté avec un compte au
 
 msgid "This channel is public (visible by the spectators)."
 msgstr "Ce canal est public (visible des spectateur·ices)."
+
+msgid "This comment is shown in place of the reason of the backup, which tells apart the backups taken by hand."
+msgstr "Ce commentaire est affiché à la place du motif de la sauvegarde, ce qui permet de distinguer les sauvegardes manuelles."
 
 msgid "This computer"
 msgstr "Cet ordinateur"

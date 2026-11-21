@@ -123,6 +123,49 @@ class TestSnapshotState:
 
 
 @pytest.mark.e2e
+class TestCommentingABackup:
+    """The comment is typed beside the Back up now button and has to travel
+    with the press: nothing but the browser says whether it does."""
+
+    EVENT_ID = 'test-snapshots-comment-e2e'
+
+    def test_the_comment_is_what_the_new_backup_reads_as(self, page: Page):
+        TestUtils.create_event(self.EVENT_ID)
+
+        modal = open_panel(page, self.EVENT_ID)
+        modal.locator('#snapshot-comment').fill('Essai n°2')
+        modal.get_by_role('button', name='Back up now').click()
+
+        panel = page.locator('#event-snapshots-modal')
+        expect(panel.locator('tbody tr').first).to_contain_text('Essai n°2')
+        # The field is empty again, so the next backup does not inherit it.
+        expect(panel.locator('#snapshot-comment')).to_have_value('')
+
+    def test_a_backup_commented_with_a_space_is_restored_from_the_panel(
+        self, page: Page
+    ):
+        """The comment ends up in the backup's file name, which the browser
+        asks for in a URL: a space escaped as a URL escapes it was looked for
+        under a name the file did not have, and the backup could not be
+        restored."""
+        uniq_id = 'test-snapshots-comment-restore-e2e'
+        TestUtils.create_event(uniq_id)
+        set_event_name(uniq_id, 'The state to come back to')
+        write_snapshot(uniq_id, SnapshotReason.MANUAL, comment='deux mots')
+        set_event_name(uniq_id, 'The mistake')
+
+        modal = open_panel(page, uniq_id)
+        modal.locator('button:has(.bi-arrow-counterclockwise)').first.click()
+
+        confirm = page.locator('#event-snapshot-restore-modal')
+        expect(confirm).to_be_visible()
+        confirm.locator('#snapshot-restore-button').click()
+
+        expect(confirm).not_to_be_visible()
+        assert event_name(uniq_id) == 'The state to come back to'
+
+
+@pytest.mark.e2e
 class TestAFailingBackupIsSeen:
     """A backup fails on the worker thread, long after the request that caused
     it, so the event page has to say so by itself."""

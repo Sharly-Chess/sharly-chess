@@ -44,6 +44,7 @@ from data.championship.championship_loader import (
 )
 from data.loader import ArchiveLoader, EventLoader
 from data.snapshot import (
+    COMMENT_MAX_LENGTH,
     Snapshot,
     SnapshotException,
     SnapshotLoader,
@@ -1723,6 +1724,7 @@ class IndexAdminController(BaseAdminController):
                     'snapshot_status': SnapshotScheduler.status(event_uniq_id),
                     'snapshots_enabled': SharlyChessConfig().snapshot_enabled,
                     'event_is_accessible': self._event_is_accessible(event_uniq_id),
+                    'snapshot_comment_max_length': COMMENT_MAX_LENGTH,
                 }
             ),
             re_target='#modal-wrapper',
@@ -1744,11 +1746,21 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_snapshot_now(
-        self, request: HTMXRequest, event_uniq_id: FromPath[str]
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: FromPath[str],
     ) -> Template:
+        # The comment the user wrote in the panel, which the backup reads as in
+        # place of "Manual": the panel is used to mark the states of a test or
+        # of an event being set up, where every manual backup would read alike.
+        comment = WebContext.form_data_to_str(data, 'snapshot_comment')
         try:
             snapshot = SnapshotScheduler.snapshot_now(
-                event_uniq_id, SnapshotReason.MANUAL
+                event_uniq_id, SnapshotReason.MANUAL, comment=comment
             )
         except SnapshotException as e:
             Message.error(

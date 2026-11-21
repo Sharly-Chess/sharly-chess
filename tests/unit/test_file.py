@@ -2,7 +2,31 @@ from pathlib import Path
 
 import pytest
 
-from utils.file import is_within, overlap, rename_when_released
+from utils.file import is_within, overlap, rename_when_released, sqlite_file_uri
+
+
+def test_a_sqlite_uri_escapes_what_sqlite_would_read_itself(tmp_path):
+    """SQLite decodes the URI a database is opened with: a percent escape, a
+    space or a hash left in the path would send it looking for a file that is
+    not there, which is how a folder named `copie%20de` lost every database
+    inside it."""
+    uri = sqlite_file_uri(tmp_path / 'copie%20de' / 'deux mots #1.sce', 'ro')
+
+    assert uri.startswith('file:///')
+    assert uri.endswith('/copie%2520de/deux%20mots%20%231.sce?mode=ro')
+
+
+def test_a_sqlite_uri_names_the_mode_it_opens_with(tmp_path):
+    assert sqlite_file_uri(tmp_path / 'x.sce', 'rw').endswith('?mode=rw')
+
+
+def test_a_sqlite_uri_keeps_a_network_share_in_the_path():
+    """`Path.as_uri` would write the host as the URI's authority, which SQLite
+    refuses with `invalid uri authority`: the share stays in the path, where
+    SQLite reads it back as the UNC path it is."""
+    uri = sqlite_file_uri(Path('//server/share/events/x.sce'), 'rw')
+
+    assert uri == 'file:////server/share/events/x.sce?mode=rw'
 
 
 def test_a_folder_is_within_itself_and_its_parents():

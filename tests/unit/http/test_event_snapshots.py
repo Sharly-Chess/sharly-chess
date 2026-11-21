@@ -87,6 +87,60 @@ def test_backing_up_now_takes_one(http: TestClient, event: str):
 
 
 @pytest.mark.unit
+def test_a_comment_is_what_the_backup_reads_as(http: TestClient, event: str):
+    """Every backup taken by hand reads "Manual", which tells none of them
+    apart: the comment the user writes takes its place."""
+    response = http.post(
+        f'/event-snapshot-now/{event}', data={'snapshot_comment': 'Essai n°2'}
+    )
+
+    assert response.is_success
+    snapshot = only_snapshot(event)
+    assert snapshot.reason == SnapshotReason.MANUAL
+    assert snapshot.comment == 'Essai n°2'
+    assert snapshot.label == 'Essai n°2'
+    body = panel(http, event)
+    assert 'Essai n°2' in body
+    # The reason it was taken for is still there, as the comment's tooltip.
+    assert 'Manual' in body
+
+
+@pytest.mark.unit
+def test_a_comment_of_spaces_alone_leaves_the_backup_reading_as_manual(
+    http: TestClient, event: str
+):
+    response = http.post(
+        f'/event-snapshot-now/{event}', data={'snapshot_comment': '   '}
+    )
+
+    assert response.is_success
+    snapshot = only_snapshot(event)
+    assert snapshot.comment is None
+    assert snapshot.label == 'Manual'
+
+
+@pytest.mark.unit
+def test_a_backup_commented_with_a_space_is_restored_like_any_other(
+    http: TestClient, event: str
+):
+    """The comment rides in the file name, which travels in a URL and in the
+    `file:` URI the database is opened through: a space escaped the way a URL
+    escapes it left both looking for a file that does not exist, and the
+    backup could neither be read nor restored."""
+    set_event_name(event, 'The state to come back to')
+    snapshot = write_snapshot(event, SnapshotReason.MANUAL, comment='deux mots')
+    set_event_name(event, 'The mistake')
+
+    assert snapshot.tournaments is not None, 'the backup could not be read'
+    response = http.get(f'/event-snapshot-restore-modal/{event}/{snapshot.file.name}')
+    assert response.is_success
+    response = http.post(f'/event-snapshot-restore/{event}/{snapshot.file.name}')
+
+    assert response.is_success
+    assert event_name(event) == 'The state to come back to'
+
+
+@pytest.mark.unit
 def test_restoring_in_place_rolls_the_event_back(http: TestClient, event: str):
     set_event_name(event, 'The state to come back to')
     snapshot = write_snapshot(event, SnapshotReason.BEFORE_PAIRING)
