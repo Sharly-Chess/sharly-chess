@@ -125,6 +125,8 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.IndividualTeamMaxPerEntityPrintOption,
             options.IndividualTeamDisplayIncompletePrintOption,
             options.FixedBoardOrderPrintOption,
+            options.PlayerListColumnsPrintOption,
+            options.PlayerCheckinListColumnsPrintOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options

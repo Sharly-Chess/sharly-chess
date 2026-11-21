@@ -55,6 +55,12 @@ class TournamentPlayerTableColumn(Column[TournamentPlayer], ABC):
         """The label of the checkbox that shows or hides the column."""
         return self.header_content
 
+    @property
+    def default_hidden(self) -> bool:
+        """Whether the column starts unticked in a document's column
+        selection, shown only when the user turns it on."""
+        return False
+
     @override
     def is_cell_blank_for(self, object_: TournamentPlayer) -> bool:
         return self.is_standing and object_.is_excluded_from_standings
@@ -92,7 +98,8 @@ class CheckinColumn(TournamentPlayerTableColumn):
 class NumberColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return pgettext('NB column header', 'No.')
+        # A running row count, whose header would say nothing.
+        return ''
 
     @property
     def cell_template(self) -> str | None:
@@ -512,6 +519,16 @@ class GridOpponentColumn(TournamentPlayerTableColumn):
 
 class TournamentColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'tournament'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Tournament')
+
+    @property
     def header_content(self) -> str:
         return pgettext('tournament for players columns', 'Tournament')
 
@@ -613,6 +630,16 @@ class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
 
 class PaidColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'paid'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Paid')
+
+    @property
     def header_content(self) -> str:
         return pgettext('paid column header', 'Paid')
 
@@ -633,6 +660,16 @@ class PaidColumn(TournamentPlayerTableColumn):
 
 
 class OwedColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'owed'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Owed')
+
     @property
     def header_content(self) -> str:
         return pgettext('owed column header', 'Owed')
@@ -655,6 +692,16 @@ class OwedColumn(TournamentPlayerTableColumn):
 
 class CommentsColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'comments'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Comments')
+
+    @property
     def header_content(self) -> str:
         return pgettext('comments column header', 'Comments')
 
@@ -664,6 +711,90 @@ class CommentsColumn(TournamentPlayerTableColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-start comments'
+
+
+class PairingNumberColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'pairing_number'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Pairing number')
+
+    @property
+    @override
+    def default_hidden(self) -> bool:
+        return True
+
+    @property
+    def header_content(self) -> str:
+        return pgettext('pairing number column header', 'No.')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return tournament_player.pairing_number or ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-end'
+
+
+class FideIdColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'fide_id'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('FIDE ID')
+
+    @property
+    @override
+    def default_hidden(self) -> bool:
+        return True
+
+    @property
+    def header_content(self) -> str:
+        return 'FIDE'
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return tournament_player.fide_id or ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class NationalIdColumn(TournamentPlayerTableColumn):
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return 'national_id'
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('National ID')
+
+    @property
+    @override
+    def default_hidden(self) -> bool:
+        return True
+
+    @property
+    def header_content(self) -> str:
+        return pgettext('national id column header', 'Nat. ID')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return tournament_player.national_id or ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class PlayerColumn(TournamentPlayerTableColumn):
