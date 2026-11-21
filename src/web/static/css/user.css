@@ -538,6 +538,11 @@ body:has(#screen-exit-button) .alert-message {
 .player-cell .player-rating {
     color: var(--screen-ink-secondary);
 }
+.player-cell .player-check-in-status {
+    margin-left: 0.5em;
+    font-style: italic;
+    color: var(--screen-ink-secondary);
+}
 .board-seat-code {
     font-size: 0.8em;
     color: #777;
@@ -743,31 +748,45 @@ body:has(#screen-exit-button) .alert-message {
 # MENUS
 ###########################################################
 */
+/* The menu reads as one obvious strip: a dark bar with the screens as
+   browser-style tabs, the current one lifted out in white so it connects to
+   the content below. Literal colours, so the bar stays visible where a screen
+   cannot resolve the theme variables. */
 .screen-menu {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem;
+    align-items: flex-end;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0.4rem 0.6rem 0;
+    background-color: #23262b;
     font-size: 1.15rem;
 }
-.screen-menu-item,
+.screen-menu-item {
+    padding: 0.3rem 0.9rem !important;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background-color: #3e4249;
+    color: #d6dae0;
+    text-decoration: none;
+    touch-action: manipulation;
+}
+.screen-menu-item.selected {
+    background-color: #ffffff;
+    color: #101418;
+}
 .screen-submenu-item {
     color: var(--screen-ink);
     text-decoration: none;
 }
-.screen-menu-item {
-    padding: 0.3rem 0.9rem !important;
-    border-radius: 999px;
-    background-color: #eef1f5;
-    touch-action: manipulation;
-}
-.screen-menu-item.selected,
 .screen-submenu-item.selected {
     background-color: var(--screen-ink);
     color: white;
 }
 @media (hover: hover) {
-    .screen-menu-item:not(.selected):hover,
+    .screen-menu-item:not(.selected):hover {
+        background-color: #4a4f57;
+        color: #ffffff;
+    }
     .screen-submenu-item:not(.selected):hover {
         background-color: #dfe3e9;
         color: var(--screen-ink);
@@ -792,7 +811,7 @@ body:has(#screen-exit-button) .alert-message {
 .screen-submenu-item {
     border-radius: 0.5rem;
 }
-/* The pills are trimmed to the capitals so that their text sits in the
+/* The tabs are trimmed to the capitals so that their text sits in the
    middle, as on the administration's buttons and badges. */
 @supports (text-box-trim: trim-both) {
     .screen-menu-item,
@@ -859,6 +878,15 @@ body:has(#screen-exit-button) .alert-message {
 }
 #top-nav-wrapper.screen-top-nav:not(.with-menu) #top-nav-content {
     display: none;
+}
+/* The menu bar runs flush to the content below and edge to edge, with no
+   gutter around it. */
+#top-nav-wrapper.with-menu {
+    padding-bottom: 0;
+}
+#top-nav-wrapper.with-menu #top-nav-content {
+    padding-left: 0;
+    padding-right: 0;
 }
 #top-nav-wrapper.with-menu.with-timer {
     display: flex;
