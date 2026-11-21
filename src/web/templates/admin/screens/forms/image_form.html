@@ -34,28 +34,39 @@
             <div class="invalid-feedback d-block">{{ errors.get('background_image') }}</div>
         {% endif %}
     </div>
-    <div class="col-12 screen-background-color">
+    <div class="col-12 screen-background-color mt-1">
         {{ admin_macros.checkbox_input(
             name='background_blurred',
             placeholder=_('Blur the background of the screen'),
             tooltip_text=_('Blur the background of the screen with the image (the background colour is then not used).'),
             data=data, errors=errors
         ) }}
-        <div class="mb-2">
-            <a
-                href="#"
-                id="background-color-from-image"
-                data-url="{{ url_for('admin-screen-image-color', event_uniq_id=admin_event.uniq_id) }}"
-                {{ macros.tooltip_attributes('', _('The colour the image is laid on is read from its border, so that no band of another colour shows around it.'), 'top') }}
-            >{{ _('Set the background colour from the image') }}</a>
+        {# The tooltip is given as attributes rather than through the
+           tooltip argument, which would wrap the button in a span: the
+           button of an input group is a child of the group itself. #}
+        {% set from_image_button %}
+            {{ components.button(
+                _('From the image'),
+                kind='outline-secondary',
+                attrs={
+                    'id': 'background-color-from-image',
+                    'data-url': url_for('admin-screen-image-color', event_uniq_id=admin_event.uniq_id),
+                    'data-bs-toggle': 'tooltip',
+                    'data-sc-tooltip': true,
+                    'data-bs-title': _('The colour the image is laid on is read from its border, so that no band of another colour shows around it.'),
+                }
+            ) }}
+        {% endset %}
+        <div class="mt-1">
+            {{ admin_macros.color_input(
+                name='background_color',
+                label=_('%(string)s:', string=_('Background colour')),
+                default_checkbox=true,
+                default_color=admin_event.background_color,
+                append=from_image_button,
+                data=data, errors=errors
+            ) }}
         </div>
-        {{ admin_macros.color_input(
-            name='background_color',
-            label=_('%(string)s:', string=_('Background colour')),
-            default_checkbox=true,
-            default_color=admin_event.background_color,
-            data=data, errors=errors
-        ) }}
     </div>
 </div>
 <script>
@@ -77,7 +88,7 @@
         const apply = () => {
             useDefault.disabled = blurred.checked;
             color.disabled = blurred.checked || useDefault.checked;
-            fromImage.classList.toggle('disabled', blurred.checked);
+            fromImage.disabled = blurred.checked;
             preview.classList.toggle('blurred-image-background', blurred.checked);
             preview.style.backgroundColor = blurred.checked ? '' : color.value;
         };

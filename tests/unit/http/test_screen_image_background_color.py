@@ -138,7 +138,7 @@ def _update(api: ApiClient, screen: StoredScreen, **overrides: str) -> StoredScr
 
 
 def _read_color(api: ApiClient, **image: str) -> str:
-    """What the link of the form reads from the image it is given."""
+    """What the button of the form reads from the image it is given."""
     response = api.post(
         f'/screen-image-color/{EVENT_ID}',
         headers={'Content-Type': 'application/x-www-form-urlencoded'},

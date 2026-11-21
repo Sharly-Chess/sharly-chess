@@ -4691,6 +4691,9 @@ msgstr "À partir de la ronde"
 msgid "From round 3, no virtual points are given."
 msgstr "À partir de la ronde 3, aucun point virtuel n'est attribué."
 
+msgid "From the image"
+msgstr "À partir de l'image"
+
 msgid "From the rule set"
 msgstr "Issu du jeu de règles"
 
@@ -10135,9 +10138,6 @@ msgstr "Noter des résultats spéciaux"
 #, python-format
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr "Affiliation définie pour %(filled)d équipe(s) à partir de « %(source)s »."
-
-msgid "Set the background colour from the image"
-msgstr "Définir la couleur de fond à partir de l'image"
 
 msgid "Set the coefficient"
 msgstr "Définir le coefficient"

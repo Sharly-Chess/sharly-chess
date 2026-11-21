@@ -4691,6 +4691,9 @@ msgstr ""
 msgid "From round 3, no virtual points are given."
 msgstr ""
 
+msgid "From the image"
+msgstr ""
+
 msgid "From the rule set"
 msgstr ""
 
@@ -10132,9 +10135,6 @@ msgstr ""
 
 #, python-format
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
-msgstr ""
-
-msgid "Set the background colour from the image"
 msgstr ""
 
 msgid "Set the coefficient"
