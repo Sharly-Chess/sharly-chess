@@ -2623,6 +2623,9 @@ msgstr "Numéros d'échiquier à afficher, séparés par des virgules."
 msgid "Comment"
 msgstr "Commentaire"
 
+msgid "Comment (optional)"
+msgstr "Commentaire (facultatif)"
+
 msgid "Comments"
 msgstr "Commentaires"
 
@@ -5968,8 +5971,30 @@ msgstr "Gérer les étiquettes."
 msgid "Manage the team roster."
 msgstr "Gérer l'effectif de l'équipe."
 
+msgctxt "backup"
+msgid "Manual"
+msgstr "Manuelle"
+
+msgctxt "individual knock-out"
 msgid "Manual"
 msgstr "Manuel"
+
+msgctxt "team knock-out"
+msgid "Manual"
+msgstr "Manuel"
+
+msgctxt "team sort mode"
+msgid "Manual"
+msgstr "Manuel"
+
+msgctxt "tie-break"
+msgid "Manual"
+msgstr "Manuel"
+
+#, python-brace-format
+msgctxt "backup label"
+msgid "Manual ({reason})"
+msgstr "Manuelle ({reason})"
 
 msgid "Manual groups"
 msgstr "Groupes manuels"
@@ -12004,6 +12029,9 @@ msgstr "Ce canal est privé : l'appareil doit être connecté avec un compte au
 msgid "This channel is public (visible by the spectators)."
 msgstr "Ce canal est public (visible des spectateur·ices)."
 
+msgid "This comment is displayed as a reason in the list of backups."
+msgstr "Ce commentaire est affiché comme motif dans la liste des sauvegardes."
+
 msgid "This computer"
 msgstr "Cet ordinateur"
 
@@ -13894,6 +13922,9 @@ msgstr "tout résultat sur l'échiquier"
 
 msgid "auto"
 msgstr "auto"
+
+msgid "before the test of round 2"
+msgstr "avant le test de la ronde 2"
 
 #, python-brace-format
 msgid "best {num} stages"

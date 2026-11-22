@@ -34,6 +34,7 @@ from data.print_documents.individual_teams import (
 from utils.option import Option
 
 if TYPE_CHECKING:
+    from data.columns.player_table import TournamentPlayerTableColumn
     from data.event import Event
     from data.print_documents import PrintIndividualTeamTypeManager
     from data.print_documents.place_cards.template import PlaceCardTemplate
@@ -46,8 +47,10 @@ class PrintOption[V](Option[V], ABC):
     """Parent class of all the options of print documents."""
 
     def __init__(self, event: Event | None, value: Any | None = None):
-        super().__init__(value)
+        # Set before ``super().__init__``: it computes ``default_value`` when no
+        # value is given, which some options derive from the event.
         self.event = event
+        super().__init__(value)
 
     @property
     def template_name(self) -> str:
@@ -657,6 +660,84 @@ class ListPlayerSortPrintOption(PrintOption[str]):
             raise OptionError(
                 f'Unknown list player sorter: {self.value}', self
             ) from None
+
+
+class ColumnSelectionPrintOption(PrintOption[list[str]], ABC):
+    """Which optional columns a player-table document shows. The value lists
+    the toggle ids of the ticked columns; a column with no toggle id is always
+    shown. Each concrete option enumerates the columns of one document."""
+
+    @property
+    def template_file_name(self) -> str:
+        return 'column_selection'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[str]
+
+    @property
+    def default_value(self) -> list[str]:
+        return [
+            column.toggle_id
+            for column in self.document_columns
+            if column.toggle_id is not None and not column.default_hidden
+        ]
+
+    @property
+    def _multiple_tournaments(self) -> bool:
+        return self.event is not None and len(list(self.event.tournaments)) > 1
+
+    @property
+    @abstractmethod
+    def document_columns(self) -> list[TournamentPlayerTableColumn]:
+        """Every column of the document, including the ones always shown."""
+
+    def column_choices(self) -> list[tuple[str, str]]:
+        """The ``(toggle id, label)`` of every column offered as a checkbox,
+        in the order they appear in the document."""
+        return [
+            (column.toggle_id, column.toggle_label)
+            for column in self.document_columns
+            if column.toggle_id is not None
+        ]
+
+    @override
+    def validate(self) -> None:
+        self._validate_list_type(str)
+
+
+class PlayerListColumnsPrintOption(ColumnSelectionPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'player-list-columns'
+
+    @property
+    @override
+    def document_columns(self) -> list[TournamentPlayerTableColumn]:
+        from data.columns.column import ColumnUsage
+        from data.columns.handlers import PlayerColumnHandler
+
+        if self.event is None:
+            return []
+        handler = PlayerColumnHandler(self.event, ColumnUsage.PRINT)
+        return handler.get_player_list_columns(self._multiple_tournaments)
+
+
+class PlayerCheckinListColumnsPrintOption(ColumnSelectionPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'player-checkin-list-columns'
+
+    @property
+    @override
+    def document_columns(self) -> list[TournamentPlayerTableColumn]:
+        from data.columns.column import ColumnUsage
+        from data.columns.handlers import PlayerColumnHandler
+
+        if self.event is None:
+            return []
+        handler = PlayerColumnHandler(self.event, ColumnUsage.PRINT)
+        return handler.get_player_checkin_list_columns(self._multiple_tournaments)
 
 
 class FixedBoardOrderPrintOption(PrintOption[str]):

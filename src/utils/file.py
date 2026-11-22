@@ -7,6 +7,33 @@ from collections.abc import Callable
 from contextlib import suppress
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
+
+
+def sqlite_file_uri(file: Path, mode: str) -> str:
+    r"""The `file:` URI a SQLite database is opened through, for `mode` (`ro`
+    to read it, `rw` to write to it).
+
+    What the path holds has to be escaped, because SQLite reads the name it is
+    given as a URI and decodes it: a folder named `copie%20de` would be looked
+    for as `copie de` and the database never found, and a `#` or a `?` in the
+    path would cut it short.
+
+    `Path.as_uri` is no use for this: on a network share it writes the host as
+    the URI's authority, which SQLite refuses with `invalid uri authority`. The
+    authority is left empty here and the share stays in the path, which is what
+    SQLite reads back as the UNC path it is:
+
+        C:\events\x.sce        ->  file:///C:/events/x.sce
+        \\server\share\x.sce   ->  file:////server/share/x.sce
+    """
+    # Absolute, since a relative path would be read as the URI's authority, and
+    # `absolute` rather than `resolve`: a database is opened on every request,
+    # and this asks the filesystem nothing.
+    path = file.absolute().as_posix()
+    if not path.startswith('/'):
+        path = f'/{path}'
+    return f'file://{quote(path, safe="/:")}?mode={mode}'
 
 
 def is_within(path: Path, directory: Path) -> bool:

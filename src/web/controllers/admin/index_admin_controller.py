@@ -44,6 +44,7 @@ from data.championship.championship_loader import (
 )
 from data.loader import ArchiveLoader, EventLoader
 from data.snapshot import (
+    COMMENT_MAX_LENGTH,
     Snapshot,
     SnapshotException,
     SnapshotLoader,
@@ -1738,17 +1739,54 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         return self._event_snapshots_modal(request, event_uniq_id)
 
+    @get(
+        path='/event-snapshot-now-modal/{event_uniq_id:str}',
+        name='event-snapshot-now-modal',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_event_snapshot_now_modal(
+        self, request: HTMXRequest, event_uniq_id: FromPath[str]
+    ) -> Template:
+        """Asks for the comment of a backup before taking it.
+
+        The panel is reached from a damaged event as well, so the uniq_id
+        comes from the path rather than from a loaded event. Rendered as the
+        other modals holding a field are, which is what puts the cursor in it
+        and makes Enter take the backup.
+        """
+        web_context = AdminWebContext(request)
+        return self._render_modal(
+            'admin/modals.html',
+            web_context.template_context
+            | {
+                'modal': 'event-snapshot-now',
+                'snapshots_event_uniq_id': event_uniq_id,
+                'snapshot_comment_max_length': COMMENT_MAX_LENGTH,
+            },
+        )
+
     @post(
         path='/event-snapshot-now/{event_uniq_id:str}',
         name='event-snapshot-now',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_snapshot_now(
-        self, request: HTMXRequest, event_uniq_id: FromPath[str]
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: FromPath[str],
     ) -> Template:
+        # The comment the user wrote in the modal that asked for it, which the
+        # backup reads as in place of "Manual": the panel is used to mark the
+        # states of a test or of an event being set up, where every manual
+        # backup would read alike.
+        comment = WebContext.form_data_to_str(data, 'snapshot_comment')
         try:
             snapshot = SnapshotScheduler.snapshot_now(
-                event_uniq_id, SnapshotReason.MANUAL
+                event_uniq_id, SnapshotReason.MANUAL, comment=comment
             )
         except SnapshotException as e:
             Message.error(

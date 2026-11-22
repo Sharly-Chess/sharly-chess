@@ -1,3 +1,4 @@
+{% set check_in_status = player.check_in_status %}
 <div
     class="
         player-cell
@@ -35,6 +36,6 @@
         data-bs-target="#modal-wrapper"
     {% endif %}
 >
-    <i class="check-in-mark {% if player.check_in %}bi-check-circle-fill{% else %}bi-circle{% endif %}"></i>
-    {% if player.display_title %}<span class="player-title">{{ player.display_title }}</span>&nbsp;{% endif %}{{ player.full_name }} <span class="player-rating">{{ player.rating_str }}</span>
+    <i class="check-in-mark {% if check_in_status.is_next_round_bye %}{{ check_in_status.base_icon_class }}{% elif player.check_in %}bi-check-circle-fill{% else %}bi-circle{% endif %}"></i>
+    {% if player.display_title %}<span class="player-title">{{ player.display_title }}</span>&nbsp;{% endif %}{{ player.full_name }} <span class="player-rating">{{ player.rating_str }}</span>{% if check_in_status.is_next_round_bye and check_in_status.name %}<span class="player-check-in-status">{{ check_in_status.name }}</span>{% endif %}
 </div>

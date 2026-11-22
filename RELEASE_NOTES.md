@@ -3,6 +3,7 @@
 ## General
 
 - Each event keeps a journal of what is done to it, shown in a new Journal page: results entered, changed or cleared, pairings, byes, penalties, players, teams, tournaments and staff accounts, with when it was done, by whom (the administrator or a staff account, even one deleted since) and from where (the computer running _Sharly Chess_, another device, a screen or _Sharly-Chess.com_), the names being kept as they were at the time. The arbiters can add notes to it, filter it by tournament, kind of action, person or origin, and download it; it follows the changes as they happen, and travels with the event when it is exported unless left out (5.3.0)
+- A backup taken by hand can be given a comment (5.3.0)
 
 ## Tournaments
 
@@ -31,13 +32,15 @@
 - Timers are simpler to set up and to keep up to date: each hour is either the start of a round, worded automatically ("Round 3 starts in 4 minutes"), or a moment with a label of its own, with a preview of what the screens will show; a tournament's schedule can be copied into a timer, and copied again after it changes; a quick countdown shows "Next round in 10 minutes" in one step; an hour can be postponed together with the later hours of its day; the delays read as the colours the timer goes through, and may be 0; and the screens showing a timer are chosen in the timer's own form (5.3.0)
 - On a players screen shown through a display controller, tapping a player opens the result window of their game, instead of sometimes opening the window of another board of the round; a game is always found by its own identifier, so that no screen can open another board's result window (5.3.0)
 - The background of image screens can use a colour extracted from the image in one click or be filled by a blurred version of the image (5.3.0)
+- The screens never take a theme: whatever the theme of the application or the appearance of the system showing them, they keep their light colours, and they tell the browser so, which keeps a device that darkens web pages on its own from turning them white-on-black; they also stay readable in a browser too old to read the colours of the theme (5.3.0)
 
 ## Documents
 
 - Appreciation certificates can be printed for the players of a prize category, from the place cards document, now named Place cards and certificates: every player of the category gets a certificate, whatever the number of its prizes, or only the prize winners, those of all the categories of a prize group at once if needed. Besides the player's information, the templates of the certificates offer the player's rank in the category, the number of players in the category, the performance for the categories ranked by performance, and the prize won in the category. A standard certificate template is provided (5.3.0)
 - The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin schedule explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the schedule printing a draw the pairing can still change (5.3.0)
+- The list of players and the players check-in list let the arbiter choose which columns to print, each document keeping its own choice: the rating, category, gender, federation and club are shown by default, as is a column a plugin adds such as the FFE league, while the pairing number, the FIDE ID and the national ID are offered and left out unless turned on (5.3.0)
 
-## __Sharly-Chess.com__
+## _Sharly-Chess.com_
 
 - The pairings published on _Sharly-Chess.com_ show the table numbers shown in _Sharly Chess_: when a fixed board leaves the board it displaces empty, as in _FFE_ events, a player with a fixed board is shown at that board instead of at the board the game would have had without it (5.3.0)
 
@@ -47,4 +50,4 @@
 
 ## _ChessEvent_
 
-- The rapid and blitz estimates of the _FFE_ imported from Chess-Event arrive as estimates rather than as national ratings: the _FFE_ database _ChessEvent_ reads types them N (5.3.0)
+- The rapid and blitz estimates of the _FFE_ imported from _ChessEvent_ arrive as estimates rather than as national ratings: the _FFE_ database _ChessEvent_ reads types them N (5.3.0)
