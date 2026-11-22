@@ -6,10 +6,13 @@
             <title>{% block title %}Sharly Chess{% endblock %}</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             {% if interface != 'admin' %}
-                {# The client screens are light only. Declaring the colour scheme
-                   keeps a device set to darken web pages, such as an Android
-                   projector, from inverting a screen to white-on-black. #}
-                <meta name="color-scheme" content="light">
+                {# The client screens are light only. `only light`, and not just
+                   `light`, forbids a browser set to darken web pages, such as
+                   on an Android projector, from inverting a screen to
+                   white-on-black: `light` alone only says that the page
+                   supports the light scheme, and does not opt out of the
+                   darkening. #}
+                <meta name="color-scheme" content="only light">
             {% endif %}
             <link rel="icon" type="image/x-icon" href="{{ url_for('static', file_path='/images/sharly-chess.ico') }}?version={{ sharly_chess_config.version }}"/>
             <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', file_path='/images/sharly-chess-icon-32.png') }}?version={{ sharly_chess_config.version }}"/>
