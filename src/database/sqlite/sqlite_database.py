@@ -9,6 +9,7 @@ from sqlite3 import Connection, Cursor, connect, OperationalError
 from typing import Self, Any, cast
 
 from common.logger import get_logger
+from utils.file import sqlite_file_uri
 
 
 logger = get_logger()
@@ -65,7 +66,7 @@ class SQLiteDatabase:
         """Copies the database as one consistent snapshot, which a copy of the
         file does not ensure: a write committed while the file is copied would
         leave the copy half old and half new."""
-        source = connect(f'{self.file.resolve().as_uri()}?mode=ro', uri=True)
+        source = connect(sqlite_file_uri(self.file, 'ro'), uri=True)
         try:
             source.execute('PRAGMA busy_timeout=5000')
             destination.unlink(missing_ok=True)
@@ -93,7 +94,7 @@ class SQLiteDatabase:
             raise e
 
     def __enter__(self) -> Self:
-        db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
+        db_url: str = sqlite_file_uri(self.file, 'rw' if self.write else 'ro')
         try:
             self.database = connect(db_url, detect_types=1, uri=True)
             self.cursor = self.database.cursor()

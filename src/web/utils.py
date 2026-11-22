@@ -17,6 +17,7 @@ from litestar.exceptions import (
 from litestar.status_codes import HTTP_423_LOCKED
 from litestar_htmx import HTMXRequest
 
+from common.i18n import gettext as _
 from common.i18n import ngettext
 from common.exception import (
     SharlyChessException,
@@ -450,7 +451,23 @@ def display_item_option(
     number of pages. The count text tells how many times it was already
     added."""
     name = item.display_name if isinstance(item, Family) else item.name
-    badges = [
+    badges = []
+    if isinstance(item, Screen | Family):
+        if item.accepts_input:
+            badges.append(
+                Markup(
+                    '<span class="badge sc-badge sc-badge-primary">'
+                    '<i class="bi-pencil-square" aria-hidden="true"></i>{label}</span>'
+                ).format(label=item.screen_type.input_badge)
+            )
+        elif item.screen_type.input_option:
+            badges.append(
+                Markup(
+                    '<span class="badge sc-badge sc-badge-neutral">'
+                    '<i class="bi-eye" aria-hidden="true"></i>{label}</span>'
+                ).format(label=_('View only'))
+            )
+    badges += [
         Markup('<span class="badge sc-badge sc-badge-neutral">{name}</span>').format(
             name=display_controller.name
         )

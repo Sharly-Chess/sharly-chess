@@ -1068,11 +1068,24 @@ class FfePlugin(Plugin):
         usage: ColumnUsage,
         player_columns: list[TournamentPlayerTableColumn],
     ) -> None:
-        PluginUtils.insert_on_isinstance(
-            player_columns,
-            FfeLeagueTableColumn(usage),
-            player_table.FederationColumn,
-        )
+        league_column = FfeLeagueTableColumn(usage)
+        # Sits before the club, after any identity columns between the two;
+        # tables without a club column keep it beside the federation.
+        if any(
+            isinstance(column, player_table.ClubColumn) for column in player_columns
+        ):
+            PluginUtils.insert_on_isinstance(
+                player_columns,
+                league_column,
+                player_table.ClubColumn,
+                after=False,
+            )
+        else:
+            PluginUtils.insert_on_isinstance(
+                player_columns,
+                league_column,
+                player_table.FederationColumn,
+            )
         PluginUtils.insert_on_isinstance(
             player_columns,
             FfeLicenceTypeTableColumn(usage),

@@ -1251,7 +1251,7 @@ class TeamSortMode(StrEnum):
     def __str__(self) -> str:
         match self:
             case TeamSortMode.MANUAL:
-                return _('Manual')
+                return pgettext('team sort mode', 'Manual')
             case TeamSortMode.TEAM_AVERAGE_RATING:
                 return _('Average rating of entire team')
             case TeamSortMode.LINEUP_AVERAGE_RATING:

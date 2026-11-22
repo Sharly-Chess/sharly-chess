@@ -123,6 +123,70 @@ class TestSnapshotState:
 
 
 @pytest.mark.e2e
+class TestCommentingABackup:
+    """The comment is asked for in a modal of its own, between the panel and
+    the backup: nothing but the browser says whether what is typed travels
+    with the press, and whether the panel comes back after it."""
+
+    EVENT_ID = 'test-snapshots-comment-e2e'
+
+    def test_the_comment_is_what_the_new_backup_reads_as(self, page: Page):
+        TestUtils.create_event(self.EVENT_ID)
+
+        modal = open_panel(page, self.EVENT_ID)
+        modal.get_by_role('button', name='Back up now').click()
+
+        # The cursor lands in the field, and Enter is enough to take the
+        # backup: a comment is typed and the modal left in one go.
+        ask = page.locator('#event-snapshot-now-modal')
+        expect(ask.locator('#snapshot-comment')).to_be_focused()
+        page.keyboard.type('Essai n°2')
+        page.keyboard.press('Enter')
+
+        # The panel is back, with the backup it was left for in it.
+        panel = page.locator('#event-snapshots-modal')
+        expect(panel).to_be_visible()
+        expect(panel.locator('tbody tr').first).to_contain_text('Manual (Essai n°2)')
+
+    def test_going_back_from_the_comment_takes_no_backup(self, page: Page):
+        uniq_id = 'test-snapshots-comment-back-e2e'
+        TestUtils.create_event(uniq_id)
+
+        modal = open_panel(page, uniq_id)
+        modal.get_by_role('button', name='Back up now').click()
+        ask = page.locator('#event-snapshot-now-modal')
+        expect(ask).to_be_visible()
+        ask.get_by_role('button', name='Back', exact=True).click()
+
+        panel = page.locator('#event-snapshots-modal')
+        expect(panel).to_be_visible()
+        expect(panel).to_contain_text('No backup has been taken of this event yet')
+
+    def test_a_backup_commented_with_a_space_is_restored_from_the_panel(
+        self, page: Page
+    ):
+        """The comment ends up in the backup's file name, which the browser
+        asks for in a URL: a space escaped as a URL escapes it was looked for
+        under a name the file did not have, and the backup could not be
+        restored."""
+        uniq_id = 'test-snapshots-comment-restore-e2e'
+        TestUtils.create_event(uniq_id)
+        set_event_name(uniq_id, 'The state to come back to')
+        write_snapshot(uniq_id, SnapshotReason.MANUAL, comment='deux mots')
+        set_event_name(uniq_id, 'The mistake')
+
+        modal = open_panel(page, uniq_id)
+        modal.locator('button:has(.bi-arrow-counterclockwise)').first.click()
+
+        confirm = page.locator('#event-snapshot-restore-modal')
+        expect(confirm).to_be_visible()
+        confirm.locator('#snapshot-restore-button').click()
+
+        expect(confirm).not_to_be_visible()
+        assert event_name(uniq_id) == 'The state to come back to'
+
+
+@pytest.mark.e2e
 class TestAFailingBackupIsSeen:
     """A backup fails on the worker thread, long after the request that caused
     it, so the event page has to say so by itself."""
@@ -140,6 +204,9 @@ class TestAFailingBackupIsSeen:
         try:
             modal = open_panel(page, self.EVENT_ID)
             modal.get_by_role('button', name='Back up now').click()
+            ask = page.locator('#event-snapshot-now-modal')
+            expect(ask).to_be_visible()
+            ask.get_by_role('button', name='Back up now').click()
 
             # The panel says so, and so does the event page from then on.
             expect(page.locator('body')).to_contain_text(
