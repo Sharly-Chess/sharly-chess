@@ -13,6 +13,11 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common import REQUEST_TIMEOUT
+from common.background import (
+    image_background_color,
+    inline_image_data,
+    uploaded_image_is_an_image,
+)
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
@@ -612,6 +617,13 @@ class ScreenAdminController(ScreenAdminRenderer):
                             errors[field] = _(
                                 'The uploaded image is too large (max 2 MB).'
                             )
+                        elif not uploaded_image_is_an_image(background_image):
+                            # The form keeps a file that is no image from
+                            # being uploaded at all; a form sent all the same
+                            # is answered with the same message.
+                            errors[field] = _(
+                                'This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file.'
+                            )
                     elif not validators.url(background_image):
                         errors[field] = _('Invalid URL [{background_image}].').format(
                             background_image=background_image
@@ -631,6 +643,19 @@ class ScreenAdminController(ScreenAdminRenderer):
                             errors[field] = _(
                                 'URL [{url}] did not respond (error: [{error}]).'
                             ).format(url=background_image, error=str(ce))
+                    previous_screen = (
+                        web_context.admin_screen.stored_screen
+                        if web_context.admin_screen
+                        else None
+                    )
+                    if type_values.get('background_blurred') and previous_screen:
+                        # The colour the blur hides is kept, so that unticking
+                        # the blur gives the screen its colour back: the form
+                        # disables the colour fields, which are then not
+                        # submitted at all.
+                        type_values['background_color'] = (
+                            previous_screen.background_color
+                        )
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox'
@@ -828,6 +853,51 @@ class ScreenAdminController(ScreenAdminRenderer):
         )
 
     @staticmethod
+    def _image_background_color(image: str) -> str | None:
+        """The colour the image given by the form is laid on, read from an
+        upload's bytes or from what its URL answers. ``None`` when there is
+        no image to read: none given, a URL that does not answer, or an image
+        the imaging library does not open."""
+        if not image:
+            return None
+        if image.startswith('data:'):
+            image_data = inline_image_data(image)
+        elif not validators.url(image):
+            return None
+        else:
+            try:
+                response = requests.get(image, timeout=REQUEST_TIMEOUT)
+            except requests.RequestException:
+                return None
+            if response.status_code != 200:
+                return None
+            image_data = response.content
+        return image_background_color(image_data) if image_data else None
+
+    @post(
+        path='/screen-image-color/{event_uniq_id:str}',
+        name='admin-screen-image-color',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+    )
+    async def htmx_admin_screen_image_color(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> str:
+        """The colour of the image the screen form holds, for the button
+        that fills the colour field in; an empty answer when there is no
+        image to read it from. The image is read in a worker thread, a URL
+        being fetched."""
+        form_data = WebContext.flatten_list_data(data)
+        image = form_data.get('background_image_upload') or form_data.get(
+            'background_image', ''
+        )
+        return await asyncio.to_thread(self._image_background_color, image) or ''
+
+    @staticmethod
     def _show_screen_type(request: HTMXRequest, screen_type: str) -> None:
         """Keeps a screen just created or duplicated in view: the filter on
         another type gives way to the screen's own."""
@@ -858,7 +928,8 @@ class ScreenAdminController(ScreenAdminRenderer):
                 raise ValueError(f'action=[{action}]')
 
         event = web_context.get_admin_event()
-        # The validation checks that a background image URL answers.
+        # The validation checks that a background image URL answers, and
+        # reads the colour the image is laid on.
         stored_screen: StoredScreen = await asyncio.to_thread(
             self._admin_validate_screen_update_data, action, web_context, data
         )

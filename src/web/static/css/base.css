@@ -1985,6 +1985,39 @@ body[data-sc-interface=admin] .htmx-indicator {
 	background-position: center center;
 	background-size: contain;
 }
+.image-screen {
+    background-image: var(--screen-image);
+}
+
+/* An image laid blurred behind itself, the sharp image on top: the image
+   fills its box instead of leaving bands of a colour around itself. Both
+   layers read the image from --screen-image, the sharp one keeping the
+   padding of the box in --blurred-image-padding. The blurred layer reaches
+   past the box, a blur fading away at the edges of its own layer, and the
+   box hides what overflows. Used by the image screens and by the thumbnails
+   of the administration. */
+.blurred-image-background {
+    position: relative;
+    overflow: hidden;
+    background-image: none;
+}
+.blurred-image-background::before,
+.blurred-image-background::after {
+    content: '';
+    position: absolute;
+    background-image: var(--screen-image);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.blurred-image-background::before {
+    inset: -5%;
+    background-size: cover;
+    filter: blur(var(--blurred-image-radius, 2vmin));
+}
+.blurred-image-background::after {
+    inset: var(--blurred-image-padding, 0);
+    background-size: contain;
+}
 .locale-flag {
     height: 1em;
 }
@@ -4678,6 +4711,25 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 input[type="color"].form-control {
     height: calc(1.5em + 0.75rem + 2px); /* line-height * font-size + padding-y + border */
     padding: 0;
+    overflow: hidden;
+}
+
+/* The swatch fills the field, so its square corners would show over the
+   rounded ones of the field: it is given the radius of the field itself,
+   which an input group sets to 0 on the side the next field is on. */
+input[type="color"].form-control::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: inherit;
+}
+
+input[type="color"].form-control::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+}
+
+input[type="color"].form-control::-moz-color-swatch {
+    border: none;
+    border-radius: inherit;
 }
 
 .form-fields-container {

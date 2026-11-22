@@ -1860,6 +1860,15 @@ msgstr "Blitz"
 msgid "Blitz rating"
 msgstr "Classement blitz"
 
+msgid "Blur the background of the screen"
+msgstr "Flouter le fond de l'écran"
+
+msgid "Blur the background of the screen with the image (the background colour is then not used)."
+msgstr "Flouter le fond de l'écran avec l'image (dans ce cas la couleur de fond d'écran n'est pas utilisée)."
+
+msgid "Blurred background"
+msgstr "Floutage de l'arrière-plan"
+
 msgctxt "blitz rating acronym"
 msgid "Blz"
 msgstr "Blz"
@@ -4681,6 +4690,9 @@ msgstr "À partir de la ronde"
 
 msgid "From round 3, no virtual points are given."
 msgstr "À partir de la ronde 3, aucun point virtuel n'est attribué."
+
+msgid "From the image"
+msgstr "À partir de l'image"
 
 msgid "From the rule set"
 msgstr "Issu du jeu de règles"
@@ -11014,6 +11026,9 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
+msgid "The background colour cannot be set from this image."
+msgstr "Impossible de définir la couleur de fond à partir de l'image."
+
 #, python-brace-format
 msgid "The backup of event [{uniq_id}] failed: {error}"
 msgstr "La sauvegarde de l'évènement [{uniq_id}] a échoué : {error}"
@@ -11064,6 +11079,9 @@ msgstr "Le coefficient a été enregistré."
 
 msgid "The colour attributed to the highest ranked player at the first round."
 msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
+
+msgid "The colour the image is laid on is read from its border, so that no band of another colour shows around it; an image bleeding to its edges gives the colour it holds itself."
+msgstr "La couleur sur laquelle l'image est posée est lue sur sa bordure, afin qu'aucune bande d'une autre couleur n'apparaisse autour d'elle ; une image qui va jusqu'à ses bords donne la couleur qu'elle contient elle-même."
 
 msgid "The competitors have been unmerged."
 msgstr "Les compétiteurs ont été séparés."
@@ -12080,6 +12098,9 @@ msgid "This file is incorrectly formatted, the extension has most likely been ch
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
 #, python-brace-format
+msgid "This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file."
+msgstr "Ce fichier n'est pas une image : choisissez un fichier JPEG, PNG, GIF, WebP ou SVG."
+
 msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
 msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly Chess car ses appariements ne peuvent être exactement reproduits."
 

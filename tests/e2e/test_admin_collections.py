@@ -18,7 +18,9 @@ STANDALONE_RESULTS_SCREEN_NAME = 'Collection Last Results Screen'
 STANDALONE_IMAGE_SCREEN_NAME = 'Collection Image Screen'
 FAMILY_TOURNAMENT_NAME = 'Collection Family Tournament'
 FAMILY_UNIQ_ID = 'collection-family-source'
-TINY_IMAGE_DATA_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
+TINY_IMAGE_DATA_URI = (
+    'data:image/gif;base64,R0lGODdhAQABAIEAAP///wAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw=='
+)
 
 
 @pytest.fixture(scope='module', autouse=True)
