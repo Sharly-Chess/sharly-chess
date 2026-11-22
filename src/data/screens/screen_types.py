@@ -2247,10 +2247,18 @@ class ImageScreenType(ScreenType):
 
         # An uploaded image (base64 data URI in ``background_image_upload``)
         # takes precedence over a typed URL. The value's format/size is
-        # validated web-side (network I/O for URLs) once the controller sees it.
+        # validated web-side (network I/O for URLs) once the controller sees it,
+        # which is also where the colour of an image is read for the form.
         uploaded = WebContext.form_data_to_str(data, 'background_image_upload', '')
         url = WebContext.form_data_to_str(data, 'background_image', '')
-        values: dict = {'background_image': uploaded or url}
+        values: dict = {
+            'background_image': uploaded or url,
+            'background_blurred': WebContext.form_data_to_bool(
+                data, 'background_blurred'
+            ),
+        }
+        # A blurred background makes no use of a colour, and the form disables
+        # the fields of the colour, which are then not submitted at all.
         if not WebContext.form_data_to_bool(data, 'background_color_checkbox'):
             field = 'background_color'
             try:
@@ -2272,7 +2280,12 @@ class ImageScreenType(ScreenType):
             'background_image': '' if is_upload else stored_image,
             'background_image_upload': stored_image if is_upload else '',
             'background_color': screen.background_color,
+            'background_blurred': screen.stored_screen.background_blurred,
         }
+
+    @override
+    def create_form_data(self, event: Event) -> dict:
+        return {'background_blurred': False}
 
     @override
     def default_screen_name(self, screen: Screen) -> str:
@@ -2321,6 +2334,7 @@ class ImageScreenType(ScreenType):
             'image_url': screen.background_url,
             'background_color': screen.background_color,
             'background_color_default': not screen.stored_screen.background_color,
+            'background_blurred': screen.stored_screen.background_blurred,
         }
 
     @override

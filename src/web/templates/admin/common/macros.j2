@@ -481,6 +481,7 @@ error: if true, sets the field as "on error", event if errors[name] is not set
 default_checkbox: if true, a checkbox is printed with the default message "by default", with query name <name>_checkbox
 default_checkbox_text: another message to replace "by default"
 default_value: the value to be set when the default checkbox is checked
+append: HTML added at the end of the input group, after the default checkbox (a button, for instance)
 select_options: a dict[str, str], keys are the select values and values are the select texts
 number_min: the minimum value for numbers
 number_max: the maximum value for numbers
@@ -512,6 +513,7 @@ with_indicator: display a loading indicator, optional
     default_checkbox_text='',
     default_checkbox_tooltip='',
     default_value='',
+    append='',
     with_indicator=false,
     select_options={},
     onchange='',
@@ -596,7 +598,7 @@ with_indicator: display a loading indicator, optional
                 class="
                     pw-input-group
                     {% if input_type in ['password', 'search', 'integer-range', 'select-range'] %}input-group{% endif %}
-                    {% if default_checkbox %}input-group{% endif %}
+                    {% if default_checkbox or append %}input-group{% endif %}
                     {% if input_type == 'switch' %}form-check form-switch d-inline-flex align-items-center me-2{% endif %}
                     {% if input_type == 'checkbox' %}form-check d-inline-flex align-items-center me-2{% endif %}
                 "
@@ -851,6 +853,9 @@ with_indicator: display a loading indicator, optional
                             />
                             {{ default_checkbox_text or _('Use default') }}
                         </div>
+                    {% endif %}
+                    {% if append %}
+                        {{ append }}
                     {% endif %}
                     {% if with_indicator and not input_type == 'search' %}
                         <div
@@ -1202,6 +1207,7 @@ with_indicator: display a loading indicator, optional
     default_checkbox=false,
     default_checkbox_text='',
     default_color='',
+    append='',
     disabled=false
 ) %}
     {{ _generic_input(
@@ -1217,6 +1223,7 @@ with_indicator: display a loading indicator, optional
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
         default_value=default_color,
+        append=append,
         disabled=disabled,
     ) }}
 {% endmacro %}

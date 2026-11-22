@@ -80,12 +80,15 @@ class PlayerColumnHandler:
     ) -> list[TournamentPlayerTableColumn]:
         column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
             pt.NumberColumn,
+            pt.PairingNumberColumn,
             pt.TitleColumn,
             pt.NameColumn,
             pt.RatingColumn,
             pt.CategoryColumn,
             pt.GenderColumn,
             pt.FederationColumn,
+            pt.FideIdColumn,
+            pt.NationalIdColumn,
             pt.ClubColumn,
         ]
         if multiple_tournaments:
@@ -97,12 +100,15 @@ class PlayerColumnHandler:
     ) -> list[TournamentPlayerTableColumn]:
         column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
             pt.CheckinColumn,
+            pt.PairingNumberColumn,
             pt.TitleColumn,
             pt.NameColumn,
             pt.RatingColumn,
             pt.CategoryColumn,
             pt.GenderColumn,
             pt.FederationColumn,
+            pt.FideIdColumn,
+            pt.NationalIdColumn,
             pt.ClubColumn,
         ]
         if multiple_tournaments:

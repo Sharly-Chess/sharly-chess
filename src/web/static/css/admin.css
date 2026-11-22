@@ -831,6 +831,50 @@
     width: 15%;
 }
 
+.screen-image-thumbnail {
+    /* A screen is landscape, so the thumbnail frames the image the way the
+       screen will: contained and centred inside a 16/9 box, on the colour of
+       the screen, which shows the bands the image leaves around itself. */
+    aspect-ratio: 16 / 9;
+    height: 3.75rem;
+    padding: .1875rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+    background-image: var(--screen-image);
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    /* The blur of a thumbnail is scaled down to its size, so that it reads
+       like the blur of the screen it stands for. */
+    --blurred-image-radius: .125rem;
+    --blurred-image-padding: .1875rem;
+}
+
+.screen-image-thumbnail.blurred-image-background {
+    /* The layers of the blur carry the image: this stylesheet comes after the
+       one the blur is defined in, so the background of the box is dropped
+       here too. */
+    background-image: none;
+}
+
+.screen-image-thumbnail-lg {
+    height: 7.5rem;
+    --blurred-image-radius: .25rem;
+}
+
+.screen-color-swatch {
+    display: inline-block;
+    width: .875rem;
+    height: .875rem;
+    /* A square, barely softened: the Bootstrap radius rounds a box this
+       small into a dot. */
+    border-radius: .125rem;
+    border: 1px solid var(--bs-border-color);
+    vertical-align: -.125rem;
+}
+
 .screens-collection-list-sections {
     display: grid;
     grid-template-columns: var(--collection-list-columns);
@@ -1139,6 +1183,11 @@
 
 .wrapping-form-check .switch-placeholder {
     line-height: 1.25;
+}
+
+.column-selection .form-check {
+    min-height: 0;
+    padding-block: .02rem;
 }
 
 .timer-usage-groups {

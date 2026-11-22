@@ -1,0 +1,23 @@
+<div class="col-12">
+    {% set raw = data.get(option.id) %}
+    {% if raw is string %}
+        {% set selected = raw.split(';') if raw else [] %}
+    {% else %}
+        {% set selected = raw or [] %}
+    {% endif %}
+    <div class="row row-cols-1 row-cols-sm-2 column-selection">
+        {% for toggle_id, label in option.column_choices() %}
+            <div class="col">
+                <div class="form-check">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           id="{{ option.id }}-{{ toggle_id }}"
+                           name="{{ option.id }}"
+                           value="{{ toggle_id }}"
+                           {% if toggle_id in selected %}checked{% endif %}>
+                    <label class="form-check-label" for="{{ option.id }}-{{ toggle_id }}">{{ label }}</label>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

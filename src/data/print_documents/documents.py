@@ -97,6 +97,9 @@ from data.print_documents.options import (
     IndividualTeamMaxPerEntityPrintOption,
     IndividualTeamDisplayIncompletePrintOption,
     FixedBoardOrderPrintOption,
+    ColumnSelectionPrintOption,
+    PlayerListColumnsPrintOption,
+    PlayerCheckinListColumnsPrintOption,
 )
 from data.print_documents.fonts import print_font_faces
 from data.print_documents.page_layout import page_footer_rule
@@ -356,6 +359,20 @@ class PlayerPrintDocument(PrintDocument, ABC):
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         """List of all the columns to display in the tables of the document."""
 
+    def _selected_columns(
+        self,
+        columns: list[TournamentPlayerTableColumn],
+        option_type: type[ColumnSelectionPrintOption],
+    ) -> list[TournamentPlayerTableColumn]:
+        """*columns* with the optional ones left out when their checkbox is
+        not ticked. A column with no toggle id is always kept."""
+        shown = set(self._get_option(option_type).value)
+        return [
+            column
+            for column in columns
+            if column.toggle_id is None or column.toggle_id in shown
+        ]
+
     def heading_before(
         self, player: TournamentPlayer, previous: TournamentPlayer | None
     ) -> str | None:
@@ -390,7 +407,11 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [*PlayerPrintDocument.available_options(), ListPlayerSortPrintOption]
+        return [
+            *PlayerPrintDocument.available_options(),
+            ListPlayerSortPrintOption,
+            PlayerListColumnsPrintOption,
+        ]
 
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
@@ -407,7 +428,8 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
-        return self.column_handler.get_player_list_columns(len(self.tournaments) > 1)
+        columns = self.column_handler.get_player_list_columns(len(self.tournaments) > 1)
+        return self._selected_columns(columns, PlayerListColumnsPrintOption)
 
 
 class PlayerCheckinListPrintDocument(PlayerPrintDocument):
@@ -425,6 +447,13 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
     def title(self) -> str:
         return _('Players check-in list')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            *PlayerPrintDocument.available_options(),
+            PlayerCheckinListColumnsPrintOption,
+        ]
+
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
         tournament_ids = [tournament.id for tournament in self.tournaments]
@@ -436,9 +465,10 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
-        return self.column_handler.get_player_checkin_list_columns(
+        columns = self.column_handler.get_player_checkin_list_columns(
             len(self.tournaments) > 1
         )
+        return self._selected_columns(columns, PlayerCheckinListColumnsPrintOption)
 
 
 class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
@@ -1358,7 +1388,6 @@ class RoundRobinGridPrintDocument(PrintDocument):
             return False
         return any(
             tournament.pairing_system == RoundRobinPairingSystem()
-            and tournament.is_fully_paired
             for tournament in allowed_tournaments
         )
 
@@ -1370,11 +1399,13 @@ class RoundRobinGridPrintDocument(PrintDocument):
             raise OptionError(
                 _('This document is only available for Round-Robin tournaments.'),
                 option,
+                field_id='document',
             )
         if not tournament.is_fully_paired:
             raise OptionError(
                 _('This document is not available for unpaired tournaments.'),
                 option,
+                field_id='document',
             )
 
     @cached_property
@@ -1550,6 +1581,13 @@ class TeamRoundRobinGridPrintDocument(PrintDocument):
             raise OptionError(
                 _('This document is only available for Round-Robin tournaments.'),
                 option,
+                field_id='document',
+            )
+        if not self.tournament.has_pairings:
+            raise OptionError(
+                _('This document is not available for unpaired tournaments.'),
+                option,
+                field_id='document',
             )
         round_option = self._get_option(RoundPrintOption)
         if round_option.value is not None:
@@ -1930,10 +1968,10 @@ class AccelerationRulesPrintDocument(PrintDocument):
 
 class RoundRobinSchedulePrintDocument(PrintDocument):
     """Round-by-round pairing schedule for a round-robin tournament
-    (individual or team). Built from the Berger tables, so it's available
-    before the rounds are paired: one row per match, one column per round.
-    Cells show the two competitors by Berger number (individuals) or team
-    letter (teams); a legend at the end maps each to its name."""
+    (individual or team). Built from the Berger tables: one row per match,
+    one column per round. Cells show the two competitors by Berger number
+    (individuals) or team letter (teams); a legend at the end maps each to
+    its name."""
 
     @staticmethod
     def static_id() -> str:
@@ -1970,10 +2008,18 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
 
     def validate_options(self) -> None:
         super().validate_options()
+        option = self._get_option(TournamentPrintOption)
         if not self._is_round_robin(self.tournament):
             raise OptionError(
                 _('This document is only available for round-robin tournaments.'),
-                self._get_option(TournamentPrintOption),
+                option,
+                field_id='document',
+            )
+        if not self.tournament.has_pairings:
+            raise OptionError(
+                _('This document is not available for unpaired tournaments.'),
+                option,
+                field_id='document',
             )
 
     @property

@@ -25,7 +25,9 @@ INPUT_SCREEN_NAME = 'An input screen'
 FAMILY_UNIQ_ID = 'anonymous-input-family'
 ASSIGNED_CONTROLLER_NAME = 'Assigned controller'
 UNASSIGNED_CONTROLLER_NAME = 'Unassigned controller'
-TINY_IMAGE_DATA_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
+TINY_IMAGE_DATA_URI = (
+    'data:image/gif;base64,R0lGODdhAQABAIEAAP///wAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw=='
+)
 
 
 @dataclass

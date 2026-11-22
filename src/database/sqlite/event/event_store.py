@@ -527,6 +527,7 @@ class StoredScreen:
     results_max_age: int | None = None
     background_image: str | None = None
     background_color: str | None = None
+    background_blurred: bool = False
     results_tournament_ids: list[int] = field(default_factory=list[int])
     ranking_crosstable: bool = False
     ranking_round: int | None = None
