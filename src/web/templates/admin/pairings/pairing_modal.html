@@ -554,7 +554,7 @@
                                     {% for row in ko_adv.breakdown %}
                                         {% if row.is_manual %}
                                             <tr class="{{ '' if row.used else 'text-muted' }}">
-                                                <td class="align-middle">{{ _('Manual') }}</td>
+                                                <td class="align-middle">{{ pgettext('individual knock-out', 'Manual') }}</td>
                                                 {% for side in [wtp, btp] %}
                                                     <td class="text-center">
                                                         {{ components.button(

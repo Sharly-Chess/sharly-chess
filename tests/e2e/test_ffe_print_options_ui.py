@@ -67,3 +67,15 @@ class TestFFEPrintOptions:
             f'|tournaments={tournament_ids["Open B"]}'
         )
         expect(page.locator('#event-name')).to_have_value(f'{EVENT_ID} (Open B)')
+
+    def test_the_league_column_is_offered_in_the_player_list(self, page: Page):
+        """The FFE league column, added to the player table by the plugin, is
+        offered as one of the player list's display columns."""
+        page.goto(f'/event/{EVENT_ID}')
+        TestUtils.wait_for_htmx_bound(page, '#print-button button')
+        page.locator('#print-button button').click()
+        expect(page.locator('.print-modal #document')).to_be_attached()
+        TestUtils.wait_for_htmx_idle(page)
+
+        TestUtils.select_and_confirm(page.locator('#document'), 'player-list')
+        expect(page.locator('#player-list-columns-ffe_league')).to_be_checked()

@@ -38,6 +38,7 @@ from data.snapshot import (
     SnapshotRetention,
     SnapshotTournament,
     ARCHIVED_DIR_NAME,
+    _read_event_content,
     _restoring_event,
     archived_snapshots_dir,
     is_being_restored,
@@ -179,6 +180,14 @@ class TestSnapshotNaming:
         assert snapshot.reason == SnapshotReason.BEFORE_UNPAIRING
         assert snapshot.reason_round is None
 
+    def test_a_name_without_a_comment_reads_as_its_reason(self):
+        file = snapshot_file(Path('/snapshots/event'), SnapshotReason.MANUAL)
+        snapshot = Snapshot.from_file(file, 'event')
+
+        assert snapshot is not None
+        assert snapshot.comment is None
+        assert snapshot.label == 'Manual'
+
     def test_a_name_that_does_not_follow_the_convention_is_ignored(self):
         for name in ('event.scs', 'a__b.scs', '.tmp-abcdef.scs', 'x__y__z.scs'):
             assert Snapshot.from_file(Path(name), 'event') is None
@@ -298,6 +307,127 @@ class TestSnapshotDirSetting:
         assert snapshots_dir not in data_dir.parents, (
             f'{platform}: the data is inside the backups folder'
         )
+
+
+@pytest.mark.unit
+class TestBackupComments:
+    """The comment the user writes when they ask for a backup rides in the
+    file name, like everything else the panel needs of it, and is what tells
+    the backup apart in the panel: every backup taken by hand would otherwise
+    read "Manual" alone."""
+
+    @staticmethod
+    def named(comment: str) -> Snapshot:
+        file = snapshot_file(
+            Path('/snapshots/event'), SnapshotReason.MANUAL, comment=comment
+        )
+        snapshot = Snapshot.from_file(file, 'event')
+        assert snapshot is not None
+        return snapshot
+
+    def test_the_comment_is_carried_by_the_name(self):
+        snapshot = self.named('Before the third test')
+
+        assert snapshot.comment == 'Before the third test'
+        assert snapshot.reason == SnapshotReason.MANUAL
+        # The reason is kept beside the comment: it used to be a tooltip on it,
+        # which nothing but a mouse would have shown.
+        assert snapshot.label == 'Manual (Before the third test)'
+        assert snapshot.reason_label == 'Manual'
+        assert snapshot.is_milestone
+
+    def test_a_comment_holding_the_field_separator_still_reads(self):
+        """Whatever the user types is encoded, so a comment holding the
+        separator between two fields cannot make a name that reads as a fourth
+        one."""
+        snapshot = self.named('Round 3__4 of the test')
+
+        assert snapshot.comment == 'Round 3__4 of the test'
+        assert snapshot.reason == SnapshotReason.MANUAL
+
+    def test_a_comment_holding_path_characters_makes_a_legal_name(self):
+        """What the user types is escaped, so a comment holding a path
+        character cannot make a name no filesystem accepts."""
+        comment = r'C:/essai\ 100% <ok>'
+        snapshot = self.named(comment)
+
+        assert snapshot.comment == comment
+        forbidden = set(r'\/:*?"<>|')
+        assert not set(snapshot.file.name) & forbidden
+
+    def test_the_name_holds_nothing_a_url_or_a_file_uri_would_read(self):
+        """The name travels in a URL and in the `file:` URI a database is
+        opened through: a percent sign, a space or a hash in it would be read
+        as an escape or a delimiter, and the file looked for under a name it
+        does not have.
+
+        This is what a backup commented "deux mots" could not be restored
+        from, so the escaping leaves no such character behind.
+        """
+        snapshot = self.named('C:/deux mots 100% #1 ?')
+
+        assert not set(snapshot.file.name) & set('% #?&=+')
+        assert snapshot.comment == 'C:/deux mots 100% #1 ?'
+
+    def test_an_accented_comment_comes_back_as_it_was_written(self):
+        snapshot = self.named('Après la ronde 3')
+
+        assert snapshot.comment == 'Après la ronde 3'
+
+    def test_a_long_comment_is_cut_to_what_a_name_can_hold(self):
+        """An accented character takes nine of the name's characters once
+        encoded: a name a filesystem would refuse is a backup that is not
+        written, so the comment is cut rather than the backup lost."""
+        snapshot = self.named('é' * 200)
+
+        assert snapshot.comment is not None
+        assert snapshot.comment.startswith('éé')
+        assert len(snapshot.comment) < 200
+        assert len(snapshot.file.name) < 255
+
+    def test_a_comment_of_spaces_alone_is_no_comment(self):
+        file = snapshot_file(
+            Path('/snapshots/event'), SnapshotReason.MANUAL, comment='   '
+        )
+        snapshot = Snapshot.from_file(file, 'event')
+
+        assert snapshot is not None
+        assert snapshot.comment is None
+        assert snapshot.label == 'Manual'
+
+    def test_the_comment_rides_beside_the_round_of_a_step(self):
+        """The comment is the last field, so the round and the tournament of a
+        step keep their place before it."""
+        file = snapshot_file(
+            Path('/snapshots/event'),
+            SnapshotReason.BEFORE_PAIRING,
+            round_=3,
+            tournament_id=7,
+            comment='Kept for the report',
+        )
+        snapshot = Snapshot.from_file(file, 'event')
+
+        assert snapshot is not None
+        assert snapshot.reason == SnapshotReason.BEFORE_PAIRING
+        assert snapshot.reason_round == 3
+        assert snapshot.reason_tournament_id == 7
+        assert snapshot.comment == 'Kept for the report'
+
+    def test_a_commented_backup_is_read_back_from_the_folder(self):
+        """Not the name alone: the comment survives a real backup being
+        written and listed again."""
+        uniq_id = 'test-snapshots-comment'
+        TestUtils.create_event(uniq_id)
+
+        written = write_snapshot(uniq_id, SnapshotReason.MANUAL, comment='Essai n°2')
+        listed = SnapshotLoader.snapshot(uniq_id, written.file.name)
+
+        assert listed is not None
+        assert listed.comment == 'Essai n°2'
+        assert listed.label == 'Manual (Essai n°2)'
+        # What the panel shows of it is read from the file itself, which a name
+        # the database layer cannot open would leave unreadable.
+        assert listed.tournaments is not None
 
 
 @pytest.mark.unit
@@ -910,7 +1040,7 @@ class TestTheCopyStaysOffTheEventLoop:
     def slow_write(recorded: list[int], seconds: float):
         """Stands in for the copy, recording the thread it ran on."""
 
-        def write(uniq_id, reason, round_=None, tournament_id=None):
+        def write(uniq_id, reason, round_=None, tournament_id=None, comment=None):
             recorded.append(get_ident())
             sleep(seconds)
             return fake_snapshot(0, reason, uniq_id)
@@ -1034,6 +1164,50 @@ class TestTurningTheBackupsOff:
             assert not SnapshotLoader.snapshots(self.EVENT_ID)
         finally:
             SnapshotScheduler.stop()
+
+
+@pytest.mark.unit
+class TestABackupsFolderNamedWithAnEscape:
+    """The backups folder is the user's own and may be named anything.
+
+    SQLite opens its databases through a `file:` URI and decodes what the path
+    holds, so a folder named `copie%20de` was looked for as `copie de`: every
+    backup in it was listed as unreadable and could not be restored.
+    """
+
+    EVENT_ID = 'test-snapshots-escaped-folder'
+
+    def event_name(self, uniq_id: str) -> str:
+        with EventDatabase(uniq_id) as database:
+            return database.load_stored_event_metadata().name
+
+    def rename_event(self, uniq_id: str, name: str):
+        with EventDatabase(uniq_id, write=True) as database:
+            database.execute('UPDATE `info` SET `name` = ?', (name,))
+
+    def test_a_backup_in_it_is_written_read_and_restored(self, monkeypatch, tmp_path):
+        monkeypatch.setattr(
+            SharlyChessConfig().stored_config,
+            'snapshot_dir',
+            str(tmp_path / 'copie%20de'),
+        )
+        TestUtils.create_event(self.EVENT_ID)
+        self.rename_event(self.EVENT_ID, 'The state to come back to')
+
+        snapshot = write_snapshot(self.EVENT_ID, SnapshotReason.MANUAL)
+
+        assert snapshot.file.is_file()
+        # What the panel shows of a backup is read from the backup itself, and
+        # read directly: a backup it cannot open is copied and migrated before
+        # being given up on, which would hide this behind a copy of every
+        # backup listed.
+        assert _read_event_content(snapshot.file) is not None
+        assert snapshot.tournaments is not None
+        self.rename_event(self.EVENT_ID, 'The mistake')
+
+        snapshot.restore_in_place()
+
+        assert self.event_name(self.EVENT_ID) == 'The state to come back to'
 
 
 @pytest.mark.unit

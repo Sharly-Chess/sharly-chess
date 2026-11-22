@@ -1,0 +1,52 @@
+{% extends '/admin/components/modal.html' %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
+{% set modal_id = 'event-snapshot-now-modal' %}
+{% set modal_size = 'lg' %}
+
+{# Asked for before the backup is taken, from the panel's Back up now button,
+   and going back to the panel either way: the comment is what the backup is
+   listed as in place of "Manual", which every backup taken by hand reads as.
+   Nothing here goes through the loaded event, which may be damaged. #}
+
+{% block title %}{{ _('Back up now') }}{% endblock %}
+
+{% block subtitle %}{{ snapshots_event_uniq_id }}{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        hx-post="{{ url_for('event-snapshot-now', event_uniq_id=snapshots_event_uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {{ admin_macros.text_input(
+            name='snapshot_comment',
+            label=_('%(string)s:', string=_('Comment (optional)')),
+            placeholder=_('E.g.: %(string)s', string=_('before the test of round 2')),
+            help_text=_(
+                'This comment is displayed as a reason in the list of backups.'
+            ),
+            max_length=snapshot_comment_max_length,
+        ) }}
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.modal_button(
+        url_for('event-snapshots-modal', event_uniq_id=snapshots_event_uniq_id),
+        _('Back'),
+        kind='secondary',
+        icon='back',
+        from_modal=true,
+        attrs={'hx-push-url': 'false'},
+    ) }}
+    {{ components.button(
+        _('Back up now'),
+        kind='primary',
+        icon='bi-camera-fill',
+        type='submit',
+        attrs={'form': 'modal-form'},
+    ) }}
+{% endblock %}

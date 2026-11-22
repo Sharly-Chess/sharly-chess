@@ -2623,6 +2623,9 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
+msgid "Comment (optional)"
+msgstr ""
+
 msgid "Comments"
 msgstr ""
 
@@ -5968,7 +5971,29 @@ msgstr ""
 msgid "Manage the team roster."
 msgstr ""
 
+msgctxt "backup"
 msgid "Manual"
+msgstr ""
+
+msgctxt "individual knock-out"
+msgid "Manual"
+msgstr ""
+
+msgctxt "team knock-out"
+msgid "Manual"
+msgstr ""
+
+msgctxt "team sort mode"
+msgid "Manual"
+msgstr ""
+
+msgctxt "tie-break"
+msgid "Manual"
+msgstr ""
+
+#, python-brace-format
+msgctxt "backup label"
+msgid "Manual ({reason})"
 msgstr ""
 
 msgid "Manual groups"
@@ -12002,6 +12027,9 @@ msgstr ""
 msgid "This channel is public (visible by the spectators)."
 msgstr ""
 
+msgid "This comment is displayed as a reason in the list of backups."
+msgstr ""
+
 msgid "This computer"
 msgstr ""
 
@@ -13891,6 +13919,9 @@ msgid "any OTB result"
 msgstr ""
 
 msgid "auto"
+msgstr ""
+
+msgid "before the test of round 2"
 msgstr ""
 
 #, python-brace-format
