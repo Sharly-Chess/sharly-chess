@@ -55,11 +55,17 @@ class PairedDeletionError(SharlyChessException):
 
 
 class OptionError(SharlyChessException):
-    """Error raised when validating an option."""
+    """Error raised when validating an option.
 
-    def __init__(self, message: str, option: Option):
+    ``field_id`` is the form field the message is shown under, the option's
+    own by default. A document-level error can point it at another, always
+    visible field when the option's own field may be hidden.
+    """
+
+    def __init__(self, message: str, option: Option, field_id: str | None = None):
         super().__init__(message)
         self.option = option
+        self.field_id = field_id or option.id
 
 
 class FormError(SharlyChessException):
