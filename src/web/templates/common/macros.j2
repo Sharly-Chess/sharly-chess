@@ -200,21 +200,35 @@
     <!-- theme_script() -->
     <!-- This is needed since it's not possible to change body attributes using HTMX -->
     <script>
-        // `auto` follows the appearance of the system, and changes with it; a
-        // browser that cannot tell it gets the dark theme.
+        $('body').attr('data-sc-interface', "{{ interface }}");
         window.scRequestedTheme = "{{ theme }}";
         window.scFollowsApplicationTheme = {{ 'true' if follows_application_theme else 'false' }};
-        window.scApplyTheme ??= function() {
-            var new_theme = window.scRequestedTheme === 'auto'
-                ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
-                : window.scRequestedTheme;
+        // Only the administration takes a theme: the client pages are light
+        // whatever the application or the system chooses. For the
+        // administration, `auto` follows the appearance of the system, and
+        // changes with it; a browser that cannot tell it gets the dark theme.
+        window.scApplyTheme = function() {
+            var new_theme = 'light';
+            if ($('body').attr('data-sc-interface') === 'admin') {
+                new_theme = window.scRequestedTheme === 'auto'
+                    ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+                    : window.scRequestedTheme;
+            }
             if ($('body').attr('data-bs-theme') != new_theme) {
                 $('body').attr('data-bs-theme', new_theme);
             }
         };
+        window.scApplyTheme();
         if (!window.scThemeListening) {
             window.scThemeListening = true;
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', window.scApplyTheme);
+            if (window.matchMedia) {
+                var scColorSchemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+                if (scColorSchemeMedia.addEventListener) {
+                    scColorSchemeMedia.addEventListener('change', function() {
+                        window.scApplyTheme();
+                    });
+                }
+            }
             document.body.addEventListener('ws:admin-theme-updated', function(event) {
                 if (window.scFollowsApplicationTheme) {
                     window.scRequestedTheme = event.detail.theme;
@@ -222,8 +236,6 @@
                 }
             });
         }
-        window.scApplyTheme();
-        $('body').attr('data-sc-interface', "{{ interface }}");
     </script>
     <!-- end theme_script() -->
 {% endmacro %}

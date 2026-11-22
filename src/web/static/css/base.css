@@ -3163,6 +3163,15 @@ a.screens-type-filter-chip {
 }
 
 body:not([data-sc-interface=admin]) {
+    /* A browser too old for custom properties drops every declaration that
+       reads one and falls back to its own colours, which on a television can
+       be light text on a dark canvas. In each pair below it keeps the literal
+       line; a browser that reads the variables takes the second. */
+    background-color: #fff;
+    background-color: var(--bs-body-bg);
+    color: #212529;
+    color: var(--bs-body-color);
+
     --bs-primary: #777;
     --bs-primary-rgb: 119, 119, 119;
     --bs-body-bg: #fff;
