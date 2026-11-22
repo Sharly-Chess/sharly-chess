@@ -848,6 +848,20 @@
                             </span>
                         </h4>
                     </button>
+                    <script>
+                        (function () {
+                            const $section = $('#points-attribution-section');
+                            const points = ['gp-win', 'gp-draw', 'gp-loss'];
+                            $section.on('input change', points.map((id) => '#' + id).join(', '), function () {
+                                $section.find('.collapse-button-summary').first().text(
+                                    points.map(function (id) {
+                                        const $input = $('#' + id);
+                                        return $input.val() || $input.attr('placeholder') || '';
+                                    }).join(' · ')
+                                );
+                            });
+                        })();
+                    </script>
                     <div id="points-collapse" class="collapse collapse-state-not-saved{% if force_points_open %} show{% endif %}">
                         {% if is_team_event %}
                             {{ components.section_heading(_('Game points'), sub=true) }}

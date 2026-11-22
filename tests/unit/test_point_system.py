@@ -81,6 +81,27 @@ class TestTeamPoints:
         assert system.team_game_points[Result.DOUBLE_FORFEIT] == -1.0
         assert _team().team_game_points[Result.FORFEIT_LOSS] == 0.0
 
+    def test_a_result_follows_the_one_it_stands_for_when_that_one_is_worth_nothing(
+        self,
+    ):
+        """Where only the games won are counted, a drawn game is worth
+        nothing however it was drawn."""
+        points = _team(game={'WIN': 1, 'DRAW': 0, 'LOSS': 0}).team_game_points
+        for result in (
+            Result.DRAW,
+            Result.UNRATED_DRAW,
+            Result.ADJOURNED,
+            Result.PENALTY_DL,
+            Result.HALF_POINT_BYE,
+        ):
+            assert result.points(points) == 0.0, result
+        assert Result.UNRATED_WIN.points(points) == 1.0
+        assert Result.FORFEIT_WIN.points(points) == 1.0
+
+    def test_a_result_no_value_stands_for_keeps_its_fide_value(self):
+        assert Result.UNRATED_DRAW.points({Result.WIN: 3.0}) == 0.5
+        assert Result.FORFEIT_WIN.points({Result.DRAW: 0.0}) == 1.0
+
     def test_match_points_default_to_the_olympiad_values(self):
         assert _team().match_points == {
             Result.WIN: 2.0,
