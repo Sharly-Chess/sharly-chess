@@ -185,6 +185,11 @@ $(document).ready(function(){
     local_delay = server_time - local_time;
     if (!timer) timer = setInterval('update_timer(' + local_delay + ');', 1000);
     update_timer(local_delay);
+    // The room kept for the timer is measured, so it is wrong until the
+    // fonts are in.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () { update_timer(local_delay); });
+    }
 });
 
 {% endwith %}
