@@ -1037,6 +1037,7 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'pairing',
                 'board': web_context.admin_board,
+                'unlock_results': request.query_params.get('unlock') == '1',
             },
         )
 
@@ -1402,14 +1403,18 @@ class PairingsAdminController(BaseEventAdminController):
                     board, web_context.admin_filtered_boards
                 )
         else:
-            if tournament.awaits_publication(round_):
-                Message.warning(
-                    request,
-                    _('Publish round {round} to enter its results.').format(
-                        round=round_
-                    ),
+            unlocked = request.query_params.get('unlock') == '1'
+            if tournament.awaits_publication(round_) and not unlocked:
+                # The board's modal explains the publication lock and
+                # offers to lift it.
+                return self._admin_event_pairings_render(
+                    web_context,
+                    {
+                        'modal': 'pairing',
+                        'board': board,
+                        'unlock_results': False,
+                    },
                 )
-                return self._admin_event_pairings_render(web_context)
             r = Result(result)
             breaches_adjournment = tournament.breaches_adjournment(board, r)
             if breaches_adjournment and not request.query_params.get('confirmed'):
@@ -1428,7 +1433,8 @@ class PairingsAdminController(BaseEventAdminController):
                             board_id=board_id,
                             result=result,
                         )
-                        + '?confirmed=1',
+                        + '?confirmed=1'
+                        + ('&unlock=1' if unlocked else ''),
                     },
                 )
             if r.is_special_result:  # noqa: SIM102
