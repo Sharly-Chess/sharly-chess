@@ -888,14 +888,35 @@ body:has(#screen-exit-button) .alert-message {
     padding-left: 0;
     padding-right: 0;
 }
+/* With a timer the dark bar spans the whole line, running on under the
+   timer; the tabs keep to the bottom edge so they stay joined to the
+   content, and the clock reads in white on the bar. */
 #top-nav-wrapper.with-menu.with-timer {
     display: flex;
-    align-items: center;
+    align-items: stretch;
+    background-color: #23262b;
 }
 #top-nav-wrapper.with-menu.with-timer #top-nav-content {
     order: -1;
     flex: 1 1 auto;
-    min-width: 0;
+    align-items: stretch;
+}
+#top-nav-wrapper.with-menu.with-timer .screen-menu {
+    align-content: flex-end;
+}
+/* On the bar the timer holds its natural width, however many tabs there
+   are: the menu takes all the squeeze, wrapping its tabs onto more rows.
+   Even a fraction of a pixel less folds the timer's text onto two lines.
+   Only a bar too narrow for the timer alone makes it wrap. */
+#top-nav-wrapper.with-menu .timer-wrapper {
+    flex: none;
+    max-width: 100%;
+}
+#top-nav-wrapper.with-menu .timer-clock {
+    color: #ffffff;
+}
+#top-nav-wrapper.with-menu .timer {
+    box-shadow: inset 0 0 0 2px #ffffff;
 }
 .timer-wrapper {
     display: flex;
