@@ -899,11 +899,18 @@ body:has(#screen-exit-button) .alert-message {
 #top-nav-wrapper.with-menu.with-timer #top-nav-content {
     order: -1;
     flex: 1 1 auto;
-    min-width: 0;
     align-items: stretch;
 }
 #top-nav-wrapper.with-menu.with-timer .screen-menu {
     align-content: flex-end;
+}
+/* On the bar the timer holds its natural width, however many tabs there
+   are: the menu takes all the squeeze, wrapping its tabs onto more rows.
+   Even a fraction of a pixel less folds the timer's text onto two lines.
+   Only a bar too narrow for the timer alone makes it wrap. */
+#top-nav-wrapper.with-menu .timer-wrapper {
+    flex: none;
+    max-width: 100%;
 }
 #top-nav-wrapper.with-menu .timer-clock {
     color: #ffffff;
