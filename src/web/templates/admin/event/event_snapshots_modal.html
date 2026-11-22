@@ -230,15 +230,15 @@
 {% block footer %}
     {{ components.cancel_button(_('Close')) }}
     {% if event_is_accessible and snapshots_enabled %}
-        {{ components.button(
+        {# The backup is asked for in a modal of its own, which the comment is
+           typed in: see event_snapshot_now_modal.html. #}
+        {{ components.modal_button(
+            url_for('event-snapshot-now-modal', event_uniq_id=snapshots_event_uniq_id),
             _('Back up now'),
             kind='primary',
             icon='bi-camera-fill',
-            attrs={
-                'hx-post': url_for('event-snapshot-now', event_uniq_id=snapshots_event_uniq_id),
-                'hx-target': 'body',
-                'hx-indicator': '#please-wait',
-            },
+            from_modal=true,
+            attrs={'hx-push-url': 'false'},
         ) }}
     {% endif %}
 {% endblock %}

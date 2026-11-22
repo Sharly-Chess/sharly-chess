@@ -486,6 +486,7 @@ select_options: a dict[str, str], keys are the select values and values are the 
 number_min: the minimum value for numbers
 number_max: the maximum value for numbers
 number_step: the step value for numbers
+max_length: the maximum number of characters of a text input
 radio_value: the value of radio buttons
 disabled: if set to true, the field will be disabled
 hx_get: the hx-get attribute of the input, optional
@@ -523,6 +524,7 @@ with_indicator: display a loading indicator, optional
     select_search_disabled=false,
     select_all=false,
     file_accept='',
+    max_length='',
     min_date='',
     max_date='',
     on_date_picker_hide='',
@@ -765,6 +767,9 @@ with_indicator: display a loading indicator, optional
                         {% if file_accept %}
                             accept="{{ file_accept }}"
                         {% endif %}
+                        {% if max_length != '' %}
+                            maxlength="{{ max_length }}"
+                        {% endif %}
                         class="form-control {% if error or (name in errors) %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         placeholder="{{ placeholder }}"
@@ -945,6 +950,7 @@ with_indicator: display a loading indicator, optional
     input_tooltip='',
     with_indicator=false,
     autocomplete='',
+    max_length='',
     prevent_wrapping=false,
     stacked=false,
     onkeyup='',
@@ -979,6 +985,7 @@ with_indicator: display a loading indicator, optional
         input_tooltip=input_tooltip,
         with_indicator=with_indicator,
         autocomplete=autocomplete,
+        max_length=max_length,
         prevent_wrapping=prevent_wrapping,
         onkeyup=onkeyup,
         hx_get=hx_get,
