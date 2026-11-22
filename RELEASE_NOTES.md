@@ -20,6 +20,7 @@
 ## Pairings
 
 - The pairings tab follows the results and check-ins entered elsewhere without being reloaded: the boards whose result changes are updated in place and light up briefly, the players and teams checked in move between the lists, and the button to the next round appears once the round is finished. Nothing changes while the arbiter is typing, choosing, dragging or has a window open: the update waits until they have finished (5.3.0)
+- Results can again be entered before the round is published, deliberately: the result window of a board of an unpublished round explains the lock and offers to unlock it, so the forfeits of a player leaving a round robin can be recorded in advance; entering a result with the keyboard on such a round opens that window instead of refusing, and the results entered stay hidden from the public until the round is published (5.3.0)
 - The tournaments of an event can be paired and published at once from the All tournaments button of the pairings tab, whose badge tells how many are ready: the next round of the Swiss, Keizer and knock-out tournaments is paired, deciding what becomes of their absent players as the Pair button does, and the next round of the round robins and fixed-table tournaments is published once the rounds before it are finished. The first round, a round opening a new period and a round that needs a confirmation are still paired from the page of their tournament, and a tournament left out, such as a one-off blitz, is left out again the next time (5.3.0)
 
 ## Staff

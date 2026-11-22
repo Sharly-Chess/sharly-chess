@@ -8773,10 +8773,6 @@ msgstr "Publier"
 msgid "Publish and unpublish pairings"
 msgstr "Publier et dépublier les appariements"
 
-#, python-brace-format
-msgid "Publish round {round} to enter its results."
-msgstr "Publiez la ronde {round} pour en saisir les résultats."
-
 msgid "Publish the ticked rounds."
 msgstr "Publier les rondes cochées."
 
@@ -12125,10 +12121,10 @@ msgstr "Ce fichier est au format {version}. Il sera complété comme suit :"
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
-#, python-brace-format
 msgid "This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file."
 msgstr "Ce fichier n'est pas une image : choisissez un fichier JPEG, PNG, GIF, WebP ou SVG."
 
+#, python-brace-format
 msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
 msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly Chess car ses appariements ne peuvent être exactement reproduits."
 

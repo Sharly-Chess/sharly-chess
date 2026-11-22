@@ -87,7 +87,7 @@
             round=admin_round,
             board_id=board.id,
             result=result_id,
-        ),
+        ) ~ ('?unlock=1' if unlock_results | default(false) else ''),
         disabled,
         label,
     ) }}
@@ -132,7 +132,7 @@
     {% set can_enter = client.can_enter_results(admin_tournament.id) %}
     {% set can_update = client.can_update_results(admin_tournament.id) %}
     {% set can_special = client.can_set_special_results(admin_tournament.id) %}
-    {% set awaits_publication = admin_tournament.awaits_publication(admin_round) %}
+    {% set awaits_publication = admin_tournament.awaits_publication(admin_round) and not (unlock_results | default(false)) %}
     {# A team board the other team left empty takes only a forfeit win for
        the present player, or F-F when that player is absent too. #}
     {% set _team_hole = board.team_forfeit_hole_pairing is not none %}
@@ -174,6 +174,18 @@
                     {{ components.note(
                         'warning',
                         _('The pairings of round {round} are not published yet. Results can be entered once they are, with the Publish button of the pairings page.').format(round=admin_round),
+                        actions=components.modal_button(
+                            url_for(
+                                'admin-event-pairing-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=admin_round,
+                                board_id=board.id,
+                            ) ~ '?unlock=1',
+                            _('Unlock'),
+                            icon='bi-unlock',
+                            from_modal=true,
+                        ),
                         class='mb-3',
                     ) }}
                 {% endif %}
@@ -319,7 +331,7 @@
                                 round=admin_round,
                                 board_id=board.id,
                                 result=0,
-                            ),
+                            ) ~ ('?unlock=1' if unlock_results | default(false) else ''),
                             (
                                 board.no_result
                                 or board.exempt

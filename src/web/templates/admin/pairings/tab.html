@@ -441,6 +441,7 @@
     <script>
         var pairing_board_id = null;
         var keyQueue = [];
+        var lastSentBoardId = null;
         // A locked round is read-only: keyboard result entry and board
         // navigation are inert (round/tournament nav still works).
         window.roundLocked = {{ 'true' if round_locked else 'false' }};
@@ -562,6 +563,7 @@
 
             requestInFlight = true;
             const { code, pairing_board_id: board_id } = keyQueue.shift();
+            lastSentBoardId = board_id;
             const validateResult = $('button[id=\'highlight-mode\']').hasClass('active');
             if (!validateResult) {
                 ignoreNextRefreshMessage();
@@ -738,6 +740,17 @@
             if (e.detail.elt?.dataset?.boardId) {
                 requestInFlight = false;
                 processNextKey();
+            }
+            // A keyboard entry answered with a modal (the publication lock):
+            // the entry did not happen, so drop the queued keys, ungrey the
+            // rows and put the cursor back on the blocked board.
+            if (e.detail.elt?.id === 'modal-wrapper' && requestInFlight) {
+                requestInFlight = false;
+                keyQueue = [];
+                $('#pairings-table .text-secondary').removeClass('text-secondary');
+                if (lastSentBoardId) {
+                    highlightBoard(lastSentBoardId, false);
+                }
             }
             // Re-apply lineup edit mode for any blocks that were being edited
             // before the swap (sessionStorage keeps the set).
