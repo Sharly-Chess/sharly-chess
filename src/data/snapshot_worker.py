@@ -233,17 +233,19 @@ class SnapshotScheduler:
         reason: SnapshotReason,
         round_: int | None = None,
         tournament_id: int | None = None,
+        comment: str | None = None,
     ) -> Snapshot:
         """Snapshots an event and waits for it, raising a `SnapshotException`
         when it fails.
 
         For the callers that cannot carry on without the snapshot: taking one
         before restoring another, and the button the user presses to check the
-        snapshots work.
+        snapshots work — with, when they wrote one, the comment the backup is
+        to read as.
         """
         cls._cancel_pending(uniq_id)
         try:
-            snapshot = write_snapshot(uniq_id, reason, round_, tournament_id)
+            snapshot = write_snapshot(uniq_id, reason, round_, tournament_id, comment)
         except SnapshotException as e:
             cls._record_failure(uniq_id, e)
             raise

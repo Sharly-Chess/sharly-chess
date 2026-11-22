@@ -3,6 +3,7 @@
 ## General
 
 - Each event keeps a journal of what is done to it, shown in a new Journal page: results entered, changed or cleared, pairings, byes, penalties, players, teams, tournaments and staff accounts, with when it was done, by whom (the administrator or a staff account, even one deleted since) and from where (the computer running _Sharly Chess_, another device, a screen or _Sharly-Chess.com_), the names being kept as they were at the time. The arbiters can add notes to it, filter it by tournament, kind of action, person or origin, and download it; it follows the changes as they happen, and travels with the event when it is exported unless left out (5.3.0)
+- A backup taken by hand can be given a comment (5.3.0)
 
 ## Tournaments
 
@@ -38,7 +39,8 @@
 
 - Appreciation certificates can be printed for the players of a prize category, from the place cards document, now named Place cards and certificates: every player of the category gets a certificate, whatever the number of its prizes, or only the prize winners, those of all the categories of a prize group at once if needed. Besides the player's information, the templates of the certificates offer the player's rank in the category, the number of players in the category, the performance for the categories ranked by performance, and the prize won in the category. A standard certificate template is provided (5.3.0)
 - The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin schedule explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the schedule printing a draw the pairing can still change (5.3.0)
+- The list of players and the players check-in list let the arbiter choose which columns to print, each document keeping its own choice: the rating, category, gender, federation and club are shown by default, as is a column a plugin adds such as the FFE league, while the pairing number, the FIDE ID and the national ID are offered and left out unless turned on (5.3.0)
 
-## __Sharly-Chess.com__
+## _Sharly-Chess.com_
 
 - The pairings published on _Sharly-Chess.com_ show the table numbers shown in _Sharly Chess_: when a fixed board leaves the board it displaces empty, as in FFE events, a player with a fixed board is shown at that board instead of at the board the game would have had without it (5.3.0)

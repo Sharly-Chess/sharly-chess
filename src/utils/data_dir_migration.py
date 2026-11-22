@@ -9,7 +9,7 @@ from enum import StrEnum
 from functools import cached_property
 from pathlib import Path
 
-from utils.file import is_within
+from utils.file import is_within, sqlite_file_uri
 from utils.instance_lock import InstanceLock
 from utils.program_variables import ProgramVar
 
@@ -324,9 +324,7 @@ def check_copy(source: Path, copy: Path) -> None:
 
 def _is_sound(database_file: Path) -> bool:
     try:
-        connection = sqlite3.connect(
-            f'{database_file.resolve().as_uri()}?mode=ro', uri=True
-        )
+        connection = sqlite3.connect(sqlite_file_uri(database_file, 'ro'), uri=True)
         try:
             row = connection.execute('PRAGMA quick_check').fetchone()
             return bool(row == ('ok',))
