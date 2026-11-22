@@ -31,11 +31,13 @@
 - A screen is drawn again only when something it shows has changed: a player withdrawn from another tournament no longer redraws every screen of the event (5.3.0)
 - Timers are simpler to set up and to keep up to date: each hour is either the start of a round, worded automatically ("Round 3 starts in 4 minutes"), or a moment with a label of its own, with a preview of what the screens will show; a tournament's schedule can be copied into a timer, and copied again after it changes; a quick countdown shows "Next round in 10 minutes" in one step; an hour can be postponed together with the later hours of its day; the delays read as the colours the timer goes through, and may be 0; and the screens showing a timer are chosen in the timer's own form (5.3.0)
 - On a players screen shown through a display controller, tapping a player opens the result window of their game, instead of sometimes opening the window of another board of the round; a game is always found by its own identifier, so that no screen can open another board's result window (5.3.0)
+- The background of image screens can use a colour extracted from the image in one click or be filled by a blurred version of the image (5.3.0)
 - The client screens are always white with black text, even on a television or projector browser, such as some Android ones, that showed them white-on-black: their colours no longer depend on anything the browser might not support or might override (5.3.0)
 
 ## Documents
 
 - Appreciation certificates can be printed for the players of a prize category, from the place cards document, now named Place cards and certificates: every player of the category gets a certificate, whatever the number of its prizes, or only the prize winners, those of all the categories of a prize group at once if needed. Besides the player's information, the templates of the certificates offer the player's rank in the category, the number of players in the category, the performance for the categories ranked by performance, and the prize won in the category. A standard certificate template is provided (5.3.0)
+- The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin schedule explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the schedule printing a draw the pairing can still change (5.3.0)
 
 ## __Sharly-Chess.com__
 

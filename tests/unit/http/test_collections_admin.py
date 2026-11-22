@@ -22,7 +22,9 @@ RESULTS_SCREEN_NAME = 'A results screen'
 IMAGE_SCREEN_NAME = 'An image screen'
 CONTROLLER_NAME = 'A destination'
 FAMILY_UNIQ_ID = 'collections-http-family'
-TINY_IMAGE_DATA_URI = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
+TINY_IMAGE_DATA_URI = (
+    'data:image/gif;base64,R0lGODdhAQABAIEAAP///wAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw=='
+)
 
 
 @pytest.fixture

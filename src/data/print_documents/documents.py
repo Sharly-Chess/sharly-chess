@@ -1358,7 +1358,6 @@ class RoundRobinGridPrintDocument(PrintDocument):
             return False
         return any(
             tournament.pairing_system == RoundRobinPairingSystem()
-            and tournament.is_fully_paired
             for tournament in allowed_tournaments
         )
 
@@ -1370,11 +1369,13 @@ class RoundRobinGridPrintDocument(PrintDocument):
             raise OptionError(
                 _('This document is only available for Round-Robin tournaments.'),
                 option,
+                field_id='document',
             )
         if not tournament.is_fully_paired:
             raise OptionError(
                 _('This document is not available for unpaired tournaments.'),
                 option,
+                field_id='document',
             )
 
     @cached_property
@@ -1550,6 +1551,13 @@ class TeamRoundRobinGridPrintDocument(PrintDocument):
             raise OptionError(
                 _('This document is only available for Round-Robin tournaments.'),
                 option,
+                field_id='document',
+            )
+        if not self.tournament.has_pairings:
+            raise OptionError(
+                _('This document is not available for unpaired tournaments.'),
+                option,
+                field_id='document',
             )
         round_option = self._get_option(RoundPrintOption)
         if round_option.value is not None:
@@ -1930,10 +1938,10 @@ class AccelerationRulesPrintDocument(PrintDocument):
 
 class RoundRobinSchedulePrintDocument(PrintDocument):
     """Round-by-round pairing schedule for a round-robin tournament
-    (individual or team). Built from the Berger tables, so it's available
-    before the rounds are paired: one row per match, one column per round.
-    Cells show the two competitors by Berger number (individuals) or team
-    letter (teams); a legend at the end maps each to its name."""
+    (individual or team). Built from the Berger tables: one row per match,
+    one column per round. Cells show the two competitors by Berger number
+    (individuals) or team letter (teams); a legend at the end maps each to
+    its name."""
 
     @staticmethod
     def static_id() -> str:
@@ -1970,10 +1978,18 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
 
     def validate_options(self) -> None:
         super().validate_options()
+        option = self._get_option(TournamentPrintOption)
         if not self._is_round_robin(self.tournament):
             raise OptionError(
                 _('This document is only available for round-robin tournaments.'),
-                self._get_option(TournamentPrintOption),
+                option,
+                field_id='document',
+            )
+        if not self.tournament.has_pairings:
+            raise OptionError(
+                _('This document is not available for unpaired tournaments.'),
+                option,
+                field_id='document',
             )
 
     @property

@@ -3333,6 +3333,9 @@ class EventDatabase(MigrationDatabase):
             ),
             background_image=row['background_image'],
             background_color=row['background_color'],
+            background_blurred=cls.load_bool_from_database_field(
+                row['background_blurred']
+            ),
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
@@ -3435,6 +3438,7 @@ class EventDatabase(MigrationDatabase):
             'round_robin_grid_players',
             'background_image',
             'background_color',
+            'background_blurred',
             'message_default',
             'message_text',
             'plugin_data',
@@ -3497,6 +3501,9 @@ class EventDatabase(MigrationDatabase):
             else False,
             background_image,
             stored_screen.background_color if stored_screen.type == 'image' else None,
+            stored_screen.background_blurred
+            if stored_screen.type == 'image'
+            else False,
             stored_screen.message_default,
             stored_screen.message_text,
             self.dump_to_json_database_field(stored_screen.plugin_data, {}),
