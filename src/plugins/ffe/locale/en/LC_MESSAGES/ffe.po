@@ -27,6 +27,9 @@ msgctxt "FFE licence"
 msgid "A - Competition"
 msgstr ""
 
+msgid "A game of these boards scores half the game points set below: 1 for a win where the other boards score 2. With two such boards, each meets the opponent of the other in its second game."
+msgstr ""
+
 msgid "A non-empty string is expected"
 msgstr ""
 
@@ -94,6 +97,17 @@ msgstr ""
 msgid "Board differentials"
 msgstr ""
 
+#, python-brace-format
+msgid "Board {board} is for a player of the U{age_limit} category or younger: {name} ({category})."
+msgstr ""
+
+#, python-brace-format
+msgid "Board {board}, second game"
+msgstr ""
+
+msgid "Boards playing two games, each for half the points"
+msgstr ""
+
 msgid "Buchholz"
 msgstr ""
 
@@ -125,6 +139,9 @@ msgid "Close"
 msgstr ""
 
 msgid "Club Arbiter"
+msgstr ""
+
+msgid "Compares the tied teams on the matches they played against one another: their match points there, then their differential, then their points for (FFE rules §4.4). Not applied to teams that have not all met one another."
 msgstr ""
 
 msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
@@ -217,6 +234,12 @@ msgstr ""
 msgid "FFE Form:"
 msgstr ""
 
+msgid "FFE Interclubs Jeunes, Nationale 3. By default 4 boards by age category, board 4 playing its opponent twice; a league may set another format."
+msgstr ""
+
+msgid "FFE Interclubs Jeunes, national divisions. 8 boards by age category; boards 7 and 8 play two games, the second against each other's opponent."
+msgstr ""
+
 msgid "FFE Licence"
 msgstr ""
 
@@ -294,6 +317,12 @@ msgid "FFE website could not be reached."
 msgstr ""
 
 msgid "FFE website rejected the data"
+msgstr ""
+
+msgid "FFE youth team championship (Nationale 3)"
+msgstr ""
+
+msgid "FFE youth team championship (Top Jeunes / N1 / N2)"
 msgstr ""
 
 #, python-brace-format
@@ -441,6 +470,10 @@ msgstr ""
 msgid "Match Arbiter"
 msgstr ""
 
+#, python-brace-format
+msgid "Match won by forfeit, counted as {score}-0."
+msgstr ""
+
 msgid "Max. teams per league:"
 msgstr ""
 
@@ -459,6 +492,12 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
+#, python-brace-format
+msgid "More than {n} forfeited board: the match is lost by forfeit."
+msgid_plural "More than {n} forfeited boards: the match is lost by forfeit."
+msgstr[0] ""
+msgstr[1] ""
+
 msgctxt "FFE licence"
 msgid "N - Expired"
 msgstr ""
@@ -466,7 +505,13 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Nationale 1"
+msgstr ""
+
 msgid "Nationale 1 Féminine"
+msgstr ""
+
+msgid "Nationale 2"
 msgstr ""
 
 msgid "Nationale 2 Féminine, inter-departmental zone phase"
@@ -493,6 +538,9 @@ msgstr ""
 msgid "No FFE Licence"
 msgstr ""
 
+msgid "No board"
+msgstr ""
+
 msgid "No changes detected since the last upload."
 msgstr ""
 
@@ -504,6 +552,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
+msgstr ""
+
+#, python-brace-format
+msgid "No player on board {board}: that board and the following ones are lost by forfeit."
 msgstr ""
 
 msgid "No tournament configured for FFE upload."
@@ -617,6 +669,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Ranking by league after round #{round}"
+msgstr ""
+
+msgid "Results between the tied teams"
 msgstr ""
 
 #, python-brace-format
@@ -756,10 +811,20 @@ msgstr ""
 msgid "The group on the FFE website does not look like tournament [%(tournament)s]: only %(matched)d of its %(teams)d teams have the name of a team of the tournament. Uploading it will replace the match reports of the group (%(reports)d filled in) with those of the tournament, and delete the teams the tournament does not have."
 msgstr ""
 
+msgid "The last board"
+msgstr ""
+
+msgid "The last two boards"
+msgstr ""
+
 msgid "The match score cannot go below zero."
 msgstr ""
 
 msgid "The name typed is not the name of the group."
+msgstr ""
+
+#, python-brace-format
+msgid "The opponent has no player on board {board}: that board and the following ones are won by forfeit."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
@@ -784,6 +849,9 @@ msgid "This is the first period, and the registration where the whole tournament
 msgstr ""
 
 msgid "This period has been submitted; later rounds do not change it."
+msgstr ""
+
+msgid "Top Jeunes"
 msgstr ""
 
 msgid "Tournament"
@@ -929,6 +997,13 @@ msgstr ""
 msgid "tournament most likely marked as finished on the FFE website"
 msgstr ""
 
+msgid "unknown"
+msgstr ""
+
+#, python-brace-format
+msgid "{board}b"
+msgstr ""
+
 #, python-brace-format
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
@@ -936,8 +1011,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
+msgid "{name} (board {board}) is younger than {older_name} (board {older_board}) and has a lower rating: the older player sits above."
+msgstr ""
+
+#, python-brace-format
 msgid "{n} forfeited board above a board on which a game was played, counted as -1."
 msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{n} forfeited board above a board on which a game was played, counted as -{points}."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -{points} each."
 msgstr[0] ""
 msgstr[1] ""
 

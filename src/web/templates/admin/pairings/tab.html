@@ -760,6 +760,16 @@
             }
         }
 
+        // A row drawn again under the cursor keeps showing it. Settling gives
+        // the row the classes the server sent, so the cursor is put back
+        // once it has settled.
+        function afterSettleHandler(e) {
+            const row = e.detail.elt;
+            if (row?.dataset?.boardId && String(row.dataset.boardId) === String(pairing_board_id)) {
+                row.classList.add('highlight');
+            }
+        }
+
         function searchPlayerHandler(e) {
             const value = normalizeText($("#search-player").val().trim());
             $("table").filter(function() {
@@ -806,12 +816,14 @@
             $(document).off("keydown.pairings");
             $(document).off("click.pairings");
             $(document).off("htmx:afterSwap.pairings");
+            $(document).off("htmx:afterSettle.pairings");
             $(document).off("highlight_board_with_warning.pairings");
             $(document).off("input.search");
 
             $(document).on("keydown.pairings", keydownHandler);
             $(document).on("click.pairings", "tr.pairing-row > td", rowClickHandler);
             $(document).on("htmx:afterSwap.pairings", afterSwapHandler);
+            $(document).on("htmx:afterSettle.pairings", afterSettleHandler);
             $(document).on("highlight_board_with_warning.pairings", function(e) {
                 highlightBoardWithError(e.detail.board_id);
             });

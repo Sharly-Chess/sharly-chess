@@ -16,9 +16,11 @@ from common.logger import get_logger
 from data.board import Board
 from data.pairings.fixed_table import FixedTablePairingEngine
 from data.player import Player
+from data.teams.extra_game import ExtraGame
 from data.teams.team import Team
 from data.teams.team_board import TeamBoard
 from data.tournament import Tournament
+from plugins.ffe.ffe_rule_sets import FfeTeamCompetitionRuleSet
 from plugins.ffe.ffe_session import (
     FFESession,
     FFE_ADMIN_URL,
@@ -101,6 +103,13 @@ SITE_RESULTS: dict[Result, str] = {
 }
 UNMAPPED_SITE_RESULT: str = 'NonAttribue'
 
+# The results the site records beside an administrative forfeit, which
+# keeps the game as it was played: "Admin Bl & Gain Nr" for a game the
+# right-hand player won and the left-hand team loses.
+ADMINISTRATIVE_SITE_RESULTS: frozenset[str] = frozenset(
+    {'GainBlanc', 'GainNoir', 'Nulle'}
+)
+
 
 SITE_NAME_MAX_LENGTH: int = 50
 
@@ -181,12 +190,26 @@ class Match:
     boards: list[Board]
     game_points: tuple[float, float]
     match_points: tuple[float, float]
+    extra_games: list[ExtraGame] = field(default_factory=list)
+    """The games the match counts beyond its boards, which the site lists
+    after them."""
+    administrative_forfeits: dict[int, int] = field(default_factory=dict)
+    """For a team losing boards by administrative forfeit, the index of
+    the first of them."""
+
+    def loses_by_administrative_forfeit(
+        self, team_id: int, board_index: int | None
+    ) -> bool:
+        first = self.administrative_forfeits.get(team_id)
+        return first is not None and board_index is not None and board_index >= first
 
     @property
     def played(self) -> bool:
-        """Whether any board has a result: the site gets scores for a
+        """Whether any game has a result: the site gets scores for a
         played match only."""
-        return any(not board.no_result for board in self.boards)
+        return any(not board.no_result for board in self.boards) or any(
+            not extra_game.no_result for extra_game in self.extra_games
+        )
 
     def board_team_ids(self, board: Board) -> tuple[int | None, int | None]:
         """``(white_team_id, black_team_id)``; a forfeited side is a hole
@@ -210,13 +233,18 @@ class Match:
         team_b = team_board.team_b
         if team_b is None:
             return None
+        rule_set = team_board.tournament.rule_set
         return cls(
+            administrative_forfeits=rule_set.administrative_forfeits(team_board)
+            if isinstance(rule_set, FfeTeamCompetitionRuleSet)
+            else {},
             round=team_board.round,
             team_a=team_board.team_a,
             team_b=team_b,
             boards=team_board.boards,
             game_points=team_board.effective_game_points,
             match_points=team_board.match_points_pair() or (0.0, 0.0),
+            extra_games=team_board.extra_games,
         )
 
     @classmethod
@@ -282,6 +310,9 @@ class MatchReportData:
     date: str
     place: str
     arbiter: str
+    extra_game_count: int = 0
+    """How many of the last ``boards`` are games played beyond the boards
+    of the match, which a report with too few lines cannot hold."""
 
 
 class FFETeamSession(FFESession):
@@ -704,6 +735,12 @@ class FFETeamSession(FFESession):
                 f'Match report [{report_id}] could not be opened.'
             )
         board_count = self.parse_board_count(parser)
+        if data.extra_game_count and len(data.boards) > board_count:
+            raise SharlyChessException(
+                f'Match report [{report_id}] has {board_count} lines for the '
+                f'{len(data.boards)} games of the match: the group is not set up '
+                f'for the boards that play two games.'
+            )
         if len(data.boards) > board_count:
             logger.warning(
                 'Match report [%d] has %d boards, %d in Sharly Chess: the extra boards are not sent.',
@@ -1039,12 +1076,19 @@ class FFETeamSession(FFESession):
             right_match_points=cls._site_match_points(right_mp) if with_mp else '',
             left_game_points=cls._site_game_points(left_gp) if match.played else '',
             right_game_points=cls._site_game_points(right_gp) if match.played else '',
-            boards=[cls._board_data(match, board, left.id) for board in boards],
+            boards=[
+                *(cls._board_data(match, board, left.id, right.id) for board in boards),
+                *(
+                    cls._extra_game_data(match, extra_game, left.id, right.id)
+                    for extra_game in match.extra_games
+                ),
+            ],
             left_captain=cls._captain_licence(left),
             right_captain=cls._captain_licence(right),
             date=date,
             place=tournament.location or tournament.event.location or '',
             arbiter=arbiter,
+            extra_game_count=len(match.extra_games),
         )
 
     @staticmethod
@@ -1072,9 +1116,29 @@ class FFETeamSession(FFESession):
         captain = team.captain
         return (cls.licence_number(captain) or '') if captain else ''
 
+    @staticmethod
+    def _administrative_site_result(
+        site_result: str, lost_by_left: bool, lost_by_right: bool
+    ) -> str:
+        """*site_result* as the site records it when the left-hand team,
+        the right-hand one or both lose the game by administrative
+        forfeit."""
+        if site_result in ADMINISTRATIVE_SITE_RESULTS:
+            if lost_by_left and lost_by_right:
+                return f'AdminDouble{site_result}'
+            if lost_by_left:
+                return f'AdminBlanc{site_result}'
+            if lost_by_right:
+                return f'AdminNoir{site_result}'
+        if site_result == 'GainBlancForfait' and lost_by_left:
+            return 'AdminBlancForfaitNoir'
+        if site_result == 'GainNoirForfait' and lost_by_right:
+            return 'AdminNoirForfaitBlanc'
+        return site_result
+
     @classmethod
     def _board_data(
-        cls, match: Match, board: Board, left_team_id: int
+        cls, match: Match, board: Board, left_team_id: int, right_team_id: int
     ) -> tuple[str, str, str]:
         white_team_id, _black_team_id = match.board_team_ids(board)
         white = board.optional_white_tournament_player
@@ -1097,7 +1161,43 @@ class FFETeamSession(FFESession):
         return (
             (cls.licence_number(left_player) or '') if left_player else '',
             (cls.licence_number(right_player) or '') if right_player else '',
-            site_result,
+            cls._administrative_site_result(
+                site_result,
+                match.loses_by_administrative_forfeit(left_team_id, board.index),
+                match.loses_by_administrative_forfeit(right_team_id, board.index),
+            ),
+        )
+
+    @classmethod
+    def _extra_game_data(
+        cls,
+        match: Match,
+        extra_game: ExtraGame,
+        left_team_id: int,
+        right_team_id: int,
+    ) -> tuple[str, str, str]:
+        """The line of a game played beyond the boards, the player of the
+        left team first and the result read from their side."""
+        white = extra_game.white_tournament_player
+        black = extra_game.black_tournament_player
+        result = extra_game.result
+        if extra_game.white_team_id == left_team_id:
+            left_player, right_player = white, black
+        else:
+            left_player, right_player = black, white
+            result = result.opposite_result
+        return (
+            (cls.licence_number(left_player) or '') if left_player else '',
+            (cls.licence_number(right_player) or '') if right_player else '',
+            cls._administrative_site_result(
+                SITE_RESULTS.get(result, UNMAPPED_SITE_RESULT),
+                match.loses_by_administrative_forfeit(
+                    left_team_id, extra_game.board_index_of(left_team_id)
+                ),
+                match.loses_by_administrative_forfeit(
+                    right_team_id, extra_game.board_index_of(right_team_id)
+                ),
+            ),
         )
 
     # ---------------------------------------------------------------------

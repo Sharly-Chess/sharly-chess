@@ -104,8 +104,8 @@
                         icon='bi-cloud-arrow-up-fill',
                         size='sm',
                         icon_only=true,
-                        allowed=not actions_unavailable_message,
-                        reason=actions_unavailable_message,
+                        allowed=not tournament.exports_forbidden_message,
+                        reason=tournament.exports_forbidden_message,
                         attrs={
                             'hx-post': url_for(
                                 'chess-results-upload-tournament',

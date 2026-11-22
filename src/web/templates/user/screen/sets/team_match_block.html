@@ -117,6 +117,70 @@
                     </div>
                 </div>
             {% endfor %}
+            {% for extra_game in team_board.extra_games %}
+                {% set team_a_is_white = extra_game.team_a_is_white %}
+                {% if team_a_is_white %}
+                    {% set left_tp, right_tp = extra_game.white_tournament_player, extra_game.black_tournament_player %}
+                {% else %}
+                    {% set left_tp, right_tp = extra_game.black_tournament_player, extra_game.white_tournament_player %}
+                {% endif %}
+                {% set display_result = extra_game.display_result_str | replace('-', ' - ') %}
+                {% set editable =
+                    (screen.accepts_input and not tournament.is_fake)
+                    and extra_game.has_both_players
+                    and (
+                        client.can_update_results(tournament.id)
+                        or
+                        (extra_game.pending and client.can_enter_results(tournament.id))
+                    )
+                %}
+                <div
+                    class="
+                        board-row
+                        {% if editable %}editable{% endif %}
+                        {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
+                        {% if display_result %}result-set{% else %}result-not-set fw-bold{% endif %}"
+                    {% if editable %}
+                        hx-get="{{ url_for(
+                            'user-extra-game-result-modal',
+                            event_uniq_id=user_event.uniq_id,
+                            display_controller_id=display_controller.id,
+                            tournament_id=tournament.id,
+                            team_board_id=team_board.id,
+                            extra_game_key=extra_game.key
+                        ) ~ display_controller_query if display_controller else url_for(
+                            'user-extra-game-result-modal',
+                            is_screen=1,
+                            event_uniq_id=user_event.uniq_id,
+                            screen_uniq_id=screen.uniq_id,
+                            tournament_id=tournament.id,
+                            team_board_id=team_board.id,
+                            extra_game_key=extra_game.key
+                        ) ~ menu_query }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    {% endif %}
+                >
+                    <div class="text-end pe-1 text-nowrap">{{ extra_game.label }}</div>
+                    <div class="text-start text-nowrap overflow-hidden text-ellipsis">
+                        <span class="board-color-chip {{ 'white' if team_a_is_white else 'black' }}"></span>
+                        {%- if left_tp %} {{ left_tp.full_name }} <span class="text-muted">{{ left_tp.rating_str_in_round(team_board.round) }}</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                    </div>
+                    <div class="score text-center px-2">
+                        {% if display_result or not (screen.accepts_input and not tournament.is_fake) %}
+                            {{ display_result }}
+                        {% elif editable %}
+                            <span class="enter-result-button">{{ pgettext('result entry button', 'Enter') }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-start text-nowrap overflow-hidden text-ellipsis">
+                        <span class="board-color-chip {{ 'black' if team_a_is_white else 'white' }}"></span>
+                        {%- if right_tp %} {{ right_tp.full_name }} <span class="text-muted">{{ right_tp.rating_str_in_round(team_board.round) }}</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     {% endif %}
 </div>

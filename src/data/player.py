@@ -52,6 +52,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
+    from data.teams.extra_game import ExtraGame
     from data.teams.team import Team
     from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
@@ -1674,6 +1675,23 @@ class TournamentPlayer(Player):  # noqa: PLW1641
     @property
     def pairings(self) -> dict[int, Pairing]:
         return self.pairings_by_round
+
+    def extra_games_in(self, round_: int) -> list[ExtraGame]:
+        """The games the player plays in *round_* beyond their board, in a
+        team match whose rule set counts some. They are shown with the
+        player's games, and left out of the player's own points."""
+        if self.team_id is None:
+            return []
+        team_board = self.tournament.team_match_by_team_and_round.get(
+            (self.team_id, round_)
+        )
+        if team_board is None:
+            return []
+        return [
+            extra_game
+            for extra_game in team_board.extra_games
+            if extra_game.seats(self.id)
+        ]
 
     @property
     def has_played_games(self) -> bool:

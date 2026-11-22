@@ -701,6 +701,9 @@ msgstr ""
 msgid "A fixed number of rows on each page"
 msgstr ""
 
+msgid "A game played beyond the boards of the match: it counts for the team, not towards the points of the player."
+msgstr ""
+
 msgid "A half point to one side only, or nothing to either."
 msgstr ""
 
@@ -7357,6 +7360,12 @@ msgstr ""
 msgid "Not available"
 msgstr ""
 
+msgid "Not available with the rule set of this tournament, whose games this format cannot hold."
+msgstr ""
+
+msgid "Not available: this tournament holds games of a rule set that is no longer there, which this format cannot hold."
+msgstr ""
+
 msgid "Not checked in yet"
 msgstr ""
 
@@ -12146,6 +12155,13 @@ msgstr ""
 msgid "The rule has been saved."
 msgstr ""
 
+#, python-brace-format
+msgid "The rule set [{rule_set}] is played with the pairing system [{pairing_system}]."
+msgstr ""
+
+msgid "The rule set cannot be changed once the tournament is paired."
+msgstr ""
+
 msgid "The rule set fixes the team sort order."
 msgstr ""
 
@@ -12473,6 +12489,9 @@ msgid "This backup was taken by another version of the application and its conte
 msgstr ""
 
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
+msgstr ""
+
+msgid "This cannot be changed once the tournament is paired."
 msgstr ""
 
 #, python-brace-format

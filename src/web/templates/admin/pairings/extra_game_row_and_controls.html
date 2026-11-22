@@ -1,0 +1,21 @@
+{% import '/admin/components/macros.j2' as components with context %}
+{% import '/admin/components/pairings.j2' as pairing_components with context %}
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% include '/admin/pairings/round_next_button.html' %}
+{% include '/admin/pairings/print_default_script.html' %}
+<div id="messages" hx-swap-oob="beforeend">
+    {% include '/common/messages.html' %}
+</div>
+{% include '/admin/pairings/extra_game_rows.html' %}
+{% with swap_oob=True %}
+    <template>
+        {% include '/admin/pairings/pairing_table_header.html' %}
+    </template>
+{% endwith %}
+{% with swap_oob=True %}
+    <template>
+        {% include admin_tournament.pairing_system.pairing_buttons_template %}
+    </template>
+{% endwith %}

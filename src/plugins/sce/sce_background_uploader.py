@@ -194,7 +194,7 @@ def remove_scheduled_upload(tournament: Tournament) -> None:
 
 def schedule_upload(tournament: Tournament, force: bool = False) -> None:
     """Launch a background thread to upload this tournament's results."""
-    if not tournament.started:
+    if not tournament.started or tournament.exports_forbidden_message:
         return
     key = _tournament_result_key(tournament)
     if key in _ONGOING_TOURNAMENT_IDS:
@@ -226,6 +226,7 @@ def upload_event_tournaments(tournaments: list[Tournament]) -> None:
         for tournament in tournaments
         if SCEUtils.get_tournament_plugin_data(tournament).id
         and tournament.started
+        and not tournament.exports_forbidden_message
         and _tournament_result_key(tournament) not in _ONGOING_TOURNAMENT_IDS
     ]
     if not eligible:

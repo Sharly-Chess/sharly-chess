@@ -651,7 +651,7 @@
                 {% endif %}
                 {% call components.submenu(_('Export'), icon='bi-box-arrow-right') %}
                     {% for exporter in tournament_exporters %}
-                        {% set unavailable = exporter.is_unavailable_message(tournament) %}
+                        {% set unavailable = exporter.unavailable_message(tournament) %}
                         {% if unavailable %}
                             {{ components.menu_item(exporter.label(tournament), allowed=false, reason=unavailable) }}
                         {% else %}

@@ -47,6 +47,13 @@ class TournamentExporter(IdentifiableEntity, ABC):
         Returns None if the export is available."""
         return None
 
+    def unavailable_message(self, tournament: Tournament) -> str | None:
+        """Why *tournament* cannot be exported in this format, whether the
+        tournament or the format says so, or ``None`` when it can."""
+        return tournament.exports_forbidden_message or self.is_unavailable_message(
+            tournament
+        )
+
     def warning_message(self, tournament: Tournament) -> str | None:
         """Get a warning message about the export for the tournament.
         Returns None for no warning."""

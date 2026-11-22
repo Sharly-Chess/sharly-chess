@@ -203,6 +203,8 @@
                                     'for an official rule set (federation cup, etc.).'
                                 ),
                                 select_options=rule_set_options,
+                                disabled=rule_set_locked,
+                                input_tooltip=_('The rule set cannot be changed once the tournament is paired.') if rule_set_locked else '',
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -215,6 +217,10 @@
                                 <div
                                     class="col-12 col-md-6"
                                     data-rule-set-config="{{ rs.id }}"
+                                    {% if rule_set_locked and config_field.locked_once_paired %}
+                                        data-rule-set-config-locked
+                                        {{ macros.tooltip_attributes('info', _('This cannot be changed once the tournament is paired.'), 'top') }}
+                                    {% endif %}
                                     hidden
                                 >
                                     {% if config_field.kind == 'bool' %}
@@ -576,6 +582,8 @@
                                 label=_('Players per team match:'),
                                 min=1,
                                 tooltip_text=_('Number of boards in each team match.'),
+                                disabled=rule_set_locked,
+                                input_tooltip=_('This cannot be changed once the tournament is paired.') if rule_set_locked else '',
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -1290,8 +1298,13 @@
 
                             function lockForRuleSet(id) {
                                 const fields = RULE_SET_MANAGED[id] || [];
-                                const defaults = currentDefaults(id);
                                 const title = RULE_SET_LOCK_TITLES[id] || '';
+                                // The other defaults depend on the pairing
+                                // system, so it is settled before they are read.
+                                if (fields.includes('pairing_system')) {
+                                    lockField('pairing_system', currentDefaults(id), title);
+                                }
+                                const defaults = currentDefaults(id);
                                 fields.forEach(function(name) {
                                     lockField(name, defaults, title);
                                 });
@@ -1306,7 +1319,7 @@
                                     const mine = $block.attr('data-rule-set-config') === ruleId;
                                     $block.prop('hidden', !mine)
                                           .find('input, select')
-                                          .prop('disabled', !mine)
+                                          .prop('disabled', !mine || $block.is('[data-rule-set-config-locked]'))
                                           .filter('select')
                                           .trigger('change.select2');
                                 });

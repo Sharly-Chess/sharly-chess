@@ -37,6 +37,7 @@ from data.player import TournamentPlayer, Player
 from data.screens.rotator import Rotator
 from data.screens.menu import Menu
 from data.screens.screen import Screen
+from data.teams.extra_game import ExtraGame
 from data.teams.team import Team
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
@@ -326,6 +327,26 @@ class RequestUtils:
             raise NotFoundException(f'Board [{board_id_param}] not found.')
         request.state[cls.REQUEST_BOARD_ATTR] = board
         return board
+
+    REQUEST_EXTRA_GAME_ATTR: str = 'sharly_chess_extra_game'
+    TEAM_BOARD_ID_PARAM: str = 'team_board_id'
+    EXTRA_GAME_KEY_PARAM: str = 'extra_game_key'
+
+    @classmethod
+    def get_extra_game(cls, request: HTMXRequest) -> ExtraGame:
+        if cls.REQUEST_EXTRA_GAME_ATTR in request.state:
+            return cast(ExtraGame, request.state[cls.REQUEST_EXTRA_GAME_ATTR])
+        tournament: Tournament = cls.get_tournament(request)
+        team_board_id = cls._get_request_param(request, cls.TEAM_BOARD_ID_PARAM)
+        key = cls._get_request_param(request, cls.EXTRA_GAME_KEY_PARAM)
+        team_board = tournament.team_boards_by_id.get(team_board_id)
+        extra_game = team_board.extra_game(str(key)) if team_board else None
+        if extra_game is None:
+            raise NotFoundException(
+                f'Extra game [{key}] of team board [{team_board_id}] not found.'
+            )
+        request.state[cls.REQUEST_EXTRA_GAME_ATTR] = extra_game
+        return extra_game
 
     REQUEST_RESULT_ATTR: str = 'sharly_chess_result'
     RESULT_PARAM: str = 'result'

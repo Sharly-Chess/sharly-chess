@@ -3,7 +3,7 @@ from typing import Any, Annotated
 
 from litestar import get, post, patch
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import NotFoundException
+from litestar.exceptions import ClientException, NotFoundException
 from litestar.params import Body, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
@@ -197,6 +197,8 @@ class ChessResultsController(BaseEventAdminController):
     ) -> Template:
         web_context = CRWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
+        if unavailable := tournament.exports_forbidden_message:
+            raise ClientException(unavailable)
         CRBackgroundUploader.upload_tournament(tournament.event.uniq_id, tournament.id)
         if CRUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(

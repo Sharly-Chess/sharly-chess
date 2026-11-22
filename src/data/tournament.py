@@ -42,6 +42,7 @@ from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.prohibited_pairings import ProhibitedPairings
 from data.screens.screen import Screen
+from data.teams.extra_game import EXTRA_GAME_RESULTS, ExtraGame
 from data.teams.team_board import TeamBoard
 from data.teams.team_pairing_block import TeamPairingBlock
 from data.tournament_period import (
@@ -91,6 +92,7 @@ from data.norms import (
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredBoard,
+    StoredExtraGame,
     StoredPibe,
     StoredRatingCorrection,
     StoredPrizeGroup,
@@ -638,6 +640,31 @@ class Tournament:
         return rule_set_type(self.stored_tournament.rule_set_config)
 
     @property
+    def exports_forbidden_message(self) -> str | None:
+        """Why the tournament is neither exported nor published, or
+        ``None`` when it is."""
+        rule_set = self.rule_set
+        if rule_set is not None and rule_set.forbids_exports:
+            return _(
+                'Not available with the rule set of this tournament, whose games '
+                'this format cannot hold.'
+            )
+        if rule_set is None and self.stored_tournament.stored_extra_games:
+            return _(
+                'Not available: this tournament holds games of a rule set that '
+                'is no longer there, which this format cannot hold.'
+            )
+        return None
+
+    @property
+    def rule_set_is_locked(self) -> bool:
+        """Whether the rule set can no longer be changed."""
+        rule_set = self.rule_set
+        return (
+            rule_set is not None and rule_set.locked_once_paired and self.has_pairings
+        )
+
+    @property
     def roster_max_size(self) -> int | None:
         """Maximum team-roster size, or ``None`` for no cap. Set on the
         tournament directly; a rule set writes (and locks) it via
@@ -779,7 +806,7 @@ class Tournament:
         tie-break list for the current pairing system. The tie-break
         editor renders read-only in that case."""
         rule_set = self.rule_set
-        if rule_set is None:
+        if rule_set is None or not rule_set.imposes_tie_breaks:
             return False
         try:
             system_id = self.pairing_system.id
@@ -2536,7 +2563,7 @@ class Tournament:
             # A board whose opponent slot is a hole has no game to
             # play (it's a forfeit), so it never holds up the round.
             and player.pairings[round_].opponent_id is not None
-        )
+        ) and not self.extra_games_without_result(round_)
 
     def adjourned_boards(self, before_round: int | None = None) -> list[Board]:
         """The boards of the adjourned games, of the rounds before
@@ -2702,6 +2729,13 @@ class Tournament:
                 or board.stored_board.black_player_id is not None
             )
         ]
+
+    def games_without_result_count(self, at_round: int) -> int:
+        """How many games of the round still wait for their result, those
+        the team matches count beyond their boards included."""
+        return len(self.boards_without_result(at_round)) + len(
+            self.extra_games_without_result(at_round)
+        )
 
     def get_round_boards(self, round_: int) -> list[Board]:
         return sorted(
@@ -2916,6 +2950,143 @@ class Tournament:
                 'old': int(old),
                 'new': int(new),
             },
+        )
+
+    @cached_property
+    def extra_game_results(self) -> dict[tuple[int, int, int], Result]:
+        """The result of white in the games played beyond the boards of the
+        team matches, by round, white player and black player."""
+        return {
+            (
+                stored.round_,
+                stored.white_player_id,
+                stored.black_player_id,
+            ): Result(stored.result)
+            for stored in self.stored_tournament.stored_extra_games
+        }
+
+    def extra_games_without_result(self, at_round: int) -> list[ExtraGame]:
+        return [
+            extra_game
+            for team_board in self.get_round_team_boards(at_round)
+            for extra_game in team_board.extra_games
+            if extra_game.pending
+        ]
+
+    def forget_extra_game_results(
+        self,
+        round_: int,
+        database: EventDatabase,
+        team_ids: Collection[int] | None = None,
+    ) -> None:
+        """Forget the results of the extra games of a round whose matches
+        are unpaired: all of them, or those of the players of *team_ids*.
+        A match paired again starts with every game to play."""
+        player_ids = (
+            None
+            if team_ids is None
+            else {
+                player.id
+                for player in self.tournament_players
+                if player.team_id in team_ids
+            }
+        )
+        database.delete_stored_extra_games_of_round(self.id, round_, player_ids)
+        self.stored_tournament.stored_extra_games = [
+            stored
+            for stored in self.stored_tournament.stored_extra_games
+            if stored.round_ != round_
+            or (
+                player_ids is not None
+                and stored.white_player_id not in player_ids
+                and stored.black_player_id not in player_ids
+            )
+        ]
+        Utils.reset_cached_properties(self, 'extra_game_results')
+
+    def set_extra_game_result(
+        self, extra_game: ExtraGame, white_result: Result
+    ) -> None:
+        """Record *white_result* for *extra_game*, or forget the result it
+        had when given ``NO_RESULT``. Only a game both teams field takes a
+        result: the other ones are forfeits already."""
+        if white_result not in EXTRA_GAME_RESULTS:
+            raise ValueError(f'An extra game cannot take the result [{white_result}].')
+        white_id = extra_game.seat.white_player_id
+        black_id = extra_game.seat.black_player_id
+        if white_id is None or black_id is None or not extra_game.has_both_players:
+            raise ValueError(
+                f'The extra game [{extra_game.key}] has a player missing, '
+                f'it cannot take a result.'
+            )
+        round_ = extra_game.round
+        old_result = extra_game.stored_result
+        if white_result == old_result:
+            return
+        clear = white_result == Result.NO_RESULT
+        with EventDatabase(self.event.uniq_id, write=True) as event_database:
+            if clear:
+                event_database.delete_stored_extra_game(
+                    self.id, round_, white_id, black_id
+                )
+            else:
+                event_database.set_stored_extra_game(
+                    StoredExtraGame(
+                        id=None,
+                        tournament_id=self.id,
+                        round_=round_,
+                        white_player_id=white_id,
+                        black_player_id=black_id,
+                        result=white_result.value,
+                    )
+                )
+            extra_game.team_board.set_last_result_update(clear, event_database)
+            white = extra_game.white_tournament_player
+            black = extra_game.black_tournament_player
+            assert white is not None and black is not None
+            if old_result == Result.NO_RESULT:
+                action = JournalAction.RESULT_ENTERED
+            elif clear:
+                action = JournalAction.RESULT_CLEARED
+            else:
+                action = JournalAction.RESULT_CHANGED
+            self.record(
+                action,
+                round_,
+                data={
+                    'board': extra_game.label,
+                    'white': white.full_name,
+                    'black': black.full_name,
+                    'old': int(old_result),
+                    'new': int(white_result),
+                },
+            )
+        self.stored_tournament.stored_extra_games = [
+            stored
+            for stored in self.stored_tournament.stored_extra_games
+            if (stored.round_, stored.white_player_id, stored.black_player_id)
+            != (round_, white_id, black_id)
+        ]
+        if not clear:
+            self.stored_tournament.stored_extra_games.append(
+                StoredExtraGame(
+                    id=None,
+                    tournament_id=self.id,
+                    round_=round_,
+                    white_player_id=white_id,
+                    black_player_id=black_id,
+                    result=white_result.value,
+                )
+            )
+        Utils.reset_cached_properties(self, 'extra_game_results', 'playing')
+
+        logger.info(
+            'Set extra game result: %s %s %d %s %s.',
+            self.event.uniq_id,
+            self.name,
+            round_,
+            extra_game.key,
+            white_result,
         )
 
     def store_illegal_move(self, tournament_player: TournamentPlayer) -> bool:

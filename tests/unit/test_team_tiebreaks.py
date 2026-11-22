@@ -2155,6 +2155,124 @@ class MedianCutWithVoluntaryUnplayedRoundsTestCase(TestCase):
 
 
 @pytest.mark.unit
+class MutualResultsTieBreakTestCase(TestCase):
+    """FFE *Résultats réalisés entre elles* (J02 §4.4): tied teams are
+    compared on the matches between them, by match points, then
+    differential, then points for. The value is a within-group rank
+    delta, 0 being the worst of the group."""
+
+    @staticmethod
+    def _context() -> TeamTieBreakContext:
+        return TeamTieBreakContext(
+            primary_score=ScoreType.MATCH_POINTS,
+            secondary_score=ScoreType.GAME_POINTS,
+            rounds=3,
+            win_mp=3.0,
+            draw_mp=2.0,
+            loss_mp=1.0,
+            team_player_count=4,
+            draw_gp=0.0,
+        )
+
+    @staticmethod
+    def _records(*matches: tuple[int, int, int, float, float]) -> dict[int, TeamRecord]:
+        """Records from ``(round, team, opponent, team score, opponent
+        score)`` matches, match points following the scores."""
+        records: dict[int, TeamRecord] = {}
+
+        def add(round_: int, team: int, opponent: int, own: float, other: float):
+            match_points = 3.0 if own > other else 2.0 if own == other else 1.0
+            record = records.setdefault(
+                team, TeamRecord(team_id=team, name=str(team), total_mp=0, total_gp=0)
+            )
+            record.matches.append(
+                TeamMatchRecord(
+                    round_=round_,
+                    opponent_id=opponent,
+                    own_mp=match_points,
+                    own_gp=own,
+                    match_type=TeamMatchType.PLAYED,
+                )
+            )
+
+        for round_, team, opponent, own, other in matches:
+            add(round_, team, opponent, own, other)
+            add(round_, opponent, team, other, own)
+        return records
+
+    def _values(
+        self, records: dict[int, TeamRecord], *tied: int, after_round: int = 3
+    ) -> dict[int, float]:
+        from plugins.ffe.ffe_tie_breaks import MutualResultsTieBreak
+
+        return MutualResultsTieBreak([]).compute_all_team_values(
+            [[records[team] for team in tied]],
+            records,
+            self._context(),
+            after_round=after_round,
+        )
+
+    def test_the_match_between_two_tied_teams_decides(self):
+        records = self._records((1, 1, 2, 5.0, 3.0))
+        values = self._values(records, 1, 2)
+        assert values[1] > values[2]
+        assert values[2] == 0.0
+
+    def test_the_differential_decides_teams_level_on_match_points(self):
+        # Each beat one of the others: 1 beat 2 by 8-0, 2 beat 3 by 5-3 and
+        # 3 beat 1 by 5-3, so their differentials are +6, -6 and 0.
+        records = self._records(
+            (1, 1, 2, 8.0, 0.0), (2, 2, 3, 5.0, 3.0), (3, 3, 1, 5.0, 3.0)
+        )
+        values = self._values(records, 1, 2, 3)
+        assert values[1] > values[3] > values[2]
+
+    def test_the_points_for_decide_teams_level_on_the_differential(self):
+        # A cycle of three wins by two points: 6-4, 5-3 and 4-2. All three
+        # have a differential of 0; their points for are 8, 9 and 7.
+        records = self._records(
+            (1, 1, 2, 6.0, 4.0), (2, 2, 3, 5.0, 3.0), (3, 3, 1, 4.0, 2.0)
+        )
+        values = self._values(records, 1, 2, 3)
+        assert values[2] > values[1] > values[3]
+
+    def test_the_matches_against_the_other_teams_are_left_out(self):
+        # 1 and 2 drew their match; 1 beat 3 by 8-0, which is no match
+        # between the tied teams.
+        records = self._records((1, 1, 2, 4.0, 4.0), (2, 1, 3, 8.0, 0.0))
+        values = self._values(records, 1, 2)
+        assert values[1] == values[2]
+
+    def test_a_score_below_zero_counts_as_zero(self):
+        records = self._records((1, 1, 2, 2.0, -2.0), (2, 3, 4, 2.0, 0.0))
+        del records[4]
+        mutual = self._values(records, 1, 2)
+        assert mutual[1] > mutual[2]
+        from plugins.ffe.ffe_tie_breaks import MutualResultsTieBreak
+
+        assert MutualResultsTieBreak._mutual_results(
+            records[1], {1, 2}, records, 3
+        ) == (3.0, 2.0, 2.0)
+
+    def test_rounds_after_the_cutoff_are_ignored(self):
+        records = self._records((1, 1, 2, 4.0, 4.0), (2, 1, 2, 8.0, 0.0))
+        values = self._values(records, 1, 2, after_round=1)
+        assert values[1] == values[2]
+
+    def test_teams_that_have_not_all_met_are_left_level(self):
+        # 1 beat 2 and 2 beat 3, but 1 and 3 never met.
+        records = self._records((1, 1, 2, 8.0, 0.0), (2, 2, 3, 5.0, 3.0))
+        values = self._values(records, 1, 2, 3)
+        assert values == {1: 0.0, 2: 0.0, 3: 0.0}
+
+    def test_a_match_after_the_cutoff_is_no_meeting(self):
+        records = self._records(
+            (1, 1, 2, 8.0, 0.0), (2, 2, 3, 5.0, 3.0), (3, 3, 1, 5.0, 3.0)
+        )
+        values = self._values(records, 1, 2, 3, after_round=2)
+        assert values == {1: 0.0, 2: 0.0, 3: 0.0}
+
+
 class BoardDifferentialTieBreakTestCase(TestCase):
     """FFE *Somme des différentiels par échiquier* (F01 §4.4.a): tied
     teams are compared on their board-1 differential, then board 2, and

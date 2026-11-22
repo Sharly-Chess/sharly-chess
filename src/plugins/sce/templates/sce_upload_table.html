@@ -107,8 +107,8 @@
                         icon='bi-cloud-arrow-up-fill',
                         size='sm',
                         icon_only=true,
-                        allowed=not (sce_event_status.actions_disabled or not tournament.started),
-                        reason=_('Upload') if tournament.started else _('Tournament has not started yet, no results to upload.'),
+                        allowed=not (sce_event_status.actions_disabled or not tournament.started or tournament.exports_forbidden_message),
+                        reason=tournament.exports_forbidden_message or (_('Upload') if tournament.started else _('Tournament has not started yet, no results to upload.')),
                         attrs={
                             'hx-post': url_for(
                                 'sce-upload-tournament-results',

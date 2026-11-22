@@ -32,6 +32,9 @@ msgctxt "FFE licence"
 msgid "A - Competition"
 msgstr "A - Compétition"
 
+msgid "A game of these boards scores half the game points set below: 1 for a win where the other boards score 2. With two such boards, each meets the opponent of the other in its second game."
+msgstr "Une partie de ces échiquiers rapporte la moitié des points de partie définis plus bas : 1 pour une victoire là où les autres échiquiers en rapportent 2. Avec deux échiquiers de ce type, chacun rencontre l'adversaire de l'autre à la deuxième partie."
+
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
@@ -99,6 +102,17 @@ msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
 msgid "Board differentials"
 msgstr "Différentiels par échiquier"
 
+#, python-brace-format
+msgid "Board {board} is for a player of the U{age_limit} category or younger: {name} ({category})."
+msgstr "L'échiquier {board} est réservé à la catégorie U{age_limit} ou plus jeune : {name} ({category})."
+
+#, python-brace-format
+msgid "Board {board}, second game"
+msgstr "Échiquier {board}, deuxième partie"
+
+msgid "Boards playing two games, each for half the points"
+msgstr "Échiquiers jouant deux parties, chacune pour la moitié des points"
+
 msgid "Buchholz"
 msgstr "Buchholz"
 
@@ -131,6 +145,9 @@ msgstr "Fermer"
 
 msgid "Club Arbiter"
 msgstr "Arbitre Fédéral Club"
+
+msgid "Compares the tied teams on the matches they played against one another: their match points there, then their differential, then their points for (FFE rules §4.4). Not applied to teams that have not all met one another."
+msgstr "Compare les équipes à départager sur les matchs joués entre elles : leurs points de match, puis leur différentiel, puis leurs points « pour » (règlement FFE §4.4). N'est pas appliqué aux équipes qui ne se sont pas toutes rencontrées."
 
 msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
 msgstr "Départage les équipes à égalité sur la somme des différentiels au 1er échiquier ; celles toujours à égalité sont ensuite comparées au 2e échiquier, et ainsi de suite (règlement FFE §4.4.a)."
@@ -222,6 +239,12 @@ msgstr "Coupe FFE par équipes à 4 échiquiers. Effectif limité à 5 joueur·e
 msgid "FFE Form:"
 msgstr "Formulaire FFE :"
 
+msgid "FFE Interclubs Jeunes, Nationale 3. By default 4 boards by age category, board 4 playing its opponent twice; a league may set another format."
+msgstr "Interclubs Jeunes FFE, Nationale 3. Par défaut 4 échiquiers par catégorie d'âge, l'échiquier 4 jouant deux parties contre le même adversaire ; une ligue peut définir un autre format."
+
+msgid "FFE Interclubs Jeunes, national divisions. 8 boards by age category; boards 7 and 8 play two games, the second against each other's opponent."
+msgstr "Interclubs Jeunes FFE, divisions nationales. 8 échiquiers par catégorie d'âge ; les échiquiers 7 et 8 jouent deux parties, la deuxième contre l'adversaire de l'autre échiquier."
+
 msgid "FFE Licence"
 msgstr "Licence FFE"
 
@@ -300,6 +323,12 @@ msgstr "Impossible d'accéder au site FFE."
 
 msgid "FFE website rejected the data"
 msgstr "le site de la FFE a refusé les données"
+
+msgid "FFE youth team championship (Nationale 3)"
+msgstr "Championnat de France Interclubs Jeunes (Nationale 3)"
+
+msgid "FFE youth team championship (Top Jeunes / N1 / N2)"
+msgstr "Championnat de France Interclubs Jeunes (Top Jeunes / N1 / N2)"
 
 #, python-brace-format
 msgid "FFE {id}"
@@ -446,6 +475,10 @@ msgstr "Rendre visible sur le site de la FFE"
 msgid "Match Arbiter"
 msgstr "Arbitre Fédéral Match"
 
+#, python-brace-format
+msgid "Match won by forfeit, counted as {score}-0."
+msgstr "Match gagné par forfait, compté {score}-0."
+
 msgid "Max. teams per league:"
 msgstr "Max. d'équipes par ligue :"
 
@@ -464,6 +497,12 @@ msgstr "Coupe de la Parité"
 msgid "Modified"
 msgstr "Modifié"
 
+#, python-brace-format
+msgid "More than {n} forfeited board: the match is lost by forfeit."
+msgid_plural "More than {n} forfeited boards: the match is lost by forfeit."
+msgstr[0] "Plus de {n} joueur·euse forfait : le match est perdu par forfait."
+msgstr[1] "Plus de {n} joueur·euses forfaits : le match est perdu par forfait."
+
 msgctxt "FFE licence"
 msgid "N - Expired"
 msgstr "N - Expirée"
@@ -471,8 +510,14 @@ msgstr "N - Expirée"
 msgid "Name"
 msgstr "Nom"
 
+msgid "Nationale 1"
+msgstr "Nationale 1"
+
 msgid "Nationale 1 Féminine"
 msgstr "Nationale 1 féminine"
+
+msgid "Nationale 2"
+msgstr "Nationale 2"
 
 msgid "Nationale 2 Féminine, inter-departmental zone phase"
 msgstr "Nationale 2 féminine, phase zone interdépartementale"
@@ -498,6 +543,9 @@ msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
 msgid "No FFE Licence"
 msgstr "Aucune licence FFE"
 
+msgid "No board"
+msgstr "Aucun échiquier"
+
 msgid "No changes detected since the last upload."
 msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 
@@ -510,6 +558,10 @@ msgstr "Pas de connexion internet."
 #, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr "Aucune composition légale de {n} joueur·euses : plus faible somme {sum} > plafond {cap}."
+
+#, python-brace-format
+msgid "No player on board {board}: that board and the following ones are lost by forfeit."
+msgstr "Aucun nom à l'échiquier {board} : cet échiquier et les suivants sont perdus par forfait."
 
 msgid "No tournament configured for FFE upload."
 msgstr "Aucun tournoi configuré pour la mise en ligne FFE."
@@ -623,6 +675,9 @@ msgstr "Page publique du tournoi."
 #, python-brace-format
 msgid "Ranking by league after round #{round}"
 msgstr "Classement par ligue après la ronde n°{round}"
+
+msgid "Results between the tied teams"
+msgstr "Résultats entre les équipes à départager"
 
 #, python-brace-format
 msgid "Roster must consist of women players only: {names}."
@@ -761,11 +816,21 @@ msgstr "Les parties corrigées pour le rapport Elo sont exportées corrigées :
 msgid "The group on the FFE website does not look like tournament [%(tournament)s]: only %(matched)d of its %(teams)d teams have the name of a team of the tournament. Uploading it will replace the match reports of the group (%(reports)d filled in) with those of the tournament, and delete the teams the tournament does not have."
 msgstr "Le groupe sur le site de la FFE ne ressemble pas au tournoi [%(tournament)s] : seules %(matched)d de ses %(teams)d équipes portent le nom d'une équipe du tournoi. La mise en ligne remplacera les procès-verbaux du groupe (%(reports)d remplis) par ceux du tournoi, et supprimera les équipes que le tournoi n'a pas."
 
+msgid "The last board"
+msgstr "Le dernier échiquier"
+
+msgid "The last two boards"
+msgstr "Les deux derniers échiquiers"
+
 msgid "The match score cannot go below zero."
 msgstr "Le score du match ne peut pas être négatif."
 
 msgid "The name typed is not the name of the group."
 msgstr "Le nom saisi n'est pas celui du groupe."
+
+#, python-brace-format
+msgid "The opponent has no player on board {board}: that board and the following ones are won by forfeit."
+msgstr "L'équipe adverse n'a aucun nom à l'échiquier {board} : cet échiquier et les suivants sont gagnés par forfait."
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
@@ -790,6 +855,9 @@ msgstr "Il s'agit de la première période, et de l'homologation où le tournoi 
 
 msgid "This period has been submitted; later rounds do not change it."
 msgstr "Cette période a été soumise ; les rondes suivantes ne la modifient pas."
+
+msgid "Top Jeunes"
+msgstr "Top Jeunes"
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -934,6 +1002,13 @@ msgstr "le tournoi n'a pas pu être converti au format Papi"
 msgid "tournament most likely marked as finished on the FFE website"
 msgstr "le tournoi a probablement été marqué comme terminé sur le site FFE"
 
+msgid "unknown"
+msgstr "inconnue"
+
+#, python-brace-format
+msgid "{board}b"
+msgstr "{board}b"
+
 #, python-brace-format
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
@@ -941,10 +1016,20 @@ msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
 
 #, python-brace-format
+msgid "{name} (board {board}) is younger than {older_name} (board {older_board}) and has a lower rating: the older player sits above."
+msgstr "{name} (échiquier {board}) est plus jeune que {older_name} (échiquier {older_board}) avec un classement inférieur : le·la joueur·euse plus âgé·e doit jouer au-dessus."
+
+#, python-brace-format
 msgid "{n} forfeited board above a board on which a game was played, counted as -1."
 msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
 msgstr[0] "{n} échiquier après un échiquier perdu par forfait, compté -1."
 msgstr[1] "{n} échiquiers après un échiquier perdu par forfait, comptés -1 chacun."
+
+#, python-brace-format
+msgid "{n} forfeited board above a board on which a game was played, counted as -{points}."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -{points} each."
+msgstr[0] "{n} échiquier perdu par forfait au-dessus d'un échiquier où une partie a été jouée, compté -{points}."
+msgstr[1] "{n} échiquiers perdus par forfait au-dessus d'un échiquier où une partie a été jouée, comptés -{points} chacun."
 
 #, python-brace-format
 msgid "{n} game lost by forfeit, counted as -1."

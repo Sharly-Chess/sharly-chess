@@ -1114,7 +1114,7 @@ class MatchSheetsPrintDocument(PairingPrintDocument):
         """Sheets are printed across the width of the page, larger, when
         every match fits on a landscape page."""
         return all(
-            len(team_board.boards) <= LANDSCAPE_MAX_BOARDS
+            len(team_board.boards) + len(team_board.extra_games) <= LANDSCAPE_MAX_BOARDS
             for team_board in self.team_boards
         )
 

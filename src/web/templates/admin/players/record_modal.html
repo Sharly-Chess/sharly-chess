@@ -141,7 +141,15 @@
                     {% set can_set_hpb = client.can_set_half_point_bye(tournament_player.tournament.id) %}
                     {% set can_set_fpb = client.can_set_full_point_bye(tournament_player.tournament.id) %}
                     {% set k, k_is_estimated = tournament_player.fide_rating_coefficient %}
-                    {% set ns = namespace(delta=0) %}
+                    {% set ns = namespace(delta=0, has_extra_games=false) %}
+                    {% set extra_game_texts = {
+                        1: _('Loss'),
+                        2: _('Draw'),
+                        3: _('Win'),
+                        4: _('Forfeit Loss'),
+                        5: _('Forfeit Loss'),
+                        6: _('Forfeit Win'),
+                    } %}
                     {% for round, pairing in tournament_player.pairings.items() %}
                         {% set name='round_' ~ round ~ '_result' %}
                         {% set id=name|replace('_', '-') %}
@@ -337,7 +345,37 @@
                                 {% endif %}
                             {% endif %}
                         </tr>
+                        {% for extra_game in tournament_player.extra_games_in(round) %}
+                            {% set ns.has_extra_games = true %}
+                            {% set extra_opponent = extra_game.opponent_of(tournament_player.id) %}
+                            <tr>
+                                <th scope="row" class="text-nowrap text-center fw-normal" title="{{ extra_game.description }}">{{ extra_game.label }}</th>
+                                <td class="text-nowrap text-center align-middle">{{ extra_game.points_str_of(tournament_player.id) }}*</td>
+                                <td class="text-nowrap text-start">{{ extra_game_texts.get(extra_game.result_of(tournament_player.id).value, '') }}</td>
+                                <td class="text-nowrap text-start">{{ extra_game.color_of(tournament_player.id) }}</td>
+                                <td class="text-nowrap text-start">{% if extra_opponent %}{{ extra_opponent.display_title }} {{ extra_opponent.full_name }}{% endif %}</td>
+                                <td class="text-nowrap text-center">
+                                    {% if extra_opponent and extra_opponent.federation %}
+                                        <img
+                                            class="player-federation-flag pe-1"
+                                            alt=""
+                                            src="{{ macros.federation_flag_url(extra_opponent.federation) }}"
+                                        />
+                                        {{ extra_opponent.federation }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap text-end">{{ extra_opponent.rating_str if extra_opponent else '' }}</td>
+                                {% if display_rating_change %}<td></td>{% endif %}
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
+                    {% if ns.has_extra_games %}
+                        <tr>
+                            <td colspan="{{ 8 if display_rating_change else 7 }}" class="small text-muted text-start">
+                                * {{ _('A game played beyond the boards of the match: it counts for the team, not towards the points of the player.') }}
+                            </td>
+                        </tr>
+                    {% endif %}
                     {% if display_rating_change %}
                         {% if tournament_player.rating_used_by_fide.type != 3 %}
                         <tr>

@@ -687,6 +687,10 @@ class TeamScoring:
             black_pairing = board.optional_black_pairing
             black_pts = black_pairing.points if black_pairing is not None else 0.0
             scores.append(white_pts if white_team_id == team_id else black_pts)
+        for extra_game in team_board.extra_games:
+            board_index = extra_game.board_index_of(team_id)
+            if board_index is not None and board_index < len(scores):
+                scores[board_index] += extra_game.player_points(team_id)
         return tuple(scores)
 
     def _board_ratings_for(
