@@ -900,7 +900,10 @@ body:has(#screen-exit-button) .alert-message {
     order: -1;
     flex: 1 1 auto;
     min-width: 0;
-    display: flex;
+    align-items: stretch;
+}
+#top-nav-wrapper.with-menu.with-timer .screen-menu {
+    align-content: flex-end;
 }
 #top-nav-wrapper.with-menu .timer-clock {
     color: #ffffff;
