@@ -303,6 +303,9 @@ class ChessEventTournamentImporter(TournamentImporter):
         except KeyError:
             raise unknown_exception('blitz_rating_type') from None
 
+        date_of_birth = (epoch + timedelta(seconds=float(player.birth))).astimezone(
+            paris_tz
+        )
         ratings = ffe_list_ratings(
             {
                 Cadence.STANDARD: (player.standard_rating, standard_rating_type),
@@ -310,6 +313,7 @@ class ChessEventTournamentImporter(TournamentImporter):
                 Cadence.BLITZ: (player.blitz_rating, blitz_rating_type),
             },
             None,
+            date_of_birth.year,
         )
         try:
             ffe_licence = ChessEventFFELicence.get_core_object(player.ffe_license)
@@ -327,9 +331,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             id=player_id,
             last_name=unidecode(player.last_name),
             first_name=unidecode(player.first_name).title(),
-            date_of_birth=(epoch + timedelta(seconds=float(player.birth))).astimezone(
-                paris_tz
-            ),
+            date_of_birth=date_of_birth,
             gender=gender.value,
             mail=player.email,
             phone=player.phone,

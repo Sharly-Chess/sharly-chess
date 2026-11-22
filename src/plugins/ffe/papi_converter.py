@@ -62,7 +62,7 @@ from plugins.ffe.papi_mappers import (
 )
 from plugins.ffe.utils import FFEUtils
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
-from plugins.ffe.utils import ffe_estimate_rating
+from plugins.ffe.utils import ffe_age, ffe_estimate_rating
 from plugins.manager import plugin_manager
 from data.pairings.acceleration import (
     BakuSwissVariation,
@@ -557,7 +557,13 @@ class PapiConverter:
                 except KeyError:
                     raise_unknown_value(papi_rating.type_field, papi_rating.type)
             ratings[papi_rating.tournament_rating.value] = (
-                ffe_estimate_rating(papi_rating.value, papi_rating.tournament_rating)
+                ffe_estimate_rating(
+                    papi_rating.value,
+                    papi_rating.tournament_rating,
+                    ffe_age(
+                        date_of_birth.year if date_of_birth else year_of_birth, None
+                    ),
+                )
                 if rating_type == PlayerRatingType.ESTIMATED
                 else PlayerRating.from_type(papi_rating.value, rating_type)
             ).stored_value

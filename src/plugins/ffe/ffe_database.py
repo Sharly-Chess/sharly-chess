@@ -92,11 +92,12 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
 
     def get_stored_player_from_row(self, row: dict[str, Any]) -> StoredPlayer:
         fide_title = PlayerTitle(row['fide_title'])
+        date_of_birth = datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date()
         return StoredPlayer(
             id=0,
             first_name=row['first_name'] or '',
             last_name=row['last_name'],
-            date_of_birth=datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date(),
+            date_of_birth=date_of_birth,
             gender=PlayerGender(row['gender']),
             title=fide_title.open_value,
             women_title=fide_title.women_value,
@@ -116,6 +117,7 @@ class FfeDatabase(GitHubLocalSourcePlayerDatabase):
                     ),
                 },
                 self.rating_origin(),
+                date_of_birth.year,
             ),
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             national_id=row['ffe_licence_number'] or None,

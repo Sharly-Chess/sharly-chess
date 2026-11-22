@@ -186,6 +186,7 @@ class FFESqlServer(SqlServer):
                     ),
                 },
                 RatingOrigin(NATIONAL_SOURCE_ID, date.today().isoformat(), online=True),
+                date_of_birth.year if date_of_birth else None,
             ),
             fide_id=int((row['FideCode'] or '').strip("' ") or 0) or None,
             national_id=row['NrFFE'] or None,

@@ -51,7 +51,34 @@ def test_the_ffe_list_estimates_are_kept_however_typed_but_outgrown_ones(
     value: int, rating_type: PlayerRatingType, expected: dict[str, int]
 ) -> None:
     ratings = ffe_list_ratings(
-        {Cadence.RAPID: (value, rating_type)}, RatingOrigin('ffe')
+        {Cadence.RAPID: (value, rating_type)}, RatingOrigin('ffe'), None
+    )
+    rating = ratings[Cadence.RAPID.value]
+    rating.pop('origins', None)
+    assert rating == expected
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    'value, age, expected',
+    [
+        (999, 8, {'manual': 999}),
+        (999, 12, {}),
+        (999, 16, {}),
+        (799, 8, {}),
+        (799, 12, {}),
+    ],
+)
+def test_an_estimate_above_the_one_of_the_player_age_is_kept(
+    value: int, age: int, expected: dict[str, int]
+) -> None:
+    """A higher estimate than the player's age gives is one their club
+    asked for, not one they outgrew."""
+    list_version = '2026-11-01'
+    ratings = ffe_list_ratings(
+        {Cadence.RAPID: (value, PlayerRatingType.NATIONAL)},
+        RatingOrigin('ffe', list_version),
+        2027 - age,
     )
     rating = ratings[Cadence.RAPID.value]
     rating.pop('origins', None)

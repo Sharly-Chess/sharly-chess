@@ -1,3 +1,4 @@
+import contextlib
 import json
 import re
 from dataclasses import dataclass
@@ -153,15 +154,17 @@ def ffe_database_name_keys(stored_player: StoredPlayer) -> set[FfeNameKey]:
 def ffe_list_ratings(
     ratings: dict[Cadence, tuple[int | None, PlayerRatingType]],
     origin: RatingOrigin | None,
+    year_of_birth: int | None,
 ) -> dict[int, dict[str, Any]]:
     """The ratings of a player of the FFE list, each typed F, N or E. The
     estimates are those typed E, and those of the published file typed N,
     which only their value tells apart from a national rating (see
     `ffe_estimate_rating`). The FFE's Papi database, which Chess-Event
     reads, types its rapid and blitz estimates N in the same way."""
+    age = ffe_age(year_of_birth, origin)
     return {
         tournament_rating.value: (
-            ffe_estimate_rating(value, tournament_rating)
+            ffe_estimate_rating(value, tournament_rating, age)
             if value is not None
             and (
                 rating_type == PlayerRatingType.ESTIMATED
@@ -181,16 +184,51 @@ FFE_OUTGROWN_ESTIMATES: dict[Cadence, frozenset[int]] = {
     Cadence.BLITZ: frozenset({799, 999}),
 }
 
+#: The FFE sporting season, which the categories follow, starts in September.
+FFE_SEASON_CHANGE_MONTH = 9
+FFE_JUNIOR_AGE_LIMIT = 20
 
-def ffe_estimate_rating(value: int, cadence: Cadence) -> PlayerRating:
+
+def ffe_age(year_of_birth: int | None, origin: RatingOrigin | None) -> int | None:
+    """The FFE age of a player in the season a list was published in,
+    None when their year of birth is unknown."""
+    if not year_of_birth:
+        return None
+    list_date = date.today()
+    if origin is not None and origin.version:
+        with contextlib.suppress(ValueError):
+            list_date = date.fromisoformat(origin.version)
+    reference_year = list_date.year
+    if list_date.month >= FFE_SEASON_CHANGE_MONTH:
+        reference_year += 1
+    return reference_year - year_of_birth
+
+
+def ffe_age_estimate(cadence: Cadence, age: int) -> int:
+    """The FFE estimate of a player's age, the scale
+    `Ffe.get_prescribed_rating` applies to their category."""
+    if cadence == Cadence.STANDARD:
+        return 1299 if age <= FFE_JUNIOR_AGE_LIMIT else 1399
+    if age <= 10:
+        return 799
+    if age <= 14:
+        return 999
+    return 1199
+
+
+def ffe_estimate_rating(
+    value: int, cadence: Cadence, age: int | None = None
+) -> PlayerRating:
     """The rating an FFE estimate stands for. The FFE gives an unrated
     player the estimate of their category, the estimate their club asked
     for and the FFE accepted, or 1399 at a cadence where they lost a FIDE
     rating; once published, that estimate is the official one. It is kept
-    as a typed value, but for an estimate of a younger category, which may
-    be one the player outgrew: the plugin then prescribes the estimate of
-    their category."""
-    if value in FFE_OUTGROWN_ESTIMATES[cadence]:
+    as a typed value, but for an estimate the player's age does not rule
+    out as one of their own category or an outgrown one: the plugin then
+    prescribes the estimate of their category."""
+    if value in FFE_OUTGROWN_ESTIMATES[cadence] and (
+        age is None or value <= ffe_age_estimate(cadence, age)
+    ):
         return PlayerRating()
     return PlayerRating(manual=value)
 
