@@ -283,10 +283,13 @@ class FfePairingSheetDocument(PrintDocument):
             tournament.teams,
             key=lambda team: team.name.lower(),
         )
-        # Letters and team count reflect the whole tournament (the table
-        # position), even when only some teams are printed.
+        # The sheets print in team-name order, but the letter on each sheet is
+        # the fixed-table letter, which follows pairing order (A = pairing
+        # number 1) — the same letters the pairings use. Reflects the whole
+        # tournament's table even when only some teams are printed.
         letter_by_id = {
-            team.id: chr(ord('A') + index) for index, team in enumerate(all_teams)
+            team.id: chr(ord('A') + index)
+            for index, team in enumerate(tournament.teams_in_pairing_order)
         }
         team_count = len(all_teams)
         # The arbiter may pick which teams to print; empty selection = all.
