@@ -42,6 +42,14 @@ _CUP_MATCH_POINTS = {
 }
 
 
+# Only the games won are counted: a drawn game scores nothing.
+_WINS_ONLY_GAME_POINTS = {
+    Result.WIN.value: 1.0,
+    Result.DRAW.value: 0.0,
+    Result.LOSS.value: 0.0,
+}
+
+
 class _AbsentMatchPointsHarness(TestCase):
     """A four-team round-robin scored on match points, with the cup
     scheme in force and a helper to forfeit a whole match.
@@ -324,6 +332,63 @@ class TeamAbsentMatchPointsTestCase(_AbsentMatchPointsHarness):
         }
         self.assertEqual(matches[team_id].match_type, TeamMatchType.PLAYED)
         self._assert_tally_adds_up(tournament)
+
+    def test_a_match_of_drawn_games_worth_nothing_is_drawn(self) -> None:
+        """Where only the games won are counted, a match whose games are
+        all drawn ends 0-0: both teams drew it."""
+        self._create(_CUP_MATCH_POINTS, game_points=_WINS_ONLY_GAME_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        team_board = self._round_one_match(tournament, team_id)
+        for board in team_board.boards:
+            tournament.add_result(board, Result.DRAW)
+        tournament = self._load()
+        team_board = self._round_one_match(tournament, team_id)
+        self.assertEqual(team_board.game_points, (0.0, 0.0))
+        self.assertEqual(team_board.match_points_pair(), (2.0, 2.0))
+        for team in (team_id, opponent_id):
+            row = self._row(tournament, team)
+            self.assertEqual(row.mp, 2.0)
+            self.assertEqual(row.draws, 1)
+            self.assertEqual(row.losses, 0)
+        self._assert_tally_adds_up(tournament)
+
+    def test_a_drawn_game_is_enough_for_a_match_level_at_nothing_to_be_drawn(
+        self,
+    ) -> None:
+        self._create(_CUP_MATCH_POINTS, game_points=_WINS_ONLY_GAME_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        first, second = self._round_one_match(tournament, team_id).boards
+        tournament.add_result(first, Result.DRAW)
+        tournament.add_result(second, Result.PENALTY_LL)
+        tournament = self._load()
+        self.assertEqual(
+            self._round_one_match(tournament, team_id).match_points_pair(), (2.0, 2.0)
+        )
+
+    def test_a_match_nobody_won_or_drew_a_game_of_is_lost_by_both_on_any_scale(
+        self,
+    ) -> None:
+        self._create(_CUP_MATCH_POINTS, game_points=_WINS_ONLY_GAME_POINTS)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+        tournament = self._load()
+        team_id = self.team_ids[0]
+        opponent_id = self._opponent_id(tournament, team_id)
+        for board in self._round_one_match(tournament, team_id).boards:
+            tournament.add_result(board, Result.PENALTY_LL)
+        tournament = self._load()
+        for team in (team_id, opponent_id):
+            row = self._row(tournament, team)
+            self.assertEqual(row.mp, 1.0)
+            self.assertEqual(row.losses, 1)
+            self.assertEqual(row.draws, 0)
 
     def test_a_contested_match_stays_a_played_round(self) -> None:
         """One game over the board is enough: a team with three boards

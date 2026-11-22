@@ -235,7 +235,7 @@ class Result(IntEnum):
                 | Result.PAIRING_ALLOCATED_BYE
             ):
                 value = values.get(Result.WIN)
-        return value or self.point_value
+        return self.point_value if value is None else value
 
     @property
     def opposite_result(self) -> Result:
@@ -1251,7 +1251,7 @@ class TeamSortMode(StrEnum):
     def __str__(self) -> str:
         match self:
             case TeamSortMode.MANUAL:
-                return _('Manual')
+                return pgettext('team sort mode', 'Manual')
             case TeamSortMode.TEAM_AVERAGE_RATING:
                 return _('Average rating of entire team')
             case TeamSortMode.LINEUP_AVERAGE_RATING:

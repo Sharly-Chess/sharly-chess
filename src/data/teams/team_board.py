@@ -14,6 +14,11 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+_RESULTS_LOST_BY_BOTH = frozenset(
+    {Result.DOUBLE_FORFEIT, Result.PENALTY_LL, Result.UNRATED_PENALTY_LL}
+)
+
+
 class TeamBoard:
     """A team-vs-team match for a given round.
     The two teams are symmetric (no home/away). *team_b* is None for a bye.
@@ -247,13 +252,17 @@ class TeamBoard:
         return saw_board
 
     def lost_by_both(self, game_points: tuple[float, float]) -> bool:
-        """True when neither team scored in a match that has a result: a
-        draw needs a point on each side, so such a match is lost by both."""
+        """True when a level match has results and neither team won or
+        drew a game of it: a drawn match needs a game on each side, so
+        such a match is lost by both. The games are read as they ended and
+        not from what they score, a drawn game being worth nothing where
+        only the games won are counted."""
         a_gp, b_gp = game_points
-        return (
-            a_gp == b_gp
-            and a_gp <= 0
-            and not all(board.no_result for board in self.boards)
+        if a_gp != b_gp:
+            return False
+        results = [board.result for board in self.boards if not board.no_result]
+        return bool(results) and all(
+            result in _RESULTS_LOST_BY_BOTH for result in results
         )
 
     def match_points_pair(

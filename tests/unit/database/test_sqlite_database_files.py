@@ -14,6 +14,22 @@ def _create_database(file: Path) -> None:
     connection.close()
 
 
+def test_a_database_in_a_folder_named_with_an_escape_is_opened(tmp_path: Path):
+    """A database is opened through a `file:` URI, and SQLite decodes what the
+    URI holds: a folder named `copie%20de` was looked for as `copie de`, and
+    every database inside it was out of reach of the application."""
+    folder = tmp_path / 'copie%20de'
+    folder.mkdir()
+    file = folder / 'event.sce'
+    _create_database(file)
+
+    with SQLiteDatabase(file) as database:
+        database.execute('SELECT 1 AS answer')
+        assert database.fetchone().get('answer') == 1
+    with SQLiteDatabase(file, write=True) as database:
+        database.execute('INSERT INTO t (x) VALUES (1)')
+
+
 def test_an_accessible_file_has_no_system_error(tmp_path: Path):
     file = tmp_path / 'event.sce'
     _create_database(file)
