@@ -888,14 +888,25 @@ body:has(#screen-exit-button) .alert-message {
     padding-left: 0;
     padding-right: 0;
 }
+/* With a timer the dark bar spans the whole line, running on under the
+   timer; the tabs keep to the bottom edge so they stay joined to the
+   content, and the clock reads in white on the bar. */
 #top-nav-wrapper.with-menu.with-timer {
     display: flex;
-    align-items: center;
+    align-items: stretch;
+    background-color: #23262b;
 }
 #top-nav-wrapper.with-menu.with-timer #top-nav-content {
     order: -1;
     flex: 1 1 auto;
     min-width: 0;
+    display: flex;
+}
+#top-nav-wrapper.with-menu .timer-clock {
+    color: #ffffff;
+}
+#top-nav-wrapper.with-menu .timer {
+    box-shadow: inset 0 0 0 2px #ffffff;
 }
 .timer-wrapper {
     display: flex;
