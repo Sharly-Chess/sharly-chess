@@ -37,6 +37,7 @@
 
 - Appreciation certificates can be printed for the players of a prize category, from the place cards document, now named Place cards and certificates: every player of the category gets a certificate, whatever the number of its prizes, or only the prize winners, those of all the categories of a prize group at once if needed. Besides the player's information, the templates of the certificates offer the player's rank in the category, the number of players in the category, the performance for the categories ranked by performance, and the prize won in the category. A standard certificate template is provided (5.3.0)
 - The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin schedule explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the schedule printing a draw the pairing can still change (5.3.0)
+- The list of players and the players check-in list let the arbiter choose which columns to print, each document keeping its own choice: the rating, category, gender, federation and club are shown by default, as is a column a plugin adds such as the FFE league, while the pairing number, the FIDE ID and the national ID are offered and left out unless turned on (5.3.0)
 
 ## __Sharly-Chess.com__
 
