@@ -13054,6 +13054,9 @@ msgstr "Mettre à jour les listes"
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
 
+msgid "Update the ratings"
+msgstr "Mettre à jour les classements"
+
 msgid "Update tournaments"
 msgstr "Modifier les tournois"
 
@@ -13075,6 +13078,9 @@ msgstr[1] "La mise à jour enregistre la liste dont proviennent désormais les c
 #, python-format
 msgid "Updating the lists: %(lists)s. The check is run again once they are up to date."
 msgstr "Mise à jour des listes : %(lists)s. La vérification est relancée une fois qu’elles sont à jour."
+
+msgid "Updating the players only updates their information, not their ratings."
+msgstr "La mise à jour des joueur·euses ne met à jour que leurs informations, pas leurs classements."
 
 msgid "Upload image"
 msgstr "Téléverser une image"
