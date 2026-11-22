@@ -529,12 +529,14 @@ class Snapshot:
     def label(self) -> str:
         """How the snapshot reads in the panel.
 
-        A backup the user asked for and wrote a comment on reads as that
-        comment: "Manual" is what every one of them would otherwise read as,
-        and telling them apart is the whole point of asking for one.
+        A backup the user asked for and wrote a comment on reads as its
+        reason and that comment: "Manual" is what every one of them would
+        otherwise read as, and telling them apart is the whole point of asking
+        for one. The comment is shown beside the reason rather than in place of
+        it, a tooltip on it being something only a mouse would have opened.
         """
         return (
-            pgettext('backup label', 'Manual: {reason}').format(reason=self.comment)
+            pgettext('backup label', 'Manual ({reason})').format(reason=self.comment)
             if self.comment
             else self.reason_label
         )

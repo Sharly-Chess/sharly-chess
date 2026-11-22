@@ -146,7 +146,7 @@ class TestCommentingABackup:
         # The panel is back, with the backup it was left for in it.
         panel = page.locator('#event-snapshots-modal')
         expect(panel).to_be_visible()
-        expect(panel.locator('tbody tr').first).to_contain_text('Essai n°2')
+        expect(panel.locator('tbody tr').first).to_contain_text('Manual (Essai n°2)')
 
     def test_going_back_from_the_comment_takes_no_backup(self, page: Page):
         uniq_id = 'test-snapshots-comment-back-e2e'

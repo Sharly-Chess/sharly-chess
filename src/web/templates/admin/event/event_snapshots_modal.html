@@ -160,14 +160,7 @@
                                     {{ snapshot.taken_at_str }}
                                 </th>
                                 <td class="small">
-                                    {% if snapshot.comment %}
-                                        {# What the user wrote when they asked
-                                           for the backup, with its reason kept
-                                           as a tooltip. #}
-                                        <span {{ macros.tooltip_attributes(
-                                            'info', snapshot.reason_label, 'top'
-                                        ) }}>{{ snapshot.comment }}</span>
-                                    {% elif snapshot.is_milestone %}
+                                    {% if snapshot.is_milestone %}
                                         {{ snapshot.label }}
                                     {% else %}
                                         <span class="text-secondary">{{ snapshot.label }}</span>

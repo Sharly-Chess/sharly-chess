@@ -37,6 +37,6 @@
 
 - Appreciation certificates can be printed for the players of a prize category, from the place cards document, now named Place cards and certificates: every player of the category gets a certificate, whatever the number of its prizes, or only the prize winners, those of all the categories of a prize group at once if needed. Besides the player's information, the templates of the certificates offer the player's rank in the category, the number of players in the category, the performance for the categories ranked by performance, and the prize won in the category. A standard certificate template is provided (5.3.0)
 
-## __Sharly-Chess.com__
+## _Sharly-Chess.com_
 
 - The pairings published on _Sharly-Chess.com_ show the table numbers shown in _Sharly Chess_: when a fixed board leaves the board it displaces empty, as in FFE events, a player with a fixed board is shown at that board instead of at the board the game would have had without it (5.3.0)

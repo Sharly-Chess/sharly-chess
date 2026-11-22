@@ -312,9 +312,9 @@ class TestSnapshotDirSetting:
 @pytest.mark.unit
 class TestBackupComments:
     """The comment the user writes when they ask for a backup rides in the
-    file name, like everything else the panel needs of it, and is what the
-    backup reads as: every backup taken by hand would otherwise read
-    "Manual"."""
+    file name, like everything else the panel needs of it, and is what tells
+    the backup apart in the panel: every backup taken by hand would otherwise
+    read "Manual" alone."""
 
     @staticmethod
     def named(comment: str) -> Snapshot:
@@ -330,7 +330,9 @@ class TestBackupComments:
 
         assert snapshot.comment == 'Before the third test'
         assert snapshot.reason == SnapshotReason.MANUAL
-        assert snapshot.label == 'Before the third test'
+        # The reason is kept beside the comment: it used to be a tooltip on it,
+        # which nothing but a mouse would have shown.
+        assert snapshot.label == 'Manual (Before the third test)'
         assert snapshot.reason_label == 'Manual'
         assert snapshot.is_milestone
 
@@ -422,7 +424,7 @@ class TestBackupComments:
 
         assert listed is not None
         assert listed.comment == 'Essai n°2'
-        assert listed.label == 'Essai n°2'
+        assert listed.label == 'Manual (Essai n°2)'
         # What the panel shows of it is read from the file itself, which a name
         # the database layer cannot open would leave unreadable.
         assert listed.tournaments is not None

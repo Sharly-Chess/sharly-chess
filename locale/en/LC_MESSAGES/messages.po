@@ -5979,6 +5979,11 @@ msgctxt "tie-break"
 msgid "Manual"
 msgstr ""
 
+#, python-brace-format
+msgctxt "backup label"
+msgid "Manual ({reason})"
+msgstr ""
+
 msgid "Manual groups"
 msgstr ""
 
@@ -5993,11 +5998,6 @@ msgid "Manual tie-break set for {players}"
 msgstr ""
 
 msgid "Manual tie-breaks reset"
-msgstr ""
-
-#, python-brace-format
-msgctxt "backup label"
-msgid "Manual: {reason}"
 msgstr ""
 
 msgid "Manually pair players"

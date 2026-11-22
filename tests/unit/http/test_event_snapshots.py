@@ -102,7 +102,7 @@ def test_the_comment_is_asked_for_in_a_modal_of_its_own(http: TestClient, event:
 @pytest.mark.unit
 def test_a_comment_is_what_the_backup_reads_as(http: TestClient, event: str):
     """Every backup taken by hand reads "Manual", which tells none of them
-    apart: the comment the user writes takes its place."""
+    apart: the comment the user writes is shown beside it."""
     response = http.post(
         f'/event-snapshot-now/{event}', data={'snapshot_comment': 'Essai n°2'}
     )
@@ -113,11 +113,10 @@ def test_a_comment_is_what_the_backup_reads_as(http: TestClient, event: str):
     snapshot = only_snapshot(event)
     assert snapshot.reason == SnapshotReason.MANUAL
     assert snapshot.comment == 'Essai n°2'
-    assert snapshot.label == 'Essai n°2'
-    body = panel(http, event)
-    assert 'Essai n°2' in body
-    # The reason it was taken for is still there, as the comment's tooltip.
-    assert 'Manual' in body
+    assert snapshot.label == 'Manual (Essai n°2)'
+    # The reason it was taken for is read beside the comment, not behind a
+    # tooltip only a mouse would have opened.
+    assert 'Manual (Essai n°2)' in panel(http, event)
 
 
 @pytest.mark.unit
