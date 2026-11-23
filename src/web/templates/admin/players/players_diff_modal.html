@@ -25,6 +25,19 @@
 {% endblock %}
 
 {% block body %}
+            {% set ratings_update_action %}
+                {{ components.modal_button(
+                    url_for('admin-event-ratings-check-modal', event_uniq_id=admin_event.uniq_id, tab=tab),
+                    _('Update the ratings'),
+                    from_modal=true,
+                    attrs={'hx-vals': '{"tournament_id": "' ~ admin_tournament.id ~ '"}'} if admin_tournament else {},
+                ) }}
+            {% endset %}
+            {{ components.note(
+                'warning',
+                _('Updating the players only updates their information, not their ratings.'),
+                actions=ratings_update_action,
+            ) }}
             {% if source_message and source_message_is_warning %}
                 {{ components.note('danger', source_message, icon='warning') }}
             {% endif %}
