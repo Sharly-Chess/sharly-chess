@@ -18,7 +18,7 @@ from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.account import Account
 from data.access_levels.client import Client
-from data.board import Board
+from data.board import Board, compute_round_board_numbers
 from data.pairings.fixed_table import FixedPairingTable
 from data.pairings.round_robin_grid import team_grid, team_player_grid
 from data.teams.team_board import TeamBoard
@@ -2066,14 +2066,36 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
         for round_ in range(1, rounds + 1):
             matches: list[dict[str, Any]] = []
             exempt: str | None = None
+            real_pairs = [
+                (a_id, b_id)
+                for a_id, b_id in schedule.get(round_, [])
+                if a_id is not None and b_id is not None
+            ]
             for a_id, b_id in schedule.get(round_, []):
                 if a_id is None or b_id is None:
                     real = a_id if a_id is not None else b_id
                     exempt = name_by_id.get(real) if real is not None else None
-                    continue
+            # Table numbers a round not yet paired would get: a fixed team
+            # takes its table, the rest fill the gaps compactly, exactly as
+            # the pairing will freeze them. A paired round keeps the numbers
+            # it was frozen with (the team board's display number), which a
+            # later change to a fixed table must not disturb.
+            live_numbers = compute_round_board_numbers(
+                [
+                    (
+                        position,
+                        engine._match_fixed_table(tournament, pair),
+                        position + 1,
+                    )
+                    for position, pair in enumerate(real_pairs)
+                ],
+                first_board_number=1,
+                leave_holes=False,
+            )
+            for position, (a_id, b_id) in enumerate(real_pairs):
                 left_name = name_by_id.get(a_id, '')
                 right_name = name_by_id.get(b_id, '')
-                number = str(len(matches) + 1)
+                number = str(live_numbers[position])
                 result = None
                 played = match_by_round_pair.get((round_, frozenset({a_id, b_id})))
                 if played is not None:

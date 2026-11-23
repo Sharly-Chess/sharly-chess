@@ -203,6 +203,24 @@ def test_a_team_event_generates_a_team_tournament(tmp_path: Path):
 
 
 @pytest.mark.unit
+def test_a_team_event_needs_a_rating_for_every_board(tmp_path: Path):
+    """An explicit ratings list must cover every player of the field —
+    teams times players per team. A shorter one is refused with a clear
+    message instead of running off the end as the boards are filled."""
+    with pytest.raises(ValueError, match='needs 16 ratings, but 3 were given'):
+        generate_tournament_file(
+            TournamentSettings(
+                teams=4,
+                players_per_team=4,
+                rounds=3,
+                ratings=[2200, 2100, 2000],
+            ),
+            tmp_path / 'short.trf',
+            seed=1,
+        )
+
+
+@pytest.mark.unit
 def test_a_team_forfeit_takes_one_board_of_one_match(tmp_path: Path):
     trf_path = tmp_path / 'team-forfeits.trf'
     generate_tournament_file(

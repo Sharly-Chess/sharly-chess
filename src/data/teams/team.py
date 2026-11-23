@@ -135,6 +135,13 @@ class Team:
         return None
 
     @property
+    def fixed(self) -> int | None:
+        """The table the team is always assigned to. Applied when a round
+        is paired (onto the team board's index), so changing it renumbers
+        only rounds paired afterwards."""
+        return self.stored_team.fixed
+
+    @property
     def group_id(self) -> int | None:
         return self.stored_team.group_id
 

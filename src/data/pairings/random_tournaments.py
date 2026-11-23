@@ -255,6 +255,16 @@ class TournamentSettings:
                 *_UNSTATED_TEAM_PLAYER_RANGE
             )
             players = teams * players_per_team
+            # The field is the players filling every board, so an explicit
+            # ratings list has to cover them all — one rating per player,
+            # strongest first. Too few would run off the end as the boards
+            # are filled; say so rather than fail deep in generation.
+            if self.ratings is not None and len(self.ratings) < players:
+                raise ValueError(
+                    f'A team event of {teams} teams of {players_per_team} '
+                    f'players needs {players} ratings, but '
+                    f'{len(self.ratings)} were given.'
+                )
         else:
             players = self.players or chance.randint(*_UNSTATED_PLAYER_RANGE)
         rounds = self.rounds or chance.randint(*_UNSTATED_ROUND_RANGE)

@@ -162,6 +162,7 @@ class StoredTeam:
     group_id: int | None = None
     federation: str | None = None
     check_in: bool = False
+    fixed: int | None = None
     stored_round_lineups: dict[int, list[StoredTeamRoundLineupEntry]] = field(
         default_factory=dict[int, list[StoredTeamRoundLineupEntry]]
     )

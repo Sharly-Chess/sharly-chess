@@ -153,11 +153,29 @@ class TeamAdminController(BaseEventAdminController):
         if 'federation' not in data:
             # New teams default to the event's federation.
             data = data | {'federation': event.federation or ''}
+        # A fixed table only means something where the team plays a match of
+        # its own, so the field is offered when no tournament is chosen and
+        # hidden for a flat-paired system (a Molter), whose boards are spread
+        # over several teams and carry no team table. The chosen tournament
+        # is the one in the select, which the field follows as it changes,
+        # so its ids drive both the initial state and the script below.
+        fixable_tournament_ids = sorted(
+            str(tournament.id)
+            for tournament in event.tournaments_by_id.values()
+            if tournament.pairing_system.paired_by_team
+        )
+        selected_tournament_id = data.get('tournament_id') or ''
+        show_fixed_table = (
+            selected_tournament_id == ''
+            or selected_tournament_id in fixable_tournament_ids
+        )
         return {
             'modal': 'team',
             'action': action,
             'tournament_options': tournament_options,
             'tournament_locked': tournament_locked,
+            'show_fixed_table': show_fixed_table,
+            'fixable_tournament_ids': fixable_tournament_ids,
             'captain_options': captain_options,
             'federation_options': (
                 {'': '-'} | TeamAdminController._get_federation_options()
@@ -196,6 +214,7 @@ class TeamAdminController(BaseEventAdminController):
                 'tournament_id': team.tournament_id or '',
                 'group_id': team.group_id or '',
                 'federation': team.federation,
+                'fixed': team.fixed or '',
                 'captain': captain,
                 'captain_name': team.stored_team.captain_name or '',
             }
@@ -1690,6 +1709,7 @@ class TeamAdminController(BaseEventAdminController):
             captain_id=captain_id,
             captain_name=captain_name,
             federation=federation,
+            fixed=WebContext.form_data_to_int(data, 'fixed'),
             pairing_number=(
                 existing.pairing_number
                 if existing and action == FormAction.UPDATE
@@ -1780,12 +1800,14 @@ class TeamAdminController(BaseEventAdminController):
             team.stored_team.captain_id,
             team.stored_team.captain_name,
             team.stored_team.federation,
+            team.stored_team.fixed,
         )
         team.stored_team.name = stored_team.name
         team.stored_team.group_id = stored_team.group_id
         team.stored_team.captain_id = stored_team.captain_id
         team.stored_team.captain_name = stored_team.captain_name
         team.stored_team.federation = stored_team.federation
+        team.stored_team.fixed = stored_team.fixed
         event = web_context.get_admin_event()
         with EventDatabase(event.uniq_id, True) as database:
             if tournament_changed:
@@ -1804,6 +1826,7 @@ class TeamAdminController(BaseEventAdminController):
                 stored_team.captain_id,
                 stored_team.captain_name,
                 stored_team.federation,
+                stored_team.fixed,
             ):
                 team.record(JournalAction.TEAM_EDITED)
         event.clear_team_cache()

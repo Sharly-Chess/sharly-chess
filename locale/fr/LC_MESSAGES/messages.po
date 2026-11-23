@@ -11821,6 +11821,9 @@ msgstr "Le numéro de table du premier match à sélectionner."
 msgid "The table number of the last match to select."
 msgstr "Le numéro de table du dernier match à sélectionner."
 
+msgid "The table number the team will always be assigned to (use it for disabled people). Changing it renumbers only the rounds paired afterwards."
+msgstr "Le numéro de la table qui sera toujours assignée à l'équipe (à utiliser pour les personnes handicapées). Le modifier ne renumérote que les rondes appariées par la suite."
+
 msgid "The team order sets each team's pairing number, shown on each card."
 msgstr "L'ordre des équipes définit le numéro d'appariement de chaque équipe, indiqué sur chaque carte."
 

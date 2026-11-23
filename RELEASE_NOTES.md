@@ -9,6 +9,7 @@
 
 - A player who leaves an individual round-robin can be replaced, from the player form, by a newcomer who takes over their seat from a chosen round: their Berger number, their remaining opponents and their colours. The tournament keeps its rounds and its schedule, both players are ranked on the games they played, and in the tie-breaks the seat counts as a single opponent worth the points of all who held it. The Berger grid gives the seat one line, and the TRF gives the tournament as a custom round-robin with a comment for each replacement (5.3.0)
 - The "Export event (SCE)" button of the warning shown before a tournament export that loses data opens the event export options, with the players included by default: the file it produced held no players, teams or pairings (5.3.0)
+- A team can be pinned to a table, as a player can be pinned to a board in an individual tournament, from the team form: its match is placed on that table every round it is paired and the other matches fill the tables around it, and changing the table renumbers only the rounds paired afterwards, leaving the rounds already played alone (5.3.0)
 
 ## Players
 

@@ -11819,6 +11819,9 @@ msgstr ""
 msgid "The table number of the last match to select."
 msgstr ""
 
+msgid "The table number the team will always be assigned to (use it for disabled people). Changing it renumbers only the rounds paired afterwards."
+msgstr ""
+
 msgid "The team order sets each team's pairing number, shown on each card."
 msgstr ""
 
