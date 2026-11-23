@@ -13052,6 +13052,9 @@ msgstr ""
 msgid "Update the players' information from an external data source."
 msgstr ""
 
+msgid "Update the ratings"
+msgstr ""
+
 msgid "Update tournaments"
 msgstr ""
 
@@ -13072,6 +13075,9 @@ msgstr[1] ""
 
 #, python-format
 msgid "Updating the lists: %(lists)s. The check is run again once they are up to date."
+msgstr ""
+
+msgid "Updating the players only updates their information, not their ratings."
 msgstr ""
 
 msgid "Upload image"
