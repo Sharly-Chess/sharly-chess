@@ -35,6 +35,7 @@
 - On a players screen shown through a display controller, tapping a player opens the result window of their game, instead of sometimes opening the window of another board of the round; a game is always found by its own identifier, so that no screen can open another board's result window (5.3.0)
 - The background of image screens can use a colour extracted from the image in one click or be filled by a blurred version of the image (5.3.0)
 - The screens never take a theme: whatever the theme of the application or the appearance of the system showing them, they keep their light colours, and they tell the browser so, which keeps a device that darkens web pages on its own from turning them white-on-black; they also stay readable in a browser too old to read the colours of the theme (5.3.0)
+- A pairings-by-board or result-entry screen of a team tournament paired on fixed tables no longer fails with an error on the rounds where a team fielding fewer players than there are boards leaves an empty seat on the white side of a board: the seat is shown empty, as it already was on the black side (5.3.0)
 
 ## Documents
 
