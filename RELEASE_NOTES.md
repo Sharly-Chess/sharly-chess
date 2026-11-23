@@ -45,6 +45,7 @@
 ## _Sharly-Chess.com_
 
 - The pairings published on _Sharly-Chess.com_ show the table numbers shown in _Sharly Chess_: when a fixed board leaves the board it displaces empty, as in _FFE_ events, a player with a fixed board is shown at that board instead of at the board the game would have had without it (5.3.0)
+- An event whose tournaments are held at different places on _Sharly-Chess.com_ gives each tournament its own location, imported with the event and kept in step on every synchronisation; an event held at a single place still gives that place to all its tournaments (5.3.0)
 
 ## _FFE_
 
