@@ -22,7 +22,7 @@
                     {{ components.menu_item(
                         screen_type.name,
                         icon=screen_type.icon_str,
-                        url=url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.id),
+                        url=url_for('admin-screen-create-choice-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.id),
                         modal=true,
                         allowed=creatable,
                         reason=screen_type.no_tournament_reason,

@@ -674,6 +674,15 @@ msgstr "Un champ laissé vide reçoit une valeur aléatoire. Les rondes sont app
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
+msgid "A fixed number of boards on each page"
+msgstr "Un nombre fixe d'échiquiers par page"
+
+msgid "A fixed number of pages"
+msgstr "Un nombre fixe de pages"
+
+msgid "A fixed number of players on each page"
+msgstr "Un nombre fixe de joueur·euses par page"
+
 msgid "A half point to one side only, or nothing to either."
 msgstr "Un demi-point à un seul des deux camps, ou rien à aucun."
 
@@ -2391,6 +2400,9 @@ msgstr "Pointage ouvert"
 msgid "Check-in players"
 msgstr "Pointer les joueur·euses"
 
+msgid "Check-in screen creation wizard"
+msgstr "Assistant de création d'écran de pointage"
+
 msgid "Check-in screens allow players to check-in or out."
 msgstr "Les écrans de pointage permettent aux joueur·euses de se pointer."
 
@@ -2947,6 +2959,12 @@ msgstr "Créer l'équipe"
 
 msgid "Create teams and assign them to tournaments."
 msgstr "Créer des équipes et les assigner à des tournois."
+
+msgid "Create the screen"
+msgstr "Créer l'écran"
+
+msgid "Create the screen and open it in a new tab"
+msgstr "Créer l'écran et l'ouvrir dans un nouvel onglet"
 
 msgid "Create tie-break"
 msgstr "Créer un départage"
@@ -3516,12 +3534,18 @@ msgid_plural "Do you want to add these folders to the Microsoft Defender excepti
 msgstr[0] "Voulez-vous ajouter ce dossier à la liste d'exclusions de Microsoft Defender ?"
 msgstr[1] "Voulez-vous ajouter ces dossiers à la liste d'exclusions de Microsoft Defender ?"
 
+msgid "Do you want to display a timer?"
+msgstr "Voulez-vous afficher un chronomètre ?"
+
 msgid "Do you want to install the update now?"
 msgstr "Voulez-vous installer la mise à jour maintenant ?"
 
 #, python-brace-format
 msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
 msgstr "Voulez-vous déplacer les données vers [{folder}] ? Le dossier actuel est supprimé une fois la copie vérifiée, et {service} supprime à son tour la copie qu'il conserve."
+
+msgid "Do you want to show the unpaired players?"
+msgstr "Voulez-vous afficher les joueur·euses non apparié·es ?"
 
 msgid "Do you want to try again?"
 msgstr "Voulez-vous réessayer ?"
@@ -4703,6 +4727,9 @@ msgstr "Issu du jeu de règles"
 msgid "From top"
 msgstr "Depuis le haut"
 
+msgid "Full"
+msgstr "Complet"
+
 msgid "Full name"
 msgstr "Nom complet"
 
@@ -5018,6 +5045,12 @@ msgstr "Horaires"
 msgid "How a player's Keizer total is rounded for the ranking and the pairings table."
 msgstr "La manière dont le total Keizer d'un·e joueur·euse est arrondi pour le classement et la table des appariements."
 
+msgid "How do you want to distribute the boards across the pages?"
+msgstr "Comment voulez-vous répartir les échiquiers sur les pages ?"
+
+msgid "How do you want to distribute the players across the pages?"
+msgstr "Comment voulez-vous répartir les joueur·euses sur les pages ?"
+
 msgid "How each match's colours are decided."
 msgstr "Comment sont déterminées les couleurs de chaque partie."
 
@@ -5033,6 +5066,18 @@ msgstr "Comment tout s'articule"
 #, python-format
 msgid "How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay."
 msgstr "Durée d'affichage de chaque page quand les pages défilent, sur un canal ou dans un écran rotatif. Vide, un canal affiche chaque page %(seconds)d secondes et un écran rotatif selon son propre délai."
+
+msgid "How many boards per page?"
+msgstr "Combien d'échiquiers par page ?"
+
+msgid "How many columns?"
+msgstr "Combien de colonnes ?"
+
+msgid "How many pages?"
+msgstr "Combien de pages ?"
+
+msgid "How many players per page?"
+msgstr "Combien de joueur·euses par page ?"
 
 msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
 msgstr "Combien de fois le compétiteur a terminé à la place choisie (p. ex. nombre de premières places). Un décompte, donc non pondéré."
@@ -5320,6 +5365,9 @@ msgstr "Installer un plug-in rend ses fonctionnalités disponibles dans toute l�
 
 msgid "Installing…"
 msgstr "Installation…"
+
+msgid "Intermediate"
+msgstr "Intermédiaire"
 
 msgid "International Arbiter"
 msgstr "Arbitre International·e"
@@ -5732,6 +5780,12 @@ msgstr "La longueur ({len}) doit correspondre au nombre de joueur·euses par mat
 
 msgid "Lesotho"
 msgstr "Lesotho"
+
+msgid "Let players check-in"
+msgstr "Permettre aux joueur·euses de pointer"
+
+msgid "Let the players enter the results"
+msgstr "Permettre aux joueur·euses de saisir les résultats"
 
 msgid "Level specific colours"
 msgstr "Couleurs spécifiques au niveau"
@@ -6246,6 +6300,9 @@ msgstr "Min"
 msgid "Min. age category"
 msgstr "Catégorie d'âge min."
 
+msgid "Minimal"
+msgstr "Minimal"
+
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
 
@@ -6556,6 +6613,9 @@ msgstr "Nouveau tournoi"
 #, python-format
 msgid "Newer versions of these lists are available: %(lists)s. Update them before relying on this check."
 msgstr "Des versions plus récentes de ces listes sont disponibles : %(lists)s. Mettez-les à jour avant de vous fier à cette vérification."
+
+msgid "Next"
+msgstr "Suivant"
 
 msgid "Next round"
 msgstr "Ronde suivante"
@@ -7438,6 +7498,9 @@ msgstr "Ouvrir l'événement."
 msgid "Open the profile in a new tab."
 msgstr "Ouvrir la fiche dans un nouvel onglet."
 
+msgid "Open the standard screen creation form"
+msgstr "Ouvrir le formulaire standard de création des écrans"
+
 msgid "Open this address once on each device, or scan the code. Use as many devices as you like: they all show whatever you send to this channel."
 msgstr "Ouvrez cette adresse une fois sur chaque appareil, ou scannez le code. Utilisez autant d'appareils que vous le souhaitez : ils affichent tous ce que vous envoyez à ce canal."
 
@@ -7857,8 +7920,14 @@ msgstr "App. %f-%l"
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
+msgid "Pairings by board screen creation wizard"
+msgstr "Assistant de création d'écran d'appariements par échiquier"
+
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
+
+msgid "Pairings by player screen creation wizard"
+msgstr "Assistant de création d'écran d'appariements par ordre alphabétique"
 
 msgid "Pairings changed by hand"
 msgstr "Appariements modifiés à la main"
@@ -8316,6 +8385,9 @@ msgstr "Salle de jeu"
 msgid "Playing in tournament [%(name)s]"
 msgstr "Participe au tournoi [%(name)s]"
 
+msgid "Please answer the question."
+msgstr "Veuillez répondre à la question."
+
 msgid "Please ask your administrator to set a password."
 msgstr "Veuillez demander à votre administrateur·ice de définir un mot de passe."
 
@@ -8339,6 +8411,9 @@ msgstr "Veuillez choisir une couleur valide."
 
 msgid "Please choose a variation."
 msgstr "Veuillez choisir une variante."
+
+msgid "Please choose an answer."
+msgstr "Veuillez choisir une réponse."
 
 msgid "Please choose the candidate."
 msgstr "Veuillez choisir le·la candidat·e."
@@ -10051,8 +10126,14 @@ msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 msgid "Select the signee"
 msgstr "Sélectionner le·la signataire"
 
+msgid "Select the tournament:"
+msgstr "Sélectionnez le tournoi :"
+
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
+
+msgid "Select the tournaments:"
+msgstr "Sélectionnez les tournois :"
 
 msgid "Select this empty table (forfeit for the paired player)"
 msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse apparié·e)"
@@ -10224,6 +10305,15 @@ msgstr "Serveur Sharly Chess"
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
 
+msgid "Sharly Chess will calculate the number of boards per page."
+msgstr "Sharly Chess calculera le nombre d'échiquiers par page."
+
+msgid "Sharly Chess will calculate the number of pages for you."
+msgstr "Sharly Chess calculera le nombre de pages pour vous."
+
+msgid "Sharly Chess will calculate the number of players per page."
+msgstr "Sharly Chess calculera le nombre de joueur·euses par page."
+
 msgid "Sharly Chess will restart to complete the move."
 msgstr "Sharly Chess va redémarrer pour terminer le déplacement."
 
@@ -10256,8 +10346,14 @@ msgstr "Affichez appariements, classements, résultats et pointage partout dans 
 msgid "Show the members of each team"
 msgstr "Afficher les membres de chaque équipe"
 
+msgid "Show the pairings"
+msgstr "Afficher les appariements"
+
 msgid "Show the pairings of this round on the screens and send them to the online services."
 msgstr "Afficher les appariements de cette ronde sur les écrans et les envoyer aux services en ligne."
+
+msgid "Show the players' check-in status"
+msgstr "Afficher le pointage des joueur·euses"
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
@@ -11821,6 +11917,12 @@ msgstr "Le numéro de table du premier match à sélectionner."
 msgid "The table number of the last match to select."
 msgstr "Le numéro de table du dernier match à sélectionner."
 
+msgid "The team matches and the boards"
+msgstr "Les matchs d'équipes et les échiquiers"
+
+msgid "The team matches only"
+msgstr "Les matchs d'équipes seulement"
+
 msgid "The team order sets each team's pairing number, shown on each card."
 msgstr "L'ordre des équipes définit le numéro d'appariement de chaque équipe, indiqué sur chaque carte."
 
@@ -11903,6 +12005,10 @@ msgstr "L'image téléversée est trop volumineuse (max. 2 Mo)."
 #, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
+
+#, python-brace-format
+msgid "The value must be at least {min}."
+msgstr "La valeur doit être au moins {min}."
 
 #, python-brace-format
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
@@ -13166,6 +13272,9 @@ msgstr "Utiliser le Elo estimé"
 msgid "Use the previous round's lineup (untick to set this round)"
 msgstr "Utiliser la composition de la ronde précédente (décocher pour définir cette ronde)"
 
+msgid "Use the screen creation wizard"
+msgstr "Utiliser l'assistant de création d'écran"
+
 msgid "Use the timer defined for each screen."
 msgstr "Utiliser le chronomètre défini pour chaque écran."
 
@@ -13400,6 +13509,15 @@ msgstr "Pondérer la valeur de chaque étape comptée par le coefficient du tour
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
+msgid "What do you want to display?"
+msgstr "Que voulez-vous afficher ?"
+
+msgid "What do you want to do?"
+msgstr "Que voulez-vous faire ?"
+
+msgid "What do you want to show?"
+msgstr "Que voulez-vous afficher ?"
+
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr "Ce qui a été inscrit dans le TRF : atteintes à l'intégrité des appariements, modifications des paramètres et parties corrigées pour le rapport Elo."
 
@@ -13448,6 +13566,9 @@ msgstr "Où"
 
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
 msgstr "La combinaison du score de l'adversaire et du score propre utilisée. Les points de match (PM) récompensent la victoire du match ; les points de partie (PP) récompensent l'écart de score."
+
+msgid "Which display format do you want?"
+msgstr "Quel format d'affichage voulez-vous ?"
 
 msgid "Which score is the ranking based on. "
 msgstr "Score sur lequel le classement est basé."
@@ -14526,6 +14647,12 @@ msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
 msgstr[0] "{count} club représenté"
 msgstr[1] "{count} clubs représentés"
+
+#, python-brace-format
+msgid "{count} column"
+msgid_plural "{count} columns"
+msgstr[0] "{count} colonne"
+msgstr[1] "{count} colonnes"
 
 #, python-brace-format
 msgid "{count} federation represented"

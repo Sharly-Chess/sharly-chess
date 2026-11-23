@@ -1,0 +1,24 @@
+{# The field of a WizardRadioQuestion, included by the wizard modals (see admin/screens/screen_wizard_modal.html). #}
+{% for option in question.options %}
+    {% set option_id = field|replace('_', '-') ~ '-' ~ loop.index0 %}
+    <div class="form-check mb-2">
+        <input
+            id="{{ option_id }}"
+            class="form-check-input"
+            type="radio"
+            name="{{ field }}"
+            value="{{ loop.index0 }}"
+            data-next="{{ wizard.enabled_question_id(option.next or question.next) or '' }}"
+            {% if data.get(field) == loop.index0|string %}checked{% endif %}
+        >
+        <label class="form-check-label" for="{{ option_id }}">
+            <span class="screen-wizard-option-text">{{ option.text }}</span>
+            {% if option.help %}
+                <span class="d-block form-text mt-0">{{ option.help }}</span>
+            {% endif %}
+        </label>
+    </div>
+{% endfor %}
+{% if field in errors %}
+    <div class="invalid-feedback d-block">{{ errors[field] }}</div>
+{% endif %}

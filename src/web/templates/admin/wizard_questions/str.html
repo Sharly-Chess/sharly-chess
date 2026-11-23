@@ -1,0 +1,7 @@
+{# The field of a WizardStrQuestion, included by the wizard modals (see admin/screens/screen_wizard_modal.html). #}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{{ admin_macros.text_input(
+    name=field,
+    label='',
+    data=data, errors=errors
+) }}

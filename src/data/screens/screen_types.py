@@ -1,12 +1,21 @@
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, NamedTuple, override, cast
+from typing import TYPE_CHECKING, NamedTuple, override, cast, Any
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from plugins.manager import plugin_manager
+from data.wizard import (
+    Wizard,
+    WizardIntQuestion,
+    WizardOption,
+    WizardQuestion,
+    WizardRadioQuestion,
+    WizardTournamentQuestion,
+    WizardTournamentsQuestion,
+)
 from utils.entity import IdentifiableEntity
 from utils.enum import (
     BoardSelectionMode,
@@ -817,6 +826,213 @@ class ScreenType(IdentifiableEntity, ABC):
             for screen_set in screen.sorted_screen_sets
         )
 
+    @classmethod
+    def create_wizard(cls, event: Event) -> Wizard | None:
+        """The information of the wizard opened when creating a
+        screen of this type. No wizard is opened if None."""
+        return None
+
+    @classmethod
+    def create_screen_from_wizard_answers(
+        cls,
+        event: Event,
+        create_wizard_answers: dict[str, Any],
+    ) -> StoredScreen | StoredFamily:
+        """Create a stored screen (or a stored family for a screen over
+        several pages) with the wizard answers, by question ID. The
+        screen sets of a stored screen are given by its
+        ``init_set_tournament_ids``. This method should be overridden only
+        when a wizard is used for the screen type."""
+        raise NotImplementedError
+
+    @staticmethod
+    def _wizard_result_input_question(
+        shown_next: str, input_next: str
+    ) -> WizardRadioQuestion:
+        """The question of a creation wizard asking whether the screen shows
+        the pairings (the next question is then *shown_next*) or lets the
+        players enter the results (*input_next*), its answer being
+        ``accepts_input``."""
+        return WizardRadioQuestion(
+            text=_('What do you want to do?'),
+            options=[
+                WizardOption(
+                    value=False,
+                    text=_('Show the pairings'),
+                    next=shown_next,
+                ),
+                WizardOption(
+                    value=True,
+                    text=_('Let the players enter the results'),
+                    next=input_next,
+                ),
+            ],
+            default_value=False,
+        )
+
+    @classmethod
+    def _wizard_layout_questions(
+        cls,
+        event: Event,
+        method_text: str,
+        number_option_text: str,
+        pages_option_help: str,
+        number_text: str,
+        columns_default: int | None = None,
+    ) -> dict[str, WizardQuestion]:
+        """The questions of a creation wizard on the layout of the screen,
+        common to the types showing the items (players, boards...) of
+        tournaments: one or more tournaments on one page, or one tournament
+        over several pages, then the columns and the timer. The items are
+        distributed across the pages (question *method_text*) by a number of
+        items per page (option *number_option_text*, question *number_text*)
+        or by a number of pages (option helped by *pages_option_help*). The
+        number of columns is *columns_default* by default (1 if None). The
+        first question is 'paged'; see _stored_from_wizard_answers()."""
+        screen_type = cls()
+        # The tournaments a screen of this type can show.
+        tournaments = [
+            tournament
+            for tournament in event.sorted_tournaments
+            if screen_type.shows_tournament(tournament)
+        ]
+        return {
+            'paged': WizardRadioQuestion(
+                text=_('What do you want to display?'),
+                options=[
+                    WizardOption(
+                        value=False,
+                        text=_('One or more tournaments, on one page'),
+                        next='switch_tournaments',
+                    ),
+                    WizardOption(
+                        value=True,
+                        text=_('One tournament, over several pages'),
+                        next='paged_tournament',
+                    ),
+                ],
+                default_value=False,
+            ),
+            'switch_tournaments': WizardTournamentsQuestion(
+                tournaments,
+                next='columns',
+            ),
+            'paged_tournament': WizardTournamentQuestion(
+                tournaments,
+                next='paged_method',
+            ),
+            'paged_method': WizardRadioQuestion(
+                text=method_text,
+                options=[
+                    WizardOption(
+                        value='number',
+                        text=number_option_text,
+                        help=_(
+                            'Sharly Chess will calculate the number of pages for you.'
+                        ),
+                        next='paged_number',
+                    ),
+                    WizardOption(
+                        value='pages',
+                        text=_('A fixed number of pages'),
+                        help=pages_option_help,
+                        next='paged_pages',
+                    ),
+                ],
+                default_value='number',
+            ),
+            'paged_number': WizardIntQuestion(
+                text=number_text,
+                min=1,
+                next='columns',
+            ),
+            'paged_pages': WizardIntQuestion(
+                text=_('How many pages?'),
+                min=1,
+                next='columns',
+            ),
+            'columns': WizardRadioQuestion(
+                text=_('How many columns?'),
+                options=[
+                    WizardOption(
+                        value=value,
+                        text=ngettext(
+                            '{count} column', '{count} columns', value
+                        ).format(count=value),
+                    )
+                    for value in range(1, 5)
+                ],
+                default_value=columns_default or 1,
+                next='timer',
+            ),
+            'timer': WizardRadioQuestion(
+                # Not asked when the event has no timer.
+                disabled=not event.timers_by_id,
+                text=_('Do you want to display a timer?'),
+                options=[
+                    WizardOption(value=None, text=_('No timer')),
+                    *(
+                        WizardOption(value=timer.id, text=timer.name)
+                        for timer in event.timers_by_id.values()
+                    ),
+                ],
+                default_value=None,
+            ),
+        }
+
+    @classmethod
+    def _stored_from_wizard_answers(
+        cls,
+        event: Event,
+        answers: dict[str, Any],
+        accepts_input: bool,
+        **fields: Any,
+    ) -> StoredScreen | StoredFamily:
+        """The stored screen, or the stored family when over several pages,
+        built from the answers to the questions of
+        _wizard_layout_questions(), *accepts_input* and the *fields* of the
+        type."""
+        from database.sqlite.event.event_store import StoredFamily, StoredScreen
+
+        screen_type = cls()
+        # Not answered when the event has no timer.
+        timer_id: int | None = answers.get('timer')
+        if answers['paged']:
+            # One tournament over several pages: a family, split either by a
+            # number of items per page or by a number of pages.
+            return StoredFamily(
+                id=None,
+                uniq_id=event.get_unused_family_uniq_id(screen_type),
+                name=None,
+                type=screen_type.id,
+                tournament_id=answers['paged_tournament'],
+                columns=answers['columns'],
+                font_size=None,
+                menu_text='',
+                timer_id=timer_id,
+                accepts_input=accepts_input,
+                input_exit_button=False,
+                number=answers.get('paged_number'),
+                parts=answers.get('paged_pages'),
+                **fields,
+            )
+        # One or more tournaments on one page: a screen with a set for each
+        # tournament.
+        return StoredScreen(
+            id=None,
+            uniq_id=event.get_unused_screen_uniq_id(screen_type),
+            name=None,
+            type=screen_type.id,
+            columns=answers['columns'],
+            font_size=None,
+            menu_text=None,
+            timer_id=timer_id,
+            accepts_input=accepts_input,
+            input_exit_button=False,
+            init_set_tournament_ids=answers['switch_tournaments'],
+            **fields,
+        )
+
 
 class CheckInScreenType(ScreenType):
     @staticmethod
@@ -959,6 +1175,54 @@ class CheckInScreenType(ScreenType):
             else _('The number of the last player to select.')
         )
         return selection
+
+    @classmethod
+    @override
+    def create_wizard(cls, event: Event) -> Wizard:
+        return Wizard(
+            title=_('Check-in screen creation wizard'),
+            questions={
+                'accepts_input': WizardRadioQuestion(
+                    text=_('What do you want to do?'),
+                    options=[
+                        WizardOption(
+                            value=False,
+                            text=_("Show the players' check-in status"),
+                        ),
+                        WizardOption(
+                            value=True,
+                            text=_('Let players check-in'),
+                        ),
+                    ],
+                    default_value=False,
+                    next='paged',
+                ),
+                **cls._wizard_layout_questions(
+                    event,
+                    method_text=_(
+                        'How do you want to distribute the players across the pages?'
+                    ),
+                    number_option_text=_('A fixed number of players on each page'),
+                    pages_option_help=_(
+                        'Sharly Chess will calculate the number of players per page.'
+                    ),
+                    number_text=_('How many players per page?'),
+                ),
+            },
+        )
+
+    @classmethod
+    @override
+    def create_screen_from_wizard_answers(
+        cls,
+        event: Event,
+        create_wizard_answers: dict[str, Any],
+    ) -> StoredScreen | StoredFamily:
+        return cls._stored_from_wizard_answers(
+            event,
+            create_wizard_answers,
+            accepts_input=create_wizard_answers['accepts_input'],
+        )
 
 
 class BoardsScreenType(ScreenType):
@@ -1127,6 +1391,65 @@ class BoardsScreenType(ScreenType):
     @override
     def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
         return _board_family_number_strings(family)
+
+    @classmethod
+    @override
+    def create_wizard(cls, event: Event) -> Wizard:
+        return Wizard(
+            title=_('Pairings by board screen creation wizard'),
+            questions={
+                'accepts_input': cls._wizard_result_input_question(
+                    shown_next='hide_players', input_next='paged'
+                ),
+                'hide_players': WizardRadioQuestion(
+                    # Only the matches of team tournaments can be shown
+                    # without their players.
+                    disabled=not event.is_team_event,
+                    text=_('What do you want to show?'),
+                    options=[
+                        WizardOption(
+                            value=False,
+                            text=_('The team matches and the boards'),
+                        ),
+                        WizardOption(
+                            value=True,
+                            text=_('The team matches only'),
+                        ),
+                    ],
+                    default_value=False,
+                    next='paged',
+                ),
+                **cls._wizard_layout_questions(
+                    event,
+                    method_text=_(
+                        'How do you want to distribute the boards across the pages?'
+                    ),
+                    number_option_text=_('A fixed number of boards on each page'),
+                    pages_option_help=_(
+                        'Sharly Chess will calculate the number of boards per page.'
+                    ),
+                    number_text=_('How many boards per page?'),
+                ),
+            },
+        )
+
+    @classmethod
+    @override
+    def create_screen_from_wizard_answers(
+        cls,
+        event: Event,
+        create_wizard_answers: dict[str, Any],
+    ) -> StoredScreen | StoredFamily:
+        accepts_input: bool = create_wizard_answers['accepts_input']
+        return cls._stored_from_wizard_answers(
+            event,
+            create_wizard_answers,
+            accepts_input=accepts_input,
+            # Not asked when the results are entered, nor in an individual
+            # event.
+            boards_hide_players=bool(create_wizard_answers.get('hide_players'))
+            and not accepts_input,
+        )
 
 
 class PlayersScreenType(ScreenType):
@@ -1395,6 +1718,101 @@ class PlayersScreenType(ScreenType):
             else _('The number of the last player to select.')
         )
         return selection
+
+    @staticmethod
+    def _wizard_format_option(
+        text: str,
+        player_format: PlayersScreenPlayerFormat,
+        board_format: PlayersScreenBoardFormat,
+        opponent_format: PlayersScreenOpponentFormat,
+    ) -> WizardOption:
+        """An option of the format question of the creation wizard, setting
+        the three formats, with an example as help."""
+        examples = [player_format.example, board_format.example]
+        if opponent_format != PlayersScreenOpponentFormat.NONE:
+            examples.append(opponent_format.example)
+        return WizardOption(
+            value=(player_format, board_format, opponent_format),
+            text=text,
+            help=' — '.join(examples),
+        )
+
+    @classmethod
+    @override
+    def create_wizard(cls, event: Event) -> Wizard:
+        full_format = cls._wizard_format_option(
+            _('Full'),
+            PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS,
+            PlayersScreenBoardFormat.FULL,
+            PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS,
+        )
+        return Wizard(
+            title=_('Pairings by player screen creation wizard'),
+            questions={
+                'accepts_input': cls._wizard_result_input_question(
+                    shown_next='show_unpaired', input_next='show_unpaired'
+                ),
+                'show_unpaired': WizardRadioQuestion(
+                    text=_('Do you want to show the unpaired players?'),
+                    options=[
+                        WizardOption(value=True, text=_('Yes')),
+                        WizardOption(value=False, text=_('No')),
+                    ],
+                    default_value=True,
+                    next='format',
+                ),
+                'format': WizardRadioQuestion(
+                    text=_('Which display format do you want?'),
+                    options=[
+                        full_format,
+                        cls._wizard_format_option(
+                            _('Intermediate'),
+                            PlayersScreenPlayerFormat.NAME_RATING,
+                            PlayersScreenBoardFormat.MEDIUM_2,
+                            PlayersScreenOpponentFormat.NAME_RATING,
+                        ),
+                        cls._wizard_format_option(
+                            _('Minimal'),
+                            PlayersScreenPlayerFormat.NAME,
+                            PlayersScreenBoardFormat.MINIMAL,
+                            PlayersScreenOpponentFormat.NONE,
+                        ),
+                    ],
+                    default_value=full_format.value,
+                    next='paged',
+                ),
+                **cls._wizard_layout_questions(
+                    event,
+                    method_text=_(
+                        'How do you want to distribute the players across the pages?'
+                    ),
+                    number_option_text=_('A fixed number of players on each page'),
+                    pages_option_help=_(
+                        'Sharly Chess will calculate the number of players per page.'
+                    ),
+                    number_text=_('How many players per page?'),
+                    columns_default=cls.default_columns(event),
+                ),
+            },
+        )
+
+    @classmethod
+    @override
+    def create_screen_from_wizard_answers(
+        cls,
+        event: Event,
+        create_wizard_answers: dict[str, Any],
+    ) -> StoredScreen | StoredFamily:
+        player_format, board_format, opponent_format = create_wizard_answers['format']
+        return cls._stored_from_wizard_answers(
+            event,
+            create_wizard_answers,
+            accepts_input=create_wizard_answers['accepts_input'],
+            players_show_unpaired=create_wizard_answers['show_unpaired'],
+            players_player_format=player_format.value,
+            players_board_format=board_format.value,
+            players_opponent_format=opponent_format.value,
+        )
 
 
 class ResultsScreenType(ScreenType):

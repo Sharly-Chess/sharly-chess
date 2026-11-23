@@ -1,0 +1,304 @@
+{#
+    The wizard creating a screen, built from the Wizard of the screen type
+    (see data/wizard.py); the field of each question is shown by the
+    template of its type (admin/wizard_questions/<type>.html). The questions are asked one after the other, starting with
+    the first one: the question after an answered one is given by the option
+    chosen (radio questions) or else by the question itself; a question with
+    no next question is the last one. Disabled questions are not shown (the
+    next questions skip them).
+    The questions answered are listed above the one asked, with their
+    answers. The first time a question is asked, it is set to its default
+    value (default_value); going back (Back) keeps the answers given.
+    Choosing an option of a radio question answers it and moves on to the
+    next question.
+    Once the last question answered, the wizard offers to create the screen,
+    and to open it in a new tab. All the answers are then sent, the server
+    following the questions the same way: on an error it sends the wizard
+    back with the questions asked (wizard_path), the last one being the one
+    in error; else it redirects to the screens of the type, giving the URL of
+    the screen created (SC-Screen-Url header) to open it.
+#}
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'lg' %}
+{% set modal_class = 'admin-screen-wizard-modal' %}
+
+{% block title %}
+    {{ wizard.title }}
+{% endblock %}
+
+{% block body %}
+    <form
+        id="modal-form"
+        class="screen-wizard-form"
+        hx-post="{{ url_for('admin-screen-wizard-create', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
+        hx-trigger="wizard-submit"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        data-first-question="{{ wizard.first_question_id or '' }}"
+        data-path='{{ wizard_path | tojson }}'
+        data-yes-label="{{ _('Yes') }}"
+        data-no-label="{{ _('No') }}"
+    >
+        <div class="screen-wizard-answers" data-testid="screen-wizard-answers"></div>
+        {% for question_id, question in wizard.questions.items() if not question.disabled %}
+            {% set field = wizard.answer_field(question_id) %}
+            <div
+                class="screen-wizard-question"
+                data-question-id="{{ question_id }}"
+                data-type="{{ question.type }}"
+                data-next="{{ wizard.enabled_question_id(question.next) or '' }}"
+                data-default="{{ wizard_defaults[field] }}"
+                data-testid="screen-wizard-question-{{ question_id }}"
+                hidden
+            >
+                <p class="screen-wizard-question-text fw-semibold mb-2">{{ question.text }}</p>
+                {% if question.help %}
+                    <p class="form-text mt-0 mb-2">{{ question.help }}</p>
+                {% endif %}
+                {# The field, by the type of the question. #}
+                {% include '/admin/wizard_questions/' ~ question.type ~ '.html' %}
+                <div class="invalid-feedback screen-wizard-required">{{ _('Please answer the question.') }}</div>
+            </div>
+        {% endfor %}
+        {# Once the last question answered. #}
+        {# (d-grid on an inner block: its display would show the hidden one.) #}
+        <div class="screen-wizard-final" data-testid="screen-wizard-final" hidden>
+            <div class="d-grid gap-3">
+            {{ components.button(
+                _('Create the screen'),
+                kind='primary',
+                icon='add',
+                class='py-3',
+                attrs={'id': 'screen-wizard-create', 'data-testid': 'screen-wizard-create'},
+            ) }}
+            {{ components.button(
+                _('Create the screen and open it in a new tab'),
+                kind='outline',
+                icon='external',
+                class='py-3',
+                attrs={'id': 'screen-wizard-create-open', 'data-testid': 'screen-wizard-create-open'},
+            ) }}
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {{ components.button(_('Back'), kind='outline-secondary', icon='back', attrs={'id': 'screen-wizard-back', 'hidden': true, 'data-testid': 'screen-wizard-back'}) }}
+    {{ components.button(_('Next'), kind='primary', icon='bi-arrow-right-circle-fill', attrs={'id': 'screen-wizard-next', 'data-testid': 'screen-wizard-next'}) }}
+{% endblock %}
+
+{% block after_modal %}
+    <script>
+        (() => {
+            const form = document.querySelector('.screen-wizard-form');
+            const questions = new Map(
+                [...form.querySelectorAll('.screen-wizard-question')].map(
+                    (question) => [question.dataset.questionId, question]
+                )
+            );
+            const final = form.querySelector('.screen-wizard-final');
+            const backButton = document.getElementById('screen-wizard-back');
+            const nextButton = document.getElementById('screen-wizard-next');
+            const createButton = document.getElementById('screen-wizard-create');
+            const createOpenButton = document.getElementById('screen-wizard-create-open');
+            const answersList = form.querySelector('.screen-wizard-answers');
+            // The questions answered before the one shown, to go back.
+            const history = JSON.parse(form.dataset.path || '[]');
+            // The questions already asked (back from the server with an
+            // error: those of the path, holding the answers sent).
+            const asked = new Set(history);
+            // The question shown, null once the last one answered.
+            let current = null;
+            // The tab opened to show the screen created.
+            let screenTab = null;
+
+            // The ID of the question following the current one ('' when the
+            // current question is the last one), null while a radio question
+            // is not answered.
+            function nextQuestionId() {
+                if (current.dataset.type === 'radio') {
+                    const checked = current.querySelector('input[type=radio]:checked');
+                    return checked ? checked.dataset.next : null;
+                }
+                return current.dataset.next;
+            }
+
+            // The answer given to a question, as shown in the list of the
+            // questions answered.
+            function answerText(question) {
+                switch (question.dataset.type) {
+                    case 'radio': {
+                        const checked = question.querySelector('input[type=radio]:checked');
+                        return checked
+                            ? checked.closest('.form-check').querySelector('.screen-wizard-option-text').textContent.trim()
+                            : '';
+                    }
+                    case 'bool':
+                        return question.querySelector('input[type=checkbox]').checked
+                            ? form.dataset.yesLabel
+                            : form.dataset.noLabel;
+                    case 'tournament':
+                    case 'tournaments':
+                        return [...question.querySelector('select').selectedOptions]
+                            .map((option) => option.textContent.trim())
+                            .join(', ');
+                    default:
+                        return question.querySelector('input').value;
+                }
+            }
+
+            // The questions answered, above the one asked.
+            function renderAnswers() {
+                answersList.replaceChildren(...history.map((questionId) => {
+                    const question = questions.get(questionId);
+                    const row = document.createElement('div');
+                    row.className = 'screen-wizard-answer mb-3';
+                    row.dataset.testid = 'screen-wizard-answer-' + questionId;
+                    const questionText = document.createElement('div');
+                    questionText.className = 'form-text mt-0';
+                    questionText.textContent = question.querySelector('.screen-wizard-question-text').textContent.trim();
+                    const answer = document.createElement('div');
+                    answer.className = 'fw-semibold';
+                    answer.textContent = answerText(question);
+                    row.append(questionText, answer);
+                    return row;
+                }));
+            }
+
+            // Show the question *questionId*, or the creation buttons when
+            // null (the last question answered).
+            function show(questionId) {
+                current = questionId === null ? null : questions.get(questionId);
+                // The first time a question is asked, it is set to its
+                // default value.
+                if (current && !asked.has(questionId)) {
+                    asked.add(questionId);
+                    setAnswer(current, current.dataset.default);
+                }
+                questions.forEach((question) => question.hidden = question !== current);
+                final.hidden = current !== null;
+                renderAnswers();
+                backButton.hidden = history.length === 0;
+                nextButton.hidden = current === null;
+                // The focus on the button answering the question.
+                (current ? nextButton : createButton).focus();
+            }
+
+            function isAnswered() {
+                switch (current.dataset.type) {
+                    case 'radio':
+                        return current.querySelector('input[type=radio]:checked') !== null;
+                    case 'int':
+                    case 'str': {
+                        const input = current.querySelector('input');
+                        if (current.dataset.type === 'int' && input.value === '') {
+                            return false;
+                        }
+                        return input.reportValidity();
+                    }
+                    case 'tournament':
+                    case 'tournaments':
+                        return $(current.querySelector('select')).val()?.length > 0;
+                    default:
+                        return true;
+                }
+            }
+
+            function goNext() {
+                if (current === null) {
+                    // Once the last question answered, Enter creates the
+                    // screen.
+                    create(false);
+                    return;
+                }
+                const required = current.querySelector('.screen-wizard-required');
+                const answered = isAnswered();
+                required.classList.toggle('d-block', !answered);
+                if (!answered) {
+                    return;
+                }
+                const nextId = nextQuestionId();
+                history.push(current.dataset.questionId);
+                show(nextId === '' ? null : nextId);
+            }
+
+            // Send the answers to create the screen, opening it in a new tab
+            // if *open*.
+            function create(open) {
+                // Opened at once, within the click (or the browser blocks it),
+                // then sent to the screen once created.
+                screenTab = open ? window.open('', '_blank') : null;
+                htmx.trigger(form, 'wizard-submit');
+            }
+
+            // Set the answer to a question from its form value (see
+            // default_form_value), '' for no answer.
+            function setAnswer(question, value) {
+                question.querySelectorAll('input[type=radio]')
+                    .forEach((input) => input.checked = input.value === value);
+                question.querySelectorAll('input[type=checkbox]')
+                    .forEach((input) => input.checked = value === 'on');
+                // Only the field of the answer (not the search field of
+                // select2, for instance).
+                question.querySelectorAll('input[name^="answer_"]:not([type=radio]):not([type=checkbox]):not([type=hidden])')
+                    .forEach((input) => input.value = value);
+                question.querySelectorAll('select').forEach((select) => $(select).val(
+                    select.multiple ? value.split(';').filter((id) => id) : value || null
+                ).trigger('change'));
+            }
+
+            // Go back to the previous question, keeping the answers given.
+            function goBack() {
+                if (history.length) {
+                    current?.querySelector('.screen-wizard-required').classList.remove('d-block');
+                    show(history.pop());
+                }
+            }
+
+            form.addEventListener('change', (event) => {
+                if (current === null) {
+                    return;
+                }
+                current.querySelector('.screen-wizard-required').classList.remove('d-block');
+                if (event.target.type === 'radio' && current.contains(event.target)) {
+                    // Choosing an option answers the question.
+                    goNext();
+                }
+            });
+            $(form).find('select').on('select2:select select2:unselect', () => {
+                current?.querySelector('.screen-wizard-required').classList.remove('d-block');
+            });
+            // The screen created: the new tab shows it (the page is
+            // redirected to the screens); else the tab is closed.
+            form.addEventListener('htmx:beforeOnLoad', (event) => {
+                if (screenTab === null) {
+                    return;
+                }
+                const screenUrl = event.detail.xhr.getResponseHeader('SC-Screen-Url');
+                if (screenUrl) {
+                    screenTab.location.href = screenUrl;
+                } else {
+                    screenTab.close();
+                }
+                screenTab = null;
+            });
+            // Enter (see modals.js) answers the question shown.
+            form.addEventListener('enterKeypressFromModal', goNext);
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                goNext();
+            });
+            nextButton.addEventListener('click', goNext);
+            createButton.addEventListener('click', () => create(false));
+            createOpenButton.addEventListener('click', () => create(true));
+            backButton.addEventListener('click', goBack);
+
+            // Back from the server with an error: the last question asked is
+            // the one in error.
+            const start = history.length ? history.pop() : form.dataset.firstQuestion;
+            show(start);
+        })();
+    </script>
+{% endblock %}

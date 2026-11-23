@@ -7,7 +7,7 @@ from litestar import post, get, delete, patch
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException, ClientException
 from litestar.params import Body, FromPath, FromQuery
-from litestar.plugins.htmx import ClientRefresh, HTMXRequest
+from litestar.plugins.htmx import ClientRedirect, ClientRefresh, HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -29,7 +29,11 @@ from data.screens.screen_types import ScreenType
 from utils import Utils
 from utils.enum import BoardSelectionMode
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredScreen, StoredScreenSet
+from database.sqlite.event.event_store import (
+    StoredFamily,
+    StoredScreen,
+    StoredScreenSet,
+)
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -138,6 +142,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
         scroll_to_screen_id: int | None = None,
+        wizard_path: list[str] | None = None,
     ) -> HTMXTemplate | Redirect:
         web_context = ScreenAdminWebContext(
             request,
@@ -330,6 +335,31 @@ class ScreenAdminRenderer(BaseEventAdminController):
                     'action': action,
                     'data': data,
                     'errors': errors,
+                }
+            case 'screen_create_choice':
+                template_context |= {
+                    'modal': modal,
+                }
+            case 'screen_wizard':
+                wizard_screen_type = web_context.screen_type
+                assert wizard_screen_type is not None
+                wizard = wizard_screen_type.create_wizard(event)
+                if wizard is None:
+                    raise NotFoundException(
+                        f'No creation wizard for screen type [{wizard_screen_type.id}].'
+                    )
+                # The default values of the questions, as form data.
+                wizard_defaults = wizard.default_data
+                template_context |= {
+                    'modal': modal,
+                    'wizard': wizard,
+                    'wizard_defaults': wizard_defaults,
+                    # The questions already answered, to go back to the
+                    # one in error.
+                    'wizard_path': wizard_path or [],
+                    # The default values when the wizard opens.
+                    'data': wizard_defaults if data is None else data,
+                    'errors': errors or {},
                 }
             case 'screen_sets':
                 template_context |= {
@@ -834,6 +864,153 @@ class ScreenAdminController(ScreenAdminRenderer):
             screen_id=None,
             screen_type=screen_type,
         )
+
+    @get(
+        path='/screen-create-choice-modal/{event_uniq_id:str}/{screen_type:str}',
+        name='admin-screen-create-choice-modal',
+    )
+    async def htmx_admin_screen_create_choice_modal(
+        self,
+        request: HTMXRequest,
+        screen_type: FromPath[str],
+    ) -> Template | Redirect:
+        """The modal opened to create a screen: the choice between the
+        wizard and the standard form when the screen type has a wizard, the
+        standard form otherwise."""
+        web_context = ScreenAdminWebContext(request, screen_type_id=screen_type)
+        screen_type_obj = web_context.screen_type
+        has_wizard = (
+            screen_type_obj is not None
+            and screen_type_obj.create_wizard(web_context.get_admin_event()) is not None
+        )
+        return self._admin_event_screens_render(
+            request,
+            modal='screen_create_choice' if has_wizard else 'screen',
+            action='create',
+            screen_id=None,
+            screen_type=screen_type,
+        )
+
+    @get(
+        path='/screen-wizard-modal/{event_uniq_id:str}/{screen_type:str}',
+        name='admin-screen-wizard-modal',
+    )
+    async def htmx_admin_screen_wizard_modal(
+        self,
+        request: HTMXRequest,
+        screen_type: FromPath[str],
+    ) -> Template | Redirect:
+        return self._admin_event_screens_render(
+            request,
+            modal='screen_wizard',
+            screen_id=None,
+            screen_type=screen_type,
+        )
+
+    @post(
+        path='/screen-wizard-create/{event_uniq_id:str}/{screen_type:str}',
+        name='admin-screen-wizard-create',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_screen_wizard_create(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        screen_type: FromPath[str],
+    ) -> Template | Redirect | ClientRedirect:
+        """Create a screen (or a paged screen) from the answers to the
+        wizard of its type, and redirect to the screens of the type."""
+        form_data = WebContext.flatten_list_data(data)
+        web_context = ScreenAdminWebContext(request, screen_type_id=screen_type)
+        event = web_context.get_admin_event()
+        screen_type_obj = web_context.screen_type
+        assert screen_type_obj is not None
+        if not screen_type_obj.supports_event_type(event.event_type):
+            raise ValueError(
+                f'Screen type [{screen_type_obj.id}] is not available for '
+                f'[{event.event_type}] events.'
+            )
+        wizard = screen_type_obj.create_wizard(event)
+        if wizard is None:
+            raise NotFoundException(
+                f'No creation wizard for screen type [{screen_type_obj.id}].'
+            )
+        answers, wizard_path, errors = wizard.read_answers(form_data)
+        if errors:
+            return self._admin_event_screens_render(
+                request,
+                modal='screen_wizard',
+                screen_type=screen_type,
+                data=form_data,
+                errors=errors,
+                wizard_path=wizard_path,
+            )
+        stored: StoredScreen | StoredFamily = (
+            screen_type_obj.create_screen_from_wizard_answers(event, answers)
+        )
+        screen_id: int | None = None
+        family_id: int | None = None
+        with EventDatabase(event.uniq_id, write=True) as event_database:
+            if isinstance(stored, StoredFamily):
+                stored_family = event_database.add_stored_family(stored)
+                family_id = stored_family.id
+                Message.success(
+                    request,
+                    _('Paged Screen [{family_uniq_id}] has been created.').format(
+                        family_uniq_id=stored_family.uniq_id
+                    ),
+                )
+            else:
+                # add_stored_screen() does not store the screen sets.
+                init_set_tournament_ids = stored.init_set_tournament_ids
+                stored_screen = event_database.add_stored_screen(stored)
+                assert stored_screen.id is not None
+                if screen_type_obj.has_screen_sets:
+                    if not init_set_tournament_ids:
+                        raise RuntimeError(
+                            'Missing data: not able to create default screen set'
+                        )
+                    for tournament_id in init_set_tournament_ids:
+                        event_database.add_stored_screen_set(
+                            stored_screen.id, tournament_id
+                        )
+                screen_id = stored_screen.id
+                Message.success(
+                    request,
+                    _('Screen [{screen_uniq_id}] has been created.').format(
+                        screen_uniq_id=stored_screen.uniq_id
+                    ),
+                )
+        # The screen shown when opening the screen created (the first page of
+        # a paged screen, if any).
+        event = ScreenAdminWebContext(request, reload_event=True).get_admin_event()
+        screen_uniq_id: str | None = None
+        if screen_id is not None:
+            screen_uniq_id = event.basic_screens_by_id[screen_id].uniq_id
+        elif family_id is not None:
+            family = event.families_by_id[family_id]
+            if family.screens_by_uniq_id:
+                screen_uniq_id = family.calculated_first_screen_id
+        # The page is redirected to the screens of the type.
+        response = ClientRedirect(
+            redirect_to=request.app.route_reverse(
+                'admin-event-screens-tab', event_uniq_id=event.uniq_id
+            )
+            + f'?screen_type_filter={screen_type_obj.id}'
+        )
+        if screen_uniq_id is not None:
+            # To open the screen created in a new tab (see
+            # screen_wizard_modal.html).
+            response.headers['SC-Screen-Url'] = request.app.route_reverse(
+                'user-screen',
+                event_uniq_id=event.uniq_id,
+                screen_uniq_id=screen_uniq_id,
+            )
+        return response
 
     @get(
         path='/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}',

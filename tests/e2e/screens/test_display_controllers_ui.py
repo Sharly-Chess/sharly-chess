@@ -64,6 +64,8 @@ class TestDisplayControllers:
         page.goto(f'/event/{EVENT_ID}/screens')
         page.get_by_role('button', name='Create a screen').click()
         page.get_by_test_id(f'create-screen-type-{ScreenType.CHECK_IN.value}').click()
+        # Check-in screens have a wizard: the standard form is chosen.
+        page.get_by_test_id('screen-create-choice-form').click()
         destinations = page.locator('#modal-form select[name="display_controller_ids"]')
         expect(destinations).to_be_attached()
 

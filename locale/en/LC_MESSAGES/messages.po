@@ -674,6 +674,15 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
+msgid "A fixed number of boards on each page"
+msgstr ""
+
+msgid "A fixed number of pages"
+msgstr ""
+
+msgid "A fixed number of players on each page"
+msgstr ""
+
 msgid "A half point to one side only, or nothing to either."
 msgstr ""
 
@@ -2391,6 +2400,9 @@ msgstr ""
 msgid "Check-in players"
 msgstr ""
 
+msgid "Check-in screen creation wizard"
+msgstr ""
+
 msgid "Check-in screens allow players to check-in or out."
 msgstr ""
 
@@ -2946,6 +2958,12 @@ msgid "Create team"
 msgstr ""
 
 msgid "Create teams and assign them to tournaments."
+msgstr ""
+
+msgid "Create the screen"
+msgstr ""
+
+msgid "Create the screen and open it in a new tab"
 msgstr ""
 
 msgid "Create tie-break"
@@ -3516,11 +3534,17 @@ msgid_plural "Do you want to add these folders to the Microsoft Defender excepti
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Do you want to display a timer?"
+msgstr ""
+
 msgid "Do you want to install the update now?"
 msgstr ""
 
 #, python-brace-format
 msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
+msgstr ""
+
+msgid "Do you want to show the unpaired players?"
 msgstr ""
 
 msgid "Do you want to try again?"
@@ -4703,6 +4727,9 @@ msgstr ""
 msgid "From top"
 msgstr ""
 
+msgid "Full"
+msgstr ""
+
 msgid "Full name"
 msgstr ""
 
@@ -5018,6 +5045,12 @@ msgstr ""
 msgid "How a player's Keizer total is rounded for the ranking and the pairings table."
 msgstr ""
 
+msgid "How do you want to distribute the boards across the pages?"
+msgstr ""
+
+msgid "How do you want to distribute the players across the pages?"
+msgstr ""
+
 msgid "How each match's colours are decided."
 msgstr ""
 
@@ -5032,6 +5065,18 @@ msgstr ""
 
 #, python-format
 msgid "How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay."
+msgstr ""
+
+msgid "How many boards per page?"
+msgstr ""
+
+msgid "How many columns?"
+msgstr ""
+
+msgid "How many pages?"
+msgstr ""
+
+msgid "How many players per page?"
 msgstr ""
 
 msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
@@ -5319,6 +5364,9 @@ msgid "Installing a plugin makes its features available in the whole application
 msgstr ""
 
 msgid "Installing…"
+msgstr ""
+
+msgid "Intermediate"
 msgstr ""
 
 msgid "International Arbiter"
@@ -5731,6 +5779,12 @@ msgid "Length ({len}) must match players per team match ({count})."
 msgstr ""
 
 msgid "Lesotho"
+msgstr ""
+
+msgid "Let players check-in"
+msgstr ""
+
+msgid "Let the players enter the results"
 msgstr ""
 
 msgid "Level specific colours"
@@ -6246,6 +6300,9 @@ msgstr ""
 msgid "Min. age category"
 msgstr ""
 
+msgid "Minimal"
+msgstr ""
+
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 
@@ -6555,6 +6612,9 @@ msgstr ""
 
 #, python-format
 msgid "Newer versions of these lists are available: %(lists)s. Update them before relying on this check."
+msgstr ""
+
+msgid "Next"
 msgstr ""
 
 msgid "Next round"
@@ -7436,6 +7496,9 @@ msgstr ""
 msgid "Open the profile in a new tab."
 msgstr ""
 
+msgid "Open the standard screen creation form"
+msgstr ""
+
 msgid "Open this address once on each device, or scan the code. Use as many devices as you like: they all show whatever you send to this channel."
 msgstr ""
 
@@ -7855,7 +7918,13 @@ msgstr ""
 msgid "Pairings by board"
 msgstr ""
 
+msgid "Pairings by board screen creation wizard"
+msgstr ""
+
 msgid "Pairings by player"
+msgstr ""
+
+msgid "Pairings by player screen creation wizard"
 msgstr ""
 
 msgid "Pairings changed by hand"
@@ -8314,6 +8383,9 @@ msgstr ""
 msgid "Playing in tournament [%(name)s]"
 msgstr ""
 
+msgid "Please answer the question."
+msgstr ""
+
 msgid "Please ask your administrator to set a password."
 msgstr ""
 
@@ -8336,6 +8408,9 @@ msgid "Please choose a valid colour."
 msgstr ""
 
 msgid "Please choose a variation."
+msgstr ""
+
+msgid "Please choose an answer."
 msgstr ""
 
 msgid "Please choose the candidate."
@@ -10049,7 +10124,13 @@ msgstr ""
 msgid "Select the signee"
 msgstr ""
 
+msgid "Select the tournament:"
+msgstr ""
+
 msgid "Select the tournaments to add players to."
+msgstr ""
+
+msgid "Select the tournaments:"
 msgstr ""
 
 msgid "Select this empty table (forfeit for the paired player)"
@@ -10222,6 +10303,15 @@ msgstr ""
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
+msgid "Sharly Chess will calculate the number of boards per page."
+msgstr ""
+
+msgid "Sharly Chess will calculate the number of pages for you."
+msgstr ""
+
+msgid "Sharly Chess will calculate the number of players per page."
+msgstr ""
+
 msgid "Sharly Chess will restart to complete the move."
 msgstr ""
 
@@ -10254,7 +10344,13 @@ msgstr ""
 msgid "Show the members of each team"
 msgstr ""
 
+msgid "Show the pairings"
+msgstr ""
+
 msgid "Show the pairings of this round on the screens and send them to the online services."
+msgstr ""
+
+msgid "Show the players' check-in status"
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
@@ -11819,6 +11915,12 @@ msgstr ""
 msgid "The table number of the last match to select."
 msgstr ""
 
+msgid "The team matches and the boards"
+msgstr ""
+
+msgid "The team matches only"
+msgstr ""
+
 msgid "The team order sets each team's pairing number, shown on each card."
 msgstr ""
 
@@ -11900,6 +12002,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
+#, python-brace-format
+msgid "The value must be at least {min}."
 msgstr ""
 
 #, python-brace-format
@@ -13164,6 +13270,9 @@ msgstr ""
 msgid "Use the previous round's lineup (untick to set this round)"
 msgstr ""
 
+msgid "Use the screen creation wizard"
+msgstr ""
+
 msgid "Use the timer defined for each screen."
 msgstr ""
 
@@ -13398,6 +13507,15 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
+msgid "What do you want to display?"
+msgstr ""
+
+msgid "What do you want to do?"
+msgstr ""
+
+msgid "What do you want to show?"
+msgstr ""
+
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr ""
 
@@ -13445,6 +13563,9 @@ msgid "Where"
 msgstr ""
 
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
+msgstr ""
+
+msgid "Which display format do you want?"
 msgstr ""
 
 msgid "Which score is the ranking based on. "
@@ -14522,6 +14643,12 @@ msgstr ""
 #, python-brace-format
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} column"
+msgid_plural "{count} columns"
 msgstr[0] ""
 msgstr[1] ""
 
