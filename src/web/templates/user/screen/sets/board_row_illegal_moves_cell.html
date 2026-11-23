@@ -1,11 +1,11 @@
-{% set tournament_player = board.black_tournament_player if column.is_black else board.white_tournament_player %}
+{% set tournament_player = board.black_tournament_player if column.is_black else board.optional_white_tournament_player %}
 <div onclick="event.stopPropagation()" class="
     {% if (
         (screen.accepts_input and not tournament.is_fake) and
         last_illegal_move_updated and
         last_illegal_move_updated.expiration > now and
         last_illegal_move_updated.tournament_id == tournament.id and
-        last_illegal_move_updated.player_id == tournament_player.id
+        tournament_player and last_illegal_move_updated.player_id == tournament_player.id
     ) %}
         last_illegal_move_updated
     {% endif %}"
