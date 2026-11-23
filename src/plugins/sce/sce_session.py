@@ -936,6 +936,12 @@ class SCESession(Session):
         )
         sync_data = SCETournamentSyncData.from_sce_data(raw_data)
         sync_data.augment_stored_tournament(stored_tournament, self.event)
+        location = raw_data.get('location')
+        if location:
+            # The event holds one address per tournament: give the tournament
+            # its own. With one address for the whole event the field is null
+            # and the tournament falls back to the event's location.
+            stored_tournament.location = location['city']
         stored_tournament.id = database.add_stored_tournament(stored_tournament)
         tournament = Tournament(self.event, stored_tournament)
         self.event.tournaments_by_id[tournament.id] = tournament
@@ -1118,6 +1124,16 @@ class SCESession(Session):
                 log_operation(
                     f'Not mergeable dual changes, conflict created (details: {e})'
                 )
+        # The address is the site's to give; the desktop never edits it, so it
+        # is taken straight from the site rather than merged. None where the
+        # event holds a single address: the tournament falls back to it.
+        sce_location = tournament_data_by_id[sce_tournament_id].get('location')
+        new_location = sce_location['city'] if sce_location else None
+        if new_location != tournament.stored_tournament.location:
+            tournament.stored_tournament.location = new_location
+            stored_object_modified = True
+            needs_saving = True
+            log_operation('Address imported (local)')
         check_in_open = tournament_data_by_id[sce_tournament_id]['check_in_open']
         if check_in_open != plugin_data.check_in_open:
             plugin_data.check_in_open = check_in_open
@@ -1201,7 +1217,6 @@ class SCESession(Session):
             ]
             stored_event.organiser_name = data['organizer']['name']
             stored_event.prize_currency = data['currency']
-            stored_event.location = data['city']
             stored_event.timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore[assignment]
             stored_event.timer_colors = SharlyChessConfig.timer_colors  # type: ignore[assignment]
 
@@ -1237,6 +1252,10 @@ class SCESession(Session):
         stored_event.allow_multi_tournament_players = data[
             'allow_multiple_tournament_registrations'
         ]
+        # The event's address is its own, kept in step with the site. With one
+        # address per tournament the site clears it and each tournament carries
+        # its own.
+        stored_event.location = data['city']
         with EventDatabase(stored_event.uniq_id, True) as database:
             with journal.not_journaled(
                 'the event settings kept in step with Sharly-Chess.com'

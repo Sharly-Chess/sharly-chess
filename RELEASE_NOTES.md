@@ -15,6 +15,7 @@
 - The players tab follows the check-ins and results entered elsewhere, on another computer, a screen or the pairings tab, without being reloaded: the rows that change are updated in place and light up briefly, and a player who no longer matches the filters leaves the table, so that the list of the players not yet checked in shrinks as they arrive. A player checked in from the tab keeps their row while its countdown runs (5.3.0)
 - The rows of the players tab are lighter, so that long lists load faster (5.3.0)
 - The rating check proposes to remove a national rating that no list gave, such as an _FFE_ estimate imported as a national rating, when the national list finds the player and gives them no national rating at that cadence (5.3.0)
+- The players update window reminds that updating the players only updates their information, not their ratings, with a button opening the ratings update, so the ratings can be checked right after the player data is updated from a data source (5.3.0)
 
 ## Pairings
 
@@ -34,6 +35,7 @@
 - On a players screen shown through a display controller, tapping a player opens the result window of their game, instead of sometimes opening the window of another board of the round; a game is always found by its own identifier, so that no screen can open another board's result window (5.3.0)
 - The background of image screens can use a colour extracted from the image in one click or be filled by a blurred version of the image (5.3.0)
 - The screens never take a theme: whatever the theme of the application or the appearance of the system showing them, they keep their light colours, and they tell the browser so, which keeps a device that darkens web pages on its own from turning them white-on-black; they also stay readable in a browser too old to read the colours of the theme (5.3.0)
+- A pairings-by-board or result-entry screen of a team tournament paired on fixed tables no longer fails with an error on the rounds where a team fielding fewer players than there are boards leaves an empty seat on the white side of a board: the seat is shown empty, as it already was on the black side (5.3.0)
 
 ## Documents
 
@@ -44,6 +46,7 @@
 ## _Sharly-Chess.com_
 
 - The pairings published on _Sharly-Chess.com_ show the table numbers shown in _Sharly Chess_: when a fixed board leaves the board it displaces empty, as in _FFE_ events, a player with a fixed board is shown at that board instead of at the board the game would have had without it (5.3.0)
+- An event whose tournaments are held at different places on _Sharly-Chess.com_ gives each tournament its own location, imported with the event and kept in step on every synchronisation; an event held at a single place still gives that place to all its tournaments (5.3.0)
 
 ## _FFE_
 
