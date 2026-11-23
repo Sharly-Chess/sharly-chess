@@ -616,7 +616,7 @@ class ScheduleBreach:
 
     @property
     def label(self) -> str:
-        return _('Round-robin schedule')
+        return _('Round-robin pairings')
 
     @property
     def date_str(self) -> str:

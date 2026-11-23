@@ -875,7 +875,7 @@ class PairingPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Pairings')
+        return _('Pairings by round')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1967,11 +1967,11 @@ class AccelerationRulesPrintDocument(PrintDocument):
 
 
 class RoundRobinSchedulePrintDocument(PrintDocument):
-    """Round-by-round pairing schedule for a round-robin tournament
-    (individual or team). Built from the Berger tables: one row per match,
-    one column per round. Cells show the two competitors by Berger number
-    (individuals) or team letter (teams); a legend at the end maps each to
-    its name."""
+    """Every round of a round-robin tournament (individual or team) as one
+    pairing table per round, in the style of the per-round pairings: the
+    table number, the two opponents and the result once it is known. The
+    rounds are read from the saved schedule, so the rounds not paired yet
+    are listed too."""
 
     @staticmethod
     def static_id() -> str:
@@ -1979,7 +1979,7 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Round-robin schedule')
+        return _('Round-robin pairings')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -2027,11 +2027,23 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
         tournament = self.tournament
         rounds = tournament.rounds
         engine = tournament.pairing_variation.engine
-        if isinstance(tournament.pairing_system, TeamRoundRobinPairingSystem):
+        is_team = isinstance(tournament.pairing_system, TeamRoundRobinPairingSystem)
+        if is_team:
             rounds_data = self._team_rounds_data(tournament, engine, rounds)
+            show_titles = False
         else:
             rounds_data = self._individual_rounds_data(tournament, engine, rounds)
-        return {'tournament': tournament, 'rounds_data': rounds_data}
+            show_titles = any(
+                match['left'].display_title or match['right'].display_title
+                for round_data in rounds_data
+                for match in round_data['matches']
+            )
+        return {
+            'tournament': tournament,
+            'rounds_data': rounds_data,
+            'is_team': is_team,
+            'show_titles': show_titles,
+        }
 
     @staticmethod
     def _team_rounds_data(
@@ -2061,21 +2073,25 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
                     continue
                 left_name = name_by_id.get(a_id, '')
                 right_name = name_by_id.get(b_id, '')
-                left_score = right_score = None
+                number = str(len(matches) + 1)
+                result = None
                 played = match_by_round_pair.get((round_, frozenset({a_id, b_id})))
-                if played is not None and played.match_score_pair is not None:
-                    # Orient the displayed score to the stored team_a/team_b.
+                if played is not None:
+                    # Orient the displayed match to the stored team_a/team_b.
                     stb = played.stored_team_board
                     left_name = name_by_id.get(stb.team_a_id, '')
                     if stb.team_b_id is not None:
                         right_name = name_by_id.get(stb.team_b_id, '')
-                    left_score, right_score = played.match_score_pair
+                    if played.display_number:
+                        number = str(played.display_number)
+                    if played.match_score_pair is not None:
+                        result = played.game_score_display
                 matches.append(
                     {
+                        'number': number,
                         'left': left_name,
                         'right': right_name,
-                        'left_score': left_score,
-                        'right_score': right_score,
+                        'result': result,
                     }
                 )
             rounds_data.append({'number': round_, 'matches': matches, 'exempt': exempt})
@@ -2114,30 +2130,34 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
 
             if (resting := holder(schedule_round.rest)) is not None:
                 exempt = resting.full_name
-            for left_seat, right_seat in schedule_round.tables:
+            for table_index, (left_seat, right_seat) in enumerate(
+                schedule_round.tables, start=1
+            ):
                 left_player = holder(left_seat)
                 right_player = holder(right_seat)
                 if left_player is None or right_player is None:
                     continue
-                left_score = right_score = None
+                number = str(table_index)
+                result = None
                 played_board = board_by_round_pair.get(
                     (round_, frozenset({left_player.id, right_player.id}))
                 )
-                if played_board is not None and played_board.result != Result.NO_RESULT:
-                    raw = str(played_board.result)
-                    if '-' in raw:
-                        white_str, black_str = raw.split('-', 1)
-                        white = played_board.optional_white_tournament_player
-                        if white is not None and white.id == left_player.id:
-                            left_score, right_score = white_str, black_str
-                        else:
-                            left_score, right_score = black_str, white_str
+                if played_board is not None:
+                    # Orient the displayed game to the played colours.
+                    white = played_board.optional_white_tournament_player
+                    if white is not None:
+                        left_player = white
+                        right_player = played_board.black_tournament_player
+                    if played_board.number_str:
+                        number = played_board.number_str
+                    if played_board.result != Result.NO_RESULT:
+                        result = played_board.result_str
                 matches.append(
                     {
-                        'left': left_player.full_name,
-                        'right': right_player.full_name,
-                        'left_score': left_score,
-                        'right_score': right_score,
+                        'number': number,
+                        'left': left_player,
+                        'right': right_player,
+                        'result': result,
                     }
                 )
             rounds_data.append({'number': round_, 'matches': matches, 'exempt': exempt})

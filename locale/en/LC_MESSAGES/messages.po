@@ -3917,9 +3917,6 @@ msgstr ""
 msgid "Edit rule"
 msgstr ""
 
-msgid "Edit schedule"
-msgstr ""
-
 msgid "Edit screen"
 msgstr ""
 
@@ -7858,6 +7855,9 @@ msgstr ""
 msgid "Pairings by player"
 msgstr ""
 
+msgid "Pairings by round"
+msgstr ""
+
 msgid "Pairings changed by hand"
 msgstr ""
 
@@ -9605,7 +9605,7 @@ msgstr ""
 msgid "Round-robin grid screens show every player of a round robin against every other, with the results and the rounds still to play."
 msgstr ""
 
-msgid "Round-robin schedule"
+msgid "Round-robin pairings"
 msgstr ""
 
 msgid "Round-robin schedule saved"
