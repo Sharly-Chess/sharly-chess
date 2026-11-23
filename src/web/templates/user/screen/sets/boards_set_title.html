@@ -8,6 +8,8 @@
         {%- else -%}
             {{ _('finished') }}
         {%- endif -%}
+    {%- elif not tournament.started -%}
+        {{ _('not started') }}
     {%- endif -%}
 {% endset %}
 {{ screen_macros.set_title(screen_set.name_for_boards, details, live_key=none if tournament.is_fake else 'set-' ~ set_index ~ '-title') }}

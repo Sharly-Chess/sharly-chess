@@ -20,6 +20,13 @@
     justify-content: center;
 }
 
+.not-started-message {
+    margin: 0;
+    padding: 0.75rem 0.5rem;
+    font-size: calc(var(--font-size) / 100 * 1.3rem);
+    color: var(--screen-ink-secondary);
+}
+
 .ranking-screen-set thead th {
     background-color: #212529;
     color: white;
