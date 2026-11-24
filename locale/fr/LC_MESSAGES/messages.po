@@ -1943,27 +1943,27 @@ msgstr "Ensembles d'échiquiers de l'écran %(screen_name)s"
 
 #, python-brace-format
 msgid "Board {board}: colours swapped, now {white} – {black}"
-msgstr "Échiquier {board} : couleurs inversées, désormais {white} – {black}"
+msgstr "Échiquier {board} : couleurs inversées, désormais {white} – {black}"
 
 #, python-brace-format
 msgid "Board {board}: winner no longer designated"
-msgstr "Échiquier {board} : vainqueur·e plus désigné·e"
+msgstr "Échiquier {board} : vainqueur·e plus désigné·e"
 
 #, python-brace-format
 msgid "Board {board}: {white} – {black}, result changed from {old} to {new}"
-msgstr "Échiquier {board} : {white} – {black}, résultat modifié de {old} en {new}"
+msgstr "Échiquier {board} : {white} – {black}, résultat modifié de {old} en {new}"
 
 #, python-brace-format
 msgid "Board {board}: {white} – {black}, result {new}"
-msgstr "Échiquier {board} : {white} – {black}, résultat {new}"
+msgstr "Échiquier {board} : {white} – {black}, résultat {new}"
 
 #, python-brace-format
 msgid "Board {board}: {white} – {black}, result {old} cleared"
-msgstr "Échiquier {board} : {white} – {black}, résultat {old} effacé"
+msgstr "Échiquier {board} : {white} – {black}, résultat {old} effacé"
 
 #, python-brace-format
 msgid "Board {board}: {winner} designated as the winner"
-msgstr "Échiquier {board} : {winner} désigné·e vainqueur·e"
+msgstr "Échiquier {board} : {winner} désigné·e vainqueur·e"
 
 #, python-brace-format
 msgid "Board {number}"
@@ -2510,7 +2510,7 @@ msgid "Clear the result"
 msgstr "Effacer le résultat"
 
 msgid "Clear the schedule"
-msgstr "Vider les appariements"
+msgstr "Supprimer les appariements"
 
 msgid "Clear the tag filter."
 msgstr "Effacer le filtre par étiquette."
@@ -2793,7 +2793,7 @@ msgstr "Correction"
 
 #, python-brace-format
 msgid "Correction for the rating report removed: {white} – {black}"
-msgstr "Correction pour le rapport Elo retirée : {white} – {black}"
+msgstr "Correction pour le rapport Elo retirée : {white} – {black}"
 
 #, python-brace-format
 msgid "Correction logged: {correction}"
@@ -3346,7 +3346,7 @@ msgid "Delete this championship."
 msgstr "Supprimer ce Grand Prix."
 
 msgid "Delete this note?"
-msgstr "Supprimer cette remarque ?"
+msgstr "Supprimer cette remarque ?"
 
 msgid "Delete this rule."
 msgstr "Supprimer cette règle."
@@ -3795,7 +3795,7 @@ msgid "E.g.: Youth"
 msgstr "Ex. : Jeunes"
 
 msgid "E.g.: appeal on board 12, result confirmed after hearing both players"
-msgstr "Ex. : réclamation sur l'échiquier 12, résultat confirmé après avoir entendu les deux joueur·euses"
+msgstr "Ex. : réclamation sur l'échiquier 12, résultat confirmé après avoir entendu les deux joueur·euses"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
@@ -4610,7 +4610,7 @@ msgstr "Pour le rapport Elo : {corrected}."
 
 #, python-brace-format
 msgid "For the rating report: {white} – {black} {result}"
-msgstr "Pour le rapport Elo : {white} – {black} {result}"
+msgstr "Pour le rapport Elo : {white} – {black} {result}"
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
@@ -7730,7 +7730,7 @@ msgstr "Apparié·e contre : %(opponent_name)s"
 
 #, python-brace-format
 msgid "Paired by hand: {boards}"
-msgstr "Appariés à la main : {boards}"
+msgstr "Appariés à la main : {boards}"
 
 msgid "Pairing"
 msgstr "Appariement"
@@ -11102,7 +11102,7 @@ msgid "The colour attributed to the highest ranked player at the first round."
 msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
 msgid "The colour the image is laid on is read from its border, so that no band of another colour shows around it; an image bleeding to its edges gives the colour it holds itself."
-msgstr "La couleur sur laquelle l'image est posée est lue sur sa bordure, afin qu'aucune bande d'une autre couleur n'apparaisse autour d'elle ; une image qui va jusqu'à ses bords donne la couleur qu'elle contient elle-même."
+msgstr "La couleur sur laquelle l'image est posée est lue sur sa bordure, afin qu'aucune bande d'une autre couleur n'apparaisse autour d'elle ; une image qui va jusqu'à ses bords donne la couleur qu'elle contient elle-même."
 
 msgid "The competitors have been unmerged."
 msgstr "Les compétiteurs ont été séparés."
@@ -12125,7 +12125,7 @@ msgid "This file is incorrectly formatted, the extension has most likely been ch
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
 msgid "This file is not an image: choose a JPEG, PNG, GIF, WebP or SVG file."
-msgstr "Ce fichier n'est pas une image : choisissez un fichier JPEG, PNG, GIF, WebP ou SVG."
+msgstr "Ce fichier n'est pas une image : choisissez un fichier JPEG, PNG, GIF, WebP ou SVG."
 
 #, python-brace-format
 msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
@@ -12949,7 +12949,7 @@ msgstr "Non apparié·es : caché·es"
 
 #, python-brace-format
 msgid "Unpaired: {boards}"
-msgstr "Désappariés : {boards}"
+msgstr "Désappariés : {boards}"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
@@ -13562,7 +13562,7 @@ msgid "Write %%s where the time goes. Leave a text empty to keep the wording abo
 msgstr "Écrire %%s à l'endroit de la durée. Laisser un texte vide pour garder le texte ci-dessus."
 
 msgid "Write in the journal what the actions do not say: a decision, an appeal, a remark."
-msgstr "Inscrire au journal ce que les actions ne disent pas : une décision, une réclamation, une remarque."
+msgstr "Inscrire au journal ce que les actions ne disent pas : une décision, une réclamation, une remarque."
 
 msgid "Written by hand"
 msgstr "À écrire à la main"
@@ -14489,15 +14489,15 @@ msgstr "{account} (compte supprimé)"
 
 #, python-brace-format
 msgid "{account}: access level {level} granted"
-msgstr "{account} : niveau d'accès {level} accordé"
+msgstr "{account} : niveau d'accès {level} accordé"
 
 #, python-brace-format
 msgid "{account}: access level {level} modified"
-msgstr "{account} : niveau d'accès {level} modifié"
+msgstr "{account} : niveau d'accès {level} modifié"
 
 #, python-brace-format
 msgid "{account}: access level {level} revoked"
-msgstr "{account} : niveau d'accès {level} retiré"
+msgstr "{account} : niveau d'accès {level} retiré"
 
 #, python-brace-format
 msgid "{after} instead of {before}."
@@ -14793,23 +14793,23 @@ msgstr "{player} retiré·e du tournoi"
 
 #, python-brace-format
 msgid "{player}: bonus or penalty changed from {old} to {new}"
-msgstr "{player} : bonus ou pénalité modifié de {old} à {new}"
+msgstr "{player} : bonus ou pénalité modifié de {old} à {new}"
 
 #, python-brace-format
 msgid "{player}: illegal move ({count})"
-msgstr "{player} : coup illégal ({count})"
+msgstr "{player} : coup illégal ({count})"
 
 #, python-brace-format
 msgid "{player}: illegal move removed ({count} left)"
-msgstr "{player} : coup illégal retiré ({count} restant)"
+msgstr "{player} : coup illégal retiré ({count} restant)"
 
 #, python-brace-format
 msgid "{player}: {bye}"
-msgstr "{player} : {bye}"
+msgstr "{player} : {bye}"
 
 #, python-brace-format
 msgid "{player}: {bye} removed"
-msgstr "{player} : {bye} retiré"
+msgstr "{player} : {bye} retiré"
 
 #, python-brace-format
 msgid "{plugin} (disabled)"
@@ -14869,7 +14869,7 @@ msgstr "{string} : {value}"
 
 #, python-brace-format
 msgid "{team}: bonus or penalty changed from {old_mp} MP / {old_gp} GP to {new_mp} MP / {new_gp} GP"
-msgstr "{team} : bonus ou pénalité modifié de {old_mp} PM / {old_gp} PP à {new_mp} PM / {new_gp} PP"
+msgstr "{team} : bonus ou pénalité modifié de {old_mp} PM / {old_gp} PP à {new_mp} PM / {new_gp} PP"
 
 #, python-brace-format
 msgid "{title} (provisional)"
