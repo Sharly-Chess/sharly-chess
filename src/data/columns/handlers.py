@@ -163,7 +163,13 @@ class PlayerColumnHandler:
         screens, by toggle id."""
         toggles = {
             column.toggle_id: column.toggle_label
-            for column in self.get_columns(list(ROUND_ROBIN_GRID_PLAYER_COLUMNS))
+            for column in self.get_columns(
+                [
+                    *ROUND_ROBIN_GRID_PLAYER_COLUMNS,
+                    pt.GridTableNumberColumn,
+                    pt.GridRankColumn,
+                ]
+            )
             if column.toggle_id is not None
         }
         return toggles | pt.tie_break_toggle_labels()
@@ -174,23 +180,32 @@ class PlayerColumnHandler:
         order: list[int],
         cells: GridCells,
         hidden: Collection[str] = (),
+        accepts_input: bool = False,
     ) -> list[TournamentPlayerTableColumn]:
         """The columns of the round-robin grid of *tournament*, its players in
-        *order*: who they are, their games against each of them, then their
-        score and rank."""
+        *order*: who they are, the table they play at (hideable) and a
+        result-entry button when asked, their games against each of them, then
+        their score and rank (hideable)."""
         number_by_player_id = {
             player_id: number for number, player_id in enumerate(order, 1)
         }
         Column = Callable[[ColumnUsage], TournamentPlayerTableColumn]
+        before_grid: list[Column] = [
+            partial(pt.GridTableNumberColumn, current_round=tournament.current_round)
+        ]
+        if accepts_input:
+            before_grid.append(pt.GridInputColumn)
         column_types: list[Column] = [
             partial(pt.GridNumberColumn, number_by_player_id=number_by_player_id),
             *ROUND_ROBIN_GRID_PLAYER_COLUMNS,
+            *before_grid,
             *(
                 partial(
                     pt.GridOpponentColumn,
                     opponent_id=player_id,
                     number=number,
                     cells=cells,
+                    current_round=tournament.current_round,
                 )
                 for player_id, number in number_by_player_id.items()
             ),
@@ -198,7 +213,7 @@ class PlayerColumnHandler:
                 partial(pt.TieBreakColumn, tournament=tournament, index=index)
                 for index in range(len(tournament.tie_breaks))
             ),
-            pt.RankColumn,
+            pt.GridRankColumn,
         ]
         return self._without_hidden(self.get_columns(column_types), hidden)
 

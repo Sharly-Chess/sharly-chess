@@ -1,0 +1,37 @@
+{% set holder_id = tournament.seat_holder(tournament.seat_of(tournament_player.id), tournament.current_round) %}
+{% set board = data.input_boards.get(holder_id) %}
+{% if board and not tournament.is_fake and board.black_tournament_player %}
+    {% set clickable =
+        client.can_update_results(tournament.id)
+        or (not board.result_str and client.can_enter_results(tournament.id))
+    %}
+    {% if clickable %}
+        {% set result_url = url_for(
+            'user-result-modal',
+            event_uniq_id=user_event.uniq_id,
+            display_controller_id=display_controller.id,
+            tournament_id=tournament.id,
+            board_id=board.id
+        ) ~ display_controller_query if display_controller else url_for(
+            'user-result-modal',
+            is_screen=1,
+            event_uniq_id=user_event.uniq_id,
+            screen_uniq_id=screen.uniq_id,
+            tournament_id=tournament.id,
+            board_id=board.id
+        ) ~ menu_query %}
+        <button
+            type="button"
+            class="grid-input-button{% if board.result_str %} result-set{% else %} result-not-set{% endif %}"
+            hx-get="{{ result_url }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {{ board.result_str or pgettext('result entry button', 'Enter') }}
+        </button>
+    {% elif board.result_str %}
+        <span class="grid-result">{{ board.result_str }}</span>
+    {% endif %}
+{% endif %}

@@ -57,16 +57,16 @@ def members_by_pairing_number(tournament: Tournament) -> list[int]:
 def player_grid(
     tournament: Tournament, shows_result: Callable[[int], bool]
 ) -> GridCells:
-    """The encounters of every two players of the round robin *tournament*,
-    by player id and opponent id, in the order of the rounds. The result of
-    a game is given when *shows_result* accepts its round."""
+    """The encounters of every two seats of the round robin *tournament*, by
+    seat id and opponent seat id, in the order of the rounds. A seat may be
+    held by several players in turn (replacements); the result of a round is
+    read from the player who held the seat then, and given when *shows_result*
+    accepts the round."""
     engine = round_robin_engine(tournament)
     players = tournament.tournament_players_by_id
+    seats = tournament.seat_ids
     cells: GridCells = {
-        player_id: {
-            opponent_id: [] for opponent_id in players if opponent_id != player_id
-        }
-        for player_id in players
+        seat: {opponent: [] for opponent in seats if opponent != seat} for seat in seats
     }
     if engine is None:
         return cells
@@ -75,20 +75,24 @@ def player_grid(
         tables, _rests = engine.paired_tables(tournament, round_)
         if not tables and schedule is not None and round_ in schedule.rounds:
             tables = schedule.rounds[round_].tables
-        for white_id, black_id in tables:
-            if white_id is None or black_id is None:
+        for white_seat, black_seat in tables:
+            if white_seat is None or black_seat is None:
                 continue
-            for player_id, opponent_id, color in (
-                (white_id, black_id, BoardColor.WHITE),
-                (black_id, white_id, BoardColor.BLACK),
+            for seat, opponent_seat, color in (
+                (white_seat, black_seat, BoardColor.WHITE),
+                (black_seat, white_seat, BoardColor.BLACK),
             ):
-                if player_id not in cells or opponent_id not in cells[player_id]:
+                if seat not in cells or opponent_seat not in cells[seat]:
                     continue
-                player = players[player_id]
-                pairing = player.pairings_by_round.get(round_)
+                holder = players.get(tournament.seat_holder(seat, round_))
+                pairing = (
+                    holder.pairings_by_round.get(round_) if holder is not None else None
+                )
                 if (
-                    pairing is None
-                    or pairing.opponent_id != opponent_id
+                    holder is None
+                    or pairing is None
+                    or pairing.opponent_id is None
+                    or tournament.seat_of(pairing.opponent_id) != opponent_seat
                     or pairing.result == Result.NO_RESULT
                     or not shows_result(round_)
                 ):
@@ -97,10 +101,10 @@ def player_grid(
                     encounter = GridEncounter(
                         round_,
                         pairing.result.to_berger_table,
-                        player.game_is_annulled(pairing),
+                        holder.game_is_annulled(pairing),
                         color,
                     )
-                cells[player_id][opponent_id].append(encounter)
+                cells[seat][opponent_seat].append(encounter)
     return cells
 
 

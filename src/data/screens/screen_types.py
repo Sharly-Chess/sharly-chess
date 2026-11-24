@@ -1979,16 +1979,20 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
             'round_robin_grid_players': event.is_team_event
             and WebContext.form_data_to_bool(data, 'round_robin_grid_players'),
             'ranking_hidden_columns': self.hidden_columns_form_value(data, event),
-        }
+        } | self.input_form_values(data)
 
     @override
     def default_form_data(self, screen: Screen) -> dict:
         stored = screen.stored_screen
         assert stored is not None
-        return {
-            'round_robin_grid_by_rank': stored.round_robin_grid_by_rank,
-            'round_robin_grid_players': stored.round_robin_grid_players,
-        } | self.column_form_data(stored, screen.event)
+        return (
+            {
+                'round_robin_grid_by_rank': stored.round_robin_grid_by_rank,
+                'round_robin_grid_players': stored.round_robin_grid_players,
+            }
+            | self.column_form_data(stored, screen.event)
+            | self.input_defaults(stored)
+        )
 
     @override
     def create_form_data(self, event: Event) -> dict:
@@ -1996,14 +2000,18 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
 
     @override
     def ranking_column_toggles(self, event: Event) -> dict[str, str]:
-        """The labels of the columns that can be hidden, by toggle id. Team
-        grids only have tie-break columns to hide."""
+        """The labels of the columns that can be hidden, by toggle id. A team
+        grid detailed by player can hide the table column too, and has no rank
+        column; otherwise only tie-break columns."""
         from data.columns.column import ColumnUsage
         from data.columns.handlers import PlayerColumnHandler
-        from data.columns.player_table import tie_break_toggle_labels
+        from data.columns.player_table import (
+            grid_table_number_toggle,
+            tie_break_toggle_labels,
+        )
 
         if event.is_team_event:
-            return tie_break_toggle_labels()
+            return dict((grid_table_number_toggle(),)) | tie_break_toggle_labels()
         return PlayerColumnHandler(
             event, ColumnUsage.SCREEN
         ).get_round_robin_grid_column_toggles()
@@ -2017,6 +2025,11 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
     @override
     def multi_column_allowed(self) -> bool:
         return False
+
+    @property
+    @override
+    def allows_result_input(self) -> bool:
+        return True
 
     @override
     def shows_tournament(self, tournament: Tournament) -> bool:
@@ -2077,17 +2090,19 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
                 else members_by_pairing_number(tournament)
             )
         else:
-            members = list(tournament.tournament_players_by_id)
-            ordered = (
-                [
-                    tournament_player.id
-                    for tournament_player in tournament.compute_tournament_player_ranks(
-                        after_round=ranking_round
-                    ).values()
-                ]
-                if self.by_rank(screen)
-                else members_by_pairing_number(tournament)
-            )
+            # A round robin is played between seats: a player and the
+            # replacements who took their seat in turn share one row.
+            members = tournament.seat_ids
+            if self.by_rank(screen):
+                ordered = []
+                for tournament_player in tournament.compute_tournament_player_ranks(
+                    after_round=ranking_round
+                ).values():
+                    seat = tournament.seat_of(tournament_player.id)
+                    if seat not in ordered:
+                        ordered.append(seat)
+            else:
+                ordered = members_by_pairing_number(tournament)
         return [member for member in ordered if member in members] + [
             member for member in members if member not in ordered
         ]
@@ -2100,6 +2115,7 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
         from data.columns.handlers import PlayerColumnHandler
         from data.pairings.round_robin_grid import player_grid
 
+        tournament.set_for_round()
         tournament.compute_tournament_player_ranks(
             after_round=tournament.ranking.correct_round()
         )
@@ -2115,6 +2131,7 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
             self.member_order(screen, tournament),
             cells,
             self.ranking_hidden_columns(screen),
+            accepts_input=screen.accepts_input,
         )
 
     @override
@@ -2126,6 +2143,7 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
 
     @override
     def set_context(self, screen_set: ScreenSet) -> dict:
+        from data.columns.player_table import GRID_TABLE_NUMBER_TOGGLE
         from data.columns.player_table import tie_break_toggle_id
         from data.columns.player_table import grid_encounters_markup as drawn
         from data.pairings.round_robin_grid import team_grid, team_player_grid
@@ -2139,9 +2157,19 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
             if stored_screen_set is not None and stored_screen_set.name
             else tournament.name
         )
+        input_boards: dict[int, Board] = {}
+        if screen.accepts_input and not tournament.is_fake:
+            for board in tournament.get_round_boards(tournament.current_round):
+                for tournament_player in (
+                    board.optional_white_tournament_player,
+                    board.black_tournament_player,
+                ):
+                    if tournament_player is not None:
+                        input_boards[tournament_player.id] = board
         if not tournament.is_team_tournament:
             return {
                 'title': title,
+                'input_boards': input_boards,
                 'players': [
                     tournament.tournament_players_by_id[player_id]
                     for player_id in order
@@ -2157,6 +2185,9 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
             )
             return {
                 'title': title,
+                'input_boards': input_boards,
+                'show_table_number': GRID_TABLE_NUMBER_TOGGLE
+                not in self.ranking_hidden_columns(screen),
                 'player_rows': [
                     {
                         'row': row,
@@ -2166,7 +2197,8 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
                             else drawn(
                                 player_cells[row.tournament_player.id][
                                     opponent.tournament_player.id
-                                ]
+                                ],
+                                tournament.current_round,
                             )
                             for opponent in player_rows
                         ],
@@ -2194,7 +2226,9 @@ class RoundRobinGridScreenType(ColumnTogglesScreenType):
                     'cells': [
                         None
                         if opponent_id == team_id
-                        else drawn(cells[team_id][opponent_id])
+                        else drawn(
+                            cells[team_id][opponent_id], tournament.current_round
+                        )
                         for opponent_id in order
                     ],
                 }

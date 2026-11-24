@@ -24,6 +24,7 @@ from data.pairings.variations import (
     CustomRoundRobinVariation,
 )
 from data.pairings.round_robin_editor import RoundRobinScheduleEditor
+from data.pairings.round_robin_grid import player_grid
 from data.player import TournamentPlayer
 from data.print_documents.documents import PlayerRankingPrintDocument
 from data.print_documents.options import TournamentPrintOption
@@ -125,6 +126,31 @@ class BergerReplacementTestCase(RoundRobinReplacementTestCase):
         self.assertEqual(
             tournament.replaceable_rounds_by_player_id[leaver.id], [3, 4, 5]
         )
+
+    def test_the_grid_rows_are_seats_holding_the_replacements_games(self) -> None:
+        self._play_rounds(1, 2)
+        leaver_id, replacement_id = self._replace('Player1', 3)
+        self._play_rounds(3)
+        tournament = self.tournament
+        cells = player_grid(tournament, lambda round_: True)
+        # One row per seat: the replacement shares the leaver's seat rather
+        # than taking a row of their own.
+        self.assertEqual(set(cells), set(tournament.seat_ids))
+        self.assertEqual(len(cells), tournament.seat_count)
+        self.assertNotIn(replacement_id, cells)
+        self.assertEqual(tournament.seat_of(replacement_id), leaver_id)
+        # The seat's round-3 game carries the replacement's result, read from
+        # the player who held the seat that round rather than from the leaver.
+        replacement = tournament.tournament_players_by_id[replacement_id]
+        pairing = replacement.pairings_by_round[3]
+        assert pairing.opponent_id is not None
+        opponent_seat = tournament.seat_of(pairing.opponent_id)
+        encounter = next(
+            encounter
+            for encounter in cells[leaver_id][opponent_seat]
+            if encounter.round == 3
+        )
+        self.assertEqual(encounter.result, pairing.result.to_berger_table)
 
     def test_the_replacement_plays_the_games_of_the_seat(self) -> None:
         self._play_rounds(1, 2)
