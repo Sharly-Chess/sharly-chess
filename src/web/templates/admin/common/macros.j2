@@ -1934,14 +1934,22 @@ with_indicator: display a loading indicator, optional
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <div class="dropdown-menu">
+            {% set alternate_option = options | reject('equalto', active_option) | first %}
             {% for option_id, option_name in options.items() %}
                 <button
                     type="submit"
                     name="{{ option_id }}"
                     form="{{ form_id }}"
-                    class="dropdown-item {% if option_id == active_option %}active{% endif %}"
+                    class="dropdown-item d-flex justify-content-between gap-4 {% if option_id == active_option %}active{% endif %}"
+                    {% if option_id == alternate_option %}
+                        data-sc-alternate-submit
+                        aria-keyshortcuts="Shift+Enter"
+                    {% endif %}
                 >
-                    {{ option_name }}
+                    <span>{{ option_name }}</span>
+                    {% if option_id == alternate_option %}
+                        <kbd class="sc-shortcut-hint" aria-hidden="true">⇧ ↵</kbd>
+                    {% endif %}
                 </button>
             {% endfor %}
         </div>
