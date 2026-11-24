@@ -58,23 +58,32 @@ function handleModalOpened(static) {
     }
 
     modalForm = modal._element.querySelector("#modal-form");
-    if (modalForm) {
-        let eventListeners = $._data(modal._element, "events")
-        if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
-            $(modal._element).on("keydown", function(event) {
-                if (event.key == "Enter") {
-                    if (event.target.getAttribute("type") === "search") {
-                        return;
-                    }
-                    if (!enterKeySubmitDisabled) {
-                        event.preventDefault();
-                        modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
-                        enterKeySubmitDisabled = true;
-                        setTimeout(() => enterKeySubmitDisabled = false, 1000);
-                    }
-                }
-            })
-        }
+    let eventListeners = $._data(modal._element, "events")
+    if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
+        $(modal._element).on("keydown", function(event) {
+            if (event.key != "Enter") {
+                return;
+            }
+            // Shift+Enter submits with the alternative of a split submit
+            // button, from any field, the search field included.
+            let submitter = event.shiftKey
+                ? modal._element.querySelector("[data-sc-alternate-submit]")
+                : null;
+            if (!submitter && (!modalForm || event.target.getAttribute("type") === "search")) {
+                return;
+            }
+            event.preventDefault();
+            if (enterKeySubmitDisabled) {
+                return;
+            }
+            enterKeySubmitDisabled = true;
+            setTimeout(() => enterKeySubmitDisabled = false, 1000);
+            if (submitter) {
+                submitter.click();
+            } else {
+                modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
+            }
+        })
     }
 
     closeTooltips();
