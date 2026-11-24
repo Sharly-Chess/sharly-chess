@@ -22,20 +22,22 @@ if TYPE_CHECKING:
     )
     from data.tournament import Tournament
     from data.event import Event
-    from data.player import TournamentPlayer
 
-#: A board of an example round: the higher-ranked player, and the
-#: lower-ranked one or ``None`` for a bye.
-type ExamplePair = tuple[TournamentPlayer, TournamentPlayer | None]
+#: A board or match of an example round: the higher-ranked player or team,
+#: and the lower-ranked one or ``None`` for a bye.
+type ExamplePair[P] = tuple[P, P | None]
 
 
-def fold_pairs(players: list[TournamentPlayer]) -> list[ExamplePair]:
+def fold_pairs[P](participants: list[P]) -> list[ExamplePair[P]]:
     """The first against the last, the second against the one before, and so
-    on, the first player getting the bye of an odd number."""
-    if len(players) % 2:
-        return [*fold_pairs(players[1:]), (players[0], None)]
-    count = len(players)
-    return [(players[index], players[count - 1 - index]) for index in range(count // 2)]
+    on, the first participant getting the bye of an odd number."""
+    if len(participants) % 2:
+        return [*fold_pairs(participants[1:]), (participants[0], None)]
+    count = len(participants)
+    return [
+        (participants[index], participants[count - 1 - index])
+        for index in range(count // 2)
+    ]
 
 
 @cache
@@ -130,17 +132,17 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     """Abstract class representing all the different pairing systems.
     Each system can have different variations."""
 
-    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
-        """A first round as the system would pair it among *players*, sorted
-        by starting rank, to show on the screens before the real one: the top
-        half against the bottom half, the last player getting the bye of an
-        odd number."""
-        half = len(players) // 2
-        pairs: list[ExamplePair] = [
-            (players[index], players[half + index]) for index in range(half)
+    def example_first_round[P](self, participants: list[P]) -> list[ExamplePair[P]]:
+        """A first round as the system would pair it among *participants*
+        (players, or teams for a team system), sorted by starting rank, to
+        show on the screens before the real one: the top half against the
+        bottom half, the last one getting the bye of an odd number."""
+        half = len(participants) // 2
+        pairs: list[ExamplePair[P]] = [
+            (participants[index], participants[half + index]) for index in range(half)
         ]
-        if len(players) % 2:
-            pairs.append((players[-1], None))
+        if len(participants) % 2:
+            pairs.append((participants[-1], None))
         return pairs
 
     @property
@@ -498,8 +500,8 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
 
 class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @override
-    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
-        return fold_pairs(players)
+    def example_first_round[P](self, participants: list[P]) -> list[ExamplePair[P]]:
+        return fold_pairs(participants)
 
     @property
     @override
@@ -704,6 +706,10 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
 
 
 class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
+    @override
+    def example_first_round[P](self, participants: list[P]) -> list[ExamplePair[P]]:
+        return fold_pairs(participants)
+
     @property
     @override
     def supports_adjourned_games(self) -> bool:
