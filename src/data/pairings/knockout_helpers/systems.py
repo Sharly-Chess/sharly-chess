@@ -13,7 +13,6 @@ from utils.entity import EntityManager
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.player import TournamentPlayer
     from data.pairings.knockout_helpers.variations import (
         KnockoutVariation,
         TeamKnockoutVariation,
@@ -27,9 +26,9 @@ class _KnockoutSystemMixin:
     win), settles its own round count from the field size, and reads no
     colour history — colours are drawn or alternated."""
 
-    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
+    def example_first_round[P](self, participants: list[P]) -> list[ExamplePair[P]]:
         # The top seed meets the bottom one.
-        return fold_pairs(players)
+        return fold_pairs(participants)
 
     @property
     def example_draws(self) -> bool:
