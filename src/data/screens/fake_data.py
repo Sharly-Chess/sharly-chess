@@ -15,6 +15,7 @@ from datetime import datetime
 from operator import attrgetter
 from typing import TYPE_CHECKING
 
+from common.exception import SharlyChessException
 from database.sqlite.event.event_store import (
     StoredBoard,
     StoredPairing,
@@ -93,17 +94,22 @@ def event_with_fake_data(event: Event) -> Event:
     fake_tournament_ids: set[int] = {
         tournament.id
         for tournament in tournaments_for_fake_data(event)
-        if (
-            _fake_team_round(tournament)
-            if tournament.is_team_tournament
-            else _fake_individual_round(tournament)
-        )
+        if _fake_round(tournament)
     }
     if not fake_tournament_ids:
         return event
     fake_event = Event(event.stored_event, public_view=event.public_view)
     fake_event.fake_tournament_ids = fake_tournament_ids
     return fake_event
+
+
+def _fake_round(tournament: Tournament) -> bool:
+    """Pairs the first round of the tournament, telling whether it could."""
+    if not tournament.is_team_tournament:
+        return _fake_individual_round(tournament)
+    if tournament.pairing_system.paired_by_team:
+        return _fake_team_round(tournament)
+    return _fake_flat_team_round(tournament)
 
 
 def _fake_individual_round(tournament: Tournament) -> bool:
@@ -140,7 +146,8 @@ def _fake_team_round(tournament: Tournament) -> bool:
     from data.pairings.engines import TeamPairingEngine
 
     engine = tournament.pairing_variation.engine
-    assert isinstance(engine, TeamPairingEngine)
+    if not isinstance(engine, TeamPairingEngine):
+        return False
     stored_tournament = tournament.stored_tournament
     # Teams already given a bye for the first round keep it.
     byes = [
@@ -221,6 +228,45 @@ def _fake_team_round(tournament: Tournament) -> bool:
                 stored_tournament, black, white_result.opposite_result, board.id or 0
             )
     stored_tournament.stored_team_boards_by_round[1] = team_boards
+    stored_tournament.stored_boards_by_round[1] = boards
+    stored_tournament.published_round = max(stored_tournament.published_round, 1)
+    return True
+
+
+def _fake_flat_team_round(tournament: Tournament) -> bool:
+    """Pairs the first round of a team tournament whose boards are not
+    grouped into matches, from its pairing table and the teams' first-round
+    lineups, telling whether a table covers the teams."""
+    engine = tournament.pairing_variation.engine
+    try:
+        stored_boards = engine._generate_stored_boards(tournament, 1)
+    except SharlyChessException, ValueError:
+        return False
+    if not stored_boards:
+        return False
+    for player in tournament.tournament_players:
+        _drop_first_round(player)
+    stored_tournament = tournament.stored_tournament
+    players_by_id = tournament.tournament_players_by_id
+    white_results = (
+        _WHITE_RESULTS
+        if tournament.pairing_system.example_draws
+        else _DECISIVE_WHITE_RESULTS
+    )
+    now = datetime.now()
+    boards: list[StoredBoard] = []
+    for index, stored_board in enumerate(stored_boards):
+        board = replace(stored_board, id=index + 1, last_result_update=now)
+        boards.append(board)
+        white = players_by_id.get(board.white_player_id or 0)
+        black = players_by_id.get(board.black_player_id or 0)
+        if white is None or black is None:
+            if present := white or black:
+                _add_pairing(stored_tournament, present, engine.pab_result, index + 1)
+            continue
+        white_result = white_results[index % len(white_results)]
+        _add_pairing(stored_tournament, white, white_result, index + 1)
+        _add_pairing(stored_tournament, black, white_result.opposite_result, index + 1)
     stored_tournament.stored_boards_by_round[1] = boards
     stored_tournament.published_round = max(stored_tournament.published_round, 1)
     return True

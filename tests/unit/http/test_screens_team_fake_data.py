@@ -209,6 +209,49 @@ def test_a_scheveningen_is_shown_from_its_table(tournament: StoredTournament):
 
 
 @pytest.mark.unit
+def test_a_molter_is_shown_from_its_table(tournament: StoredTournament):
+    """The boards mix the players of the teams, each player meeting one of
+    another team, with no match grouping them."""
+    set_pairing(tournament, 'MOLTER_STANDARD')
+    event, fake = fake_tournament(tournament)
+    assert fake.id in event.fake_tournament_ids
+    assert not fake.get_round_team_boards(1)
+    boards = fake.get_round_boards(1)
+    assert boards
+    for board in boards:
+        white = board.optional_white_pairing
+        black = board.optional_black_pairing
+        assert white is not None and black is not None
+        assert white.tournament_player.team_id != black.tournament_player.team_id
+        assert board.result != Result.NO_RESULT
+
+
+@pytest.mark.unit
+def test_a_molter_without_a_table_waits(tournament: StoredTournament):
+    with EventDatabase(EVENT_ID, True) as database:
+        stored_event = database.load_stored_event()
+        team_3 = next(
+            team for team in stored_event.stored_teams if team.name == 'Team 3'
+        )
+        database.delete_stored_team(team_3.id or 0)
+    set_pairing(tournament, 'MOLTER_STANDARD')
+    event, fake = fake_tournament(tournament)
+    assert fake.id not in event.fake_tournament_ids
+    assert not fake.get_round_boards(1)
+
+
+@pytest.mark.unit
+def test_the_boards_screen_shows_a_molter(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+):
+    set_pairing(tournament, 'MOLTER_STANDARD')
+    set_fake_data(http, True)
+    shown = screen_text(http, api, tournament, ScreenType.BOARDS)
+    assert 'data-testid="fake-data-notice"' in shown
+    assert 'PLAYER10' in shown
+
+
+@pytest.mark.unit
 @pytest.mark.parametrize(
     ('screen_type', 'text'),
     [
