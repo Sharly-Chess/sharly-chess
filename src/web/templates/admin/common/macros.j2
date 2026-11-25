@@ -192,7 +192,11 @@
                 },
             },
             minimumResultsForSearch: {% if search_disabled %}1000{% elif search_placeholder %}5{% else %}10{% endif %},
-            dropdownParent: $('#modal-wrapper'),
+            // In the page's modal when the select is in it; else in the
+            // page, the modal wrapper being hidden.
+            dropdownParent: $('#{{ id }}').closest('#modal-wrapper').length
+                ? $('#modal-wrapper')
+                : $(document.body),
             closeOnSelect: {% if keep_open_on_select %}false{% else %}true{% endif %},
             templateResult: function (data) {
                 if (data.id === '__divider__') {

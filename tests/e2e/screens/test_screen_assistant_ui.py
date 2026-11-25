@@ -157,3 +157,29 @@ class TestScreenAssistant:
         assert channels[0].name == 'Main hall'
         assert channels[0].family_id is None
         assert channels[0].stored_display_controller.item_family_ids == [families[0].id]
+
+    def test_the_tournament_lists_open_on_the_page(
+        self, page: Page, api_request_context: APIRequestContext
+    ):
+        """On the assistant's page, which is no modal, the lists of the
+        tournament selects open on the page and offer every tournament."""
+        TestUtils.create_tournament(
+            EVENT_ID,
+            f'{TOURNAMENT_NAME} 2',
+            via_api_request_context=api_request_context,
+        )
+        self._open_assistant(page)
+        page.get_by_test_id('screen-assistant-goal-check-in').click()
+        question = page.get_by_test_id('screen-assistant-question-paged')
+        expect(question).to_be_visible()
+        TestUtils.wait_for_htmx_idle(page)
+        question.get_by_label('One tournament, over several pages').check()
+        question = page.get_by_test_id('screen-assistant-question-paged_tournament')
+        expect(question).to_be_visible()
+        question.locator('.select2-selection').click()
+        options = page.locator('.select2-container--open .select2-results__option')
+        expect(options).to_have_text(['-', TOURNAMENT_NAME, f'{TOURNAMENT_NAME} 2'])
+        options.filter(has_text=f'{TOURNAMENT_NAME} 2').click()
+        expect(question.locator('select option:checked')).to_have_text(
+            f'{TOURNAMENT_NAME} 2'
+        )
