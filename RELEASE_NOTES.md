@@ -55,6 +55,8 @@
 ## _FFE_
 
 - On the _FFE_ pairing sheets (Fiche d'appariement), the letter printed for each team is its fixed-table letter, the one its place in the pairing order gives it and the one the tables and the pairings use, rather than the rank of its name in the alphabet, so that once the team order is changed the letters follow it (5.3.0)
+- Team competitions are no longer uploaded automatically to the team module of the _FFE_ website: an upload rewrites the whole group, deleting the match reports and teams the tournament does not have, so it is only sent when the arbiter asks (5.3.0)
+- Before uploading a team competition, _Sharly Chess_ reads the group on the _FFE_ website and asks for confirmation when the upload would empty it (the tournament has no match to send while the group holds filled-in match reports, or no team while the group lists some), or when the group, not uploaded to from this tournament yet, looks like another competition (fewer than half of its teams have the name of a team of the tournament). The confirmation window names the competition, division and group, says what will be deleted, and uploads only once the name of the group has been typed (5.3.0)
 
 ## _ChessEvent_
 

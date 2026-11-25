@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/components/macros.j2' as components with context %}
 
-{% set auto_upload_count = allowed_tournaments | selectattr('plugin_data.ffe.auto_upload') | list | length %}
+{% set auto_upload_count = auto_upload_tournaments | selectattr('plugin_data.ffe.auto_upload') | list | length %}
 
 <table
     id="upload-results"
@@ -16,35 +16,35 @@
 >
     <thead>
         <th>
-            <div
-                class="form-check blue-checkbox form-switch d-inline-flex align-items-center gap-1 mb-0"
-                {{ macros.tooltip_attributes('', _(
-                    'Upload automatically every %(delay)d minutes.',
-                    delay=FFE_UPLOAD_DELAY,
-                )) }}
-            >
-                <input
-                    id="ffe-auto-upload-all"
-                    name="auto_upload"
-                    class="form-check-input blue-checkbox mt-0"
-                    type="checkbox"
-                    hx-patch="{{ url_for(
-                        'ffe-update-event-auto-upload',
-                        event_uniq_id=admin_event.uniq_id
-                    ) }}"
-                    value="on"
-                    {% if not allowed_tournaments %}
-                        disabled
-                    {% elif auto_upload_count == allowed_tournaments | length %}
-                        checked
-                    {% endif %}
-                />
-                <i class="bi-arrow-repeat"></i>
-            </div>
-            {% if 0 < auto_upload_count < allowed_tournaments | length %}
-                <script>
-                    document.getElementById('ffe-auto-upload-all').indeterminate = true;
-                </script>
+            {% if auto_upload_tournaments %}
+                <div
+                    class="form-check blue-checkbox form-switch d-inline-flex align-items-center gap-1 mb-0"
+                    {{ macros.tooltip_attributes('', _(
+                        'Upload automatically every %(delay)d minutes.',
+                        delay=FFE_UPLOAD_DELAY,
+                    )) }}
+                >
+                    <input
+                        id="ffe-auto-upload-all"
+                        name="auto_upload"
+                        class="form-check-input blue-checkbox mt-0"
+                        type="checkbox"
+                        hx-patch="{{ url_for(
+                            'ffe-update-event-auto-upload',
+                            event_uniq_id=admin_event.uniq_id
+                        ) }}"
+                        value="on"
+                        {% if auto_upload_count == auto_upload_tournaments | length %}
+                            checked
+                        {% endif %}
+                    />
+                    <i class="bi-arrow-repeat"></i>
+                </div>
+                {% if 0 < auto_upload_count < auto_upload_tournaments | length %}
+                    <script>
+                        document.getElementById('ffe-auto-upload-all').indeterminate = true;
+                    </script>
+                {% endif %}
             {% endif %}
         </th>
         <th>
@@ -65,22 +65,24 @@
             {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
             <tr>
                 <td class="text-nowrap text-center">
-                    <div class="form-check form-switch d-inline-block pe-3">
-                        <input
-                            name="tournament_auto_upload_{{ tournament.id }}"
-                            class="form-check-input blue-checkbox mt-2"
-                            type="checkbox"
-                            hx-patch="{{ url_for(
-                                'ffe-update-tournament-auto-upload',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=tournament.id,
-                            ) }}"
-                            value="on"
-                            {% if plugin_data.auto_upload %}
-                                checked
-                            {% endif %}
-                        />
-                    </div>
+                    {% if ffe_utils.supports_auto_upload(tournament) %}
+                        <div class="form-check form-switch d-inline-block pe-3">
+                            <input
+                                name="tournament_auto_upload_{{ tournament.id }}"
+                                class="form-check-input blue-checkbox mt-2"
+                                type="checkbox"
+                                hx-patch="{{ url_for(
+                                    'ffe-update-tournament-auto-upload',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                ) }}"
+                                value="on"
+                                {% if plugin_data.auto_upload %}
+                                    checked
+                                {% endif %}
+                            />
+                        </div>
+                    {% endif %}
                 </td>
                 <td style="width: 0;" class="text-nowrap">
                     {{ tournament.name }}

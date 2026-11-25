@@ -302,6 +302,33 @@ class GroupNotFoundFFEUploadStatus(FailureFFEUploadStatus):
         )
 
 
+class OverwriteNotConfirmedFFEUploadStatus(FailureFFEUploadStatus):
+    """The group on the site holds data the upload would delete and that
+    does not look like the tournament's: the arbiter has to confirm the
+    group before anything is written there."""
+
+    retryable = False
+
+    @staticmethod
+    def static_id() -> str:
+        return 'OVERWRITE_NOT_CONFIRMED'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Confirmation needed')
+
+    @property
+    def badge_kind(self) -> str:
+        return 'warning'
+
+    @property
+    def details(self) -> str:
+        return _(
+            'the upload would delete the data of the group on the FFE website, '
+            'click the Upload button to review and confirm it'
+        )
+
+
 class RejectedFFEUploadStatus(FailureFFEUploadStatus):
     @staticmethod
     def static_id() -> str:

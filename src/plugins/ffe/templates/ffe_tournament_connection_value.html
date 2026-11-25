@@ -19,14 +19,16 @@
             ><i class="bi bi-box-arrow-up-right"></i></a>
         </span>
     {% endif %}
-    {% set auto_upload = ffe_utils.get_tournament_plugin_data(tournament).auto_upload %}
-    <i
-        class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"
-        style="transform: scale(1.1)"
-        {{ macros.tooltip_attributes(
-            'info', _('Auto-upload enabled') if auto_upload else _('Auto-upload disabled'), 'top'
-        ) }}
-    ></i>
+    {% if ffe_utils.supports_auto_upload(tournament) %}
+        {% set auto_upload = ffe_utils.get_tournament_plugin_data(tournament).auto_upload %}
+        <i
+            class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"
+            style="transform: scale(1.1)"
+            {{ macros.tooltip_attributes(
+                'info', _('Auto-upload enabled') if auto_upload else _('Auto-upload disabled'), 'top'
+            ) }}
+        ></i>
+    {% endif %}
     {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
     {% if ffe_actions_unavailable_message %}
         <i

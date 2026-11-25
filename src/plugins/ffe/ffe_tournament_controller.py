@@ -20,6 +20,7 @@ from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_team_session import FFETeamSession, SiteOption
+from plugins.ffe.ffe_upload_controller import FfeUploadController
 from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
 from plugins.utils import PluginUtils
 from web.controllers.admin.base_event_admin_controller import (
@@ -323,6 +324,12 @@ class FfeTournamentController(BaseEventAdminController):
         correction."""
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
+        if period_id is None and (
+            overwrite := await FfeUploadController.preview_team_upload(tournament)
+        ):
+            return FfeUploadController.render_overwrite_modal(
+                web_context.template_context, tournament, overwrite, from_card=True
+            )
         FfeBackgroundUploader.upload_tournament(
             tournament.event.uniq_id, tournament.id, period_id=period_id
         )

@@ -9,6 +9,7 @@ posts for a match.
 import contextlib
 from pathlib import Path
 from unittest import TestCase
+from unittest.mock import patch
 
 import pytest
 from AdvancedHTMLParser import AdvancedHTMLParser
@@ -22,8 +23,11 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from plugins.ffe import NATIONAL_SOURCE_ID
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_team_session import (
     FFETeamSession,
+    GroupPage,
+    SiteMatchReport,
     MatchReportData,
     DIVISION_SELECT,
     GROUP_SELECT,
@@ -32,7 +36,10 @@ from plugins.ffe.ffe_team_session import (
     site_name_key,
 )
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
-from plugins.ffe.ffe_upload_status import IncompatibleFFEUploadStatus
+from plugins.ffe.ffe_upload_status import (
+    IncompatibleFFEUploadStatus,
+    OverwriteNotConfirmedFFEUploadStatus,
+)
 from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.papi_mappers import PapiColor, PapiResult
 from plugins.ffe.utils import FFEUtils, FfeTournamentPluginData
@@ -719,3 +726,137 @@ class MatchReportTestCase(_MatchReportHarness):
             self.assertEqual(
                 (data.left_match_points, data.right_match_points), ('', '')
             )
+
+
+@pytest.mark.unit
+class GroupOverwriteTestCase(_MatchReportHarness):
+    """An upload rewrites the whole group: one that would empty the group,
+    or that goes to a group of another competition, waits for the
+    arbiter's confirmation."""
+
+    def _configure(self, tournament: Tournament) -> None:
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        plugin_data.team_login = 'group'
+        plugin_data.team_password = 'secret'
+        plugin_data.team_division_id = 706
+        plugin_data.team_group_id = 3593
+        plugin_data.team_group_name = 'Test group'
+
+    def _tournament(self, published: bool = True) -> Tournament:
+        tournament = self._create()
+        self._configure(tournament)
+        tournament.stored_tournament.published_round = 1 if published else 0
+        return tournament
+
+    @staticmethod
+    def _page(*team_names: str, filled_reports: int = 1) -> GroupPage:
+        page = GroupPage(
+            teams_by_name={name: 2213 + index for index, name in enumerate(team_names)}
+        )
+        for index in range(filled_reports):
+            page.match_reports.append(
+                SiteMatchReport(5000 + index, 1, team_names[0], team_names[1])
+            )
+        page.match_reports.append(SiteMatchReport(6000, 2, '', ''))
+        return page
+
+    def test_the_tournament_group_needs_no_confirmation(self) -> None:
+        tournament = self._tournament()
+        session = FFETeamSession(tournament)
+        self.assertIsNone(session.group_overwrite(self._page('TEAM 1', 'Team 2')))
+
+    def test_a_group_of_other_teams_needs_confirmation(self) -> None:
+        tournament = self._tournament()
+        overwrite = FFETeamSession(tournament).group_overwrite(
+            self._page('Other A', 'Other B', 'Team 1', filled_reports=3)
+        )
+        assert overwrite is not None
+        self.assertFalse(overwrite.empties_group)
+        self.assertEqual(overwrite.unmatched_team_names, ['Other A', 'Other B'])
+        self.assertEqual(overwrite.filled_report_count, 3)
+
+    def test_a_group_already_uploaded_to_takes_other_teams(self) -> None:
+        """Renamed teams in a group the tournament was sent to are the
+        tournament's own changes."""
+        tournament = self._tournament()
+        FFEUtils.get_tournament_plugin_data(
+            tournament
+        ).team_uploaded_group = FFEUtils.team_group_key(tournament)
+        self.assertIsNone(
+            FFETeamSession(tournament).group_overwrite(self._page('Other A', 'Other B'))
+        )
+
+    def test_a_tournament_without_matches_never_empties_a_group_unasked(
+        self,
+    ) -> None:
+        tournament = self._tournament(published=False)
+        FFEUtils.get_tournament_plugin_data(
+            tournament
+        ).team_uploaded_group = FFEUtils.team_group_key(tournament)
+        overwrite = FFETeamSession(tournament).group_overwrite(
+            self._page('Team 1', 'Team 2')
+        )
+        assert overwrite is not None
+        self.assertTrue(overwrite.empties_group)
+
+    def test_a_group_of_blank_reports_takes_a_tournament_without_matches(
+        self,
+    ) -> None:
+        tournament = self._tournament(published=False)
+        self.assertIsNone(
+            FFETeamSession(tournament).group_overwrite(
+                self._page('Team 1', 'Team 2', filled_reports=0)
+            )
+        )
+
+    def test_an_unconfirmed_overwrite_writes_nothing(self) -> None:
+        tournament = self._tournament()
+        session = FFETeamSession(tournament)
+        page = self._page('Other A', 'Other B')
+        with (
+            patch.object(session, '_open_configured_group', return_value=page),
+            patch.object(session, '_sync_teams') as sync_teams,
+        ):
+            status = session.upload_match_reports()
+        self.assertIsInstance(status, OverwriteNotConfirmedFFEUploadStatus)
+        sync_teams.assert_not_called()
+
+    def test_a_confirmed_overwrite_binds_the_group(self) -> None:
+        tournament = self._tournament()
+        session = FFETeamSession(tournament)
+        page = self._page('Other A', 'Other B')
+        with (
+            patch.object(session, '_open_configured_group', return_value=page),
+            patch.object(session, '_sync_teams', return_value={}),
+            patch.object(session, '_sync_reports', return_value=page),
+            patch.object(session, '_delete_stale_teams'),
+            patch.object(session, 'recompute_standings'),
+            patch.object(session, 'set_team_places'),
+        ):
+            self.assertIsNone(session.upload_match_reports(confirm_overwrite=True))
+        self.assertEqual(
+            FFEUtils.get_tournament_plugin_data(tournament).team_uploaded_group,
+            FFEUtils.team_group_key(tournament),
+        )
+
+    def test_a_team_competition_is_never_uploaded_automatically(self) -> None:
+        tournament = self._tournament()
+        stored_tournament = tournament.stored_tournament
+        stored_tournament.plugin_data['ffe'] = FFEUtils.get_tournament_plugin_data(
+            tournament
+        ).to_stored_value()
+        stored_event = tournament.event.stored_event
+        stored_event.federation = 'FRA'
+        self.assertFalse(FFEUtils.supports_auto_upload(tournament))
+        self.assertFalse(
+            FfeBackgroundUploader.should_schedule_tournament_upload(
+                stored_event, stored_tournament
+            )
+        )
+        stored_event.event_type = EventType.INDIVIDUAL
+        stored_tournament.plugin_data['ffe'] |= {'ffe_id': 1, 'password': 'secret'}
+        self.assertTrue(
+            FfeBackgroundUploader.should_schedule_tournament_upload(
+                stored_event, stored_tournament
+            )
+        )
