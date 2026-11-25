@@ -106,6 +106,9 @@ msgstr ""
 msgid "Bye"
 msgstr ""
 
+msgid "Cancel"
+msgstr ""
+
 msgid "Cheating complaint"
 msgstr ""
 
@@ -128,6 +131,9 @@ msgid "Compares the tied teams on the sum of their differentials on board 1; tho
 msgstr ""
 
 msgid "Competition:"
+msgstr ""
+
+msgid "Confirmation needed"
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -522,6 +528,12 @@ msgstr ""
 msgid "Open Arbiter"
 msgstr ""
 
+msgid "Overwrite and upload"
+msgstr ""
+
+msgid "Overwrite the group on the FFE website?"
+msgstr ""
+
 msgid "PAPI"
 msgstr ""
 
@@ -700,6 +712,9 @@ msgstr ""
 msgid "Team [{team}] has no players."
 msgstr ""
 
+msgid "Teams deleted:"
+msgstr ""
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr ""
 
@@ -737,7 +752,14 @@ msgstr ""
 msgid "The games corrected for the rating report are exported as corrected: the standings on the FFE website may differ from those of the tournament."
 msgstr ""
 
+#, python-format
+msgid "The group on the FFE website does not look like tournament [%(tournament)s]: only %(matched)d of its %(teams)d teams have the name of a team of the tournament. Uploading it will replace the match reports of the group (%(reports)d filled in) with those of the tournament, and delete the teams the tournament does not have."
+msgstr ""
+
 msgid "The match score cannot go below zero."
+msgstr ""
+
+msgid "The name typed is not the name of the group."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
@@ -752,6 +774,9 @@ msgstr ""
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
+msgid "This cannot be undone. Check the group above, then type its name to confirm:"
+msgstr ""
+
 msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
 msgstr ""
 
@@ -762,6 +787,10 @@ msgid "This period has been submitted; later rounds do not change it."
 msgstr ""
 
 msgid "Tournament"
+msgstr ""
+
+#, python-format
+msgid "Tournament [%(tournament)s] has no match to send to this group: uploading it will delete the %(reports)d match reports and the %(teams)d teams of the group on the FFE website."
 msgstr ""
 
 #, python-brace-format
@@ -889,6 +918,9 @@ msgid "group not found on the FFE website, check the division and group in the t
 msgstr ""
 
 msgid "no internet connection"
+msgstr ""
+
+msgid "the upload would delete the data of the group on the FFE website, click the Upload button to review and confirm it"
 msgstr ""
 
 msgid "tournament could not be converted to the Papi format"

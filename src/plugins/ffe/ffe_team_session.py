@@ -31,6 +31,7 @@ from plugins.ffe.ffe_upload_status import (
     NotReachableFFEUploadStatus,
     AuthFailureFFEUploadStatus,
     GroupNotFoundFFEUploadStatus,
+    OverwriteNotConfirmedFFEUploadStatus,
     RejectedFFEUploadStatus,
     UnexpectedFailureFFEUploadStatus,
 )
@@ -150,6 +151,22 @@ class GroupPage:
     @property
     def report_ids(self) -> set[int]:
         return {report.id for report in self.match_reports}
+
+
+@dataclass(frozen=True)
+class GroupOverwrite:
+    """What an upload would destroy in a group whose content does not look
+    like the tournament's: Sharly rewrites the whole group, so the reports
+    and teams it does not send are deleted."""
+
+    #: Whether the tournament sends nothing to keep: no match while the
+    #: group holds filled reports, or no team while it lists some.
+    empties_group: bool
+    site_team_names: list[str]
+    #: The site's teams without a tournament team of the same name.
+    unmatched_team_names: list[str]
+    #: The reports of the group naming their teams.
+    filled_report_count: int
 
 
 @dataclass(frozen=True)
@@ -1087,12 +1104,47 @@ class FFETeamSession(FFESession):
     # Upload
     # ---------------------------------------------------------------------
 
-    def upload_match_reports(self) -> FailureFFEUploadStatus | None:
-        """Sends the tournament to the team module: registers the teams
-        that are not there yet, then fills in one match report per
-        played match (existing reports are overwritten unless they
-        already hold the match). Returns the
-        failure status, None on success."""
+    def group_overwrite(self, page: GroupPage) -> GroupOverwrite | None:
+        """What sending the tournament would destroy in the group of
+        *page*, when that needs the arbiter's confirmation: always when
+        the tournament would empty the group, and when fewer than half of
+        the site's teams are the tournament's in a group the tournament
+        has not been sent to yet."""
+        assert self.tournament is not None
+        tournament = self.tournament
+        ours = {site_name_key(team.name) for team in tournament.teams}
+        site_team_names = list(page.teams_by_name)
+        unmatched = [
+            name for name in site_team_names if site_name_key(name) not in ours
+        ]
+        filled_report_count = sum(
+            1 for report in page.match_reports if not report.is_blank
+        )
+        match_count = sum(
+            len(self.round_matches(tournament, round_))
+            for round_ in range(1, tournament.published_round + 1)
+        )
+        empties_group = (match_count == 0 and filled_report_count > 0) or (
+            not tournament.teams and bool(site_team_names)
+        )
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        own_group = plugin_data.team_uploaded_group == FFEUtils.team_group_key(
+            tournament
+        )
+        mismatch = not own_group and len(unmatched) * 2 > len(site_team_names)
+        if not empties_group and not mismatch:
+            return None
+        return GroupOverwrite(
+            empties_group=empties_group,
+            site_team_names=site_team_names,
+            unmatched_team_names=unmatched,
+            filled_report_count=filled_report_count,
+        )
+
+    def _open_configured_group(self) -> GroupPage | FailureFFEUploadStatus | None:
+        """Logs in with the tournament's group account and opens its group,
+        or returns why that failed; None when the tournament cannot be
+        sent."""
         assert self.tournament is not None
         tournament = self.tournament
         plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
@@ -1105,28 +1157,72 @@ class FFETeamSession(FFESession):
             return None
         assert plugin_data.team_login and plugin_data.team_password
         assert plugin_data.team_division_id and plugin_data.team_group_id
+        logged_in = self.login(plugin_data.team_login, plugin_data.team_password)
+        if logged_in is None:
+            return NotReachableFFEUploadStatus()
+        if not logged_in:
+            return AuthFailureFFEUploadStatus()
+        try:
+            page = self.open_group(
+                competition_id,
+                plugin_data.team_division_id,
+                plugin_data.team_group_id,
+            )
+        except SharlyChessException as error:
+            logger.error(str(error))
+            return GroupNotFoundFFEUploadStatus(str(error))
+        if page is None:
+            return NotReachableFFEUploadStatus()
+        return page
+
+    def preview_upload(self) -> GroupOverwrite | None:
+        """What the upload would destroy and needs confirming, read from
+        the site without writing to it; None when nothing needs it or the
+        group could not be read (the upload then fails the same way)."""
+        assert self.tournament is not None
+        try:
+            page = self._open_configured_group()
+            if not isinstance(page, GroupPage):
+                return None
+            return self.group_overwrite(page)
+        except Exception:
+            logger.exception(
+                '%sGroup could not be checked.', self.tournament.log_prefix
+            )
+            return None
+
+    def upload_match_reports(
+        self, confirm_overwrite: bool = False
+    ) -> FailureFFEUploadStatus | None:
+        """Sends the tournament to the team module: registers the teams
+        that are not there yet, then fills in one match report per
+        played match (existing reports are overwritten unless they
+        already hold the match). A group the upload would wipe out or
+        that looks like another competition's is left untouched unless
+        *confirm_overwrite* (see :meth:`group_overwrite`). Returns the
+        failure status, None on success."""
+        assert self.tournament is not None
+        tournament = self.tournament
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
 
         logger.info(
             'Sending tournament [%s] to the FFE website (team module)...',
             tournament.name,
         )
         try:
-            logged_in = self.login(plugin_data.team_login, plugin_data.team_password)
-            if logged_in is None:
-                return NotReachableFFEUploadStatus()
-            if not logged_in:
-                return AuthFailureFFEUploadStatus()
-            try:
-                page = self.open_group(
-                    competition_id,
-                    plugin_data.team_division_id,
-                    plugin_data.team_group_id,
-                )
-            except SharlyChessException as error:
-                logger.error(str(error))
-                return GroupNotFoundFFEUploadStatus(str(error))
+            page = self._open_configured_group()
             if page is None:
-                return NotReachableFFEUploadStatus()
+                return None
+            if not isinstance(page, GroupPage):
+                return page
+            if not confirm_overwrite and self.group_overwrite(page) is not None:
+                logger.warning(
+                    '%sUpload stopped: it would delete the data of group [%s] on '
+                    'the FFE website, which has to be confirmed.',
+                    tournament.log_prefix,
+                    plugin_data.team_group_name,
+                )
+                return OverwriteNotConfirmedFFEUploadStatus()
             site_team_ids = self._sync_teams(page)
             page = self._sync_reports(page, site_team_ids)
             self._delete_stale_teams(page, site_team_ids)
@@ -1138,6 +1234,8 @@ class FFETeamSession(FFESession):
         except Exception:
             logger.exception('%sUpload failed.', tournament.log_prefix)
             return UnexpectedFailureFFEUploadStatus()
+        # Stored with the outcome of the upload.
+        plugin_data.team_uploaded_group = FFEUtils.team_group_key(tournament)
         logger.info('Tournament [%s] sent to the FFE website.', tournament.name)
         return None
 
