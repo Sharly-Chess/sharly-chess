@@ -21,16 +21,19 @@
     {% if client.can_manage_screens %}
         {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
+        {{ components.button(
+            _('Setup assistant'),
+            kind='outline',
+            icon='bi-magic',
+            tooltip=_('Create a screen step by step, with the menu and the channel it needs.'),
+            attrs={
+                'hx-get': url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id),
+                'hx-target': 'body',
+                'hx-indicator': '#please-wait',
+                'data-testid': 'create-screen-assistant',
+            },
+        ) }}
         {% call components.menu_button(_('Create a screen'), kind='primary', icon='add') %}
-            {{ components.menu_item(
-                _('Setup assistant…'),
-                icon='bi-magic',
-                url=url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id),
-                tooltip=_('Create a screen step by step, with the channel showing it.'),
-                tooltip_placement='left',
-                attrs={'data-testid': 'create-screen-assistant'},
-            ) }}
-            {{ components.menu_divider() }}
             {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
                 {{ components.menu_item(
                     screen_type_data['title'],

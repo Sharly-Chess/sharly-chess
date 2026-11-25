@@ -165,7 +165,7 @@ def assistant_goals(event: Event) -> list[AssistantGoal]:
         'ranking',
         False,
         _('Show the standings'),
-        _('The ranking after each round.'),
+        _('The ranking, the cross-table or, for the round robins, the grid.'),
         'bi-trophy',
         _('Standings'),
     )
@@ -175,7 +175,11 @@ def assistant_goals(event: Event) -> list[AssistantGoal]:
 def assistant_other_type_names(event: Event) -> list[str]:
     """The names of the screen types the assistant has no goal for (plugin
     types included), to point at the standard forms."""
-    covered = {goal.screen_type.id for goal in assistant_goals(event)}
+    covered = {
+        type_id
+        for goal in assistant_goals(event)
+        for type_id in goal.screen_type.assistant_covered_type_ids(event)
+    }
     return [
         screen_type.name
         for screen_type in ScreenTypeManager(event).objects()
@@ -293,6 +297,9 @@ class AssistantCreation:
     family_uniq_ids: list[str]
     # The IDs of the screens and paged screens created, to scroll to them
     screen_ids: list[int] = field(default_factory=list)
+    # The types of the screens created (a standings goal can create a
+    # round-robin grid)
+    screen_type_ids: set[str] = field(default_factory=set)
     family_ids: list[int] = field(default_factory=list)
     # The name of the menu created, if any
     menu_name: str | None = None
@@ -368,6 +375,7 @@ class _AssistantWriter:
             self.database.add_stored_screen_set(stored_screen.id, tournament_id)
         self._screen_ids.append(stored_screen.id)
         self.creation.screen_ids.append(stored_screen.id)
+        self.creation.screen_type_ids.add(stored_screen.type)
         self.creation.screen_uniq_ids.append(stored_screen.uniq_id)
 
     def _add_family(self, tournament_id: int, uniq_id: str) -> None:
@@ -383,6 +391,7 @@ class _AssistantWriter:
         assert stored_family.id is not None
         self._family_ids.append(stored_family.id)
         self.creation.family_ids.append(stored_family.id)
+        self.creation.screen_type_ids.add(stored_family.type)
         self.creation.family_uniq_ids.append(stored_family.uniq_id)
 
     def _write_input_screens(self) -> None:
@@ -453,6 +462,7 @@ class _AssistantWriter:
             assert stored_family.id is not None
             self._family_ids.append(stored_family.id)
             self.creation.family_ids.append(stored_family.id)
+            self.creation.screen_type_ids.add(stored_family.type)
             self.creation.family_uniq_ids.append(stored_family.uniq_id)
             # A menu to pick the page when asked (the pages turn by
             # themselves otherwise).
@@ -466,6 +476,7 @@ class _AssistantWriter:
                 self.database.add_stored_screen_set(stored_screen.id, tournament_id)
             self._screen_ids.append(stored_screen.id)
             self.creation.screen_ids.append(stored_screen.id)
+            self.creation.screen_type_ids.add(stored_screen.type)
             self.creation.screen_uniq_ids.append(stored_screen.uniq_id)
 
     def _write_channel(self) -> None:
@@ -521,7 +532,18 @@ def assistant_summary(
 ) -> list[str]:
     """What the assistant is about to create, one line each, shown before
     the Create button (mirrors ``create_from_assistant()``)."""
+    # The standings goal names what it shows: the ranking, the cross-table
+    # or the round-robin grid.
+    item_name = {
+        'crosstable': _('Cross-table'),
+        'grid': _('Round-robin grid'),
+    }.get(answers.get('ranking_kind', ''), goal.short_name)
     screen_type = goal.screen_type
+    shown_type: ScreenType = screen_type
+    if answers.get('ranking_kind') == 'grid':
+        from data.screens.screen_types import RoundRobinGridScreenType
+
+        shown_type = RoundRobinGridScreenType()
     lines: list[str] = []
     menu_line: str | None = None
 
@@ -567,7 +589,7 @@ def assistant_summary(
         )
         lines.append(
             _('A “{name}” screen for {tournament}, over several pages.').format(
-                name=goal.short_name,
+                name=item_name,
                 tournament=tournament_names([tournament_id]),
             )
         )
@@ -576,12 +598,13 @@ def assistant_summary(
     else:
         lines.append(
             _('A “{name}” screen covering {tournaments}.').format(
-                name=goal.short_name,
+                name=item_name,
                 tournaments=tournament_names(
-                    answers.get('switch_tournaments')
+                    answers.get('grid_tournaments')
+                    or answers.get('switch_tournaments')
                     or [
                         tournament.id
-                        for tournament in screen_type.assistant_tournaments(event)
+                        for tournament in shown_type.assistant_tournaments(event)
                     ]
                 ),
             )

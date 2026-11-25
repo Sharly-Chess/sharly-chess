@@ -32,7 +32,6 @@ class TestScreenAssistant:
     @staticmethod
     def _open_assistant(page: Page):
         page.goto(f'/event/{EVENT_ID}/screens')
-        page.get_by_role('button', name='Create a screen').click()
         page.get_by_test_id('create-screen-assistant').click()
         expect(page.get_by_test_id('screen-assistant')).to_be_visible()
         TestUtils.wait_for_htmx_idle(page)
@@ -51,6 +50,12 @@ class TestScreenAssistant:
         # goals from the first question.
         answers = page.locator('.screen-assistant-answer')
         expect(answers).to_have_text(['Show the check-in status'])
+        # The question asked is shown under its stage.
+        expect(
+            page.get_by_test_id('screen-assistant-stage-content').locator(
+                '.screen-assistant-current'
+            )
+        ).to_have_text('On one page, or over several pages?')
         back.click()
         expect(page.get_by_test_id('screen-assistant-goal-check-in')).to_be_visible()
         TestUtils.wait_for_htmx_idle(page)

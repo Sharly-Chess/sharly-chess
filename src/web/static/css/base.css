@@ -2519,10 +2519,7 @@ a.screens-type-filter-chip {
 
 .display-guide-assistant {
     display: flex;
-    justify-content: center;
-    margin-top: 1.25rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--pw-control-border-color);
+    margin-bottom: .75rem;
 }
 
 .display-guide-assistant .sc-btn {
@@ -2535,7 +2532,9 @@ a.screens-type-filter-chip {
     flex-wrap: wrap;
     justify-content: center;
     gap: .5rem;
-    margin-top: .75rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--pw-control-border-color);
 }
 
 .display-explainer .dx-header {

@@ -881,6 +881,12 @@ class ScreenType(IdentifiableEntity, ABC):
         ``assistant_questions()``."""
         raise NotImplementedError
 
+    def assistant_covered_type_ids(self, event: Event) -> list[str]:
+        """The IDs of the screen types the assistant creates through the
+        goals of this type, so that the others can be pointed at the
+        standard forms."""
+        return [self.id]
+
     def assistant_tournaments(self, event: Event) -> list[Tournament]:
         """The tournaments a screen of this type can show."""
         return [
@@ -1066,6 +1072,7 @@ class ScreenType(IdentifiableEntity, ABC):
             ),
             'paged_number': WizardIntQuestion(
                 text=_('How many rows per page?'),
+                summary=_('{answer} rows per page'),
                 help=_(
                     'Each column holds this many rows: with 20 rows and 2 '
                     'columns, 40 entries fit on each page.'
@@ -1075,6 +1082,7 @@ class ScreenType(IdentifiableEntity, ABC):
             ),
             'paged_pages': WizardIntQuestion(
                 text=_('How many pages?'),
+                summary=_('{answer} pages'),
                 min=1,
                 next='columns',
             ),
@@ -1107,7 +1115,11 @@ class ScreenType(IdentifiableEntity, ABC):
                 options=[
                     WizardOption(value=None, text=_('No timer')),
                     *(
-                        WizardOption(value=timer.id, text=timer.name)
+                        WizardOption(
+                            value=timer.id,
+                            text=timer.name,
+                            summary=_('Timer: {name}').format(name=timer.name),
+                        )
                         for timer in event.timers_by_id.values()
                     ),
                 ],
@@ -1176,7 +1188,8 @@ class ScreenType(IdentifiableEntity, ABC):
             uniq_id=uniq_id,
             name=None,
             type=self.id,
-            columns=answers['columns'],
+            # Not asked for the types on a single column.
+            columns=answers.get('columns', 1),
             font_size=None,
             menu_text=None,
             # Not answered when the event has no timer.
@@ -1883,6 +1896,7 @@ class PlayersScreenType(ScreenType):
             value=(player_format, board_format, opponent_format),
             text=text,
             help=' — '.join(examples),
+            summary=_('Format: {name}').format(name=text),
         )
 
     @override
@@ -1902,8 +1916,16 @@ class PlayersScreenType(ScreenType):
                 stage='content',
                 text=_('Do you want to show the unpaired players?'),
                 options=[
-                    WizardOption(value=True, text=_('Yes')),
-                    WizardOption(value=False, text=_('No')),
+                    WizardOption(
+                        value=True,
+                        text=_('Yes'),
+                        summary=_('Unpaired players shown'),
+                    ),
+                    WizardOption(
+                        value=False,
+                        text=_('No'),
+                        summary=_('Unpaired players hidden'),
+                    ),
                 ],
                 default_value=True,
                 next='format',
@@ -2501,14 +2523,106 @@ class RankingScreenType(ColumnTogglesScreenType):
     ) -> dict[str, WizardQuestion] | None:
         if accepts_input:
             return None
-        return self._assistant_layout_questions(event)
+        grid_type = RoundRobinGridScreenType()
+        grid_tournaments = grid_type.assistant_tournaments(event)
+        options = [
+            WizardOption(
+                value='ranking',
+                text=_('The ranking'),
+                help=_('The players by rank, with their points and tie-breaks.'),
+                next='paged',
+            ),
+            WizardOption(
+                value='crosstable',
+                text=_('The cross-table'),
+                help=_(
+                    'The ranking, with the result of every game against each opponent.'
+                ),
+                next='paged',
+            ),
+        ]
+        grid_questions: dict[str, WizardQuestion] = {}
+        if grid_tournaments:
+            # The grid is a screen type of its own, offered here as it shows
+            # the standings of the round robins.
+            options.append(
+                WizardOption(
+                    value='grid',
+                    text=_('The round-robin grid'),
+                    help=_('Every player against every other, for the round robins.'),
+                    next='grid_tournaments',
+                )
+            )
+            grid_questions = {
+                'grid_tournaments': WizardTournamentsQuestion(
+                    grid_tournaments,
+                    stage='content',
+                    disabled=len(grid_tournaments) < 2,
+                    next='grid_order',
+                ),
+                'grid_order': WizardRadioQuestion(
+                    text=_('In which order?'),
+                    options=[
+                        WizardOption(
+                            value=False,
+                            text=_('By pairing number'),
+                            help=_(
+                                'Every player keeps their row all through the tournament.'
+                            ),
+                            summary=_('Ordered by pairing number'),
+                        ),
+                        WizardOption(
+                            value=True,
+                            text=_('By rank'),
+                            help=_('The leaders at the top.'),
+                            summary=_('Ordered by rank'),
+                        ),
+                    ],
+                    default_value=False,
+                    next='timer',
+                ),
+            }
+        return {
+            'ranking_kind': WizardRadioQuestion(
+                stage='content',
+                text=_('What do you want to show?'),
+                options=options,
+                default_value='ranking',
+            ),
+            **grid_questions,
+            **self._assistant_layout_questions(event),
+        }
+
+    @override
+    def assistant_covered_type_ids(self, event: Event) -> list[str]:
+        if RoundRobinGridScreenType().assistant_tournaments(event):
+            return [self.id, RoundRobinGridScreenType.static_id()]
+        return [self.id]
 
     @override
     def create_from_assistant_answers(
         self, event: Event, answers: dict[str, Any], accepts_input: bool
     ) -> StoredScreen | StoredFamily:
+        kind = answers.get('ranking_kind', 'ranking')
+        if kind == 'grid':
+            grid_type = RoundRobinGridScreenType()
+            tournament_ids: list[int] = answers.get('grid_tournaments') or [
+                tournament.id for tournament in grid_type.assistant_tournaments(event)
+            ]
+            return grid_type.assistant_stored_screen(
+                event,
+                answers,
+                accepts_input,
+                tournament_ids,
+                event.get_unused_screen_uniq_id(grid_type),
+                round_robin_grid_by_rank=bool(answers.get('grid_order')),
+                round_robin_grid_players=False,
+            )
         return self._stored_from_assistant_answers(
-            event, answers, accepts_input=accepts_input
+            event,
+            answers,
+            accepts_input=accepts_input,
+            ranking_crosstable=kind == 'crosstable',
         )
 
 

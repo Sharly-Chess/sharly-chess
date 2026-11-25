@@ -8,20 +8,22 @@
 
 {% block cards_container_cards %}
     <div class="display-guide" data-testid="display-guide">
-        {{ screens_map.diagram() }}
-        <div class="display-guide-assistant">
-            {{ components.button(
-                _('Setup assistant'),
-                kind='primary',
-                icon='bi-magic',
-                attrs={
-                    'hx-get': url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id),
-                    'hx-target': 'body',
-                    'hx-indicator': '#please-wait',
-                    'data-testid': 'guide-setup-assistant',
-                },
-            ) }}
-        </div>
+        {% set assistant_button %}
+            <div class="display-guide-assistant">
+                {{ components.button(
+                    _('Setup assistant'),
+                    kind='primary',
+                    icon='bi-magic',
+                    attrs={
+                        'hx-get': url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id),
+                        'hx-target': 'body',
+                        'hx-indicator': '#please-wait',
+                        'data-testid': 'guide-setup-assistant',
+                    },
+                ) }}
+            </div>
+        {% endset %}
+        {{ screens_map.diagram(lead=assistant_button) }}
         <div class="display-guide-create">
             {{ components.modal_button(
                 url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id),

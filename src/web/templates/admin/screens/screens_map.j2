@@ -38,7 +38,9 @@
     } | tojson }}
 {% endmacro %}
 
-{% macro diagram() %}
+{# *lead*: markup set at the top of the steps column, beside the example
+   rather than above it. #}
+{% macro diagram(lead=none) %}
     <div class="display-explainer">
         <script type="application/json" class="dx-strings">{{ _strings() }}</script>
         <header class="dx-header">
@@ -47,6 +49,7 @@
         </header>
         <div class="dx-layout">
             <div class="dx-steps">
+                {% if lead %}<div class="dx-lead">{{ lead }}</div>{% endif %}
                 <section class="dx-step">
                     <div class="dx-step-head">
                         <span class="dx-num">1</span>

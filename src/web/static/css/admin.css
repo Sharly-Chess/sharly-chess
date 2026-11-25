@@ -1638,3 +1638,12 @@ tr.live-updated > td {
 .screen-assistant-create-buttons[hidden] {
     display: none;
 }
+
+/* The question being asked, under its stage in the rail. */
+.screen-assistant-current {
+    font-size: .85rem;
+    font-style: italic;
+    color: var(--bs-body-color);
+    padding: .1rem .4rem .1rem .55rem;
+    border-left: 2px solid var(--bs-primary);
+}

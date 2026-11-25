@@ -178,7 +178,7 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         # filter is otherwise left alone, and the page scrolls to the
         # screen created instead.
         type_filter = SessionScreensTypeFilter(request)
-        if type_filter.get() not in ('', goal.screen_type.id):
+        if type_filter.get() not in ('', *creation.screen_type_ids):
             type_filter.set('')
         scroll_to = ''
         if creation.screen_ids:

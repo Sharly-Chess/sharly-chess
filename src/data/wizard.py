@@ -27,6 +27,9 @@ class WizardOption:
     help: str | None = None
     # The ID of the next question (if None see the next question of the question itself)
     next: str | None = None
+    # The answer as listed among those given, when the text alone would not
+    # say what it answers (a bare "Yes"); the text if None
+    summary: str | None = None
 
 
 @dataclass
@@ -46,6 +49,10 @@ class WizardQuestion(ABC):
     next: str | None = None
     # The stage of the wizard the question belongs to (see Wizard.stages)
     stage: str = 'layout'
+    # The answer as listed among those given, ``{answer}`` standing for it,
+    # when the bare answer would not say what it answers (a number of
+    # pages); the bare answer if None
+    summary: str | None = None
 
     @abstractmethod
     def _read_answer(self, raw: str) -> tuple[Any, str | None]:

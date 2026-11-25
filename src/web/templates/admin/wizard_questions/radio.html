@@ -9,6 +9,7 @@
             name="{{ field }}"
             value="{{ loop.index0 }}"
             data-next="{{ wizard.enabled_question_id(option.next or question.next) or '' }}"
+            {% if option.summary %}data-summary="{{ option.summary }}"{% endif %}
             {% if data.get(field) == loop.index0|string %}checked{% endif %}
         >
         <label class="form-check-label" for="{{ option_id }}">

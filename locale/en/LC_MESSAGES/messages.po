@@ -2129,10 +2129,16 @@ msgstr ""
 msgid "By number of groups (balanced player counts)"
 msgstr ""
 
+msgid "By pairing number"
+msgstr ""
+
 msgid "By pairing number, every player keeps their row and column all through the tournament; by rank, the leaders come first."
 msgstr ""
 
 msgid "By player"
+msgstr ""
+
+msgid "By rank"
 msgstr ""
 
 msgid "By rating step"
@@ -2921,7 +2927,7 @@ msgstr ""
 msgid "Create a screen now to get started."
 msgstr ""
 
-msgid "Create a screen step by step, with the channel showing it."
+msgid "Create a screen step by step, with the menu and the channel it needs."
 msgstr ""
 
 msgid "Create a team"
@@ -3037,6 +3043,9 @@ msgid "Croatia"
 msgstr ""
 
 msgid "Crop marks:"
+msgstr ""
+
+msgid "Cross-table"
 msgstr ""
 
 msgid "Crosstable"
@@ -4262,6 +4271,12 @@ msgstr ""
 msgid "Events"
 msgstr ""
 
+msgid "Every player against every other, for the round robins."
+msgstr ""
+
+msgid "Every player keeps their row all through the tournament."
+msgstr ""
+
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
 msgstr ""
 
@@ -4738,6 +4753,10 @@ msgid "Form:"
 msgstr ""
 
 msgid "Format as schedule"
+msgstr ""
+
+#, python-brace-format
+msgid "Format: {name}"
 msgstr ""
 
 msgid "Fourth place"
@@ -5294,6 +5313,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "In team events, the tie-break is calculated using {score} as the reference score."
+msgstr ""
+
+msgid "In which order?"
 msgstr ""
 
 msgid "In-tournament"
@@ -7647,6 +7669,12 @@ msgid "Order: by pairing number"
 msgstr ""
 
 msgid "Order: by rank"
+msgstr ""
+
+msgid "Ordered by pairing number"
+msgstr ""
+
+msgid "Ordered by rank"
 msgstr ""
 
 msgid "Organisation"
@@ -10347,9 +10375,6 @@ msgstr ""
 msgid "Setup assistant"
 msgstr ""
 
-msgid "Setup assistant…"
-msgstr ""
-
 msgid "Seychelles"
 msgstr ""
 
@@ -11317,6 +11342,9 @@ msgstr ""
 msgid "The criteria the standings are ranked on, as TRF26 acronyms, comma-separated."
 msgstr ""
 
+msgid "The cross-table"
+msgstr ""
+
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr ""
 
@@ -11460,6 +11488,9 @@ msgid "The label used for this screen in menus. If left empty, the tournament na
 msgstr ""
 
 msgid "The last backup could not be written."
+msgstr ""
+
+msgid "The leaders at the top."
 msgstr ""
 
 #, python-brace-format
@@ -11774,6 +11805,9 @@ msgstr ""
 msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
 msgstr ""
 
+msgid "The players by rank, with their points and tie-breaks."
+msgstr ""
+
 msgid "The players checked in and those not yet checked in."
 msgstr ""
 
@@ -11814,7 +11848,13 @@ msgstr ""
 msgid "The rank of the last team to select."
 msgstr ""
 
-msgid "The ranking after each round."
+msgid "The ranking"
+msgstr ""
+
+msgid "The ranking, the cross-table or, for the round robins, the grid."
+msgstr ""
+
+msgid "The ranking, with the result of every game against each opponent."
 msgstr ""
 
 #, python-format
@@ -11917,6 +11957,9 @@ msgid "The round count is incompatible with the number of teams (expected: {expe
 msgstr ""
 
 msgid "The round must be paired first."
+msgstr ""
+
+msgid "The round-robin grid"
 msgstr ""
 
 msgid "The rule has been deleted."
@@ -12692,6 +12735,10 @@ msgstr ""
 msgid "Timer: none"
 msgstr ""
 
+#, python-brace-format
+msgid "Timer: {name}"
+msgstr ""
+
 msgid "Timers"
 msgstr ""
 
@@ -13171,6 +13218,12 @@ msgstr ""
 
 msgctxt "said of a woman"
 msgid "Unpaired"
+msgstr ""
+
+msgid "Unpaired players hidden"
+msgstr ""
+
+msgid "Unpaired players shown"
 msgstr ""
 
 msgid "Unpaired: displayed"
@@ -14762,6 +14815,14 @@ msgstr ""
 #, python-brace-format
 msgctxt "senior age category"
 msgid "{age_limit}+"
+msgstr ""
+
+#, python-brace-format
+msgid "{answer} pages"
+msgstr ""
+
+#, python-brace-format
+msgid "{answer} rows per page"
 msgstr ""
 
 #, python-brace-format

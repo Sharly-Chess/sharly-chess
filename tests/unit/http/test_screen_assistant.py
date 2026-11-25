@@ -12,6 +12,7 @@ import pytest
 from litestar.testing import TestClient
 
 from data.loader import EventLoader
+from data.pairings.variations import BergerRoundRobinVariation
 from database.sqlite.event.event_store import StoredTournament
 from tests.test_config import ScreenType, TestUtils
 from tests.unit.http.client import ApiClient
@@ -597,3 +598,77 @@ def test_create_and_edit_opens_the_form_of_what_was_created(
     assert f'/family-modal/update/{EVENT_ID}/{family.id}' in response.text
     response = http.get(f'/event/{EVENT_ID}/menus?scroll_to={menu.id}&edit=1')
     assert f'/menu-modal/update/{EVENT_ID}/{menu.id}' in response.text
+
+
+@pytest.mark.unit
+def test_the_standings_goal_offers_the_cross_table_and_the_grid(
+    http: TestClient, tournament: StoredTournament
+):
+    """The standings goal asks what to show: the ranking, the cross-table,
+    or — once there is a round robin — the round-robin grid, which is then
+    no longer listed among the kinds of screens to create directly."""
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=ranking')
+    assert 'The cross-table' in response.text
+    assert 'The round-robin grid' not in response.text
+    assert 'Round-robin grid' in http.get(f'/screen-assistant/{EVENT_ID}').text
+
+    # No players imported: the import would bring its own pairing system.
+    round_robin = TestUtils.create_tournament(
+        EVENT_ID,
+        f'{TOURNAMENT_NAME}-rr',
+        overrides={'pairing': BergerRoundRobinVariation.static_id()},
+    )
+    reload_event()
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=ranking')
+    assert 'The round-robin grid' in response.text
+    assert 'Other kinds of screens exist too: Last results, Image.' in (
+        http.get(f'/screen-assistant/{EVENT_ID}').text
+    )
+
+    # The cross-table: a ranking screen with the switch on.
+    response = http.post(
+        f'/screen-assistant-create/{EVENT_ID}',
+        data={
+            'goal': 'ranking',
+            'answer_ranking_kind': '1',
+            'answer_paged': ONE_PAGE,
+            'answer_switch_tournaments': str(tournament.id),
+            'answer_columns': '0',
+            'answer_channel': NO_CHANNEL,
+        },
+    )
+    assert response.is_success
+    # The round-robin grid, of the single round robin, by rank.
+    data = {
+        'goal': 'ranking',
+        'answer_ranking_kind': '2',
+        'answer_grid_order': '1',
+        'answer_channel': NO_CHANNEL,
+    }
+    summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text
+    assert (f'A “Round-robin grid” screen covering {TOURNAMENT_NAME}-rr.') in summary
+    assert http.post(f'/screen-assistant-create/{EVENT_ID}', data=data).is_success
+    event = reload_event()
+    rankings = event.sorted_basic_screens_by_screen_type[ScreenType.RANKING.value]
+    assert len(rankings) == 1
+    assert rankings[0].stored_screen is not None
+    assert rankings[0].stored_screen.ranking_crosstable
+    grids = event.sorted_basic_screens_by_screen_type[ScreenType.ROUND_ROBIN_GRID.value]
+    assert len(grids) == 1
+    assert grids[0].stored_screen is not None
+    assert grids[0].stored_screen.round_robin_grid_by_rank
+    assert [screen_set.tournament.id for screen_set in grids[0].screen_sets] == [
+        round_robin.id
+    ]
+
+
+@pytest.mark.unit
+def test_short_answers_are_put_in_words(http: TestClient, tournament: StoredTournament):
+    """The answers listed beside the questions say what they answer: a bare
+    Yes or a number would not."""
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=players')
+    assert 'data-summary="Unpaired players shown"' in response.text
+    assert 'data-summary="Unpaired players hidden"' in response.text
+    assert 'data-summary="Format: Full"' in response.text
+    assert 'data-summary="{answer} pages"' in response.text
+    assert 'data-summary="{answer} rows per page"' in response.text

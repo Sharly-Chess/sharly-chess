@@ -2129,11 +2129,17 @@ msgstr "Par match"
 msgid "By number of groups (balanced player counts)"
 msgstr "Par nombre de groupes (effectifs équilibrés)"
 
+msgid "By pairing number"
+msgstr "Par numéro d'appariement"
+
 msgid "By pairing number, every player keeps their row and column all through the tournament; by rank, the leaders come first."
 msgstr "Par numéro d'appariement, chaque joueur·euse garde sa ligne et sa colonne pendant tout le tournoi ; par classement, les premier·ères viennent en tête."
 
 msgid "By player"
 msgstr "Par ordre alpha."
+
+msgid "By rank"
+msgstr "Par classement"
 
 msgid "By rating step"
 msgstr "Par pas de Elo"
@@ -2921,8 +2927,8 @@ msgstr "Créer un écran"
 msgid "Create a screen now to get started."
 msgstr "Créer un écran pour commencer"
 
-msgid "Create a screen step by step, with the channel showing it."
-msgstr "Créer un écran pas à pas, avec le canal qui l'affiche."
+msgid "Create a screen step by step, with the menu and the channel it needs."
+msgstr "Créer un écran pas à pas, avec le menu et le canal dont il a besoin."
 
 msgid "Create a team"
 msgstr "Créer une équipe"
@@ -3038,6 +3044,9 @@ msgstr "Croatie"
 
 msgid "Crop marks:"
 msgstr "Traits de coupe :"
+
+msgid "Cross-table"
+msgstr "Grille américaine"
 
 msgid "Crosstable"
 msgstr "Grille américaine"
@@ -4262,6 +4271,12 @@ msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id
 msgid "Events"
 msgstr "Évènements"
 
+msgid "Every player against every other, for the round robins."
+msgstr "Chaque joueur·euse face à tou·tes les autres, pour les toutes-rondes."
+
+msgid "Every player keeps their row all through the tournament."
+msgstr "Chaque joueur·euse garde sa ligne pendant tout le tournoi."
+
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
 msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi. Les équipes que le fichier laisse vides sont également supprimées."
 
@@ -4739,6 +4754,10 @@ msgstr "Formulaire :"
 
 msgid "Format as schedule"
 msgstr "Afficher en calendrier"
+
+#, python-brace-format
+msgid "Format: {name}"
+msgstr "Format : {name}"
 
 msgid "Fourth place"
 msgstr "Quatrième place"
@@ -5295,6 +5314,9 @@ msgstr "Aux rondes 1 et 2, chaque joueur·euse du groupe A reçoit {win} points 
 #, python-brace-format
 msgid "In team events, the tie-break is calculated using {score} as the reference score."
 msgstr "Dals les évènements par équipes, le départage est calculé en utilisant les {score} comme score de référence."
+
+msgid "In which order?"
+msgstr "Dans quel ordre ?"
 
 msgid "In-tournament"
 msgstr "Dans le tournoi"
@@ -7650,6 +7672,12 @@ msgstr "Ordre : par numéro d'appariement"
 
 msgid "Order: by rank"
 msgstr "Ordre : par classement"
+
+msgid "Ordered by pairing number"
+msgstr "Par numéro d'appariement"
+
+msgid "Ordered by rank"
+msgstr "Par classement"
 
 msgid "Organisation"
 msgstr "Organisation"
@@ -10349,9 +10377,6 @@ msgstr "Paramètres"
 msgid "Setup assistant"
 msgstr "Assistant de création"
 
-msgid "Setup assistant…"
-msgstr "Assistant de création…"
-
 msgid "Seychelles"
 msgstr "Seychelles"
 
@@ -11319,6 +11344,9 @@ msgstr "La configuration a été enregistrée."
 msgid "The criteria the standings are ranked on, as TRF26 acronyms, comma-separated."
 msgstr "Les critères du classement, en acronymes TRF26 séparés par des virgules."
 
+msgid "The cross-table"
+msgstr "La grille américaine"
+
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
 
@@ -11463,6 +11491,9 @@ msgstr "Le libellé utilisé pour cet écran dans les menus. S'il est vide, le n
 
 msgid "The last backup could not be written."
 msgstr "La dernière sauvegarde n'a pas pu être écrite."
+
+msgid "The leaders at the top."
+msgstr "Les premier·ères en tête."
 
 #, python-brace-format
 msgid "The least and the most significant values are removed."
@@ -11776,6 +11807,9 @@ msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en trois g
 msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
 msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en deux groupes : le groupe A, les premiers numéros d'appariement, et le groupe B, les autres."
 
+msgid "The players by rank, with their points and tie-breaks."
+msgstr "Les joueur·euses par classement, avec leurs points et leurs départages."
+
 msgid "The players checked in and those not yet checked in."
 msgstr "La liste des joueur·euses pointé·es et non pointé·es."
 
@@ -11816,8 +11850,14 @@ msgstr "Le classement du·de la dernier·e joueur·euse."
 msgid "The rank of the last team to select."
 msgstr "Le classement de la dernière équipe à sélectionner."
 
-msgid "The ranking after each round."
-msgstr "Le classement après chaque ronde."
+msgid "The ranking"
+msgstr "Le classement"
+
+msgid "The ranking, the cross-table or, for the round robins, the grid."
+msgstr "Le classement, la grille américaine ou, pour les toutes-rondes, la grille."
+
+msgid "The ranking, with the result of every game against each opponent."
+msgstr "Le classement, avec le résultat de chaque partie contre chaque adversaire."
 
 #, python-format
 msgid "The rating lists give %(num)d player a different rating."
@@ -11920,6 +11960,9 @@ msgstr "Le nombre de rondes est incompatible avec le nombre d'équipes (attendu�
 
 msgid "The round must be paired first."
 msgstr "La ronde doit d'abord être appariée."
+
+msgid "The round-robin grid"
+msgstr "La grille toutes-rondes"
 
 msgid "The rule has been deleted."
 msgstr "La règle a été supprimée."
@@ -12694,6 +12737,10 @@ msgstr "Chronomètre : %(timer_uniq_id)s"
 msgid "Timer: none"
 msgstr "Chronomètre : aucun"
 
+#, python-brace-format
+msgid "Timer: {name}"
+msgstr "Chronomètre : {name}"
+
 msgid "Timers"
 msgstr "Chronomètres"
 
@@ -13174,6 +13221,12 @@ msgstr "Non apparié"
 msgctxt "said of a woman"
 msgid "Unpaired"
 msgstr "Non appariée"
+
+msgid "Unpaired players hidden"
+msgstr "Joueur·euses non apparié·es masqué·es"
+
+msgid "Unpaired players shown"
+msgstr "Joueur·euses non apparié·es affiché·es"
 
 msgid "Unpaired: displayed"
 msgstr "Non apparié·es : affiché·es"
@@ -14765,6 +14818,14 @@ msgstr "{after} au lieu de {before}."
 msgctxt "senior age category"
 msgid "{age_limit}+"
 msgstr "{age_limit}+"
+
+#, python-brace-format
+msgid "{answer} pages"
+msgstr "{answer} pages"
+
+#, python-brace-format
+msgid "{answer} rows per page"
+msgstr "{answer} lignes par page"
 
 #, python-brace-format
 msgid "{board_number} {color}"

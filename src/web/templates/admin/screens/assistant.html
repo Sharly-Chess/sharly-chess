@@ -125,6 +125,7 @@
                                 data-next-single="{{ wizard.enabled_question_id(question.next_single) or '' }}"
                             {% endif %}
                             data-default="{{ wizard_defaults[field] }}"
+                            {% if question.summary %}data-summary="{{ question.summary }}"{% endif %}
                             data-testid="screen-assistant-question-{{ question_id }}"
                             hidden
                         >
@@ -169,7 +170,9 @@
             // Fills the rail: *answered* holds {stage, text, onclick} rows in
             // the order answered, *currentStage* names the stage of the
             // question shown ('create' once the last one is answered).
-            function renderRail(answered, currentStage) {
+            // *currentText*: the question being asked, listed last under
+            // its stage.
+            function renderRail(answered, currentStage, currentText) {
                 const stageIds = [...stages.keys()];
                 const reached = stageIds.indexOf(currentStage);
                 stages.forEach((stage, stageId) => {
@@ -191,13 +194,23 @@
                             row.addEventListener('click', answer.onclick);
                             return row;
                         }));
+                    if (stageId === currentStage && currentText) {
+                        const row = document.createElement('div');
+                        row.className = 'screen-assistant-current';
+                        row.textContent = currentText;
+                        list.append(row);
+                    }
                 });
             }
 
             if (form === null) {
                 // Choosing the goal: the first stage is active, nothing is
                 // answered yet.
-                renderRail([], 'content');
+                renderRail(
+                    [],
+                    'content',
+                    document.querySelector('.screen-assistant-main .screen-assistant-question-text')?.textContent.trim()
+                );
                 return;
             }
 
@@ -241,25 +254,35 @@
 
             // The answer given to a question, as shown in the rail.
             function answerText(question) {
+                let answer;
                 switch (question.dataset.type) {
                     case 'radio': {
                         const checked = question.querySelector('input[type=radio]:checked');
-                        return checked
-                            ? checked.closest('.form-check').querySelector('.screen-assistant-option-text').textContent.trim()
-                            : '';
+                        if (!checked) {
+                            return '';
+                        }
+                        // An option's own summary says what it answers.
+                        return checked.dataset.summary
+                            || checked.closest('.form-check').querySelector('.screen-assistant-option-text').textContent.trim();
                     }
                     case 'bool':
-                        return question.querySelector('input[type=checkbox]').checked
+                        answer = question.querySelector('input[type=checkbox]').checked
                             ? form.dataset.yesLabel
                             : form.dataset.noLabel;
+                        break;
                     case 'tournament':
                     case 'tournaments':
-                        return [...question.querySelector('select').selectedOptions]
+                        answer = [...question.querySelector('select').selectedOptions]
                             .map((option) => option.textContent.trim())
                             .join(', ');
+                        break;
                     default:
-                        return question.querySelector('input').value;
+                        answer = question.querySelector('input[name^="answer_"]').value;
                 }
+                // A bare answer, such as a number, is put in words.
+                return question.dataset.summary
+                    ? question.dataset.summary.replace('{answer}', answer)
+                    : answer;
             }
 
             // The rail rows: the goal first (clicking it starts over), then
@@ -314,7 +337,8 @@
                 }
                 renderRail(
                     railAnswers(),
-                    current === null ? 'create' : current.dataset.stage
+                    current === null ? 'create' : current.dataset.stage,
+                    (current ?? final).querySelector('.screen-assistant-question-text').textContent.trim()
                 );
                 nextButton.hidden = current === null;
                 createButtons.hidden = current !== null;
