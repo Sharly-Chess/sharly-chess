@@ -13,6 +13,7 @@ from web.controllers.user.base_screen_user_controller import (
     DisplayControllerUserWebContext,
     DisplayControllerWaitingWebContext,
     MenuUserWebContext,
+    MenuWaitingWebContext,
     PagedScreenUserWebContext,
     RotatorUserWebContext,
     ScreenUserWebContext,
@@ -159,6 +160,11 @@ class ScreenUserController(BaseScreenUserController):
         rotator_screen_index: FromPath[int] = 0,
     ) -> Template | Reswap:
         web_context = MenuUserWebContext(request, rotator_screen_index)
+        if not web_context.has_screen:
+            return HTMXTemplate(
+                template_name='user/waiting.html',
+                context=MenuWaitingWebContext(request).template_context,
+            )
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
@@ -180,7 +186,7 @@ class ScreenUserController(BaseScreenUserController):
         web_context = DisplayControllerUserWebContext(request, rotator_screen_index)
         if not web_context.has_screen:
             return HTMXTemplate(
-                template_name='user/display_controller_waiting.html',
+                template_name='user/waiting.html',
                 context=DisplayControllerWaitingWebContext(request).template_context,
             )
         if web_context.is_rotator:

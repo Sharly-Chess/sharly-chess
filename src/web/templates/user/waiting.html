@@ -1,30 +1,28 @@
 {% extends '/common/base.html' %}
 
-{% block title %}{{ display_controller.name }}{% endblock %}
+{% block title %}{{ waiting_name }}{% endblock %}
 
 {% block header %}
     <div
         id="user-screen-header"
         class="header user-header user-screen-header"
-        data-page-title="{{ display_controller.name }}"
+        data-page-title="{{ waiting_name }}"
         data-page-context="{{ user_event.name }}"
     >
         {% set refresh_conditions = "modalIsClosed()" ~ (" && document.visibilityState === 'visible'" if not DEVEL_ENV else '') %}
         {% set becomes_visible = "visibilitychange[" ~ refresh_conditions ~ "] from:document," if not DEVEL_ENV else '' %}
+        {% set notified = waiting_ws_event ~ '[' ~ refresh_conditions ~ '] from:body, ' if waiting_ws_event else '' %}
         {% if not request.query_params.get('preview') %}
             <div
                 id="screen-live-update"
                 class="d-none"
                 data-ws-url="{{ url_for('ws-event-screens', event_uniq_id=user_event.uniq_id) }}"
+                {% if waiting_live_events %}data-events="{{ waiting_live_events }}"{% endif %}
             ></div>
             <div
-                class="refresher display-controller-refresher"
-                hx-get="{{ url_for(
-                    'user-display-controller',
-                    event_uniq_id=user_event.uniq_id,
-                    display_controller_id=display_controller.id,
-                ) }}"
-                hx-trigger="ws:display-controller-updated|{{ user_event.uniq_id }}|{{ display_controller.id }}[{{ refresh_conditions }}] from:body, screen-refresh[{{ refresh_conditions }}] from:body, {{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
+                class="refresher {{ waiting_refresher_class }}"
+                hx-get="{{ waiting_url }}"
+                hx-trigger="{{ notified }}screen-refresh[{{ refresh_conditions }}] from:body, {{ becomes_visible }} every {{ waiting_delay }}s[{{ refresh_conditions }}]"
                 hx-target="body"
             ></div>
         {% endif %}
@@ -36,12 +34,12 @@
 {% block content %}
     <div
         class="d-flex flex-column align-items-center justify-content-center text-center gap-2 p-4 vh-100"
-        data-testid="display-controller-waiting"
+        data-testid="{{ waiting_testid }}"
     >
-        <i class="bi-display fs-1 text-secondary"></i>
-        <div class="fs-2 fw-bold">{{ display_controller.name }}</div>
+        <i class="{{ waiting_icon }} fs-1 text-secondary"></i>
+        <div class="fs-2 fw-bold">{{ waiting_name }}</div>
         <div class="text-secondary">{{ user_event.name }}</div>
-        <div class="fs-5 mt-3">{{ _('Connected. Waiting for a screen…') }}</div>
+        <div class="fs-5 mt-3">{{ waiting_message }}</div>
     </div>
 {% endblock content %}
 
