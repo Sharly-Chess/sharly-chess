@@ -145,6 +145,15 @@ async function downloadFileAndCloseModal(el, formId) {
     closeModal();
 }
 
+/* Escape stops the page loading: in the keydown that closes a modal asking for
+   a refresh, it would cancel the reload replacing the hide, and leave the
+   modal open. */
+window.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && refreshRequested && isModalOpened()) {
+        event.preventDefault();
+    }
+}, true);
+
 // Intercept Bootstrap modal hide
 $(document).on('hide.bs.modal', function (e) {
     if (ignoreNextModalClose) {
