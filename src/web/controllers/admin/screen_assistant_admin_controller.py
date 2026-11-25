@@ -154,6 +154,13 @@ class ScreenAssistantAdminController(BaseEventAdminController):
                     menu_name=creation.menu_name
                 ),
             )
+        if creation.rotator_name is not None:
+            Message.success(
+                request,
+                _('Rotator [{rotator_name}] has been created.').format(
+                    rotator_name=creation.rotator_name
+                ),
+            )
         if creation.channel_created:
             Message.success(
                 request,
@@ -163,10 +170,17 @@ class ScreenAssistantAdminController(BaseEventAdminController):
             )
         # Asked to edit what was created, the tab opens its form too: the
         # screen or paged screen when a single one was created, else the
-        # menu leading to the screens.
+        # menu or the rotator leading to the screens.
         edit = '&edit=1' if form_data.get('edit_after') else ''
         single_item = len(creation.screen_ids) + len(creation.family_ids) == 1
-        # On to the menu created, or to the screens of the goal's type.
+        # On to the rotator or the menu created, or to the screens.
+        if creation.rotator_id is not None:
+            return ClientRedirect(
+                redirect_to=request.app.route_reverse(
+                    'admin-event-rotators-tab', event_uniq_id=event.uniq_id
+                )
+                + f'?scroll_to={creation.rotator_id}{edit}'
+            )
         if creation.menu_id is not None and not (edit and single_item):
             return ClientRedirect(
                 redirect_to=request.app.route_reverse(

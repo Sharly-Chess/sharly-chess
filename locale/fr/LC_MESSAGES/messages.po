@@ -694,6 +694,10 @@ msgid "A menu named “{name}” for the players to pick their tournament."
 msgstr "Un menu nommé « {name} » pour que les joueur·euses choisissent leur tournoi."
 
 #, python-brace-format
+msgid "A menu named “{name}” to pick the grid."
+msgstr "Un menu nommé « {name} » pour choisir la grille."
+
+#, python-brace-format
 msgid "A menu named “{name}” to pick the page."
 msgstr "Un menu nommé « {name} » pour choisir la page."
 
@@ -782,8 +786,15 @@ msgstr "Un classement de 0 à {max} est attendu."
 msgid "A rotator"
 msgstr "Un écran rotatif"
 
+#, python-brace-format
+msgid "A rotator named “{name}” showing them in turn."
+msgstr "Un écran rotatif nommé « {name} » qui les affiche à tour de rôle."
+
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr "Un écran rotatif affiche plusieurs écrans à tour de rôle sur un même appareil, en passant automatiquement au suivant. Il peut contenir tout écran, sauf les écrans de pointage et de saisie des résultats."
+
+msgid "A rotator shows the grids in turn, which suits a projector."
+msgstr "Un écran rotatif affiche les grilles à tour de rôle, ce qui convient à un vidéoprojecteur."
 
 #, python-brace-format
 msgid "A round between 1 and {max} is expected."
@@ -1240,6 +1251,9 @@ msgstr "Toutes les catégories ne peuvent être imprimées que pour les lauréat
 
 msgid "All the dependant objects will also be deleted:"
 msgstr "Tous les objets dépendants seront également supprimés :"
+
+msgid "All the grids on one page"
+msgstr "Toutes les grilles sur une seule page"
 
 msgid "All the players"
 msgstr "Tou·tes les joueur·euses"
@@ -5120,6 +5134,9 @@ msgstr "Comment passe-t-on d'une page à l'autre ?"
 msgid "How do you want to name the channel?"
 msgstr "Comment voulez-vous nommer le canal ?"
 
+msgid "How do you want to show the grids?"
+msgstr "Comment voulez-vous afficher les grilles ?"
+
 msgid "How do you want to split it into pages?"
 msgstr "Comment voulez-vous découper les pages ?"
 
@@ -7503,11 +7520,20 @@ msgstr "Sur l'ordinateur de l'arbitre, le canal"
 msgid "On this computer"
 msgstr "Sur cet ordinateur"
 
+msgid "One above the other."
+msgstr "L'une au-dessus de l'autre."
+
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
 
 msgid "One or more tournaments, on one page"
 msgstr "Un ou plusieurs tournois, sur une page"
+
+msgid "One page per grid, turning by themselves"
+msgstr "Une page par grille, qui tournent toutes seules"
+
+msgid "One page per grid, with a menu to pick the grid"
+msgstr "Une page par grille, avec un menu pour choisir la grille"
 
 msgid "One page per tournament, with a menu to switch between them."
 msgstr "Une page par tournoi, avec un menu pour passer de l'une à l'autre."
@@ -9582,6 +9608,10 @@ msgid "Rotator"
 msgstr "Écran rotatif"
 
 #, python-brace-format
+msgid "Rotator [{rotator_name}] has been created."
+msgstr "L'écran rotatif [{rotator_name}] a été créé."
+
+#, python-brace-format
 msgid "Rotator [{rotator}] has been created."
 msgstr "L'écran rotatif [{rotator}] a été créé."
 
@@ -9798,6 +9828,9 @@ msgstr "Grille toutes-rondes"
 
 msgid "Round-robin grid screens show every player of a round robin against every other, with the results and the rounds still to play."
 msgstr "Les écrans de grille toutes-rondes montrent chaque joueur·euse d'un toutes-rondes face à tou·tes les autres, avec les résultats et les rondes restant à jouer."
+
+msgid "Round-robin grids"
+msgstr "Grilles toutes-rondes"
 
 msgid "Round-robin pairings"
 msgstr "Appariements toutes-rondes"

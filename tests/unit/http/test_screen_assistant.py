@@ -672,3 +672,77 @@ def test_short_answers_are_put_in_words(http: TestClient, tournament: StoredTour
     assert 'data-summary="Format: Full"' in response.text
     assert 'data-summary="{answer} pages"' in response.text
     assert 'data-summary="{answer} rows per page"' in response.text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ('split', 'grids', 'rotators', 'menus'),
+    [
+        # All the grids on one page.
+        ('0', 1, 0, 0),
+        # One page per grid, turning by themselves: a rotator.
+        ('1', 2, 1, 0),
+        # One page per grid, picked in a menu.
+        ('2', 2, 0, 1),
+    ],
+)
+def test_several_round_robin_grids_on_one_page_or_a_page_each(
+    http: TestClient,
+    tournament: StoredTournament,
+    split: str,
+    grids: int,
+    rotators: int,
+    menus: int,
+):
+    """With several round robins, the standings goal asks whether their
+    grids share one page or take a page each, shown in turn by a rotator or
+    picked in a menu."""
+    round_robins = [
+        TestUtils.create_tournament(
+            EVENT_ID,
+            f'{TOURNAMENT_NAME}-rr-{index}',
+            overrides={'pairing': BergerRoundRobinVariation.static_id()},
+        )
+        for index in (1, 2)
+    ]
+    reload_event()
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=ranking')
+    assert 'screen-assistant-question-grid_split' in response.text
+    data = {
+        'goal': 'ranking',
+        'answer_ranking_kind': '2',
+        'answer_grid_tournaments': ';'.join(
+            str(round_robin.id) for round_robin in round_robins
+        ),
+        'answer_grid_split': split,
+        'answer_grid_order': '0',
+        'answer_channel': NO_CHANNEL,
+    }
+    summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text
+    if rotators:
+        assert 'A rotator named “Round-robin grids” showing them in turn.' in summary
+    if menus:
+        assert 'A menu named “Round-robin grids” to pick the grid.' in summary
+    response = http.post(f'/screen-assistant-create/{EVENT_ID}', data=data)
+    assert response.is_success
+    event = reload_event()
+    created = event.sorted_basic_screens_by_screen_type[
+        ScreenType.ROUND_ROBIN_GRID.value
+    ]
+    assert len(created) == grids
+    assert len(event.rotators_by_id) == rotators
+    assert len(event.menus_by_id) == menus
+    if rotators:
+        rotator = next(iter(event.rotators_by_id.values()))
+        assert rotator.name == 'Round-robin grids'
+        assert {screen.id for screen in rotator.rotating_screens} == {
+            screen.id for screen in created
+        }
+        assert response.headers['HX-Redirect'] == (
+            f'/event/{EVENT_ID}/rotators?scroll_to={rotator.id}'
+        )
+    if menus:
+        menu = next(iter(event.menus_by_id.values()))
+        assert {screen.id for screen in menu.resolved_screens()} == {
+            screen.id for screen in created
+        }

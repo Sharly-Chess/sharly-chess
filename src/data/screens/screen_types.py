@@ -2558,6 +2558,33 @@ class RankingScreenType(ColumnTogglesScreenType):
                     grid_tournaments,
                     stage='content',
                     disabled=len(grid_tournaments) < 2,
+                    next='grid_split',
+                    next_single='grid_order',
+                ),
+                'grid_split': WizardRadioQuestion(
+                    stage='content',
+                    # Asked when several round robins are chosen.
+                    disabled=len(grid_tournaments) < 2,
+                    text=_('How do you want to show the grids?'),
+                    options=[
+                        WizardOption(
+                            value='single',
+                            text=_('All the grids on one page'),
+                            help=_('One above the other.'),
+                        ),
+                        WizardOption(
+                            value='rotate',
+                            text=_('One page per grid, turning by themselves'),
+                            help=_(
+                                'A rotator shows the grids in turn, which suits a projector.'
+                            ),
+                        ),
+                        WizardOption(
+                            value='menu',
+                            text=_('One page per grid, with a menu to pick the grid'),
+                        ),
+                    ],
+                    default_value='single',
                     next='grid_order',
                 ),
                 'grid_order': WizardRadioQuestion(

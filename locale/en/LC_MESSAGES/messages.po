@@ -694,6 +694,10 @@ msgid "A menu named “{name}” for the players to pick their tournament."
 msgstr ""
 
 #, python-brace-format
+msgid "A menu named “{name}” to pick the grid."
+msgstr ""
+
+#, python-brace-format
 msgid "A menu named “{name}” to pick the page."
 msgstr ""
 
@@ -782,7 +786,14 @@ msgstr ""
 msgid "A rotator"
 msgstr ""
 
+#, python-brace-format
+msgid "A rotator named “{name}” showing them in turn."
+msgstr ""
+
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
+msgstr ""
+
+msgid "A rotator shows the grids in turn, which suits a projector."
 msgstr ""
 
 #, python-brace-format
@@ -1239,6 +1250,9 @@ msgid "All the categories can only be printed for the prize winners."
 msgstr ""
 
 msgid "All the dependant objects will also be deleted:"
+msgstr ""
+
+msgid "All the grids on one page"
 msgstr ""
 
 msgid "All the players"
@@ -5120,6 +5134,9 @@ msgstr ""
 msgid "How do you want to name the channel?"
 msgstr ""
 
+msgid "How do you want to show the grids?"
+msgstr ""
+
 msgid "How do you want to split it into pages?"
 msgstr ""
 
@@ -7501,10 +7518,19 @@ msgstr ""
 msgid "On this computer"
 msgstr ""
 
+msgid "One above the other."
+msgstr ""
+
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr ""
 
 msgid "One or more tournaments, on one page"
+msgstr ""
+
+msgid "One page per grid, turning by themselves"
+msgstr ""
+
+msgid "One page per grid, with a menu to pick the grid"
 msgstr ""
 
 msgid "One page per tournament, with a menu to switch between them."
@@ -9580,6 +9606,10 @@ msgid "Rotator"
 msgstr ""
 
 #, python-brace-format
+msgid "Rotator [{rotator_name}] has been created."
+msgstr ""
+
+#, python-brace-format
 msgid "Rotator [{rotator}] has been created."
 msgstr ""
 
@@ -9795,6 +9825,9 @@ msgid "Round-robin grid"
 msgstr ""
 
 msgid "Round-robin grid screens show every player of a round robin against every other, with the results and the rounds still to play."
+msgstr ""
+
+msgid "Round-robin grids"
 msgstr ""
 
 msgid "Round-robin pairings"

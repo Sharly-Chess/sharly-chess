@@ -102,6 +102,8 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         show_details: FromQuery[bool | None],
+        scroll_to: FromQuery[str | None] = None,
+        edit: FromQuery[bool] = False,
     ) -> Template | Redirect:
         if not WebContext(request).client.can_manage_screens:
             return Redirect(
@@ -113,7 +115,13 @@ class RotatorAdminController(BaseEventAdminController):
             )
         if show_details is not None:
             SessionRotatorsShowDetails(request).set(show_details)
-        return self._admin_event_rotator_render(RotatorAdminWebContext(request))
+        return self._admin_event_rotator_render(
+            RotatorAdminWebContext(request),
+            template_context={
+                'scroll_to_rotator_id': scroll_to,
+                'edit_scrolled_to': edit,
+            },
+        )
 
     # -------------------------------------------------------------------------
     # Modals
