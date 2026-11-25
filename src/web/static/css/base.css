@@ -2517,9 +2517,31 @@ a.screens-type-filter-chip {
     margin: 1rem auto;
 }
 
+.display-explainer .dx-header-with-lead {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.display-explainer .dx-header-with-lead .dx-header-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.display-explainer .dx-header-with-lead .dx-lead {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 767.98px) {
+    .display-explainer .dx-header-with-lead {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .75rem;
+    }
+}
+
 .display-guide-assistant {
     display: flex;
-    margin-bottom: .75rem;
 }
 
 .display-guide-assistant .sc-btn {
