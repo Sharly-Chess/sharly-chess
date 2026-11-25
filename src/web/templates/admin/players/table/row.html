@@ -1,6 +1,7 @@
 {% filter compact_html %}
 <tr
     id="player-{{ player.id }}"
+    tabindex="-1"
     {% if swap_oob %}
         hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id }}"
     {% endif %}
@@ -32,6 +33,7 @@
                     tooltip=_('Edit the player\'s properties.'),
                     tooltip_placement='right',
                     class='players-table-row-action',
+                    attrs={'data-sc-row-open': true},
                 ) }}
             {% endif %}
             {% call components.menu_button(

@@ -192,14 +192,14 @@ class KeizerScorer:
 
 class KeizerPairingSystem(PairingSystem['KeizerVariation']):
     @override
-    def example_first_round(self, players: list[TournamentPlayer]) -> list[ExamplePair]:
+    def example_first_round[P](self, participants: list[P]) -> list[ExamplePair[P]]:
         # Keizer pairs neighbours in the ranking.
-        pairs: list[ExamplePair] = [
-            (players[index], players[index + 1])
-            for index in range(0, len(players) - 1, 2)
+        pairs: list[ExamplePair[P]] = [
+            (participants[index], participants[index + 1])
+            for index in range(0, len(participants) - 1, 2)
         ]
-        if len(players) % 2:
-            pairs.append((players[-1], None))
+        if len(participants) % 2:
+            pairs.append((participants[-1], None))
         return pairs
 
     @staticmethod

@@ -26,7 +26,10 @@
         {% if not editable %}
             style="opacity: 45%"
         {% else %}
-
+            role="button"
+            tabindex="0"
+            aria-label="{{ status.name }}"
+            data-sc-row-check-in
             hx-indicator="#please-wait"
             {% if status in (4, 5) %}
                 hx-patch="{{ url_for(

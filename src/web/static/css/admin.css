@@ -1325,3 +1325,21 @@ tr.live-updated > td {
         animation: none;
     }
 }
+
+.sc-shortcut-hint {
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
+#players-table tbody tr:focus,
+#players-table [data-sc-row-check-in]:focus:not(:focus-visible) {
+    outline: none;
+}
+
+#players-table tbody tr:focus-visible > td {
+    --bs-table-bg-state: rgba(var(--bs-primary-rgb), 0.2);
+}

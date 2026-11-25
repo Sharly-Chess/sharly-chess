@@ -205,6 +205,7 @@ UNJOURNALED_COLUMNS: dict[tuple[str, str], str] = {
     ('info', 'origin'): 'where the file came from, said by the entry that made it',
     ('info', 'origin_date'): 'where the file came from, said by the entry that made it',
     ('info', 'ratings_check_dismissed'): 'a warning dismissed',
+    ('info', 'screens_fake_data'): 'a preview of the screens, nothing played',
     ('info', 'tag_ids'): 'the tags of this installation, not of the event',
 }
 

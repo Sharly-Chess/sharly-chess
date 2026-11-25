@@ -4,6 +4,7 @@
 
 - Each event keeps a journal of what is done to it, shown in a new Journal page: results entered, changed or cleared, pairings, byes, penalties, players, teams, tournaments and staff accounts, with when it was done, by whom (the administrator or a staff account, even one deleted since) and from where (the computer running _Sharly Chess_, another device, a screen or _Sharly-Chess.com_), the names being kept as they were at the time. The arbiters can add notes to it, filter it by tournament, kind of action, person or origin, and download it; it follows the changes as they happen, and travels with the event when it is exported unless left out (5.3.0)
 - A backup taken by hand can be given a comment (5.3.0)
+- More can be done from the keyboard: in a window with a split button such as "Create" / "Create and add another", Shift+Enter submits with the other choice of the button; in the players tab, the arrow keys move from row to row, Enter opens the player, Space checks them in or out, and the check-in icon can be reached with the Tab key (5.3.0)
 
 ## Tournaments
 
