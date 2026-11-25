@@ -537,7 +537,7 @@ msgid "Overwrite and upload"
 msgstr "Écraser et mettre en ligne"
 
 msgid "Overwrite the group on the FFE website?"
-msgstr "Écraser le groupe sur le site de la FFE ?"
+msgstr "Écraser le groupe sur le site de la FFE ?"
 
 msgid "PAPI"
 msgstr "PAPI"
@@ -718,7 +718,7 @@ msgid "Team [{team}] has no players."
 msgstr "L'équipe [{team}] n'a aucun·e joueur·euse."
 
 msgid "Teams deleted:"
-msgstr "Équipes supprimées :"
+msgstr "Équipes supprimées :"
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
@@ -759,7 +759,7 @@ msgstr "Les parties corrigées pour le rapport Elo sont exportées corrigées :
 
 #, python-format
 msgid "The group on the FFE website does not look like tournament [%(tournament)s]: only %(matched)d of its %(teams)d teams have the name of a team of the tournament. Uploading it will replace the match reports of the group (%(reports)d filled in) with those of the tournament, and delete the teams the tournament does not have."
-msgstr "Le groupe sur le site de la FFE ne ressemble pas au tournoi [%(tournament)s] : seules %(matched)d de ses %(teams)d équipes portent le nom d'une équipe du tournoi. La mise en ligne remplacera les procès-verbaux du groupe (%(reports)d remplis) par ceux du tournoi, et supprimera les équipes que le tournoi n'a pas."
+msgstr "Le groupe sur le site de la FFE ne ressemble pas au tournoi [%(tournament)s] : seules %(matched)d de ses %(teams)d équipes portent le nom d'une équipe du tournoi. La mise en ligne remplacera les procès-verbaux du groupe (%(reports)d remplis) par ceux du tournoi, et supprimera les équipes que le tournoi n'a pas."
 
 msgid "The match score cannot go below zero."
 msgstr "Le score du match ne peut pas être négatif."
@@ -780,7 +780,7 @@ msgid "The team's own players' average rating, weighted by their per-round board
 msgstr "La moyenne des classements des joueur·euses de l'équipe, pondérée par le nombre de matchs disputés. L'équipe avec la plus faible moyenne gagne au départage."
 
 msgid "This cannot be undone. Check the group above, then type its name to confirm:"
-msgstr "Cette opération est irréversible. Vérifiez le groupe ci-dessus, puis saisissez son nom pour confirmer :"
+msgstr "Cette opération est irréversible. Vérifiez le groupe ci-dessus, puis saisissez son nom pour confirmer :"
 
 msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
 msgstr "Ce filtre ne s'applique qu'aux joueur·euses affilié·es à la fédération française, les autres ne seront ni filtré·es ni grisé·es (pas besoin de licence française)."
@@ -796,7 +796,7 @@ msgstr "Tournoi"
 
 #, python-format
 msgid "Tournament [%(tournament)s] has no match to send to this group: uploading it will delete the %(reports)d match reports and the %(teams)d teams of the group on the FFE website."
-msgstr "Le tournoi [%(tournament)s] n'a aucun match à envoyer à ce groupe : la mise en ligne supprimera les %(reports)d procès-verbaux et les %(teams)d équipes du groupe sur le site de la FFE."
+msgstr "Le tournoi [%(tournament)s] n'a aucun match à envoyer à ce groupe : la mise en ligne supprimera les %(reports)d procès-verbaux et les %(teams)d équipes du groupe sur le site de la FFE."
 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
