@@ -18,6 +18,7 @@ from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
+from plugins.ffe.ffe_team_session import FFETeamSession, GroupOverwrite
 from plugins.ffe.utils import FFEUtils, FFE_UPLOAD_DELAY
 from plugins.utils import PluginUtils
 from web.controllers.admin.base_admin_controller import AdminWebContext
@@ -26,6 +27,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
+from web.messages import Message
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 logger = get_logger()
@@ -66,6 +68,14 @@ class FfeWebContext(AdminWebContext):
         ]
 
     @property
+    def auto_upload_tournaments(self) -> list[Tournament]:
+        return [
+            tournament
+            for tournament in self.allowed_tournaments
+            if FFEUtils.supports_auto_upload(tournament)
+        ]
+
+    @property
     def ffe_rules_tournaments(self) -> list[Tournament]:
         """The tournaments rules can be uploaded for: the team module
         has no rules upload."""
@@ -83,6 +93,7 @@ class FfeWebContext(AdminWebContext):
             'allowed_tournaments': self.allowed_tournaments,
             'ffe_configured_tournaments': self.ffe_configured_tournaments,
             'ffe_rules_tournaments': self.ffe_rules_tournaments,
+            'auto_upload_tournaments': self.auto_upload_tournaments,
             'FFE_UPLOAD_DELAY': FFE_UPLOAD_DELAY,
         }
 
@@ -186,10 +197,114 @@ class FfeUploadController(BaseEventAdminController):
     ) -> Template:
         web_context = FfeWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
+        if overwrite := await self.preview_team_upload(tournament):
+            return self.render_overwrite_modal(
+                web_context.template_context, tournament, overwrite, from_card=False
+            )
 
         FfeBackgroundUploader.schedule_upload(tournament, True)
 
         return self._render_upload_results(web_context)
+
+    @staticmethod
+    async def preview_team_upload(tournament: Tournament) -> GroupOverwrite | None:
+        """What uploading a team competition would destroy on the site and
+        needs confirming, if anything."""
+        if not FFEUtils.supports_team_transfer(
+            tournament
+        ) or FFEUtils.ffe_actions_unavailable_message(tournament):
+            return None
+        return await asyncio.to_thread(FFETeamSession(tournament).preview_upload)
+
+    @staticmethod
+    def overwrite_confirmation_key(name: str) -> str:
+        """The group name the arbiter types, as it is compared."""
+        return ' '.join(name.split()).casefold()
+
+    @classmethod
+    def render_overwrite_modal(
+        cls,
+        template_context: dict[str, Any],
+        tournament: Tournament,
+        overwrite: GroupOverwrite,
+        from_card: bool,
+        error: str | None = None,
+    ) -> HTMXTemplate:
+        """The modal asking the arbiter to confirm an upload that would
+        destroy the data of the group on the site. *from_card*: asked
+        from the tournament card rather than the upload modal."""
+        plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        return cls._render_modal(
+            '/ffe_team_overwrite_modal.html',
+            template_context
+            | {
+                'tournament': tournament,
+                'overwrite': overwrite,
+                'ffe_plugin_data': plugin_data,
+                'from_card': from_card,
+                'data': {},
+                'errors': {'group_name': error} if error else {},
+            },
+        )
+
+    @post(
+        path='/ffe/upload-modal/confirm-overwrite/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-confirm-team-overwrite',
+    )
+    async def htmx_ffe_confirm_team_overwrite(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Upload a team competition whose upload rewrites a group the
+        arbiter has confirmed by typing its name."""
+        web_context = FfeWebContext(request, tournament_id)
+        tournament = web_context.get_tournament()
+        from_card = WebContext.form_data_to_bool(data, 'from_card')
+        typed = WebContext.form_data_to_str(data, 'group_name') or ''
+        group_name = FFEUtils.get_tournament_plugin_data(tournament).team_group_name
+        confirmed = bool(group_name) and self.overwrite_confirmation_key(
+            typed
+        ) == self.overwrite_confirmation_key(group_name or '')
+        if not confirmed:
+            overwrite = await self.preview_team_upload(tournament)
+            if overwrite is not None:
+                return self.render_overwrite_modal(
+                    web_context.template_context,
+                    tournament,
+                    overwrite,
+                    from_card,
+                    _('The name typed is not the name of the group.'),
+                )
+        if not from_card:
+            FfeBackgroundUploader.schedule_upload(
+                tournament, True, confirm_overwrite=confirmed
+            )
+            return self._render_ffe_upload_modal(FfeWebContext(request))
+        await asyncio.to_thread(
+            FfeBackgroundUploader.upload_tournament,
+            tournament.event.uniq_id,
+            tournament.id,
+            confirm_overwrite=confirmed,
+        )
+        tournament = FfeWebContext(
+            request, tournament_id, reload_event=True
+        ).get_tournament()
+        if FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
+            Message.error(
+                request,
+                _(
+                    'Tournament upload failed, consult Menu > '
+                    'Data Transfer > FFE for more details.'
+                ),
+            )
+        else:
+            Message.success(request, _('Tournament successfully uploaded.'))
+        return self._render_empty_modal_and_messages(request)
 
     @post(
         path=(
@@ -362,6 +477,8 @@ class FfeUploadController(BaseEventAdminController):
 
     @staticmethod
     def _set_tournament_auto_upload(tournament: Tournament, auto_upload: bool) -> None:
+        if not FFEUtils.supports_auto_upload(tournament):
+            return
         plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
         plugin_data.auto_upload = auto_upload
         FFEUtils.update_tournament_plugin_data(tournament, plugin_data)

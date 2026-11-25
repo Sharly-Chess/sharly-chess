@@ -1,0 +1,105 @@
+{% extends '/admin/components/modal.html' %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set modal_size = 'lg' %}
+
+{% block title %}{{ _('Overwrite the group on the FFE website?') }}{% endblock %}
+
+{% block subtitle %}{{ tournament.name }}{% endblock %}
+
+{% block body %}
+    {% set site_team_count = overwrite.site_team_names | length %}
+    {% if overwrite.empties_group %}
+        {{ components.note('danger', _(
+            'Tournament [%(tournament)s] has no match to send to this group: '
+            'uploading it will delete the %(reports)d match reports and the '
+            '%(teams)d teams of the group on the FFE website.',
+            tournament=tournament.name,
+            reports=overwrite.filled_report_count,
+            teams=site_team_count,
+        ), icon='warning') }}
+    {% else %}
+        {{ components.note('danger', _(
+            'The group on the FFE website does not look like tournament '
+            '[%(tournament)s]: only %(matched)d of its %(teams)d teams have '
+            'the name of a team of the tournament. Uploading it will replace '
+            'the match reports of the group (%(reports)d filled in) with '
+            'those of the tournament, and delete the teams the tournament '
+            'does not have.',
+            tournament=tournament.name,
+            matched=site_team_count - overwrite.unmatched_team_names | length,
+            teams=site_team_count,
+            reports=overwrite.filled_report_count,
+        ), icon='warning') }}
+    {% endif %}
+
+    <dl class="row mb-3">
+        {% if ffe_plugin_data.team_competition_name %}
+            <dt class="col-sm-4">{{ _('Competition:') }}</dt>
+            <dd class="col-sm-8">{{ ffe_plugin_data.team_competition_name }}</dd>
+        {% endif %}
+        <dt class="col-sm-4">{{ _('%(string)s:', string=_('Division')) }}</dt>
+        <dd class="col-sm-8">{{ ffe_plugin_data.team_division_name }}</dd>
+        <dt class="col-sm-4">{{ _('Group:') }}</dt>
+        <dd class="col-sm-8 fw-bold">{{ ffe_plugin_data.team_group_name }}</dd>
+        {% if overwrite.unmatched_team_names %}
+            <dt class="col-sm-4">{{ _('Teams deleted:') }}</dt>
+            <dd class="col-sm-8">{{ overwrite.unmatched_team_names | join(', ') }}</dd>
+        {% endif %}
+    </dl>
+
+    <form
+        id="modal-form"
+        hx-post="{{ url_for(
+            'ffe-confirm-team-overwrite',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=tournament.id,
+        ) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt="#ffe-overwrite-submit"
+    >
+        <input type="hidden" name="from_card" value="{{ 'on' if from_card else '' }}">
+        <p>
+            {{ _('This cannot be undone. Check the group above, then type its name to confirm:') }}
+            <strong>{{ ffe_plugin_data.team_group_name }}</strong>
+        </p>
+        {{ admin_macros.text_input(
+            name='group_name',
+            label=_('Group:'),
+            autocomplete='off',
+            data=data, errors=errors
+        ) }}
+    </form>
+    <script>
+        (() => {
+            const key = (value) => value.trim().split(/\s+/).join(' ').toLowerCase();
+            const expected = key({{ ffe_plugin_data.team_group_name | tojson }});
+            const input = document.querySelector('#modal-form [name="group_name"]');
+            input.addEventListener('input', () => {
+                document.getElementById('ffe-overwrite-submit').disabled =
+                    key(input.value) !== expected;
+            });
+        })();
+    </script>
+{% endblock %}
+
+{% block footer %}
+    {% if from_card %}
+        {{ components.cancel_button() }}
+    {% else %}
+        {{ components.modal_button(
+            url_for('ffe-upload-modal', event_uniq_id=admin_event.uniq_id),
+            _('Cancel'),
+            kind='secondary',
+            icon='cancel',
+            from_modal=true,
+        ) }}
+    {% endif %}
+    {{ components.button(
+        _('Overwrite and upload'),
+        kind='danger',
+        icon='bi-cloud-arrow-up-fill',
+        type='submit',
+        attrs={'id': 'ffe-overwrite-submit', 'form': 'modal-form', 'disabled': true},
+    ) }}
+{% endblock %}

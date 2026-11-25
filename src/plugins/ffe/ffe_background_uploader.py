@@ -30,6 +30,7 @@ from plugins.ffe.utils import (
 )
 from plugins.utils import PluginUtils
 from utils import Utils
+from utils.enum import EventType
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -145,6 +146,7 @@ class FfeBackgroundUploader:
         set_visible: bool = False,
         period_id: int | None = None,
         attempt: int = 0,
+        confirm_overwrite: bool = False,
     ) -> None:
         """Upload a tournament to FFE.
 
@@ -160,7 +162,10 @@ class FfeBackgroundUploader:
 
         A failed upload that may succeed later is tried again, after each
         of the delays of ``FFE_UPLOAD_RETRY_DELAYS``; *attempt* counts the
-        new attempts made so far."""
+        new attempts made so far.
+
+        *confirm_overwrite* lets a team competition rewrite a group whose
+        data it would destroy (see :meth:`FFETeamSession.group_overwrite`)."""
         result_id = cls.result_id(event_uniq_id, tournament_id)
         with cls.upload_locks_guard:
             lock = cls.upload_locks.setdefault(result_id, Lock())
@@ -170,7 +175,12 @@ class FfeBackgroundUploader:
             lock.acquire()
         try:
             cls._upload_tournament(
-                event_uniq_id, tournament_id, set_visible, period_id, attempt
+                event_uniq_id,
+                tournament_id,
+                set_visible,
+                period_id,
+                attempt,
+                confirm_overwrite,
             )
         finally:
             lock.release()
@@ -183,6 +193,7 @@ class FfeBackgroundUploader:
         set_visible: bool,
         period_id: int | None,
         attempt: int,
+        confirm_overwrite: bool,
     ) -> None:
         # Set the locale (called in a new thread)
         set_locale(SharlyChessConfig().locale)
@@ -274,7 +285,9 @@ class FfeBackgroundUploader:
                 'Uploading tournament [%s] to the FFE website...', tournament.name
             )
             if team_transfer:
-                failure_status = FFETeamSession(tournament).upload_match_reports()
+                failure_status = FFETeamSession(tournament).upload_match_reports(
+                    confirm_overwrite
+                )
                 return
             failure_status = FFESession(tournament).upload(set_visible)
             if failure_status is None and current_period is not None:
@@ -304,7 +317,13 @@ class FfeBackgroundUploader:
                     tournament, uploaded_period, failure_status, loaded_at
                 )
                 if failure_status is not None and failure_status.retryable:
-                    cls._schedule_retry(tournament, set_visible, period_id, attempt + 1)
+                    cls._schedule_retry(
+                        tournament,
+                        set_visible,
+                        period_id,
+                        attempt + 1,
+                        confirm_overwrite,
+                    )
             cls.publish_upload_event()
 
     @classmethod
@@ -314,6 +333,7 @@ class FfeBackgroundUploader:
         set_visible: bool,
         period_id: int | None,
         attempt: int,
+        confirm_overwrite: bool,
     ) -> None:
         """Try a failed upload again after the delay of *attempt*, unless
         the attempts are used up. A new upload of the tournament replaces
@@ -343,6 +363,7 @@ class FfeBackgroundUploader:
                 'set_visible': set_visible,
                 'period_id': period_id,
                 'attempt': attempt,
+                'confirm_overwrite': confirm_overwrite,
             },
         )
         timer.daemon = True
@@ -439,16 +460,16 @@ class FfeBackgroundUploader:
     ) -> bool:
         if stored_event.federation != 'FRA':
             return False
+        if stored_event.event_type == EventType.TEAM:
+            # See FFEUtils.supports_auto_upload.
+            return False
 
         tournament_plugin_data = FfeTournamentPluginData.from_stored_value(
             stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )
         if not tournament_plugin_data.auto_upload:
             return False
-        if not (
-            (tournament_plugin_data.ffe_id and tournament_plugin_data.password)
-            or tournament_plugin_data.team_place_configured
-        ):
+        if not (tournament_plugin_data.ffe_id and tournament_plugin_data.password):
             return False
 
         assert stored_tournament.id is not None
@@ -472,7 +493,12 @@ class FfeBackgroundUploader:
         return True
 
     @classmethod
-    def schedule_upload(cls, tournament: Tournament, force: bool = False) -> None:
+    def schedule_upload(
+        cls,
+        tournament: Tournament,
+        force: bool = False,
+        confirm_overwrite: bool = False,
+    ) -> None:
         """Schedule the upload of a tournament that has been modified."""
         if FFEUtils.ffe_actions_unavailable_message(tournament):
             return
@@ -503,6 +529,7 @@ class FfeBackgroundUploader:
                 tournament.event.uniq_id,
                 tournament.id,
             ),
+            kwargs={'confirm_overwrite': confirm_overwrite},
         )
         cls.timeout_threads[result_id] = timer
         timer.start()

@@ -36,6 +36,7 @@ from plugins.ffe.ffe_upload_status import (
     FinishedFailureFFEUploadStatus,
     PapiConversionFailureFFEUploadStatus,
     GroupNotFoundFFEUploadStatus,
+    OverwriteNotConfirmedFFEUploadStatus,
     RejectedFFEUploadStatus,
 )
 from plugins.utils import PluginUtils, PluginData, AccountPluginData
@@ -283,6 +284,23 @@ class FFEUtils:
         (match reports, one per round and pair of teams) rather than as
         a Papi file: every tournament of a team event is."""
         return tournament.event.is_team_event
+
+    @classmethod
+    def supports_auto_upload(cls, tournament: Tournament) -> bool:
+        """Whether the tournament may be sent on its own as it changes. A
+        team competition is not: its upload rewrites the whole group on
+        the site, so it is only sent when the arbiter asks."""
+        return not cls.supports_team_transfer(tournament)
+
+    @classmethod
+    def team_group_key(cls, tournament: Tournament) -> str | None:
+        """The competition, division and group the match reports go to,
+        as one value, or None when they are not all named."""
+        pd = cls.get_tournament_plugin_data(tournament)
+        competition_id = cls.team_competition_id(tournament)
+        if not competition_id or not pd.team_division_id or not pd.team_group_id:
+            return None
+        return f'{competition_id}/{pd.team_division_id}/{pd.team_group_id}'
 
     @staticmethod
     def supports_ffe_transfer(tournament: Tournament) -> bool:
@@ -593,6 +611,7 @@ class FFEUploadFailureStatusManager(EntityManager[FailureFFEUploadStatus]):
             FinishedFailureFFEUploadStatus,
             PapiConversionFailureFFEUploadStatus,
             GroupNotFoundFFEUploadStatus,
+            OverwriteNotConfirmedFFEUploadStatus,
             RejectedFFEUploadStatus,
         ]
 
@@ -737,6 +756,9 @@ class FfeTournamentPluginData(PluginData):
     team_division_name: str | None = None
     team_group_id: int | None = None
     team_group_name: str | None = None
+    # The group (see FFEUtils.team_group_key) the match reports last went
+    # to: a group the tournament has already been sent to is its own.
+    team_uploaded_group: str | None = None
     auto_upload: bool = True
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
@@ -763,6 +785,7 @@ class FfeTournamentPluginData(PluginData):
             team_division_name=stored_value.get('team_division_name'),
             team_group_id=stored_value.get('team_group_id'),
             team_group_name=stored_value.get('team_group_name'),
+            team_uploaded_group=stored_value.get('team_uploaded_group'),
             auto_upload=stored_value.get('auto_upload', True),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
@@ -786,6 +809,7 @@ class FfeTournamentPluginData(PluginData):
             'team_division_name': self.team_division_name,
             'team_group_id': self.team_group_id,
             'team_group_name': self.team_group_name,
+            'team_uploaded_group': self.team_uploaded_group,
             'auto_upload': self.auto_upload,
             'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
@@ -839,6 +863,7 @@ class FfeTournamentPluginData(PluginData):
                 plugin_data.upload_failure_message = (
                     previous_object.upload_failure_message
                 )
+                plugin_data.team_uploaded_group = previous_object.team_uploaded_group
             plugin_data.auto_upload = previous_object.auto_upload
         return plugin_data
 
