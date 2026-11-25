@@ -711,8 +711,8 @@ msgid "A new channel"
 msgstr "Un nouveau canal"
 
 #, python-brace-format
-msgid "A new channel named “{name}”, with everything designed for it."
-msgstr "Un nouveau canal nommé « {name} », tout étant marqué comme conçu pour lui."
+msgid "A new channel named “{name}”."
+msgstr "Un nouveau canal nommé « {name} »."
 
 msgid "A new timer"
 msgstr "Un nouveau chronomètre"
@@ -4317,10 +4317,6 @@ msgstr "Tout"
 
 msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
 msgstr "Tout ce qui est fait sur l'évènement (résultats, appariements, joueur·euses, tournois) est inscrit ici, avec quand et par qui."
-
-#, python-brace-format
-msgid "Everything is marked as designed for the channel “{name}”."
-msgstr "Tout est marqué comme conçu pour le canal « {name} »."
 
 msgid "Everything on one page"
 msgstr "Tout sur une seule page"
@@ -12054,11 +12050,11 @@ msgstr "Le critère de score appliqué pour classer les compétiteurs."
 msgid "The screen"
 msgstr "L'écran"
 
-msgid "The screen is marked as designed for it."
-msgstr "L'écran est marqué comme conçu pour lui."
-
 msgid "The screen is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
 msgstr "L'écran est marqué comme conçu pour le canal choisi. Vous choisissez ce qu'un canal affiche, à tout moment, depuis l'onglet Canaux."
+
+msgid "The screen is marked as designed for this new channel."
+msgstr "L'écran est marqué comme conçu pour ce nouveau canal."
 
 #, python-brace-format
 msgid "The screens of timer [{timer}] have been updated."
@@ -14095,8 +14091,8 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe non cumulable."
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
-msgid "You will open the screen's own address on the display."
-msgstr "Vous ouvrirez l'adresse propre de l'écran sur l'affichage."
+msgid "You will need to select the screen on your display."
+msgstr "Vous devrez sélectionner l'écran sur votre affichage."
 
 #, python-brace-format
 msgid "Your data folder [{folder}] is synchronised by {service}, which can block the events while Sharly Chess writes to them."
@@ -15023,6 +15019,10 @@ msgstr "ecran-{family_type}"
 #, python-brace-format
 msgid "{first} — Pairing-Allocated Bye"
 msgstr "{first} — Exemption attribuée par l'appariement"
+
+#, python-brace-format
+msgid "{item} and marked as designed for the channel “{name}”."
+msgstr "{item} et marqué comme conçu pour le canal « {name} »."
 
 #, python-brace-format, python-format
 msgid "{label} (%%s ago)"

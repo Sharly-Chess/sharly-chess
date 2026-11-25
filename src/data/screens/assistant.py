@@ -228,7 +228,7 @@ def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
             WizardOption(
                 value=None,
                 text=_('No channel'),
-                help=_("You will open the screen's own address on the display."),
+                help=_('You will need to select the screen on your display.'),
             )
         )
         text = _('Which channel is this screen designed for?')
@@ -241,13 +241,13 @@ def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
             WizardOption(
                 value='new',
                 text=_('Create a channel for this screen'),
-                help=_('The screen is marked as designed for it.'),
+                help=_('The screen is marked as designed for this new channel.'),
                 next='channel_name',
             ),
             WizardOption(
                 value=None,
                 text=_('No channel — just create the screen'),
-                help=_("You will open the screen's own address on the display."),
+                help=_('You will need to select the screen on your display.'),
             ),
         ]
         text = _('Do you want to set up a channel for this screen?')
@@ -722,16 +722,19 @@ def assistant_summary(
             menu_line.format(name=_assistant_menu_name(event, goal, menu_base_name))
         )
     channel_answer = answers.get('channel')
+    channel_name: str | None = None
     if channel_answer == 'new':
-        lines.append(
-            _('A new channel named “{name}”, with everything designed for it.').format(
-                name=answers.get('channel_name') or ''
-            )
-        )
+        channel_name = answers.get('channel_name') or ''
     elif isinstance(channel_answer, int):
-        lines.append(
-            _('Everything is marked as designed for the channel “{name}”.').format(
-                name=event.display_controllers_by_id[channel_answer].name
-            )
+        channel_name = event.display_controllers_by_id[channel_answer].name
+    if channel_name is not None:
+        # The last line is what the channel is designed for: the menu or the
+        # rotator when there is one, else the screen.
+        lines[-1] = _('{item} and marked as designed for the channel “{name}”.').format(
+            item=lines[-1].rstrip('.'), name=channel_name
         )
+        if channel_answer == 'new':
+            lines.insert(
+                0, _('A new channel named “{name}”.').format(name=channel_name)
+            )
     return lines

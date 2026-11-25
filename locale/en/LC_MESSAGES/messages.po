@@ -711,7 +711,7 @@ msgid "A new channel"
 msgstr ""
 
 #, python-brace-format
-msgid "A new channel named “{name}”, with everything designed for it."
+msgid "A new channel named “{name}”."
 msgstr ""
 
 msgid "A new timer"
@@ -4316,10 +4316,6 @@ msgid "Everything"
 msgstr ""
 
 msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
-msgstr ""
-
-#, python-brace-format
-msgid "Everything is marked as designed for the channel “{name}”."
 msgstr ""
 
 msgid "Everything on one page"
@@ -12052,10 +12048,10 @@ msgstr ""
 msgid "The screen"
 msgstr ""
 
-msgid "The screen is marked as designed for it."
+msgid "The screen is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
 msgstr ""
 
-msgid "The screen is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
+msgid "The screen is marked as designed for this new channel."
 msgstr ""
 
 #, python-brace-format
@@ -14093,7 +14089,7 @@ msgstr ""
 msgid "You must create a tournament before creating these screens."
 msgstr ""
 
-msgid "You will open the screen's own address on the display."
+msgid "You will need to select the screen on your display."
 msgstr ""
 
 #, python-brace-format
@@ -15020,6 +15016,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "{first} — Pairing-Allocated Bye"
+msgstr ""
+
+#, python-brace-format
+msgid "{item} and marked as designed for the channel “{name}”."
 msgstr ""
 
 #, python-brace-format, python-format

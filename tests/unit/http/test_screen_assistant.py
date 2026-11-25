@@ -8,12 +8,15 @@ per tournament behind a menu) and, if asked, the channel showing them.
 
 from collections.abc import Iterator
 
+import re
+
 import pytest
 from litestar.testing import TestClient
 
 from data.loader import EventLoader
 from data.pairings.variations import BergerRoundRobinVariation
-from database.sqlite.event.event_store import StoredTournament
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredDisplayController, StoredTournament
 from tests.test_config import ScreenType, TestUtils
 from tests.unit.http.client import ApiClient
 from tests.unit.http.conftest import TEAM_EVENT_ID
@@ -423,16 +426,41 @@ def test_the_summary_says_what_will_be_created(
         },
     )
     assert response.status_code == 200
-    assert (
+    # The new channel first, then what is created, the menu designed for
+    # the channel.
+    lines = re.findall(r'<li>(.*?)</li>', response.text)
+    assert lines == [
+        'A new channel named “Main hall”.',
         f'One “Result entry” screen per tournament: '
-        f'{TOURNAMENT_NAME}, {TOURNAMENT_NAME}-2.'
-    ) in response.text
-    assert (
-        'A menu named “Result entry” for the players to pick their tournament.'
-    ) in response.text
-    assert (
-        'A new channel named “Main hall”, with everything designed for it.'
-    ) in response.text
+        f'{TOURNAMENT_NAME}, {TOURNAMENT_NAME}-2.',
+        'A menu named “Result entry” for the players to pick their tournament '
+        'and marked as designed for the channel “Main hall”.',
+    ]
+
+    # An existing channel: the screen itself is designed for it, with no
+    # line for the channel.
+    with EventDatabase(EVENT_ID, write=True) as database:
+        channel = database.add_stored_display_controller(
+            StoredDisplayController(id=None, name='Projector')
+        )
+    reload_event()
+    response = http.post(
+        f'/screen-assistant-summary/{EVENT_ID}',
+        data={
+            'goal': 'ranking',
+            'answer_ranking_kind': '0',
+            'answer_paged': ONE_PAGE,
+            'answer_switch_tournaments': f'{tournament.id};{other.id}',
+            'answer_columns': '0',
+            # The existing channel comes first among the options.
+            'answer_channel': '0',
+        },
+    )
+    assert channel.id is not None
+    assert re.findall(r'<li>(.*?)</li>', response.text) == [
+        f'A “Standings” screen covering {TOURNAMENT_NAME}, {TOURNAMENT_NAME}-2 '
+        'and marked as designed for the channel “Projector”.',
+    ]
 
 
 @pytest.mark.unit
