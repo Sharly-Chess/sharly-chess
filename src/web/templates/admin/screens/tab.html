@@ -22,6 +22,15 @@
         {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
         {% call components.menu_button(_('Create a screen'), kind='primary', icon='add') %}
+            {{ components.menu_item(
+                _('Setup assistant…'),
+                icon='bi-magic',
+                url=url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id),
+                tooltip=_('Create a screen step by step, with the channel showing it.'),
+                tooltip_placement='left',
+                attrs={'data-testid': 'create-screen-assistant'},
+            ) }}
+            {{ components.menu_divider() }}
             {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
                 {{ components.menu_item(
                     screen_type_data['title'],
@@ -45,6 +54,17 @@
                 {% call components.empty_state(none, class='screens-map-empty') %}
                     {{ screens_map.guide('screens') }}
                     <p>{{ _('Create a screen now to get started.') }}</p>
+                    {{ components.button(
+                        _('Start the setup assistant'),
+                        kind='primary',
+                        icon='bi-magic',
+                        attrs={
+                            'hx-get': url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id),
+                            'hx-target': 'body',
+                            'hx-indicator': '#please-wait',
+                            'data-testid': 'screens-empty-assistant',
+                        },
+                    ) }}
                 {% endcall %}
             {% else %}
                 {% set present_types = admin_screen_types_data.items()|selectattr('1.screens')|list %}
@@ -119,6 +139,7 @@
                         return;
                     }
                     card.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    card.classList.add('collection-item-created');
                 }
                 requestAnimationFrame(reveal);
             })();

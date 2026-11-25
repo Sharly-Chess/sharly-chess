@@ -46,4 +46,19 @@
             {% include '/admin/common/collection.html' %}
         {% endwith %}
     {% endif %}
+    {% if scroll_to_menu_id %}
+        <script>
+            (function () {
+                function reveal() {
+                    const card = document.getElementById('collection-menus-item-{{ scroll_to_menu_id }}');
+                    if (!card) {
+                        return;
+                    }
+                    card.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    card.classList.add('collection-item-created');
+                }
+                requestAnimationFrame(reveal);
+            })();
+        </script>
+    {% endif %}
 {% endblock %}

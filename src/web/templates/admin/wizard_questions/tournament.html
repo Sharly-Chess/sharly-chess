@@ -1,0 +1,9 @@
+{# The field of a WizardTournamentQuestion, included by the setup assistant (see admin/screens/assistant.html). #}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set select_options = {'': '-'} %}
+{% do select_options.update(question.select_options) %}
+{{ admin_macros.select_input(
+    name=field,
+    select_options=select_options,
+    data=data, errors=errors
+) }}

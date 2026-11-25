@@ -96,6 +96,7 @@ class MenuAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         show_details: FromQuery[bool | None],
+        scroll_to: FromQuery[str | None] = None,
     ) -> Template | Redirect:
         if not WebContext(request).client.can_manage_screens:
             return Redirect(
@@ -107,7 +108,10 @@ class MenuAdminController(BaseEventAdminController):
             )
         if show_details is not None:
             SessionMenusShowDetails(request).set(show_details)
-        return self._admin_event_menu_render(MenuAdminWebContext(request))
+        return self._admin_event_menu_render(
+            MenuAdminWebContext(request),
+            template_context={'scroll_to_menu_id': scroll_to},
+        )
 
     # -------------------------------------------------------------------------
     # Modals

@@ -2517,14 +2517,25 @@ a.screens-type-filter-chip {
     margin: 1rem auto;
 }
 
+.display-guide-assistant {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--pw-control-border-color);
+}
+
+.display-guide-assistant .sc-btn {
+    font-size: 1.1rem;
+    padding: .65rem 2rem;
+}
+
 .display-guide-create {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: .5rem;
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--pw-control-border-color);
+    margin-top: .75rem;
 }
 
 .display-explainer .dx-header {

@@ -1,0 +1,8 @@
+{# The field of a WizardBoolQuestion, included by the setup assistant (see admin/screens/assistant.html). #}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{{ admin_macros.switch_input(
+    name=field,
+    label='',
+    placeholder=_('Yes'),
+    data=data, errors=errors
+) }}

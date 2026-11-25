@@ -1,0 +1,8 @@
+{# The field of a WizardIntQuestion, included by the setup assistant (see admin/screens/assistant.html). #}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{{ admin_macros.number_input(
+    name=field,
+    label='',
+    min=question.min if question.min is not none else '',
+    data=data, errors=errors
+) }}
