@@ -10,6 +10,7 @@ from litestar.datastructures import CacheControlHeader
 from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
+from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.columns.board_table import BoardColumn
@@ -156,14 +157,20 @@ class MenuUserWebContext(ScreenEntityUserWebContext):
     def __init__(self, request: HTMXRequest, rotator_screen_index: int):
         super().__init__(request, user_event_tab='menus')
         self.menu = RequestUtils.get_menu(request)
+        self._screen: Screen | None = None
+        self.rotator_screen_index = 0
         screens = self.menu.screens_for(self.client.can_view_private_screens)
-        if not screens:
-            raise NotFoundException(f'Menu [{self.menu.id}] has no screen to show.')
-        self.rotator_screen_index = rotator_screen_index % len(screens)
-        self._screen: Screen = screens[self.rotator_screen_index]
+        if screens:
+            self.rotator_screen_index = rotator_screen_index % len(screens)
+            self._screen = screens[self.rotator_screen_index]
+
+    @property
+    def has_screen(self) -> bool:
+        return self._screen is not None
 
     @property
     def screen(self) -> Screen:
+        assert self._screen is not None
         return self._screen
 
 
@@ -203,8 +210,49 @@ class DisplayControllerWaitingWebContext(EventUserWebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        display_controller = self.display_controller
+        event_uniq_id = self.user_event.uniq_id
         return super().template_context | {
-            'display_controller': self.display_controller,
+            'waiting_name': display_controller.name,
+            'waiting_message': _('Connected. Waiting for a screen…'),
+            'waiting_icon': 'bi-display',
+            'waiting_testid': 'display-controller-waiting',
+            'waiting_refresher_class': 'display-controller-refresher',
+            'waiting_url': self.request.app.route_reverse(
+                'user-display-controller',
+                event_uniq_id=event_uniq_id,
+                display_controller_id=display_controller.id,
+            ),
+            'waiting_ws_event': (
+                f'ws:display-controller-updated|{event_uniq_id}|{display_controller.id}'
+            ),
+            'waiting_live_events': None,
+            'waiting_delay': display_controller.delay,
+        }
+
+
+class MenuWaitingWebContext(EventUserWebContext):
+    """A menu with no screen to show, until it is given one."""
+
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request, user_event_tab='menus')
+        self.menu = RequestUtils.get_menu(request)
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        event_uniq_id = self.user_event.uniq_id
+        return super().template_context | {
+            'waiting_name': self.menu.name,
+            'waiting_message': _('This menu is empty.'),
+            'waiting_icon': 'bi-list-nested',
+            'waiting_testid': 'menu-waiting',
+            'waiting_refresher_class': 'menu-refresher',
+            'waiting_url': self.request.app.route_reverse(
+                'user-menu', event_uniq_id=event_uniq_id, menu_id=self.menu.id
+            ),
+            'waiting_ws_event': None,
+            'waiting_live_events': f'ws:screens-changed|{event_uniq_id}',
+            'waiting_delay': SharlyChessConfig.user_screen_update_delay,
         }
 
 

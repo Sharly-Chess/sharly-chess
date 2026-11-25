@@ -600,6 +600,19 @@ def test_a_menu_with_nothing_to_show_leaves_its_controller_waiting(
     assert 'display-controller-waiting' in http.get(url).text
 
 
+def test_a_menu_with_nothing_to_show_waits_at_its_own_address(
+    http: TestClient, api: ApiClient, tournament: StoredTournament
+) -> None:
+    menu_id = menu_of([])
+    url = f'/view/menu/{EVENT_ID}/{menu_id}'
+
+    for address in (url, f'{url}/3'):
+        page = http.get(address)
+        assert page.status_code == 200
+        assert 'menu-waiting' in page.text
+        assert f'hx-get="{url}"' in page.text
+
+
 def test_deleting_a_menu_clears_its_controller_and_its_list(
     http: TestClient, api: ApiClient, tournament: StoredTournament
 ) -> None:

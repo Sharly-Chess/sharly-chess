@@ -245,6 +245,23 @@ function closeTooltips () {
     $('body .tooltip').remove();
 }
 
+// Leaving the window, as when a link opens in another browser tab, takes the
+// open tooltips away. Coming back gives the focus back to the element that
+// had it, which shows its tooltip again with the pointer elsewhere: a button
+// or a link with a tooltip gives up the focus, which a field being filled in
+// keeps.
+window.addEventListener('blur', () => {
+    closeTooltips();
+    const focused = document.activeElement;
+    if (
+        focused instanceof HTMLElement
+        && focused.closest(tooltipSelector)
+        && !focused.matches('input, select, textarea, [contenteditable="true"]')
+    ) {
+        focused.blur();
+    }
+});
+
 function removeOrphanedTooltips () {
     document.querySelectorAll('body .tooltip').forEach((tip) => {
         if (!tip.id || !document.querySelector(`[aria-describedby~="${tip.id}"]`)) {
