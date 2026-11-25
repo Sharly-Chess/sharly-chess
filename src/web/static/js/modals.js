@@ -16,7 +16,14 @@ function isModalOpened() {
     return document.getElementById('modal-wrapper').classList.contains('show');
 }
 
+/* The element whose click opened the modal, while the content it requested is
+   still on its way. */
+var modalLoadingOpener = null;
+
 window.addEventListener('show.bs.modal', function(event) {
+    if (event.target.id === 'modal-wrapper') {
+        modalLoadingOpener = event.relatedTarget || null;
+    }
     var target = $(event.relatedTarget);
     if (!target) return;
 
@@ -43,6 +50,7 @@ function modalIsClosed() {
 var enterKeySubmitDisabled = false;
 
 function handleModalOpened(static) {
+    modalLoadingOpener = null;
     var modal = bootstrap.Modal.getOrCreateInstance('#modal-wrapper', {});
 
     // This is a hack to force the modal to be static
@@ -137,6 +145,15 @@ async function downloadFileAndCloseModal(el, formId) {
     closeModal();
 }
 
+/* Escape stops the page loading: in the keydown that closes a modal asking for
+   a refresh, it would cancel the reload replacing the hide, and leave the
+   modal open. */
+window.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && refreshRequested && isModalOpened()) {
+        event.preventDefault();
+    }
+}, true);
+
 // Intercept Bootstrap modal hide
 $(document).on('hide.bs.modal', function (e) {
     if (ignoreNextModalClose) {
@@ -152,6 +169,11 @@ $(document).on('hide.bs.modal', function (e) {
         // the new content arrives: until then the closing modal's buttons
         // would be shown again, and act on what that modal was about.
         $(e.target).children().attr('inert', '');
+        // Closed before its content arrived, the modal would open again with it.
+        if (modalLoadingOpener) {
+            htmx.trigger(modalLoadingOpener, 'htmx:abort');
+            modalLoadingOpener = null;
+        }
     }
 });
 
