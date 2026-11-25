@@ -4135,7 +4135,7 @@ msgid "Elo"
 msgstr "Elo"
 
 msgid "Email address"
-msgstr "Adresse e-mail"
+msgstr "Adresse mél"
 
 msgid "Email:"
 msgstr "Mél :"
@@ -5168,7 +5168,7 @@ msgid "How much each player is rated below the one above them."
 msgstr "L'écart de Elo entre chaque joueur·euse et le·la précédante."
 
 msgid "How should the players reach their tournament?"
-msgstr "Comment les joueur·euses accèdent-ils·elles à leur tournoi ?"
+msgstr "Comment est-ce que les joueur·euses accèdent à leur tournoi ?"
 
 msgid "How the boards shown by this set are chosen and ordered."
 msgstr "Comment les échiquiers affichés par cet ensemble sont choisis et ordonnés."
@@ -5307,7 +5307,7 @@ msgid "In FIDE mode, the prohibited pairings are announced before the first roun
 msgstr "En mode FIDE, les appariements interdits sont annoncés avant la première ronde et ne peuvent plus changer une fois celle-ci appariée."
 
 msgid "In alphabetical order, for the players to find their board."
-msgstr "Par ordre alphabétique, pour que les joueur·euses trouvent leur échiquier."
+msgstr "Par ordre alphabétique, pour que les joueur·euses trouvent facilement leur échiquier."
 
 msgid "In play"
 msgstr "En jeu"
@@ -8667,7 +8667,7 @@ msgid "Please write the note."
 msgstr "Veuillez écrire la remarque."
 
 msgid "Plug a projector or a monitor into the computer running Sharly Chess: no network needed."
-msgstr "Branchez un vidéoprojecteur ou un écran sur l'ordinateur où tourne Sharly Chess : aucun réseau nécessaire."
+msgstr "Branchez un vidéoprojecteur ou un écran sur l'ordinateur où s'exécute Sharly Chess : aucun réseau nécessaire."
 
 #, python-brace-format
 msgid "Plug a projector or a monitor into this computer and open {what} on it, full screen. No network is needed."
@@ -11843,7 +11843,7 @@ msgid "The players checked in and those not yet checked in."
 msgstr "La liste des joueur·euses pointé·es et non pointé·es."
 
 msgid "The players scroll if everything does not fit."
-msgstr "Les joueur·euses font défiler si tout ne tient pas."
+msgstr "Les joueur·euses font défiler si tout n'est pas visible'."
 
 msgid "The points are not among the ranking criteria."
 msgstr "Les points ne font pas partie des critères de classement."
