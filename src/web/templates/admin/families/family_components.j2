@@ -102,12 +102,6 @@
 {% macro summary(item, view, placement) %}
     {% set family = item %}
     <div class="d-flex flex-column gap-2">
-        {% if show_details and client.can_manage_screens %}
-            <div>
-                <span class="pe-1">{{ macros.screen_type_icon(family.screen_type, true) }}</span>
-                {{ _('Type: %(screen_type)s', screen_type=family.type_str) }}
-            </div>
-        {% endif %}
         {% if family.screen_type.multi_column_allowed %}
             <div>
                 {{ _('%(string)s:', string=_('Columns')) }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
