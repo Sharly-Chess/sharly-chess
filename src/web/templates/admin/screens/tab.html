@@ -142,6 +142,15 @@
                     card.classList.add('collection-item-created');
                 }
                 requestAnimationFrame(reveal);
+                {% if edit_scrolled_to %}
+                    {% set scroll_to = scroll_to_screen_id|string %}
+                    {% if scroll_to.startswith('family-') %}
+                        {% set edit_url = url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=scroll_to[7:]|int) %}
+                    {% else %}
+                        {% set edit_url = url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=scroll_to|int) %}
+                    {% endif %}
+                    htmx.ajax('GET', '{{ edit_url }}', { target: 'body', indicator: '#please-wait' });
+                {% endif %}
             })();
         </script>
     {% endif %}

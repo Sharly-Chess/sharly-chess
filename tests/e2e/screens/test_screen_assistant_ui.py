@@ -183,3 +183,28 @@ class TestScreenAssistant:
         expect(question.locator('select option:checked')).to_have_text(
             f'{TOURNAMENT_NAME} 2'
         )
+
+    def test_create_and_edit_opens_the_screen_form(self, page: Page):
+        """Create and edit creates the screen, then opens its form on the
+        screens tab."""
+        self._open_assistant(page)
+        page.get_by_test_id('screen-assistant-goal-check-in').click()
+        question = page.get_by_test_id('screen-assistant-question-paged')
+        expect(question).to_be_visible()
+        TestUtils.wait_for_htmx_idle(page)
+        # The defaults: one page, one column, and no channel.
+        expect(question.get_by_label('On one page', exact=True)).to_be_checked()
+        next_ = page.get_by_test_id('screen-assistant-next')
+        next_.click()
+        expect(page.get_by_test_id('screen-assistant-question-columns')).to_be_visible()
+        next_.click()
+        expect(page.get_by_test_id('screen-assistant-question-channel')).to_be_visible()
+        next_.click()
+        create_edit = page.get_by_test_id('screen-assistant-create-edit')
+        expect(create_edit).to_be_visible()
+        with page.expect_navigation():
+            create_edit.click()
+        expect(page).to_have_url(
+            re.compile(f'/event/{EVENT_ID}/screens\\?scroll_to=\\d+&edit=1$')
+        )
+        expect(page.locator('#modal-wrapper.show #modal-form')).to_be_visible()

@@ -161,13 +161,18 @@ class ScreenAssistantAdminController(BaseEventAdminController):
                     channel_name=creation.channel_name
                 ),
             )
+        # Asked to edit what was created, the tab opens its form too: the
+        # screen or paged screen when a single one was created, else the
+        # menu leading to the screens.
+        edit = '&edit=1' if form_data.get('edit_after') else ''
+        single_item = len(creation.screen_ids) + len(creation.family_ids) == 1
         # On to the menu created, or to the screens of the goal's type.
-        if creation.menu_id is not None:
+        if creation.menu_id is not None and not (edit and single_item):
             return ClientRedirect(
                 redirect_to=request.app.route_reverse(
                     'admin-event-menus-tab', event_uniq_id=event.uniq_id
                 )
-                + f'?scroll_to={creation.menu_id}'
+                + f'?scroll_to={creation.menu_id}{edit}'
             )
         # A filter on another type would hide what was just created; the
         # filter is otherwise left alone, and the page scrolls to the
@@ -177,9 +182,9 @@ class ScreenAssistantAdminController(BaseEventAdminController):
             type_filter.set('')
         scroll_to = ''
         if creation.screen_ids:
-            scroll_to = f'?scroll_to={creation.screen_ids[0]}'
+            scroll_to = f'?scroll_to={creation.screen_ids[0]}{edit}'
         elif creation.family_ids:
-            scroll_to = f'?scroll_to=family-{creation.family_ids[0]}'
+            scroll_to = f'?scroll_to=family-{creation.family_ids[0]}{edit}'
         return ClientRedirect(
             redirect_to=request.app.route_reverse(
                 'admin-event-screens-tab', event_uniq_id=event.uniq_id

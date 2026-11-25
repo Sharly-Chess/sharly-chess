@@ -58,6 +58,9 @@
                     card.classList.add('collection-item-created');
                 }
                 requestAnimationFrame(reveal);
+                {% if edit_scrolled_to %}
+                    htmx.ajax('GET', '{{ url_for('admin-menu-update-modal', event_uniq_id=admin_event.uniq_id, menu_id=scroll_to_menu_id|int) }}', { target: 'body', indicator: '#please-wait' });
+                {% endif %}
             })();
         </script>
     {% endif %}

@@ -2948,6 +2948,9 @@ msgstr ""
 msgid "Create and add another"
 msgstr ""
 
+msgid "Create and edit"
+msgstr ""
+
 msgid "Create category set"
 msgstr ""
 
@@ -4284,9 +4287,6 @@ msgid "Everything"
 msgstr ""
 
 msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
-msgstr ""
-
-msgid "Everything is created in one go; refine it later from the Screens and Channels tabs."
 msgstr ""
 
 #, python-brace-format
@@ -11486,9 +11486,6 @@ msgstr ""
 msgid "The lineup for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster."
 msgstr ""
 
-msgid "The list of arrivals, on a display in the hall."
-msgstr ""
-
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr ""
 
@@ -11775,6 +11772,9 @@ msgid "The players are split by pairing number into three groups: group A, the f
 msgstr ""
 
 msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
+msgstr ""
+
+msgid "The players checked in and those not yet checked in."
 msgstr ""
 
 msgid "The players scroll if everything does not fit."

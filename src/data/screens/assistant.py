@@ -118,7 +118,7 @@ def assistant_goals(event: Event) -> list[AssistantGoal]:
         'check-in',
         False,
         _('Show the check-in status'),
-        _('The list of arrivals, on a display in the hall.'),
+        _('The players checked in and those not yet checked in.'),
         'bi-check-square',
         _('Check-in'),
     )

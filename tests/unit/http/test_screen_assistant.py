@@ -529,3 +529,71 @@ def test_the_assistant_comes_back_on_the_question_in_error(
     assert 'The value must be at least 1.' in response.text
     event = reload_event()
     assert not event.families_by_screen_type.get(ScreenType.CHECK_IN.value)
+
+
+@pytest.mark.unit
+def test_create_and_edit_opens_the_form_of_what_was_created(
+    http: TestClient, tournament: StoredTournament
+):
+    """Create and edit leads to the edit form of the screen when a single
+    one is created, even behind a page menu, and to the menu leading to
+    the screens when there are several."""
+
+    def create(data: dict[str, str]) -> str:
+        response = http.post(
+            f'/screen-assistant-create/{EVENT_ID}',
+            data=data | {'answer_columns': '0', 'answer_channel': NO_CHANNEL},
+        )
+        assert response.is_success
+        return response.headers['HX-Redirect']
+
+    redirect = create(
+        {
+            'goal': 'check-in',
+            'answer_paged': ONE_PAGE,
+            'answer_switch_tournaments': str(tournament.id),
+            'edit_after': '1',
+        }
+    )
+    event = reload_event()
+    screen = event.sorted_basic_screens_by_screen_type[ScreenType.CHECK_IN.value][0]
+    assert redirect == f'/event/{EVENT_ID}/screens?scroll_to={screen.id}&edit=1'
+
+    redirect = create(
+        {
+            'goal': 'results-input',
+            'answer_tournaments': str(tournament.id),
+            'answer_paged': INPUT_PAGES_MENU,
+            'answer_paged_method': PAGES,
+            'answer_paged_pages': '2',
+            'edit_after': '1',
+        }
+    )
+    event = reload_event()
+    family = event.families_by_screen_type[ScreenType.BOARDS.value][0]
+    assert redirect == f'/event/{EVENT_ID}/screens?scroll_to=family-{family.id}&edit=1'
+
+    other = TestUtils.create_tournament(
+        EVENT_ID, f'{TOURNAMENT_NAME}-2', json_file='test-screens'
+    )
+    redirect = create(
+        {
+            'goal': 'check-in-input',
+            'answer_tournaments': f'{tournament.id};{other.id}',
+            'answer_nav': MENU,
+            'edit_after': '1',
+        }
+    )
+    event = reload_event()
+    menu = next(menu for menu in event.menus_by_id.values() if menu.name == 'Check-in')
+    assert redirect == f'/event/{EVENT_ID}/menus?scroll_to={menu.id}&edit=1'
+
+    # The tabs then open the edit form.
+    response = http.get(f'/event/{EVENT_ID}/screens?scroll_to={screen.id}&edit=1')
+    assert f'/screen-modal/update/{EVENT_ID}/{screen.id}' in response.text
+    response = http.get(
+        f'/event/{EVENT_ID}/screens?scroll_to=family-{family.id}&edit=1'
+    )
+    assert f'/family-modal/update/{EVENT_ID}/{family.id}' in response.text
+    response = http.get(f'/event/{EVENT_ID}/menus?scroll_to={menu.id}&edit=1')
+    assert f'/menu-modal/update/{EVENT_ID}/{menu.id}' in response.text

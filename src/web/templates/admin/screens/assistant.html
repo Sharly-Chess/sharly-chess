@@ -112,6 +112,7 @@
                     data-no-label="{{ _('No') }}"
                 >
                     <input type="hidden" name="goal" value="{{ assistant_goal.id }}">
+                    <input type="hidden" name="edit_after" value="">
                     {% for question_id, question in wizard.questions.items() if not question.disabled %}
                         {% set field = wizard.answer_field(question_id) %}
                         <div
@@ -138,10 +139,7 @@
                     {% endfor %}
                     {# Once the last question answered. #}
                     <div class="screen-assistant-step screen-assistant-final" data-stage="create" data-testid="screen-assistant-final" hidden>
-                        <h3 class="screen-assistant-question-text">{{ _('Ready to create') }}</h3>
-                        <p class="form-text mt-0 mb-3">
-                            {{ _('Everything is created in one go; refine it later from the Screens and Channels tabs.') }}
-                        </p>
+                        <h3 class="screen-assistant-question-text mb-3">{{ _('Ready to create') }}</h3>
                         {# What the answers create, asked of the server once the
                            last question is answered. #}
                         <div id="screen-assistant-summary" data-testid="screen-assistant-summary"></div>
@@ -149,7 +147,10 @@
                     <div class="screen-assistant-nav">
                         {{ components.button(_('Back'), kind='outline-secondary', icon='back', attrs={'id': 'screen-assistant-back', 'data-testid': 'screen-assistant-back'}) }}
                         {{ components.button(_('Next'), kind='primary', icon='bi-arrow-right-circle-fill', attrs={'id': 'screen-assistant-next', 'data-testid': 'screen-assistant-next'}) }}
-                        {{ components.button(_('Create'), kind='primary', icon='add', attrs={'id': 'screen-assistant-create', 'data-testid': 'screen-assistant-create', 'hidden': true}) }}
+                        <div class="screen-assistant-create-buttons" id="screen-assistant-create-buttons" hidden>
+                            {{ components.button(_('Create and edit'), kind='outline', icon='bi-pencil', attrs={'id': 'screen-assistant-create-edit', 'data-testid': 'screen-assistant-create-edit'}) }}
+                            {{ components.button(_('Create'), kind='primary', icon='add', attrs={'id': 'screen-assistant-create', 'data-testid': 'screen-assistant-create'}) }}
+                        </div>
                     </div>
                 </form>
             {% endif %}
@@ -209,6 +210,9 @@
             const backButton = document.getElementById('screen-assistant-back');
             const nextButton = document.getElementById('screen-assistant-next');
             const createButton = document.getElementById('screen-assistant-create');
+            const createEditButton = document.getElementById('screen-assistant-create-edit');
+            const createButtons = document.getElementById('screen-assistant-create-buttons');
+            const editAfterField = form.querySelector('input[name="edit_after"]');
             // The questions answered before the one shown, to go back.
             const history = JSON.parse(form.dataset.path || '[]');
             // The questions already asked (back from the server with an
@@ -313,7 +317,7 @@
                     current === null ? 'create' : current.dataset.stage
                 );
                 nextButton.hidden = current === null;
-                createButton.hidden = current !== null;
+                createButtons.hidden = current !== null;
                 // The focus on the button answering the question.
                 (current ? nextButton : createButton).focus();
             }
@@ -342,7 +346,7 @@
                 if (current === null) {
                     // Once the last question answered, Enter creates
                     // everything.
-                    create();
+                    create(false);
                     return;
                 }
                 const required = current.querySelector('.screen-assistant-required');
@@ -356,8 +360,10 @@
                 show(nextId === '' ? null : nextId);
             }
 
-            // Send the answers to create everything.
-            function create() {
+            // Send the answers to create everything, then to edit what was
+            // created if *edit*.
+            function create(edit) {
+                editAfterField.value = edit ? '1' : '';
                 htmx.trigger(form, 'wizard-submit');
             }
 
@@ -409,7 +415,8 @@
                 goNext();
             });
             nextButton.addEventListener('click', goNext);
-            createButton.addEventListener('click', create);
+            createButton.addEventListener('click', () => create(false));
+            createEditButton.addEventListener('click', () => create(true));
             backButton.addEventListener('click', goBack);
 
             // Back from the server with an error: the last question asked is

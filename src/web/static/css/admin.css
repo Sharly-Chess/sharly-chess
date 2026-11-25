@@ -1629,3 +1629,12 @@ tr.live-updated > td {
 #players-table tbody tr:focus-visible > td {
     --bs-table-bg-state: rgba(var(--bs-primary-rgb), 0.2);
 }
+
+.screen-assistant-create-buttons {
+    display: flex;
+    gap: .5rem;
+}
+
+.screen-assistant-create-buttons[hidden] {
+    display: none;
+}

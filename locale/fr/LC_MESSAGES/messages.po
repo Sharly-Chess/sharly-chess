@@ -691,11 +691,11 @@ msgstr "Un menu"
 
 #, python-brace-format
 msgid "A menu named “{name}” for the players to pick their tournament."
-msgstr "Un menu nommé “{name}” pour que les joueur·euses choisissent leur tournoi."
+msgstr "Un menu nommé « {name} » pour que les joueur·euses choisissent leur tournoi."
 
 #, python-brace-format
 msgid "A menu named “{name}” to pick the page."
-msgstr "Un menu nommé “{name}” pour choisir la page."
+msgstr "Un menu nommé « {name} » pour choisir la page."
 
 msgid "A menu puts a bar of buttons at the top of a device, such as a tablet, so that people can tap between its screens. It can hold chosen screens, or all the screens of a type."
 msgstr "Un menu place une barre de boutons en haut d'un appareil, comme une tablette, pour passer d'un de ses écrans à l'autre en touchant. Il peut contenir des écrans choisis, ou tous les écrans d'un type."
@@ -708,7 +708,7 @@ msgstr "Un nouveau canal"
 
 #, python-brace-format
 msgid "A new channel named “{name}”, with everything designed for it."
-msgstr "Un nouveau canal nommé “{name}”, tout étant marqué comme conçu pour lui."
+msgstr "Un nouveau canal nommé « {name} », tout étant marqué comme conçu pour lui."
 
 msgid "A new timer"
 msgstr "Un nouveau chronomètre"
@@ -841,11 +841,11 @@ msgstr "Un pourcentage entier entre 0 et 100 est attendu."
 
 #, python-brace-format
 msgid "A “{name}” screen covering {tournaments}."
-msgstr "Un écran “{name}” couvrant {tournaments}."
+msgstr "Un écran « {name} » couvrant {tournaments}."
 
 #, python-brace-format
 msgid "A “{name}” screen for {tournament}, over several pages."
-msgstr "Un écran “{name}” pour {tournament}, sur plusieurs pages."
+msgstr "Un écran « {name} » pour {tournament}, sur plusieurs pages."
 
 msgid "ADM"
 msgstr "ADM"
@@ -2948,6 +2948,9 @@ msgstr "Créer un évènement"
 msgid "Create and add another"
 msgstr "Créer et ajouter à nouveau"
 
+msgid "Create and edit"
+msgstr "Créer et modifier"
+
 msgid "Create category set"
 msgstr "Créer un ensemble de catégories"
 
@@ -4286,12 +4289,9 @@ msgstr "Tout"
 msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
 msgstr "Tout ce qui est fait sur l'évènement (résultats, appariements, joueur·euses, tournois) est inscrit ici, avec quand et par qui."
 
-msgid "Everything is created in one go; refine it later from the Screens and Channels tabs."
-msgstr "Tout est créé en une seule fois ; affinez ensuite depuis les onglets Écrans et Canaux."
-
 #, python-brace-format
 msgid "Everything is marked as designed for the channel “{name}”."
-msgstr "Tout est marqué comme conçu pour le canal “{name}”."
+msgstr "Tout est marqué comme conçu pour le canal « {name} »."
 
 msgid "Everything on one page"
 msgstr "Tout sur une seule page"
@@ -5114,7 +5114,7 @@ msgid "How every timer of the event is coloured around each of its hours, unless
 msgstr "Les couleurs de chaque chronomètre de l'évènement autour de ses horaires, sauf s'il a ses propres délais."
 
 msgid "How it all fits together"
-msgstr "Comment tout s'articule"
+msgstr "Tout comprendre sur les affichages"
 
 #, python-format
 msgid "How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay."
@@ -5838,10 +5838,10 @@ msgid "Lesotho"
 msgstr "Lesotho"
 
 msgid "Let the players check in"
-msgstr "Laisser les joueur·euses pointer"
+msgstr "Permettre aux joueur·euses de pointer"
 
 msgid "Let the players enter their results"
-msgstr "Laisser les joueur·euses saisir leurs résultats"
+msgstr "Permettre aux joueur·euses de saisir leurs résultats"
 
 msgid "Level specific colours"
 msgstr "Couleurs spécifiques au niveau"
@@ -7504,7 +7504,7 @@ msgstr "Un seul tournoi, sur plusieurs pages"
 
 #, python-brace-format
 msgid "One “{name}” screen per tournament: {tournaments}."
-msgstr "Un écran “{name}” par tournoi : {tournaments}."
+msgstr "Un écran « {name} » par tournoi : {tournaments}."
 
 msgid "Ongoing"
 msgstr "En cours"
@@ -7672,7 +7672,7 @@ msgstr "Autre"
 
 #, python-brace-format
 msgid "Other kinds of screens exist too: {types}. Create them directly from the “Create a screen” menu of the Screens tab."
-msgstr "D'autres types d'écrans existent aussi : {types}. Créez-les directement depuis le menu “Créer un écran” de l'onglet Écrans."
+msgstr "D'autres types d'écrans existent aussi : {types}. Créez-les directement depuis le menu « Créer un écran » de l'onglet Écrans."
 
 #, python-brace-format
 msgid "Other missing players: {count}"
@@ -11488,9 +11488,6 @@ msgstr "La composition pour la ronde %(round)d n'est pas dans le même ordre que
 msgid "The lineup for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster."
 msgstr "La composition pour les rondes %(first_round)d-%(last_round)d n'est pas dans le même ordre que l'effectif."
 
-msgid "The list of arrivals, on a display in the hall."
-msgstr "La liste des arrivées, sur un affichage dans la salle."
-
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr "Le classement le plus bas qu'un·e joueur·euse doit avoir pour que son score attendu soit supérieur ou égal à son score réel."
 
@@ -11778,6 +11775,9 @@ msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en trois g
 
 msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
 msgstr "Les joueur·euses sont réparti·es par numéro d'appariement en deux groupes : le groupe A, les premiers numéros d'appariement, et le groupe B, les autres."
+
+msgid "The players checked in and those not yet checked in."
+msgstr "La liste des joueur·euses pointé·es et non pointé·es."
 
 msgid "The players scroll if everything does not fit."
 msgstr "Les joueur·euses font défiler si tout ne tient pas."
