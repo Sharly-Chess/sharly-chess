@@ -3917,9 +3917,6 @@ msgstr ""
 msgid "Edit rule"
 msgstr ""
 
-msgid "Edit schedule"
-msgstr ""
-
 msgid "Edit screen"
 msgstr ""
 
@@ -7858,6 +7855,9 @@ msgstr ""
 msgid "Pairings by player"
 msgstr ""
 
+msgid "Pairings by round"
+msgstr ""
+
 msgid "Pairings changed by hand"
 msgstr ""
 
@@ -9605,7 +9605,7 @@ msgstr ""
 msgid "Round-robin grid screens show every player of a round robin against every other, with the results and the rounds still to play."
 msgstr ""
 
-msgid "Round-robin schedule"
+msgid "Round-robin pairings"
 msgstr ""
 
 msgid "Round-robin schedule saved"
@@ -11817,6 +11817,9 @@ msgid "The table number of the first match to select."
 msgstr ""
 
 msgid "The table number of the last match to select."
+msgstr ""
+
+msgid "The table number the team will always be assigned to (use it for disabled people). Changing it renumbers only the rounds paired afterwards."
 msgstr ""
 
 msgid "The team order sets each team's pairing number, shown on each card."

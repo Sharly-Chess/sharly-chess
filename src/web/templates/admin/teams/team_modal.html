@@ -66,6 +66,15 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12" id="fixed-table-field" {% if not show_fixed_table %}hidden{% endif %}>
+                        {{ admin_macros.number_input(
+                            name='fixed',
+                            label=_('%(string)s:', string=_('Fixed table')),
+                            tooltip_text=_('The table number the team will always be assigned to (use it for disabled people). Changing it renumbers only the rounds paired afterwards.'),
+                            min=1,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                     <div class="col-12">
                         {% include '/admin/teams/team_group_fields.html' %}
                     </div>
@@ -100,6 +109,16 @@
                     document.getElementById('captain-name-field').hidden =
                         this.value !== 'other';
                 });
+                (function () {
+                    const fixable = new Set({{ fixable_tournament_ids | tojson }});
+                    const field = document.getElementById('fixed-table-field');
+                    function toggleFixedTable() {
+                        const value = $('#tournament-id').val() || '';
+                        field.hidden = !(value === '' || fixable.has(value));
+                    }
+                    $('#tournament-id').on('change', toggleFixedTable);
+                    toggleFixedTable();
+                })();
             </script>
 {% endblock %}
 

@@ -1,24 +1,12 @@
 {% extends '/admin/print/base.html' %}
 
 {% block css %}
-    .rr-schedule {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 16pt;
-    }
-    .rr-schedule td {
-        padding: 4pt 8pt;
-        vertical-align: middle;
-    }
-    .rr-schedule td.team-left { text-align: left; width: 45%; }
-    .rr-schedule td.score {
-        text-align: right;
-        white-space: nowrap;
-        width: 10%;
-        font-weight: bold;
-    }
-    .rr-schedule td.team-right { text-align: left; width: 45%; padding-left: 6pt; }
-    .rr-schedule tr.exempt td { font-style: italic; color: #555; }
+    {% include 'boards.css' %}
+    .board-table { margin-bottom: 16pt; }
+    .board-table .team { text-align: left; width: 50%; }
+    .board-table td.number { font-weight: bold; text-align: right; }
+    .board-table.team-table { font-size: 10.5pt; }
+    .board-table tr.exempt td.team { font-style: italic; }
 {% endblock %}
 
 {% block content %}
@@ -28,28 +16,89 @@
         {% for round in rounds_data %}
             <section>
                 <div class="section-title">{{ _('Round #%(round)d', round=round.number) }}</div>
-                <table class="rr-schedule">
-                    <tbody>
-                        {% for match in round.matches %}
-                            <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
-                                <td class="team-left">{{ match.left }}</td>
-                                <td class="score">
-                                    {%- if match.left_score is not none -%}
-                                        {{ match.left_score }} - {{ match.right_score }}
-                                    {%- endif -%}
-                                </td>
-                                <td class="team-right">{{ match.right }}</td>
+                {% if is_team %}
+                    <table class="board-table team-table">
+                        <thead>
+                            <tr class="board-header">
+                                <th class="number">{{ pgettext('table number column header', 'Tbl.') }}</th>
+                                <th class="team"></th>
+                                <th class="result">{{ pgettext('result column header', 'Res.') }}</th>
+                                <th class="team"></th>
                             </tr>
-                        {% endfor %}
-                        {% if round.exempt %}
-                            <tr class="exempt {% if (round.matches|length + 1) is even %}even{% else %}odd{% endif %}">
-                                <td class="team-left">{{ round.exempt }}</td>
-                                <td class="score">{{ _('Bye') }}</td>
-                                <td class="team-right"></td>
+                        </thead>
+                        <tbody>
+                            {% for match in round.matches %}
+                                <tr class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}">
+                                    <td class="number">{{ match.number }}</td>
+                                    <td class="team">{{ match.left }}</td>
+                                    <td class="result">{{ match.result or '–' }}</td>
+                                    <td class="team">{{ match.right }}</td>
+                                </tr>
+                            {% endfor %}
+                            {% if round.exempt %}
+                                <tr class="board-row exempt {% if (round.matches|length + 1) is even %}even{% else %}odd{% endif %}">
+                                    <td class="number"></td>
+                                    <td class="team">{{ round.exempt }}</td>
+                                    <td class="result"></td>
+                                    <td class="team">{{ _('Bye') }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <table class="board-table">
+                        <thead>
+                            <tr class="board-header">
+                                <th class="board">{{ pgettext('board number column header', 'Bd.') }}</th>
+                                {% if show_titles %}
+                                    <th class="title"></th>
+                                {% endif %}
+                                <th class="name">{{ _('White') }}</th>
+                                <th class="rating"></th>
+                                <th class="result"></th>
+                                {% if show_titles %}
+                                    <th class="title"></th>
+                                {% endif %}
+                                <th class="name">{{ _('Black') }}</th>
+                                <th class="rating"></th>
                             </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for match in round.matches %}
+                                <tr class="board-row {% if loop.index is even %}even{% else %}odd{% endif %}">
+                                    <td class="board">{{ match.number }}</td>
+                                    {% if show_titles %}
+                                        <td class="title">{{ match.left.display_title }}</td>
+                                    {% endif %}
+                                    <td class="name">{{ match.left.full_name }}</td>
+                                    <td class="rating text-end">{{ match.left.rating_str }}</td>
+                                    <td class="result">{{ match.result or '–' }}</td>
+                                    {% if show_titles %}
+                                        <td class="title">{{ match.right.display_title }}</td>
+                                    {% endif %}
+                                    <td class="name">{{ match.right.full_name }}</td>
+                                    <td class="rating text-end">{{ match.right.rating_str }}</td>
+                                </tr>
+                            {% endfor %}
+                            {% if round.exempt %}
+                                <tr class="board-row exempt {% if (round.matches|length + 1) is even %}even{% else %}odd{% endif %}">
+                                    <td class="board"></td>
+                                    {% if show_titles %}
+                                        <td class="title"></td>
+                                    {% endif %}
+                                    <td class="name">{{ round.exempt }}</td>
+                                    <td class="rating"></td>
+                                    <td class="result"></td>
+                                    {% if show_titles %}
+                                        <td class="title"></td>
+                                    {% endif %}
+                                    <td class="name">{{ _('Bye') }}</td>
+                                    <td class="rating"></td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                {% endif %}
             </section>
         {% endfor %}
     {% endif %}

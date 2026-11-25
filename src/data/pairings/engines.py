@@ -27,7 +27,7 @@ from common.logger import (
     get_logger,
 )
 from common.tool_installer import BbpPairingsInstaller
-from data.board import Board
+from data.board import Board, compute_round_board_numbers
 from data.pairings.round_robin_schedule import (
     RoundRobinSchedule,
     ScheduleRound,
@@ -982,6 +982,26 @@ class TeamPairingEngine(PairingEngine, ABC):
         ]
         return sorted(teams, key=_team_ui_sort_key)
 
+    def _match_fixed_table(
+        self, tournament: Tournament, pair: tuple[int, int | None]
+    ) -> int | None:
+        """The table ``pair`` is pinned to, or ``None`` when neither team
+        is fixed. A bye envelope (no opponent) holds no table, so it is
+        never pinned. When both teams are fixed to different tables the
+        higher number wins, as for an individual board whose two players
+        are each fixed."""
+        team_a_id, team_b_id = pair
+        if team_b_id is None:
+            return None
+        teams_by_id = tournament.event.teams_by_id
+        team_a = teams_by_id.get(team_a_id)
+        team_b = teams_by_id.get(team_b_id)
+        fixed_a = team_a.fixed if team_a else None
+        fixed_b = team_b.fixed if team_b else None
+        if fixed_a and fixed_b:
+            return max(fixed_a, fixed_b)
+        return fixed_a or fixed_b
+
     def _persist_team_round(
         self,
         tournament: Tournament,
@@ -1013,13 +1033,23 @@ class TeamPairingEngine(PairingEngine, ABC):
                     return index
 
                 for team_a_id, team_b_id in team_pairs:
+                    # A newly-paired team takes its fixed table when that
+                    # table is still free this round, otherwise the lowest
+                    # free one — the same hole-filling the matches already
+                    # present went through.
+                    fixed = self._match_fixed_table(tournament, (team_a_id, team_b_id))
+                    if fixed is not None and (fixed - 1) not in used_indexes:
+                        index = fixed - 1
+                        used_indexes.add(index)
+                    else:
+                        index = _next_free_index()
                     stb = StoredTeamBoard(
                         id=None,
                         tournament_id=tournament.id,
                         round_=round_,
                         team_a_id=team_a_id,
                         team_b_id=team_b_id,
-                        index=_next_free_index(),
+                        index=index,
                     )
                     stb.id = database.add_stored_team_board(stb)
                     kept.append(stb)
@@ -1116,16 +1146,27 @@ class TeamPairingEngine(PairingEngine, ABC):
 
             kept = []
             # Real / PAB matches own the table numbers 0…d-1, exactly
-            # like individual boards. Hidden byes (HPB / FPB / ZPB) are
-            # placed *after* them so they never consume a table number.
-            for index, (team_a_id, team_b_id) in enumerate(sorted_pairs):
+            # like individual boards. A match whose team is fixed to a
+            # table takes that number; the rest fill the gaps compactly,
+            # so the round still has neither holes nor duplicates. Hidden
+            # byes (HPB / FPB / ZPB) are placed *after* them so they never
+            # consume a table number.
+            table_numbers = compute_round_board_numbers(
+                [
+                    (position, self._match_fixed_table(tournament, pair), position + 1)
+                    for position, pair in enumerate(sorted_pairs)
+                ],
+                first_board_number=1,
+                leave_holes=False,
+            )
+            for position, (team_a_id, team_b_id) in enumerate(sorted_pairs):
                 stb = StoredTeamBoard(
                     id=None,
                     tournament_id=tournament.id,
                     round_=round_,
                     team_a_id=team_a_id,
                     team_b_id=team_b_id,
-                    index=index,
+                    index=table_numbers[position] - 1,
                 )
                 stb.id = database.add_stored_team_board(stb)
                 kept.append(stb)

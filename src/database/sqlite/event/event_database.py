@@ -2084,6 +2084,7 @@ class EventDatabase(MigrationDatabase):
             group_id=row['group_id'],
             federation=row['federation'],
             check_in=cls.load_bool_from_database_field(row['check_in']),
+            fixed=row['fixed'],
         )
 
     def load_stored_teams(self) -> list[StoredTeam]:
@@ -2125,6 +2126,7 @@ class EventDatabase(MigrationDatabase):
                 'group_id',
                 'federation',
                 'check_in',
+                'fixed',
             ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
@@ -2149,6 +2151,7 @@ class EventDatabase(MigrationDatabase):
                 'group_id',
                 'federation',
                 'check_in',
+                'fixed',
             ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)

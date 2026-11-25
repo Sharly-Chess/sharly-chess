@@ -5,8 +5,8 @@
         if schedule_editor.every_round_locked
 ) %}
 {{ components.button(
-    _('Edit schedule'),
-    icon='bi-calendar3',
+    _('Manual pairing'),
+    icon='bi-arrow-left-right',
     allowed=not schedule_locked_message,
     reason=schedule_locked_message,
     tooltip=_('Define who meets whom in every round; each round is then paired from the schedule.')

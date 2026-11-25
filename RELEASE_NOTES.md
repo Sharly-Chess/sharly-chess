@@ -10,6 +10,7 @@
 
 - A player who leaves an individual round-robin can be replaced, from the player form, by a newcomer who takes over their seat from a chosen round: their Berger number, their remaining opponents and their colours. The tournament keeps its rounds and its schedule, both players are ranked on the games they played, and in the tie-breaks the seat counts as a single opponent worth the points of all who held it. The Berger grid gives the seat one line, and the TRF gives the tournament as a custom round-robin with a comment for each replacement (5.3.0)
 - The "Export event (SCE)" button of the warning shown before a tournament export that loses data opens the event export options, with the players included by default: the file it produced held no players, teams or pairings (5.3.0)
+- A team can be pinned to a table, as a player can be pinned to a board in an individual tournament, from the team form: its match is placed on that table every round it is paired and the other matches fill the tables around it, and changing the table renumbers only the rounds paired afterwards, leaving the rounds already played alone (5.3.0)
 
 ## Players
 
@@ -41,7 +42,8 @@
 ## Documents
 
 - Appreciation certificates can be printed for the players of a prize category, from the place cards document, now named Place cards and certificates: every player of the category gets a certificate, whatever the number of its prizes, or only the prize winners, those of all the categories of a prize group at once if needed. Besides the player's information, the templates of the certificates offer the player's rank in the category, the number of players in the category, the performance for the categories ranked by performance, and the prize won in the category. A standard certificate template is provided (5.3.0)
-- The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin schedule explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the schedule printing a draw the pairing can still change (5.3.0)
+- The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin pairings explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the pairings printing a draw the pairing can still change (5.3.0)
+- The document printing every round of a round robin at once, now named Round-robin pairings, lays each round out like the per-round pairings, with the table numbers, the players with their title and rating (the teams for a team tournament) and the result once it is known, rather than a plain list of names; the per-round document is named Pairings by round, and the round robin's own pairings are edited from a Manual pairing button on the pairings tab (5.3.0)
 - The list of players and the players check-in list let the arbiter choose which columns to print, each document keeping its own choice: the rating, category, gender, federation and club are shown by default, as is a column a plugin adds such as the FFE league, while the pairing number, the FIDE ID and the national ID are offered and left out unless turned on (5.3.0)
 
 ## _Sharly-Chess.com_
