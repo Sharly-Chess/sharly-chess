@@ -31,7 +31,9 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ListColumn(
                 'identity',
                 label=_('Screen'),
-                width='minmax(min-content, 1.4fr)',
+                # Not min-content: a long name would push the other columns
+                # off the row instead of being cut short.
+                width='minmax(12rem, 1.4fr)',
             ),
             ListColumn('screen_sets', label=_('Content')),
             ListColumn('timer', label=_('Timer')),

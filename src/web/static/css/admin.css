@@ -1326,6 +1326,292 @@ tr.live-updated > td {
     }
 }
 
+/* The screen setup assistant: a stage rail beside one question at a time. */
+.screen-assistant {
+    display: flex;
+    gap: 1.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-body-bg);
+    min-height: 32rem;
+    overflow: hidden;
+}
+
+.screen-assistant-rail {
+    flex: 0 0 15rem;
+    padding: 1.25rem 1rem;
+    background: var(--pw-surface-raised-bg, var(--bs-tertiary-bg));
+    border-right: 1px solid var(--bs-border-color);
+}
+
+.screen-assistant-rail-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+}
+
+.screen-assistant-stage {
+    margin-bottom: .9rem;
+}
+
+.screen-assistant-stage-name {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--bs-secondary-color);
+}
+
+.screen-assistant-stage.active .screen-assistant-stage-name,
+.screen-assistant-stage.done .screen-assistant-stage-name {
+    color: var(--bs-body-color);
+}
+
+.screen-assistant-stage-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    border: 2px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+    font-size: .7rem;
+}
+
+.screen-assistant-stage.active .screen-assistant-stage-dot {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+
+.screen-assistant-stage.done .screen-assistant-stage-dot {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary);
+    color: var(--bs-white);
+}
+
+.screen-assistant-stage-answers {
+    margin: .3rem 0 0 1.7rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .15rem;
+}
+
+.screen-assistant-answer {
+    border: none;
+    background: transparent;
+    color: var(--bs-body-color);
+    font-size: .85rem;
+    font-weight: 600;
+    text-align: left;
+    padding: .1rem .4rem;
+    border-radius: .35rem;
+}
+
+.screen-assistant-answer:hover {
+    background: var(--pw-nav-active-bg, var(--bs-tertiary-bg));
+}
+
+.screen-assistant-main {
+    flex: 1;
+    min-width: 0;
+    padding: 1.75rem 2rem;
+}
+
+.screen-assistant-step {
+    max-width: 38rem;
+}
+
+.screen-assistant-question-text {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: .35rem;
+}
+
+.screen-assistant-goals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: .75rem;
+}
+
+.screen-assistant .sc-btn.screen-assistant-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: .25rem;
+    text-align: left;
+    padding: .8rem 1rem;
+    white-space: normal;
+}
+
+.screen-assistant-card-icon {
+    position: relative;
+    display: inline-block;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--bs-primary);
+    margin-bottom: .4rem;
+}
+
+.screen-assistant-card-badge {
+    position: absolute;
+    right: -.55rem;
+    bottom: -.25rem;
+    font-size: .55em;
+    color: var(--bs-body-color);
+    background: var(--bs-body-bg);
+    border-radius: 50%;
+    padding: .18em;
+}
+
+.screen-assistant-card-title {
+    font-weight: 600;
+}
+
+.screen-assistant-card-help {
+    font-size: .85rem;
+    color: var(--bs-secondary-color);
+}
+
+/* The options of a question, shown as cards. The selectors carry the
+   admin attribute to outweigh the admin flex layout of plain checks
+   (see base.css). */
+[data-sc-interface=admin] .screen-assistant .screen-assistant-question .form-check {
+    position: relative;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .6rem;
+    padding: .8rem 1rem;
+    gap: .75rem;
+}
+
+.screen-assistant-question .form-check:hover {
+    border-color: rgba(var(--bs-primary-rgb), 0.45);
+}
+
+/* Above the card-wide label overlay, so that it can be clicked directly. */
+.screen-assistant-question .form-check .form-check-input {
+    position: relative;
+    z-index: 1;
+}
+
+.screen-assistant-question .form-check:has(.form-check-input:checked) {
+    border-color: var(--bs-primary);
+    background: var(--pw-nav-active-bg, var(--bs-tertiary-bg));
+}
+
+.screen-assistant-question .form-check .form-check-label {
+    display: block;
+    cursor: pointer;
+}
+
+.screen-assistant-question .form-check .form-check-label::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.screen-assistant-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    max-width: 38rem;
+}
+
+@media (max-width: 767.98px) {
+    .screen-assistant {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .screen-assistant-rail {
+        flex: none;
+        border-right: none;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .screen-assistant-main {
+        padding: 1.25rem 1rem;
+    }
+}
+
+/* The screen or menu just created pulses twice in green once scrolled
+   into view. */
+.collection-item-created {
+    animation: collection-item-created 3s ease-out;
+    border-radius: .375rem;
+}
+
+@keyframes collection-item-created {
+    0% { box-shadow: inset 0 0 0 9999px rgba(var(--bs-success-rgb), 0.3); }
+    40% { box-shadow: inset 0 0 0 9999px rgba(var(--bs-success-rgb), 0.08); }
+    60% { box-shadow: inset 0 0 0 9999px rgba(var(--bs-success-rgb), 0.25); }
+    100% { box-shadow: inset 0 0 0 9999px rgba(var(--bs-success-rgb), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collection-item-created {
+        animation: none;
+    }
+}
+
+/* What the assistant is about to create, before the Create button. */
+.screen-assistant-summary-list {
+    margin: 0 0 1rem;
+    padding-left: 1.2rem;
+}
+
+.screen-assistant-summary-list li {
+    margin-bottom: .25rem;
+}
+
+/* The name of a screen with its badges: cut short on one line in the
+   list, over at most two lines on a card, the badges kept whole. */
+.collection-identity {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.collection-identity > :not(.collection-identity-name) {
+    flex-shrink: 0;
+}
+
+.collection-identity-name {
+    min-width: 0;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.collection-card .collection-identity {
+    flex-wrap: wrap;
+    row-gap: .35rem;
+}
+
+.collection-card .collection-identity-name {
+    flex: 1 1 10rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
 .sc-shortcut-hint {
     padding: 0;
     background: none;
@@ -1342,4 +1628,22 @@ tr.live-updated > td {
 
 #players-table tbody tr:focus-visible > td {
     --bs-table-bg-state: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.screen-assistant-create-buttons {
+    display: flex;
+    gap: .5rem;
+}
+
+.screen-assistant-create-buttons[hidden] {
+    display: none;
+}
+
+/* The question being asked, under its stage in the rail. */
+.screen-assistant-current {
+    font-size: .85rem;
+    font-style: italic;
+    color: var(--bs-body-color);
+    padding: .1rem .4rem .1rem .55rem;
+    border-left: 2px solid var(--bs-primary);
 }

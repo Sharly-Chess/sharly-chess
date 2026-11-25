@@ -1,0 +1,452 @@
+{#
+    The screen setup assistant (see data/screens/assistant.py): a full page
+    under the Screens tab.
+    With no goal chosen, the goals are offered as cards; choosing one loads
+    the page again with the questions of the goal's wizard
+    (data/wizard.py), each shown by the template of its type
+    (admin/wizard_questions/<type>.html). The questions are asked one after
+    the other, starting with the first one: the question after an answered
+    one is given by the option chosen (radio questions) or else by the
+    question itself; a question with no next question is the last one.
+    Disabled questions are not shown (the next questions skip them).
+    The questions answered are listed in the stage rail on the left, under
+    the stage they belong to, and can be clicked to go back to. The first
+    time a question is asked, it is set to its default value
+    (default_value); going back (Back) keeps the answers given.
+    Once the last question answered, the assistant offers to create
+    everything. All the answers are then sent, the server following the
+    questions the same way: on an error it sends the page back with the
+    questions asked (wizard_path), the last one being the one in error;
+    else it redirects to the menu created, or to the screens tab showing
+    the screens of the goal's type.
+#}
+{% extends '../../common/admin_cards_container.html' %}
+
+{% block top_left_nav %}
+    {{ components.button(
+        _('Screens'),
+        kind='plain',
+        icon='back',
+        attrs={
+            'hx-get': url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id),
+            'hx-target': 'body',
+            'hx-indicator': '#please-wait',
+        },
+    ) }}
+{% endblock %}
+
+{% block cards_container_cards %}
+    <div class="screen-assistant" data-testid="screen-assistant">
+        <aside class="screen-assistant-rail">
+            <h2 class="screen-assistant-rail-title">
+                <i class="bi-magic"></i>
+                {{ _('Setup assistant') }}
+            </h2>
+            {% for stage_id, stage_name in assistant_stages.items() %}
+                <div
+                    class="screen-assistant-stage"
+                    data-stage="{{ stage_id }}"
+                    data-testid="screen-assistant-stage-{{ stage_id }}"
+                >
+                    <div class="screen-assistant-stage-name">
+                        <span class="screen-assistant-stage-dot">{{ loop.index }}</span>
+                        {{ stage_name }}
+                    </div>
+                    <div class="screen-assistant-stage-answers"></div>
+                </div>
+            {% endfor %}
+        </aside>
+        <div class="screen-assistant-main">
+            {% if not assistant_goal %}
+                <div class="screen-assistant-step">
+                    <h3 class="screen-assistant-question-text">{{ _('What do you want to put up?') }}</h3>
+                    <p class="form-text mt-0 mb-3">
+                        {{ _('The assistant creates the screen and, if you want, the channel for the display it will run on.') }}
+                    </p>
+                    <div class="screen-assistant-goals">
+                        {% for goal in assistant_goals %}
+                            {% call components.button(
+                                goal.title,
+                                kind='outline',
+                                class='screen-assistant-card',
+                                allowed=goal.creatable,
+                                reason=goal.screen_type.no_tournament_reason,
+                                attrs={
+                                    'hx-get': url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id) ~ '?goal=' ~ goal.id,
+                                    'hx-target': 'body',
+                                    'hx-indicator': '#please-wait',
+                                    'data-testid': 'screen-assistant-goal-' ~ goal.id,
+                                },
+                            ) %}
+                                <span class="screen-assistant-card-icon">
+                                    <i class="{{ goal.icon }}"></i>
+                                    {% if goal.badge_icon %}
+                                        <i class="screen-assistant-card-badge {{ goal.badge_icon }}"></i>
+                                    {% endif %}
+                                </span>
+                                <span class="screen-assistant-card-title">{{ goal.title }}</span>
+                                <span class="screen-assistant-card-help">{{ goal.help }}</span>
+                            {% endcall %}
+                        {% endfor %}
+                    </div>
+                    {% if assistant_other_type_names %}
+                        <p class="form-text mt-3 mb-0">
+                            {{ _('Other kinds of screens exist too: {types}. Create them directly from the “Create a screen” menu of the Screens tab.').format(types=assistant_other_type_names | join(', ')) }}
+                        </p>
+                    {% endif %}
+                </div>
+            {% else %}
+                <form
+                    id="screen-assistant-form"
+                    class="screen-assistant-form"
+                    hx-post="{{ url_for('admin-screen-assistant-create', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-trigger="wizard-submit"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-goal-title="{{ assistant_goal.title }}"
+                    data-goal-url="{{ url_for('admin-screen-assistant', event_uniq_id=admin_event.uniq_id) }}"
+                    data-summary-url="{{ url_for('admin-screen-assistant-summary', event_uniq_id=admin_event.uniq_id) }}"
+                    data-first-question="{{ wizard.first_question_id or '' }}"
+                    data-path='{{ wizard_path | tojson }}'
+                    data-yes-label="{{ _('Yes') }}"
+                    data-no-label="{{ _('No') }}"
+                >
+                    <input type="hidden" name="goal" value="{{ assistant_goal.id }}">
+                    <input type="hidden" name="edit_after" value="">
+                    {% for question_id, question in wizard.questions.items() if not question.disabled %}
+                        {% set field = wizard.answer_field(question_id) %}
+                        <div
+                            class="screen-assistant-step screen-assistant-question"
+                            data-question-id="{{ question_id }}"
+                            data-type="{{ question.type }}"
+                            data-stage="{{ question.stage }}"
+                            data-next="{{ wizard.enabled_question_id(question.next) or '' }}"
+                            {% if question.next_single is defined and question.next_single %}
+                                data-next-single="{{ wizard.enabled_question_id(question.next_single) or '' }}"
+                            {% endif %}
+                            data-default="{{ wizard_defaults[field] }}"
+                            {% if question.summary %}data-summary="{{ question.summary }}"{% endif %}
+                            data-testid="screen-assistant-question-{{ question_id }}"
+                            hidden
+                        >
+                            <h3 class="screen-assistant-question-text">{{ question.text }}</h3>
+                            {% if question.help %}
+                                <p class="form-text mt-0 mb-3">{{ question.help }}</p>
+                            {% endif %}
+                            {# The field, by the type of the question. #}
+                            {% include '/admin/wizard_questions/' ~ question.type ~ '.html' %}
+                            <div class="invalid-feedback screen-assistant-required">{{ _('Please answer the question.') }}</div>
+                        </div>
+                    {% endfor %}
+                    {# Once the last question answered. #}
+                    <div class="screen-assistant-step screen-assistant-final" data-stage="create" data-testid="screen-assistant-final" hidden>
+                        <h3 class="screen-assistant-question-text mb-3">{{ _('Ready to create') }}</h3>
+                        {# What the answers create, asked of the server once the
+                           last question is answered. #}
+                        <div id="screen-assistant-summary" data-testid="screen-assistant-summary"></div>
+                    </div>
+                    <div class="screen-assistant-nav">
+                        {{ components.button(_('Back'), kind='outline-secondary', icon='back', attrs={'id': 'screen-assistant-back', 'data-testid': 'screen-assistant-back'}) }}
+                        {{ components.button(_('Next'), kind='primary', icon='bi-arrow-right-circle-fill', attrs={'id': 'screen-assistant-next', 'data-testid': 'screen-assistant-next'}) }}
+                        <div class="screen-assistant-create-buttons" id="screen-assistant-create-buttons" hidden>
+                            {{ components.button(_('Create and edit'), kind='outline', icon='bi-pencil', attrs={'id': 'screen-assistant-create-edit', 'data-testid': 'screen-assistant-create-edit'}) }}
+                            {{ components.button(_('Create'), kind='primary', icon='add', attrs={'id': 'screen-assistant-create', 'data-testid': 'screen-assistant-create'}) }}
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        (() => {
+            const form = document.getElementById('screen-assistant-form');
+            const rail = document.querySelector('.screen-assistant-rail');
+            const stages = new Map(
+                [...rail.querySelectorAll('.screen-assistant-stage')].map(
+                    (stage) => [stage.dataset.stage, stage]
+                )
+            );
+
+            // Fills the rail: *answered* holds {stage, text, onclick} rows in
+            // the order answered, *currentStage* names the stage of the
+            // question shown ('create' once the last one is answered).
+            // *currentText*: the question being asked, listed last under
+            // its stage.
+            function renderRail(answered, currentStage, currentText) {
+                const stageIds = [...stages.keys()];
+                const reached = stageIds.indexOf(currentStage);
+                stages.forEach((stage, stageId) => {
+                    stage.classList.toggle('active', stageId === currentStage);
+                    stage.classList.toggle(
+                        'done', stageIds.indexOf(stageId) < reached
+                    );
+                    const list = stage.querySelector('.screen-assistant-stage-answers');
+                    list.replaceChildren(...answered
+                        .filter((answer) => answer.stage === stageId)
+                        .map((answer) => {
+                            const row = document.createElement('button');
+                            row.type = 'button';
+                            row.className = 'screen-assistant-answer';
+                            row.textContent = answer.text;
+                            if (answer.title) {
+                                row.title = answer.title;
+                            }
+                            row.addEventListener('click', answer.onclick);
+                            return row;
+                        }));
+                    if (stageId === currentStage && currentText) {
+                        const row = document.createElement('div');
+                        row.className = 'screen-assistant-current';
+                        row.textContent = currentText;
+                        list.append(row);
+                    }
+                });
+            }
+
+            if (form === null) {
+                // Choosing the goal: the first stage is active, nothing is
+                // answered yet.
+                renderRail(
+                    [],
+                    'content',
+                    document.querySelector('.screen-assistant-main .screen-assistant-question-text')?.textContent.trim()
+                );
+                return;
+            }
+
+            const questions = new Map(
+                [...form.querySelectorAll('.screen-assistant-question')].map(
+                    (question) => [question.dataset.questionId, question]
+                )
+            );
+            const final = form.querySelector('.screen-assistant-final');
+            const backButton = document.getElementById('screen-assistant-back');
+            const nextButton = document.getElementById('screen-assistant-next');
+            const createButton = document.getElementById('screen-assistant-create');
+            const createEditButton = document.getElementById('screen-assistant-create-edit');
+            const createButtons = document.getElementById('screen-assistant-create-buttons');
+            const editAfterField = form.querySelector('input[name="edit_after"]');
+            // The questions answered before the one shown, to go back.
+            const history = JSON.parse(form.dataset.path || '[]');
+            // The questions already asked (back from the server with an
+            // error: those of the path, holding the answers sent).
+            const asked = new Set(history);
+            // The question shown, null once the last one answered.
+            let current = null;
+
+            // The ID of the question following the current one ('' when the
+            // current question is the last one), null while a radio question
+            // is not answered.
+            function nextQuestionId() {
+                if (current.dataset.type === 'radio') {
+                    const checked = current.querySelector('input[type=radio]:checked');
+                    return checked ? checked.dataset.next : null;
+                }
+                if (
+                    current.dataset.type === 'tournaments'
+                    && current.dataset.nextSingle !== undefined
+                    && $(current.querySelector('select')).val()?.length === 1
+                ) {
+                    return current.dataset.nextSingle;
+                }
+                return current.dataset.next;
+            }
+
+            // The answer given to a question, as shown in the rail.
+            function answerText(question) {
+                let answer;
+                switch (question.dataset.type) {
+                    case 'radio': {
+                        const checked = question.querySelector('input[type=radio]:checked');
+                        if (!checked) {
+                            return '';
+                        }
+                        // An option's own summary says what it answers.
+                        return checked.dataset.summary
+                            || checked.closest('.form-check').querySelector('.screen-assistant-option-text').textContent.trim();
+                    }
+                    case 'bool':
+                        answer = question.querySelector('input[type=checkbox]').checked
+                            ? form.dataset.yesLabel
+                            : form.dataset.noLabel;
+                        break;
+                    case 'tournament':
+                    case 'tournaments':
+                        answer = [...question.querySelector('select').selectedOptions]
+                            .map((option) => option.textContent.trim())
+                            .join(', ');
+                        break;
+                    default:
+                        answer = question.querySelector('input[name^="answer_"]').value;
+                }
+                // A bare answer, such as a number, is put in words.
+                return question.dataset.summary
+                    ? question.dataset.summary.replace('{answer}', answer)
+                    : answer;
+            }
+
+            // The rail rows: the goal first (clicking it starts over), then
+            // the questions answered.
+            function railAnswers() {
+                return [
+                    {
+                        stage: 'content',
+                        text: form.dataset.goalTitle,
+                        onclick: () => htmx.ajax('GET', form.dataset.goalUrl, {
+                            target: 'body',
+                            indicator: '#please-wait',
+                        }),
+                    },
+                    ...history.map((questionId) => {
+                        const question = questions.get(questionId);
+                        return {
+                            stage: question.dataset.stage,
+                            text: answerText(question),
+                            title: question.querySelector('.screen-assistant-question-text').textContent.trim(),
+                            onclick: () => {
+                                while (history.length && history[history.length - 1] !== questionId) {
+                                    history.pop();
+                                }
+                                history.pop();
+                                show(questionId);
+                            },
+                        };
+                    }),
+                ];
+            }
+
+            // Show the question *questionId*, or the creation buttons when
+            // null (the last question answered).
+            function show(questionId) {
+                current = questionId === null ? null : questions.get(questionId);
+                // The first time a question is asked, it is set to its
+                // default value.
+                if (current && !asked.has(questionId)) {
+                    asked.add(questionId);
+                    setAnswer(current, current.dataset.default);
+                }
+                questions.forEach((question) => question.hidden = question !== current);
+                final.hidden = current !== null;
+                if (current === null) {
+                    // The server says what the answers create.
+                    htmx.ajax('POST', form.dataset.summaryUrl, {
+                        source: form,
+                        target: '#screen-assistant-summary',
+                        swap: 'innerHTML',
+                    });
+                }
+                renderRail(
+                    railAnswers(),
+                    current === null ? 'create' : current.dataset.stage,
+                    (current ?? final).querySelector('.screen-assistant-question-text').textContent.trim()
+                );
+                nextButton.hidden = current === null;
+                createButtons.hidden = current !== null;
+                // The focus on the button answering the question.
+                (current ? nextButton : createButton).focus();
+            }
+
+            function isAnswered() {
+                switch (current.dataset.type) {
+                    case 'radio':
+                        return current.querySelector('input[type=radio]:checked') !== null;
+                    case 'int':
+                    case 'str': {
+                        const input = current.querySelector('input');
+                        if (current.dataset.type === 'int' && input.value === '') {
+                            return false;
+                        }
+                        return input.reportValidity();
+                    }
+                    case 'tournament':
+                    case 'tournaments':
+                        return $(current.querySelector('select')).val()?.length > 0;
+                    default:
+                        return true;
+                }
+            }
+
+            function goNext() {
+                if (current === null) {
+                    // Once the last question answered, Enter creates
+                    // everything.
+                    create(false);
+                    return;
+                }
+                const required = current.querySelector('.screen-assistant-required');
+                const answered = isAnswered();
+                required.classList.toggle('d-block', !answered);
+                if (!answered) {
+                    return;
+                }
+                const nextId = nextQuestionId();
+                history.push(current.dataset.questionId);
+                show(nextId === '' ? null : nextId);
+            }
+
+            // Send the answers to create everything, then to edit what was
+            // created if *edit*.
+            function create(edit) {
+                editAfterField.value = edit ? '1' : '';
+                htmx.trigger(form, 'wizard-submit');
+            }
+
+            // Set the answer to a question from its form value (see
+            // default_form_value), '' for no answer.
+            function setAnswer(question, value) {
+                question.querySelectorAll('input[type=radio]')
+                    .forEach((input) => input.checked = input.value === value);
+                question.querySelectorAll('input[type=checkbox]')
+                    .forEach((input) => input.checked = value === 'on');
+                // Only the field of the answer (not the search field of
+                // select2, for instance).
+                question.querySelectorAll('input[name^="answer_"]:not([type=radio]):not([type=checkbox]):not([type=hidden])')
+                    .forEach((input) => input.value = value);
+                question.querySelectorAll('select').forEach((select) => $(select).val(
+                    select.multiple ? value.split(';').filter((id) => id) : value || null
+                ).trigger('change'));
+            }
+
+            // Go back to the previous question, keeping the answers given;
+            // from the first question, back to the choice of the goal.
+            function goBack() {
+                if (history.length) {
+                    current?.querySelector('.screen-assistant-required').classList.remove('d-block');
+                    show(history.pop());
+                } else {
+                    htmx.ajax('GET', form.dataset.goalUrl, {
+                        target: 'body',
+                        indicator: '#please-wait',
+                    });
+                }
+            }
+
+            form.addEventListener('change', (event) => {
+                if (current === null) {
+                    return;
+                }
+                current.querySelector('.screen-assistant-required').classList.remove('d-block');
+                if (event.target.type === 'radio' && current.contains(event.target)) {
+                    // Choosing an option answers the question.
+                    goNext();
+                }
+            });
+            $(form).find('select').on('select2:select select2:unselect', () => {
+                current?.querySelector('.screen-assistant-required').classList.remove('d-block');
+            });
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                goNext();
+            });
+            nextButton.addEventListener('click', goNext);
+            createButton.addEventListener('click', () => create(false));
+            createEditButton.addEventListener('click', () => create(true));
+            backButton.addEventListener('click', goBack);
+
+            // Back from the server with an error: the last question asked is
+            // the one in error.
+            const start = history.length ? history.pop() : form.dataset.firstQuestion;
+            show(start);
+        })();
+    </script>
+{% endblock %}

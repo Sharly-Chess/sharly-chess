@@ -83,6 +83,9 @@ from web.controllers.admin.screen_admin_controller import (
     DisplayAdminController,
     ScreenAdminController,
 )
+from web.controllers.admin.screen_assistant_admin_controller import (
+    ScreenAssistantAdminController,
+)
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.team_admin_controller import TeamAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
@@ -132,6 +135,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     ScreenConfigAdminController,
     DisplayAdminController,
     ScreenAdminController,
+    ScreenAssistantAdminController,
     TimerAdminController,
     FamilyAdminController,
     RotatorAdminController,

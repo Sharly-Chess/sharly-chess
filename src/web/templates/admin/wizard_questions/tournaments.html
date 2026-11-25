@@ -1,0 +1,8 @@
+{# The field of a WizardTournamentsQuestion, included by the setup assistant (see admin/screens/assistant.html). #}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{{ admin_macros.select_input(
+    name=field,
+    multiple_select=true,
+    select_options=question.select_options,
+    data=data, errors=errors
+) }}

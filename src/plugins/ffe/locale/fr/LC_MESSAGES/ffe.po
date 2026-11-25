@@ -245,7 +245,7 @@ msgid "FFE estimate"
 msgstr "Estimation FFE"
 
 msgid "FFE estimate by age: 1399 (1299 for juniors) in standard; 1199, 999 up to U14 and 799 up to U10 in rapid and blitz. A player the FFE list gives another estimate keeps it: one their club asked for, or 1399 after losing a FIDE rating"
-msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz. Un·e joueur·euse à qui la liste FFE donne une autre estimation la garde : celle demandée par son club, ou 1399 après la perte d’un classement FIDE"
+msgstr "Estimation FFE selon l’âge : 1399 (1299 pour les jeunes) en standard ; 1199, 999 jusqu’à U14 et 799 jusqu’à U10 en rapide et blitz. Un·e joueur·euse à qui la liste FFE donne une autre estimation la garde : celle demandée par son club, ou 1399 après la perte d’un classement FIDE"
 
 msgid "FFE forms"
 msgstr "Formulaires FFE"
@@ -503,7 +503,7 @@ msgstr "Pas de connexion internet."
 
 #, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
-msgstr "Aucun composition de {n} joueur·euses légale: plus faible somme {sum} > plafond {cap}."
+msgstr "Aucune composition légale de {n} joueur·euses : plus faible somme {sum} > plafond {cap}."
 
 msgid "No tournament configured for FFE upload."
 msgstr "Aucun tournoi configuré pour la mise en ligne FFE."
@@ -537,7 +537,7 @@ msgid "Page of the tournament on the FFE website."
 msgstr "Page du tournoi sur le site FFE."
 
 msgid "Papi cannot record a player replacing another in a round-robin: each of them is exported with the games they played, as if they had been absent from the other rounds."
-msgstr "Papi ne sait pas représenter le remplacement d'un·e joueur·euse dans un toutes-rondes : chacun·e est exporté·e avec les parties qu'il·elle a jouées, comme s'il·elle avait été absent·e des autres rondes."
+msgstr "Papi ne sait pas représenter le remplacement d'un·e joueur·euse dans un toutes-rondes : chacun·e est exporté·e avec les parties qu'il·elle a jouées, comme s'il·elle avait été absent·e des autres rondes."
 
 msgid "Papi export does not support bonus / penalty points, which this tournament uses."
 msgstr "L'export Papi ne prend pas en charge les points de bonus / pénalité, utilisés par ce tournoi."
