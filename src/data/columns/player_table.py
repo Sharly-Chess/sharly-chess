@@ -30,11 +30,32 @@ def tie_break_toggle_labels() -> dict[str, str]:
     }
 
 
+GRID_TABLE_NUMBER_TOGGLE = 'grid_table_number'
+GRID_RANK_TOGGLE = 'grid_rank'
+
+
+def grid_table_number_header() -> str:
+    return _('Table')
+
+
+def grid_table_number_toggle() -> tuple[str, str]:
+    """The toggle id and label hiding the grid's current-round table column."""
+    return GRID_TABLE_NUMBER_TOGGLE, grid_table_number_header()
+
+
 class TournamentPlayerTableColumn(Column[TournamentPlayer], ABC):
     """Base class for player table columns."""
 
     def __init__(self, usage: ColumnUsage):
         self.usage = usage
+
+    @property
+    def per_seat_holder(self) -> bool:
+        """On a round-robin grid, whether a cell about a shared seat stacks a
+        value for each player who held it (a fact about a player, such as the
+        name or a tie-break) rather than one value for the seat (its number or
+        its games)."""
+        return True
 
     @property
     def is_standing(self) -> bool:
@@ -415,11 +436,16 @@ class RoundColumn(TournamentPlayerTableColumn):
 
 
 class GridNumberColumn(TournamentPlayerTableColumn):
-    """The number of a player in a round-robin grid, which heads their column."""
+    """The number of a seat in a round-robin grid, which heads its column."""
 
     def __init__(self, usage: ColumnUsage, number_by_player_id: dict[int, int]):
         super().__init__(usage)
         self.number_by_player_id = number_by_player_id
+
+    @property
+    @override
+    def per_seat_holder(self) -> bool:
+        return False
 
     @property
     def header_content(self) -> str:
@@ -429,25 +455,107 @@ class GridNumberColumn(TournamentPlayerTableColumn):
         return self.number_by_player_id[tournament_player.id]
 
     @property
+    @override
+    def header_classes(self) -> str:
+        return 'text-center'
+
+    @property
     def shared_classes(self) -> str:
-        return 'text-end fw-bold'
+        return 'text-end fw-bold grid-number-cell'
 
 
-def grid_encounters_markup(encounters: list[GridEncounter]) -> Markup:
+class GridTableNumberColumn(TournamentPlayerTableColumn):
+    """The table the seat's current-round player sits at, shown in a
+    round-robin grid so people find the game being played. It can be hidden."""
+
+    def __init__(self, usage: ColumnUsage, current_round: int | None = None):
+        super().__init__(usage)
+        self.current_round = current_round
+
+    @property
+    @override
+    def per_seat_holder(self) -> bool:
+        return False
+
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return GRID_TABLE_NUMBER_TOGGLE
+
+    @property
+    def header_content(self) -> str:
+        return grid_table_number_header()
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        if self.current_round is None:
+            return ''
+        tournament = tournament_player.tournament
+        holder = tournament.tournament_players_by_id.get(
+            tournament.seat_holder(tournament_player.seat_id, self.current_round)
+        )
+        return (holder.board_number or '') if holder is not None else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center grid-table-cell'
+
+
+class GridRankColumn(RankColumn):
+    """The rank column of a round-robin grid, which people can hide."""
+
+    @property
+    @override
+    def toggle_id(self) -> str | None:
+        return GRID_RANK_TOGGLE
+
+    @property
+    @override
+    def toggle_label(self) -> str:
+        return _('Ranking')
+
+
+class GridInputColumn(TournamentPlayerTableColumn):
+    """The button opening the result-entry modal for a player's current-round
+    game, on a round-robin grid that accepts input."""
+
+    @property
+    @override
+    def per_seat_holder(self) -> bool:
+        return False
+
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    @property
+    def cell_template(self) -> str | None:
+        return '/user/screen/sets/round_robin_grid_input_cell.html'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center grid-input-cell'
+
+
+def grid_encounters_markup(
+    encounters: list[GridEncounter], current_round: int | None = None
+) -> Markup:
     """The encounters of a square of a round-robin grid, side by side, each
-    on the colour played with."""
+    on the colour played with. Encounters of *current_round* are marked so the
+    round being played stands out."""
     if not encounters:
         return Markup('')
     return Markup('<span class="grid-encounters">{encounters}</span>').format(
         encounters=Markup('').join(
-            grid_encounter_markup(encounter) for encounter in encounters
+            grid_encounter_markup(encounter, current_round) for encounter in encounters
         )
     )
 
 
-def grid_encounter_markup(encounter: GridEncounter) -> Markup:
+def grid_encounter_markup(
+    encounter: GridEncounter, current_round: int | None = None
+) -> Markup:
     """An encounter of a round-robin grid: its result, or the round it is
-    played in, on the colour played with."""
+    played in, on the colour played with. The current round is highlighted."""
     if encounter.result is not None:
         content = escape(encounter.result)
         state = 'played'
@@ -463,10 +571,11 @@ def grid_encounter_markup(encounter: GridEncounter) -> Markup:
             color = 'black'
         case _:
             color = 'none'
+    current = ' grid-encounter-current' if encounter.round == current_round else ''
     return Markup(
-        '<span class="grid-encounter grid-encounter-{color} grid-encounter-{state}">'
-        '{content}</span>'
-    ).format(color=color, state=state, content=content)
+        '<span class="grid-encounter grid-encounter-{color} grid-encounter-{state}'
+        '{current}">{content}</span>'
+    ).format(color=color, state=state, current=Markup(current), content=content)
 
 
 class GridOpponentColumn(TournamentPlayerTableColumn):
@@ -480,11 +589,18 @@ class GridOpponentColumn(TournamentPlayerTableColumn):
         opponent_id: int,
         number: int,
         cells: GridCells,
+        current_round: int | None = None,
     ):
         super().__init__(usage)
         self.opponent_id = opponent_id
         self.number = number
         self.cells = cells
+        self.current_round = current_round
+
+    @property
+    @override
+    def per_seat_holder(self) -> bool:
+        return False
 
     def _encounters(self, tournament_player: TournamentPlayer) -> list[GridEncounter]:
         return self.cells.get(tournament_player.id, {}).get(self.opponent_id, [])
@@ -510,7 +626,9 @@ class GridOpponentColumn(TournamentPlayerTableColumn):
         return True
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return grid_encounters_markup(self._encounters(tournament_player))
+        return grid_encounters_markup(
+            self._encounters(tournament_player), self.current_round
+        )
 
     @property
     def shared_classes(self) -> str:

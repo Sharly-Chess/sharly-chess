@@ -1,5 +1,8 @@
 <div class="round-robin-grid-screen-set">
-    {% call screen_macros.set_title(data.title) %}
+    {% call screen_macros.set_title(
+        data.title,
+        _('Round %(round)d', round=tournament.current_round) if tournament.current_round else ''
+    ) %}
         {% if tournament.adjourned_boards(before_round=tournament.rounds + 1) %}
             <span class="badge provisional-badge align-self-center">
                 <i class="bi-hourglass-split pe-1"></i>{{ _('Provisional') }}
@@ -13,6 +16,8 @@
                     <th class="fw-bold text-end">{{ pgettext('NB column header', 'No.') }}</th>
                     <th class="fw-bold text-start name-column">{{ pgettext('name column header', 'Name') }}</th>
                     <th class="fw-bold text-start">{{ _('Team') }}</th>
+                    {% if data.show_table_number %}<th class="fw-bold text-center grid-table-cell">{{ _('Table') }}</th>{% endif %}
+                    {% if screen.accepts_input %}<th class="grid-input-cell"></th>{% endif %}
                     {% for opponent in data.opponents %}
                         <th class="fw-bold text-center grid-cell{% if opponent.first_of_team and not loop.first %} grid-team-start{% endif %}">{{ opponent.number }}</th>
                     {% endfor %}
@@ -27,6 +32,14 @@
                         <td class="text-end fw-bold">{{ row.number }}</td>
                         <td class="text-start fw-bold text-nowrap name-column">{{ row.tournament_player.full_name }}</td>
                         <td class="text-start text-nowrap">{% if row.first_of_team %}{{ row.team.name }}{% endif %}</td>
+                        {% if data.show_table_number %}<td class="text-center grid-table-cell">{{ row.tournament_player.board_number if row.tournament_player.board_number }}</td>{% endif %}
+                        {% if screen.accepts_input %}
+                            <td class="text-center grid-input-cell">
+                                {% with tournament_player=row.tournament_player %}
+                                    {% include '/user/screen/sets/round_robin_grid_input_cell.html' %}
+                                {% endwith %}
+                            </td>
+                        {% endif %}
                         {% for results in player_row.cells %}
                             {% set opponent = data.opponents[loop.index0] %}
                             <td class="text-center grid-cell{% if opponent.first_of_team and not loop.first %} grid-team-start{% endif %}{% if results is none %} grid-self{% elif excluded or opponent.team.is_excluded_from_standings %} annulled{% endif %}">
@@ -102,7 +115,17 @@
                     <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                         {% for column in player_columns %}
                             <td class="{{ column.get_cell_classes(tournament_player) }}">
-                                {% if column.cell_template %}
+                                {% if column.per_seat_holder and tournament_player.shares_seat %}
+                                    {% for holder in tournament_player.seat_players %}
+                                        <div class="grid-seat-holder">
+                                            {% if column.cell_template %}
+                                                {% with tournament_player=holder %}{% include column.cell_template %}{% endwith %}
+                                            {% else %}
+                                                {{ macros.column_cell(column, holder) }}
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% elif column.cell_template %}
                                     {% include column.cell_template %}
                                 {% else %}
                                     {{ macros.column_cell(column, tournament_player) }}

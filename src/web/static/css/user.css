@@ -97,6 +97,11 @@
     font-size: 0.75em;
     font-style: italic;
 }
+/* The round being played, picked out across the grid. */
+.round-robin-grid .grid-encounter-current {
+    box-shadow: inset 0 0 0 2px #f0b429;
+    font-weight: 800;
+}
 
 /* The members of a team, under its name on the check-in screens. */
 .check-in-set .team-members {
@@ -632,6 +637,51 @@ body:has(#screen-exit-button) .alert-message {
     color: white;
     font-weight: 800;
     white-space: nowrap;
+}
+.round-robin-grid .grid-input-cell,
+.round-robin-grid .grid-table-cell {
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.round-robin-grid .grid-number-cell {
+    vertical-align: middle;
+}
+.grid-input-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1em 0.75em;
+    border: none;
+    border-radius: 0.45rem;
+    background-color: var(--screen-ink);
+    color: white;
+    font-weight: 800;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+.grid-input-button.result-set {
+    padding-inline: 0.5em;
+    background-color: transparent;
+    color: var(--screen-ink);
+    box-shadow: inset 0 0 0 1px var(--screen-ink);
+}
+.grid-input-button:active {
+    transform: scale(0.95);
+}
+@media (hover: hover) {
+    .grid-input-button:hover {
+        background-color: #fff8d6;
+        color: var(--screen-ink);
+    }
+}
+/* A current-round result shown to someone who cannot edit it. */
+.round-robin-grid .grid-result {
+    display: inline-block;
+    padding: 0.1em 0.5em;
+    font-weight: 700;
 }
 /* On a phone the white and black columns do not fit side by side: each game
    becomes a card instead. */

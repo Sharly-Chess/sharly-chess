@@ -3453,7 +3453,8 @@ class EventDatabase(MigrationDatabase):
             stored_screen.type,
             stored_screen.public,
             stored_screen.input_exit_button
-            if stored_screen.type in ('boards', 'players', 'check-in')
+            if stored_screen.type
+            in ('boards', 'players', 'check-in', 'round-robin-grid')
             else None,
             stored_screen.accepts_input,
             stored_screen.boards_hide_players
