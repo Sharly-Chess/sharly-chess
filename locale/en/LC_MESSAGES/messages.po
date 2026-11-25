@@ -662,6 +662,9 @@ msgstr ""
 msgid "A channel"
 msgstr ""
 
+msgid "A channel is an address you open once on a display — a projector, a TV, a tablet. From then on, you choose what the display shows from Sharly Chess, without going back to the display."
+msgstr ""
+
 msgid "A competitor who has played in fewer than this many stages is left out of the rankings. Leave empty for no minimum."
 msgstr ""
 
@@ -674,16 +677,41 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
+msgid "A fixed number of pages"
+msgstr ""
+
+msgid "A fixed number of rows on each page"
+msgstr ""
+
 msgid "A half point to one side only, or nothing to either."
 msgstr ""
 
 msgid "A menu"
 msgstr ""
 
+#, python-brace-format
+msgid "A menu named “{name}” for the players to pick their tournament."
+msgstr ""
+
+#, python-brace-format
+msgid "A menu named “{name}” to pick the grid."
+msgstr ""
+
+#, python-brace-format
+msgid "A menu named “{name}” to pick the page."
+msgstr ""
+
 msgid "A menu puts a bar of buttons at the top of a device, such as a tablet, so that people can tap between its screens. It can hold chosen screens, or all the screens of a type."
 msgstr ""
 
 msgid "A minimum and a maximum rating are expected."
+msgstr ""
+
+msgid "A new channel"
+msgstr ""
+
+#, python-brace-format
+msgid "A new channel named “{name}”."
 msgstr ""
 
 msgid "A new timer"
@@ -758,7 +786,14 @@ msgstr ""
 msgid "A rotator"
 msgstr ""
 
+#, python-brace-format
+msgid "A rotator named “{name}” showing them in turn."
+msgstr ""
+
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
+msgstr ""
+
+msgid "A rotator shows the grids in turn, which suits a projector."
 msgstr ""
 
 #, python-brace-format
@@ -813,6 +848,14 @@ msgid "A value is expected."
 msgstr ""
 
 msgid "A whole percentage between 0 and 100 is expected."
+msgstr ""
+
+#, python-brace-format
+msgid "A “{name}” screen covering {tournaments}."
+msgstr ""
+
+#, python-brace-format
+msgid "A “{name}” screen for {tournament}, over several pages."
 msgstr ""
 
 msgid "ADM"
@@ -1209,6 +1252,9 @@ msgstr ""
 msgid "All the dependant objects will also be deleted:"
 msgstr ""
 
+msgid "All the grids on one page"
+msgstr ""
+
 msgid "All the players"
 msgstr ""
 
@@ -1232,6 +1278,9 @@ msgid "All the text of the certificate may be modified by the arbiter before pri
 msgstr ""
 
 msgid "All the tournaments"
+msgstr ""
+
+msgid "All the tournaments on a single page the players scroll through."
 msgstr ""
 
 msgid "All tournaments"
@@ -1395,6 +1444,9 @@ msgid "Arbiter Norm Report"
 msgstr ""
 
 msgid "Arbiters"
+msgstr ""
+
+msgid "Arbiters usually name channels after the place (“Main hall”) or the device (“iPad”)."
 msgstr ""
 
 msgid "Archive"
@@ -2091,10 +2143,16 @@ msgstr ""
 msgid "By number of groups (balanced player counts)"
 msgstr ""
 
+msgid "By pairing number"
+msgstr ""
+
 msgid "By pairing number, every player keeps their row and column all through the tournament; by rank, the leaders come first."
 msgstr ""
 
 msgid "By player"
+msgstr ""
+
+msgid "By rank"
 msgstr ""
 
 msgid "By rating step"
@@ -2348,6 +2406,10 @@ msgid "Changing the tie-breaks once the tournament has started is not compliant 
 msgstr ""
 
 msgid "Channel"
+msgstr ""
+
+#, python-brace-format
+msgid "Channel [{channel_name}] has been created."
 msgstr ""
 
 #, python-brace-format
@@ -2852,6 +2914,9 @@ msgstr ""
 msgid "Create a channel"
 msgstr ""
 
+msgid "Create a channel for this screen"
+msgstr ""
+
 msgid "Create a channel now to get started."
 msgstr ""
 
@@ -2876,6 +2941,9 @@ msgstr ""
 msgid "Create a screen now to get started."
 msgstr ""
 
+msgid "Create a screen step by step, with the menu and the channel it needs."
+msgstr ""
+
 msgid "Create a team"
 msgstr ""
 
@@ -2898,6 +2966,9 @@ msgid "Create an event"
 msgstr ""
 
 msgid "Create and add another"
+msgstr ""
+
+msgid "Create and edit"
 msgstr ""
 
 msgid "Create category set"
@@ -2988,6 +3059,9 @@ msgstr ""
 msgid "Crop marks:"
 msgstr ""
 
+msgid "Cross-table"
+msgstr ""
+
 msgid "Crosstable"
 msgstr ""
 
@@ -3041,6 +3115,13 @@ msgid "Current title:"
 msgstr ""
 
 msgid "Current version"
+msgstr ""
+
+msgid "Currently showing nothing."
+msgstr ""
+
+#, python-brace-format
+msgid "Currently showing: {name}."
 msgstr ""
 
 msgid "Custom"
@@ -3516,11 +3597,20 @@ msgid_plural "Do you want to add these folders to the Microsoft Defender excepti
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Do you want to display a timer?"
+msgstr ""
+
 msgid "Do you want to install the update now?"
 msgstr ""
 
 #, python-brace-format
 msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
+msgstr ""
+
+msgid "Do you want to set up a channel for this screen?"
+msgstr ""
+
+msgid "Do you want to show the unpaired players?"
 msgstr ""
 
 msgid "Do you want to try again?"
@@ -3829,6 +3919,9 @@ msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman)
 msgstr ""
 
 msgid "Each change will be recorded in the TRF of the tournament, with the round and the former list of tie-breaks."
+msgstr ""
+
+msgid "Each column holds this many rows: with 20 rows and 2 columns, 40 entries fit on each page."
 msgstr ""
 
 msgid "Each competitor row carries a popover with the per-stage breakdown."
@@ -4192,6 +4285,12 @@ msgstr ""
 msgid "Events"
 msgstr ""
 
+msgid "Every player against every other, for the round robins."
+msgstr ""
+
+msgid "Every player keeps their row all through the tournament."
+msgstr ""
+
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament. Teams the file leaves empty are deleted too."
 msgstr ""
 
@@ -4217,6 +4316,9 @@ msgid "Everything"
 msgstr ""
 
 msgid "Everything done to the event (results, pairings, players, tournaments) is written here, with when it was done and by whom."
+msgstr ""
+
+msgid "Everything on one page"
 msgstr ""
 
 msgid "Everywhere"
@@ -4663,6 +4765,10 @@ msgstr ""
 msgid "Format as schedule"
 msgstr ""
 
+#, python-brace-format
+msgid "Format: {name}"
+msgstr ""
+
 msgid "Fourth place"
 msgstr ""
 
@@ -4698,6 +4804,9 @@ msgid "From the rule set"
 msgstr ""
 
 msgid "From top"
+msgstr ""
+
+msgid "Full"
 msgstr ""
 
 msgid "Full name"
@@ -5015,6 +5124,18 @@ msgstr ""
 msgid "How a player's Keizer total is rounded for the ranking and the pairings table."
 msgstr ""
 
+msgid "How do people move between the pages?"
+msgstr ""
+
+msgid "How do you want to name the channel?"
+msgstr ""
+
+msgid "How do you want to show the grids?"
+msgstr ""
+
+msgid "How do you want to split it into pages?"
+msgstr ""
+
 msgid "How each match's colours are decided."
 msgstr ""
 
@@ -5031,10 +5152,22 @@ msgstr ""
 msgid "How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay."
 msgstr ""
 
+msgid "How many columns?"
+msgstr ""
+
+msgid "How many pages?"
+msgstr ""
+
+msgid "How many rows per page?"
+msgstr ""
+
 msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
 msgstr ""
 
 msgid "How much each player is rated below the one above them."
+msgstr ""
+
+msgid "How should the players reach their tournament?"
 msgstr ""
 
 msgid "How the boards shown by this set are chosen and ordered."
@@ -5173,6 +5306,9 @@ msgstr ""
 msgid "In FIDE mode, the prohibited pairings are announced before the first round and cannot change once it is paired."
 msgstr ""
 
+msgid "In alphabetical order, for the players to find their board."
+msgstr ""
+
 msgid "In play"
 msgstr ""
 
@@ -5190,6 +5326,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "In team events, the tie-break is calculated using {score} as the reference score."
+msgstr ""
+
+msgid "In which order?"
 msgstr ""
 
 msgid "In-tournament"
@@ -5316,6 +5455,9 @@ msgid "Installing a plugin makes its features available in the whole application
 msgstr ""
 
 msgid "Installing…"
+msgstr ""
+
+msgid "Intermediate"
 msgstr ""
 
 msgid "International Arbiter"
@@ -5728,6 +5870,12 @@ msgid "Length ({len}) must match players per team match ({count})."
 msgstr ""
 
 msgid "Lesotho"
+msgstr ""
+
+msgid "Let the players check in"
+msgstr ""
+
+msgid "Let the players enter their results"
 msgstr ""
 
 msgid "Level specific colours"
@@ -6196,6 +6344,10 @@ msgid "Menu"
 msgstr ""
 
 #, python-brace-format
+msgid "Menu [{menu_name}] has been created."
+msgstr ""
+
+#, python-brace-format
 msgid "Menu [{menu}] has been created."
 msgstr ""
 
@@ -6241,6 +6393,9 @@ msgid "Min"
 msgstr ""
 
 msgid "Min. age category"
+msgstr ""
+
+msgid "Minimal"
 msgstr ""
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
@@ -6554,6 +6709,9 @@ msgstr ""
 msgid "Newer versions of these lists are available: %(lists)s. Update them before relying on this check."
 msgstr ""
 
+msgid "Next"
+msgstr ""
+
 msgid "Next round"
 msgstr ""
 
@@ -6620,7 +6778,13 @@ msgstr ""
 msgid "No captain is set for this team."
 msgstr ""
 
+msgid "No channel"
+msgstr ""
+
 msgid "No channel set for the event."
+msgstr ""
+
+msgid "No channel — just create the screen"
 msgstr ""
 
 msgid "No channels"
@@ -7335,16 +7499,37 @@ msgstr ""
 msgid "Oman"
 msgstr ""
 
+msgid "On a computer or tablet the players walk up to."
+msgstr ""
+
+msgid "On one page"
+msgstr ""
+
+msgid "On one page, or over several pages?"
+msgstr ""
+
 msgid "On the arbiter computer, channel"
 msgstr ""
 
 msgid "On this computer"
 msgstr ""
 
+msgid "One above the other."
+msgstr ""
+
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr ""
 
 msgid "One or more tournaments, on one page"
+msgstr ""
+
+msgid "One page per grid, turning by themselves"
+msgstr ""
+
+msgid "One page per grid, with a menu to pick the grid"
+msgstr ""
+
+msgid "One page per tournament, with a menu to switch between them."
 msgstr ""
 
 msgid "One page, several tournaments"
@@ -7357,6 +7542,10 @@ msgid "One tournament over several pages"
 msgstr ""
 
 msgid "One tournament, over several pages"
+msgstr ""
+
+#, python-brace-format
+msgid "One “{name}” screen per tournament: {tournaments}."
 msgstr ""
 
 msgid "Ongoing"
@@ -7504,6 +7693,12 @@ msgstr ""
 msgid "Order: by rank"
 msgstr ""
 
+msgid "Ordered by pairing number"
+msgstr ""
+
+msgid "Ordered by rank"
+msgstr ""
+
 msgid "Organisation"
 msgstr ""
 
@@ -7521,6 +7716,10 @@ msgid "Origin: {template_origin}"
 msgstr ""
 
 msgid "Other"
+msgstr ""
+
+#, python-brace-format
+msgid "Other kinds of screens exist too: {types}. Create them directly from the “Create a screen” menu of the Screens tab."
 msgstr ""
 
 #, python-brace-format
@@ -7547,6 +7746,12 @@ msgstr ""
 #, python-brace-format
 msgctxt "team knock-out"
 msgid "Out — round {round}"
+msgstr ""
+
+msgid "Over several pages"
+msgstr ""
+
+msgid "Over several pages, with a menu to pick the page"
 msgstr ""
 
 msgid "Overall"
@@ -8314,6 +8519,9 @@ msgstr ""
 msgid "Playing in tournament [%(name)s]"
 msgstr ""
 
+msgid "Please answer the question."
+msgstr ""
+
 msgid "Please ask your administrator to set a password."
 msgstr ""
 
@@ -8336,6 +8544,9 @@ msgid "Please choose a valid colour."
 msgstr ""
 
 msgid "Please choose a variation."
+msgstr ""
+
+msgid "Please choose an answer."
 msgstr ""
 
 msgid "Please choose the candidate."
@@ -9028,6 +9239,9 @@ msgstr ""
 msgid "Ready"
 msgstr ""
 
+msgid "Ready to create"
+msgstr ""
+
 msgid "Reason"
 msgstr ""
 
@@ -9388,6 +9602,10 @@ msgid "Rotator"
 msgstr ""
 
 #, python-brace-format
+msgid "Rotator [{rotator_name}] has been created."
+msgstr ""
+
+#, python-brace-format
 msgid "Rotator [{rotator}] has been created."
 msgstr ""
 
@@ -9603,6 +9821,9 @@ msgid "Round-robin grid"
 msgstr ""
 
 msgid "Round-robin grid screens show every player of a round robin against every other, with the results and the rounds still to play."
+msgstr ""
+
+msgid "Round-robin grids"
 msgstr ""
 
 msgid "Round-robin pairings"
@@ -10049,7 +10270,13 @@ msgstr ""
 msgid "Select the signee"
 msgstr ""
 
+msgid "Select the tournament:"
+msgstr ""
+
 msgid "Select the tournaments to add players to."
+msgstr ""
+
+msgid "Select the tournaments:"
 msgstr ""
 
 msgid "Select this empty table (forfeit for the paired player)"
@@ -10174,6 +10401,9 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Setup assistant"
+msgstr ""
+
 msgid "Seychelles"
 msgstr ""
 
@@ -10222,6 +10452,12 @@ msgstr ""
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
+msgid "Sharly Chess will calculate the number of pages for you."
+msgstr ""
+
+msgid "Sharly Chess will calculate the number of rows per page."
+msgstr ""
+
 msgid "Sharly Chess will restart to complete the move."
 msgstr ""
 
@@ -10251,7 +10487,16 @@ msgstr ""
 msgid "Show pairings, rankings, results and check-in anywhere in the venue: a projector in the playing hall, a TV at the entrance, tablets where players check in or enter their results."
 msgstr ""
 
+msgid "Show the check-in status"
+msgstr ""
+
 msgid "Show the members of each team"
+msgstr ""
+
+msgid "Show the pairings by board"
+msgstr ""
+
+msgid "Show the pairings by player"
 msgstr ""
 
 msgid "Show the pairings of this round on the screens and send them to the online services."
@@ -10265,6 +10510,9 @@ msgstr ""
 
 #, python-format
 msgid "Show the stages of %(competitor)s"
+msgstr ""
+
+msgid "Show the standings"
 msgstr ""
 
 msgid "Show this round on the screens and send its results to the online services."
@@ -10422,6 +10670,9 @@ msgstr ""
 msgid "Sort the players by year of birth (youngest first)."
 msgstr ""
 
+msgid "Sorted by board number."
+msgstr ""
+
 msgid "Source"
 msgstr ""
 
@@ -10534,6 +10785,9 @@ msgstr ""
 msgid "Standard team Swiss"
 msgstr ""
 
+msgid "Standings"
+msgstr ""
+
 msgid "Start"
 msgstr ""
 
@@ -10559,6 +10813,9 @@ msgid "Start of a round"
 msgstr ""
 
 msgid "Start of the sporting season"
+msgstr ""
+
+msgid "Start the setup assistant"
 msgstr ""
 
 msgid "Start year"
@@ -11038,6 +11295,9 @@ msgstr ""
 msgid "The archive must contain exactly one template file. Export a template to see the expected format."
 msgstr ""
 
+msgid "The assistant creates the screen and, if you want, the channel for the display it will run on."
+msgstr ""
+
 #, python-brace-format
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
@@ -11109,6 +11369,9 @@ msgid "The configuration has been saved."
 msgstr ""
 
 msgid "The criteria the standings are ranked on, as TRF26 acronyms, comma-separated."
+msgstr ""
+
+msgid "The cross-table"
 msgstr ""
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
@@ -11254,6 +11517,9 @@ msgid "The label used for this screen in menus. If left empty, the tournament na
 msgstr ""
 
 msgid "The last backup could not be written."
+msgstr ""
+
+msgid "The leaders at the top."
 msgstr ""
 
 #, python-brace-format
@@ -11433,6 +11699,9 @@ msgstr ""
 msgid "The organisation to which the team belongs (for example a club, league, or school). Affiliations may be used by pairing rules to avoid pairing related teams."
 msgstr ""
 
+msgid "The pages turn by themselves"
+msgstr ""
+
 #, python-format
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
 msgstr ""
@@ -11565,6 +11834,15 @@ msgstr ""
 msgid "The players are split by pairing number into two groups: group A, the first pairing numbers, and group B, the others."
 msgstr ""
 
+msgid "The players by rank, with their points and tie-breaks."
+msgstr ""
+
+msgid "The players checked in and those not yet checked in."
+msgstr ""
+
+msgid "The players scroll if everything does not fit."
+msgstr ""
+
 msgid "The points are not among the ranking criteria."
 msgstr ""
 
@@ -11597,6 +11875,15 @@ msgid "The rank of the last player to select."
 msgstr ""
 
 msgid "The rank of the last team to select."
+msgstr ""
+
+msgid "The ranking"
+msgstr ""
+
+msgid "The ranking, the cross-table or, for the round robins, the grid."
+msgstr ""
+
+msgid "The ranking, with the result of every game against each opponent."
 msgstr ""
 
 #, python-format
@@ -11701,6 +11988,9 @@ msgstr ""
 msgid "The round must be paired first."
 msgstr ""
 
+msgid "The round-robin grid"
+msgstr ""
+
 msgid "The rule has been deleted."
 msgstr ""
 
@@ -11756,6 +12046,12 @@ msgid "The scoring criterion applied to rank the competitors."
 msgstr ""
 
 msgid "The screen"
+msgstr ""
+
+msgid "The screen is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
+msgstr ""
+
+msgid "The screen is marked as designed for this new channel."
 msgstr ""
 
 #, python-brace-format
@@ -11820,6 +12116,12 @@ msgid "The table number of the last match to select."
 msgstr ""
 
 msgid "The table number the team will always be assigned to (use it for disabled people). Changing it renumbers only the rounds paired afterwards."
+msgstr ""
+
+msgid "The team matches and the boards"
+msgstr ""
+
+msgid "The team matches only"
 msgstr ""
 
 msgid "The team order sets each team's pairing number, shown on each card."
@@ -11903,6 +12205,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
+#, python-brace-format
+msgid "The value must be at least {min}."
 msgstr ""
 
 #, python-brace-format
@@ -12458,6 +12764,10 @@ msgstr ""
 msgid "Timer: none"
 msgstr ""
 
+#, python-brace-format
+msgid "Timer: {name}"
+msgstr ""
+
 msgid "Timers"
 msgstr ""
 
@@ -12939,6 +13249,12 @@ msgctxt "said of a woman"
 msgid "Unpaired"
 msgstr ""
 
+msgid "Unpaired players hidden"
+msgstr ""
+
+msgid "Unpaired players shown"
+msgstr ""
+
 msgid "Unpaired: displayed"
 msgstr ""
 
@@ -13407,6 +13723,15 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
+msgid "What do you want to display?"
+msgstr ""
+
+msgid "What do you want to put up?"
+msgstr ""
+
+msgid "What do you want to show?"
+msgstr ""
+
 msgid "What has been recorded in the TRF: pairing integrity breaches, changes to the settings and games corrected for the rating report."
 msgstr ""
 
@@ -13453,7 +13778,13 @@ msgstr ""
 msgid "Where"
 msgstr ""
 
+msgid "Which channel is this screen designed for?"
+msgstr ""
+
 msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
+msgstr ""
+
+msgid "Which display format do you want?"
 msgstr ""
 
 msgid "Which score is the ranking based on. "
@@ -13501,6 +13832,12 @@ msgid "Winner"
 msgstr ""
 
 msgid "With a channel, the arbiter decides what devices show. A device follows the channel and shows whatever the arbiter puts on it from the arbiter computer: a screen, a rotator or a menu. Any number of devices can follow the same channel."
+msgstr ""
+
+msgid "With a menu — people pick their page"
+msgstr ""
+
+msgid "With a menu — the players pick their tournament first"
 msgstr ""
 
 msgid "With less players than prizes, some prizes will not be attributed."
@@ -13750,6 +14087,9 @@ msgid "You must create a tournament before creating a prize bracket."
 msgstr ""
 
 msgid "You must create a tournament before creating these screens."
+msgstr ""
+
+msgid "You will need to select the screen on your display."
 msgstr ""
 
 #, python-brace-format
@@ -14507,6 +14847,14 @@ msgid "{age_limit}+"
 msgstr ""
 
 #, python-brace-format
+msgid "{answer} pages"
+msgstr ""
+
+#, python-brace-format
+msgid "{answer} rows per page"
+msgstr ""
+
+#, python-brace-format
 msgid "{board_number} {color}"
 msgstr ""
 
@@ -14531,6 +14879,12 @@ msgstr ""
 #, python-brace-format
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} column"
+msgid_plural "{count} columns"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -14664,6 +15018,10 @@ msgstr ""
 msgid "{first} — Pairing-Allocated Bye"
 msgstr ""
 
+#, python-brace-format
+msgid "{item} and marked as designed for the channel “{name}”."
+msgstr ""
+
 #, python-brace-format, python-format
 msgid "{label} (%%s ago)"
 msgstr ""
@@ -14704,6 +15062,12 @@ msgstr ""
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr ""
+
+#, python-brace-format
+msgid "{name} and {count} other tournament"
+msgid_plural "{name} and {count} other tournaments"
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-brace-format
 msgid "{name}, page {page}"

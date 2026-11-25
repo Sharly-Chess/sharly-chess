@@ -17,9 +17,9 @@
 {% endmacro %}
 
 {% macro identity(item, view, placement) %}
-    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+    <span class="collection-identity">
         {{ admin_macros.family_visibility_icon(item, '') }}
-        <span class="fw-bold text-truncate">{{ item.display_name }}</span>
+        <span class="collection-identity-name" title="{{ item.display_name }}">{{ item.display_name }}</span>
         {{ screen_badges.input(item) }}
         {% if item.display_controllers %}
             {% for display_controller in item.display_controllers %}

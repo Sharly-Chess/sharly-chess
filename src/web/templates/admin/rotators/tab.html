@@ -52,4 +52,22 @@
             {% include '/admin/common/collection.html' %}
         {% endwith %}
     {% endif %}
+    {% if scroll_to_rotator_id %}
+        <script>
+            (function () {
+                function reveal() {
+                    const card = document.getElementById('collection-rotators-item-{{ scroll_to_rotator_id }}');
+                    if (!card) {
+                        return;
+                    }
+                    card.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    card.classList.add('collection-item-created');
+                }
+                requestAnimationFrame(reveal);
+                {% if edit_scrolled_to %}
+                    htmx.ajax('GET', '{{ url_for('admin-rotator-update-modal', event_uniq_id=admin_event.uniq_id, rotator_id=scroll_to_rotator_id|int) }}', { target: 'body', indicator: '#please-wait' });
+                {% endif %}
+            })();
+        </script>
+    {% endif %}
 {% endblock %}

@@ -59,11 +59,11 @@
 
 {% macro identity(item, view, placement) %}
 {% if item.is_paged %}{{ paged.identity(item, view, placement) }}{% else %}
-    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+    <span class="collection-identity">
         {% if client.can_manage_screens %}
             {{ macros.screen_visibility_icon(item, '') }}
         {% endif %}
-        <span class="fw-bold text-truncate">{{ item.name }}</span>
+        <span class="collection-identity-name" title="{{ item.name }}">{{ item.name }}</span>
         {% if item.family %}
             {{ components.badge('neutral', _('Paged Screen')) }}
         {% endif %}

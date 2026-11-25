@@ -1,10 +1,18 @@
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, NamedTuple, override, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, override, cast
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
+from data.wizard import (
+    WizardOption,
+    WizardQuestion,
+    WizardRadioQuestion,
+    WizardIntQuestion,
+    WizardTournamentQuestion,
+    WizardTournamentsQuestion,
+)
 from common.sharly_chess_config import SharlyChessConfig
 from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
@@ -31,6 +39,35 @@ if TYPE_CHECKING:
     from data.screens.screen_set import ScreenSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredFamily, StoredScreen
+
+
+def tournaments_screen_name(
+    event: Event,
+    tournament_ids: list[int],
+    showable_tournament_ids: list[int],
+    fallback: str,
+) -> str:
+    """The automatic name of a screen showing *tournament_ids*: their names
+    for one or two, "All tournaments" when they are all the tournaments the
+    screen could show (*showable_tournament_ids*), else the first one and
+    how many others. *fallback* when there is none."""
+    names = [
+        event.tournaments_by_id[tournament_id].name
+        for tournament_id in tournament_ids
+        if event.tournaments_by_id[tournament_id].name
+    ]
+    if not names:
+        return fallback
+    if len(names) <= 2:
+        return ' / '.join(names)
+    if set(tournament_ids) >= set(showable_tournament_ids):
+        return _('All tournaments')
+    others = len(names) - 1
+    return ngettext(
+        '{name} and {count} other tournament',
+        '{name} and {count} other tournaments',
+        others,
+    ).format(name=names[0], count=others)
 
 
 def _build_board_columns(
@@ -478,12 +515,20 @@ class ScreenType(IdentifiableEntity, ABC):
         screens."""
         if screen.stored_screen is not None:
             # Basic screen: the tournament name(s) of its sets, deduplicated.
-            names: list[str] = []
-            for screen_set in screen.sorted_screen_sets:
-                name = screen_set.tournament.name
-                if name and name not in names:
-                    names.append(name)
-            return ' / '.join(names) if names else _('Screen')
+            tournament_ids = list(
+                dict.fromkeys(
+                    screen_set.tournament.id for screen_set in screen.sorted_screen_sets
+                )
+            )
+            return tournaments_screen_name(
+                screen.event,
+                tournament_ids,
+                [
+                    tournament.id
+                    for tournament in self.assistant_tournaments(screen.event)
+                ],
+                _('Screen'),
+            )
         return self.default_family_screen_name(screen)
 
     def default_family_screen_name(self, screen: Screen) -> str:
@@ -817,6 +862,378 @@ class ScreenType(IdentifiableEntity, ABC):
             for screen_set in screen.sorted_screen_sets
         )
 
+    def assistant_questions(
+        self, event: Event, accepts_input: bool
+    ) -> dict[str, WizardQuestion] | None:
+        """The questions the setup assistant asks to create a screen of this
+        type, showing the items or — when *accepts_input* — taking the
+        players' input. The chain ends on the assistant's 'channel'
+        question. None when the assistant does not create such screens."""
+        return None
+
+    def create_from_assistant_answers(
+        self, event: Event, answers: dict[str, Any], accepts_input: bool
+    ) -> StoredScreen | StoredFamily:
+        """Create a stored screen (or a stored family for a screen over
+        several pages) from the assistant answers, by question ID. The
+        screen sets of a stored screen are given by its
+        ``init_set_tournament_ids``. Implemented by the types that provide
+        ``assistant_questions()``."""
+        raise NotImplementedError
+
+    def assistant_covered_type_ids(self, event: Event) -> list[str]:
+        """The IDs of the screen types the assistant creates through the
+        goals of this type, so that the others can be pointed at the
+        standard forms."""
+        return [self.id]
+
+    def assistant_tournaments(self, event: Event) -> list[Tournament]:
+        """The tournaments a screen of this type can show."""
+        return [
+            tournament
+            for tournament in event.sorted_tournaments
+            if self.shows_tournament(tournament)
+        ]
+
+    def _assistant_number_per_column(self, event: Event, tournament_id: int) -> bool:
+        """Whether the item count stored for a paged screen of
+        *tournament_id* counts its items per column rather than per page
+        (see Family._calculate_screens)."""
+        return False
+
+    def _assistant_layout_questions(
+        self,
+        event: Event,
+        columns_default: int | None = None,
+    ) -> dict[str, WizardQuestion]:
+        """The questions of the assistant on the layout of a screen showing
+        the items (players, boards...) of tournaments: one or more
+        tournaments on one page, or one tournament over several pages, then
+        the columns and the timer. With a single tournament, the tournament
+        picks answer themselves and the first question only opposes one
+        page to several. The number of columns is *columns_default* by
+        default (1 if None). The first question is 'paged'; see
+        _stored_from_assistant_answers()."""
+        tournaments = self.assistant_tournaments(event)
+        single = len(tournaments) == 1
+        return {
+            'paged': WizardRadioQuestion(
+                stage='content',
+                text=_('On one page, or over several pages?')
+                if single
+                else _('What do you want to display?'),
+                options=[
+                    WizardOption(
+                        value=False,
+                        text=_('On one page')
+                        if single
+                        else _('One or more tournaments, on one page'),
+                        next='switch_tournaments',
+                    ),
+                    WizardOption(
+                        value=True,
+                        text=_('Over several pages')
+                        if single
+                        else _('One tournament, over several pages'),
+                        next='paged_tournament',
+                    ),
+                ],
+                default_value=False,
+            ),
+            'switch_tournaments': WizardTournamentsQuestion(
+                tournaments,
+                stage='content',
+                disabled=single,
+                next='columns',
+            ),
+            'paged_tournament': WizardTournamentQuestion(
+                tournaments,
+                stage='content',
+                disabled=single,
+                next='paged_nav',
+            ),
+            'paged_nav': WizardRadioQuestion(
+                stage='content',
+                text=_('How do people move between the pages?'),
+                options=[
+                    WizardOption(
+                        value='rotate',
+                        text=_('The pages turn by themselves'),
+                    ),
+                    WizardOption(
+                        value='menu',
+                        text=_('With a menu — people pick their page'),
+                    ),
+                ],
+                default_value='rotate',
+                next='paged_method',
+            ),
+            **self._assistant_paging_questions(),
+            **self._assistant_final_questions(event, columns_default),
+        }
+
+    def _assistant_input_questions(self, event: Event) -> dict[str, WizardQuestion]:
+        """The questions of the assistant for the screens taking the
+        players' input: the tournaments covered, how the players reach
+        theirs when several are chosen (a menu of one screen per
+        tournament, or a single screen they scroll through) and — for a
+        single tournament — whether the screen fits on one page or runs
+        over several, picked in a menu (the pages of an input screen never
+        turn by themselves), then the columns and the timer. The first
+        question is 'tournaments'; the answers are turned into screens,
+        paged screens and a menu by
+        ``data.screens.assistant.create_from_assistant()``."""
+        tournaments = self.assistant_tournaments(event)
+        return {
+            'tournaments': WizardTournamentsQuestion(
+                tournaments,
+                stage='content',
+                # A single tournament answers itself (the navigation
+                # question below is then skipped too).
+                disabled=len(tournaments) < 2,
+                next='nav',
+                next_single='paged',
+            ),
+            'nav': WizardRadioQuestion(
+                stage='content',
+                disabled=len(tournaments) < 2,
+                text=_('How should the players reach their tournament?'),
+                options=[
+                    WizardOption(
+                        value='menu',
+                        text=_('With a menu — the players pick their tournament first'),
+                        help=_(
+                            'One page per tournament, with a menu to switch between them.'
+                        ),
+                        next='columns',
+                    ),
+                    WizardOption(
+                        value='single',
+                        text=_('Everything on one page'),
+                        help=_(
+                            'All the tournaments on a single page the players scroll through.'
+                        ),
+                        next='columns',
+                    ),
+                ],
+                default_value='menu',
+                # Where the skip lands with a single tournament.
+                next='paged',
+            ),
+            'paged': WizardRadioQuestion(
+                stage='content',
+                text=_('On one page, or over several pages?'),
+                options=[
+                    WizardOption(
+                        value=False,
+                        text=_('On one page'),
+                        help=_('The players scroll if everything does not fit.'),
+                        next='columns',
+                    ),
+                    WizardOption(
+                        value='menu',
+                        text=_('Over several pages, with a menu to pick the page'),
+                        next='paged_method',
+                    ),
+                ],
+                default_value=False,
+            ),
+            **self._assistant_paging_questions(),
+            **self._assistant_final_questions(event, None),
+        }
+
+    @staticmethod
+    def _assistant_paging_questions() -> dict[str, WizardQuestion]:
+        """The questions splitting a paged screen into pages: by a number
+        of rows on each page (each column holding that many rows) or by a
+        number of pages."""
+        return {
+            'paged_method': WizardRadioQuestion(
+                text=_('How do you want to split it into pages?'),
+                options=[
+                    WizardOption(
+                        value='number',
+                        text=_('A fixed number of rows on each page'),
+                        help=_(
+                            'Sharly Chess will calculate the number of pages for you.'
+                        ),
+                        next='paged_number',
+                    ),
+                    WizardOption(
+                        value='pages',
+                        text=_('A fixed number of pages'),
+                        help=_(
+                            'Sharly Chess will calculate the number of rows per page.'
+                        ),
+                        next='paged_pages',
+                    ),
+                ],
+                default_value='number',
+            ),
+            'paged_number': WizardIntQuestion(
+                text=_('How many rows per page?'),
+                summary=_('{answer} rows per page'),
+                help=_(
+                    'Each column holds this many rows: with 20 rows and 2 '
+                    'columns, 40 entries fit on each page.'
+                ),
+                min=1,
+                next='columns',
+            ),
+            'paged_pages': WizardIntQuestion(
+                text=_('How many pages?'),
+                summary=_('{answer} pages'),
+                min=1,
+                next='columns',
+            ),
+        }
+
+    def _assistant_final_questions(
+        self, event: Event, columns_default: int | None
+    ) -> dict[str, WizardQuestion]:
+        """The questions ending every assistant chain: the columns and the
+        timer, leading on to the assistant's 'channel' question."""
+        return {
+            'columns': WizardRadioQuestion(
+                text=_('How many columns?'),
+                options=[
+                    WizardOption(
+                        value=value,
+                        text=ngettext(
+                            '{count} column', '{count} columns', value
+                        ).format(count=value),
+                    )
+                    for value in range(1, 5)
+                ],
+                default_value=columns_default or 1,
+                next='timer',
+            ),
+            'timer': WizardRadioQuestion(
+                # Not asked when the event has no timer.
+                disabled=not event.timers_by_id,
+                text=_('Do you want to display a timer?'),
+                options=[
+                    WizardOption(value=None, text=_('No timer')),
+                    *(
+                        WizardOption(
+                            value=timer.id,
+                            text=timer.name,
+                            summary=_('Timer: {name}').format(name=timer.name),
+                        )
+                        for timer in event.timers_by_id.values()
+                    ),
+                ],
+                default_value=None,
+                next='channel',
+            ),
+        }
+
+    def assistant_stored_family(
+        self,
+        event: Event,
+        answers: dict[str, Any],
+        accepts_input: bool,
+        tournament_id: int,
+        uniq_id: str,
+        **fields: Any,
+    ) -> StoredFamily:
+        """A stored family (a screen over several pages) for
+        *tournament_id*, built from the assistant answers: split either by
+        a number of rows on each page or by a number of pages. The rows
+        answered become the stored item count: one item per row and
+        column, except where the family counts its items per column."""
+        from database.sqlite.event.event_store import StoredFamily
+
+        rows: int | None = answers.get('paged_number')
+        number: int | None = None
+        if rows is not None:
+            number = (
+                rows
+                if self._assistant_number_per_column(event, tournament_id)
+                else rows * answers['columns']
+            )
+        return StoredFamily(
+            id=None,
+            uniq_id=uniq_id,
+            name=None,
+            type=self.id,
+            tournament_id=tournament_id,
+            columns=answers['columns'],
+            font_size=None,
+            menu_text='',
+            # Not answered when the event has no timer.
+            timer_id=answers.get('timer'),
+            accepts_input=accepts_input,
+            input_exit_button=False,
+            number=number,
+            parts=answers.get('paged_pages'),
+            **fields,
+        )
+
+    def assistant_stored_screen(
+        self,
+        event: Event,
+        answers: dict[str, Any],
+        accepts_input: bool,
+        tournament_ids: list[int],
+        uniq_id: str,
+        **fields: Any,
+    ) -> StoredScreen:
+        """A stored screen on one page, with a set for each of
+        *tournament_ids*, built from the assistant answers."""
+        from database.sqlite.event.event_store import StoredScreen
+
+        return StoredScreen(
+            id=None,
+            uniq_id=uniq_id,
+            name=None,
+            type=self.id,
+            # Not asked for the types on a single column.
+            columns=answers.get('columns', 1),
+            font_size=None,
+            menu_text=None,
+            # Not answered when the event has no timer.
+            timer_id=answers.get('timer'),
+            accepts_input=accepts_input,
+            input_exit_button=False,
+            init_set_tournament_ids=tournament_ids,
+            **fields,
+        )
+
+    def _stored_from_assistant_answers(
+        self,
+        event: Event,
+        answers: dict[str, Any],
+        accepts_input: bool,
+        **fields: Any,
+    ) -> StoredScreen | StoredFamily:
+        """The stored screen, or the stored family when over several pages,
+        built from the answers to the questions of
+        _assistant_layout_questions(), *accepts_input* and the *fields* of
+        the type."""
+        if answers.get('paged'):
+            return self.assistant_stored_family(
+                event,
+                answers,
+                accepts_input,
+                # Not asked when the event has a single tournament.
+                answers.get('paged_tournament')
+                or self.assistant_tournaments(event)[0].id,
+                event.get_unused_family_uniq_id(self),
+                **fields,
+            )
+        tournament_ids: list[int] = answers.get('switch_tournaments') or [
+            tournament.id for tournament in self.assistant_tournaments(event)
+        ]
+        return self.assistant_stored_screen(
+            event,
+            answers,
+            accepts_input,
+            tournament_ids,
+            event.get_unused_screen_uniq_id(self),
+            **fields,
+        )
+
 
 class CheckInScreenType(ScreenType):
     @staticmethod
@@ -959,6 +1376,22 @@ class CheckInScreenType(ScreenType):
             else _('The number of the last player to select.')
         )
         return selection
+
+    @override
+    def assistant_questions(
+        self, event: Event, accepts_input: bool
+    ) -> dict[str, WizardQuestion]:
+        if accepts_input:
+            return self._assistant_input_questions(event)
+        return self._assistant_layout_questions(event)
+
+    @override
+    def create_from_assistant_answers(
+        self, event: Event, answers: dict[str, Any], accepts_input: bool
+    ) -> StoredScreen | StoredFamily:
+        return self._stored_from_assistant_answers(
+            event, answers, accepts_input=accepts_input
+        )
 
 
 class BoardsScreenType(ScreenType):
@@ -1127,6 +1560,57 @@ class BoardsScreenType(ScreenType):
     @override
     def family_number_strings(self, family: Family) -> tuple[dict[str, str], int]:
         return _board_family_number_strings(family)
+
+    @override
+    def assistant_questions(
+        self, event: Event, accepts_input: bool
+    ) -> dict[str, WizardQuestion]:
+        if accepts_input:
+            return self._assistant_input_questions(event)
+        return {
+            'hide_players': WizardRadioQuestion(
+                # Only the matches of team tournaments can be shown without
+                # their players.
+                disabled=not event.is_team_event,
+                stage='content',
+                text=_('What do you want to show?'),
+                options=[
+                    WizardOption(
+                        value=False,
+                        text=_('The team matches and the boards'),
+                    ),
+                    WizardOption(
+                        value=True,
+                        text=_('The team matches only'),
+                    ),
+                ],
+                default_value=False,
+                next='paged',
+            ),
+            **self._assistant_layout_questions(event),
+        }
+
+    @override
+    def _assistant_number_per_column(self, event: Event, tournament_id: int) -> bool:
+        # A team-paired tournament counts its matches per column (a match
+        # spans one row per board).
+        tournament = event.tournaments_by_id[tournament_id]
+        return (
+            tournament.is_team_tournament and tournament.pairing_system.paired_by_team
+        )
+
+    @override
+    def create_from_assistant_answers(
+        self, event: Event, answers: dict[str, Any], accepts_input: bool
+    ) -> StoredScreen | StoredFamily:
+        return self._stored_from_assistant_answers(
+            event,
+            answers,
+            accepts_input=accepts_input,
+            # Not asked when the results are entered, nor in an individual
+            # event.
+            boards_hide_players=bool(answers.get('hide_players')) and not accepts_input,
+        )
 
 
 class PlayersScreenType(ScreenType):
@@ -1396,6 +1880,97 @@ class PlayersScreenType(ScreenType):
         )
         return selection
 
+    @staticmethod
+    def _assistant_format_option(
+        text: str,
+        player_format: PlayersScreenPlayerFormat,
+        board_format: PlayersScreenBoardFormat,
+        opponent_format: PlayersScreenOpponentFormat,
+    ) -> WizardOption:
+        """An option of the format question of the assistant, setting the
+        three formats, with an example as help."""
+        examples = [player_format.example, board_format.example]
+        if opponent_format != PlayersScreenOpponentFormat.NONE:
+            examples.append(opponent_format.example)
+        return WizardOption(
+            value=(player_format, board_format, opponent_format),
+            text=text,
+            help=' — '.join(examples),
+            summary=_('Format: {name}').format(name=text),
+        )
+
+    @override
+    def assistant_questions(
+        self, event: Event, accepts_input: bool
+    ) -> dict[str, WizardQuestion] | None:
+        if accepts_input:
+            return None
+        full_format = self._assistant_format_option(
+            _('Full'),
+            PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS,
+            PlayersScreenBoardFormat.FULL,
+            PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS,
+        )
+        return {
+            'show_unpaired': WizardRadioQuestion(
+                stage='content',
+                text=_('Do you want to show the unpaired players?'),
+                options=[
+                    WizardOption(
+                        value=True,
+                        text=_('Yes'),
+                        summary=_('Unpaired players shown'),
+                    ),
+                    WizardOption(
+                        value=False,
+                        text=_('No'),
+                        summary=_('Unpaired players hidden'),
+                    ),
+                ],
+                default_value=True,
+                next='format',
+            ),
+            'format': WizardRadioQuestion(
+                text=_('Which display format do you want?'),
+                options=[
+                    full_format,
+                    self._assistant_format_option(
+                        _('Intermediate'),
+                        PlayersScreenPlayerFormat.NAME_RATING,
+                        PlayersScreenBoardFormat.MEDIUM_2,
+                        PlayersScreenOpponentFormat.NAME_RATING,
+                    ),
+                    self._assistant_format_option(
+                        _('Minimal'),
+                        PlayersScreenPlayerFormat.NAME,
+                        PlayersScreenBoardFormat.MINIMAL,
+                        PlayersScreenOpponentFormat.NONE,
+                    ),
+                ],
+                default_value=full_format.value,
+                next='paged',
+            ),
+            **self._assistant_layout_questions(
+                event,
+                columns_default=self.default_columns(event),
+            ),
+        }
+
+    @override
+    def create_from_assistant_answers(
+        self, event: Event, answers: dict[str, Any], accepts_input: bool
+    ) -> StoredScreen | StoredFamily:
+        player_format, board_format, opponent_format = answers['format']
+        return self._stored_from_assistant_answers(
+            event,
+            answers,
+            accepts_input=accepts_input,
+            players_show_unpaired=answers['show_unpaired'],
+            players_player_format=player_format.value,
+            players_board_format=board_format.value,
+            players_opponent_format=opponent_format.value,
+        )
+
 
 class ResultsScreenType(ScreenType):
     @staticmethod
@@ -1452,12 +2027,12 @@ class ResultsScreenType(ScreenType):
 
     @override
     def default_screen_name(self, screen: Screen) -> str:
-        names: list[str] = []
-        for tournament_id in self.tournament_ids(screen):
-            name = screen.event.tournaments_by_id[tournament_id].name
-            if name and name not in names:
-                names.append(name)
-        return ' / '.join(names) if names else _('Last results')
+        return tournaments_screen_name(
+            screen.event,
+            list(dict.fromkeys(self.tournament_ids(screen))),
+            list(screen.event.tournaments_by_id),
+            _('Last results'),
+        )
 
     @property
     @override
@@ -1940,6 +2515,141 @@ class RankingScreenType(ColumnTogglesScreenType):
         return (
             str(first.rank) if first else dash,
             str(last.rank) if last else dash,
+        )
+
+    @override
+    def assistant_questions(
+        self, event: Event, accepts_input: bool
+    ) -> dict[str, WizardQuestion] | None:
+        if accepts_input:
+            return None
+        grid_type = RoundRobinGridScreenType()
+        grid_tournaments = grid_type.assistant_tournaments(event)
+        options = [
+            WizardOption(
+                value='ranking',
+                text=_('The ranking'),
+                help=_('The players by rank, with their points and tie-breaks.'),
+                next='paged',
+            ),
+            WizardOption(
+                value='crosstable',
+                text=_('The cross-table'),
+                help=_(
+                    'The ranking, with the result of every game against each opponent.'
+                ),
+                next='paged',
+            ),
+        ]
+        grid_questions: dict[str, WizardQuestion] = {}
+        if grid_tournaments:
+            # The grid is a screen type of its own, offered here as it shows
+            # the standings of the round robins.
+            options.append(
+                WizardOption(
+                    value='grid',
+                    text=_('The round-robin grid'),
+                    help=_('Every player against every other, for the round robins.'),
+                    next='grid_tournaments',
+                )
+            )
+            grid_questions = {
+                'grid_tournaments': WizardTournamentsQuestion(
+                    grid_tournaments,
+                    stage='content',
+                    disabled=len(grid_tournaments) < 2,
+                    next='grid_split',
+                    next_single='grid_order',
+                ),
+                'grid_split': WizardRadioQuestion(
+                    stage='content',
+                    # Asked when several round robins are chosen.
+                    disabled=len(grid_tournaments) < 2,
+                    text=_('How do you want to show the grids?'),
+                    options=[
+                        WizardOption(
+                            value='single',
+                            text=_('All the grids on one page'),
+                            help=_('One above the other.'),
+                        ),
+                        WizardOption(
+                            value='rotate',
+                            text=_('One page per grid, turning by themselves'),
+                            help=_(
+                                'A rotator shows the grids in turn, which suits a projector.'
+                            ),
+                        ),
+                        WizardOption(
+                            value='menu',
+                            text=_('One page per grid, with a menu to pick the grid'),
+                        ),
+                    ],
+                    default_value='single',
+                    next='grid_order',
+                ),
+                'grid_order': WizardRadioQuestion(
+                    text=_('In which order?'),
+                    options=[
+                        WizardOption(
+                            value=False,
+                            text=_('By pairing number'),
+                            help=_(
+                                'Every player keeps their row all through the tournament.'
+                            ),
+                            summary=_('Ordered by pairing number'),
+                        ),
+                        WizardOption(
+                            value=True,
+                            text=_('By rank'),
+                            help=_('The leaders at the top.'),
+                            summary=_('Ordered by rank'),
+                        ),
+                    ],
+                    default_value=False,
+                    next='timer',
+                ),
+            }
+        return {
+            'ranking_kind': WizardRadioQuestion(
+                stage='content',
+                text=_('What do you want to show?'),
+                options=options,
+                default_value='ranking',
+            ),
+            **grid_questions,
+            **self._assistant_layout_questions(event),
+        }
+
+    @override
+    def assistant_covered_type_ids(self, event: Event) -> list[str]:
+        if RoundRobinGridScreenType().assistant_tournaments(event):
+            return [self.id, RoundRobinGridScreenType.static_id()]
+        return [self.id]
+
+    @override
+    def create_from_assistant_answers(
+        self, event: Event, answers: dict[str, Any], accepts_input: bool
+    ) -> StoredScreen | StoredFamily:
+        kind = answers.get('ranking_kind', 'ranking')
+        if kind == 'grid':
+            grid_type = RoundRobinGridScreenType()
+            tournament_ids: list[int] = answers.get('grid_tournaments') or [
+                tournament.id for tournament in grid_type.assistant_tournaments(event)
+            ]
+            return grid_type.assistant_stored_screen(
+                event,
+                answers,
+                accepts_input,
+                tournament_ids,
+                event.get_unused_screen_uniq_id(grid_type),
+                round_robin_grid_by_rank=bool(answers.get('grid_order')),
+                round_robin_grid_players=False,
+            )
+        return self._stored_from_assistant_answers(
+            event,
+            answers,
+            accepts_input=accepts_input,
+            ranking_crosstable=kind == 'crosstable',
         )
 
 

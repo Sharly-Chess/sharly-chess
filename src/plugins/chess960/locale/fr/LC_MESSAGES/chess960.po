@@ -2,7 +2,7 @@ msgid ""
 "- a **Chess960** screen type, holding the start position of the round so that it can be displayed to the players;\n"
 "- an **All Chess960 positions** document, listing every start position with its number."
 msgstr ""
-"- un type d’écran **Chess960**, contenant la position de départ de la ronde afin de l’afficher aux joueur·euses ;\n"
+"- un type d’écran **Chess960**, contenant la position de départ de la ronde afin de l’afficher aux joueur·euses ;\n"
 "- un document **Toutes les positions Chess960**, listant chaque position de départ avec son numéro."
 
 msgid "Adds a screen showing the Chess960 start position."

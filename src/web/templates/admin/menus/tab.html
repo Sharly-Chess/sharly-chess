@@ -46,4 +46,22 @@
             {% include '/admin/common/collection.html' %}
         {% endwith %}
     {% endif %}
+    {% if scroll_to_menu_id %}
+        <script>
+            (function () {
+                function reveal() {
+                    const card = document.getElementById('collection-menus-item-{{ scroll_to_menu_id }}');
+                    if (!card) {
+                        return;
+                    }
+                    card.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    card.classList.add('collection-item-created');
+                }
+                requestAnimationFrame(reveal);
+                {% if edit_scrolled_to %}
+                    htmx.ajax('GET', '{{ url_for('admin-menu-update-modal', event_uniq_id=admin_event.uniq_id, menu_id=scroll_to_menu_id|int) }}', { target: 'body', indicator: '#please-wait' });
+                {% endif %}
+            })();
+        </script>
+    {% endif %}
 {% endblock %}
