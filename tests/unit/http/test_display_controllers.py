@@ -375,6 +375,32 @@ def test_a_page_of_a_check_in_multi_screen_can_be_sent(
     assert 'display-controller-waiting' not in page.text
 
 
+@pytest.mark.parametrize(
+    'screen_type', [ScreenType.CHECK_IN, ScreenType.PLAYERS, ScreenType.RANKING]
+)
+def test_a_paged_screen_with_nothing_to_show_is_titled_after_its_tournament(
+    http: TestClient,
+    api: ApiClient,
+    tournament: StoredTournament,
+    screen_type: ScreenType,
+) -> None:
+    empty = TestUtils.create_tournament(EVENT_ID, 'Empty tournament')
+    EventLoader.unload_event(EVENT_ID)
+    family = TestUtils.create_family(
+        api, EVENT_ID, empty, 'empty-pages', screen_type, {'number': 10}
+    )
+    family.name = None
+    with EventDatabase(EVENT_ID, True) as database:
+        database.update_stored_family(family)
+    EventLoader.unload_event(EVENT_ID)
+
+    page = http.get(f'/view/paged-screen/{EVENT_ID}/{family.uniq_id}')
+    assert page.status_code == 200
+    assert '%f' not in page.text
+    assert '%l' not in page.text
+    assert 'Empty tournament' in page.text
+
+
 def test_a_controller_on_a_page_that_no_longer_exists_waits(
     http: TestClient, api: ApiClient, tournament: StoredTournament
 ) -> None:

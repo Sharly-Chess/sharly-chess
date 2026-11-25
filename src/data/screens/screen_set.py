@@ -212,129 +212,106 @@ class ScreenSet:
     def columns(self) -> int:
         return self.screen.columns
 
+    def _title(
+        self, first: str | None, last: str | None, ranged: str, whole: str
+    ) -> str:
+        """The title of the set, from the name it was given or else from the
+        automatic one: ``ranged`` when the set shows a part of its tournament,
+        ``whole`` when it shows all of it or has nothing to show yet. ``%t``
+        stands for the tournament, ``%f`` and ``%l`` for the first and last
+        items shown."""
+        if self.stored_screen_set:
+            custom = self.stored_screen_set.name
+        else:
+            assert self.family is not None
+            custom = self.family.stored_family.name
+        if custom:
+            name = custom
+        elif first is None and last is None:
+            name = whole
+        elif self.family is not None and not self.stored_screen_set:
+            name = self.family.name
+        elif self.first or self.last:
+            name = ranged
+        else:
+            name = whole
+        name = name.replace('%t', str(self.tournament.name))
+        return name.replace('%f', first or '-').replace('%l', last or '-')
+
     @property
     def name_for_boards(self) -> str:
         if self.tournament.current_round:
             if self.shows_team_matches:
                 return self._name_for_team_matches()
             self._extract_boards()
-            if self.stored_screen_set:
-                name = self.stored_screen_set.name
-            else:
-                if self.family is None:
-                    raise RuntimeError('Family reference unexpectedly None')
-                name = self.family.name
-            if name is None:
-                if self.first or self.last:
-                    if self.board_selection_mode == BoardSelectionMode.PAIRING:
-                        name = _('Pairings %f-%l')
-                    else:
-                        name = _('Boards %f-%l')
-                else:
-                    name = '%t'
-            name = name.replace('%t', str(self.tournament.name))
-            if r'%f' in name and self.first_board is not None:
-                name = name.replace(r'%f', str(self.first_board.standard_number))
-            if r'%l' in name and self.last_board is not None:
-                name = name.replace(r'%l', str(self.last_board.standard_number))
-            return name
+            first_board = self.first_board
+            last_board = self.last_board
+            return self._title(
+                str(first_board.standard_number) if first_board is not None else None,
+                str(last_board.standard_number) if last_board is not None else None,
+                _('Pairings %f-%l')
+                if self.board_selection_mode == BoardSelectionMode.PAIRING
+                else _('Boards %f-%l'),
+                '%t',
+            )
         return self.name_for_players
 
     def _name_for_team_matches(self) -> str:
         """Set title in team mode: ``%f``/``%l`` are the first and last
         match table numbers shown by the set."""
         self._extract_team_matches()
-        if self.stored_screen_set:
-            name = self.stored_screen_set.name
-        else:
-            if self.family is None:
-                raise RuntimeError('Family reference unexpectedly None')
-            name = self.family.name
-        if name is None:
-            name = _('Matches %f-%l') if self.first or self.last else '%t'
-        name = name.replace('%t', str(self.tournament.name))
         first_match = self._team_first_item
         last_match = self._team_last_item
-        if r'%f' in name:
-            name = name.replace(
-                r'%f',
-                str(first_match.display_number)
-                if first_match is not None and first_match.display_number is not None
-                else '-',
-            )
-        if r'%l' in name:
-            name = name.replace(
-                r'%l',
-                str(last_match.display_number)
-                if last_match is not None and last_match.display_number is not None
-                else '-',
-            )
-        return name
+        return self._title(
+            str(first_match.display_number)
+            if first_match is not None and first_match.display_number is not None
+            else None,
+            str(last_match.display_number)
+            if last_match is not None and last_match.display_number is not None
+            else None,
+            _('Matches %f-%l'),
+            '%t',
+        )
 
     @property
     def name_for_players(self) -> str:
         self._extract_players_by_name()
-        if self.stored_screen_set:
-            name = self.stored_screen_set.name
-        else:
-            assert self.family is not None
-            name = self.family.name
-        if name is None:
-            name = _('%f to %l') if self.first or self.last else '%t'
-        name = name.replace('%t', str(self.tournament.name))
-        if self.first_tournament_player_by_name is not None:
-            name = name.replace(
-                '%f', self.first_tournament_player_by_name.last_name[:8]
-            )
-        if self.last_tournament_player_by_name is not None:
-            name = name.replace('%l', self.last_tournament_player_by_name.last_name[:8])
-        return name
+        first_player = self.first_tournament_player_by_name
+        last_player = self.last_tournament_player_by_name
+        return self._title(
+            first_player.last_name[:8] if first_player is not None else None,
+            last_player.last_name[:8] if last_player is not None else None,
+            _('%f to %l'),
+            '%t',
+        )
 
     @property
     def name_for_ranking(self) -> str:
         if self.tournament.is_team_tournament:
             return self._name_for_team_standings()
         self._extract_players_by_rank()
-        if self.stored_screen_set:
-            name = self.stored_screen_set.name
-        else:
-            assert self.family is not None
-            name = self.family.name
-        if name is None:
-            if self.first or self.last:
-                if self._config.ranking_crosstable:
-                    name = _('Crosstable %f to %l')
-                else:
-                    name = _('Ranking %f to %l')
-            else:
-                if self._config.ranking_crosstable:
-                    name = _('%t crosstable')
-                else:
-                    name = _('%t ranking')
-        name = name.replace('%t', str(self.tournament.name))
-        if self.first_tournament_player_by_rank is not None:
-            name = name.replace(r'%f', str(self.first_tournament_player_by_rank.rank))
-        if self.last_tournament_player_by_rank is not None:
-            name = name.replace('%l', str(self.last_tournament_player_by_rank.rank))
-        return name
+        first_player = self.first_tournament_player_by_rank
+        last_player = self.last_tournament_player_by_rank
+        crosstable = self._config.ranking_crosstable
+        return self._title(
+            str(first_player.rank) if first_player is not None else None,
+            str(last_player.rank) if last_player is not None else None,
+            _('Crosstable %f to %l') if crosstable else _('Ranking %f to %l'),
+            _('%t crosstable') if crosstable else _('%t ranking'),
+        )
 
     def _name_for_team_standings(self) -> str:
         """Set title for a team ranking: ``%f``/``%l`` are the first and
         last team ranks shown by the set."""
         self._extract_team_standings()
-        if self.stored_screen_set:
-            name = self.stored_screen_set.name
-        else:
-            assert self.family is not None
-            name = self.family.name
-        if name is None:
-            name = _('Ranking %f to %l') if self.first or self.last else _('%t ranking')
-        name = name.replace('%t', str(self.tournament.name))
-        if self._team_first_item is not None:
-            name = name.replace(r'%f', str(self._team_first_item.rank))
-        if self._team_last_item is not None:
-            name = name.replace(r'%l', str(self._team_last_item.rank))
-        return name
+        first_standing = self._team_first_item
+        last_standing = self._team_last_item
+        return self._title(
+            str(first_standing.rank) if first_standing is not None else None,
+            str(last_standing.rank) if last_standing is not None else None,
+            _('Ranking %f to %l'),
+            _('%t ranking'),
+        )
 
     def _extract_team_data(self, items: list[Any]) -> None:
         """Slice ``items`` by ``first``/``last`` and split across the
@@ -641,19 +618,14 @@ class ScreenSet:
         """Set title for the team check-in list: ``%f``/``%l`` are the
         first and last team names shown by the set."""
         self._extract_teams_by_name()
-        if self.stored_screen_set:
-            name = self.stored_screen_set.name
-        else:
-            assert self.family is not None
-            name = self.family.name
-        if name is None:
-            name = _('%f to %l') if self.first or self.last else '%t'
-        name = name.replace('%t', str(self.tournament.name))
-        if self._team_first_item is not None:
-            name = name.replace('%f', self._team_first_item.name[:12])
-        if self._team_last_item is not None:
-            name = name.replace('%l', self._team_last_item.name[:12])
-        return name
+        first_team = self._team_first_item
+        last_team = self._team_last_item
+        return self._title(
+            first_team.name[:12] if first_team is not None else None,
+            last_team.name[:12] if last_team is not None else None,
+            _('%f to %l'),
+            '%t',
+        )
 
     def _extract_team_standings(self) -> None:
         """Team-tournament counterpart of :meth:`_extract_players_by_rank`:
