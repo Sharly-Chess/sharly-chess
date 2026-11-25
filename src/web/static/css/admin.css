@@ -1447,6 +1447,7 @@ tr.live-updated > td {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: flex-start;
     gap: .25rem;
     text-align: left;
     padding: .8rem 1rem;
