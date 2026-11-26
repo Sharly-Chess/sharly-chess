@@ -14,6 +14,7 @@ import pytest
 from litestar.testing import TestClient
 
 from data.loader import EventLoader
+from data.screens.assistant import assistant_goal, assistant_wizard
 from data.pairings.variations import BergerRoundRobinVariation
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredDisplayController, StoredTournament
@@ -257,12 +258,12 @@ def test_the_assistant_creates_an_input_screen_and_its_channel(
     assert stored_screen is not None
     assert stored_screen.accepts_input
     assert stored_screen.columns == 1
-    # The channel is created and the screen designed for it, but the
-    # channel is not switched to it.
+    # The channel is created, the screen designed for it, and the channel
+    # shows it.
     channels = list(event.display_controllers_by_id.values())
     assert len(channels) == 1
     assert channels[0].name == 'Main hall'
-    assert channels[0].screen_id is None
+    assert channels[0].screen_id == screens[0].id
     assert channels[0].stored_display_controller.item_screen_ids == [screens[0].id]
 
 
@@ -302,8 +303,8 @@ def test_the_assistant_creates_one_screen_per_tournament_behind_a_menu(
         for screen in screens
         for screen_set in screen.screen_sets
     ) == sorted([tournament.id, other.id])
-    # One menu pointing to both screens, designed for the channel, named
-    # after the goal.
+    # One menu pointing to both screens, designed for the channel and shown
+    # by it, named after the goal.
     menus = list(event.menus_by_id.values())
     assert len(menus) == 1
     assert menus[0].name == 'Check-in'
@@ -313,7 +314,8 @@ def test_the_assistant_creates_one_screen_per_tournament_behind_a_menu(
     channels = list(event.display_controllers_by_id.values())
     assert len(channels) == 1
     assert channels[0].name == 'iPad'
-    assert channels[0].menu_id is None
+    assert channels[0].menu_id == menus[0].id
+    assert channels[0].screen_id is None
     assert channels[0].stored_display_controller.item_menu_ids == [menus[0].id]
 
 
@@ -395,6 +397,131 @@ def test_the_assistant_offers_the_existing_channels(
 
 
 @pytest.mark.unit
+def test_an_existing_channel_is_not_switched_to_the_new_screen(
+    http: TestClient, tournament: StoredTournament
+):
+    # A first run creates a channel, showing the screen created...
+    response = http.post(
+        f'/screen-assistant-create/{EVENT_ID}',
+        data={
+            'goal': 'check-in',
+            'answer_paged': ONE_PAGE,
+            'answer_switch_tournaments': str(tournament.id),
+            'answer_columns': '0',
+            'answer_channel': NEW_CHANNEL,
+            'answer_channel_name': 'Main hall',
+        },
+    )
+    assert response.status_code == 200
+    event = reload_event()
+    check_in_screens = event.sorted_basic_screens_by_screen_type[
+        ScreenType.CHECK_IN.value
+    ]
+    assert len(check_in_screens) == 1
+    channel = next(iter(event.display_controllers_by_id.values()))
+    # ... which the next run asks to switch, saying what it shows.
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=boards')
+    assert response.status_code == 200
+    assert 'Do you want the channel “Main hall” to show the new screen?' in (
+        response.text
+    )
+    assert f'currently shows “{check_in_screens[0].name}”' in response.text
+    # Picking that channel without switching it marks the new screen as
+    # designed for it, but the channel keeps showing the first screen.
+    response = http.post(
+        f'/screen-assistant-create/{EVENT_ID}',
+        data={
+            'goal': 'boards',
+            'answer_paged': ONE_PAGE,
+            'answer_switch_tournaments': str(tournament.id),
+            'answer_columns': '0',
+            'answer_channel': '0',  # the existing channel
+            f'answer_channel_switch_{channel.id}': '1',  # No
+        },
+    )
+    assert response.status_code == 200
+    event = reload_event()
+    boards_screens = event.sorted_basic_screens_by_screen_type[ScreenType.BOARDS.value]
+    assert len(boards_screens) == 1
+    channels = list(event.display_controllers_by_id.values())
+    assert len(channels) == 1
+    assert channels[0].screen_id == check_in_screens[0].id
+    assert boards_screens[0].id in channels[0].stored_display_controller.item_screen_ids
+
+
+@pytest.mark.unit
+def test_an_existing_channel_is_switched_to_the_new_menu_when_asked(
+    http: TestClient, tournament: StoredTournament
+):
+    other = TestUtils.create_tournament(
+        EVENT_ID, f'{TOURNAMENT_NAME}-2', json_file='test-screens'
+    )
+    with EventDatabase(EVENT_ID, write=True) as database:
+        channel = database.add_stored_display_controller(
+            StoredDisplayController(id=None, name='Projector')
+        )
+    assert channel.id is not None
+    event = reload_event()
+    # A channel showing nothing is switched by default.
+    goal = assistant_goal(event, 'check-in-input')
+    assert goal is not None
+    question = assistant_wizard(event, goal).questions[f'channel_switch_{channel.id}']
+    assert question.default_form_value == '0'
+    assert question.help == 'The channel “Projector” currently shows nothing.'
+    # The question and the answer switching it name what is created, asked
+    # of the server once the question is shown: the screen until then...
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=check-in-input')
+    assert 'Do you want the channel “Projector” to show the new screen?' in (
+        response.text
+    )
+    assert 'Yes, show the new screen on this channel' in response.text
+    question_url = (
+        f'/screen-assistant-text/{EVENT_ID}?question=channel_switch_{channel.id}'
+    )
+    assert question_url in response.text
+    assert f'{question_url}&option=0' in response.text
+    # ... the menu for one screen per tournament behind a menu...
+    data = {
+        'goal': 'check-in-input',
+        'answer_tournaments': f'{tournament.id};{other.id}',
+        'answer_nav': MENU,
+        'answer_columns': '0',
+        'answer_channel': '0',  # the existing channel
+    }
+    response = http.post(question_url, data=data)
+    assert response.text == 'Do you want the channel “Projector” to show the new menu?'
+    response = http.post(f'{question_url}&option=0', data=data)
+    assert response.text == 'Yes, show the new menu on this channel'
+    # ... and the screen for a single tournament.
+    response = http.post(
+        f'{question_url}&option=0',
+        data=data
+        | {'answer_tournaments': str(tournament.id), 'answer_paged': ONE_PAGE},
+    )
+    assert response.text == 'Yes, show the new screen on this channel'
+    response = http.post(
+        f'/screen-assistant-create/{EVENT_ID}',
+        data={
+            'goal': 'check-in-input',
+            'answer_tournaments': f'{tournament.id};{other.id}',
+            'answer_nav': MENU,
+            'answer_columns': '0',
+            'answer_channel': '0',  # the existing channel
+            f'answer_channel_switch_{channel.id}': '0',  # Yes
+        },
+    )
+    assert response.status_code == 200
+    event = reload_event()
+    menus = list(event.menus_by_id.values())
+    assert len(menus) == 1
+    # The channel shows the menu, which is designed for it.
+    switched = event.display_controllers_by_id[channel.id]
+    assert switched.menu_id == menus[0].id
+    assert switched.screen_id is None
+    assert switched.stored_display_controller.item_menu_ids == [menus[0].id]
+
+
+@pytest.mark.unit
 def test_the_goals_point_at_the_other_screen_types(
     http: TestClient, tournament: StoredTournament
 ):
@@ -427,39 +554,57 @@ def test_the_summary_says_what_will_be_created(
     )
     assert response.status_code == 200
     # The new channel first, then what is created, the menu designed for
-    # the channel.
+    # the channel, and last the channel showing the menu.
     lines = re.findall(r'<li>(.*?)</li>', response.text)
     assert lines == [
-        'A new channel named “Main hall”.',
-        f'One “Result entry” screen per tournament: '
-        f'{TOURNAMENT_NAME}, {TOURNAMENT_NAME}-2.',
-        'A menu named “Result entry” for the players to pick their tournament '
-        'and marked as designed for the channel “Main hall”.',
+        'Create a new channel named “Main hall”.',
+        (
+            f'Create one “Result entry” screen per tournament: '
+            f'{TOURNAMENT_NAME}, {TOURNAMENT_NAME}-2.'
+        ),
+        (
+            'Create a menu named “Result entry” for the players to pick their tournament '
+            'and mark it as designed for the channel “Main hall”.'
+        ),
+        'Show the new menu on the channel “Main hall”.',
     ]
 
-    # An existing channel: the screen itself is designed for it, with no
-    # line for the channel.
+    # An existing channel not switched: the screen itself is designed for
+    # it, with no line for the channel.
     with EventDatabase(EVENT_ID, write=True) as database:
         channel = database.add_stored_display_controller(
             StoredDisplayController(id=None, name='Projector')
         )
+    assert channel.id is not None
     reload_event()
+    data = {
+        'goal': 'ranking',
+        'answer_ranking_kind': '0',
+        'answer_paged': ONE_PAGE,
+        'answer_switch_tournaments': f'{tournament.id};{other.id}',
+        'answer_columns': '0',
+        # The existing channel comes first among the options.
+        'answer_channel': '0',
+        f'answer_channel_switch_{channel.id}': '1',  # No
+    }
+    response = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data)
+    assert re.findall(r'<li>(.*?)</li>', response.text) == [
+        (
+            f'Create a “Standings” screen for tournaments {TOURNAMENT_NAME}, '
+            f'{TOURNAMENT_NAME}-2 and mark it as designed for the channel “Projector”.'
+        ),
+    ]
+    # Switched, the channel says it shows the screen.
     response = http.post(
         f'/screen-assistant-summary/{EVENT_ID}',
-        data={
-            'goal': 'ranking',
-            'answer_ranking_kind': '0',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': f'{tournament.id};{other.id}',
-            'answer_columns': '0',
-            # The existing channel comes first among the options.
-            'answer_channel': '0',
-        },
+        data=data | {f'answer_channel_switch_{channel.id}': '0'},  # Yes
     )
-    assert channel.id is not None
     assert re.findall(r'<li>(.*?)</li>', response.text) == [
-        f'A “Standings” screen covering {TOURNAMENT_NAME}, {TOURNAMENT_NAME}-2 '
-        'and marked as designed for the channel “Projector”.',
+        (
+            f'Create a “Standings” screen for tournaments {TOURNAMENT_NAME}, '
+            f'{TOURNAMENT_NAME}-2 and mark it as designed for the channel “Projector”.'
+        ),
+        'Show the new screen on the channel “Projector”.',
     ]
 
 
@@ -482,7 +627,7 @@ def test_the_summary_names_the_menu_as_it_will_be_created(
     # A second run cannot reuse the name: the summary says the name the menu
     # will really get.
     response = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data)
-    assert 'A menu named “Check-in (2)”' in response.text
+    assert 'Create a menu named “Check-in (2)”' in response.text
     assert http.post(f'/screen-assistant-create/{EVENT_ID}', data=data).is_success
     event = reload_event()
     assert sorted(menu.name for menu in event.menus_by_id.values()) == [
@@ -674,7 +819,9 @@ def test_the_standings_goal_offers_the_cross_table_and_the_grid(
         'answer_channel': NO_CHANNEL,
     }
     summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text
-    assert (f'A “Round-robin grid” screen covering {TOURNAMENT_NAME}-rr.') in summary
+    assert (
+        f'Create a “Round-robin grid” screen for tournaments {TOURNAMENT_NAME}-rr.'
+    ) in summary
     assert http.post(f'/screen-assistant-create/{EVENT_ID}', data=data).is_success
     event = reload_event()
     rankings = event.sorted_basic_screens_by_screen_type[ScreenType.RANKING.value]
@@ -748,9 +895,12 @@ def test_several_round_robin_grids_on_one_page_or_a_page_each(
     }
     summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text
     if rotators:
-        assert 'A rotator named “Round-robin grids” showing them in turn.' in summary
+        assert (
+            'Create a rotator named “Round-robin grids” showing them in turn.'
+            in summary
+        )
     if menus:
-        assert 'A menu named “Round-robin grids” to pick the grid.' in summary
+        assert 'Create a menu named “Round-robin grids” to pick the grid.' in summary
     response = http.post(f'/screen-assistant-create/{EVENT_ID}', data=data)
     assert response.is_success
     event = reload_event()

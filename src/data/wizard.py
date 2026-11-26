@@ -7,7 +7,7 @@ names the template showing it
 (``admin/wizard_questions/<type>.html``)."""
 
 from abc import ABC, abstractmethod
-from collections.abc import Collection, Iterable
+from collections.abc import Callable, Collection, Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar, override
 
@@ -30,6 +30,10 @@ class WizardOption:
     # The answer as listed among those given, when the text alone would not
     # say what it answers (a bare "Yes"); the text if None
     summary: str | None = None
+    # The text from the answers given before, when it depends on them: the
+    # page asks the server for it when the question is shown, ``text``
+    # standing until then
+    text_for_answers: Callable[[dict[str, Any]], str] | None = None
 
 
 @dataclass
@@ -53,6 +57,9 @@ class WizardQuestion(ABC):
     # when the bare answer would not say what it answers (a number of
     # pages); the bare answer if None
     summary: str | None = None
+    # The text from the answers given before, when it depends on them (see
+    # WizardOption.text_for_answers)
+    text_for_answers: Callable[[dict[str, Any]], str] | None = None
 
     @abstractmethod
     def _read_answer(self, raw: str) -> tuple[Any, str | None]:

@@ -13,7 +13,10 @@
             {% if data.get(field) == loop.index0|string %}checked{% endif %}
         >
         <label class="form-check-label" for="{{ option_id }}">
-            <span class="screen-assistant-option-text">{{ option.text }}</span>
+            <span
+                class="screen-assistant-option-text"
+                {% if option.text_for_answers %}data-text-url="{{ url_for('admin-screen-assistant-text', event_uniq_id=admin_event.uniq_id) }}?question={{ question_id }}&option={{ loop.index0 }}"{% endif %}
+            >{{ option.text }}</span>
             {% if option.help %}
                 <span class="d-block form-text mt-0">{{ option.help }}</span>
             {% endif %}

@@ -129,7 +129,10 @@
                             data-testid="screen-assistant-question-{{ question_id }}"
                             hidden
                         >
-                            <h3 class="screen-assistant-question-text">{{ question.text }}</h3>
+                            <h3
+                                class="screen-assistant-question-text"
+                                {% if question.text_for_answers %}data-text-url="{{ url_for('admin-screen-assistant-text', event_uniq_id=admin_event.uniq_id) }}?question={{ question_id }}"{% endif %}
+                            >{{ question.text }}</h3>
                             {% if question.help %}
                                 <p class="form-text mt-0 mb-3">{{ question.help }}</p>
                             {% endif %}
@@ -140,7 +143,7 @@
                     {% endfor %}
                     {# Once the last question answered. #}
                     <div class="screen-assistant-step screen-assistant-final" data-stage="create" data-testid="screen-assistant-final" hidden>
-                        <h3 class="screen-assistant-question-text mb-3">{{ _('Ready to create') }}</h3>
+                        <h3 class="screen-assistant-question-text mb-3">{{ _('Perform the following actions:') }}</h3>
                         {# What the answers create, asked of the server once the
                            last question is answered. #}
                         <div id="screen-assistant-summary" data-testid="screen-assistant-summary"></div>
@@ -325,6 +328,25 @@
                     asked.add(questionId);
                     setAnswer(current, current.dataset.default);
                 }
+                // A question or an answer worded after the answers given so
+                // far is asked of the server (the rail then lists the
+                // question as worded).
+                const shown = current;
+                shown?.querySelectorAll('[data-text-url]').forEach((text) => {
+                    htmx.ajax('POST', text.dataset.textUrl, {
+                        source: form,
+                        target: text,
+                        swap: 'innerHTML',
+                    }).then(() => {
+                        if (current === shown) {
+                            renderRail(
+                                railAnswers(),
+                                shown.dataset.stage,
+                                shown.querySelector('.screen-assistant-question-text').textContent.trim()
+                            );
+                        }
+                    });
+                });
                 questions.forEach((question) => question.hidden = question !== current);
                 final.hidden = current !== null;
                 if (current === null) {

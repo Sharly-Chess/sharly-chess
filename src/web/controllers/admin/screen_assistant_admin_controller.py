@@ -1,7 +1,8 @@
+import html
 from typing import Annotated, Any
 
-from litestar import get, post
-from litestar.enums import RequestEncodingType
+from litestar import Response, get, post
+from litestar.enums import MediaType, RequestEncodingType
 from litestar.exceptions import NotFoundException
 from litestar.params import Body, FromQuery
 from litestar.plugins.htmx import ClientRedirect, HTMXRequest
@@ -13,6 +14,7 @@ from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.screens.assistant import (
     AssistantGoal,
+    assistant_created_kind,
     assistant_goal,
     assistant_goals,
     assistant_other_type_names,
@@ -21,10 +23,12 @@ from data.screens.assistant import (
     assistant_wizard,
     create_from_assistant,
 )
+from data.wizard import WizardChoiceQuestion, WizardOption, WizardQuestion
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.channels import mark_screens_change_announced, publish_ws_event
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard
 from web.messages import Message
@@ -168,6 +172,22 @@ class ScreenAssistantAdminController(BaseEventAdminController):
                     channel_name=creation.channel_name
                 ),
             )
+        if creation.channel_switched_id is not None:
+            # The display of the channel shows what was created at once.
+            mark_screens_change_announced(event.uniq_id)
+            publish_ws_event(
+                f'display-controller-updated|{event.uniq_id}|'
+                f'{creation.channel_switched_id}',
+                event_uniq_id=event.uniq_id,
+            )
+            switched_message = {
+                'menu': _('Channel [{channel_name}] now shows the new menu.'),
+                'rotator': _('Channel [{channel_name}] now shows the new rotator.'),
+                'screen': _('Channel [{channel_name}] now shows the new screen.'),
+            }[assistant_created_kind(event, goal, answers)]
+            Message.success(
+                request, switched_message.format(channel_name=creation.channel_name)
+            )
         # Asked to edit what was created, the tab opens its form too: the
         # screen or paged screen when a single one was created, else the
         # menu or the rotator leading to the screens.
@@ -235,3 +255,48 @@ class ScreenAssistantAdminController(BaseEventAdminController):
             template_name='admin/screens/assistant_summary.html',
             context={'summary_lines': summary_lines},
         )
+
+    @post(
+        path='/screen-assistant-text/{event_uniq_id:str}',
+        name='admin-screen-assistant-text',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_screen_assistant_text(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        question: FromQuery[str],
+        option: FromQuery[int | None] = None,
+    ) -> Response[str]:
+        """The text of the question *question* (or of its option *option*)
+        worded after the answers given so far (see
+        ``WizardOption.text_for_answers``)."""
+        form_data = WebContext.flatten_list_data(data)
+        web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
+        goal = assistant_goal(event, form_data.get('goal', ''))
+        if goal is None or not goal.creatable:
+            raise NotFoundException('Unknown assistant goal.')
+        wizard = assistant_wizard(event, goal)
+        wizard_question = wizard.questions.get(question)
+        if wizard_question is None:
+            raise NotFoundException(f'Unknown assistant question [{question}].')
+        item: WizardQuestion | WizardOption = wizard_question
+        if option is not None:
+            if not isinstance(wizard_question, WizardChoiceQuestion) or not (
+                0 <= option < len(wizard_question.options)
+            ):
+                raise NotFoundException(f'Unknown assistant option [{option}].')
+            item = wizard_question.options[option]
+        # The questions after the one shown may not be answered yet: the
+        # text only depends on those before.
+        answers, _path, _errors = wizard.read_answers(form_data)
+        text = (
+            item.text_for_answers(answers)
+            if item.text_for_answers is not None
+            else item.text
+        )
+        return Response(html.escape(text), media_type=MediaType.HTML)
