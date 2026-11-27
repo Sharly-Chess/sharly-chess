@@ -783,6 +783,12 @@ class ScreenType(IdentifiableEntity, ABC):
         modal); a plugin type points this at its own form partial."""
         return None
 
+    @property
+    def multiple_edit_form_template(self) -> str | None:
+        """The extra fields of this type in the modal editing several screens
+        at once, ``None`` to leave them out."""
+        return self.form_template
+
     def read_form_data(
         self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
@@ -3158,6 +3164,12 @@ class ImageScreenType(ScreenType):
     @override
     def form_template(self) -> str | None:
         return '/admin/screens/forms/image_form.html'
+
+    @property
+    @override
+    def multiple_edit_form_template(self) -> str | None:
+        # The image of each screen is its own.
+        return None
 
     @property
     @override

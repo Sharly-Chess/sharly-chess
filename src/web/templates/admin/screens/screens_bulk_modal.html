@@ -1,0 +1,240 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_size = 'fit' if action == 'delete' else 'wide' %}
+{% set modal_class = 'admin-screen-edit-modal' %}
+{% set selection = bulk_selection %}
+
+{% block title %}
+    {% if action == 'delete' %}
+        {{ ngettext('Delete %(num)d screen', 'Delete %(num)d screens', selection.count) }}
+    {% else %}
+        {{ ngettext('Edit %(num)d screen', 'Edit %(num)d screens', selection.count) }}
+    {% endif %}
+{% endblock %}
+
+{% block subtitle %}
+    {{ _('%(string)s: %(value)s', string=_('Screen type'), value=screen_type.name) }}
+{% endblock %}
+
+{% block body %}
+    <ul class="screens-bulk-names" data-testid="screens-bulk-names">
+        {% for name in selection.names %}
+            <li>{{ name }}</li>
+        {% endfor %}
+    </ul>
+    <form
+        id="modal-form"
+        hx-trigger="submit, enterKeypressFromModal"
+        {% if action == 'delete' %}
+            hx-delete="{{ url_for('admin-screens-bulk-delete', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
+        {% else %}
+            hx-patch="{{ url_for('admin-screens-bulk-update', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        {% for item_id in selection.item_ids %}
+            <input type="hidden" name="item_ids" value="{{ item_id }}">
+        {% endfor %}
+        {% if action == 'delete' %}
+            {{ components.note('danger', _('Warning: the deletion is permanent!'), icon='warning') }}
+        {% else %}
+            {{ components.note('info', _('Only the fields you change are applied to the selected screens; the others keep their own values.')) }}
+            {% for field in bulk_changed %}
+                <input type="hidden" name="bulk_changed" value="{{ field }}">
+            {% endfor %}
+            {{ components.section_heading(_('Properties')) }}
+            <div class="row gy-2 gx-3">
+                <div class="col-12">
+                    {{ admin_macros.switch_input(
+                        name='public',
+                        label='',
+                        placeholder=_('Public screens'),
+                        tooltip_text=_('Only allowed users can see private screens.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                {% if not screen_type.has_config_fields %}
+                    {% include '/admin/display_controllers/destination_field.html' %}
+                {% endif %}
+            </div>
+
+            {% if screen_type.multiple_edit_form_template %}
+                {% include screen_type.multiple_edit_form_template %}
+            {% endif %}
+
+            {% set timer_field %}
+                {% if admin_event.timers_by_id %}
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='timer_id',
+                            label=_('%(string)s:', string=_('Timer')),
+                            tooltip_text=_('The timer displayed on the screen.'),
+                            select_options=timer_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endif %}
+            {% endset %}
+
+            {% if screen_type.has_config_fields %}
+                {{ components.section_heading(_('Layout')) }}
+                <div class="row gy-2 gx-3">
+                    {% with destination_field_class='col-12' %}
+                        {% include '/admin/display_controllers/destination_field.html' %}
+                    {% endwith %}
+                    {% if screen_type.multi_column_allowed %}
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='columns',
+                                label=_('%(string)s:', string=_('Columns')),
+                                placeholder=_('E.g.: %(num)d', num=2),
+                                tooltip_text=_('The number of columns used to display data.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    {% endif %}
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='font_size',
+                            label=_('Font size adjustment (%%):'),
+                            placeholder=100,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    {% if selection.all_paged %}
+                        {% set is_team_matches = selection.families|selectattr('shows_team_matches')|list|length > 0 %}
+                        {% set sel = screen_type.selection_labels(admin_event.is_team_event, is_team_matches) %}
+                        {% if selection.shows_board_selection %}
+                            <div class="col-12">
+                                {{ admin_macros.select_input(
+                                    name='fixed_board_order',
+                                    label=_('Board selection:'),
+                                    select_options=screen_type.board_selection_options(false),
+                                    tooltip_text=_('How the boards shown on these pages are chosen and ordered.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='parts',
+                                label=_('%(string)s:', string=_('Number of pages')),
+                                placeholder=sel.parts_placeholder,
+                                tooltip_text=sel.parts_tooltip,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='number',
+                                label=sel.number_label,
+                                placeholder=sel.number_placeholder,
+                                tooltip_text=sel.number_tooltip,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='page_delay',
+                                label=_('Seconds per page:'),
+                                placeholder=_('Default'),
+                                tooltip_text=_('How long each page is shown when the pages turn, on a channel or in a rotator. Left empty, a channel shows each page for %(seconds)d seconds and a rotator for its own delay.', seconds=sharly_chess_config.default_rotator_delay),
+                                data=data, errors=errors,
+                                min=1
+                            ) }}
+                        </div>
+                    {% endif %}
+                    {{ timer_field }}
+                    <div class="col-12">
+                        {% include '../common/modal/alert_message.html' %}
+                    </div>
+                </div>
+            {% elif admin_event.timers_by_id %}
+                <div class="row gy-2 gx-3 mt-0">
+                    {{ timer_field }}
+                </div>
+            {% endif %}
+        {% endif %}
+    </form>
+    {% if action != 'delete' %}
+        <script>
+            (() => {
+                const form = document.getElementById('modal-form');
+                const mixedLabel = {{ _('Mixed')|tojson }};
+                const mixedNote = {{ _('The selected screens differ.')|tojson }};
+                const reserved = ['item_ids', 'bulk_changed'];
+                const changed = new Set(
+                    Array.from(form.querySelectorAll('input[name="bulk_changed"]'), (input) => input.value)
+                );
+                function markChanged(name) {
+                    if (!name || reserved.includes(name) || changed.has(name)) {
+                        return;
+                    }
+                    changed.add(name);
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'bulk_changed';
+                    input.value = name;
+                    form.appendChild(input);
+                }
+                // Hidden inputs carry what the visible fields need to be read
+                // (the column checkboxes' marker, a select's single option).
+                form.querySelectorAll('input[type="hidden"][name]').forEach((input) => markChanged(input.name));
+                for (const name of {{ bulk_mixed|tojson }}) {
+                    form.querySelectorAll(`[name="${CSS.escape(name)}"]`).forEach((input) => {
+                        if (input.type === 'hidden') {
+                            return;
+                        }
+                        const block = input.closest('.input-block');
+                        if (block && !block.querySelector('.screens-bulk-mixed-note')) {
+                            block.classList.add('screens-bulk-mixed');
+                            const note = document.createElement('div');
+                            note.className = 'sc-detail screens-bulk-mixed-note';
+                            note.textContent = mixedNote;
+                            block.appendChild(note);
+                        }
+                        if (input.type === 'checkbox') {
+                            input.indeterminate = true;
+                        } else if (input.tagName === 'SELECT') {
+                            if (!input.multiple) {
+                                $(input).prepend(new Option(mixedLabel, '', true, true)).trigger('change.select2');
+                            }
+                        } else {
+                            input.value = '';
+                            input.placeholder = mixedLabel;
+                        }
+                    });
+                }
+                // A paged screen is cut either into a number of pages or
+                // into pages of a number of rows, never both.
+                const exclusive = {parts: 'number', number: 'parts'};
+                $(form).on('input', '[name="parts"], [name="number"]', function () {
+                    const other = form.querySelector(`[name="${exclusive[this.name]}"]`);
+                    if (this.value && other.value !== '') {
+                        other.value = '';
+                    }
+                    if (this.value) {
+                        $(other).trigger('change');
+                    }
+                });
+                $(form).on('input change', '[name]', function () {
+                    markChanged(this.name);
+                    const block = this.closest('.input-block');
+                    if (block) {
+                        block.classList.remove('screens-bulk-mixed');
+                        block.querySelector('.screens-bulk-mixed-note')?.remove();
+                    }
+                });
+            })();
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% if action == 'delete' %}
+        {{ components.button(_('Delete'), kind='danger', icon='delete', type='submit', attrs={'form': 'modal-form', 'data-testid': 'screens-bulk-submit'}) }}
+    {% else %}
+        {{ components.button(_('Save'), kind='primary', icon='save', type='submit', attrs={'form': 'modal-form', 'data-testid': 'screens-bulk-submit'}) }}
+    {% endif %}
+{% endblock %}

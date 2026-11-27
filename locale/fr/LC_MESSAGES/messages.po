@@ -225,6 +225,18 @@ msgstr[0] "%(num)d écran"
 msgstr[1] "%(num)d écrans"
 
 #, python-format
+msgid "%(num)d screen has been deleted."
+msgid_plural "%(num)d screens have been deleted."
+msgstr[0] "%(num)d écran a été supprimé."
+msgstr[1] "%(num)d écrans ont été supprimés."
+
+#, python-format
+msgid "%(num)d screen has been updated."
+msgid_plural "%(num)d screens have been updated."
+msgstr[0] "%(num)d écran a été modifié."
+msgstr[1] "%(num)d écrans ont été modifiés."
+
+#, python-format
 msgid "%(num)d second per page"
 msgid_plural "%(num)d seconds per page"
 msgstr[0] "%(num)d seconde par page"
@@ -289,6 +301,12 @@ msgid "%(num)d unknown column (ignored)"
 msgid_plural "%(num)d unknown columns (ignored)"
 msgstr[0] "%(num)d colonne inconnue (ignorée)"
 msgstr[1] "%(num)d colonnes inconnues (ignorées)"
+
+#, python-format
+msgid "%(num)s selected"
+msgid_plural "%(num)s selected"
+msgstr[0] "%(num)s sélectionné"
+msgstr[1] "%(num)s sélectionnés"
 
 #, python-format
 msgid "%(players)d player in %(groups)d groups → %(size)d-slot bracket, %(rounds)d rounds (%(byes)d byes)."
@@ -2558,6 +2576,9 @@ msgstr "Effacer le résultat"
 msgid "Clear the schedule"
 msgstr "Supprimer les appariements"
 
+msgid "Clear the selection"
+msgstr "Vider la sélection"
+
 msgid "Clear the tag filter."
 msgstr "Effacer le filtre par étiquette."
 
@@ -3332,6 +3353,12 @@ msgstr "Délai (secondes) :"
 msgid "Delete"
 msgstr "Supprimer"
 
+#, python-format
+msgid "Delete %(num)d screen"
+msgid_plural "Delete %(num)d screens"
+msgstr[0] "Supprimer %(num)d écran"
+msgstr[1] "Supprimer %(num)d écrans"
+
 #, python-brace-format
 msgid "Delete <b>{value}</b>"
 msgstr "Supprimer <b>{value}</b>"
@@ -4000,6 +4027,12 @@ msgstr "Équateur"
 
 msgid "Edit"
 msgstr "Modifier"
+
+#, python-format
+msgid "Edit %(num)d screen"
+msgid_plural "Edit %(num)d screens"
+msgstr[0] "Modifier %(num)d écran"
+msgstr[1] "Modifier %(num)d écrans"
 
 msgid "Edit Player"
 msgstr "Modifier joueur·euse"
@@ -6476,6 +6509,9 @@ msgstr "Champ requis manquant [{field}]."
 msgid "Missing women"
 msgstr "Femmes manquantes"
 
+msgid "Mixed"
+msgstr "Valeurs différentes"
+
 msgctxt "monday"
 msgid "Mo"
 msgstr "Lu"
@@ -7627,6 +7663,9 @@ msgstr "Seuls les modèles personnalisés peuvent être modifiés."
 
 msgid "Only required for users that need to connect to the server."
 msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serveur."
+
+msgid "Only the fields you change are applied to the selected screens; the others keep their own values."
+msgstr "Seuls les champs modifiés sont appliqués aux écrans sélectionnés ; les autres gardent leurs propres valeurs."
 
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois. Il est donc recommandé de ne demander que l'année de naissance de vos joueur·euses afin de respecter leur vie privée."
@@ -9030,6 +9069,9 @@ msgstr "Écran paginé public"
 msgid "Public screen"
 msgstr "Écran public"
 
+msgid "Public screens"
+msgstr "Écrans publics"
+
 msgid "Publish"
 msgstr "Publier"
 
@@ -10252,6 +10294,10 @@ msgstr "Sélectionner"
 msgid "Select %(competitor)s"
 msgstr "Sélectionner %(competitor)s"
 
+#, python-format
+msgid "Select %(name)s"
+msgstr "Sélectionner %(name)s"
+
 msgid "Select All"
 msgstr "Tout sélectionner"
 
@@ -10269,6 +10315,10 @@ msgstr "Sélectionner une étape de tournoi…"
 
 msgid "Select all"
 msgstr "Tout sélectionner"
+
+#, python-format
+msgid "Select all the screens of the type %(type)s"
+msgstr "Sélectionner tous les écrans du type %(type)s"
 
 msgid "Select an account"
 msgstr "Sélectionner un compte"
@@ -12164,6 +12214,9 @@ msgstr "Les écrans affichés sur un canal sont désignés par l'administrateur�
 
 msgid "The screens, paged screens, rotators and menus designed for this channel. They appear first when choosing what it shows, and anything else can still be sent to it."
 msgstr "Les écrans, écrans paginés, écrans rotatifs et menus conçus pour ce canal. Ils sont proposés en premier quand on choisit ce qu'il affiche, et tout le reste peut encore lui être envoyé."
+
+msgid "The selected screens differ."
+msgstr "Les écrans sélectionnés diffèrent."
 
 #, python-brace-format
 msgid "The selected {competitors} have been merged."

@@ -125,6 +125,29 @@ class ScreenAdminRenderer(BaseEventAdminController):
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
     ]
 
+    @staticmethod
+    def screen_form_values(screen: Screen) -> dict[str, Any]:
+        """The stored values of *screen*, as the values of its edit form."""
+        stored_screen = screen.stored_screen
+        assert stored_screen is not None
+        form_values: dict[str, Any] = {
+            'public': stored_screen.public,
+            'name': stored_screen.name,
+            'columns': stored_screen.columns,
+            'font_size': stored_screen.font_size,
+            'menu_text': stored_screen.menu_text,
+            'timer_id': stored_screen.timer_id,
+            'message_text_checkbox': stored_screen.message_default,
+            'message_text': stored_screen.message_text,
+        } | screen.screen_type.default_form_data(screen)
+        form_values['background_color_checkbox'] = (
+            form_values.get('background_color') is None
+        )
+        form_values['display_controller_ids'] = [
+            display_controller.id for display_controller in screen.display_controllers
+        ]
+        return form_values
+
     @classmethod
     def _admin_event_screens_render(
         cls,
@@ -212,97 +235,55 @@ class ScreenAdminRenderer(BaseEventAdminController):
                 pass
             case 'screen':
                 if data is None:
-                    public: bool | None = None
-                    name: str | None = None
-                    columns: int | None = None
-                    font_size: int | None = None
-                    menu_text: str | None = None
-                    timer_id: int | None = None
-                    message_default: bool | None = None
-                    message_text: str | None = None
-                    init_set_tournament_ids: list[int] = []
-                    # Type-specific form values, provided by the screen type.
-                    type_values: dict[str, Any] = {}
+                    form_values: dict[str, Any]
                     match action:
                         case 'update':
-                            stored_screen = web_context.get_admin_screen().stored_screen
-                            assert stored_screen is not None
-                            name = stored_screen.name
-                        case 'create':
-                            screen_type_obj = web_context.screen_type
-                            assert screen_type_obj is not None
-                            # Set-based screens open on a first tournament.
-                            if screen_type_obj.has_screen_sets:
-                                init_set_tournament_ids = [
-                                    tournament.id
-                                    for tournament in event.tournaments_by_id.values()
-                                    if screen_type_obj.shows_tournament(tournament)
-                                ][:1]
-                            # No default name: an unnamed screen is named
-                            # automatically from its tournament(s).
+                            form_values = cls.screen_form_values(
+                                web_context.get_admin_screen()
+                            )
                         case 'clone':
                             screen = web_context.get_admin_screen()
-                            stored_screen = screen.stored_screen
-                            assert stored_screen is not None
-                            init_set_tournament_ids = list(
+                            form_values = cls.screen_form_values(screen)
+                            form_values['name'] = (
+                                event.get_unused_screen_name(
+                                    base_name=form_values['name'],
+                                    screen_type=screen.screen_type,
+                                )
+                                if form_values['name']
+                                else None
+                            )
+                            form_values['init_set_tournament_ids'] = list(
                                 dict.fromkeys(
                                     screen_set.tournament.id
                                     for screen_set in screen.sorted_screen_sets
                                 )
                             )
-                            if stored_screen.name:
-                                name = event.get_unused_screen_name(
-                                    base_name=stored_screen.name,
-                                    screen_type=screen.screen_type,
-                                )
-                        case 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    match action:
-                        case 'update' | 'clone':
-                            screen = web_context.get_admin_screen()
-                            stored_screen = screen.stored_screen
-                            assert stored_screen is not None
-                            public = stored_screen.public
-                            columns = stored_screen.columns
-                            font_size = stored_screen.font_size
-                            menu_text = stored_screen.menu_text
-                            timer_id = stored_screen.timer_id
-                            type_values = screen.screen_type.default_form_data(screen)
-                            message_default = stored_screen.message_default
-                            message_text = stored_screen.message_text
                         case 'create':
-                            public = True
-                            message_default = True
                             create_type = web_context.screen_type
                             assert create_type is not None
                             type_values = create_type.create_form_data(event)
-                            columns = type_values.pop('columns', None)
+                            form_values = {
+                                'public': True,
+                                'columns': type_values.pop('columns', None),
+                                'message_text_checkbox': True,
+                                # Set-based screens open on a first tournament.
+                                # No default name: an unnamed screen is named
+                                # automatically from its tournament(s).
+                                'init_set_tournament_ids': [
+                                    tournament.id
+                                    for tournament in event.tournaments_by_id.values()
+                                    if create_type.shows_tournament(tournament)
+                                ][:1]
+                                if create_type.has_screen_sets
+                                else [],
+                            } | type_values
+                            form_values['background_color_checkbox'] = (
+                                form_values.get('background_color') is None
+                            )
                         case 'delete':
-                            pass
+                            form_values = {}
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    form_values: dict[str, Any] = {
-                        'public': public,
-                        'name': name,
-                        'columns': columns,
-                        'font_size': font_size,
-                        'menu_text': menu_text,
-                        'timer_id': timer_id,
-                        'message_text_checkbox': message_default,
-                        'message_text': message_text,
-                        'init_set_tournament_ids': init_set_tournament_ids,
-                    }
-                    form_values.update(type_values)
-                    form_values['background_color_checkbox'] = (
-                        form_values.get('background_color') is None
-                    )
-                    if action in ('update', 'clone'):
-                        form_values['display_controller_ids'] = [
-                            display_controller.id
-                            for display_controller in web_context.get_admin_screen().display_controllers
-                        ]
                     data = WebContext.values_dict_to_form_data(form_values)
                 # Errors are only surfaced when passed in from a failed submit;
                 # a freshly opened form must not show validation errors.

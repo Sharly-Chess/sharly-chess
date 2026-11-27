@@ -16,7 +16,10 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     row_href_component='row_href',
     preview_template='/admin/common/collection_previews.html',
     card=CardLayout(
-        header=(ComponentPlacement('identity', 'flex-grow-1 min-width-0'),),
+        header=(
+            ComponentPlacement('select'),
+            ComponentPlacement('identity', 'flex-grow-1 min-width-0'),
+        ),
         summary=(
             ComponentPlacement('screen_type'),
             ComponentPlacement('source'),
@@ -28,6 +31,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     ),
     list=ListLayout(
         columns=(
+            ListColumn('select'),
             ListColumn(
                 'identity',
                 label=_('Screen'),

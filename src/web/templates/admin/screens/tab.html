@@ -107,11 +107,50 @@
                     {% if screen_type_data.screens and admin_screens_type_filter in ('', screen_type.id) %}
                         {% set hidden_list_columns = [] if screen_type.has_screen_sets else ['screen_sets'] %}
                         <div class="screens-collection-list-section" id="admin-screens-section-{{ screen_type.id }}">
-                            <h2 class="screens-collection-section-heading">
-                                {{ macros.screen_type_icon(screen_type, false) }}
-                                {{ screen_type_data.title }}
-                                <span class="screens-type-filter-count">{{ screen_type_data.screens|length }}</span>
-                            </h2>
+                            <div class="screens-collection-section-header">
+                                {% if collection_view_mode.value != 'preview' %}
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input m-0 screens-bulk-select-all"
+                                        aria-label="{{ _('Select all the screens of the type %(type)s', type=screen_type_data.title) }}"
+                                        data-testid="screens-bulk-select-all-{{ screen_type.id }}"
+                                    />
+                                {% endif %}
+                                <h2 class="screens-collection-section-heading">
+                                    {{ macros.screen_type_icon(screen_type, false) }}
+                                    {{ screen_type_data.title }}
+                                    <span class="screens-type-filter-count">{{ screen_type_data.screens|length }}</span>
+                                </h2>
+                                {% if collection_view_mode.value != 'preview' %}
+                                    {% set selected_items = '#admin-screens-section-' ~ screen_type.id ~ ' .screens-bulk-select:checked' %}
+                                    <div class="screens-bulk-toolbar d-none" data-testid="screens-bulk-toolbar-{{ screen_type.id }}">
+                                        <span class="screens-bulk-count"></span>
+                                        {{ components.modal_button(
+                                            url_for('admin-screens-bulk-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.id),
+                                            _('Edit'),
+                                            icon='edit',
+                                            size='sm',
+                                            attrs={'hx-include': selected_items, 'data-testid': 'screens-bulk-edit'},
+                                        ) }}
+                                        {{ components.modal_button(
+                                            url_for('admin-screens-bulk-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.id),
+                                            _('Delete'),
+                                            kind='danger',
+                                            icon='delete',
+                                            size='sm',
+                                            attrs={'hx-include': selected_items, 'data-testid': 'screens-bulk-delete'},
+                                        ) }}
+                                        {{ components.button(
+                                            _('Clear the selection'),
+                                            kind='plain',
+                                            icon='bi-x-lg',
+                                            icon_only=true,
+                                            size='sm',
+                                            class='screens-bulk-clear',
+                                        ) }}
+                                    </div>
+                                {% endif %}
+                            </div>
                             <div class="mb-4 screens-collection-section-content">
                                 {% with
                                     items=screen_type_data.screens,
@@ -132,6 +171,53 @@
                 {% endif %}
             {% endif %}
         {% endwith %}
+    {% endif %}
+    {% if client.can_manage_screens and collection_view_mode.value != 'preview' %}
+        <script>
+            (() => {
+                const sections = Array.from(document.querySelectorAll('.screens-collection-list-section'));
+                const countLabels = {
+                    one: {{ ngettext('%(num)s selected', '%(num)s selected', 1, num='{num}')|tojson }},
+                    other: {{ ngettext('%(num)s selected', '%(num)s selected', 2, num='{num}')|tojson }},
+                };
+                function update(section) {
+                    const boxes = section.querySelectorAll('.screens-bulk-select');
+                    const checked = section.querySelectorAll('.screens-bulk-select:checked').length;
+                    const all = section.querySelector('.screens-bulk-select-all');
+                    all.checked = checked > 0 && checked === boxes.length;
+                    all.indeterminate = checked > 0 && checked < boxes.length;
+                    const toolbar = section.querySelector('.screens-bulk-toolbar');
+                    toolbar.classList.toggle('d-none', checked === 0);
+                    toolbar.querySelector('.screens-bulk-count').textContent =
+                        (checked === 1 ? countLabels.one : countLabels.other).replace('{num}', checked);
+                    section.classList.toggle('screens-bulk-selecting', checked > 0);
+                }
+                function clearOthers(section) {
+                    for (const other of sections) {
+                        if (other !== section && other.querySelector('.screens-bulk-select:checked')) {
+                            other.querySelectorAll('.screens-bulk-select').forEach((box) => { box.checked = false; });
+                            update(other);
+                        }
+                    }
+                }
+                for (const section of sections) {
+                    section.addEventListener('change', (event) => {
+                        if (event.target.matches('.screens-bulk-select-all')) {
+                            const checked = event.target.checked;
+                            section.querySelectorAll('.screens-bulk-select').forEach((box) => { box.checked = checked; });
+                        } else if (!event.target.matches('.screens-bulk-select')) {
+                            return;
+                        }
+                        clearOthers(section);
+                        update(section);
+                    });
+                    section.querySelector('.screens-bulk-clear')?.addEventListener('click', () => {
+                        section.querySelectorAll('.screens-bulk-select').forEach((box) => { box.checked = false; });
+                        update(section);
+                    });
+                }
+            })();
+        </script>
     {% endif %}
     {% if scroll_to_screen_id %}
         <script>
