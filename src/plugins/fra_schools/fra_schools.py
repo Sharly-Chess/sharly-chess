@@ -465,6 +465,7 @@ class FRASchoolsPlugin(Plugin):
                 key=f'{PLUGIN_NAME}:fra-schools-championship',
                 name=_('French schools championship'),
                 tie_breaks=[
+                    tie_breaks.PointsTieBreak(),
                     ffe_tie_breaks.PapiBuchholzTieBreak(
                         [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
                     ),

@@ -144,6 +144,7 @@ _J03_ACCEPTED_LICENCES = frozenset({PlayerFFELicence.A, PlayerFFELicence.B})
 # the first three places; applying it to the whole standings is a superset
 # that changes nothing about who finishes 1st, 2nd or 3rd.
 _J03_TIE_BREAKS: list[tuple[str, dict]] = [
+    ('POINTS', {}),
     ('TEAM_EDE', {}),
     (f'{FRA_SCHOOLS_PLUGIN_NAME}-BOARD-ORDER-WINS', {}),
     ('ffe-GP-DIFFERENTIAL', {}),
