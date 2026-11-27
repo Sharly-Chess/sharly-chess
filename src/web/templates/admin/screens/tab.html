@@ -234,11 +234,29 @@
                 {% if edit_scrolled_to %}
                     {% set scroll_to = scroll_to_screen_id|string %}
                     {% if scroll_to.startswith('family-') %}
-                        {% set edit_url = url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=scroll_to[7:]|int) %}
+                        {% set scroll_item = admin_event.families_by_id[scroll_to[7:]|int] %}
                     {% else %}
-                        {% set edit_url = url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=scroll_to|int) %}
+                        {% set scroll_item = admin_event.basic_screens_by_id[scroll_to|int] %}
                     {% endif %}
-                    htmx.ajax('GET', '{{ edit_url }}', { target: 'body', indicator: '#please-wait' });
+                    {% if not scroll_item %}
+                        {% set edit_url = '' %}
+                    {% elif selected_item_ids|length > 1 %}
+                        {% set edit_url = url_for('admin-screens-bulk-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_type=scroll_item.type) ~ '?item_ids=' ~ selected_item_ids|map('urlencode')|join('&item_ids=') %}
+                        const selected = {{ selected_item_ids|tojson }};
+                        document.querySelectorAll('.screens-bulk-select').forEach((box) => {
+                            if (selected.includes(box.value)) {
+                                box.checked = true;
+                                box.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        });
+                    {% elif scroll_item.is_paged %}
+                        {% set edit_url = url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=scroll_item.id) %}
+                    {% else %}
+                        {% set edit_url = url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=scroll_item.id) %}
+                    {% endif %}
+                    {% if edit_url %}
+                        htmx.ajax('GET', {{ edit_url|tojson }}, { target: 'body', indicator: '#please-wait' });
+                    {% endif %}
                 {% endif %}
             })();
         </script>

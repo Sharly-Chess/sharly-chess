@@ -162,6 +162,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
         errors: dict[str, str] | None = None,
         scroll_to_screen_id: int | str | None = None,
         edit_scrolled_to: bool = False,
+        selected_item_ids: list[str] | None = None,
     ) -> HTMXTemplate | Redirect:
         web_context = ScreenAdminWebContext(
             request,
@@ -217,8 +218,10 @@ class ScreenAdminRenderer(BaseEventAdminController):
                     len(data) for data in admin_screen_types_data.values()
                 ),
                 'scroll_to_screen_id': scroll_to_screen_id,
-                # The edit form of the screen scrolled to opens too.
+                # The edit form of the screen scrolled to opens too, or the
+                # edit of the screens selected with it.
                 'edit_scrolled_to': edit_scrolled_to,
+                'selected_item_ids': selected_item_ids or [],
             }
         else:
             screen_type_obj = web_context.screen_type
@@ -797,13 +800,17 @@ class ScreenAdminController(ScreenAdminRenderer):
         screen_type_filter: FromQuery[str | None],
         scroll_to: FromQuery[str | None] = None,
         edit: FromQuery[bool] = False,
+        selected: FromQuery[list[str] | None] = None,
     ) -> Template | Redirect:
         if show_details is not None:
             SessionScreensShowDetails(request).set(show_details)
         if screen_type_filter is not None:
             SessionScreensTypeFilter(request).set(screen_type_filter)
         return self._admin_event_screens_render(
-            request, scroll_to_screen_id=scroll_to, edit_scrolled_to=edit
+            request,
+            scroll_to_screen_id=scroll_to,
+            edit_scrolled_to=edit,
+            selected_item_ids=selected,
         )
 
     @get(
