@@ -225,7 +225,7 @@ class TournamentSettings:
     #: The criteria the standings are ranked on, as TRF26 acronyms. Left
     #: out, the points and a few of the mandatory tie-breaks.
     tie_breaks: list[str] | None = None
-    name: str = 'Generated tournament'
+    name: str = _('Generated tournament')
     #: Give the players and teams names to read rather than numbers, for a
     #: tournament somebody is going to look at.
     realistic_names: bool = False
