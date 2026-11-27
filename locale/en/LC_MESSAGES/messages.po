@@ -2730,6 +2730,9 @@ msgstr ""
 msgid "Complete Team"
 msgstr ""
 
+msgid "Complete web page"
+msgstr ""
+
 msgid "Configuration"
 msgstr ""
 
@@ -3732,7 +3735,13 @@ msgstr ""
 msgid "Download the document as a Word file, with the values entered in its fields"
 msgstr ""
 
+msgid "Download the document as a web page, without these buttons, to reuse it on a website"
+msgstr ""
+
 msgid "Download the players matching the search into a file."
+msgstr ""
+
+msgid "Download the style and content of the document only, to insert them into a page of a website"
 msgstr ""
 
 msgid "Download the whole journal as a spreadsheet (CSV)."
@@ -5119,6 +5128,12 @@ msgid "Guinea"
 msgstr ""
 
 msgid "Guyana"
+msgstr ""
+
+msgid "HTML"
+msgstr ""
+
+msgid "HTML code"
 msgstr ""
 
 msgid "Haiti"

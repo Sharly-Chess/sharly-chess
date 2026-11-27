@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="{{ url_for('static', file_path=export_toolbar_icons) }}">
-<style>
+<link rel="stylesheet" data-document-export href="{{ url_for('static', file_path=export_toolbar_icons) }}">
+<style data-document-export>
     @media screen {
         html {
             padding-top: var(--document-export-toolbar-height, 44px);
@@ -80,8 +80,51 @@
         opacity: 0.65;
         cursor: progress;
     }
-    .document-export-toolbar button[hidden] {
+    .document-export-toolbar button[hidden],
+    .document-export-toolbar .document-export-menu[hidden] {
         display: none;
+    }
+    /* The HTML menu: its own button does nothing, its submenu opens on hover.
+       The submenu is positioned against the toolbar, not against the buttons,
+       which clip their content to their rounded border. */
+    .document-export-toolbar .document-export-menu {
+        border-left: 1px solid #212529;
+    }
+    .document-export-toolbar .document-export-menu > .document-export-menu-trigger {
+        display: flex;
+        height: 100%;
+        cursor: default;
+    }
+    .document-export-toolbar .document-export-menu-trigger .bi-caret-down-fill {
+        font-size: 9px;
+    }
+    .document-export-toolbar .document-export-menu:hover > .document-export-menu-trigger,
+    .document-export-toolbar .document-export-menu:focus-within > .document-export-menu-trigger {
+        color: #FFFFFF;
+        background-color: #212529;
+    }
+    .document-export-toolbar .document-export-submenu {
+        display: none;
+        position: absolute;
+        right: 12px;
+        flex-direction: column;
+        border: 1px solid #212529;
+        border-radius: 0 0 4px 4px;
+        overflow: hidden;
+        background-color: #FFFFFF;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    .document-export-toolbar .document-export-menu:hover > .document-export-submenu,
+    .document-export-toolbar .document-export-menu:focus-within > .document-export-submenu {
+        display: flex;
+    }
+    .document-export-toolbar .document-export-submenu button {
+        white-space: nowrap;
+        padding: 8px 12px;
+    }
+    .document-export-toolbar .document-export-submenu button + button {
+        border-left: none;
+        border-top: 1px solid #CED4DA;
     }
     @media print {
         .document-export-toolbar {
@@ -106,6 +149,19 @@
         <button type="button" data-export="word" hidden title="{{ _('Download the document as a Word file, with the values entered in its fields') }}" data-error-message="{{ _('The Word file could not be generated.') }}">
             <i class="bi bi-download"></i>{{ _('Word') }}
         </button>
+        <div class="document-export-menu" data-export="html" hidden>
+            <button type="button" class="document-export-menu-trigger" aria-haspopup="true">
+                <i class="bi bi-download"></i>{{ _('HTML') }}<i class="bi bi-caret-down-fill"></i>
+            </button>
+            <div class="document-export-submenu">
+                <button type="button" data-export="html-page" title="{{ _('Download the document as a web page, without these buttons, to reuse it on a website') }}">
+                    {{ _('Complete web page') }}
+                </button>
+                <button type="button" data-export="html-code" title="{{ _('Download the style and content of the document only, to insert them into a page of a website') }}">
+                    {{ _('HTML code') }}
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <script src="{{ url_for('static', file_path='/js/document_export.js') }}?version={{ export_toolbar_version }}"></script>

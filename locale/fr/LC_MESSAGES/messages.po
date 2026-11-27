@@ -2730,6 +2730,9 @@ msgstr "Valeur complémentaire"
 msgid "Complete Team"
 msgstr "Équipe complète"
 
+msgid "Complete web page"
+msgstr "Page web complète"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -3732,8 +3735,14 @@ msgstr "Télécharger le document au format PDF"
 msgid "Download the document as a Word file, with the values entered in its fields"
 msgstr "Télécharger le document au format Word, avec les valeurs saisies dans ses champs"
 
+msgid "Download the document as a web page, without these buttons, to reuse it on a website"
+msgstr "Télécharger le document en page web, sans ces boutons, pour le réutiliser sur un site"
+
 msgid "Download the players matching the search into a file."
 msgstr "Télécharger un fichier contenant les joueur·euses correspondant à la recherche."
+
+msgid "Download the style and content of the document only, to insert them into a page of a website"
+msgstr "Télécharger seulement le style et le contenu du document, pour les insérer dans une page d'un site"
 
 msgid "Download the whole journal as a spreadsheet (CSV)."
 msgstr "Télécharger tout le journal sous forme de tableur (CSV)."
@@ -5120,6 +5129,12 @@ msgstr "Guinée"
 
 msgid "Guyana"
 msgstr "Guyana"
+
+msgid "HTML"
+msgstr "HTML"
+
+msgid "HTML code"
+msgstr "Code HTML"
 
 msgid "Haiti"
 msgstr "Haïti"
