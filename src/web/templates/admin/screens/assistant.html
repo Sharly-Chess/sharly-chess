@@ -351,11 +351,19 @@
                 questions.forEach((question) => question.hidden = question !== current);
                 final.hidden = current !== null;
                 if (current === null) {
-                    // The server says what the answers create.
+                    // The server says what the answers create, and whether
+                    // it is a single screen to edit.
+                    createEditButton.classList.add('d-none');
                     htmx.ajax('POST', form.dataset.summaryUrl, {
                         source: form,
                         target: '#screen-assistant-summary',
                         swap: 'innerHTML',
+                    }).then(() => {
+                        createEditButton.classList.toggle(
+                            'd-none',
+                            form.querySelector('#screen-assistant-summary [data-editable]')
+                                ?.dataset.editable !== 'true'
+                        );
                     });
                 }
                 renderRail(

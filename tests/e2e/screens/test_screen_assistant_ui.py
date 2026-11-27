@@ -218,7 +218,8 @@ class TestScreenAssistant:
         self, page: Page, api_request_context: APIRequestContext
     ):
         """A page per tournament is offered first, before the tournaments
-        are picked, and needs at least two of them."""
+        are picked, and needs at least two of them. Gathered by a rotator,
+        the screens are not offered to be edited once created."""
         TestUtils.create_tournament(
             EVENT_ID,
             f'{TOURNAMENT_NAME} 2',
@@ -252,3 +253,14 @@ class TestScreenAssistant:
         question = page.get_by_test_id('screen-assistant-question-split_nav')
         expect(question).to_be_visible()
         expect(question.get_by_label('The pages turn by themselves')).to_be_checked()
+        # A screen per tournament gathered by a rotator: nothing to edit.
+        next_.click()
+        expect(page.get_by_test_id('screen-assistant-question-columns')).to_be_visible()
+        next_.click()
+        expect(page.get_by_test_id('screen-assistant-question-channel')).to_be_visible()
+        next_.click()
+        expect(page.get_by_test_id('screen-assistant-summary')).to_contain_text(
+            'Create a rotator named'
+        )
+        expect(page.get_by_test_id('screen-assistant-create')).to_be_visible()
+        expect(page.get_by_test_id('screen-assistant-create-edit')).to_be_hidden()

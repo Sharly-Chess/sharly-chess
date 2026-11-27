@@ -220,6 +220,15 @@ def assistant_created_kind(
     return 'screen'
 
 
+def assistant_creates_single_screen(
+    event: Event, goal: AssistantGoal, answers: dict[str, Any]
+) -> bool:
+    """Whether the *answers* create a single screen or paged screen, which
+    can be edited once created (a screen per tournament is gathered by a
+    menu or a rotator)."""
+    return _assistant_layout(event, goal, answers).kind != 'split'
+
+
 def _assistant_layout(
     event: Event, goal: AssistantGoal, answers: dict[str, Any]
 ) -> AssistantLayout:
