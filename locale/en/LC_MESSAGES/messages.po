@@ -6006,6 +6006,9 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
+msgid "List the players tied with the last main category prize winner"
+msgstr ""
+
 msgid "List view"
 msgstr ""
 
@@ -7056,6 +7059,9 @@ msgid "No players."
 msgstr ""
 
 msgid "No plugin matches your search."
+msgstr ""
+
+msgid "No prize"
 msgstr ""
 
 msgid "No prize brackets."
@@ -12854,6 +12860,10 @@ msgstr ""
 msgid "Tie-break:"
 msgstr ""
 
+msgid "Tie-breaks"
+msgstr ""
+
+msgctxt "tie-breaks column header"
 msgid "Tie-breaks"
 msgstr ""
 

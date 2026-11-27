@@ -6006,6 +6006,9 @@ msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 msgid "List of players"
 msgstr "Liste des participant·es"
 
+msgid "List the players tied with the last main category prize winner"
+msgstr "Citer les ex-æquo du·de la dernier·e primé·e du classement général"
+
 msgid "List view"
 msgstr "Affichage en liste"
 
@@ -7057,6 +7060,9 @@ msgstr "Aucun·e joueur·euse."
 
 msgid "No plugin matches your search."
 msgstr "Aucun plug-in ne correspond à votre recherche."
+
+msgid "No prize"
+msgstr "Non primé·e"
 
 msgid "No prize brackets."
 msgstr "Aucun groupe non cumulable."
@@ -12856,6 +12862,10 @@ msgstr "Les ensembles de départages sont enregistrés depuis la fenêtre Dépar
 msgid "Tie-break:"
 msgstr "Départage :"
 
+msgid "Tie-breaks"
+msgstr "Départages"
+
+msgctxt "tie-breaks column header"
 msgid "Tie-breaks"
 msgstr "Départages"
 

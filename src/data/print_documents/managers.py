@@ -105,6 +105,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.TeamGridSortPrintOption,
             options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
+            options.ShowTiedPlayersPrintOption,
             options.KnockoutSchedulePrintOption,
             options.NonMonetaryPrintOption,
             options.FederationPrintOption,
