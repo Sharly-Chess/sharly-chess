@@ -3137,7 +3137,7 @@ msgid "Currently showing nothing."
 msgstr ""
 
 #, python-brace-format
-msgid "Currently showing: {name}."
+msgid "This channel is currently showing {name}."
 msgstr ""
 
 msgid "Custom"

@@ -327,7 +327,9 @@ def _channel_questions(event: Event, goal: AssistantGoal) -> dict[str, WizardQue
                 value=channel.id,
                 text=channel.name,
                 help=(
-                    _('Currently showing: {name}.').format(name=channel.assigned_name)
+                    _('This channel is currently showing {name}.').format(
+                        name=channel.assigned_name
+                    )
                     if channel.assigned_object is not None
                     else _('Currently showing nothing.')
                 ),
