@@ -26,13 +26,17 @@ EVENT_ID = 'test-screen-assistant-http'
 TOURNAMENT_NAME = 'test-screen-assistant-http-tournament'
 
 # The option indexes of the radio questions of the assistant: the layout
-# (for the input goals, index 1 of 'paged' is the pages-in-a-menu option)...
+# (a page per tournament comes third, or second for the round-robin grids,
+# which never run over several pages; for the input goals, index 1 of
+# 'paged' is the pages-in-a-menu option)...
 ONE_PAGE = '0'
 SEVERAL_PAGES = '1'
+PAGE_PER_TOURNAMENT = '2'
+GRID_PAGE_PER_TOURNAMENT = '1'
 INPUT_PAGES_MENU = '1'
 NUMBER_PER_PAGE = '0'
 PAGES = '1'
-# ... how people move between the pages...
+# ... how people move between the pages or the tournaments...
 PAGES_ROTATE = '0'
 PAGES_MENU = '1'
 # ... how the players reach their tournament...
@@ -80,7 +84,7 @@ def test_the_assistant_opens_on_the_goals(
 def test_a_goal_opens_its_questions(http: TestClient, tournament: StoredTournament):
     response = http.get(f'/screen-assistant/{EVENT_ID}?goal=boards')
     assert response.status_code == 200
-    assert 'screen-assistant-question-paged' in response.text
+    assert 'screen-assistant-question-layout' in response.text
     assert 'screen-assistant-question-channel' in response.text
     # The event has no timer: the timer question is not asked.
     assert 'screen-assistant-question-timer' not in response.text
@@ -88,9 +92,11 @@ def test_a_goal_opens_its_questions(http: TestClient, tournament: StoredTourname
     assert 'screen-assistant-question-hide_players' not in response.text
     # A single tournament: the tournament picks answer themselves, and the
     # first question only opposes one page to several.
-    assert 'screen-assistant-question-switch_tournaments' not in response.text
+    assert 'screen-assistant-question-tournaments' not in response.text
     assert 'screen-assistant-question-paged_tournament' not in response.text
+    assert 'screen-assistant-question-split_tournaments' not in response.text
     assert 'On one page, or over several pages?' in response.text
+    assert 'Several tournaments, one page each' not in response.text
 
     # The same for the input goals: their tournament and navigation
     # questions are skipped.
@@ -125,8 +131,8 @@ def test_the_assistant_creates_a_screen_on_one_page(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'check-in',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'answer_columns': '1',  # 2 columns
             'answer_channel': NO_CHANNEL,
             # Not on the path of the answers: ignored.
@@ -177,7 +183,7 @@ def test_the_assistant_creates_a_paged_screen(
             'goal': 'players',
             'answer_show_unpaired': '0',  # yes
             'answer_format': '0',  # full
-            'answer_paged': SEVERAL_PAGES,
+            'answer_layout': SEVERAL_PAGES,
             'answer_paged_tournament': str(tournament.id),
             'answer_paged_nav': PAGES_ROTATE,
             'answer_paged_method': method,
@@ -212,7 +218,7 @@ def test_the_assistant_creates_a_paged_screen_behind_a_page_menu(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'check-in',
-            'answer_paged': SEVERAL_PAGES,
+            'answer_layout': SEVERAL_PAGES,
             'answer_paged_tournament': str(tournament.id),
             'answer_paged_nav': PAGES_MENU,
             'answer_paged_method': PAGES,
@@ -232,6 +238,157 @@ def test_the_assistant_creates_a_paged_screen_behind_a_page_menu(
     menus = list(event.menus_by_id.values())
     assert len(menus) == 1
     assert [family.id for family in menus[0].families] == [families[0].id]
+
+
+@pytest.mark.unit
+def test_the_layout_is_asked_before_the_tournaments(
+    http: TestClient, tournament: StoredTournament
+):
+    """With several tournaments, the first question offers the three
+    layouts, the tournaments being picked after it."""
+    TestUtils.create_tournament(
+        EVENT_ID, f'{TOURNAMENT_NAME}-2', json_file='test-screens'
+    )
+    reload_event()
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=check-in')
+    assert response.status_code == 200
+    assert 'How do you want to show the tournaments?' in response.text
+    assert 'One or more tournaments, on one page' in response.text
+    assert 'One tournament, over several pages' in response.text
+    assert 'Several tournaments, one page each' in response.text
+    assert 'data-first-question="layout"' in response.text
+    for question_id in ('tournaments', 'paged_tournament', 'split_tournaments'):
+        assert f'screen-assistant-question-{question_id}"' in response.text
+    # The input goals still pick the tournaments first.
+    response = http.get(f'/screen-assistant/{EVENT_ID}?goal=check-in-input')
+    assert 'data-first-question="tournaments"' in response.text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ('goal', 'answers', 'nav', 'group_name', 'screen_type'),
+    [
+        # A screen per tournament, shown in turn by a rotator named after
+        # what the screens show.
+        ('check-in', {}, PAGES_ROTATE, 'Check-in', ScreenType.CHECK_IN),
+        (
+            'ranking',
+            {'answer_ranking_kind': '1'},
+            PAGES_ROTATE,
+            'Cross-table',
+            ScreenType.RANKING,
+        ),
+        # Or picked in a menu.
+        (
+            'players',
+            {'answer_show_unpaired': '1', 'answer_format': '2'},
+            PAGES_MENU,
+            'Pairings by player',
+            ScreenType.PLAYERS,
+        ),
+    ],
+)
+def test_the_assistant_creates_a_screen_per_tournament(
+    http: TestClient,
+    tournament: StoredTournament,
+    goal: str,
+    answers: dict[str, str],
+    nav: str,
+    group_name: str,
+    screen_type: ScreenType,
+):
+    other = TestUtils.create_tournament(
+        EVENT_ID, f'{TOURNAMENT_NAME}-2', json_file='test-screens'
+    )
+    reload_event()
+    data = {
+        'goal': goal,
+        **answers,
+        'answer_layout': PAGE_PER_TOURNAMENT,
+        'answer_split_tournaments': f'{tournament.id};{other.id}',
+        'answer_split_nav': nav,
+        'answer_columns': '0',
+        'answer_channel': NEW_CHANNEL,
+        'answer_channel_name': 'Main hall',
+    }
+    # The summary names the rotator or the menu as it will be created.
+    summary = re.findall(
+        r'<li>(.*?)</li>',
+        http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text,
+    )
+    group_kind = 'rotator' if nav == PAGES_ROTATE else 'menu'
+    group_line = (
+        f'Create a rotator named “{group_name}” showing them in turn'
+        if nav == PAGES_ROTATE
+        else f'Create a menu named “{group_name}” to pick the tournament'
+    )
+    assert summary[2] == (
+        f'{group_line} and mark it as designed for the channel “Main hall”.'
+    )
+    assert summary[3] == f'Show the new {group_kind} on the channel “Main hall”.'
+    response = http.post(f'/screen-assistant-create/{EVENT_ID}', data=data)
+    assert response.is_success
+    event = reload_event()
+    screens = event.sorted_basic_screens_by_screen_type[screen_type.value]
+    assert len(screens) == 2
+    assert sorted(
+        screen_set.tournament.id
+        for screen in screens
+        for screen_set in screen.screen_sets
+    ) == sorted([tournament.id, other.id])
+    channel = next(iter(event.display_controllers_by_id.values()))
+    if nav == PAGES_ROTATE:
+        rotator = next(iter(event.rotators_by_id.values()))
+        assert rotator.name == group_name
+        assert [screen.id for screen in rotator.rotating_screens] == [
+            screen.id for screen in screens
+        ]
+        assert channel.rotator_id == rotator.id
+        assert response.headers['HX-Redirect'] == (
+            f'/event/{EVENT_ID}/rotators?scroll_to={rotator.id}'
+        )
+        assert not event.menus_by_id
+    else:
+        menu = next(iter(event.menus_by_id.values()))
+        assert menu.name == group_name
+        assert {screen.id for screen in menu.resolved_screens()} == {
+            screen.id for screen in screens
+        }
+        assert channel.menu_id == menu.id
+        assert not event.rotators_by_id
+    # The answers of the goal are set on every screen.
+    for screen in screens:
+        stored_screen = screen.stored_screen
+        assert stored_screen is not None
+        if goal == 'ranking':
+            assert stored_screen.ranking_crosstable
+        if goal == 'players':
+            assert not stored_screen.players_show_unpaired
+
+
+@pytest.mark.unit
+def test_a_page_per_tournament_needs_two_tournaments(
+    http: TestClient, tournament: StoredTournament
+):
+    other = TestUtils.create_tournament(
+        EVENT_ID, f'{TOURNAMENT_NAME}-2', json_file='test-screens'
+    )
+    reload_event()
+    response = http.post(
+        f'/screen-assistant-create/{EVENT_ID}',
+        data={
+            'goal': 'boards',
+            'answer_layout': PAGE_PER_TOURNAMENT,
+            'answer_split_tournaments': str(other.id),
+            'answer_split_nav': PAGES_ROTATE,
+            'answer_columns': '0',
+            'answer_channel': NO_CHANNEL,
+        },
+    )
+    assert response.status_code == 200
+    assert 'Please choose at least 2 tournaments.' in response.text
+    event = reload_event()
+    assert not event.sorted_basic_screens_by_screen_type[ScreenType.BOARDS.value]
 
 
 @pytest.mark.unit
@@ -363,8 +520,8 @@ def test_the_assistant_offers_the_existing_channels(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'check-in',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'answer_columns': '0',
             'answer_channel': NEW_CHANNEL,
             'answer_channel_name': 'Main hall',
@@ -382,8 +539,8 @@ def test_the_assistant_offers_the_existing_channels(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'boards',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'answer_columns': '0',
             'answer_channel': '1',  # a new channel (after the existing one)
             'answer_channel_name': 'Main hall',
@@ -405,8 +562,8 @@ def test_an_existing_channel_is_not_switched_to_the_new_screen(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'check-in',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'answer_columns': '0',
             'answer_channel': NEW_CHANNEL,
             'answer_channel_name': 'Main hall',
@@ -432,8 +589,8 @@ def test_an_existing_channel_is_not_switched_to_the_new_screen(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'boards',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'answer_columns': '0',
             'answer_channel': '0',  # the existing channel
             f'answer_channel_switch_{channel.id}': '1',  # No
@@ -580,8 +737,8 @@ def test_the_summary_says_what_will_be_created(
     data = {
         'goal': 'ranking',
         'answer_ranking_kind': '0',
-        'answer_paged': ONE_PAGE,
-        'answer_switch_tournaments': f'{tournament.id};{other.id}',
+        'answer_layout': ONE_PAGE,
+        'answer_tournaments': f'{tournament.id};{other.id}',
         'answer_columns': '0',
         # The existing channel comes first among the options.
         'answer_channel': '0',
@@ -656,8 +813,8 @@ def test_the_automatic_name_of_a_screen_stays_short(
             f'/screen-assistant-create/{EVENT_ID}',
             data={
                 'goal': 'boards',
-                'answer_paged': ONE_PAGE,
-                'answer_switch_tournaments': ';'.join(
+                'answer_layout': ONE_PAGE,
+                'answer_tournaments': ';'.join(
                     str(tournament_id) for tournament_id in tournament_ids
                 ),
                 'answer_columns': '0',
@@ -691,7 +848,7 @@ def test_the_assistant_comes_back_on_the_question_in_error(
         f'/screen-assistant-create/{EVENT_ID}',
         data={
             'goal': 'check-in',
-            'answer_paged': SEVERAL_PAGES,
+            'answer_layout': SEVERAL_PAGES,
             'answer_paged_tournament': str(tournament.id),
             'answer_paged_nav': PAGES_ROTATE,
             'answer_paged_method': PAGES,
@@ -724,8 +881,8 @@ def test_create_and_edit_opens_the_form_of_what_was_created(
     redirect = create(
         {
             'goal': 'check-in',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'edit_after': '1',
         }
     )
@@ -804,8 +961,8 @@ def test_the_standings_goal_offers_the_cross_table_and_the_grid(
         data={
             'goal': 'ranking',
             'answer_ranking_kind': '1',
-            'answer_paged': ONE_PAGE,
-            'answer_switch_tournaments': str(tournament.id),
+            'answer_layout': ONE_PAGE,
+            'answer_tournaments': str(tournament.id),
             'answer_columns': '0',
             'answer_channel': NO_CHANNEL,
         },
@@ -854,17 +1011,17 @@ def test_short_answers_are_put_in_words(http: TestClient, tournament: StoredTour
     ('split', 'grids', 'rotators', 'menus'),
     [
         # All the grids on one page.
-        ('0', 1, 0, 0),
+        (None, 1, 0, 0),
         # One page per grid, turning by themselves: a rotator.
-        ('1', 2, 1, 0),
+        (PAGES_ROTATE, 2, 1, 0),
         # One page per grid, picked in a menu.
-        ('2', 2, 0, 1),
+        (PAGES_MENU, 2, 0, 1),
     ],
 )
 def test_several_round_robin_grids_on_one_page_or_a_page_each(
     http: TestClient,
     tournament: StoredTournament,
-    split: str,
+    split: str | None,
     grids: int,
     rotators: int,
     menus: int,
@@ -882,17 +1039,27 @@ def test_several_round_robin_grids_on_one_page_or_a_page_each(
     ]
     reload_event()
     response = http.get(f'/screen-assistant/{EVENT_ID}?goal=ranking')
-    assert 'screen-assistant-question-grid_split' in response.text
+    assert 'screen-assistant-question-grid_layout' in response.text
+    # A grid never runs over several pages.
+    assert 'screen-assistant-question-grid_paged_tournament' not in response.text
+    round_robin_ids = ';'.join(str(round_robin.id) for round_robin in round_robins)
     data = {
         'goal': 'ranking',
         'answer_ranking_kind': '2',
-        'answer_grid_tournaments': ';'.join(
-            str(round_robin.id) for round_robin in round_robins
-        ),
-        'answer_grid_split': split,
         'answer_grid_order': '0',
         'answer_channel': NO_CHANNEL,
     }
+    if split is None:
+        data |= {
+            'answer_grid_layout': ONE_PAGE,
+            'answer_grid_tournaments': round_robin_ids,
+        }
+    else:
+        data |= {
+            'answer_grid_layout': GRID_PAGE_PER_TOURNAMENT,
+            'answer_grid_split_tournaments': round_robin_ids,
+            'answer_grid_split_nav': split,
+        }
     summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text
     if rotators:
         assert (
@@ -900,7 +1067,9 @@ def test_several_round_robin_grids_on_one_page_or_a_page_each(
             in summary
         )
     if menus:
-        assert 'Create a menu named “Round-robin grids” to pick the grid.' in summary
+        assert (
+            'Create a menu named “Round-robin grids” to pick the tournament.' in summary
+        )
     response = http.post(f'/screen-assistant-create/{EVENT_ID}', data=data)
     assert response.is_success
     event = reload_event()

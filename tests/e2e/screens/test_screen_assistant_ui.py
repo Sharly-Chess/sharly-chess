@@ -40,7 +40,7 @@ class TestScreenAssistant:
         self._open_assistant(page)
         # The goals are offered; the first question of the chosen goal opens.
         page.get_by_test_id('screen-assistant-goal-check-in').click()
-        question = page.get_by_test_id('screen-assistant-question-paged')
+        question = page.get_by_test_id('screen-assistant-question-layout')
         expect(question).to_be_visible()
         TestUtils.wait_for_htmx_idle(page)
         back = page.get_by_test_id('screen-assistant-back')
@@ -175,7 +175,7 @@ class TestScreenAssistant:
         )
         self._open_assistant(page)
         page.get_by_test_id('screen-assistant-goal-check-in').click()
-        question = page.get_by_test_id('screen-assistant-question-paged')
+        question = page.get_by_test_id('screen-assistant-question-layout')
         expect(question).to_be_visible()
         TestUtils.wait_for_htmx_idle(page)
         question.get_by_label('One tournament, over several pages').check()
@@ -194,7 +194,7 @@ class TestScreenAssistant:
         screens tab."""
         self._open_assistant(page)
         page.get_by_test_id('screen-assistant-goal-check-in').click()
-        question = page.get_by_test_id('screen-assistant-question-paged')
+        question = page.get_by_test_id('screen-assistant-question-layout')
         expect(question).to_be_visible()
         TestUtils.wait_for_htmx_idle(page)
         # The defaults: one page, one column, and no channel.
@@ -213,3 +213,42 @@ class TestScreenAssistant:
             re.compile(f'/event/{EVENT_ID}/screens\\?scroll_to=\\d+&edit=1$')
         )
         expect(page.locator('#modal-wrapper.show #modal-form')).to_be_visible()
+
+    def test_a_page_per_tournament_asks_for_two_tournaments(
+        self, page: Page, api_request_context: APIRequestContext
+    ):
+        """A page per tournament is offered first, before the tournaments
+        are picked, and needs at least two of them."""
+        TestUtils.create_tournament(
+            EVENT_ID,
+            f'{TOURNAMENT_NAME} 2',
+            via_api_request_context=api_request_context,
+        )
+        self._open_assistant(page)
+        page.get_by_test_id('screen-assistant-goal-boards').click()
+        question = page.get_by_test_id('screen-assistant-question-layout')
+        expect(question).to_be_visible()
+        TestUtils.wait_for_htmx_idle(page)
+        question.get_by_label('Several tournaments, one page each').check()
+        question = page.get_by_test_id('screen-assistant-question-split_tournaments')
+        expect(question).to_be_visible()
+        # Both tournaments are chosen by default; one is removed.
+        question.locator(
+            '.select2-selection__choice', has_text=f'{TOURNAMENT_NAME} 2'
+        ).locator('.select2-selection__choice__remove').click()
+        page.keyboard.press('Escape')
+        expect(question.locator('.select2-selection__choice')).to_have_count(1)
+        next_ = page.get_by_test_id('screen-assistant-next')
+        next_.click()
+        required = question.locator('.screen-assistant-required')
+        expect(required).to_be_visible()
+        expect(required).to_have_text('Please choose at least 2 tournaments.')
+        question.locator('select').evaluate(
+            '(select) => $(select).val([...select.options].map((option) => '
+            "option.value)).trigger('change')"
+        )
+        expect(question.locator('.select2-selection__choice')).to_have_count(2)
+        next_.click()
+        question = page.get_by_test_id('screen-assistant-question-split_nav')
+        expect(question).to_be_visible()
+        expect(question.get_by_label('The pages turn by themselves')).to_be_checked()

@@ -770,11 +770,11 @@ msgstr "Un classement de 0 à {max} est attendu."
 msgid "A rotator"
 msgstr "Un écran rotatif"
 
+msgid "A rotator is created to show the screens in turn, named after what they show."
+msgstr "Un écran rotatif est créé pour afficher les écrans à tour de rôle, nommé d'après ce qu'ils affichent."
+
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr "Un écran rotatif affiche plusieurs écrans à tour de rôle sur un même appareil, en passant automatiquement au suivant. Il peut contenir tout écran, sauf les écrans de pointage et de saisie des résultats."
-
-msgid "A rotator shows the grids in turn, which suits a projector."
-msgstr "Un écran rotatif affiche les grilles à tour de rôle, ce qui convient à un vidéoprojecteur."
 
 #, python-brace-format
 msgid "A round between 1 and {max} is expected."
@@ -785,6 +785,9 @@ msgstr "Un écran"
 
 msgid "A screen or rotator shows one timer: checking it below replaces the timer it showed previously."
 msgstr "Un écran ou un écran rotatif affiche un seul chronomètre : le cocher ci-dessous remplace le chronomètre qu'il affichait précédemment."
+
+msgid "A screen per tournament: the screens turn by themselves, or people pick their tournament in a menu."
+msgstr "Un écran par tournoi : les écrans tournent tout seuls, ou chacun·e choisit son tournoi dans un menu."
 
 msgid "A screen shows pairings, rankings, results or check-in for one or more tournaments, on one page or over several pages that turn by themselves."
 msgstr "Un écran affiche les appariements, classements, résultats ou le pointage d'un ou plusieurs tournois, sur une page ou sur plusieurs qui défilent toutes seules."
@@ -804,6 +807,9 @@ msgstr "Un ensemble d'écrans que l'on ouvre à la main en cliquant sur des ongl
 
 msgid "A set with this name already existe."
 msgstr "Un ensemble avec ce nom existe déjà."
+
+msgid "A single screen, showing the tournaments one after the other."
+msgstr "Un seul écran, qui affiche les tournois l'un après l'autre."
 
 msgid "A team that withdrew or was expelled having completed less than half of its matches is not ranked, and its matches are annulled: they no longer count in the other teams' scores and tie-breaks."
 msgstr "Une équipe qui a abandonné ou a été exclue après avoir disputé moins de la moitié de ses matchs n'est pas classée, et ses matchs sont annulés : ils ne comptent plus dans les points et les départages des autres équipes."
@@ -1223,9 +1229,6 @@ msgstr "Toutes les catégories ne peuvent être imprimées que pour les lauréat
 
 msgid "All the dependant objects will also be deleted:"
 msgstr "Tous les objets dépendants seront également supprimés :"
-
-msgid "All the grids on one page"
-msgstr "Toutes les grilles sur une seule page"
 
 msgid "All the players"
 msgstr "Tou·tes les joueur·euses"
@@ -2912,12 +2915,12 @@ msgid "Create a menu named “{name}” for the players to pick their tournament
 msgstr "Créer un menu nommé « {name} » pour que les joueur·euses choisissent leur tournoi."
 
 #, python-brace-format
-msgid "Create a menu named “{name}” to pick the grid."
-msgstr "Créer un menu nommé « {name} » pour choisir la grille."
-
-#, python-brace-format
 msgid "Create a menu named “{name}” to pick the page."
 msgstr "Créer un menu nommé « {name} » pour choisir la page."
+
+#, python-brace-format
+msgid "Create a menu named “{name}” to pick the tournament."
+msgstr "Créer un menu nommé « {name} » pour choisir le tournoi."
 
 msgid "Create a menu now to get started."
 msgstr "Créez un menu pour commencer."
@@ -4720,6 +4723,9 @@ msgstr "Police"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
+msgid "For a long list: the pages turn by themselves, or people pick theirs in a menu."
+msgstr "Pour une longue liste : les pages tournent toutes seules, ou chacun·e choisit la sienne dans un menu."
+
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr "Pour un résultat optimal, faites des groupes de taille égale — idéalement une puissance de deux joueur·euses chacun (2, 4, 8, 16…) — pour que le tableau n'ait besoin d'aucun exempt."
 
@@ -5155,11 +5161,14 @@ msgstr "La manière dont le total Keizer d'un·e joueur·euse est arrondi pour l
 msgid "How do people move between the pages?"
 msgstr "Comment passe-t-on d'une page à l'autre ?"
 
+msgid "How do people move between the tournaments?"
+msgstr "Comment passer d'un tournoi à l'autre ?"
+
 msgid "How do you want to name the channel?"
 msgstr "Comment voulez-vous nommer le canal ?"
 
-msgid "How do you want to show the grids?"
-msgstr "Comment voulez-vous afficher les grilles ?"
+msgid "How do you want to show the tournaments?"
+msgstr "Comment voulez-vous afficher les tournois ?"
 
 msgid "How do you want to split it into pages?"
 msgstr "Comment voulez-vous découper les pages ?"
@@ -7554,20 +7563,11 @@ msgstr "Sur l'ordinateur de l'arbitre, le canal"
 msgid "On this computer"
 msgstr "Sur cet ordinateur"
 
-msgid "One above the other."
-msgstr "L'une au-dessus de l'autre."
-
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
 
 msgid "One or more tournaments, on one page"
 msgstr "Un ou plusieurs tournois, sur une page"
-
-msgid "One page per grid, turning by themselves"
-msgstr "Une page par grille, qui tournent toutes seules"
-
-msgid "One page per grid, with a menu to pick the grid"
-msgstr "Une page par grille, avec un menu pour choisir la grille"
 
 msgid "One page per tournament, with a menu to switch between them."
 msgstr "Une page par tournoi, avec un menu pour passer de l'une à l'autre."
@@ -8587,6 +8587,10 @@ msgstr "Veuillez choisir une variante."
 
 msgid "Please choose an answer."
 msgstr "Veuillez choisir une réponse."
+
+#, python-brace-format
+msgid "Please choose at least {count} tournaments."
+msgstr "Veuillez choisir au moins {count} tournois."
 
 msgid "Please choose the candidate."
 msgstr "Veuillez choisir le·la candidat·e."
@@ -10439,6 +10443,9 @@ msgstr "Paramètres"
 
 msgid "Setup assistant"
 msgstr "Assistant de création"
+
+msgid "Several tournaments, one page each"
+msgstr "Plusieurs tournois, une page chacun"
 
 msgid "Seychelles"
 msgstr "Seychelles"
@@ -13794,9 +13801,6 @@ msgstr "Pondérer la valeur de chaque étape comptée par le coefficient du tour
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
-msgid "What do you want to display?"
-msgstr "Que voulez-vous afficher ?"
-
 msgid "What do you want to put up?"
 msgstr "Que voulez-vous mettre en place ?"
 
@@ -13907,6 +13911,9 @@ msgstr "Avec un canal, l'arbitre décide de ce qu'affichent les appareils. Un ap
 
 msgid "With a menu — people pick their page"
 msgstr "Avec un menu — chacun·e choisit sa page"
+
+msgid "With a menu — people pick their tournament"
+msgstr "Avec un menu — chacun·e choisit son tournoi"
 
 msgid "With a menu — the players pick their tournament first"
 msgstr "Avec un menu — les joueur·euses choisissent d'abord leur tournoi"

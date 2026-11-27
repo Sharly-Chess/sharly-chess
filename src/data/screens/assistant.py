@@ -1,6 +1,7 @@
 """The screen setup assistant: a guided, full-page flow that creates in one
-go a screen (or several screens behind a menu, or a paged screen), and if
-wanted the channel it is designed for.
+go a screen (or a paged screen, or a screen per tournament shown in turn by
+a rotator or picked in a menu), and if wanted the channel it is designed
+for.
 
 The assistant starts from a goal (what to put up, see ``AssistantGoal``).
 Each goal leads into the questions of its screen type
@@ -23,7 +24,6 @@ from data.wizard import (
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredDisplayController,
-    StoredFamily,
     StoredMenu,
     StoredMenuItem,
     StoredRotatingScreen,
@@ -34,7 +34,7 @@ from utils import Utils
 if TYPE_CHECKING:
     from data.event import Event
     from data.screens.display_controller import DisplayController
-    from data.screens.screen_types import ScreenType
+    from data.screens.screen_types import AssistantLayout, ScreenType
 
 
 def assistant_stages() -> dict[str, str]:
@@ -212,21 +212,29 @@ def assistant_created_kind(
     ``_AssistantWriter._show_on()``): ``menu`` when a menu is created,
     ``rotator`` when a rotator is, ``screen`` otherwise (a screen or a paged
     screen)."""
-    if goal.accepts_input:
-        tournament_ids: list[int] = answers.get('tournaments') or [
-            tournament.id
-            for tournament in goal.screen_type.assistant_tournaments(event)
-        ]
-        if answers.get('paged') == 'menu':
-            return 'menu'
-        if answers.get('nav') == 'single' or len(tournament_ids) == 1:
-            return 'screen'
+    layout = _assistant_layout(event, goal, answers)
+    if layout.nav == 'menu':
         return 'menu'
-    if split := _grid_split(goal, answers):
-        return 'rotator' if split == 'rotate' else 'menu'
-    if answers.get('paged') and answers.get('paged_nav') == 'menu':
-        return 'menu'
+    if layout.kind == 'split':
+        return 'rotator'
     return 'screen'
+
+
+def _assistant_layout(
+    event: Event, goal: AssistantGoal, answers: dict[str, Any]
+) -> AssistantLayout:
+    return goal.screen_type.assistant_layout(event, answers, goal.accepts_input)
+
+
+def _item_name(goal: AssistantGoal, layout: AssistantLayout) -> str:
+    """A short noun for what is put up, naming the screens in the summary."""
+    return layout.item_name or goal.short_name
+
+
+def _group_name(goal: AssistantGoal, layout: AssistantLayout) -> str:
+    """The name, before numbering, of the menu or the rotator gathering the
+    screens created."""
+    return layout.group_name or _item_name(goal, layout)
 
 
 def channel_switch_yes_text(kind: str) -> str:
@@ -433,34 +441,25 @@ class AssistantCreation:
 
 
 def _assistant_menu_name(
-    event: Event, goal: AssistantGoal, base_name: str | None = None
+    event: Event, goal: AssistantGoal, layout: AssistantLayout
 ) -> str:
     """The name of a menu the assistant creates for *goal*: named after the
     goal rather than the screen type (a result entry menu holds boards
-    screens), or after *base_name*, with a number when the name is taken."""
+    screens), with a number when the name is taken."""
     return Utils.get_unused_item_name(
-        base_name or goal.short_name, [menu.name for menu in event.sorted_menus]
+        _group_name(goal, layout), [menu.name for menu in event.sorted_menus]
     )
 
 
-def _assistant_rotator_name(event: Event, base_name: str) -> str:
-    """The name of a rotator the assistant creates, with a number when the
-    name is taken."""
+def _assistant_rotator_name(
+    event: Event, goal: AssistantGoal, layout: AssistantLayout
+) -> str:
+    """The name of a rotator the assistant creates for *goal*, with a number
+    when the name is taken."""
     return Utils.get_unused_item_name(
-        base_name, [rotator.name for rotator in event.sorted_rotators]
+        _group_name(goal, layout),
+        [rotator.name for rotator in event.sorted_rotators],
     )
-
-
-def _grid_split(goal: AssistantGoal, answers: dict[str, Any]) -> str | None:
-    """How the round-robin grids of a standings goal are split: ``rotate``
-    or ``menu`` for a page per grid, None for a single page (or when no
-    grid is asked for)."""
-    if answers.get('ranking_kind') != 'grid':
-        return None
-    if len(answers.get('grid_tournaments') or []) < 2:
-        return None
-    split = answers.get('grid_split')
-    return split if split in ('rotate', 'menu') else None
 
 
 class _AssistantWriter:
@@ -486,45 +485,72 @@ class _AssistantWriter:
         self._used_uniq_ids: set[str] = set()
 
     def write(self) -> AssistantCreation:
-        if self.goal.accepts_input:
-            self._write_input_screens()
-        else:
-            self._write_display_screens()
+        self._write_screens(_assistant_layout(self.event, self.goal, self.answers))
         self._write_channel()
         return self.creation
 
+    def _write_screens(self, layout: AssistantLayout) -> None:
+        """One screen showing the tournaments, one tournament over several
+        pages (turning by themselves, or picked in a menu), or a screen per
+        tournament (shown in turn by a rotator, or picked in a menu)."""
+        event = self.event
+        screen_type = layout.screen_type
+        if layout.kind == 'single':
+            self._add_screen(
+                layout,
+                layout.tournament_ids,
+                event.get_unused_screen_uniq_id(screen_type),
+            )
+            return
+        if layout.kind == 'paged':
+            self._add_family(
+                layout,
+                layout.tournament_ids[0],
+                event.get_unused_family_uniq_id(screen_type),
+            )
+            if layout.nav == 'menu':
+                self._add_menu(layout)
+            return
+        for tournament_id in layout.tournament_ids:
+            self._add_screen(
+                layout,
+                [tournament_id],
+                self._tournament_uniq_id(
+                    tournament_id,
+                    list(event.basic_screens_by_uniq_id),
+                    screen_type.id,
+                ),
+            )
+        if layout.nav == 'menu':
+            self._add_menu(layout)
+        else:
+            self._add_rotator(layout)
+
     def _tournament_uniq_id(
-        self, tournament_id: int, used: list[str], type_id: str | None = None
+        self, tournament_id: int, used: list[str], type_id: str
     ) -> str:
-        """A screen or family uniq ID named after its tournament (and the
-        type *type_id*, the goal's by default), for the screens created
-        behind a menu or a rotator."""
+        """A screen uniq ID named after its tournament and the type
+        *type_id*, for the screens created behind a menu or a rotator."""
         tournament = self.event.tournaments_by_id[tournament_id]
-        prefix = type_id or self.goal.screen_type.id
         uniq_id = Utils.get_unused_item_uniq_id(
-            f'{prefix}-{Utils.name_to_uniq_id(tournament.name)}',
+            f'{type_id}-{Utils.name_to_uniq_id(tournament.name)}',
             used + list(self._used_uniq_ids),
         )
         self._used_uniq_ids.add(uniq_id)
         return uniq_id
 
     def _add_screen(
-        self,
-        tournament_ids: list[int],
-        uniq_id: str,
-        screen_type: ScreenType | None = None,
-        **fields: Any,
+        self, layout: AssistantLayout, tournament_ids: list[int], uniq_id: str
     ) -> None:
-        """A screen with a set for each of *tournament_ids*, of
-        *screen_type* (the goal's by default) and its *fields*."""
+        """A screen of *layout* with a set for each of *tournament_ids*."""
         stored_screen = self.database.add_stored_screen(
-            (screen_type or self.goal.screen_type).assistant_stored_screen(
+            layout.screen_type.assistant_stored_screen(
                 self.event,
                 self.answers,
                 self.goal.accepts_input,
                 tournament_ids,
                 uniq_id,
-                **fields,
+                **layout.fields,
             )
         )
         assert stored_screen.id is not None
@@ -535,14 +561,17 @@ class _AssistantWriter:
         self.creation.screen_type_ids.add(stored_screen.type)
         self.creation.screen_uniq_ids.append(stored_screen.uniq_id)
 
-    def _add_family(self, tournament_id: int, uniq_id: str) -> None:
+    def _add_family(
+        self, layout: AssistantLayout, tournament_id: int, uniq_id: str
+    ) -> None:
         stored_family = self.database.add_stored_family(
-            self.goal.screen_type.assistant_stored_family(
+            layout.screen_type.assistant_stored_family(
                 self.event,
                 self.answers,
                 self.goal.accepts_input,
                 tournament_id,
                 uniq_id,
+                **layout.fields,
             )
         )
         assert stored_family.id is not None
@@ -551,45 +580,9 @@ class _AssistantWriter:
         self.creation.screen_type_ids.add(stored_family.type)
         self.creation.family_uniq_ids.append(stored_family.uniq_id)
 
-    def _write_input_screens(self) -> None:
-        """The screens taking the players' input: all the tournaments on
-        one page, one screen per tournament behind a menu, or — for a
-        single tournament — one screen, on one page or over several pages
-        picked in a menu."""
-        event = self.event
-        screen_type = self.goal.screen_type
-        answers = self.answers
-        tournament_ids: list[int] = answers.get('tournaments') or [
-            tournament.id for tournament in screen_type.assistant_tournaments(event)
-        ]
-        if answers.get('nav') == 'single':
-            self._add_screen(
-                tournament_ids, event.get_unused_screen_uniq_id(screen_type)
-            )
-            return
-        if answers.get('paged') == 'menu':
-            # A single tournament over several pages, picked in a menu.
-            self._add_family(
-                tournament_ids[0], event.get_unused_family_uniq_id(screen_type)
-            )
-            self._add_menu()
-            return
-        for tournament_id in tournament_ids:
-            self._add_screen(
-                [tournament_id],
-                self._tournament_uniq_id(
-                    tournament_id, list(event.basic_screens_by_uniq_id)
-                )
-                if len(tournament_ids) > 1
-                else event.get_unused_screen_uniq_id(screen_type),
-            )
-        if len(tournament_ids) > 1:
-            # A menu for the players to pick their tournament.
-            self._add_menu()
-
-    def _add_menu(self, base_name: str | None = None) -> None:
+    def _add_menu(self, layout: AssistantLayout) -> None:
         """A menu pointing to everything created so far."""
-        menu_name = _assistant_menu_name(self.event, self.goal, base_name)
+        menu_name = _assistant_menu_name(self.event, self.goal, layout)
         self._menu_id = self.database.add_stored_menu(
             StoredMenu(id=None, name=menu_name, default_type=self.goal.screen_type.id)
         )
@@ -610,9 +603,9 @@ class _AssistantWriter:
         self.creation.menu_name = menu_name
         self.creation.menu_id = self._menu_id
 
-    def _add_rotator(self, base_name: str) -> None:
+    def _add_rotator(self, layout: AssistantLayout) -> None:
         """A rotator showing in turn the screens created so far."""
-        rotator_name = _assistant_rotator_name(self.event, base_name)
+        rotator_name = _assistant_rotator_name(self.event, self.goal, layout)
         self._rotator_id = self.database.add_stored_rotator(
             StoredRotator(id=None, name=rotator_name)
         )
@@ -627,58 +620,6 @@ class _AssistantWriter:
             )
         self.creation.rotator_name = rotator_name
         self.creation.rotator_id = self._rotator_id
-
-    def _write_split_grids(self, split: str) -> None:
-        """A round-robin grid screen per round robin, shown in turn by a
-        rotator or picked in a menu."""
-        from data.screens.screen_types import RoundRobinGridScreenType
-
-        grid_type = RoundRobinGridScreenType()
-        for tournament_id in self.answers['grid_tournaments']:
-            self._add_screen(
-                [tournament_id],
-                self._tournament_uniq_id(
-                    tournament_id,
-                    list(self.event.basic_screens_by_uniq_id),
-                    grid_type.id,
-                ),
-                grid_type,
-                round_robin_grid_by_rank=bool(self.answers.get('grid_order')),
-                round_robin_grid_players=False,
-            )
-        if split == 'rotate':
-            self._add_rotator(_('Round-robin grids'))
-        else:
-            self._add_menu(_('Round-robin grids'))
-
-    def _write_display_screens(self) -> None:
-        if split := _grid_split(self.goal, self.answers):
-            self._write_split_grids(split)
-            return
-        stored = self.goal.screen_type.create_from_assistant_answers(
-            self.event, self.answers, self.goal.accepts_input
-        )
-        if isinstance(stored, StoredFamily):
-            stored_family = self.database.add_stored_family(stored)
-            assert stored_family.id is not None
-            self._family_ids.append(stored_family.id)
-            self.creation.family_ids.append(stored_family.id)
-            self.creation.screen_type_ids.add(stored_family.type)
-            self.creation.family_uniq_ids.append(stored_family.uniq_id)
-            # A menu to pick the page when asked (the pages turn by
-            # themselves otherwise).
-            if self.answers.get('paged_nav') == 'menu':
-                self._add_menu()
-        else:
-            init_set_tournament_ids = stored.init_set_tournament_ids
-            stored_screen = self.database.add_stored_screen(stored)
-            assert stored_screen.id is not None
-            for tournament_id in init_set_tournament_ids:
-                self.database.add_stored_screen_set(stored_screen.id, tournament_id)
-            self._screen_ids.append(stored_screen.id)
-            self.creation.screen_ids.append(stored_screen.id)
-            self.creation.screen_type_ids.add(stored_screen.type)
-            self.creation.screen_uniq_ids.append(stored_screen.uniq_id)
 
     def _write_channel(self) -> None:
         channel_answer = self.answers.get('channel')
@@ -755,8 +696,8 @@ def create_from_assistant(
     goal: AssistantGoal,
     answers: dict[str, Any],
 ) -> AssistantCreation:
-    """Create the screens, the paged screens, the menu and the channel the
-    assistant *answers* describe, in one database write. What was created is
+    """Create the screens, the paged screens, the menu or the rotator and
+    the channel the assistant *answers* describe, in one database write. What was created is
     marked as designed for the channel picked or created; a channel created
     also shows it, a channel picked only when the answers ask for it."""
     with EventDatabase(event.uniq_id, write=True) as database:
@@ -770,106 +711,55 @@ def assistant_summary(
 ) -> list[str]:
     """The actions the assistant is about to perform, one line each, shown
     before the Create button (mirrors ``create_from_assistant()``)."""
-    # The standings goal names what it shows: the ranking, the cross-table
-    # or the round-robin grid.
-    item_name = {
-        'crosstable': _('Cross-table'),
-        'grid': _('Round-robin grid'),
-    }.get(answers.get('ranking_kind', ''), goal.short_name)
-    screen_type = goal.screen_type
-    shown_type: ScreenType = screen_type
-    if answers.get('ranking_kind') == 'grid':
-        from data.screens.screen_types import RoundRobinGridScreenType
-
-        shown_type = RoundRobinGridScreenType()
+    layout = _assistant_layout(event, goal, answers)
+    item_name = _item_name(goal, layout)
+    tournament_names = ', '.join(
+        event.tournaments_by_id[tournament_id].name
+        for tournament_id in layout.tournament_ids
+    )
     lines: list[str] = []
-    menu_line: str | None = None
-    menu_base_name: str | None = None
-
-    def tournament_names(tournament_ids: list[int]) -> str:
-        return ', '.join(
-            event.tournaments_by_id[tournament_id].name
-            for tournament_id in tournament_ids
-        )
-
-    if goal.accepts_input:
-        tournament_ids: list[int] = answers.get('tournaments') or [
-            tournament.id for tournament in screen_type.assistant_tournaments(event)
-        ]
-        if answers.get('paged') == 'menu':
-            lines.append(
-                _(
-                    'Create a “{name}” screen for {tournament}, over several pages.'
-                ).format(
-                    name=goal.short_name,
-                    tournament=tournament_names(tournament_ids[:1]),
-                )
-            )
-            menu_line = _('Create a menu named “{name}” to pick the page.')
-        elif answers.get('nav') == 'single' or len(tournament_ids) == 1:
-            lines.append(
-                _('Create a “{name}” screen for tournaments {tournaments}.').format(
-                    name=goal.short_name,
-                    tournaments=tournament_names(tournament_ids),
-                )
-            )
-        else:
-            lines.append(
-                _('Create one “{name}” screen per tournament: {tournaments}.').format(
-                    name=goal.short_name,
-                    tournaments=tournament_names(tournament_ids),
-                )
-            )
-            menu_line = _(
-                'Create a menu named “{name}” for the players to pick their tournament.'
-            )
-    elif split := _grid_split(goal, answers):
-        lines.append(
-            _('Create one “{name}” screen per tournament: {tournaments}.').format(
-                name=item_name,
-                tournaments=tournament_names(answers['grid_tournaments']),
-            )
-        )
-        if split == 'rotate':
-            lines.append(
-                _('Create a rotator named “{name}” showing them in turn.').format(
-                    name=_assistant_rotator_name(event, _('Round-robin grids'))
-                )
-            )
-        else:
-            menu_line = _('Create a menu named “{name}” to pick the grid.')
-            menu_base_name = _('Round-robin grids')
-    elif answers.get('paged'):
-        tournament_id: int = (
-            answers.get('paged_tournament')
-            or screen_type.assistant_tournaments(event)[0].id
-        )
-        lines.append(
-            _('Create a “{name}” screen for {tournament}, over several pages.').format(
-                name=item_name,
-                tournament=tournament_names([tournament_id]),
-            )
-        )
-        if answers.get('paged_nav') == 'menu':
-            menu_line = _('Create a menu named “{name}” to pick the page.')
-    else:
+    if layout.kind == 'single':
         lines.append(
             _('Create a “{name}” screen for tournaments {tournaments}.').format(
-                name=item_name,
-                tournaments=tournament_names(
-                    answers.get('grid_tournaments')
-                    or answers.get('switch_tournaments')
-                    or [
-                        tournament.id
-                        for tournament in shown_type.assistant_tournaments(event)
-                    ]
-                ),
+                name=item_name, tournaments=tournament_names
             )
         )
-    if menu_line is not None:
+    elif layout.kind == 'paged':
         lines.append(
-            menu_line.format(name=_assistant_menu_name(event, goal, menu_base_name))
+            _('Create a “{name}” screen for {tournament}, over several pages.').format(
+                name=item_name, tournament=tournament_names
+            )
         )
+        if layout.nav == 'menu':
+            lines.append(
+                _('Create a menu named “{name}” to pick the page.').format(
+                    name=_assistant_menu_name(event, goal, layout)
+                )
+            )
+    else:
+        lines.append(
+            _('Create one “{name}” screen per tournament: {tournaments}.').format(
+                name=item_name, tournaments=tournament_names
+            )
+        )
+        if layout.nav == 'rotate':
+            lines.append(
+                _('Create a rotator named “{name}” showing them in turn.').format(
+                    name=_assistant_rotator_name(event, goal, layout)
+                )
+            )
+        elif goal.accepts_input:
+            lines.append(
+                _(
+                    'Create a menu named “{name}” for the players to pick their tournament.'
+                ).format(name=_assistant_menu_name(event, goal, layout))
+            )
+        else:
+            lines.append(
+                _('Create a menu named “{name}” to pick the tournament.').format(
+                    name=_assistant_menu_name(event, goal, layout)
+                )
+            )
     channel_answer = answers.get('channel')
     channel_name: str | None = None
     if channel_answer == 'new':

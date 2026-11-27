@@ -770,10 +770,10 @@ msgstr ""
 msgid "A rotator"
 msgstr ""
 
-msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
+msgid "A rotator is created to show the screens in turn, named after what they show."
 msgstr ""
 
-msgid "A rotator shows the grids in turn, which suits a projector."
+msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr ""
 
 #, python-brace-format
@@ -784,6 +784,9 @@ msgid "A screen"
 msgstr ""
 
 msgid "A screen or rotator shows one timer: checking it below replaces the timer it showed previously."
+msgstr ""
+
+msgid "A screen per tournament: the screens turn by themselves, or people pick their tournament in a menu."
 msgstr ""
 
 msgid "A screen shows pairings, rankings, results or check-in for one or more tournaments, on one page or over several pages that turn by themselves."
@@ -803,6 +806,9 @@ msgid "A set of screens that can be opened manually by clicking on tabs."
 msgstr ""
 
 msgid "A set with this name already existe."
+msgstr ""
+
+msgid "A single screen, showing the tournaments one after the other."
 msgstr ""
 
 msgid "A team that withdrew or was expelled having completed less than half of its matches is not ranked, and its matches are annulled: they no longer count in the other teams' scores and tie-breaks."
@@ -1222,9 +1228,6 @@ msgid "All the categories can only be printed for the prize winners."
 msgstr ""
 
 msgid "All the dependant objects will also be deleted:"
-msgstr ""
-
-msgid "All the grids on one page"
 msgstr ""
 
 msgid "All the players"
@@ -2912,11 +2915,11 @@ msgid "Create a menu named “{name}” for the players to pick their tournament
 msgstr ""
 
 #, python-brace-format
-msgid "Create a menu named “{name}” to pick the grid."
+msgid "Create a menu named “{name}” to pick the page."
 msgstr ""
 
 #, python-brace-format
-msgid "Create a menu named “{name}” to pick the page."
+msgid "Create a menu named “{name}” to pick the tournament."
 msgstr ""
 
 msgid "Create a menu now to get started."
@@ -4720,6 +4723,9 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
+msgid "For a long list: the pages turn by themselves, or people pick theirs in a menu."
+msgstr ""
+
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr ""
 
@@ -5155,10 +5161,13 @@ msgstr ""
 msgid "How do people move between the pages?"
 msgstr ""
 
+msgid "How do people move between the tournaments?"
+msgstr ""
+
 msgid "How do you want to name the channel?"
 msgstr ""
 
-msgid "How do you want to show the grids?"
+msgid "How do you want to show the tournaments?"
 msgstr ""
 
 msgid "How do you want to split it into pages?"
@@ -7552,19 +7561,10 @@ msgstr ""
 msgid "On this computer"
 msgstr ""
 
-msgid "One above the other."
-msgstr ""
-
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr ""
 
 msgid "One or more tournaments, on one page"
-msgstr ""
-
-msgid "One page per grid, turning by themselves"
-msgstr ""
-
-msgid "One page per grid, with a menu to pick the grid"
 msgstr ""
 
 msgid "One page per tournament, with a menu to switch between them."
@@ -8584,6 +8584,10 @@ msgid "Please choose a variation."
 msgstr ""
 
 msgid "Please choose an answer."
+msgstr ""
+
+#, python-brace-format
+msgid "Please choose at least {count} tournaments."
 msgstr ""
 
 msgid "Please choose the candidate."
@@ -10436,6 +10440,9 @@ msgid "Settings"
 msgstr ""
 
 msgid "Setup assistant"
+msgstr ""
+
+msgid "Several tournaments, one page each"
 msgstr ""
 
 msgid "Seychelles"
@@ -13792,9 +13799,6 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
-msgid "What do you want to display?"
-msgstr ""
-
 msgid "What do you want to put up?"
 msgstr ""
 
@@ -13904,6 +13908,9 @@ msgid "With a channel, the arbiter decides what devices show. A device follows t
 msgstr ""
 
 msgid "With a menu — people pick their page"
+msgstr ""
+
+msgid "With a menu — people pick their tournament"
 msgstr ""
 
 msgid "With a menu — the players pick their tournament first"

@@ -124,6 +124,7 @@
                             {% if question.next_single is defined and question.next_single %}
                                 data-next-single="{{ wizard.enabled_question_id(question.next_single) or '' }}"
                             {% endif %}
+                            {% if question.min_count is defined %}data-min-count="{{ question.min_count }}"{% endif %}
                             data-default="{{ wizard_defaults[field] }}"
                             {% if question.summary %}data-summary="{{ question.summary }}"{% endif %}
                             data-testid="screen-assistant-question-{{ question_id }}"
@@ -138,7 +139,7 @@
                             {% endif %}
                             {# The field, by the type of the question. #}
                             {% include '/admin/wizard_questions/' ~ question.type ~ '.html' %}
-                            <div class="invalid-feedback screen-assistant-required">{{ _('Please answer the question.') }}</div>
+                            <div class="invalid-feedback screen-assistant-required">{{ question.required_text }}</div>
                         </div>
                     {% endfor %}
                     {# Once the last question answered. #}
@@ -381,8 +382,10 @@
                         return input.reportValidity();
                     }
                     case 'tournament':
-                    case 'tournaments':
                         return $(current.querySelector('select')).val()?.length > 0;
+                    case 'tournaments':
+                        return ($(current.querySelector('select')).val()?.length ?? 0)
+                            >= Number(current.dataset.minCount || 1);
                     default:
                         return true;
                 }
