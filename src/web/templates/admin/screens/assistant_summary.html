@@ -1,6 +1,6 @@
 {# What the assistant is about to create, filled into the final step of
    the assistant (see admin/screens/assistant.html). #}
-<ul class="screen-assistant-summary-list">
+<ul class="screen-assistant-summary-list" data-editable="{{ 'true' if editable else 'false' }}">
     {% for line in summary_lines %}
         <li>{{ line }}</li>
     {% endfor %}

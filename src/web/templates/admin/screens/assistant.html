@@ -124,6 +124,7 @@
                             {% if question.next_single is defined and question.next_single %}
                                 data-next-single="{{ wizard.enabled_question_id(question.next_single) or '' }}"
                             {% endif %}
+                            {% if question.min_count is defined %}data-min-count="{{ question.min_count }}"{% endif %}
                             data-default="{{ wizard_defaults[field] }}"
                             {% if question.summary %}data-summary="{{ question.summary }}"{% endif %}
                             data-testid="screen-assistant-question-{{ question_id }}"
@@ -134,11 +135,14 @@
                                 {% if question.text_for_answers %}data-text-url="{{ url_for('admin-screen-assistant-text', event_uniq_id=admin_event.uniq_id) }}?question={{ question_id }}"{% endif %}
                             >{{ question.text }}</h3>
                             {% if question.help %}
-                                <p class="form-text mt-0 mb-3">{{ question.help }}</p>
+                                <p
+                                    class="form-text mt-0 mb-3"
+                                    {% if question.help_for_answers %}data-text-url="{{ url_for('admin-screen-assistant-text', event_uniq_id=admin_event.uniq_id) }}?question={{ question_id }}&part=help"{% endif %}
+                                >{{ question.help }}</p>
                             {% endif %}
                             {# The field, by the type of the question. #}
                             {% include '/admin/wizard_questions/' ~ question.type ~ '.html' %}
-                            <div class="invalid-feedback screen-assistant-required">{{ _('Please answer the question.') }}</div>
+                            <div class="invalid-feedback screen-assistant-required">{{ question.required_text }}</div>
                         </div>
                     {% endfor %}
                     {# Once the last question answered. #}
@@ -330,14 +334,17 @@
                 }
                 // A question or an answer worded after the answers given so
                 // far is asked of the server (the rail then lists the
-                // question as worded).
+                // question as worded). The texts are asked one after the
+                // other: htmx drops a request from the form while another
+                // is still waiting.
                 const shown = current;
+                let texts = Promise.resolve();
                 shown?.querySelectorAll('[data-text-url]').forEach((text) => {
-                    htmx.ajax('POST', text.dataset.textUrl, {
+                    texts = texts.then(() => htmx.ajax('POST', text.dataset.textUrl, {
                         source: form,
                         target: text,
                         swap: 'innerHTML',
-                    }).then(() => {
+                    })).then(() => {
                         if (current === shown) {
                             renderRail(
                                 railAnswers(),
@@ -350,11 +357,19 @@
                 questions.forEach((question) => question.hidden = question !== current);
                 final.hidden = current !== null;
                 if (current === null) {
-                    // The server says what the answers create.
+                    // The server says what the answers create, and whether
+                    // it is a single screen to edit.
+                    createEditButton.classList.add('d-none');
                     htmx.ajax('POST', form.dataset.summaryUrl, {
                         source: form,
                         target: '#screen-assistant-summary',
                         swap: 'innerHTML',
+                    }).then(() => {
+                        createEditButton.classList.toggle(
+                            'd-none',
+                            form.querySelector('#screen-assistant-summary [data-editable]')
+                                ?.dataset.editable !== 'true'
+                        );
                     });
                 }
                 renderRail(
@@ -381,8 +396,10 @@
                         return input.reportValidity();
                     }
                     case 'tournament':
-                    case 'tournaments':
                         return $(current.querySelector('select')).val()?.length > 0;
+                    case 'tournaments':
+                        return ($(current.querySelector('select')).val()?.length ?? 0)
+                            >= Number(current.dataset.minCount || 1);
                     default:
                         return true;
                 }

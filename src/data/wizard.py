@@ -34,6 +34,9 @@ class WizardOption:
     # page asks the server for it when the question is shown, ``text``
     # standing until then
     text_for_answers: Callable[[dict[str, Any]], str] | None = None
+    # The help text from the answers given before, likewise (``help``
+    # standing until then)
+    help_for_answers: Callable[[dict[str, Any]], str] | None = None
 
 
 @dataclass
@@ -60,6 +63,9 @@ class WizardQuestion(ABC):
     # The text from the answers given before, when it depends on them (see
     # WizardOption.text_for_answers)
     text_for_answers: Callable[[dict[str, Any]], str] | None = None
+    # The help text from the answers given before, likewise (see
+    # WizardOption.help_for_answers)
+    help_for_answers: Callable[[dict[str, Any]], str] | None = None
 
     @abstractmethod
     def _read_answer(self, raw: str) -> tuple[Any, str | None]:
@@ -77,6 +83,11 @@ class WizardQuestion(ABC):
     def default_form_value(self) -> str:
         """The default value (``default_value``) as set in the form field."""
         return '' if self.default_value is None else str(self.default_value)
+
+    @property
+    def required_text(self) -> str:
+        """The message shown when the question is left unanswered."""
+        return _('Please answer the question.')
 
 
 @dataclass
@@ -216,10 +227,11 @@ class WizardTournamentQuestion(WizardChoiceQuestion):
 
 
 class WizardTournamentsQuestion(WizardChoiceQuestion):
-    """Some of *tournaments*, all by default. When *next_single* is given it
-    is the next question when a single tournament is chosen, ``next``
-    leading on from a choice of several. The other arguments are those of
-    WizardQuestion (*text* defaulting to a generic one)."""
+    """Some of *tournaments*, all by default, at least *min_count* of them.
+    When *next_single* is given it is the next question when a single
+    tournament is chosen, ``next`` leading on from a choice of several. The
+    other arguments are those of WizardQuestion (*text* defaulting to a
+    generic one)."""
 
     type: ClassVar[str] = 'tournaments'
 
@@ -228,6 +240,7 @@ class WizardTournamentsQuestion(WizardChoiceQuestion):
         tournaments: Iterable[Tournament],
         text: str | None = None,
         next_single: str | None = None,
+        min_count: int = 1,
         **kwargs: Any,
     ):
         options = _tournament_options(tournaments)
@@ -236,6 +249,16 @@ class WizardTournamentsQuestion(WizardChoiceQuestion):
             text=text or _('Select the tournaments:'), options=options, **kwargs
         )
         self.next_single = next_single
+        self.min_count = min_count
+
+    @property
+    @override
+    def required_text(self) -> str:
+        if self.min_count > 1:
+            return _('Please choose at least {count} tournaments.').format(
+                count=self.min_count
+            )
+        return super().required_text
 
     @override
     def _read_answer(self, raw: str) -> tuple[Any, str | None]:
@@ -251,6 +274,8 @@ class WizardTournamentsQuestion(WizardChoiceQuestion):
             for tournament_id in tournament_ids
         ):
             raise ValueError(_('Please choose the tournaments.'))
+        if len(tournament_ids) < self.min_count:
+            raise ValueError(self.required_text)
         next_question_id = (
             self.next_single
             if len(tournament_ids) == 1 and self.next_single is not None

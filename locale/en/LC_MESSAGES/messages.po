@@ -770,10 +770,10 @@ msgstr ""
 msgid "A rotator"
 msgstr ""
 
-msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
+msgid "A rotator is created to show the screens in turn, named after what they show."
 msgstr ""
 
-msgid "A rotator shows the grids in turn, which suits a projector."
+msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr ""
 
 #, python-brace-format
@@ -803,6 +803,9 @@ msgid "A set of screens that can be opened manually by clicking on tabs."
 msgstr ""
 
 msgid "A set with this name already existe."
+msgstr ""
+
+msgid "A single screen, showing the tournaments one after the other."
 msgstr ""
 
 msgid "A team that withdrew or was expelled having completed less than half of its matches is not ranked, and its matches are annulled: they no longer count in the other teams' scores and tie-breaks."
@@ -1222,9 +1225,6 @@ msgid "All the categories can only be printed for the prize winners."
 msgstr ""
 
 msgid "All the dependant objects will also be deleted:"
-msgstr ""
-
-msgid "All the grids on one page"
 msgstr ""
 
 msgid "All the players"
@@ -2898,6 +2898,12 @@ msgstr ""
 msgid "Create a channel"
 msgstr ""
 
+msgid "Create a channel for this menu"
+msgstr ""
+
+msgid "Create a channel for this rotator"
+msgstr ""
+
 msgid "Create a channel for this screen"
 msgstr ""
 
@@ -2912,11 +2918,11 @@ msgid "Create a menu named “{name}” for the players to pick their tournament
 msgstr ""
 
 #, python-brace-format
-msgid "Create a menu named “{name}” to pick the grid."
+msgid "Create a menu named “{name}” to pick the page."
 msgstr ""
 
 #, python-brace-format
-msgid "Create a menu named “{name}” to pick the page."
+msgid "Create a menu named “{name}” to pick the tournament."
 msgstr ""
 
 msgid "Create a menu now to get started."
@@ -3134,10 +3140,6 @@ msgid "Current version"
 msgstr ""
 
 msgid "Currently showing nothing."
-msgstr ""
-
-#, python-brace-format
-msgid "Currently showing: {name}."
 msgstr ""
 
 msgid "Custom"
@@ -3633,6 +3635,12 @@ msgstr ""
 
 #, python-brace-format
 msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
+msgstr ""
+
+msgid "Do you want to set up a channel for this menu?"
+msgstr ""
+
+msgid "Do you want to set up a channel for this rotator?"
 msgstr ""
 
 msgid "Do you want to set up a channel for this screen?"
@@ -5155,10 +5163,13 @@ msgstr ""
 msgid "How do people move between the pages?"
 msgstr ""
 
+msgid "How do people move between the tournaments?"
+msgstr ""
+
 msgid "How do you want to name the channel?"
 msgstr ""
 
-msgid "How do you want to show the grids?"
+msgid "How do you want to show the tournaments?"
 msgstr ""
 
 msgid "How do you want to split it into pages?"
@@ -6812,6 +6823,12 @@ msgstr ""
 msgid "No channel set for the event."
 msgstr ""
 
+msgid "No channel — just create the menu"
+msgstr ""
+
+msgid "No channel — just create the rotator"
+msgstr ""
+
 msgid "No channel — just create the screen"
 msgstr ""
 
@@ -7552,19 +7569,10 @@ msgstr ""
 msgid "On this computer"
 msgstr ""
 
-msgid "One above the other."
-msgstr ""
-
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr ""
 
 msgid "One or more tournaments, on one page"
-msgstr ""
-
-msgid "One page per grid, turning by themselves"
-msgstr ""
-
-msgid "One page per grid, with a menu to pick the grid"
 msgstr ""
 
 msgid "One page per tournament, with a menu to switch between them."
@@ -7897,6 +7905,9 @@ msgid "Paged screens: %(num)d"
 msgstr ""
 
 msgid "Pages"
+msgstr ""
+
+msgid "Pages can be selected manually (via a clickable menu) or set to scroll automatically."
 msgstr ""
 
 msgid "Paid"
@@ -8584,6 +8595,10 @@ msgid "Please choose a variation."
 msgstr ""
 
 msgid "Please choose an answer."
+msgstr ""
+
+#, python-brace-format
+msgid "Please choose at least {count} tournaments."
 msgstr ""
 
 msgid "Please choose the candidate."
@@ -10438,6 +10453,9 @@ msgstr ""
 msgid "Setup assistant"
 msgstr ""
 
+msgid "Several tournaments, one page each"
+msgstr ""
+
 msgid "Seychelles"
 msgstr ""
 
@@ -11665,6 +11683,12 @@ msgstr ""
 msgid "The members are never paired together."
 msgstr ""
 
+msgid "The menu is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
+msgstr ""
+
+msgid "The menu is marked as designed for this new channel, which shows it."
+msgstr ""
+
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr ""
 
@@ -12043,6 +12067,12 @@ msgstr ""
 msgid "The rotating delay between two screens."
 msgstr ""
 
+msgid "The rotator is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
+msgstr ""
+
+msgid "The rotator is marked as designed for this new channel, which shows it."
+msgstr ""
+
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr ""
 
@@ -12390,6 +12420,10 @@ msgid "This backup was taken by another version of the application and its conte
 msgstr ""
 
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
+msgstr ""
+
+#, python-brace-format
+msgid "This channel is currently showing {name}."
 msgstr ""
 
 msgid "This channel is private (not visible by the spectators)."
@@ -13072,6 +13106,9 @@ msgid "Tournaments"
 msgstr "<u>T</u>ournaments"
 
 msgid "Tournaments are finished, you can not add players any longer."
+msgstr ""
+
+msgid "Tournaments can be selected manually (via a clickable menu) or set to scroll automatically."
 msgstr ""
 
 msgid "Tournaments displayed:"
@@ -13792,9 +13829,6 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
-msgid "What do you want to display?"
-msgstr ""
-
 msgid "What do you want to put up?"
 msgstr ""
 
@@ -13845,6 +13879,12 @@ msgid "When unpaired players are not displayed, there is no way to distinguish t
 msgstr ""
 
 msgid "Where"
+msgstr ""
+
+msgid "Which channel is this menu designed for?"
+msgstr ""
+
+msgid "Which channel is this rotator designed for?"
 msgstr ""
 
 msgid "Which channel is this screen designed for?"
@@ -13904,6 +13944,9 @@ msgid "With a channel, the arbiter decides what devices show. A device follows t
 msgstr ""
 
 msgid "With a menu — people pick their page"
+msgstr ""
+
+msgid "With a menu — people pick their tournament"
 msgstr ""
 
 msgid "With a menu — the players pick their tournament first"
@@ -14165,6 +14208,12 @@ msgid "You must create a tournament before creating a prize bracket."
 msgstr ""
 
 msgid "You must create a tournament before creating these screens."
+msgstr ""
+
+msgid "You will need to select the menu on your display."
+msgstr ""
+
+msgid "You will need to select the rotator on your display."
 msgstr ""
 
 msgid "You will need to select the screen on your display."

@@ -15,6 +15,7 @@ from data.access_levels.actions import AuthAction
 from data.screens.assistant import (
     AssistantGoal,
     assistant_created_kind,
+    assistant_creates_single_screen,
     assistant_goal,
     assistant_goals,
     assistant_other_type_names,
@@ -188,11 +189,10 @@ class ScreenAssistantAdminController(BaseEventAdminController):
             Message.success(
                 request, switched_message.format(channel_name=creation.channel_name)
             )
-        # Asked to edit what was created, the tab opens its form too: the
-        # screen or paged screen when a single one was created, else the
-        # menu or the rotator leading to the screens.
-        edit = '&edit=1' if form_data.get('edit_after') else ''
+        # Asked to edit what was created, the tab opens the form of the
+        # screen or paged screen, when a single one was created.
         single_item = len(creation.screen_ids) + len(creation.family_ids) == 1
+        edit = '&edit=1' if form_data.get('edit_after') and single_item else ''
         # On to the rotator or the menu created, or to the screens.
         if creation.rotator_id is not None:
             return ClientRedirect(
@@ -201,7 +201,7 @@ class ScreenAssistantAdminController(BaseEventAdminController):
                 )
                 + f'?scroll_to={creation.rotator_id}{edit}'
             )
-        if creation.menu_id is not None and not (edit and single_item):
+        if creation.menu_id is not None and not edit:
             return ClientRedirect(
                 redirect_to=request.app.route_reverse(
                     'admin-event-menus-tab', event_uniq_id=event.uniq_id
@@ -253,7 +253,11 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         summary_lines = [] if errors else assistant_summary(event, goal, answers)
         return HTMXTemplate(
             template_name='admin/screens/assistant_summary.html',
-            context={'summary_lines': summary_lines},
+            context={
+                'summary_lines': summary_lines,
+                'editable': not errors
+                and assistant_creates_single_screen(event, goal, answers),
+            },
         )
 
     @post(
@@ -270,10 +274,12 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         ],
         question: FromQuery[str],
         option: FromQuery[int | None] = None,
+        part: FromQuery[str] = 'text',
     ) -> Response[str]:
-        """The text of the question *question* (or of its option *option*)
-        worded after the answers given so far (see
-        ``WizardOption.text_for_answers``)."""
+        """The text (or the help text when *part* is ``help``) of the
+        question *question* (or of its option *option*) worded after the
+        answers given so far (see ``WizardOption.text_for_answers`` and
+        ``WizardOption.help_for_answers``)."""
         form_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -294,9 +300,16 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         # The questions after the one shown may not be answered yet: the
         # text only depends on those before.
         answers, _path, _errors = wizard.read_answers(form_data)
-        text = (
-            item.text_for_answers(answers)
-            if item.text_for_answers is not None
-            else item.text
-        )
+        if part == 'help':
+            text = (
+                item.help_for_answers(answers)
+                if item.help_for_answers is not None
+                else item.help or ''
+            )
+        else:
+            text = (
+                item.text_for_answers(answers)
+                if item.text_for_answers is not None
+                else item.text
+            )
         return Response(html.escape(text), media_type=MediaType.HTML)
